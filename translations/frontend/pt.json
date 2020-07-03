@@ -519,6 +519,11 @@
                 "clear": "Limpar",
                 "show_areas": "Mostrar áreas"
             },
+            "date-range-picker": {
+                "end_date": "Data de fim",
+                "select": "Selecione",
+                "start_date": "Data de início"
+            },
             "device-picker": {
                 "clear": "Apagar",
                 "device": "Dispositivo",
@@ -706,10 +711,10 @@
             },
             "zha_device_info": {
                 "buttons": {
-                    "add": "Adicionar Dispositivos",
+                    "add": "Adicionar dispositivos através deste dispositivo",
                     "reconfigure": "Reconfigurar Dispositivo",
                     "remove": "Remover Dispositivo",
-                    "zigbee_information": "Informação Zigbee"
+                    "zigbee_information": "Assinatura do dispositivo Zigbee"
                 },
                 "confirmations": {
                     "remove": "Tem a certeza que deseja remover este dispositivo?"
@@ -729,7 +734,7 @@
                 "unknown": "Desconhecido",
                 "zha_device_card": {
                     "area_picker_label": "Área",
-                    "device_name_placeholder": "Nome do utilizador",
+                    "device_name_placeholder": "Alterar o nome do dispositivo",
                     "update_name_button": "Atualizar Nome"
                 }
             }
@@ -1076,7 +1081,7 @@
                         },
                         "integrations": "Integrações",
                         "integrations_introduction": "As integrações para o Home Assistant Cloud permitem-lhe ligar-se aos serviços na nuvem sem ter de expor publicamente o seu Home Assistant na Internet.",
-                        "integrations_introduction2": "Consulte o site para ",
+                        "integrations_introduction2": "Consulte o site para",
                         "integrations_link_all_features": " todas as funcionalidades disponíveis",
                         "manage_account": "Gerir conta",
                         "nabu_casa_account": "Conta Nabu Casa",
@@ -1185,7 +1190,7 @@
                         "information2": "A avaliação gratuita dará acesso a todos os benefícios do Home Assistant Cloud, incluindo:",
                         "information3": "Este serviço é executado pelo nosso parceiro",
                         "information3a": ", uma empresa criada pelos fundadores do Home Assistant e do Hass.io.",
-                        "information4": "Ao registrar uma conta, concorda com os seguintes termos e condições.",
+                        "information4": "Ao registar uma conta, concorda com os seguintes termos e condições.",
                         "link_privacy_policy": "Política de privacidade",
                         "link_terms_conditions": "Termos e condições",
                         "password": "Palavra-passe",
@@ -1283,7 +1288,7 @@
                     "device_not_found": "Dispositivo não encontrado.",
                     "entities": {
                         "add_entities_lovelace": "Adicionar ao Lovelace",
-                        "disabled_entities": "+{count} {count, plural,\n uma {entity}\n outras {entities}\n}",
+                        "disabled_entities": "+{count} {count, plural,\n  one {entidade inactiva}\n  other {entidades inactivas}\n}",
                         "entities": "Entidades",
                         "hide_disabled": "Mostrar entidades desativadas",
                         "none": "Este dispositivo não possui entidades"
@@ -1338,6 +1343,7 @@
                             "button": "Remover selecionado",
                             "confirm_partly_text": "Você pode remover apenas {removable} das {selected} entidades selecionadas. As entidades só podem ser removidas quando a integração deixar de suportá-las. Por vezes é necessário reiniciar o Home Assistant antes de poder remover as entidades de uma integração removida. Tem a certeza de que deseja remover as entidades removíveis?",
                             "confirm_partly_title": "Somente {número} entidades selecionadas podem ser removidas.",
+                            "confirm_text": "Deve remover da configuração do Lovelace e das automações se contêm estas entidades",
                             "confirm_title": "Deseja remover {number} entidades?"
                         },
                         "selected": "Selecionou {number}",
@@ -1406,8 +1412,9 @@
                         "delete_button": "Apagar {integration}",
                         "delete_confirm": "Tem a certeza que pretende apagar esta integração?",
                         "device_unavailable": "Dispositivo indisponível",
-                        "devices": "{count} {count, plural,\n um {entity}\n outros {entities}\n}",
-                        "entities": "{count} {count, plural,\n uma {entity}\n outras {entities}\n}",
+                        "devices": "{count} {count, plural,\n one {dispositivo}\n other {dispositivos}\n}",
+                        "documentation": "Documentação",
+                        "entities": "{count} {count, plural,\n  one {entidade}\n  other {entidades}\n}",
                         "entity_unavailable": "Entidade indisponível",
                         "firmware": "Firmware: {version}",
                         "hub": "Conectado via",
@@ -1679,7 +1686,7 @@
                             "group": "Recarregar grupos",
                             "heading": "A recarregar a configuração YAML",
                             "input_datetime": "Recarregar input date times",
-                            "input_select": "Recarregar da",
+                            "input_select": "Recarregar input selects",
                             "introduction": "Algumas partes do Home Assistant podem ser recarregadas sem a necessidade de reiniciar. Ao carregar em Recarregar a configuração irá descartar a configuração atual e carregar a nova.",
                             "person": "Recarregar pessoas",
                             "scene": "Recarregar cenas",

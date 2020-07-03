@@ -48,6 +48,19 @@
                 "none": "Aucun",
                 "sleep": "Veille"
             }
+        },
+        "humidifier": {
+            "mode": {
+                "auto": "Auto",
+                "away": "Absent",
+                "baby": "Bébé",
+                "boost": "Boost",
+                "comfort": "Confort",
+                "eco": "Éco",
+                "home": "Présent",
+                "normal": "Normal",
+                "sleep": "Sommeil"
+            }
         }
     },
     "state_badge": {
@@ -387,6 +400,12 @@
                 "oscillate": "Osciller",
                 "reverse": "Sens inverse",
                 "speed": "Vitesse"
+            },
+            "humidifier": {
+                "humidity": "Humidité cible",
+                "mode": "Mode",
+                "on_entity": "{name} on",
+                "target_humidity_entity": "{name} humidité cible"
             },
             "light": {
                 "brightness": "Luminosité",
@@ -870,8 +889,8 @@
                                     "label": "Pas"
                                 },
                                 "numeric_state": {
-                                    "above": "Au-Dessus",
-                                    "below": "En-Dessous",
+                                    "above": "Au dessus de",
+                                    "below": "En-dessous de",
                                     "label": "Valeur numérique",
                                     "value_template": "Contenu du modèle (optionnel)"
                                 },
@@ -1412,6 +1431,7 @@
                         "delete_confirm": "Êtes-vous sûr de vouloir supprimer cette intégration?",
                         "device_unavailable": "appareil indisponible",
                         "devices": "{count} {count, plural,\n  zero {appareil}\n  one {appareil}\n  other {appareils}\n}",
+                        "documentation": "Documentation",
                         "entities": "{count} {count, plural,\n  zero {entité}\n  one {entité}\n  other {entités}\n}",
                         "entity_unavailable": "entité indisponible",
                         "firmware": "Firmware: {version}",
@@ -2197,6 +2217,10 @@
                         "horizontal-stack": {
                             "description": "La carte de pile horizontale vous permet d'empiler plusieurs cartes, de sorte qu'elles soient toujours côte à côte dans l'espace d'une colonne.",
                             "name": "Pile horizontale"
+                        },
+                        "humidifier": {
+                            "description": "La carte humidificateur donne le contrôle de votre entité humidificateur. Vous permettant de modifier l'humidité et le mode de l'entité.",
+                            "name": "Humidificateur"
                         },
                         "iframe": {
                             "description": "La carte Page Web vous permet d'intégrer votre page Web préférée directement dans Home Assistant.",

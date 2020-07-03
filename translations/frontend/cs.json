@@ -1431,6 +1431,7 @@
                         "delete_confirm": "Opravdu chcete odstranit tuto integraci?",
                         "device_unavailable": "zařízení není k dispozici",
                         "devices": "{count} {count, plural,\n  one {zařízení}\n  other {zařízení}\n}",
+                        "documentation": "Dokumentace",
                         "entities": "{count} {count, plural,\n  one {entita}\n  other {entit}\n}",
                         "entity_unavailable": "entita není k dispozici",
                         "firmware": "Firmware: {version}",

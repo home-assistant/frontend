@@ -1431,6 +1431,7 @@
                         "delete_confirm": "이 통합 구성요소를 제거하시겠습니까?",
                         "device_unavailable": "기기 사용불가",
                         "devices": "{count} {count, plural,\none {기기}\nother {기기}\n}",
+                        "documentation": "관련문서",
                         "entities": "{count} {count, plural,\none {구성요소}\nother {구성요소}\n}",
                         "entity_unavailable": "구성요소 사용불가",
                         "firmware": "펌웨어: {version}",
