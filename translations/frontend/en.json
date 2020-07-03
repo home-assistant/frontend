@@ -2678,6 +2678,10 @@
                     "not_used": "Has never been used",
                     "token_title": "Refresh token for {clientId}"
                 },
+                "suspend": {
+                    "description": "Should we close the connection to the server after being hidden for 5 minutes?",
+                    "header": "Automatically close connection"
+                },
                 "themes": {
                     "dropdown_label": "Theme",
                     "error_no_theme": "No themes available.",
