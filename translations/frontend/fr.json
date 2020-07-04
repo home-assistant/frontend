@@ -2678,6 +2678,9 @@
                     "not_used": "N'a jamais été utilisé",
                     "token_title": "Actualiser le jeton de {clientId}"
                 },
+                "suspend": {
+                    "header": "Fermer automatiquement la connexion"
+                },
                 "themes": {
                     "dropdown_label": "Thème",
                     "error_no_theme": "Aucun thème disponible.",

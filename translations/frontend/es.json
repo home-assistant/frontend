@@ -2678,6 +2678,10 @@
                     "not_used": "Nunca ha sido usado",
                     "token_title": "Actualizar token para {clientId}"
                 },
+                "suspend": {
+                    "description": "¿Deberíamos cerrar la conexión con el servidor después de estar oculto durante 5 minutos?",
+                    "header": "Cerrar automáticamente la conexión"
+                },
                 "themes": {
                     "dropdown_label": "Tema",
                     "error_no_theme": "No hay temas disponibles",

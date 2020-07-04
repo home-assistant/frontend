@@ -52,9 +52,14 @@
         "humidifier": {
             "mode": {
                 "auto": "Auto",
+                "away": "Ausente",
+                "baby": "Bebê",
+                "boost": "Impulso",
                 "comfort": "Conforto",
                 "eco": "Eco",
-                "normal": "Normal"
+                "home": "Início",
+                "normal": "Normal",
+                "sleep": "Dormir"
             }
         }
     },
@@ -497,6 +502,7 @@
             "menu": "Menu",
             "next": "Seguinte",
             "no": "Não",
+            "overflow_menu": "Abrir menu Lovelace IU",
             "previous": "Anterior",
             "refresh": "Atualizar",
             "save": "Guardar",
@@ -712,6 +718,7 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Adicionar dispositivos através deste dispositivo",
+                    "clusters": "Gerir utilizadores",
                     "reconfigure": "Reconfigurar Dispositivo",
                     "remove": "Remover Dispositivo",
                     "zigbee_information": "Assinatura do dispositivo Zigbee"
@@ -1387,7 +1394,9 @@
                 },
                 "info": {
                     "built_using": "Construído com",
+                    "caption": "Informação",
                     "custom_uis": "IUs personalizados:",
+                    "description": "Saiba mais sobre o Home Assistant Cloud",
                     "developed_by": "Desenvolvido por um punhado de pessoas incríveis.",
                     "documentation": "Documentação",
                     "frontend": "",
@@ -1402,6 +1411,11 @@
                     "source": "Fonte:",
                     "system_health_error": "O componente System Health não está carregado. Adicione 'system_health:' ao configuration.yaml",
                     "title": "Informações"
+                },
+                "integration_panel_move": {
+                    "link_integration_page": "Página de Integrações",
+                    "missing_zha": "Está faltando o painel de configuração do Z-Wave? Foi movido para a entrada do Z-Wave na {integrations_page} .",
+                    "missing_zwave": "Está faltando o painel de configuração do Z-Wave? Foi movido para a entrada do Z-Wave na {integrations_page} ."
                 },
                 "integrations": {
                     "add_integration": "Adicionar integração",
@@ -1476,7 +1490,9 @@
                 },
                 "introduction": "Aqui é possível configurar os seus componentes e o Home Assistant. Nem tudo é possível de ser configurado a partir da Interface Gráfica, mas estamos a trabalhar para isso.",
                 "logs": {
+                    "caption": "Logs",
                     "clear": "Limpar",
+                    "description": "Exibir os logs do Assistente Inicial",
                     "details": "Detalhes do log ( {level} )",
                     "load_full_log": "Carregar log completo do Home Assistant",
                     "loading_log": "A carregar o log de erros...",
@@ -1685,8 +1701,11 @@
                             "core": "Recarregar localização e personalizações",
                             "group": "Recarregar grupos",
                             "heading": "A recarregar a configuração YAML",
+                            "input_boolean": "Recarregar booleanos de entrada",
                             "input_datetime": "Recarregar input date times",
+                            "input_number": "Recarregar input numbers",
                             "input_select": "Recarregar input selects",
+                            "input_text": "Recarregar input texts",
                             "introduction": "Algumas partes do Home Assistant podem ser recarregadas sem a necessidade de reiniciar. Ao carregar em Recarregar a configuração irá descartar a configuração atual e carregar a nova.",
                             "person": "Recarregar pessoas",
                             "scene": "Recarregar cenas",
@@ -1745,12 +1764,16 @@
                             "name": "Nome",
                             "system": "Sistema"
                         }
-                    }
+                    },
+                    "users_privileges_note": "O grupo de usuários é um trabalho em andamento. O usuário não poderá administrar a instância por meio da interface do usuário. Ainda estamos auditando todos os pontos de extremidade da API de gerenciamento para garantir que eles limitem corretamente o acesso aos administradores."
                 },
                 "zha": {
                     "add_device_page": {
+                        "discovered_text": "Os dispositivos aparecerão aqui uma vez descobertos.",
                         "discovery_text": "Os dispositivos descobertos aparecerão aqui. Siga as instruções para o(s) seu(s) dispositivo(s) e coloque o(s) dispositivo(s) em modo de emparelhamento.",
                         "header": "Zigbee Home Automation - Adicionar dispositivos",
+                        "no_devices_found": "Nenhum dispositivo encontrado, verifique se eles estão no modo de emparelhamento e mantenha-os acordados enquanto a descoberta está em execução.",
+                        "pairing_mode": "Verifique se seus dispositivos estão no modo de emparelhamento. Verifique as instruções do seu dispositivo sobre como fazer isso.",
                         "search_again": "Pesquisar Novamente",
                         "spinner": "À procura de dispositivos ZHA Zigbee..."
                     },
@@ -1758,6 +1781,7 @@
                         "caption": "Adicionar Dispositivos",
                         "description": "Adicionar dispositivos à rede Zigbee"
                     },
+                    "button": "Configurar",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributos do cluster selecionado",
@@ -1836,6 +1860,9 @@
                         "header": "Gestão ",
                         "introduction": "Comandos que afetam toda a rede"
                     },
+                    "network": {
+                        "caption": "Rede"
+                    },
                     "node_management": {
                         "header": "Gestão dispositivos",
                         "help_node_dropdown": "Selecione um dispositivo para visualizar as opções por dispositivo.",
@@ -1875,6 +1902,7 @@
                     "no_zones_created_yet": "Parece que você ainda não criou nenhuma zona."
                 },
                 "zwave": {
+                    "button": "Configurar UI",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "Índice",
@@ -1908,7 +1936,18 @@
                         "true": "Verdadeiro"
                     },
                     "node_management": {
-                        "exclude_entity": "Excluir esta entidade do Home Assistant"
+                        "entities": "Entidades deste nó",
+                        "entity_info": "Definições da entidade",
+                        "exclude_entity": "Excluir esta entidade do Home Assistant",
+                        "group": "Grupo",
+                        "node_group_associations": "Associações de grupos de nós",
+                        "node_protection": "Proteção de nó",
+                        "node_to_control": "Configurar opçoes do nó",
+                        "nodes": "Nós",
+                        "nodes_hint": "Selecione o nó para visualizar as opções por nó",
+                        "pooling_intensity": "Intensidade da votação",
+                        "protection": "Proteção",
+                        "set_protection": "Definir proteção"
                     },
                     "ozw_log": {
                         "header": "Log OZW",
@@ -1919,14 +1958,17 @@
                         "add_node_secure": "Adicionar nó seguro",
                         "cancel_command": "Cancelar comando",
                         "heal_network": "Curar a Rede",
+                        "heal_node": "Adicionar nó",
                         "node_info": "Informação do Nó",
+                        "print_node": "Nó de impressão",
                         "refresh_entity": "Actualizar entidade",
                         "remove_node": "Remover nó",
                         "save_config": "Guardar configuração",
                         "soft_reset": "Reinicio suave",
                         "start_network": "Iniciar a rede",
                         "stop_network": "Parar a rede",
-                        "test_network": "Testar rede"
+                        "test_network": "Testar rede",
+                        "test_node": "Nó de Teste"
                     },
                     "values": {
                         "header": "Valores do Nó"
@@ -2158,6 +2200,7 @@
                             "name": "Agrupamento Horizontal"
                         },
                         "humidifier": {
+                            "description": "O cartão Termóstato dá-lhe o controle da sua entidade de climatização. Permitindo alterar a temperatura e o modo dessa entidade.",
                             "name": "Humidificador"
                         },
                         "iframe": {
@@ -2614,6 +2657,10 @@
                     "last_used": "Última utilização a {date} em {location}",
                     "not_used": "Nunca foi utilizado",
                     "token_title": "Atualizar o token de {clientId}"
+                },
+                "suspend": {
+                    "description": "Devemos fechar a conexão com o servidor depois de ficar oculto por 5 minutos?",
+                    "header": "Fechar automaticamente a conexão"
                 },
                 "themes": {
                     "dropdown_label": "Tema",
