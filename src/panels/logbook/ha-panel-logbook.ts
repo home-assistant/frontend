@@ -17,7 +17,7 @@ import {
 } from "lit-element";
 import { HomeAssistant } from "../../types";
 import { haStyle } from "../../resources/styles";
-import { fetchUsers } from "../../data/user";
+import { fetchPersons } from "../../data/person";
 import {
   clearLogbookCache,
   getLogbookData,
@@ -132,7 +132,7 @@ export class HaPanelLogbook extends LitElement {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
 
-    this._fetchUserDone = this._fetchUsers();
+    this._fetchUserDone = this._fetchPersons();
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -197,13 +197,20 @@ export class HaPanelLogbook extends LitElement {
     }
   }
 
-  private async _fetchUsers() {
-    const users = await fetchUsers(this.hass);
-    const userid_to_name = {};
-    users.forEach((user) => {
-      userid_to_name[user.id] = user.name;
+  private async _fetchPersons() {
+    const persons = await fetchPersons(this.hass);
+    const userIdToName = {};
+    persons.storage.forEach((person) => {
+      if (person.user_id) {
+        userIdToName[person.user_id] = person.name;
+      }
     });
-    this._userIdToName = userid_to_name;
+    persons.config.forEach((person) => {
+      if (person.user_id) {
+        userIdToName[person.user_id] = person.name;
+      }
+    });
+    this._userIdToName = userIdToName;
   }
 
   private _dateRangeChanged(ev) {
