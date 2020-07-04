@@ -22,6 +22,7 @@ const _load = (
         (element as HTMLScriptElement).async = true;
         if (type) {
           (element as HTMLScriptElement).type = type;
+          (element as HTMLScriptElement).crossOrigin = "use-credentials";
         }
         break;
       case "link":
