@@ -1465,7 +1465,7 @@
                     },
                     "configure": "Configurar",
                     "configured": "Configurades",
-                    "description": "Gestionar i configurar integracións",
+                    "description": "Gestiona i configura les integracions",
                     "details": "Detalls de la integració",
                     "discovered": "Descobertes",
                     "home_assistant_website": "lloc web de Home Assistant",
@@ -2677,6 +2677,10 @@
                     "last_used": "Darrer ús el {date} des de {location}",
                     "not_used": "Mai no s'ha utilitzat",
                     "token_title": "Token d'actualització de {clientId}"
+                },
+                "suspend": {
+                    "description": "Tancar la connexió amb el servidor després d'haver estat ocult durant 5 minuts?",
+                    "header": "Tanca la connexió automàticament"
                 },
                 "themes": {
                     "dropdown_label": "Tema",

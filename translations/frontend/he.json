@@ -21,7 +21,7 @@
         "map": "מפה",
         "profile": "פרופיל",
         "shopping_list": "רשימת קניות",
-        "states": "סקירה כללית"
+        "states": "ראשי"
     },
     "state_attributes": {
         "climate": {
@@ -1431,6 +1431,7 @@
                         "delete_confirm": "האם אתה בטוח שברצונך למחוק אינטגרציה זו?",
                         "device_unavailable": "מכשיר אינו זמין",
                         "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
+                        "documentation": "תיעוד",
                         "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
                         "entity_unavailable": "ישות לא זמינה",
                         "firmware": "קושחה: {version}",
@@ -2187,7 +2188,7 @@
                             "icon_height": "גובה אייקון",
                             "image": "נתיב תמונה",
                             "manual": "ידני",
-                            "manual_description": "צריך להוסיף כרטיס מותאם אישית או פשוט רוצה לכתוב באופן ידני את yaml?",
+                            "manual_description": "צריך להוסיף כרטיס מותאם אישית או פשוט רוצה לכתוב באופן ידני את ה-yaml?",
                             "maximum": "מקסימום",
                             "minimum": "מינימום",
                             "name": "שם",
@@ -2347,9 +2348,9 @@
                         "confirm_unsaved_changes": "יש לך שינויים שלא נשמרו, אתה בטוח שברצונך לצאת?",
                         "confirm_unsaved_comments": "התצורה שלך מכילה הערות, אלה לא יישמרו. האם אתה רוצה להמשיך?",
                         "error_invalid_config": "התצורה שלך אינה תקפה: {error}",
-                        "error_parse_yaml": "לא ניתן לנתח את YAML: {error}",
+                        "error_parse_yaml": "לא ניתן לנתח את ה-YAML: {error}",
                         "error_remove": "לא ניתן להסיר את הקונפיגורציה: {error}",
-                        "error_save_yaml": "אין אפשרות לשמור את YAML: {error}",
+                        "error_save_yaml": "אין אפשרות לשמור את ה-YAML: {error}",
                         "header": "עריכת קונפיגורציה",
                         "resources_moved": "אין להוסיף עוד משאבים לתצורת Lovelace אך ניתן להוסיף אותם בלוח התצורה של Lovelace.",
                         "save": "שמור",
@@ -2676,6 +2677,10 @@
                     "last_used": "נעשה שימוש לאחרונה ב {date} מ{location}",
                     "not_used": "לא היה בשימוש",
                     "token_title": "אסימון רענון עבור {clientId}"
+                },
+                "suspend": {
+                    "description": "האם עלינו לסגור את החיבור לשרת לאחר שהוסתרנו במשך 5 דקות?",
+                    "header": "סגור חיבור באופן אוטומטי"
                 },
                 "themes": {
                     "dropdown_label": "ערכת נושא",
