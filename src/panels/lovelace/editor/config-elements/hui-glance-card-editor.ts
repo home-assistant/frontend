@@ -116,41 +116,47 @@ export class HuiGlanceCardEditor extends LitElement
           ></paper-input>
         </div>
         <div class="side-by-side">
-          <ha-formfield
-            .label=${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.show_name"
-            )}
-          >
-            <ha-switch
-              .checked=${this._config!.show_name !== false}
-              .configValue="${"show_name"}"
-              @change="${this._valueChanged}"
-            ></ha-switch>
-          </ha-formfield>
-          <ha-formfield
-            .label=${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.show_icon"
-            )}
-          >
-            <ha-switch
-              .checked=${this._config!.show_icon !== false}
-              .configValue="${"show_icon"}"
-              @change="${this._valueChanged}"
+          <div>
+            <ha-formfield
+              .label=${this.hass.localize(
+                "ui.panel.lovelace.editor.card.generic.show_name"
+              )}
             >
-            </ha-switch>
-          </ha-formfield>
-          <ha-formfield
-            .label=${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.show_state"
-            )}
-          >
-            <ha-switch
-              .checked=${this._config!.show_state !== false}
-              .configValue="${"show_state"}"
-              @change="${this._valueChanged}"
+              <ha-switch
+                .checked=${this._config!.show_name !== false}
+                .configValue="${"show_name"}"
+                @change="${this._valueChanged}"
+              ></ha-switch>
+            </ha-formfield>
+          </div>
+          <div>
+            <ha-formfield
+              .label=${this.hass.localize(
+                "ui.panel.lovelace.editor.card.generic.show_icon"
+              )}
             >
-            </ha-switch>
-          </ha-formfield>
+              <ha-switch
+                .checked=${this._config!.show_icon !== false}
+                .configValue="${"show_icon"}"
+                @change="${this._valueChanged}"
+              >
+              </ha-switch>
+            </ha-formfield>
+          </div>
+          <div>
+            <ha-formfield
+              .label=${this.hass.localize(
+                "ui.panel.lovelace.editor.card.generic.show_state"
+              )}
+            >
+              <ha-switch
+                .checked=${this._config!.show_state !== false}
+                .configValue="${"show_state"}"
+                @change="${this._valueChanged}"
+              >
+              </ha-switch>
+            </ha-formfield>
+          </div>
         </div>
       </div>
       <hui-entity-editor
