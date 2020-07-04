@@ -21,6 +21,7 @@ import type { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { SaveDialogParams } from "./show-save-config-dialog";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
 
 const EMPTY_CONFIG = { views: [] };
 
@@ -77,6 +78,7 @@ export class HuiSaveConfig extends LitElement {
                   .label=${this.hass!.localize(
                     "ui.panel.lovelace.editor.save_config.empty_config"
                   )}
+                  .dir="${computeRTLDirection(this.hass)}"
                 >
                   <ha-switch
                     .checked=${this._emptyConfig}

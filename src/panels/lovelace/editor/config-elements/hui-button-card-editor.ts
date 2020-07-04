@@ -25,6 +25,7 @@ import {
 import "../../../../components/ha-switch";
 import "../../../../components/ha-formfield";
 import { configElementStyle } from "./config-elements-style";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -148,6 +149,7 @@ export class HuiButtonCardEditor extends LitElement
               .label=${this.hass.localize(
                 "ui.panel.lovelace.editor.card.generic.show_name"
               )}
+              .dir="${computeRTLDirection(this.hass)}"
             >
               <ha-switch
                 .checked="${this._config!.show_name !== false}"
@@ -161,6 +163,7 @@ export class HuiButtonCardEditor extends LitElement
               .label=${this.hass.localize(
                 "ui.panel.lovelace.editor.card.generic.show_icon"
               )}
+              .dir="${computeRTLDirection(this.hass)}"
             >
               <ha-switch
                 .checked="${this._config!.show_icon !== false}"

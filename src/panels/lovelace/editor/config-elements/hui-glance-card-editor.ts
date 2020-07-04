@@ -27,6 +27,7 @@ import {
   EntitiesEditorEvent,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -121,6 +122,7 @@ export class HuiGlanceCardEditor extends LitElement
               .label=${this.hass.localize(
                 "ui.panel.lovelace.editor.card.generic.show_name"
               )}
+              .dir="${computeRTLDirection(this.hass)}"
             >
               <ha-switch
                 .checked=${this._config!.show_name !== false}
@@ -134,6 +136,7 @@ export class HuiGlanceCardEditor extends LitElement
               .label=${this.hass.localize(
                 "ui.panel.lovelace.editor.card.generic.show_icon"
               )}
+              .dir="${computeRTLDirection(this.hass)}"
             >
               <ha-switch
                 .checked=${this._config!.show_icon !== false}
@@ -148,6 +151,7 @@ export class HuiGlanceCardEditor extends LitElement
               .label=${this.hass.localize(
                 "ui.panel.lovelace.editor.card.generic.show_state"
               )}
+              .dir="${computeRTLDirection(this.hass)}"
             >
               <ha-switch
                 .checked=${this._config!.show_state !== false}

@@ -31,6 +31,7 @@ import {
   EntitiesEditorEvent,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -93,6 +94,7 @@ export class HuiEntitiesCardEditor extends LitElement
           .label=${this.hass.localize(
             "ui.panel.lovelace.editor.card.entities.show_header_toggle"
           )}
+          .dir="${computeRTLDirection(this.hass)}"
         >
           <ha-switch
             .checked="${this._config!.show_header_toggle !== false}"
