@@ -1431,6 +1431,7 @@
                         "delete_confirm": "Sei sicuro di voler eliminare questa integrazione?",
                         "device_unavailable": "dispositivo non disponibile",
                         "devices": "{count} {count, plural, \none {dispositivo}\nother {dispositivi}\n}",
+                        "documentation": "Documentazione",
                         "entities": "{count} {count, plural, \none {entità}\nother {entità }\n}",
                         "entity_unavailable": "entità non disponibile",
                         "firmware": "Firmware: {version}",
@@ -2676,6 +2677,10 @@
                     "last_used": "Utilizzato l'ultima volta il {date} da {location}",
                     "not_used": "Non è mai stato usato",
                     "token_title": "Token di aggiornamento per {clientId}"
+                },
+                "suspend": {
+                    "description": "Dovremmo chiudere la connessione al server dopo essere stati nascosti per 5 minuti?",
+                    "header": "Chiudi automaticamente la connessione"
                 },
                 "themes": {
                     "dropdown_label": "Tema",
