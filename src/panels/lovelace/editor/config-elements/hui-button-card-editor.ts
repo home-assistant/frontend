@@ -25,6 +25,7 @@ import {
 import "../../../../components/ha-switch";
 import "../../../../components/ha-formfield";
 import { configElementStyle } from "./config-elements-style";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -143,28 +144,34 @@ export class HuiButtonCardEditor extends LitElement
           ></ha-icon-input>
         </div>
         <div class="side-by-side">
-          <ha-formfield
-            .label=${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.show_name"
-            )}
-          >
-            <ha-switch
-              .checked="${this._config!.show_name !== false}"
-              .configValue="${"show_name"}"
-              @change="${this._valueChanged}"
-            ></ha-switch>
-          </ha-formfield>
-          <ha-formfield
-            .label=${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.show_icon"
-            )}
-          >
-            <ha-switch
-              .checked="${this._config!.show_icon !== false}"
-              .configValue="${"show_icon"}"
-              @change="${this._valueChanged}"
-            ></ha-switch>
-          </ha-formfield>
+          <div>
+            <ha-formfield
+              .label=${this.hass.localize(
+                "ui.panel.lovelace.editor.card.generic.show_name"
+              )}
+              .dir="${computeRTLDirection(this.hass)}"
+            >
+              <ha-switch
+                .checked="${this._config!.show_name !== false}"
+                .configValue="${"show_name"}"
+                @change="${this._valueChanged}"
+              ></ha-switch>
+            </ha-formfield>
+          </div>
+          <div>
+            <ha-formfield
+              .label=${this.hass.localize(
+                "ui.panel.lovelace.editor.card.generic.show_icon"
+              )}
+              .dir="${computeRTLDirection(this.hass)}"
+            >
+              <ha-switch
+                .checked="${this._config!.show_icon !== false}"
+                .configValue="${"show_icon"}"
+                @change="${this._valueChanged}"
+              ></ha-switch>
+            </ha-formfield>
+          </div>
         </div>
         <div class="side-by-side">
           <paper-input

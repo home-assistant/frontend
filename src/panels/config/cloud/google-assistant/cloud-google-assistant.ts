@@ -39,6 +39,7 @@ import "../../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import "../../../../components/ha-formfield";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 
 const DEFAULT_CONFIG_EXPOSE = true;
 
@@ -128,32 +129,38 @@ class CloudGoogleAssistant extends LitElement {
                 .map((trait) => trait.substr(trait.lastIndexOf(".") + 1))
                 .join(", ")}
             </state-info>
-            <ha-formfield
-              .label=${this.hass!.localize(
-                "ui.panel.config.cloud.google.expose"
-              )}
-            >
-              <ha-switch
-                .entityId=${entity.entity_id}
-                .disabled=${!emptyFilter}
-                .checked=${isExposed}
-                @change=${this._exposeChanged}
+            <div>
+              <ha-formfield
+                .label=${this.hass!.localize(
+                  "ui.panel.config.cloud.google.expose"
+                )}
+                .dir="${computeRTLDirection(this.hass!)}"
               >
-              </ha-switch>
-            </ha-formfield>
+                <ha-switch
+                  .entityId=${entity.entity_id}
+                  .disabled=${!emptyFilter}
+                  .checked=${isExposed}
+                  @change=${this._exposeChanged}
+                >
+                </ha-switch>
+              </ha-formfield>
+            </div>
             ${entity.might_2fa
               ? html`
-                  <ha-formfield
-                    .label=${this.hass!.localize(
-                      "ui.panel.config.cloud.google.disable_2FA"
-                    )}
-                  >
-                    <ha-switch
-                      .entityId=${entity.entity_id}
-                      .checked=${Boolean(config.disable_2fa)}
-                      @change=${this._disable2FAChanged}
-                    ></ha-switch>
-                  </ha-formfield>
+                  <div>
+                    <ha-formfield
+                      .label=${this.hass!.localize(
+                        "ui.panel.config.cloud.google.disable_2FA"
+                      )}
+                      .dir="${computeRTLDirection(this.hass!)}"
+                    >
+                      <ha-switch
+                        .entityId=${entity.entity_id}
+                        .checked=${Boolean(config.disable_2fa)}
+                        @change=${this._disable2FAChanged}
+                      ></ha-switch>
+                    </ha-formfield>
+                  </div>
                 `
               : ""}
           </div>
@@ -376,9 +383,6 @@ class CloudGoogleAssistant extends LitElement {
       }
       state-info {
         cursor: pointer;
-      }
-      ha-formfield {
-        display: block;
       }
       ha-switch {
         padding: 8px 0;

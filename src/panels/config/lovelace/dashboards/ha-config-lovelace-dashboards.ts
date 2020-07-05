@@ -36,6 +36,7 @@ import { lovelaceTabs } from "../ha-config-lovelace";
 import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
 import "../../../../components/ha-svg-icon";
 import { mdiPlus } from "@mdi/js";
+import { computeRTL } from "../../../../common/util/compute_rtl";
 
 @customElement("ha-config-lovelace-dashboards")
 export class HaConfigLovelaceDashboards extends LitElement {
@@ -227,6 +228,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
       <mwc-fab
         ?is-wide=${this.isWide}
         ?narrow=${this.narrow}
+        ?rtl=${computeRTL(this.hass)}
         title="${this.hass.localize(
           "ui.panel.config.lovelace.dashboards.picker.add_dashboard"
         )}"
@@ -323,6 +325,10 @@ export class HaConfigLovelaceDashboards extends LitElement {
       }
       mwc-fab[narrow] {
         bottom: 84px;
+      }
+      mwc-fab[rtl] {
+        left: 16px;
+        right: auto;
       }
     `;
   }

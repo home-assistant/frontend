@@ -23,6 +23,7 @@ import { HomeAssistant } from "../../../../../../types";
 import "./mqtt-discovery-payload";
 import "./mqtt-messages";
 import { MQTTDeviceDebugInfoDialogParams } from "./show-dialog-mqtt-device-debug-info";
+import { computeRTLDirection } from "../../../../../../common/util/compute_rtl";
 
 @customElement("dialog-mqtt-device-debug-info")
 class DialogMQTTDeviceDebugInfo extends LitElement {
@@ -65,28 +66,34 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
             "ui.dialogs.mqtt_device_debug_info.payload_display"
           )}
         </h4>
-        <ha-formfield
-          .label=${this.hass!.localize(
-            "ui.dialogs.mqtt_device_debug_info.deserialize"
-          )}
-        >
-          <ha-switch
-            .checked=${this._showDeserialized}
-            @change=${this._showDeserializedChanged}
+        <div>
+          <ha-formfield
+            .label=${this.hass!.localize(
+              "ui.dialogs.mqtt_device_debug_info.deserialize"
+            )}
+            .dir="${computeRTLDirection(this.hass)}"
           >
-          </ha-switch>
-        </ha-formfield>
-        <ha-formfield
-          .label=${this.hass!.localize(
-            "ui.dialogs.mqtt_device_debug_info.show_as_yaml"
-          )}
-        >
-          <ha-switch
-            .checked=${this._showAsYaml}
-            @change=${this._showAsYamlChanged}
+            <ha-switch
+              .checked=${this._showDeserialized}
+              @change=${this._showDeserializedChanged}
+            >
+            </ha-switch>
+          </ha-formfield>
+        </div>
+        <div>
+          <ha-formfield
+            .label=${this.hass!.localize(
+              "ui.dialogs.mqtt_device_debug_info.show_as_yaml"
+            )}
+            .dir="${computeRTLDirection(this.hass)}"
           >
-          </ha-switch>
-        </ha-formfield>
+            <ha-switch
+              .checked=${this._showAsYaml}
+              @change=${this._showAsYamlChanged}
+            >
+            </ha-switch>
+          </ha-formfield>
+        </div>
         <h4>
           ${this.hass!.localize("ui.dialogs.mqtt_device_debug_info.entities")}
         </h4>
@@ -231,9 +238,6 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
         }
         .triggerlistitem {
           margin-bottom: 12px;
-        }
-        ha-formfield {
-          display: block;
         }
       `,
     ];

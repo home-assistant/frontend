@@ -26,6 +26,7 @@ import {
 import "../../../../components/ha-switch";
 import "../../../../components/ha-formfield";
 import { configElementStyle } from "./config-elements-style";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -124,6 +125,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
             .label=${this.hass.localize(
               "ui.panel.lovelace.editor.card.map.dark_mode"
             )}
+            .dir="${computeRTLDirection(this.hass)}"
           >
             <ha-switch
               .checked="${this._dark_mode}"

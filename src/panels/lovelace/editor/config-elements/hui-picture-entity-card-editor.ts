@@ -26,6 +26,7 @@ import {
   EntitiesEditorEvent,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -188,28 +189,34 @@ export class HuiPictureEntityCardEditor extends LitElement
           ></paper-input>
         </div>
         <div class="side-by-side">
-          <ha-formfield
-            .label=${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.show_name"
-            )}
-          >
-            <ha-switch
-              .checked="${this._config!.show_name !== false}"
-              .configValue="${"show_name"}"
-              @change="${this._valueChanged}"
-            ></ha-switch
-          ></ha-formfield>
-          <ha-formfield
-            .label=${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.show_state"
-            )}
-          >
-            <ha-switch
-              .checked="${this._config!.show_state !== false}"
-              .configValue="${"show_state"}"
-              @change="${this._valueChanged}"
-            ></ha-switch
-          ></ha-formfield>
+          <div>
+            <ha-formfield
+              .label=${this.hass.localize(
+                "ui.panel.lovelace.editor.card.generic.show_name"
+              )}
+              .dir="${computeRTLDirection(this.hass)}"
+            >
+              <ha-switch
+                .checked="${this._config!.show_name !== false}"
+                .configValue="${"show_name"}"
+                @change="${this._valueChanged}"
+              ></ha-switch
+            ></ha-formfield>
+          </div>
+          <div>
+            <ha-formfield
+              .label=${this.hass.localize(
+                "ui.panel.lovelace.editor.card.generic.show_state"
+              )}
+              .dir="${computeRTLDirection(this.hass)}"
+            >
+              <ha-switch
+                .checked="${this._config!.show_state !== false}"
+                .configValue="${"show_state"}"
+                @change="${this._valueChanged}"
+              ></ha-switch
+            ></ha-formfield>
+          </div>
         </div>
         <div class="side-by-side">
           <hui-action-editor

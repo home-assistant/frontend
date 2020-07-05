@@ -22,6 +22,7 @@ import {
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { ZoneDetailDialogParams } from "./show-dialog-zone-detail";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
 
 class DialogZoneDetail extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -186,6 +187,7 @@ class DialogZoneDetail extends LitElement {
               .label=${this.hass!.localize(
                 "ui.panel.config.zone.detail.passive"
               )}
+              .dir="${computeRTLDirection(this.hass)}"
             >
               <ha-switch
                 .checked=${this._passive}
