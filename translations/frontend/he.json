@@ -577,7 +577,7 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "אם הם מושבתים, ישויות שהתגלו לאחרונה עבור {integration} לא יתווספו אוטומטית ל Home Assistant.",
+                "enable_new_entities_description": "אם הן מושבתות, ישויות שהתגלו לאחרונה עבור {integration} לא יתווספו אוטומטית ל Home Assistant.",
                 "enable_new_entities_label": "הפוך ישויות חדשות שנוספו לזמינות.",
                 "title": "אפשרויות מערכת",
                 "update": "עדכון"

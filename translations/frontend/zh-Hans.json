@@ -2678,6 +2678,10 @@
                     "not_used": "从未使用过",
                     "token_title": "{clientId} 的刷新令牌"
                 },
+                "suspend": {
+                    "description": "是否要在转至后台 5 分钟后，关闭与服务器的连接？",
+                    "header": "自动关闭连接"
+                },
                 "themes": {
                     "dropdown_label": "主题",
                     "error_no_theme": "没有可用的主题。",
