@@ -22,6 +22,8 @@ const _load = (
         (element as HTMLScriptElement).async = true;
         if (type) {
           (element as HTMLScriptElement).type = type;
+          // https://github.com/home-assistant/frontend/pull/6328
+          (element as HTMLScriptElement).crossOrigin = "use-credentials";
         }
         break;
       case "link":
