@@ -78,7 +78,7 @@ export class HuiSaveConfig extends LitElement {
                   .label=${this.hass!.localize(
                     "ui.panel.lovelace.editor.save_config.empty_config"
                   )}
-                  .dir="${computeRTLDirection(this.hass)}"
+                  .dir="${computeRTLDirection(this.hass!)}"
                 >
                   <ha-switch
                     .checked=${this._emptyConfig}
