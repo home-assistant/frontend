@@ -167,6 +167,10 @@ export class CloudAlexaPref extends LitElement {
         right: 24px;
         top: 32px;
       }
+      :host([dir="rtl"]) .switch {
+        right: auto;
+        left: 24px;
+      }
       .card-actions {
         display: flex;
       }

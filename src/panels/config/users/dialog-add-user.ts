@@ -26,6 +26,7 @@ import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { AddUserDialogParams } from "./show-dialog-add-user";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
 
 @customElement("dialog-add-user")
 export class DialogAddUser extends LitElement {
@@ -115,6 +116,7 @@ export class DialogAddUser extends LitElement {
           ></paper-input>
           <ha-formfield
             .label=${this.hass.localize("ui.panel.config.users.editor.admin")}
+            .dir="${computeRTLDirection(this.hass)}"
           >
             <ha-switch .checked=${this._isAdmin} @change=${this._adminChanged}>
             </ha-switch>

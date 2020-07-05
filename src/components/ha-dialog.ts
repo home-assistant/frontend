@@ -5,6 +5,7 @@ import "./ha-icon-button";
 import { css, CSSResult, customElement, html } from "lit-element";
 import type { Constructor, HomeAssistant } from "../types";
 import { mdiClose } from "@mdi/js";
+import { computeRTL } from "../common/util/compute_rtl";
 
 const MwcDialog = customElements.get("mwc-dialog") as Constructor<Dialog>;
 
@@ -13,6 +14,7 @@ export const createCloseHeading = (hass: HomeAssistant, title: string) => html`
   <mwc-icon-button
     aria-label=${hass.localize("ui.dialogs.generic.close")}
     dialogAction="close"
+    ?rtl=${computeRTL(hass)}
     class="header_button"
   >
     <ha-svg-icon path=${mdiClose}></ha-svg-icon>
@@ -47,6 +49,10 @@ export class HaDialog extends MwcDialog {
           top: 12px;
           text-decoration: none;
           color: inherit;
+        }
+        mwc-icon-button[rtl].header_button {
+          right: auto;
+          left: 16px;
         }
       `,
     ];

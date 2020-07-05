@@ -205,6 +205,10 @@ export class CloudGooglePref extends LitElement {
         right: 24px;
         top: 32px;
       }
+      :host([dir="rtl"]) .switch {
+        right: auto;
+        left: 24px;
+      }
       ha-call-api-button {
         color: var(--primary-color);
         font-weight: 500;
