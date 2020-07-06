@@ -2679,6 +2679,7 @@
                     "token_title": "Actualiser le jeton de {clientId}"
                 },
                 "suspend": {
+                    "description": "Faut-il fermer la connexion au serveur après avoir été caché pendant 5 minutes ?",
                     "header": "Fermer automatiquement la connexion"
                 },
                 "themes": {
