@@ -1,4 +1,3 @@
-import "@polymer/paper-input/paper-input";
 import {
   customElement,
   html,
