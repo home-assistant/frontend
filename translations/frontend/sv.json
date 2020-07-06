@@ -48,6 +48,15 @@
                 "none": "Ingen",
                 "sleep": "Sover"
             }
+        },
+        "humidifier": {
+            "mode": {
+                "away": "Borta",
+                "comfort": "Komfort",
+                "eco": "Eco",
+                "home": "Hemma",
+                "normal": "Normal"
+            }
         }
     },
     "state_badge": {
@@ -506,6 +515,11 @@
                 "clear": "Rensa",
                 "show_areas": "Visa områden"
             },
+            "date-range-picker": {
+                "end_date": "Slutdatum",
+                "select": "Välj",
+                "start_date": "Startdatum"
+            },
             "device-picker": {
                 "clear": "Rensa",
                 "device": "Enhet",
@@ -695,6 +709,7 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Lägg till enheter via den här enheten",
+                    "clusters": "Hantera kluster",
                     "reconfigure": "Konfigurera om enheten",
                     "remove": "Ta bort enhet",
                     "zigbee_information": "Zigbee-information"
@@ -1391,6 +1406,11 @@
                     "system_health_error": "Systemhälsokomponenten har inte lästs in. Lägg till 'system_health:' i configuration.yaml",
                     "title": "Info"
                 },
+                "integration_panel_move": {
+                    "link_integration_page": "integrationssidan",
+                    "missing_zha": "Saknar du konfigurationspanelen för ZHA? Den är flyttad till {integrations_page} ",
+                    "missing_zwave": "Saknar du konfigurationspanelen för Z-Wave? Den är flyttad till {integrations_page} "
+                },
                 "integrations": {
                     "add_integration": "Lägg till integration",
                     "caption": "Integrationer",
@@ -1553,6 +1573,7 @@
                     }
                 },
                 "mqtt": {
+                    "button": "Konfigurera",
                     "description_listen": "Lyssna på ett ämne",
                     "description_publish": "Publicera ett paket",
                     "listening_to": "Lyssnar på",
@@ -1737,7 +1758,7 @@
                             "system": "System"
                         }
                     },
-                    "users_privileges_note": "Användar gruppen är under konstruktion. Användaren kommer inte att kunna administrera instansen via användargränssnittet. Vi granskar fortfarande alla API-slutpunkter för att försäkra att de korrekt begränsar åtkomst till endast administratörer."
+                    "users_privileges_note": "Användargruppen är under konstruktion. Användaren kommer inte att kunna administrera instansen via användargränssnittet. Vi granskar fortfarande alla API-slutpunkter för att försäkra att de korrekt begränsar åtkomst till endast administratörer."
                 },
                 "zha": {
                     "add_device_page": {
@@ -2030,11 +2051,23 @@
             },
             "history": {
                 "period": "Period",
+                "ranges": {
+                    "last_week": "Föregående vecka",
+                    "this_week": "Denna vecka",
+                    "today": "Idag",
+                    "yesterday": "Igår"
+                },
                 "showing_entries": "Visar poster för"
             },
             "logbook": {
                 "entries_not_found": "Inga loggboksposter hittades.",
                 "period": "Period",
+                "ranges": {
+                    "last_week": "Föregående vecka",
+                    "this_week": "Denna vecka",
+                    "today": "Idag",
+                    "yesterday": "Igår"
+                },
                 "showing_entries": "Visar poster för"
             },
             "lovelace": {
