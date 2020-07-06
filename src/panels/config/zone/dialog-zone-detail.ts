@@ -187,7 +187,7 @@ class DialogZoneDetail extends LitElement {
               .label=${this.hass!.localize(
                 "ui.panel.config.zone.detail.passive"
               )}
-              .dir="${computeRTLDirection(this.hass)}"
+              .dir=${computeRTLDirection(this.hass)}
             >
               <ha-switch
                 .checked=${this._passive}

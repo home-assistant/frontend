@@ -115,7 +115,7 @@ export class HuiWeatherForecastCardEditor extends LitElement
             .label=${this.hass.localize(
               "ui.panel.lovelace.editor.card.weather-forecast.show_forecast"
             )}
-            .dir="${computeRTLDirection(this.hass)}"
+            .dir=${computeRTLDirection(this.hass)}
           >
             <ha-switch
               .checked=${this._config!.show_forecast !== false}

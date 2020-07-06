@@ -51,6 +51,8 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
       return html``;
     }
 
+    const dir = computeRTLDirection(this.hass!);
+
     return html`
       <ha-dialog
         open
@@ -71,7 +73,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
             .label=${this.hass!.localize(
               "ui.dialogs.mqtt_device_debug_info.deserialize"
             )}
-            .dir="${computeRTLDirection(this.hass)}"
+            .dir=${dir}
           >
             <ha-switch
               .checked=${this._showDeserialized}
@@ -85,7 +87,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
             .label=${this.hass!.localize(
               "ui.dialogs.mqtt_device_debug_info.show_as_yaml"
             )}
-            .dir="${computeRTLDirection(this.hass)}"
+            .dir=${dir}
           >
             <ha-switch
               .checked=${this._showAsYaml}

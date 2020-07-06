@@ -100,7 +100,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
                           ) || this._params.entry.domain
                         )}
                       </p>`}
-                    .dir="${computeRTLDirection(this.hass)}"
+                    .dir=${computeRTLDirection(this.hass)}
                   >
                     <ha-switch
                       .checked=${!this._disableNewEntities}

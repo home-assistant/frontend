@@ -103,6 +103,7 @@ export class HuiButtonCardEditor extends LitElement
       "call-service",
       "none",
     ];
+    const dir = computeRTLDirection(this.hass!);
 
     return html`
       ${configElementStyle}
@@ -149,7 +150,7 @@ export class HuiButtonCardEditor extends LitElement
               .label=${this.hass.localize(
                 "ui.panel.lovelace.editor.card.generic.show_name"
               )}
-              .dir="${computeRTLDirection(this.hass)}"
+              .dir=${dir}
             >
               <ha-switch
                 .checked="${this._config!.show_name !== false}"
@@ -163,7 +164,7 @@ export class HuiButtonCardEditor extends LitElement
               .label=${this.hass.localize(
                 "ui.panel.lovelace.editor.card.generic.show_icon"
               )}
-              .dir="${computeRTLDirection(this.hass)}"
+              .dir=${dir}
             >
               <ha-switch
                 .checked="${this._config!.show_icon !== false}"

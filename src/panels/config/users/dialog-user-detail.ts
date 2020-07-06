@@ -103,7 +103,7 @@ class DialogUserDetail extends LitElement {
             ></paper-input>
             <ha-formfield
               .label=${this.hass.localize("ui.panel.config.users.editor.admin")}
-              .dir="${computeRTLDirection(this.hass)}"
+              .dir=${computeRTLDirection(this.hass)}
             >
               <ha-switch
                 .disabled=${user.system_generated}

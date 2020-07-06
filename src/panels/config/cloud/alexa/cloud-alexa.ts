@@ -133,7 +133,7 @@ class CloudAlexa extends LitElement {
               .label=${this.hass!.localize(
                 "ui.panel.config.cloud.alexa.expose"
               )}
-              .dir="${computeRTLDirection(this.hass!)}"
+              .dir=${computeRTLDirection(this.hass!)}
             >
               <ha-switch
                 .entityId=${entity.entity_id}

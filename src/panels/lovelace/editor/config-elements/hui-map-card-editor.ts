@@ -125,7 +125,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
             .label=${this.hass.localize(
               "ui.panel.lovelace.editor.card.map.dark_mode"
             )}
-            .dir="${computeRTLDirection(this.hass)}"
+            .dir=${computeRTLDirection(this.hass)}
           >
             <ha-switch
               .checked="${this._dark_mode}"
