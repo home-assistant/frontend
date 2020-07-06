@@ -30,6 +30,7 @@ import type { Lovelace } from "../../types";
 import { addEntitiesToLovelaceView } from "../add-entities-to-view";
 import "../../../../components/ha-svg-icon";
 import { mdiPlus } from "@mdi/js";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 
 @customElement("hui-unused-entities")
 export class HuiUnusedEntities extends LitElement {
@@ -171,6 +172,7 @@ export class HuiUnusedEntities extends LitElement {
         .id=${"entity_id"}
         selectable
         @selection-changed=${this._handleSelectionChanged}
+        .dir="${computeRTLDirection(this.hass)}"
       ></ha-data-table>
 
       ${this._selectedEntities.length
