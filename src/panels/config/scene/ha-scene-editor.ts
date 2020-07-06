@@ -512,6 +512,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
     const filteredEntityReg = this._entityRegistryEntries.filter((entityReg) =>
       this._entities.includes(entityReg.entity_id)
     );
+    this._devices = [];
 
     for (const entityReg of filteredEntityReg) {
       if (!entityReg.device_id) {
@@ -535,7 +536,6 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
     const entityRegistry = this._entityRegistryEntries.find(
       (entityReg) => entityReg.entity_id === entityId
     );
-    this._devices = [];
 
     if (entityRegistry && entityRegistry.device_id) {
       if (!this._devices.includes(entityRegistry.device_id)) {
