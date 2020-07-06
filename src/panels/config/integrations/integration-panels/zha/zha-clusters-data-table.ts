@@ -92,7 +92,7 @@ export class ZHAClustersDataTable extends LitElement {
         .id=${"cluster_id"}
         selectable
         auto-height
-        .dir="${computeRTLDirection(this.hass)}"
+        .dir=${computeRTLDirection(this.hass)}
       ></ha-data-table>
     `;
   }

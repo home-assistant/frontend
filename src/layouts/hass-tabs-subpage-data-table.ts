@@ -159,7 +159,7 @@ export class HaTabsSubpageDataTable extends LitElement {
           .hasFab=${this.hasFab}
           .id=${this.id}
           .noDataText=${this.noDataText}
-          .dir="${computeRTLDirection(this.hass)}"
+          .dir=${computeRTLDirection(this.hass)}
         >
           ${!this.narrow
             ? html`

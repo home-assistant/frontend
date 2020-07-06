@@ -148,7 +148,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
         .data=${this._deviceEndpoints(this.deviceEndpoints)}
         .selectable=${this.selectable}
         auto-height
-        .dir="${computeRTLDirection(this.hass)}"
+        .dir=${computeRTLDirection(this.hass)}
       ></ha-data-table>
     `;
   }
