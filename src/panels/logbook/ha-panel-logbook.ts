@@ -201,21 +201,30 @@ export class HaPanelLogbook extends LitElement {
   private async _fetchUserNames() {
     const userIdToName = {};
 
-    if (this.hass.user!.is_admin) {
+    // Start loading all the data
+    const personProm = fetchPersons(this.hass);
+    const userProm = this.hass.user!.is_admin && fetchUsers(this.hass);
+
+    // Process persons
+    const persons = await personProm;
+
+    for (const person of persons.storage) {
+      if (person.user_id) {
+        userIdToName[person.user_id] = person.name;
+      }
+    }
+    for (const person of persons.config) {
+      if (person.user_id) {
+        userIdToName[person.user_id] = person.name;
+      }
+    }
+
+    // Process users
+    if (userProm) {
       const users = await fetchUsers(this.hass);
       for (const user of users) {
-        userIdToName[user.id] = user.name;
-      }
-    } else {
-      const persons = await fetchPersons(this.hass);
-      for (const person of persons.storage) {
-        if (person.user_id) {
-          userIdToName[person.user_id] = person.name;
-        }
-      }
-      for (const person of persons.config) {
-        if (person.user_id) {
-          userIdToName[person.user_id] = person.name;
+        if (!(user.id in userIdToName)) {
+          userIdToName[user.id] = user.name;
         }
       }
     }
