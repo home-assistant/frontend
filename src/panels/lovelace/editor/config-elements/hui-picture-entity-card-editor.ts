@@ -108,6 +108,7 @@ export class HuiPictureEntityCardEditor extends LitElement
 
     const actions = ["more-info", "toggle", "navigate", "call-service", "none"];
     const views = ["auto", "live"];
+    const dir = computeRTLDirection(this.hass!);
 
     return html`
       ${configElementStyle}
@@ -194,7 +195,7 @@ export class HuiPictureEntityCardEditor extends LitElement
               .label=${this.hass.localize(
                 "ui.panel.lovelace.editor.card.generic.show_name"
               )}
-              .dir="${computeRTLDirection(this.hass)}"
+              .dir=${dir}
             >
               <ha-switch
                 .checked="${this._config!.show_name !== false}"
@@ -208,7 +209,7 @@ export class HuiPictureEntityCardEditor extends LitElement
               .label=${this.hass.localize(
                 "ui.panel.lovelace.editor.card.generic.show_state"
               )}
-              .dir="${computeRTLDirection(this.hass)}"
+              .dir=${dir}
             >
               <ha-switch
                 .checked="${this._config!.show_state !== false}"

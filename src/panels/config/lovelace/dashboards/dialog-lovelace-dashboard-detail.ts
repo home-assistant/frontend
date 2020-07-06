@@ -75,6 +75,8 @@ export class DialogLovelaceDashboardDetail extends LitElement {
       this._params.urlPath !== "lovelace" &&
       !/^[a-zA-Z0-9_-]+-[a-zA-Z0-9_-]+$/.test(this._urlPath);
     const titleInvalid = !this._title.trim();
+    const dir = computeRTLDirection(this.hass);
+
     return html`
       <ha-dialog
         open
@@ -149,7 +151,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
                       .label=${this.hass.localize(
                         "ui.panel.config.lovelace.dashboards.detail.show_sidebar"
                       )}
-                      .dir="${computeRTLDirection(this.hass)}"
+                      .dir=${dir}
                     >
                       <ha-switch
                         .checked=${this._showInSidebar}
@@ -163,7 +165,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
                       .label=${this.hass.localize(
                         "ui.panel.config.lovelace.dashboards.detail.require_admin"
                       )}
-                      .dir="${computeRTLDirection(this.hass)}"
+                      .dir=${dir}
                     >
                       <ha-switch
                         .checked=${this._requireAdmin}

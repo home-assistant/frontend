@@ -127,7 +127,7 @@ export class HuiViewEditor extends LitElement {
           .label=${this.hass.localize(
             "ui.panel.lovelace.editor.view.panel_mode.title"
           )}
-          .dir="${computeRTLDirection(this.hass!)}"
+          .dir=${computeRTLDirection(this.hass)}
         >
           <ha-switch
             .checked=${this._panel !== false}

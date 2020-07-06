@@ -84,6 +84,8 @@ export class HuiGlanceCardEditor extends LitElement
       return html``;
     }
 
+    const dir = computeRTLDirection(this.hass!);
+
     return html`
       ${configElementStyle}
       <div class="card-config">
@@ -122,7 +124,7 @@ export class HuiGlanceCardEditor extends LitElement
               .label=${this.hass.localize(
                 "ui.panel.lovelace.editor.card.generic.show_name"
               )}
-              .dir="${computeRTLDirection(this.hass)}"
+              .dir=${dir}
             >
               <ha-switch
                 .checked=${this._config!.show_name !== false}
@@ -136,7 +138,7 @@ export class HuiGlanceCardEditor extends LitElement
               .label=${this.hass.localize(
                 "ui.panel.lovelace.editor.card.generic.show_icon"
               )}
-              .dir="${computeRTLDirection(this.hass)}"
+              .dir=${dir}
             >
               <ha-switch
                 .checked=${this._config!.show_icon !== false}
@@ -151,7 +153,7 @@ export class HuiGlanceCardEditor extends LitElement
               .label=${this.hass.localize(
                 "ui.panel.lovelace.editor.card.generic.show_state"
               )}
-              .dir="${computeRTLDirection(this.hass)}"
+              .dir=${dir}
             >
               <ha-switch
                 .checked=${this._config!.show_state !== false}

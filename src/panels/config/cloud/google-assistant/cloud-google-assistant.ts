@@ -84,6 +84,7 @@ class CloudGoogleAssistant extends LitElement {
     const filterFunc = this._getEntityFilterFunc(
       this.cloudStatus.google_entities
     );
+    const dir = computeRTLDirection(this.hass!);
 
     // We will only generate `isInitialExposed` during first render.
     // On each subsequent render we will use the same set so that cards
@@ -134,7 +135,7 @@ class CloudGoogleAssistant extends LitElement {
                 .label=${this.hass!.localize(
                   "ui.panel.config.cloud.google.expose"
                 )}
-                .dir="${computeRTLDirection(this.hass!)}"
+                .dir=${dir}
               >
                 <ha-switch
                   .entityId=${entity.entity_id}
@@ -152,7 +153,7 @@ class CloudGoogleAssistant extends LitElement {
                       .label=${this.hass!.localize(
                         "ui.panel.config.cloud.google.disable_2FA"
                       )}
-                      .dir="${computeRTLDirection(this.hass!)}"
+                      .dir=${dir}
                     >
                       <ha-switch
                         .entityId=${entity.entity_id}
