@@ -221,7 +221,7 @@ export class HaPanelLogbook extends LitElement {
 
     // Process users
     if (userProm) {
-      const users = await fetchUsers(this.hass);
+      const users = await userProm;
       for (const user of users) {
         if (!(user.id in userIdToName)) {
           userIdToName[user.id] = user.name;
