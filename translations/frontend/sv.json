@@ -51,11 +51,15 @@
         },
         "humidifier": {
             "mode": {
+                "auto": "Automatisk",
                 "away": "Borta",
+                "baby": "Baby",
+                "boost": "Boost-läge",
                 "comfort": "Komfort",
                 "eco": "Eco",
                 "home": "Hemma",
-                "normal": "Normal"
+                "normal": "Normal",
+                "sleep": "Viloläge"
             }
         }
     },
@@ -396,6 +400,12 @@
                 "oscillate": "Pendlar",
                 "reverse": "Baklänges",
                 "speed": "Hastighet"
+            },
+            "humidifier": {
+                "humidity": "Målfuktighet",
+                "mode": "Läge",
+                "on_entity": "{name} på",
+                "target_humidity_entity": "{name} målfuktighet"
             },
             "light": {
                 "brightness": "Ljusstyrka",
@@ -1421,6 +1431,7 @@
                         "delete_confirm": "Är du säker på att du vill radera denna integration?",
                         "device_unavailable": "enhet otillgänglig",
                         "devices": "{count} {count, plural,\n  one {enhet}\n  other {enheter}\n}",
+                        "documentation": "Dokumentation",
                         "entities": "{count} {count, plural,\n  one {entitet}\n  other {entiteter}\n}",
                         "entity_unavailable": "entitet otillgänglig",
                         "firmware": "Firmware: {version}",
@@ -1951,10 +1962,10 @@
                     },
                     "ozw_log": {
                         "header": "OZW-logg",
-                        "introduction": "Visa loggen. 0 är det minsta (laddar hela loggen) och 1000 är det maximala. Ladda visar en statisk logg och svansen uppdateras automatiskt med det sist angivna antalet rader i loggen.",
+                        "introduction": "Visa loggen. 0 är det minsta (laddar hela loggen) och 1000 är det maximala. Ladda visar en statisk logg och medan Följ uppdateras automatiskt med det sist angivna antalet rader i loggen.",
                         "last_log_lines": "Antal sista loggrader",
                         "load": "Ladda",
-                        "tail": "Svans"
+                        "tail": "Följ"
                     },
                     "services": {
                         "add_node": "Lägg till nod",
@@ -2206,6 +2217,10 @@
                         "horizontal-stack": {
                             "description": "Med Horizontal Stack-kortet kan du stapla ihop flera kort, så att de alltid sitter bredvid varandra i utrymmet av en kolumn.",
                             "name": "Vågrät trave"
+                        },
+                        "humidifier": {
+                            "description": "Termostatkortet kontrollerar din klimatenhet så att du kan ändra luftfuktigheten och läge.",
+                            "name": "Luftfuktare"
                         },
                         "iframe": {
                             "description": "Webbsidakortet låter dig bädda in din favoritwebbplats direkt i Home Assistant.",
@@ -2662,6 +2677,10 @@
                     "last_used": "Senast använt den {date} från {location}",
                     "not_used": "Har aldrig använts",
                     "token_title": "Uppdatera token för {clientId}"
+                },
+                "suspend": {
+                    "description": "Ska vi stänga anslutningen till servern efter att den varit gömd i 5 minuter?",
+                    "header": "Stäng anslutningen automatiskt"
                 },
                 "themes": {
                     "dropdown_label": "Tema",
