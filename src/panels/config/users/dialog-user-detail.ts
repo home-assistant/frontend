@@ -21,6 +21,7 @@ import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { UserDetailDialogParams } from "./show-dialog-user-detail";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
 
 @customElement("dialog-user-detail")
 class DialogUserDetail extends LitElement {
@@ -102,6 +103,7 @@ class DialogUserDetail extends LitElement {
             ></paper-input>
             <ha-formfield
               .label=${this.hass.localize("ui.panel.config.users.editor.admin")}
+              .dir=${computeRTLDirection(this.hass)}
             >
               <ha-switch
                 .disabled=${user.system_generated}

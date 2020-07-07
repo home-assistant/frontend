@@ -50,6 +50,7 @@ import type { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import { showZoneDetailDialog } from "./show-dialog-zone-detail";
+import { computeRTL } from "../../../common/util/compute_rtl";
 
 @customElement("ha-config-zone")
 export class HaConfigZone extends SubscribeMixin(LitElement) {
@@ -258,6 +259,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       <mwc-fab
         ?is-wide=${this.isWide}
         ?narrow=${this.narrow}
+        ?rtl=${computeRTL(this.hass)}
         title="${hass.localize("ui.panel.config.zone.add_zone")}"
         @click=${this._createZone}
       >
@@ -553,6 +555,10 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       }
       mwc-fab[narrow] {
         bottom: 84px;
+      }
+      mwc-fab[rtl] {
+        left: 24px;
+        right: auto;
       }
     `;
   }
