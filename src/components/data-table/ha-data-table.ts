@@ -604,10 +604,8 @@ export class HaDataTable extends LitElement {
         padding-right: 0;
         width: 56px;
       }
-      [dir="rtl"] .mdc-data-table__header-cell--checkbox,
-      .mdc-data-table__header-cell--checkbox[dir="rtl"],
-      [dir="rtl"] .mdc-data-table__cell--checkbox,
-      .mdc-data-table__cell--checkbox[dir="rtl"] {
+      :host([dir="rtl"]) .mdc-data-table__header-cell--checkbox,
+      :host([dir="rtl"]) .mdc-data-table__cell--checkbox {
         /* @noflip */
         padding-left: 0;
         /* @noflip */
@@ -641,8 +639,7 @@ export class HaDataTable extends LitElement {
       .mdc-data-table__cell--numeric {
         text-align: right;
       }
-      [dir="rtl"] .mdc-data-table__cell--numeric,
-      .mdc-data-table__cell--numeric[dir="rtl"] {
+      :host([dir="rtl"]) .mdc-data-table__cell--numeric {
         /* @noflip */
         text-align: left;
       }
@@ -660,17 +657,32 @@ export class HaDataTable extends LitElement {
       .mdc-data-table__header-cell.mdc-data-table__header-cell--icon {
         text-align: center;
       }
+
       .mdc-data-table__header-cell.sortable.mdc-data-table__header-cell--icon:hover,
       .mdc-data-table__header-cell.sortable.mdc-data-table__header-cell--icon:not(.not-sorted) {
         text-align: left;
+      }
+      :host([dir="rtl"])
+        .mdc-data-table__header-cell.sortable.mdc-data-table__header-cell--icon:hover,
+      :host([dir="rtl"])
+        .mdc-data-table__header-cell.sortable.mdc-data-table__header-cell--icon:not(.not-sorted) {
+        text-align: right;
       }
 
       .mdc-data-table__cell--icon:first-child ha-icon {
         margin-left: 8px;
       }
+      :host([dir="rtl"]) .mdc-data-table__cell--icon:first-child ha-icon {
+        margin-left: auto;
+        margin-right: 8px;
+      }
 
       .mdc-data-table__cell--icon:first-child state-badge {
         margin-right: -8px;
+      }
+      :host([dir="rtl"]) .mdc-data-table__cell--icon:first-child state-badge {
+        margin-right: auto;
+        margin-left: -8px;
       }
 
       .mdc-data-table__header-cell--icon-button,
@@ -689,11 +701,21 @@ export class HaDataTable extends LitElement {
         width: 64px;
         padding-left: 16px;
       }
+      :host([dir="rtl"]) .mdc-data-table__header-cell--icon-button:first-child,
+      :host([dir="rtl"]) .mdc-data-table__cell--icon-button:first-child {
+        padding-left: auto;
+        padding-right: 16px;
+      }
 
       .mdc-data-table__header-cell--icon-button:last-child,
       .mdc-data-table__cell--icon-button:last-child {
         width: 64px;
         padding-right: 16px;
+      }
+      :host([dir="rtl"]) .mdc-data-table__header-cell--icon-button:last-child,
+      :host([dir="rtl"]) .mdc-data-table__cell--icon-button:last-child {
+        padding-right: auto;
+        padding-left: 16px;
       }
 
       .mdc-data-table__cell--icon-button a {
@@ -712,8 +734,7 @@ export class HaDataTable extends LitElement {
         text-transform: inherit;
         text-align: left;
       }
-      [dir="rtl"] .mdc-data-table__header-cell,
-      .mdc-data-table__header-cell[dir="rtl"] {
+      :host([dir="rtl"]) .mdc-data-table__header-cell {
         /* @noflip */
         text-align: right;
       }
@@ -725,10 +746,14 @@ export class HaDataTable extends LitElement {
       .mdc-data-table__header-cell--numeric.sortable:not(.not-sorted) {
         text-align: left;
       }
-      [dir="rtl"] .mdc-data-table__header-cell--numeric,
-      .mdc-data-table__header-cell--numeric[dir="rtl"] {
+      :host([dir="rtl"]) .mdc-data-table__header-cell--numeric {
         /* @noflip */
         text-align: left;
+      }
+      :host([dir="rtl"]) .mdc-data-table__header-cell--numeric.sortable:hover,
+      :host([dir="rtl"])
+        .mdc-data-table__header-cell--numeric.sortable:not(.not-sorted) {
+        text-align: right;
       }
 
       /* custom from here */
@@ -750,12 +775,19 @@ export class HaDataTable extends LitElement {
         position: relative;
         left: 0px;
       }
+      :host([dir="rtl"]) .mdc-data-table__header-cell span {
+        left: auto;
+        right: 0px;
+      }
 
       .mdc-data-table__header-cell.sortable {
         cursor: pointer;
       }
       .mdc-data-table__header-cell > * {
         transition: left 0.2s ease;
+      }
+      :host([dir="rtl"]) .mdc-data-table__header-cell > * {
+        transition: right 0.2s ease;
       }
       .mdc-data-table__header-cell ha-icon {
         top: -3px;
@@ -764,13 +796,34 @@ export class HaDataTable extends LitElement {
       .mdc-data-table__header-cell.not-sorted ha-icon {
         left: -20px;
       }
+      :host([dir="rtl"]) .mdc-data-table__header-cell.not-sorted ha-icon {
+        right: -20px;
+      }
       .mdc-data-table__header-cell.sortable:not(.not-sorted) span,
       .mdc-data-table__header-cell.sortable.not-sorted:hover span {
         left: 24px;
       }
+      :host([dir="rtl"])
+        .mdc-data-table__header-cell.sortable:not(.not-sorted)
+        span,
+      :host([dir="rtl"])
+        .mdc-data-table__header-cell.sortable.not-sorted:hover
+        span {
+        left: auto;
+        right: 24px;
+      }
       .mdc-data-table__header-cell.sortable:not(.not-sorted) ha-icon,
       .mdc-data-table__header-cell.sortable:hover.not-sorted ha-icon {
         left: 12px;
+      }
+      :host([dir="rtl"])
+        .mdc-data-table__header-cell.sortable:not(.not-sorted)
+        ha-icon,
+      :host([dir="rtl"])
+        .mdc-data-table__header-cell.sortable:hover.not-sorted
+        ha-icon {
+        left: auto;
+        right: 12px;
       }
       .table-header {
         border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);

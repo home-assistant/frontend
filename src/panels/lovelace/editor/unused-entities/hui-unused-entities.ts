@@ -14,7 +14,10 @@ import memoizeOne from "memoize-one";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
-import { computeRTL } from "../../../../common/util/compute_rtl";
+import {
+  computeRTL,
+  computeRTLDirection,
+} from "../../../../common/util/compute_rtl";
 import "../../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
@@ -171,6 +174,7 @@ export class HuiUnusedEntities extends LitElement {
         .id=${"entity_id"}
         selectable
         @selection-changed=${this._handleSelectionChanged}
+        .dir=${computeRTLDirection(this.hass)}
       ></ha-data-table>
 
       ${this._selectedEntities.length

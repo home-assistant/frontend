@@ -71,7 +71,7 @@ class HassioAddonNetwork extends LitElement {
                       <paper-input
                         @value-changed=${this._configChanged}
                         placeholder="disabled"
-                        .value=${String(item.host)}
+                        .value=${item.host ? String(item.host) : ""}
                         .container=${item.container}
                         no-label-float
                       ></paper-input>

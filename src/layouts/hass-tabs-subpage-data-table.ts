@@ -20,6 +20,7 @@ import type {
 import type { HomeAssistant, Route } from "../types";
 import "./hass-tabs-subpage";
 import type { PageNavigation } from "./hass-tabs-subpage";
+import { computeRTLDirection } from "../common/util/compute_rtl";
 
 @customElement("hass-tabs-subpage-data-table")
 export class HaTabsSubpageDataTable extends LitElement {
@@ -158,6 +159,7 @@ export class HaTabsSubpageDataTable extends LitElement {
           .hasFab=${this.hasFab}
           .id=${this.id}
           .noDataText=${this.noDataText}
+          .dir=${computeRTLDirection(this.hass)}
         >
           ${!this.narrow
             ? html`

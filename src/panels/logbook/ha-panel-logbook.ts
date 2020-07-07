@@ -18,6 +18,7 @@ import {
 import { HomeAssistant } from "../../types";
 import { haStyle } from "../../resources/styles";
 import { fetchUsers } from "../../data/user";
+import { fetchPersons } from "../../data/person";
 import {
   clearLogbookCache,
   getLogbookData,
@@ -132,7 +133,7 @@ export class HaPanelLogbook extends LitElement {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
 
-    this._fetchUserDone = this._fetchUsers();
+    this._fetchUserDone = this._fetchUserNames();
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -197,13 +198,38 @@ export class HaPanelLogbook extends LitElement {
     }
   }
 
-  private async _fetchUsers() {
-    const users = await fetchUsers(this.hass);
-    const userid_to_name = {};
-    users.forEach((user) => {
-      userid_to_name[user.id] = user.name;
-    });
-    this._userIdToName = userid_to_name;
+  private async _fetchUserNames() {
+    const userIdToName = {};
+
+    // Start loading all the data
+    const personProm = fetchPersons(this.hass);
+    const userProm = this.hass.user!.is_admin && fetchUsers(this.hass);
+
+    // Process persons
+    const persons = await personProm;
+
+    for (const person of persons.storage) {
+      if (person.user_id) {
+        userIdToName[person.user_id] = person.name;
+      }
+    }
+    for (const person of persons.config) {
+      if (person.user_id) {
+        userIdToName[person.user_id] = person.name;
+      }
+    }
+
+    // Process users
+    if (userProm) {
+      const users = await userProm;
+      for (const user of users) {
+        if (!(user.id in userIdToName)) {
+          userIdToName[user.id] = user.name;
+        }
+      }
+    }
+
+    this._userIdToName = userIdToName;
   }
 
   private _dateRangeChanged(ev) {
