@@ -273,6 +273,10 @@ export class MoreInfoDialog extends LitElement {
             --mdc-dialog-max-width: 90vw;
           }
 
+          app-toolbar {
+            max-width: 368px;
+          }
+
           .content {
             width: 352px;
           }
@@ -289,6 +293,10 @@ export class MoreInfoDialog extends LitElement {
           ha-dialog[data-domain="history_graph"] .content,
           :host([large]) .content {
             width: calc(90vw - 48px);
+          }
+
+          :host([large]) app-toolbar {
+            max-width: calc(90vw - 32px);
           }
         }
 
