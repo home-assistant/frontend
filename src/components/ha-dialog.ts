@@ -21,6 +21,12 @@ export const createCloseHeading = (hass: HomeAssistant, title: string) => html`
 
 @customElement("ha-dialog")
 export class HaDialog extends MwcDialog {
+  protected renderHeading() {
+    return html`<slot name="heading">
+      <h2 id="title" class="mdc-dialog__title">${this.heading}</h2>
+    </slot>`;
+  }
+
   protected static get styles(): CSSResult[] {
     return [
       style,
@@ -40,6 +46,9 @@ export class HaDialog extends MwcDialog {
         }
         .mdc-dialog .mdc-dialog__content {
           padding: var(--dialog-content-padding, 20px 24px);
+        }
+        .mdc-dialog .mdc-dialog__surface {
+          min-height: var(--mdc-dialog-min-height, auto);
         }
         .header_button {
           position: absolute;
