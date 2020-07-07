@@ -7,7 +7,6 @@ import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { DOMAINS_MORE_INFO_NO_HISTORY } from "../../common/const";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { navigate } from "../../common/navigate";
-import { computeRTLDirection } from "../../common/util/compute_rtl";
 import "../../components/state-history-charts";
 import { removeEntityRegistryEntry } from "../../data/entity_registry";
 import { showEntityEditorDialog } from "../../panels/config/entities/show-dialog-entity-editor";
@@ -70,9 +69,6 @@ export class MoreInfoDialog extends LitElement {
           clearInterval(this._interval);
           this._interval = undefined;
         }
-      }
-      if (!oldHass || oldHass.language !== this.hass.language) {
-        this.setAttribute("dir", computeRTLDirection(this.hass));
       }
     }
   }
@@ -295,11 +291,6 @@ export class MoreInfoDialog extends LitElement {
 
         :host([data-domain="camera"]) ha-dialog {
           --dialog-content-padding: 0;
-        }
-
-        :host([dir="rtl"]) app-toolbar {
-          direction: rtl;
-          text-align: right;
         }
       `,
     ];
