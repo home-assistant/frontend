@@ -16,6 +16,7 @@ import "../../../../../components/entity/ha-state-icon";
 import type { Cluster } from "../../../../../data/zha";
 import type { HomeAssistant } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
+import { computeRTLDirection } from "../../../../../common/util/compute_rtl";
 
 export interface ClusterRowData extends Cluster {
   cluster?: Cluster;
@@ -91,6 +92,7 @@ export class ZHAClustersDataTable extends LitElement {
         .id=${"cluster_id"}
         selectable
         auto-height
+        .dir=${computeRTLDirection(this.hass)}
       ></ha-data-table>
     `;
   }
