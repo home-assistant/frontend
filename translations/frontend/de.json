@@ -48,6 +48,19 @@
                 "none": "Keine",
                 "sleep": "Schlafen"
             }
+        },
+        "humidifier": {
+            "mode": {
+                "auto": "Automatisch",
+                "away": "Abwesend",
+                "baby": "Baby",
+                "boost": "Boost",
+                "comfort": "Komfort",
+                "eco": "Eco",
+                "home": "Zu Hause",
+                "normal": "Normal",
+                "sleep": "Schlafen"
+            }
         }
     },
     "state_badge": {
@@ -388,6 +401,12 @@
                 "reverse": "Rückwärts",
                 "speed": "Geschwindigkeit"
             },
+            "humidifier": {
+                "humidity": "Soll-Luftfeuchtigkeit",
+                "mode": "Modus",
+                "on_entity": "{name} eingeschaltet",
+                "target_humidity_entity": "{name} Soll-Luftfeuchtigkeit"
+            },
             "light": {
                 "brightness": "Helligkeit",
                 "color_temperature": "Farbtemperatur",
@@ -483,6 +502,7 @@
             "menu": "Menü",
             "next": "Weiter",
             "no": "Nein",
+            "overflow_menu": "Überlauf-Menü",
             "previous": "Vorher",
             "refresh": "Aktualisieren",
             "save": "Speichern",
@@ -504,6 +524,11 @@
                 "area": "Bereich",
                 "clear": "Löschen",
                 "show_areas": "Bereiche anzeigen"
+            },
+            "date-range-picker": {
+                "end_date": "Enddatum",
+                "select": "Auswählen",
+                "start_date": "Anfangsdatum"
             },
             "device-picker": {
                 "clear": "Löschen",
@@ -694,6 +719,7 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Geräte über dieses Gerät hinzufügen",
+                    "clusters": "Cluster verwalten",
                     "reconfigure": "Gerät neu konfigurieren",
                     "remove": "Gerät entfernen",
                     "zigbee_information": "ZigBee-Gerätesignatur"
@@ -1390,6 +1416,11 @@
                     "system_health_error": "System Health-Komponente wird nicht geladen. Füge 'system_health:' zu configuration.yaml hinzu",
                     "title": "Info"
                 },
+                "integration_panel_move": {
+                    "link_integration_page": "Integrationsseite",
+                    "missing_zha": "Vermissen Sie das ZHA-Konfigurationspanel? Es wurde in den ZHA-Eintrag auf der {integrations_page} verschoben.",
+                    "missing_zwave": "Vermissen Sie das Z-Wave-Konfigurationspanel? Es wurde in den Z-Wave-Eintrag auf der {integrations_page} verschoben."
+                },
                 "integrations": {
                     "add_integration": "Integration hinzufügen",
                     "caption": "Integrationen",
@@ -1400,6 +1431,7 @@
                         "delete_confirm": "Möchtest du diese Integration wirklich löschen?",
                         "device_unavailable": "Gerät nicht verfügbar",
                         "devices": "{count} {count, plural,\n one {Gerät}\n other {Geräte}\n}",
+                        "documentation": "Dokumentation",
                         "entities": "{count} {count, plural,\none {Entität}\nother {Entitäten}\n}",
                         "entity_unavailable": "Entität nicht verfügbar",
                         "firmware": "Firmware: {version}",
@@ -1552,6 +1584,7 @@
                     }
                 },
                 "mqtt": {
+                    "button": "Konfigurieren",
                     "description_listen": "Auf einen Topic hören",
                     "description_publish": "Ein Paket veröffentlichen",
                     "listening_to": "Anhören von",
@@ -1672,6 +1705,11 @@
                             "core": "Ort & Anpassungen neu laden",
                             "group": "Gruppen neu laden",
                             "heading": "Neuladen der YAML-Konfiguration",
+                            "input_boolean": "Eingabe-Booleans neu laden",
+                            "input_datetime": "Eingabe-Datums- und Zeitfelder neu laden",
+                            "input_number": "Eingabenummern neu laden",
+                            "input_select": "Eingabe-Auswahl neu laden",
+                            "input_text": "Eingabetexte neu laden",
                             "introduction": "Einige Komponenten von Home Assistant können ohne einen Neustart neu geladen werden. \"Neu laden\" entlädt dabei die aktuelle Konfiguration und lädt die neue Konfiguration.",
                             "person": "Personen neu laden",
                             "scene": "Szenen neu laden",
@@ -2024,11 +2062,23 @@
             },
             "history": {
                 "period": "Zeitraum",
+                "ranges": {
+                    "last_week": "Letzte Woche",
+                    "this_week": "Diese Woche",
+                    "today": "Heute",
+                    "yesterday": "Gestern"
+                },
                 "showing_entries": "Zeige Einträge für"
             },
             "logbook": {
                 "entries_not_found": "Keine Logbucheinträge gefunden.",
                 "period": "Zeitraum",
+                "ranges": {
+                    "last_week": "Letzte Woche",
+                    "this_week": "Diese Woche",
+                    "today": "Heute",
+                    "yesterday": "Gestern"
+                },
                 "showing_entries": "Zeige Einträge für"
             },
             "lovelace": {
@@ -2167,6 +2217,10 @@
                         "horizontal-stack": {
                             "description": "Mit der Karte \"Horizontaler Stapel\" kannst du mehrere Karten so gruppieren, dass sie immer nebeneinander sitzen und gemeinsam die Breite einer Spalte einnehmen.",
                             "name": "Horizontaler Stapel"
+                        },
+                        "humidifier": {
+                            "description": "Die Luftbefeuchter-Karte gibt dir die Kontrolle über deine Luftbefeuchter-Entität. Sie ermöglicht es dir, die Luftfeuchtigkeit und den Modus der Entität zu ändern.",
+                            "name": "Luftbefeuchter"
                         },
                         "iframe": {
                             "description": "Mit der Webseiten-Karte kannst du deine Lieblingswebseite direkt in Home Assistant einbetten.",
@@ -2623,6 +2677,10 @@
                     "last_used": "Zuletzt verwendet am {date} in {location}",
                     "not_used": "Wurde noch nie benutzt",
                     "token_title": "Aktualisierungs-Token für {clientId}"
+                },
+                "suspend": {
+                    "description": "Sollen wir die Verbindung zum Server schließen, nachdem sie 5 Minuten lang versteckt war?",
+                    "header": "Verbindung automatisch schließen"
                 },
                 "themes": {
                     "dropdown_label": "Thema",
