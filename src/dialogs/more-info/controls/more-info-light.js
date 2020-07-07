@@ -292,7 +292,10 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   computeClassNames(stateObj) {
-    const classes = [featureClassNames(stateObj, FEATURE_CLASS_NAMES)];
+    const classes = [
+      "content",
+      featureClassNames(stateObj, FEATURE_CLASS_NAMES),
+    ];
     if (stateObj && stateObj.state === "on") {
       classes.push("is-on");
     }
