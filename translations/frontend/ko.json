@@ -1126,7 +1126,7 @@
                         "title": "Alexa"
                     },
                     "caption": "Home Assistant Cloud",
-                    "description_features": "Alexa 및 Google 어시스턴트를 통해 집 밖에서도 집을 관리하세요.",
+                    "description_features": "Alexa 및 Google 어시스턴트를 통해 집 밖에서도 집을 관리합니다",
                     "description_login": "{email} 로(으로) 로그인 되어있습니다",
                     "description_not_login": "로그인이 되어있지 않습니다",
                     "dialog_certificate": {
@@ -1400,7 +1400,7 @@
                     "built_using": "다음을 사용하여 제작",
                     "caption": "정보",
                     "custom_uis": "사용자 UI :",
-                    "description": "Home Assistant 설치에 대한 정보",
+                    "description": "설치된 Home Assistant 에 대한 정보입니다",
                     "developed_by": "Home Assistant 는 수많은 멋진 사람들에 의해 개발되었습니다.",
                     "documentation": "관련문서",
                     "frontend": "프런트엔드-UI",
@@ -1496,7 +1496,7 @@
                 "logs": {
                     "caption": "로그",
                     "clear": "지우기",
-                    "description": "Home Assistant 로그 보기",
+                    "description": "Home Assistant 로그 내역을 봅니다",
                     "details": "로그 상세정보 ({level})",
                     "load_full_log": "Home Assistant 로그 전부 불러오기",
                     "loading_log": "오류 로그를 읽는 중...",
