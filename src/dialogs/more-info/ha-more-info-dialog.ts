@@ -138,7 +138,7 @@ export class MoreInfoDialog extends LitElement {
                 <state-history-charts
                   .hass=${this.hass}
                   .historyData=${this._stateHistory}
-                  upToNow
+                  up-to-now
                   .isLoadingData=${!this._stateHistory}
                 ></state-history-charts>
               `
