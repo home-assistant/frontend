@@ -24,6 +24,7 @@ import { PolymerChangedEvent } from "../../../../polymer-types";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceDashboardDetailsDialogParams } from "./show-dialog-lovelace-dashboard-detail";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 
 @customElement("dialog-lovelace-dashboard-detail")
 export class DialogLovelaceDashboardDetail extends LitElement {
@@ -74,6 +75,8 @@ export class DialogLovelaceDashboardDetail extends LitElement {
       this._params.urlPath !== "lovelace" &&
       !/^[a-zA-Z0-9_-]+-[a-zA-Z0-9_-]+$/.test(this._urlPath);
     const titleInvalid = !this._title.trim();
+    const dir = computeRTLDirection(this.hass);
+
     return html`
       <ha-dialog
         open
@@ -143,28 +146,34 @@ export class DialogLovelaceDashboardDetail extends LitElement {
                         ></paper-input>
                       `
                     : ""}
-                  <ha-formfield
-                    .label=${this.hass.localize(
-                      "ui.panel.config.lovelace.dashboards.detail.show_sidebar"
-                    )}
-                  >
-                    <ha-switch
-                      .checked=${this._showInSidebar}
-                      @change=${this._showSidebarChanged}
+                  <div>
+                    <ha-formfield
+                      .label=${this.hass.localize(
+                        "ui.panel.config.lovelace.dashboards.detail.show_sidebar"
+                      )}
+                      .dir=${dir}
                     >
-                    </ha-switch>
-                  </ha-formfield>
-                  <ha-formfield
-                    .label=${this.hass.localize(
-                      "ui.panel.config.lovelace.dashboards.detail.require_admin"
-                    )}
-                  >
-                    <ha-switch
-                      .checked=${this._requireAdmin}
-                      @change=${this._requireAdminChanged}
+                      <ha-switch
+                        .checked=${this._showInSidebar}
+                        @change=${this._showSidebarChanged}
+                      >
+                      </ha-switch>
+                    </ha-formfield>
+                  </div>
+                  <div>
+                    <ha-formfield
+                      .label=${this.hass.localize(
+                        "ui.panel.config.lovelace.dashboards.detail.require_admin"
+                      )}
+                      .dir=${dir}
                     >
-                    </ha-switch>
-                  </ha-formfield>
+                      <ha-switch
+                        .checked=${this._requireAdmin}
+                        @change=${this._requireAdminChanged}
+                      >
+                      </ha-switch>
+                    </ha-formfield>
+                  </div>
                 </div>
               `}
         </div>
@@ -317,9 +326,6 @@ export class DialogLovelaceDashboardDetail extends LitElement {
       css`
         ha-switch {
           padding: 16px 0;
-        }
-        ha-formfield {
-          display: block;
         }
       `,
     ];

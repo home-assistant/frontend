@@ -34,6 +34,7 @@ import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../../types";
 import "../../../../components/ha-formfield";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 
 const DEFAULT_CONFIG_EXPOSE = true;
 const IGNORE_INTERFACES = ["Alexa.EndpointHealth"];
@@ -132,6 +133,7 @@ class CloudAlexa extends LitElement {
               .label=${this.hass!.localize(
                 "ui.panel.config.cloud.alexa.expose"
               )}
+              .dir=${computeRTLDirection(this.hass!)}
             >
               <ha-switch
                 .entityId=${entity.entity_id}

@@ -18,6 +18,7 @@ import { HomeAssistant } from "../../../../types";
 import "../../components/hui-theme-select-editor";
 import { configElementStyle } from "../config-elements/config-elements-style";
 import { EditorTarget } from "../types";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 
 declare global {
   interface HASSDomEvents {
@@ -126,6 +127,7 @@ export class HuiViewEditor extends LitElement {
           .label=${this.hass.localize(
             "ui.panel.lovelace.editor.view.panel_mode.title"
           )}
+          .dir=${computeRTLDirection(this.hass)}
         >
           <ha-switch
             .checked=${this._panel !== false}
@@ -180,8 +182,6 @@ export class HuiViewEditor extends LitElement {
     return css`
       .panel {
         color: var(--secondary-text-color);
-      }
-      ha-formfield {
         display: block;
       }
     `;

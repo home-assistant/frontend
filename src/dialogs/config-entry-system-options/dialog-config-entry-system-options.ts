@@ -22,6 +22,7 @@ import type { PolymerChangedEvent } from "../../polymer-types";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { ConfigEntrySystemOptionsDialogParams } from "./show-dialog-config-entry-system-options";
+import { computeRTLDirection } from "../../common/util/compute_rtl";
 
 @customElement("dialog-config-entry-system-options")
 class DialogConfigEntrySystemOptions extends LitElement {
@@ -99,6 +100,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
                           ) || this._params.entry.domain
                         )}
                       </p>`}
+                    .dir=${computeRTLDirection(this.hass)}
                   >
                     <ha-switch
                       .checked=${!this._disableNewEntities}
