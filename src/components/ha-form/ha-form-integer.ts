@@ -58,7 +58,9 @@ export class HaFormInteger extends LitElement implements HaFormElement {
                 .value=${this._value}
                 .min=${this.schema.valueMin}
                 .max=${this.schema.valueMax}
-                .disabled=${this.data === undefined}
+                .disabled=${this.data === undefined &&
+                this.schema.optional &&
+                this.schema.default === undefined}
                 @value-changed=${this._valueChanged}
               ></ha-paper-slider>
             </div>
