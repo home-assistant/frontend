@@ -1,8 +1,9 @@
 import "@material/mwc-button";
+import "@material/mwc-icon-button";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "../../components/ha-icon-button";
 import "../../components/ha-dialog";
+import "../../components/ha-svg-icon";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { DOMAINS_MORE_INFO_NO_HISTORY } from "../../common/const";
 import { computeStateName } from "../../common/entity/compute_state_name";
