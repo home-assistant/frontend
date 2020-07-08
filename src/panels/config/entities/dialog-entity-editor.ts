@@ -10,7 +10,6 @@ import {
   html,
   LitElement,
   property,
-  query,
   TemplateResult,
 } from "lit-element";
 import { cache } from "lit-html/directives/cache";

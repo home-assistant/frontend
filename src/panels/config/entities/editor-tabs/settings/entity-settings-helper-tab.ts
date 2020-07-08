@@ -168,8 +168,6 @@ export class EntityRegistrySettingsHelper extends LitElement {
   private async _getItem() {
     const items = await HELPERS[this.entry.platform].fetch(this.hass!);
     this._item = items.find((item) => item.id === this.entry.unique_id) || null;
-    await this.updateComplete;
-    fireEvent(this.dialogElement as HTMLElement, "iron-resize");
   }
 
   private async _updateItem(): Promise<void> {
