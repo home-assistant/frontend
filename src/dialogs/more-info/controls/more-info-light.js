@@ -28,6 +28,12 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return html`
       <style include="iron-flex"></style>
       <style>
+        .content {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
         .effect_list,
         .brightness,
         .color_temp,
@@ -50,7 +56,6 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
         .segmentationContainer {
           position: relative;
-          width: 100%;
         }
 
         ha-color-picker {
@@ -118,8 +123,20 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
           --ha-color-picker-marker-bordercolor: white;
         }
 
+        .control {
+          width: 100%;
+        }
+
         .is-unavailable .control {
           max-height: 0px;
+        }
+
+        ha-attributes {
+          width: 100%;
+        }
+
+        ha-paper-dropdown-menu {
+          width: 100%;
         }
 
         paper-item {
@@ -275,7 +292,10 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   computeClassNames(stateObj) {
-    const classes = [featureClassNames(stateObj, FEATURE_CLASS_NAMES)];
+    const classes = [
+      "content",
+      featureClassNames(stateObj, FEATURE_CLASS_NAMES),
+    ];
     if (stateObj && stateObj.state === "on") {
       classes.push("is-on");
     }

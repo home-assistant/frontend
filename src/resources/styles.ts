@@ -241,7 +241,9 @@ export const haStyleDialog = css`
   @media all and (max-width: 450px), all and (max-height: 500px) {
     ha-dialog {
       --mdc-dialog-min-width: 100vw;
-      --mdc-dialog-max-height: 100vh;
+      --mdc-dialog-max-width: 100vw;
+      --mdc-dialog-min-height: 100%;
+      --mdc-dialog-max-height: 100%;
       --mdc-shape-medium: 0px;
       --vertial-align-dialog: flex-end;
     }

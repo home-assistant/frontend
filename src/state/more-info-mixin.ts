@@ -20,7 +20,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
       // Load it once we are having the initial rendering done.
       import(
-        /* webpackChunkName: "more-info-dialog" */ "../dialogs/ha-more-info-dialog"
+        /* webpackChunkName: "more-info-dialog" */ "../dialogs/more-info/ha-more-info-dialog"
       );
     }
 
