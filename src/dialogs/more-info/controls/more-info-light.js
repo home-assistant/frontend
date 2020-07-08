@@ -302,7 +302,6 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
     if (stateObj && stateObj.state === "unavailable") {
       classes.push("is-unavailable");
     }
-    classes.push("content");
     return classes.join(" ");
   }
 
