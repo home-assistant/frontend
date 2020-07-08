@@ -23,7 +23,7 @@ export const createCloseHeading = (hass: HomeAssistant, title: string) => html`
 export class HaDialog extends MwcDialog {
   protected renderHeading() {
     return html`<slot name="heading">
-      <h2 id="title" class="mdc-dialog__title">${this.heading}</h2>
+      ${super.renderHeading()}
     </slot>`;
   }
 
