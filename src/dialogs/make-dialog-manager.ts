@@ -43,6 +43,41 @@ export const showDialog = async (
   }
   const dialogElement = await LOADED[dialogTag];
   dialogElement.showDialog(dialogParams);
+  if (dialogElement.closeDialog) {
+    history.replaceState(
+      {
+        dialog: dialogTag,
+        open: false,
+        oldState:
+          history.state?.open && history.state?.dialog !== dialogTag
+            ? history.state
+            : null,
+      },
+      ""
+    );
+    try {
+      history.pushState(
+        { dialog: dialogTag, dialogParams: dialogParams, open: true },
+        ""
+      );
+    } catch (err) {
+      // dialogParams could not be cloned, probably contains callback
+      history.pushState(
+        { dialog: dialogTag, dialogParams: null, open: true },
+        ""
+      );
+    }
+  }
+};
+
+export const closeDialog = async (dialogTag: string) => {
+  if (!(dialogTag in LOADED)) {
+    return;
+  }
+  const dialogElement = await LOADED[dialogTag];
+  if (dialogElement.closeDialog) {
+    dialogElement.closeDialog();
+  }
 };
 
 export const makeDialogManager = (
