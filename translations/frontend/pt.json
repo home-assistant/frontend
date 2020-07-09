@@ -628,6 +628,7 @@
                     "max": "Valor máximo",
                     "min": "Valor mínimo",
                     "mode": "Modo de exibição",
+                    "slider": "Controlador deslizante",
                     "step": "Tamanho do passo",
                     "unit_of_measurement": "Unidade de medida"
                 },
@@ -768,7 +769,7 @@
             "connection_lost": "Ligação perdida. A ligar de novo...",
             "service_call_failed": "Falha ao chamar o serviço {service}.",
             "started": "Home Assistant já iniciou",
-            "starting": "Home Assistant está a inicializar, nem tudo estará disponivel até o processo concluir.",
+            "starting": "Home Assistant está a inicializar, nem tudo estará disponível até o processo concluir.",
             "triggered": "Despoletado {name}"
         },
         "panel": {
@@ -1147,12 +1148,12 @@
                         "webhook_for": "Webhook para {name}"
                     },
                     "forgot_password": {
-                        "check_your_email": "Verifique o seu e-mail para obter instruções sobre como redefinir a sua senha.",
+                        "check_your_email": "Verifique o seu e-mail para obter instruções sobre como redefinir a sua palavra-passe.",
                         "email": "",
                         "email_error_msg": "E-mail inválido",
                         "instructions": "Introduza o seu endereço de e-mail e nós lhe enviaremos um link para redefinir sua password.",
                         "send_reset_email": "Enviar e-mail de redefinição",
-                        "subtitle": "Esquecer a senha",
+                        "subtitle": "Esqueceu-se da palavra-passe?",
                         "title": "Esqueci-me da palavra-passe"
                     },
                     "google": {
@@ -1170,7 +1171,7 @@
                         "dismiss": "Fechar",
                         "email": "",
                         "email_error_msg": "E-mail inválido",
-                        "forgot_password": "Esqueceu-se da senha?",
+                        "forgot_password": "Esqueceu-se da palavra-passe?",
                         "introduction": "O Home Assistant Cloud fornece uma conexão remota segura à sua instância enquanto estiver fora de casa. Também permite que você se conecte com serviços que apenas utilizam a nuvem: Amazon Alexa e Google Assistant.",
                         "introduction2": "Este serviço é gerido pelo nosso parceiro ",
                         "introduction2a": ", uma empresa criada pelos fundadores do Home Assistant e do Hass.io.",
@@ -1247,6 +1248,7 @@
                     "attributes_set": "Os seguintes atributos de uma entidade são definidos por meio de programação.",
                     "caption": "Personalização",
                     "description": "Personalizar as suas entidades",
+                    "different_include": "Possivelmente através de um domínio, um glob ou um include diferente.",
                     "pick_attribute": "Escolha um atributo para substituir.",
                     "picker": {
                         "entity": "Entidade",
@@ -1304,6 +1306,7 @@
                     "no_devices": "Sem dispositivos",
                     "scene": {
                         "create": "Criar cena com o dispositivo",
+                        "no_scenes": "Sem cenários",
                         "scenes": "Cenas"
                     },
                     "scenes": "Cenas",
@@ -1389,6 +1392,7 @@
                         "input_boolean": "Interruptor",
                         "input_datetime": "Data e/ou hora",
                         "input_number": "Número",
+                        "input_select": "Lista de selecção",
                         "input_text": "Texto"
                     }
                 },
@@ -1414,8 +1418,8 @@
                 },
                 "integration_panel_move": {
                     "link_integration_page": "Página de Integrações",
-                    "missing_zha": "Está faltando o painel de configuração do Z-Wave? Foi movido para a entrada do Z-Wave na {integrations_page} .",
-                    "missing_zwave": "Está faltando o painel de configuração do Z-Wave? Foi movido para a entrada do Z-Wave na {integrations_page} ."
+                    "missing_zha": "Falta o painel de configuração do Z-Wave? Foi movido para a entrada do Z-Wave na {integrations_page} .",
+                    "missing_zwave": "Falta o painel de configuração do Z-Wave? Foi movido para a entrada do Z-Wave na {integrations_page} ."
                 },
                 "integrations": {
                     "add_integration": "Adicionar integração",
@@ -1754,7 +1758,7 @@
                         "owner": "Proprietário",
                         "system_generated": "Gerado pelo sistema",
                         "system_generated_users_not_editable": "Não foi possível atualizar os utilizadores gerados pelo sistema.",
-                        "system_generated_users_not_removable": "Não é possível remover usuários gerados pelo sistema.",
+                        "system_generated_users_not_removable": "Não é possível remover utilizadores gerados pelo sistema.",
                         "unnamed_user": "Utilizador sem nome",
                         "update_user": "Atualizar"
                     },
@@ -1765,11 +1769,11 @@
                             "system": "Sistema"
                         }
                     },
-                    "users_privileges_note": "O grupo de usuários é um trabalho em andamento. O usuário não poderá administrar a instância por meio da interface do usuário. Ainda estamos auditando todos os pontos de extremidade da API de gerenciamento para garantir que eles limitem corretamente o acesso aos administradores."
+                    "users_privileges_note": "O grupo de utilizadores é um trabalho em progresso. O utilizador não poderá administrar a instância por meio da interface de utilizador. Ainda estamos a auditar todos os endpoints da API de gestão para garantir que eles limitam corretamente o acesso aos administradores."
                 },
                 "zha": {
                     "add_device_page": {
-                        "discovered_text": "Os dispositivos aparecerão aqui uma vez descobertos.",
+                        "discovered_text": "Os dispositivos aparecem aqui uma vez descobertos.",
                         "discovery_text": "Os dispositivos descobertos aparecerão aqui. Siga as instruções para o(s) seu(s) dispositivo(s) e coloque o(s) dispositivo(s) em modo de emparelhamento.",
                         "header": "Zigbee Home Automation - Adicionar dispositivos",
                         "no_devices_found": "Nenhum dispositivo encontrado, verifique se eles estão no modo de emparelhamento e mantenha-os acordados enquanto a descoberta está em execução.",
@@ -1936,22 +1940,32 @@
                         "true": "Verdadeiro"
                     },
                     "node_management": {
+                        "add_to_group": "Adicionar ao Grupo",
                         "entities": "Entidades deste nó",
                         "entity_info": "Definições da entidade",
                         "exclude_entity": "Excluir esta entidade do Home Assistant",
                         "group": "Grupo",
+                        "header": "Gestão de nó Z-Wave",
+                        "introduction": "Execute comandos do Z-Wave que afetam um único nó. Escolha um nó para ver uma lista dos comandos disponíveis.",
+                        "max_associations": "Máximo de Associações:",
                         "node_group_associations": "Associações de grupos de nós",
                         "node_protection": "Proteção de nó",
                         "node_to_control": "Configurar opçoes do nó",
                         "nodes": "Nós",
                         "nodes_hint": "Selecione o nó para visualizar as opções por nó",
-                        "pooling_intensity": "Intensidade da votação",
+                        "nodes_in_group": "Outros nós neste grupo:",
+                        "pooling_intensity": "Intensidade de interrogação",
                         "protection": "Proteção",
+                        "remove_broadcast": "Remover Difusão",
+                        "remove_from_group": "Remover do Grupo",
                         "set_protection": "Definir proteção"
                     },
                     "ozw_log": {
                         "header": "Log OZW",
-                        "introduction": "Veja o log. 0 é o mínimo (carrega o log inteiro) e 1000 é o máximo. Ao carregar irá ser mostrado um log estático e a cauda será atualizada automaticamente com o último número especificado de linhas do log."
+                        "introduction": "Veja o log. 0 é o mínimo (carrega o log inteiro) e 1000 é o máximo. Ao carregar irá ser mostrado um log estático e a cauda será atualizada automaticamente com o último número especificado de linhas do log.",
+                        "last_log_lines": "Número de últimas linhas de registos",
+                        "load": "Carga",
+                        "tail": "Cauda"
                     },
                     "services": {
                         "add_node": "Adicionar nó",
@@ -1962,7 +1976,10 @@
                         "node_info": "Informação do Nó",
                         "print_node": "Nó de impressão",
                         "refresh_entity": "Actualizar entidade",
+                        "refresh_node": "Atualizar nó",
+                        "remove_failed_node": "Remover nó com falha",
                         "remove_node": "Remover nó",
+                        "replace_failed_node": "Substituir nó com falha",
                         "save_config": "Guardar configuração",
                         "soft_reset": "Reinicio suave",
                         "start_network": "Iniciar a rede",
@@ -2158,12 +2175,14 @@
                             }
                         },
                         "generic": {
+                            "aspect_ratio": "Rácio de Proporção",
                             "attribute": "Atributo",
                             "camera_image": "Entidade de Câmera",
                             "camera_view": "Vista da Câmera",
                             "double_tap_action": "Ação de toque duplo",
                             "entities": "Entidades",
                             "entity": "Entidade",
+                            "hold_action": "Ação de retenção",
                             "hours_to_show": "Horas a mostrar",
                             "icon": "Ícone",
                             "icon_height": "Altura do ícone",
@@ -2238,7 +2257,8 @@
                             "name": "Entidade de imagem"
                         },
                         "picture-glance": {
-                            "description": "O cartão Vista de imagem  mostra uma imagem e os estados das entidades correspondentes como um ícone. As entidades do lado direito permitem alternar ações, outras mostram a opção mais informações."
+                            "description": "O cartão Vista de imagem  mostra uma imagem e os estados das entidades correspondentes como um ícone. As entidades do lado direito permitem alternar ações, outras mostram a opção mais informações.",
+                            "name": "Vista sobre imagem"
                         },
                         "picture": {
                             "description": "O cartão de imagem permite definir uma imagem a ser usada para navegação em vários pontos na sua interface ou para chamar um serviço.",
@@ -2395,7 +2415,7 @@
                     "entity_non_numeric": "A entidade é não numérica: {entity}",
                     "entity_not_found": "Entidade não disponível: {entity}",
                     "entity_unavailable": "{entity} está indisponível no momento",
-                    "starting": "Home Assistant está a inicializar, nem tudo está já disponivel"
+                    "starting": "Home Assistant está a inicializar, nem tudo está já disponível"
                 }
             },
             "mailbox": {
