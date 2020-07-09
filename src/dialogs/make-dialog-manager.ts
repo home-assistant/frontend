@@ -1,5 +1,6 @@
 import { HASSDomEvent, ValidHassDomEvent } from "../common/dom/fire_event";
 import { ProvideHassElement } from "../mixins/provide-hass-lit-mixin";
+import { MoreInfoDialogParams } from "./more-info/ha-more-info-dialog";
 
 declare global {
   // for fire event

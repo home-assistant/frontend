@@ -13,6 +13,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { cache } from "lit-html/directives/cache";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
