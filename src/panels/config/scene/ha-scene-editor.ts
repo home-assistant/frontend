@@ -538,8 +538,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
     );
 
     if (
-      entityRegistry &&
-      entityRegistry.device_id &&
+      entityRegistry?.device_id &&
       !this._devices.includes(entityRegistry.device_id)
     ) {
       this._devices = [...this._devices, entityRegistry.device_id];
