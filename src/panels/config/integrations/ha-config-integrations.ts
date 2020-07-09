@@ -717,7 +717,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           right: auto;
           left: 16px;
         }
-        mwc-fab[is-wide].rtl {
+        mwc-fab[is-wide][rtl] {
           bottom: 24px;
           left: 24px;
           right: auto;
