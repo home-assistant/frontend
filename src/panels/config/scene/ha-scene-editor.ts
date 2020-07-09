@@ -532,6 +532,18 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
     }
     this._entities = [...this._entities, entityId];
     this._storeState(entityId);
+
+    const entityRegistry = this._entityRegistryEntries.find(
+      (entityReg) => entityReg.entity_id === entityId
+    );
+
+    if (
+      entityRegistry?.device_id &&
+      !this._devices.includes(entityRegistry.device_id)
+    ) {
+      this._devices = [...this._devices, entityRegistry.device_id];
+    }
+
     this._dirty = true;
   }
 
