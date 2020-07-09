@@ -38,6 +38,7 @@ import {
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
 import { mdiPlus } from "@mdi/js";
+import { computeRTL } from "../../../common/util/compute_rtl";
 
 @customElement("ha-config-areas-dashboard")
 export class HaConfigAreasDashboard extends LitElement {
@@ -126,6 +127,7 @@ export class HaConfigAreasDashboard extends LitElement {
       <mwc-fab
         ?is-wide=${this.isWide}
         ?narrow=${this.narrow}
+        ?rtl=${computeRTL(this.hass!)}
         title="${this.hass.localize(
           "ui.panel.config.areas.picker.create_area"
         )}"
@@ -194,15 +196,14 @@ export class HaConfigAreasDashboard extends LitElement {
       mwc-fab[narrow] {
         bottom: 84px;
       }
-      mwc-fab.rtl {
+      mwc-fab[rtl] {
         right: auto;
         left: 16px;
       }
-
-      mwc-fab[is-wide].rtl {
+      mwc-fab[is-wide][rtl] {
         bottom: 24px;
-        right: auto;
         left: 24px;
+        right: auto;
       }
     `;
   }

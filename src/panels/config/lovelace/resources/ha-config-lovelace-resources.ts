@@ -40,6 +40,7 @@ import { lovelaceTabs } from "../ha-config-lovelace";
 import { showResourceDetailDialog } from "./show-dialog-lovelace-resource-detail";
 import "../../../../components/ha-svg-icon";
 import { mdiPlus } from "@mdi/js";
+import { computeRTL } from "../../../../common/util/compute_rtl";
 
 @customElement("ha-config-lovelace-resources")
 export class HaConfigLovelaceRescources extends LitElement {
@@ -107,6 +108,7 @@ export class HaConfigLovelaceRescources extends LitElement {
       <mwc-fab
         ?is-wide=${this.isWide}
         ?narrow=${this.narrow}
+        ?rtl=${computeRTL(this.hass!)}
         title=${this.hass.localize(
           "ui.panel.config.lovelace.resources.picker.add_resource"
         )}
@@ -214,6 +216,15 @@ export class HaConfigLovelaceRescources extends LitElement {
       }
       mwc-fab[narrow] {
         bottom: 84px;
+      }
+      mwc-fab[rtl] {
+        right: auto;
+        left: 16px;
+      }
+      mwc-fab[is-wide][rtl] {
+        bottom: 24px;
+        left: 24px;
+        right: auto;
       }
     `;
   }

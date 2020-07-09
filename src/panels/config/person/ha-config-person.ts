@@ -31,6 +31,7 @@ import {
 } from "./show-dialog-person-detail";
 import "../../../components/ha-svg-icon";
 import { mdiPlus } from "@mdi/js";
+import { computeRTL } from "../../../common/util/compute_rtl";
 
 class HaConfigPerson extends LitElement {
   @property() public hass?: HomeAssistant;
@@ -126,6 +127,7 @@ class HaConfigPerson extends LitElement {
       <mwc-fab
         ?is-wide=${this.isWide}
         ?narrow=${this.narrow}
+        ?rtl=${computeRTL(this.hass!)}
         title="${hass.localize("ui.panel.config.person.add_person")}"
         @click=${this._createPerson}
       >
@@ -252,6 +254,15 @@ class HaConfigPerson extends LitElement {
       mwc-fab[is-wide] {
         bottom: 24px;
         right: 24px;
+      }
+      mwc-fab[rtl] {
+        right: auto;
+        left: 16px;
+      }
+      mwc-fab[is-wide][rtl] {
+        bottom: 24px;
+        left: 24px;
+        right: auto;
       }
     `;
   }
