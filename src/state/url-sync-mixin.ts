@@ -6,6 +6,7 @@ import {
 } from "../dialogs/make-dialog-manager";
 import { Constructor } from "../types";
 import { HassBaseEl } from "./hass-base-mixin";
+import { HASSDomEvent } from "../common/dom/fire_event";
 
 const DEBUG = true;
 
@@ -30,10 +31,12 @@ export const urlSyncMixin = <T extends Constructor<HassBaseEl>>(
           this.removeEventListener("dialog-closed", this._dialogClosedListener);
         }
 
-        private _dialogClosedListener = (ev: CustomEvent) => {
+        private _dialogClosedListener = (ev: HASSDomEvent<undefined>) => {
+          const dialogElement = ev.composedPath()[0] as Element;
+          // If not closed by navigating back, and not a new dialog is open, remove the open state from history
           if (
             history.state?.open &&
-            history.state?.dialog === ev.path[0].localName
+            history.state?.dialog === dialogElement.localName
           ) {
             this._ignoreNextPopState = true;
             history.back();
@@ -53,16 +56,31 @@ export const urlSyncMixin = <T extends Constructor<HassBaseEl>>(
           }
         };
 
-        private _handleDialogStateChange(state: DialogState) {
+        private async _handleDialogStateChange(state: DialogState) {
           if (DEBUG) {
             console.log("handle state", state);
           }
           if (!state.open) {
-            closeDialog(state.dialog);
+            const closed = await closeDialog(state.dialog);
+            if (!closed) {
+              // dialog could not be closed, push state again
+              history.pushState(
+                {
+                  dialog: state.dialog,
+                  open: true,
+                  dialogParams: null,
+                  oldState: null,
+                },
+                ""
+              );
+              return;
+            }
             if (state.oldState) {
               this._handleDialogStateChange(state.oldState);
             }
-          } else if (state.dialogParams !== null) {
+            return;
+          }
+          if (state.dialogParams !== null) {
             showDialog(
               this,
               this.shadowRoot!,

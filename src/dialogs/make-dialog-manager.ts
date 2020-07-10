@@ -7,17 +7,19 @@ declare global {
   interface HASSDomEvents {
     "show-dialog": ShowDialogParams<unknown>;
     "close-dialog": undefined;
+    "dialog-closed": undefined;
     "hass-more-info": MoreInfoDialogParams;
   }
   // for add event listener
   interface HTMLElementEventMap {
     "show-dialog": HASSDomEvent<ShowDialogParams<unknown>>;
+    "dialog-closed": HASSDomEvent<undefined>;
   }
 }
 
 interface HassDialog<T = HASSDomEvents[ValidHassDomEvent]> extends HTMLElement {
   showDialog(params: T);
-  closeDialog?: () => void;
+  closeDialog?: () => boolean | void;
 }
 
 interface ShowDialogParams<T> {
@@ -58,43 +60,44 @@ export const showDialog = async (
       return dialogEl;
     });
   }
-  const dialogElement = await LOADED[dialogTag];
-  dialogElement.showDialog(dialogParams);
-  if (dialogElement.closeDialog) {
-    history.replaceState(
-      {
-        dialog: dialogTag,
-        open: false,
-        oldState:
-          history.state?.open && history.state?.dialog !== dialogTag
-            ? history.state
-            : null,
-      },
+
+  history.replaceState(
+    {
+      dialog: dialogTag,
+      open: false,
+      oldState:
+        history.state?.open && history.state?.dialog !== dialogTag
+          ? history.state
+          : null,
+    },
+    ""
+  );
+  try {
+    history.pushState(
+      { dialog: dialogTag, dialogParams: dialogParams, open: true },
       ""
     );
-    try {
-      history.pushState(
-        { dialog: dialogTag, dialogParams: dialogParams, open: true },
-        ""
-      );
-    } catch (err) {
-      // dialogParams could not be cloned, probably contains callback
-      history.pushState(
-        { dialog: dialogTag, dialogParams: null, open: true },
-        ""
-      );
-    }
+  } catch (err) {
+    // dialogParams could not be cloned, probably contains callback
+    history.pushState(
+      { dialog: dialogTag, dialogParams: null, open: true },
+      ""
+    );
   }
+
+  const dialogElement = await LOADED[dialogTag];
+  dialogElement.showDialog(dialogParams);
 };
 
-export const closeDialog = async (dialogTag: string) => {
+export const closeDialog = async (dialogTag: string): Promise<boolean> => {
   if (!(dialogTag in LOADED)) {
-    return;
+    return true;
   }
   const dialogElement = await LOADED[dialogTag];
   if (dialogElement.closeDialog) {
-    dialogElement.closeDialog();
+    return dialogElement.closeDialog() !== false;
   }
+  return true;
 };
 
 export const makeDialogManager = (
