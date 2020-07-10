@@ -128,7 +128,7 @@ export class HaTabsSubpageDataTable extends LitElement {
                       no-underline
                       @value-changed=${this._handleSearchChange}
                       searchText=${this.hass.localize(
-                        "ui.panel.config.filtering.filtering_by"
+                        "ui.components.data-table.search"
                       )}
                     ></search-input>
                     ${this.activeFilters
