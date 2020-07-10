@@ -157,7 +157,7 @@ export class HaStateLabelBadge extends LitElement {
       case "timer":
         return state.state === "active"
           ? "hass:timer-outline"
-          : "hass:timer-outline-off";
+          : "hass:timer-off-outline";
       default:
         return null;
     }

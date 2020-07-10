@@ -24,7 +24,7 @@ const fixedIcons = {
   homeassistant: "hass:home-assistant",
   homekit: "hass:home-automation",
   humidifier: "hass:air-humidifier",
-  image_processing: "hass:image-multiple-outline-frames",
+  image_processing: "hass:image-filter-frames",
   input_boolean: "hass:toggle-switch-outline",
   input_datetime: "hass:calendar-clock",
   input_number: "hass:ray-vertex",
@@ -103,7 +103,7 @@ export const domainIcon = (domain: string, state?: string): string => {
         case "sleeping":
           return "hass:sleep";
         case "initializing":
-          return "hass:timer-outline-sand";
+          return "hass:timer-sand";
         default:
           return "hass:z-wave";
       }
