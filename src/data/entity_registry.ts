@@ -37,6 +37,17 @@ export const findBatteryEntity = (
       hass.states[entity.entity_id].attributes.device_class === "battery"
   );
 
+export const findBatteryChargingEntity = (
+  hass: HomeAssistant,
+  entities: EntityRegistryEntry[]
+): EntityRegistryEntry | undefined =>
+  entities.find(
+    (entity) =>
+      hass.states[entity.entity_id] &&
+      hass.states[entity.entity_id].attributes.device_class ===
+        "battery_charging"
+  );
+
 export const computeEntityRegistryName = (
   hass: HomeAssistant,
   entry: EntityRegistryEntry
