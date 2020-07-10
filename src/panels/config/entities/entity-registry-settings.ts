@@ -33,8 +33,6 @@ export class EntityRegistrySettings extends LitElement {
 
   @property() public entry!: ExtEntityRegistryEntry;
 
-  @property() public dialogElement!: HTMLElement;
-
   @property() private _name!: string;
 
   @property() private _icon!: string;
@@ -72,82 +70,76 @@ export class EntityRegistrySettings extends LitElement {
       computeDomain(this._entityId.trim()) !==
       computeDomain(this.entry.entity_id);
     return html`
-      <paper-dialog-scrollable .dialogElement=${this.dialogElement}>
-        ${!stateObj
-          ? html`
-              <div>
-                ${this.hass!.localize(
-                  "ui.dialogs.entity_registry.editor.unavailable"
-                )}
-              </div>
-            `
-          : ""}
-        ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
-        <div class="form">
-          <paper-input
-            .value=${this._name}
-            @value-changed=${this._nameChanged}
-            .label=${this.hass.localize(
-              "ui.dialogs.entity_registry.editor.name"
-            )}
-            .placeholder=${this.entry.original_name}
-            .disabled=${this._submitting}
-          ></paper-input>
-          <ha-icon-input
-            .value=${this._icon}
-            @value-changed=${this._iconChanged}
-            .label=${this.hass.localize(
-              "ui.dialogs.entity_registry.editor.icon"
-            )}
-            .placeholder=${this.entry.original_icon}
-            .disabled=${this._submitting}
-            .errorMessage=${this.hass.localize(
-              "ui.dialogs.entity_registry.editor.icon_error"
-            )}
-          ></ha-icon-input>
-          <paper-input
-            .value=${this._entityId}
-            @value-changed=${this._entityIdChanged}
-            .label=${this.hass.localize(
-              "ui.dialogs.entity_registry.editor.entity_id"
-            )}
-            error-message="Domain needs to stay the same"
-            .invalid=${invalidDomainUpdate}
-            .disabled=${this._submitting}
-          ></paper-input>
-          <div class="row">
-            <ha-switch
-              .checked=${!this._disabledBy}
-              @change=${this._disabledByChanged}
-            >
-            </ha-switch>
+      ${!stateObj
+        ? html`
             <div>
-              <div>
-                ${this.hass.localize(
-                  "ui.dialogs.entity_registry.editor.enabled_label"
-                )}
-              </div>
-              <div class="secondary">
-                ${this._disabledBy && this._disabledBy !== "user"
-                  ? this.hass.localize(
-                      "ui.dialogs.entity_registry.editor.enabled_cause",
-                      "cause",
-                      this.hass.localize(
-                        `config_entry.disabled_by.${this._disabledBy}`
-                      )
+              ${this.hass!.localize(
+                "ui.dialogs.entity_registry.editor.unavailable"
+              )}
+            </div>
+          `
+        : ""}
+      ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
+      <div class="form">
+        <paper-input
+          .value=${this._name}
+          @value-changed=${this._nameChanged}
+          .label=${this.hass.localize("ui.dialogs.entity_registry.editor.name")}
+          .placeholder=${this.entry.original_name}
+          .disabled=${this._submitting}
+        ></paper-input>
+        <ha-icon-input
+          .value=${this._icon}
+          @value-changed=${this._iconChanged}
+          .label=${this.hass.localize("ui.dialogs.entity_registry.editor.icon")}
+          .placeholder=${this.entry.original_icon}
+          .disabled=${this._submitting}
+          .errorMessage=${this.hass.localize(
+            "ui.dialogs.entity_registry.editor.icon_error"
+          )}
+        ></ha-icon-input>
+        <paper-input
+          .value=${this._entityId}
+          @value-changed=${this._entityIdChanged}
+          .label=${this.hass.localize(
+            "ui.dialogs.entity_registry.editor.entity_id"
+          )}
+          error-message="Domain needs to stay the same"
+          .invalid=${invalidDomainUpdate}
+          .disabled=${this._submitting}
+        ></paper-input>
+        <div class="row">
+          <ha-switch
+            .checked=${!this._disabledBy}
+            @change=${this._disabledByChanged}
+          >
+          </ha-switch>
+          <div>
+            <div>
+              ${this.hass.localize(
+                "ui.dialogs.entity_registry.editor.enabled_label"
+              )}
+            </div>
+            <div class="secondary">
+              ${this._disabledBy && this._disabledBy !== "user"
+                ? this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.enabled_cause",
+                    "cause",
+                    this.hass.localize(
+                      `config_entry.disabled_by.${this._disabledBy}`
                     )
-                  : ""}
-                ${this.hass.localize(
-                  "ui.dialogs.entity_registry.editor.enabled_description"
-                )}
-                <br />${this.hass.localize(
-                  "ui.dialogs.entity_registry.editor.note"
-                )}
-              </div>
+                  )
+                : ""}
+              ${this.hass.localize(
+                "ui.dialogs.entity_registry.editor.enabled_description"
+              )}
+              <br />${this.hass.localize(
+                "ui.dialogs.entity_registry.editor.note"
+              )}
             </div>
           </div>
         </div>
-      </paper-dialog-scrollable>
+      </div>
       <div class="buttons">
         <mwc-button
           class="warning"
@@ -237,7 +229,7 @@ export class EntityRegistrySettings extends LitElement {
           padding: 0 !important;
         }
         .form {
-          padding-bottom: 24px;
+          padding: 20px 24px;
         }
         .buttons {
           display: flex;
