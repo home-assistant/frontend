@@ -21,6 +21,7 @@ import {
   writeCache,
 } from "../data/iconsets";
 import { debounce } from "../common/util/debounce";
+import { fireEvent } from "../common/dom/fire_event";
 
 const mdiRenameMapping = {
   "account-badge": "badge-account",
@@ -282,15 +283,21 @@ export class HaIcon extends LitElement {
 
     if (iconName in mdiRenameMapping) {
       iconName = mdiRenameMapping[iconName];
+      const message = `Icon ${iconPrefix}:${origIconName} was renamed to ${iconPrefix}:${iconName}, please change your config, it will be removed in version 0.115.`;
       // eslint-disable-next-line no-console
-      console.warn(
-        `Icon ${iconPrefix}:${origIconName} was renamed to ${iconPrefix}:${iconName}, please change your config, it will be removed in version 0.115.`
-      );
+      console.warn(message);
+      fireEvent(this, "write_log", {
+        level: "warning",
+        message,
+      });
     } else if (mdiRemovedIcons.includes(iconName)) {
+      const message = `Icon ${this.icon} was removed from MDI, please replace this icon with an other icon in your config, it will be removed in version 0.115.`;
       // eslint-disable-next-line no-console
-      console.warn(
-        `Icon ${this.icon} was removed from MDI, please replace this icon with an other icon in your config, it will be removed in version 0.115.`
-      );
+      console.warn(message);
+      fireEvent(this, "write_log", {
+        level: "warning",
+        message,
+      });
     }
 
     if (iconName in cachedIcons) {
