@@ -1,5 +1,9 @@
 /* eslint-disable no-console */
-import { fireEvent } from "../common/dom/fire_event";
+import {
+  closeDialog,
+  showDialog,
+  DialogState,
+} from "../dialogs/make-dialog-manager";
 import { Constructor } from "../types";
 import { HassBaseEl } from "./hass-base-mixin";
 
@@ -43,60 +47,28 @@ export const urlSyncMixin = <T extends Constructor<HassBaseEl>>(
           }
           if (ev.state && "dialog" in ev.state) {
             if (DEBUG) {
-              console.log("ignore hasschange");
+              console.log("popstate", ev);
             }
-            this._ignoreNextHassChange = false;
-            return;
-          }
-          if (
-            !oldHass ||
-            oldHass.moreInfoEntityId === newHass.moreInfoEntityId
-          ) {
-            if (DEBUG) {
-              console.log("ignoring hass change");
-            }
-            return;
-          }
-
-          if (newHass.moreInfoEntityId) {
-            if (DEBUG) {
-              console.log("pushing state");
-            }
-            // We keep track of where we opened moreInfo from so that we don't
-            // pop the state when we close the modal if the modal has navigated
-            // us away.
-            this._moreInfoOpenedFromPath = window.location.pathname;
-            history.pushState(null, "", window.location.pathname);
-          } else if (
-            window.location.pathname === this._moreInfoOpenedFromPath
-          ) {
-            if (DEBUG) {
-              console.log("history back");
-            }
-            this._ignoreNextPopstate = true;
-            history.back();
+            this._handleDialogStateChange(ev.state);
           }
         };
 
-        private _popstateChangeListener = (ev) => {
-          if (this._ignoreNextPopstate) {
-            if (DEBUG) {
-              console.log("ignore popstate");
-            }
-            this._ignoreNextPopstate = false;
-            return;
-          }
-
+        private _handleDialogStateChange(state: DialogState) {
           if (DEBUG) {
-            console.log("popstate", ev);
+            console.log("handle state", state);
           }
-
-          if (this.hass && this.hass.moreInfoEntityId) {
-            if (DEBUG) {
-              console.log("deselect entity");
+          if (!state.open) {
+            closeDialog(state.dialog);
+            if (state.oldState) {
+              this._handleDialogStateChange(state.oldState);
             }
-            this._ignoreNextHassChange = true;
-            fireEvent(this, "hass-more-info", { entityId: null });
+          } else if (state.dialogParams !== null) {
+            showDialog(
+              this,
+              this.shadowRoot!,
+              state.dialog,
+              state.dialogParams
+            );
           }
-        };
+        }
       };

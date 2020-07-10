@@ -42,9 +42,9 @@ export const dialogManagerMixin = <T extends Constructor<HassBaseEl>>(
         showDialog(
           this,
           this.shadowRoot!,
-          dialogImport,
           dialogTag,
-          (showEv as HASSDomEvent<unknown>).detail
+          (showEv as HASSDomEvent<unknown>).detail,
+          dialogImport
         );
       });
     }

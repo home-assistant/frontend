@@ -7,6 +7,7 @@ declare global {
   interface HASSDomEvents {
     "show-dialog": ShowDialogParams<unknown>;
     "close-dialog": undefined;
+    "hass-more-info": MoreInfoDialogParams;
   }
   // for add event listener
   interface HTMLElementEventMap {
@@ -16,6 +17,7 @@ declare global {
 
 interface HassDialog<T = HASSDomEvents[ValidHassDomEvent]> extends HTMLElement {
   showDialog(params: T);
+  closeDialog?: () => void;
 }
 
 interface ShowDialogParams<T> {
@@ -24,16 +26,31 @@ interface ShowDialogParams<T> {
   dialogParams: T;
 }
 
+export interface DialogState {
+  dialog: string;
+  open: boolean;
+  oldState: null | DialogState;
+  dialogParams?: unknown;
+}
+
+const importMoreInfo = () =>
+  import(
+    /* webpackChunkName: "more-info-dialog" */ "./more-info/ha-more-info-dialog"
+  );
+
 const LOADED = {};
 
 export const showDialog = async (
   element: HTMLElement & ProvideHassElement,
   root: ShadowRoot | HTMLElement,
-  dialogImport: () => Promise<unknown>,
   dialogTag: string,
-  dialogParams: unknown
+  dialogParams: unknown,
+  dialogImport?: () => Promise<unknown>
 ) => {
   if (!(dialogTag in LOADED)) {
+    if (!dialogImport) {
+      return;
+    }
     LOADED[dialogTag] = dialogImport().then(() => {
       const dialogEl = document.createElement(dialogTag) as HassDialog;
       element.provideHass(dialogEl);
@@ -84,11 +101,25 @@ export const makeDialogManager = (
   element: HTMLElement & ProvideHassElement,
   root: ShadowRoot | HTMLElement
 ) => {
+  importMoreInfo();
+
+  element.addEventListener("hass-more-info", (e) =>
+    showDialog(
+      element,
+      root,
+      "ha-more-info-dialog",
+      {
+        entityId: e.detail.entityId,
+      },
+      importMoreInfo
+    )
+  );
+
   element.addEventListener(
     "show-dialog",
-    async (e: HASSDomEvent<ShowDialogParams<unknown>>) => {
+    (e: HASSDomEvent<ShowDialogParams<unknown>>) => {
       const { dialogTag, dialogImport, dialogParams } = e.detail;
-      showDialog(element, root, dialogImport, dialogTag, dialogParams);
+      showDialog(element, root, dialogTag, dialogParams, dialogImport);
     }
   );
 };
