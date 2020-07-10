@@ -35,6 +35,7 @@ import "./step-flow-external";
 import "./step-flow-form";
 import "./step-flow-loading";
 import "./step-flow-pick-handler";
+import { computeRTL } from "../../common/util/compute_rtl";
 
 let instance = 0;
 
@@ -147,6 +148,7 @@ class DataEntryFlowDialog extends LitElement {
                   )}
                   icon="hass:close"
                   dialogAction="close"
+                  ?rtl=${computeRTL(this.hass)}
                 ></ha-icon-button>
                 ${this._step === null
                   ? // Show handler picker
@@ -317,6 +319,10 @@ class DataEntryFlowDialog extends LitElement {
           position: absolute;
           top: 0;
           right: 0;
+        }
+        ha-icon-button[rtl] {
+          right: auto;
+          left: 0;
         }
       `,
     ];
