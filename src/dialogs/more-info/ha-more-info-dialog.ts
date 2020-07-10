@@ -2,6 +2,7 @@ import "@material/mwc-button";
 import "@material/mwc-icon-button";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-dialog";
 import "../../components/ha-svg-icon";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
@@ -70,6 +71,14 @@ export class MoreInfoDialog extends LitElement {
     }
   }
 
+  public closeDialog() {
+    this._entityId = undefined;
+    this._stateHistory = undefined;
+    clearInterval(this._historyRefreshInterval);
+    this._historyRefreshInterval = undefined;
+    fireEvent(this, "dialog-closed");
+  }
+
   protected render() {
     if (!this.hass.moreInfoEntityId) {
       return html``;
@@ -85,7 +94,7 @@ export class MoreInfoDialog extends LitElement {
     return html`
       <ha-dialog
         open
-        @closed=${this._close}
+        @closed=${this.closeDialog}
         .heading=${true}
         hideActions
         data-domain=${domain}
@@ -233,10 +242,6 @@ export class MoreInfoDialog extends LitElement {
       }`
     );
     this._close();
-  }
-
-  private _close() {
-    fireEvent(this, "hass-more-info", { entityId: null });
   }
 
   static get styles() {

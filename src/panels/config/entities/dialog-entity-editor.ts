@@ -73,6 +73,7 @@ export class DialogEntityEditor extends LitElement {
 
   public closeDialog(): void {
     this._params = undefined;
+    fireEvent(this, "dialog-closed");
   }
 
   protected render(): TemplateResult {

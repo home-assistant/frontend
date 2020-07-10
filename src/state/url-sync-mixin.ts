@@ -3,7 +3,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { Constructor } from "../types";
 import { HassBaseEl } from "./hass-base-mixin";
 
-const DEBUG = false;
+const DEBUG = true;
 
 export const urlSyncMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
@@ -12,26 +12,36 @@ export const urlSyncMixin = <T extends Constructor<HassBaseEl>>(
   __DEMO__
     ? superClass
     : class extends superClass {
-        private _ignoreNextHassChange = false;
-
-        private _ignoreNextPopstate = false;
-
-        private _moreInfoOpenedFromPath?: string;
+        private _ignoreNextPopState = false;
 
         public connectedCallback(): void {
           super.connectedCallback();
           window.addEventListener("popstate", this._popstateChangeListener);
+          this.addEventListener("dialog-closed", this._dialogClosedListener);
         }
 
         public disconnectedCallback(): void {
           super.disconnectedCallback();
           window.removeEventListener("popstate", this._popstateChangeListener);
+          this.removeEventListener("dialog-closed", this._dialogClosedListener);
         }
 
-        protected hassChanged(newHass, oldHass): void {
-          super.hassChanged(newHass, oldHass);
+        private _dialogClosedListener = (ev: CustomEvent) => {
+          if (
+            history.state?.open &&
+            history.state?.dialog === ev.path[0].localName
+          ) {
+            this._ignoreNextPopState = true;
+            history.back();
+          }
+        };
 
-          if (this._ignoreNextHassChange) {
+        private _popstateChangeListener = (ev: PopStateEvent) => {
+          if (this._ignoreNextPopState) {
+            this._ignoreNextPopState = false;
+            return;
+          }
+          if (ev.state && "dialog" in ev.state) {
             if (DEBUG) {
               console.log("ignore hasschange");
             }
@@ -66,7 +76,7 @@ export const urlSyncMixin = <T extends Constructor<HassBaseEl>>(
             this._ignoreNextPopstate = true;
             history.back();
           }
-        }
+        };
 
         private _popstateChangeListener = (ev) => {
           if (this._ignoreNextPopstate) {
