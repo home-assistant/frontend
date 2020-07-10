@@ -125,8 +125,9 @@ class CloudForgotPassword extends LocalizeMixin(EventsMixin(PolymerElement)) {
         () => {
           this._requestInProgress = false;
           this.fire("cloud-done", {
-            flashMessage:
-              "[[localize('ui.panel.config.cloud.forgot_password.check_your_email')]]",
+            flashMessage: this.hass.localize(
+              "ui.panel.config.cloud.forgot_password.check_your_email"
+            ),
           });
         },
         (err) =>
