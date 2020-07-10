@@ -13,7 +13,7 @@ const fixedIcons = {
   calendar: "hass:calendar",
   camera: "hass:video",
   climate: "hass:thermostat",
-  configurator: "hass:settings",
+  configurator: "hass:cog",
   conversation: "hass:text-to-speech",
   counter: "hass:counter",
   device_tracker: "hass:account",
@@ -24,12 +24,12 @@ const fixedIcons = {
   homeassistant: "hass:home-assistant",
   homekit: "hass:home-automation",
   humidifier: "hass:air-humidifier",
-  image_processing: "hass:image-filter-frames",
+  image_processing: "hass:image-multiple-outline-frames",
   input_boolean: "hass:toggle-switch-outline",
   input_datetime: "hass:calendar-clock",
   input_number: "hass:ray-vertex",
   input_select: "hass:format-list-bulleted",
-  input_text: "hass:textbox",
+  input_text: "hass:form-textbox",
   light: "hass:lightbulb",
   mailbox: "hass:mailbox",
   notify: "hass:comment-alert",
@@ -44,7 +44,7 @@ const fixedIcons = {
   simple_alarm: "hass:bell",
   sun: "hass:white-balance-sunny",
   switch: "hass:flash",
-  timer: "hass:timer",
+  timer: "hass:timer-outline",
   updater: "hass:cloud-upload",
   vacuum: "hass:robot-vacuum",
   water_heater: "hass:thermometer",
@@ -103,7 +103,7 @@ export const domainIcon = (domain: string, state?: string): string => {
         case "sleeping":
           return "hass:sleep";
         case "initializing":
-          return "hass:timer-sand";
+          return "hass:timer-outline-sand";
         default:
           return "hass:z-wave";
       }
