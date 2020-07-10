@@ -134,39 +134,44 @@ export class DialogEntityEditor extends LitElement {
           </paper-tabs>
         </div>
         <div class="wrapper">
-          ${cache(
-            this._curTab === "tab-settings"
-              ? entry
-                ? this._settingsElementTag
-                  ? html`
-                      ${dynamicElement(this._settingsElementTag, {
-                        hass: this.hass,
-                        entry,
-                        entityId,
-                      })}
-                    `
-                  : ""
-                : html`
-                    <div class="content">
-                      ${this.hass.localize(
-                        "ui.dialogs.entity_registry.no_unique_id"
-                      )}
-                    </div>
-                  `
-              : this._curTab === "tab-related"
-              ? html`
-                  <ha-related-items
-                    class="content"
-                    .hass=${this.hass}
-                    .itemId=${entityId}
-                    itemType="entity"
-                  ></ha-related-items>
-                `
-              : html``
-          )}
+          ${cache(this._renderTab())}
         </div>
       </ha-dialog>
     `;
+  }
+
+  private _renderTab() {
+    switch (this._curTab) {
+      case "tab-settings":
+        if (this._entry) {
+          if (this._settingsElementTag) {
+            return html`
+              ${dynamicElement(this._settingsElementTag, {
+                hass: this.hass,
+                entry: this._entry,
+                entityId: this._params!.entity_id,
+              })}
+            `;
+          }
+          return html``;
+        }
+        return html`
+          <div class="content">
+            ${this.hass.localize("ui.dialogs.entity_registry.no_unique_id")}
+          </div>
+        `;
+      case "tab-related":
+        return html`
+          <ha-related-items
+            class="content"
+            .hass=${this.hass}
+            .itemId=${this._params!.entity_id}
+            itemType="entity"
+          ></ha-related-items>
+        `;
+      default:
+        return html``;
+    }
   }
 
   private async _getEntityReg() {

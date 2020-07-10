@@ -128,13 +128,13 @@ export class EntityRegistrySettingsHelper extends LitElement {
           : this._item === null
           ? this.hass.localize("ui.dialogs.helper_settings.yaml_not_editable")
           : html`
-              <div @value-changed=${this._valueChanged}>
+              <span @value-changed=${this._valueChanged}>
                 ${dynamicElement(`ha-${this.entry.platform}-form`, {
                   hass: this.hass,
                   item: this._item,
                   entry: this.entry,
                 })}
-              </div>
+              </span>
             `}
         <ha-registry-basic-editor
           .hass=${this.hass}
