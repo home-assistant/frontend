@@ -23,7 +23,11 @@ const _load = (
         if (type) {
           (element as HTMLScriptElement).type = type;
           // https://github.com/home-assistant/frontend/pull/6328
-          (element as HTMLScriptElement).crossOrigin = "use-credentials";
+          if (isUrlAbsolute(url)) {
+            (element as HTMLScriptElement).crossOrigin = "anonymous";
+          } else {
+            (element as HTMLScriptElement).crossOrigin = "use-credentials";
+          }
         }
         break;
       case "link":
@@ -38,6 +42,10 @@ const _load = (
     document[parent].appendChild(element);
   });
 };
+
+// From: https://stackoverflow.com/a/38979205
+const isUrlAbsolute = (url) =>
+  url.indexOf("://") > 0 || url.indexOf("//") === 0;
 
 export const loadCSS = (url: string) => _load("link", url);
 export const loadJS = (url: string) => _load("script", url);
