@@ -1941,9 +1941,14 @@
                     },
                     "node_management": {
                         "add_to_group": "Toevoegen aan groep",
+                        "entities": "Entiteiten van dit knooppunt",
                         "entity_info": "Entiteitsinformatie",
                         "exclude_entity": "Sluit deze entiteit uit van Home Assistant",
                         "group": "Groep",
+                        "header": "Z-Wave Knooppunt-beheer",
+                        "introduction": "Voer Z-Wave commando's uit die een enkel knooppunt beïnvloeden. Kies een knooppunt om een lijst met beschikbare commando's te zien.",
+                        "nodes": "Knooppunten",
+                        "nodes_hint": "Selecteer knooppunt om de opties per knooppunt te bekijken",
                         "protection": "Bescherming",
                         "remove_from_group": "Verwijderen uit groep",
                         "set_protection": "Bescherming instellen"
