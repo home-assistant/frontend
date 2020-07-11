@@ -263,6 +263,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                     no-label-float
                     no-underline
                     @value-changed=${this._handleSearchChange}
+                    .label=${this.hass.localize(
+                      "ui.panel.config.integrations.search"
+                    )}
                   ></search-input>
                 </slot>
               </div>
@@ -293,6 +296,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                   no-underline
                   .filter=${this._filter}
                   @value-changed=${this._handleSearchChange}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.integrations.search"
+                  )}
                 ></search-input>
               </div>
             `

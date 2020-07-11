@@ -97,6 +97,9 @@ export class HuiCardPicker extends LitElement {
         .filter=${this._filter}
         no-label-float
         @value-changed=${this._handleSearchChange}
+        .label=${this.hass.localize(
+          "ui.panel.lovelace.editor.card.generic.search"
+        )}
       ></search-input>
       <div
         id="content"
