@@ -116,14 +116,14 @@ export class HuiCardPicker extends LitElement {
             @click=${this._cardPicked}
             .config=${{ type: "" }}
           >
-            <div class="preview description">
-              ${this.hass!.localize(
-                `ui.panel.lovelace.editor.card.generic.manual_description`
-              )}
-            </div>
             <div class="card-header">
               ${this.hass!.localize(
                 `ui.panel.lovelace.editor.card.generic.manual`
+              )}
+            </div>
+            <div class="preview description">
+              ${this.hass!.localize(
+                `ui.panel.lovelace.editor.card.generic.manual_description`
               )}
             </div>
           </div>
