@@ -127,7 +127,7 @@ export class HaTabsSubpageDataTable extends LitElement {
                       no-label-float
                       no-underline
                       @value-changed=${this._handleSearchChange}
-                      searchText=${this.hass.localize(
+                      .label=${this.hass.localize(
                         "ui.components.data-table.search"
                       )}
                     ></search-input>
@@ -175,7 +175,7 @@ export class HaTabsSubpageDataTable extends LitElement {
                           no-label-float
                           no-underline
                           @value-changed=${this._handleSearchChange}
-                          searchText=${this.hass.localize(
+                          .label=${this.hass.localize(
                             "ui.components.data-table.search"
                           )}
                         >

@@ -81,7 +81,7 @@ class StepFlowPickHandler extends LitElement {
         autofocus
         .filter=${this.filter}
         @value-changed=${this._filterChanged}
-        searchText=${this.hass.localize("ui.panel.config.integrations.search")}
+        .label=${this.hass.localize("ui.panel.config.integrations.search")}
       ></search-input>
       <div
         style=${styleMap({
