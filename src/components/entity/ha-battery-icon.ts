@@ -16,3 +16,5 @@ class HaBatteryIcon extends LitElement {
     `;
   }
 }
+
+customElements.define("ha-battery-icon", HaBatteryIcon);

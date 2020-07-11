@@ -208,12 +208,14 @@ export class HaConfigDeviceDashboard extends LitElement {
               template: (
                 batteryEntityPair: DeviceRowData["battery_entity"]
               ) => {
-                const battery = batteryEntityPair[0]
-                  ? this.hass.states[batteryEntityPair[0]]
-                  : undefined;
-                const batteryCharging = batteryEntityPair[1]
-                  ? this.hass.states[batteryEntityPair[1]]
-                  : undefined;
+                const battery =
+                  batteryEntityPair && batteryEntityPair[0]
+                    ? this.hass.states[batteryEntityPair[0]]
+                    : undefined;
+                const batteryCharging =
+                  batteryEntityPair && batteryEntityPair[1]
+                    ? this.hass.states[batteryEntityPair[1]]
+                    : undefined;
                 return battery
                   ? html`
                       ${isNaN(battery.state as any) ? "-" : battery.state}%
@@ -280,12 +282,14 @@ export class HaConfigDeviceDashboard extends LitElement {
               template: (
                 batteryEntityPair: DeviceRowData["battery_entity"]
               ) => {
-                const battery = batteryEntityPair[0]
-                  ? this.hass.states[batteryEntityPair[0]]
-                  : undefined;
-                const batteryCharging = batteryEntityPair[1]
-                  ? this.hass.states[batteryEntityPair[1]]
-                  : undefined;
+                const battery =
+                  batteryEntityPair && batteryEntityPair[0]
+                    ? this.hass.states[batteryEntityPair[0]]
+                    : undefined;
+                const batteryCharging =
+                  batteryEntityPair && batteryEntityPair[1]
+                    ? this.hass.states[batteryEntityPair[1]]
+                    : undefined;
                 return battery && !isNaN(battery.state as any)
                   ? html`
                       ${battery.state}%
