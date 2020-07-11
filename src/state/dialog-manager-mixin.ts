@@ -2,6 +2,7 @@ import { HASSDomEvent } from "../common/dom/fire_event";
 import { makeDialogManager, showDialog } from "../dialogs/make-dialog-manager";
 import { Constructor } from "../types";
 import { HassBaseEl } from "./hass-base-mixin";
+import { PropertyValues } from "lit-element";
 
 interface RegisterDialogParams {
   dialogShowEvent: keyof HASSDomEvents;
@@ -24,7 +25,7 @@ export const dialogManagerMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
 ) =>
   class extends superClass {
-    protected firstUpdated(changedProps) {
+    protected firstUpdated(changedProps: PropertyValues) {
       super.firstUpdated(changedProps);
       // deprecated
       this.addEventListener("register-dialog", (e) =>

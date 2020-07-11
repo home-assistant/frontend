@@ -1,6 +1,5 @@
 import { HASSDomEvent, ValidHassDomEvent } from "../common/dom/fire_event";
 import { ProvideHassElement } from "../mixins/provide-hass-lit-mixin";
-import { MoreInfoDialogParams } from "./more-info/ha-more-info-dialog";
 
 declare global {
   // for fire event
@@ -8,7 +7,6 @@ declare global {
     "show-dialog": ShowDialogParams<unknown>;
     "close-dialog": undefined;
     "dialog-closed": undefined;
-    "hass-more-info": MoreInfoDialogParams;
   }
   // for add event listener
   interface HTMLElementEventMap {
@@ -34,11 +32,6 @@ export interface DialogState {
   oldState: null | DialogState;
   dialogParams?: unknown;
 }
-
-const importMoreInfo = () =>
-  import(
-    /* webpackChunkName: "more-info-dialog" */ "./more-info/ha-more-info-dialog"
-  );
 
 const LOADED = {};
 
@@ -104,20 +97,6 @@ export const makeDialogManager = (
   element: HTMLElement & ProvideHassElement,
   root: ShadowRoot | HTMLElement
 ) => {
-  importMoreInfo();
-
-  element.addEventListener("hass-more-info", (e) =>
-    showDialog(
-      element,
-      root,
-      "ha-more-info-dialog",
-      {
-        entityId: e.detail.entityId,
-      },
-      importMoreInfo
-    )
-  );
-
   element.addEventListener(
     "show-dialog",
     (e: HASSDomEvent<ShowDialogParams<unknown>>) => {
