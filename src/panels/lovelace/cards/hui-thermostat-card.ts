@@ -34,7 +34,7 @@ import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { ThermostatCardConfig } from "./types";
 
 const modeIcons: { [mode in HvacMode]: string } = {
-  auto: "hass:calendar-repeat",
+  auto: "hass:calendar-sync",
   heat_cool: "hass:autorenew",
   heat: "hass:fire",
   cool: "hass:snowflake",

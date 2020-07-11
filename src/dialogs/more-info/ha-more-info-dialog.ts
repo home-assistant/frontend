@@ -27,7 +27,7 @@ import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 import { getRecentWithCache } from "../../data/cached-history";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { mdiClose, mdiSettings, mdiPencil } from "@mdi/js";
+import { mdiClose, mdiCog, mdiPencil } from "@mdi/js";
 import { HistoryResult } from "../../data/history";
 
 const DOMAINS_NO_INFO = ["camera", "configurator", "history_graph"];
@@ -107,7 +107,7 @@ export class MoreInfoDialog extends LitElement {
                 )}
                 @click=${this._gotoSettings}
               >
-                <ha-svg-icon .path=${mdiSettings}></ha-svg-icon>
+                <ha-svg-icon .path=${mdiCog}></ha-svg-icon>
               </mwc-icon-button>`
             : ""}
           ${this.hass.user!.is_admin &&
