@@ -240,7 +240,7 @@ class HassTabsSubpage extends LitElement {
         flex: 1;
         overflow: hidden;
         text-overflow: ellipsis;
-        max-height: 40px;
+        max-height: 58px;
         line-height: 20px;
       }
 
