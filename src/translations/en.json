@@ -331,6 +331,9 @@
         "scene": "Part of the following scenes",
         "script": "Part of the following scripts",
         "automation": "Part of the following automations"
+      },
+      "data-table": {
+        "search": "Search"
       }
     },
     "dialogs": {
@@ -602,7 +605,8 @@
               "type": "Type",
               "editable": "Editable"
             },
-            "add_helper": "Add helper"
+            "add_helper": "Add helper",
+            "no_helpers": "Looks like you don't have any helpers yet!"
           },
           "dialog": {
             "create": "Create",
@@ -1338,6 +1342,7 @@
             "header": "Entities",
             "introduction": "Home Assistant keeps a registry of every entity it has ever seen that can be uniquely identified. Each of these entities will have an entity ID assigned which will be reserved for just this entity.",
             "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant.",
+            "search": "Search entities",
             "filter": {
               "filter": "Filter",
               "show_disabled": "Show disabled entities",
@@ -1452,6 +1457,7 @@
           "details": "Integration details",
           "rename_dialog": "Edit the name of this config entry",
           "rename_input_label": "Entry name",
+          "search": "Search integrations",
           "ignore": {
             "ignore": "Ignore",
             "confirm_ignore_title": "Ignore discovery of {name}?",
@@ -1996,7 +2002,8 @@
               "unit": "Unit",
               "url": "Url",
               "state": "State",
-              "secondary_info_attribute": "Secondary Info Attribute"
+              "secondary_info_attribute": "Secondary Info Attribute",
+              "search": "Search"
             },
             "map": {
               "name": "Map",

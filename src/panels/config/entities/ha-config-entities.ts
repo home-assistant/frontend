@@ -422,6 +422,9 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             no-underline
             @value-changed=${this._handleSearchChange}
             .filter=${this._filter}
+            .label=${this.hass.localize(
+              "ui.panel.config.entities.picker.search"
+            )}
           ></search-input
           >${activeFilters
             ? html`<div class="active-filters">
