@@ -65,6 +65,7 @@ export class HaConfigLovelaceRescources extends LitElement {
           filterable: true,
           direction: "asc",
           grows: true,
+          forceLTR: true,
         },
         type: {
           title: this.hass.localize(

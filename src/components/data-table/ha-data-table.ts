@@ -69,6 +69,7 @@ export interface DataTableColumnData extends DataTableSortColumnData {
   width?: string;
   maxWidth?: string;
   grows?: boolean;
+  forceLTR?: boolean;
 }
 
 export interface DataTableRowData {
@@ -352,6 +353,7 @@ export class HaDataTable extends LitElement {
                                     column.type === "icon-button"
                                   ),
                                   grows: Boolean(column.grows),
+                                  forceLTR: Boolean(column.forceLTR),
                                 })}"
                                 style=${column.width
                                   ? styleMap({
@@ -854,6 +856,9 @@ export class HaDataTable extends LitElement {
       .grows {
         flex-grow: 1;
         flex-shrink: 1;
+      }
+      .forceLTR {
+        direction: ltr;
       }
     `;
   }
