@@ -147,7 +147,7 @@ const mdiRenameMapping = {
   "youtube-creator-studio": "youtube-studio",
 };
 
-const mdiRemovedIcons = [
+const mdiRemovedIcons = new Set([
   "accusoft",
   "amazon-drive",
   "android-head",
@@ -214,7 +214,7 @@ const mdiRemovedIcons = [
   "xing-box",
   "xing-circle",
   "yelp",
-];
+]);
 
 const chunks: Chunks = {};
 
@@ -290,7 +290,7 @@ export class HaIcon extends LitElement {
         level: "warning",
         message,
       });
-    } else if (mdiRemovedIcons.includes(iconName)) {
+    } else if (mdiRemovedIcons.has(iconName)) {
       const message = `Icon ${this.icon} was removed from MDI, please replace this icon with an other icon in your config, it will be removed in version 0.115.`;
       // eslint-disable-next-line no-console
       console.warn(message);

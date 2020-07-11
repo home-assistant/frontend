@@ -23,6 +23,7 @@ import { subscribePanels } from "../data/ws-panels";
 import { subscribeThemes } from "../data/ws-themes";
 import { subscribeUser } from "../data/ws-user";
 import type { ExternalAuth } from "../external_app/external_auth";
+import { HomeAssistant } from "../types";
 
 declare global {
   interface Window {
@@ -107,5 +108,26 @@ window.hassConnection.then(({ conn }) => {
       // Ignore it, it is handled by Lovelace panel.
     });
     llWindow.llResProm = fetchResources(conn);
+  }
+});
+
+window.addEventListener("error", (e) => {
+  if (!__DEV__ && e.message === "ResizeObserver loop limit exceeded") {
+    e.stopImmediatePropagation();
+    e.stopPropagation();
+    return;
+  }
+  const homeAssistant = document.querySelector("home-assistant") as any;
+  if (
+    homeAssistant &&
+    homeAssistant.hass &&
+    (homeAssistant.hass as HomeAssistant).callService
+  ) {
+    homeAssistant.hass.callService("system_log", "write", {
+      logger: `frontend.${
+        __DEV__ ? "js_dev" : "js"
+      }.${__BUILD__}.${__VERSION__.replace(".", "")}`,
+      message: `${e.filename}:${e.lineno}:${e.colno} ${e.message}`,
+    });
   }
 });

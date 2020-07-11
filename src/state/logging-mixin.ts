@@ -21,20 +21,6 @@ export const loggingMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
 ) =>
   class extends superClass {
-    constructor(...args: any[]) {
-      super(...args);
-      window.addEventListener("error", (e) => {
-        if (!__DEV__ && e.message === "ResizeObserver loop limit exceeded") {
-          e.stopImmediatePropagation();
-          e.stopPropagation();
-          return;
-        }
-        this._writeLog({
-          message: `${e.filename}:${e.lineno}:${e.colno} ${e.message}`,
-        });
-      });
-    }
-
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
       this.addEventListener("write_log", (ev) => {
