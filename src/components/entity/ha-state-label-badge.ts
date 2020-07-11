@@ -155,7 +155,9 @@ export class HaStateLabelBadge extends LitElement {
           ? domainIcon(domain)
           : "hass:brightness-3";
       case "timer":
-        return state.state === "active" ? "hass:timer" : "hass:timer-off";
+        return state.state === "active"
+          ? "hass:timer-outline"
+          : "hass:timer-off-outline";
       default:
         return null;
     }

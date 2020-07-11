@@ -1,7 +1,7 @@
 import "@material/mwc-icon-button";
 import {
   mdiBell,
-  mdiCellphoneSettingsVariant,
+  mdiCellphoneCog,
   mdiMenuOpen,
   mdiMenu,
   mdiViewDashboard,
@@ -219,7 +219,7 @@ class HaSidebar extends LitElement {
                 <paper-icon-item>
                   <ha-svg-icon
                     slot="item-icon"
-                    .path=${mdiCellphoneSettingsVariant}
+                    .path=${mdiCellphoneCog}
                   ></ha-svg-icon>
                   <span class="item-text">
                     ${hass.localize("ui.sidebar.external_app_configuration")}
