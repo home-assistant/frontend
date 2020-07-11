@@ -23,7 +23,7 @@ const _load = (
         if (type) {
           (element as HTMLScriptElement).type = type;
           // https://github.com/home-assistant/frontend/pull/6328
-          (element as HTMLScriptElement).crossOrigin = "use-credentials";
+          (element as HTMLScriptElement).crossOrigin = url.substr(0, 1) === "/" ? "use-credentials" : "anonymous";
         }
         break;
       case "link":
