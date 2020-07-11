@@ -118,7 +118,6 @@ const mdiRenameMapping = {
   "sort-numeric": "sort-numeric-variant",
   "star-half": "star-half-full",
   storefront: "storefront-outline",
-  textbox: "form-textbox",
   timer: "timer-outline",
   "timer-off": "timer-off-outline",
   towing: "tow-truck",
@@ -145,6 +144,12 @@ const mdiRenameMapping = {
   "xbox-controller-view": "microsoft-xbox-controller-view",
   yammer: "microsoft-yammer",
   "youtube-creator-studio": "youtube-studio",
+  "selection-mutliple": "selection-multiple",
+  textarea: "form-textarea",
+  textbox: "form-textbox",
+  "textbox-lock": "form-textbox-lock",
+  "textbox-password": "form-textbox-password",
+  "syllabary-katakana-half-width": "syllabary-katakana-halfwidth",
 };
 
 const mdiRemovedIcons = new Set([

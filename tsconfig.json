@@ -13,19 +13,6 @@
     "noImplicitAny": false,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "experimentalDecorators": true,
-    "plugins": [
-      {
-        "name": "ts-lit-plugin",
-        "strict": false,
-        "rules": {
-          "no-unknown-tag-name": "error",
-          "no-missing-import": "error",
-          "no-unclosed-tag": "error",
-          "no-incompatible-type-binding": "warning",
-          "no-invalid-css": "warning"
-        }
-      }
-    ]
+    "experimentalDecorators": true
   }
 }
