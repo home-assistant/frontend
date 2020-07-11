@@ -1845,7 +1845,8 @@
           "edit_lovelace": {
             "header": "Title of your Lovelace UI",
             "explanation": "This title is shown above all your views in the Lovelace UI.",
-            "edit_title": "Edit title"
+            "edit_title": "Edit title",
+            "title": "Title"
           },
           "edit_view": {
             "header": "View Configuration",
