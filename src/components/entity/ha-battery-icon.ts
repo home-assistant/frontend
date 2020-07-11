@@ -5,6 +5,7 @@ import { customElement, html, property, LitElement } from "lit-element";
 @customElement("ha-battery-icon")
 class HaBatteryIcon extends LitElement {
   @property() public batteryStateObj;
+
   @property() public batteryChargingStateObj;
 
   protected render() {
