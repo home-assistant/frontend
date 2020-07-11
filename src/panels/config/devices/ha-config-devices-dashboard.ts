@@ -36,7 +36,7 @@ interface DeviceRowData extends DeviceRegistryEntry {
   device?: DeviceRowData;
   area?: string;
   integration?: string;
-  battery_entity?: string;
+  battery_entity: [string | undefined, string | undefined];
 }
 
 @customElement("ha-config-devices-dashboard")
@@ -205,7 +205,9 @@ export class HaConfigDeviceDashboard extends LitElement {
               sortable: true,
               type: "numeric",
               width: "90px",
-              template: (batteryEntityPair: Array<string>) => {
+              template: (
+                batteryEntityPair: DeviceRowData["battery_entity"]
+              ) => {
                 const battery = batteryEntityPair[0]
                   ? this.hass.states[batteryEntityPair[0]]
                   : undefined;
@@ -275,7 +277,9 @@ export class HaConfigDeviceDashboard extends LitElement {
               type: "numeric",
               width: "15%",
               maxWidth: "90px",
-              template: (batteryEntityPair: Array<string>) => {
+              template: (
+                batteryEntityPair: DeviceRowData["battery_entity"]
+              ) => {
                 const battery = batteryEntityPair[0]
                   ? this.hass.states[batteryEntityPair[0]]
                   : undefined;

@@ -13,8 +13,7 @@ export const batteryIcon = (
     return "hass:battery-unknown";
   }
 
-  // We obscure 'hass' in iconname so this name does not get picked up
-  var icon = `${"hass"}:battery`;
+  var icon = "hass:battery";
   const batteryRound = Math.round(battery / 10) * 10;
   if (battery_charging && battery > 10) {
     icon += `-charging-${batteryRound}`;
@@ -26,25 +25,4 @@ export const batteryIcon = (
     icon += `-${batteryRound}`;
   }
   return icon;
-  // Will return one of the following icons: (listed so extractor picks up)
-  // hass:battery-10
-  // hass:battery-20
-  // hass:battery-30
-  // hass:battery-40
-  // hass:battery-50
-  // hass:battery-60
-  // hass:battery-70
-  // hass:battery-80
-  // hass:battery-90
-  // hass:battery-charging-10
-  // hass:battery-charging-20
-  // hass:battery-charging-30
-  // hass:battery-charging-40
-  // hass:battery-charging-50
-  // hass:battery-charging-60
-  // hass:battery-charging-70
-  // hass:battery-charging-80
-  // hass:battery-charging-90
-  // hass:battery-outline
-  // hass:battery-alert
 };
