@@ -243,6 +243,10 @@ export class MoreInfoDialog extends LitElement {
     return [
       haStyleDialog,
       css`
+        ha-dialog {
+          --dialog-content-position: static;
+        }
+
         app-toolbar {
           flex-shrink: 0;
           color: var(--primary-text-color);
