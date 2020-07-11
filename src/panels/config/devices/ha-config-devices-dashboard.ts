@@ -36,7 +36,7 @@ interface DeviceRowData extends DeviceRegistryEntry {
   device?: DeviceRowData;
   area?: string;
   integration?: string;
-  battery_entity: [string | undefined, string | undefined];
+  battery_entity?: [string | undefined, string | undefined];
 }
 
 @customElement("ha-config-devices-dashboard")
