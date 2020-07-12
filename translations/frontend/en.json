@@ -525,6 +525,9 @@
                 "clear": "Clear",
                 "show_areas": "Show areas"
             },
+            "data-table": {
+                "search": "Search"
+            },
             "date-range-picker": {
                 "end_date": "End date",
                 "select": "Select",
@@ -1356,6 +1359,7 @@
                             "confirm_text": "You should remove them from your Lovelace config and automations if they contain these entities.",
                             "confirm_title": "Do you want to remove {number} entities?"
                         },
+                        "search": "Search entities",
                         "selected": "{number} selected",
                         "status": {
                             "disabled": "Disabled",
@@ -1386,7 +1390,8 @@
                             "entity_id": "Entity ID",
                             "name": "Name",
                             "type": "Type"
-                        }
+                        },
+                        "no_helpers": "Looks like you don't have any helpers yet!"
                     },
                     "types": {
                         "input_boolean": "Toggle",
@@ -1490,7 +1495,8 @@
                     "note_about_integrations": "Not all integrations can be configured via the UI yet.",
                     "note_about_website_reference": "More are available on the ",
                     "rename_dialog": "Edit the name of this config entry",
-                    "rename_input_label": "Entry name"
+                    "rename_input_label": "Entry name",
+                    "search": "Search integrations"
                 },
                 "introduction": "Here it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
                 "logs": {
@@ -2194,6 +2200,7 @@
                             "name": "Name",
                             "no_theme": "No theme",
                             "refresh_interval": "Refresh Interval",
+                            "search": "Search",
                             "secondary_info_attribute": "Secondary Info Attribute",
                             "show_icon": "Show Icon?",
                             "show_name": "Show Name?",
@@ -2314,7 +2321,8 @@
                     "edit_lovelace": {
                         "edit_title": "Edit title",
                         "explanation": "This title is shown above all your views in the Lovelace UI.",
-                        "header": "Title of your Lovelace UI"
+                        "header": "Title of your Lovelace UI",
+                        "title": "Title"
                     },
                     "edit_view": {
                         "add": "Add view",
