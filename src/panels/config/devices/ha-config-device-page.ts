@@ -14,7 +14,7 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { createValidEntityId } from "../../../common/entity/valid_entity_id";
 import { compare } from "../../../common/string/compare";
-import "../../../components/entity/ha-state-icon";
+import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-icon-next";
 import { AreaRegistryEntry } from "../../../data/area_registry";
 import { ConfigEntry } from "../../../data/config_entries";
@@ -26,6 +26,7 @@ import {
 import {
   EntityRegistryEntry,
   findBatteryEntity,
+  findBatteryChargingEntity,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import { SceneEntities, showSceneEditor } from "../../../data/scene";
@@ -117,6 +118,11 @@ export class HaConfigDevicePage extends LitElement {
     | EntityRegistryEntry
     | undefined => findBatteryEntity(this.hass, entities));
 
+  private _batteryChargingEntity = memoizeOne(
+    (entities: EntityRegistryEntry[]): EntityRegistryEntry | undefined =>
+      findBatteryChargingEntity(this.hass, entities)
+  );
+
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     loadDeviceRegistryDetailDialog();
@@ -145,8 +151,12 @@ export class HaConfigDevicePage extends LitElement {
     const integrations = this._integrations(device, this.entries);
     const entities = this._entities(this.deviceId, this.entities);
     const batteryEntity = this._batteryEntity(entities);
+    const batteryChargingEntity = this._batteryChargingEntity(entities);
     const batteryState = batteryEntity
       ? this.hass.states[batteryEntity.entity_id]
+      : undefined;
+    const batteryChargingState = batteryChargingEntity
+      ? this.hass.states[batteryChargingEntity.entity_id]
       : undefined;
     const area = this._computeArea(this.areas, device);
 
@@ -201,10 +211,11 @@ export class HaConfigDevicePage extends LitElement {
                       ? html`
                           <div class="battery">
                             ${batteryState.state}%
-                            <ha-state-icon
+                            <ha-battery-icon
                               .hass=${this.hass!}
-                              .stateObj=${batteryState}
-                            ></ha-state-icon>
+                              .batteryStateObj=${batteryState}
+                              .batteryChargingStateObj=${batteryChargingState}
+                            ></ha-battery-icon>
                           </div>
                         `
                       : ""
