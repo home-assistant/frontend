@@ -1440,7 +1440,7 @@
                         "no_area": "Не указано",
                         "no_device": "Объекты без устройств",
                         "no_devices": "Эта интеграция не имеет устройств",
-                        "options": "Параметры",
+                        "options": "Настройки",
                         "rename": "Переименовать",
                         "restart_confirm": "Перезапустите Home Assistant, чтобы завершить удаление этой интеграции",
                         "settings_button": "Настройки интеграции {integration}",
@@ -1584,7 +1584,7 @@
                     }
                 },
                 "mqtt": {
-                    "button": "Настройка",
+                    "button": "Настройки",
                     "description_listen": "Подписаться на топик",
                     "description_publish": "Опубликовать данные",
                     "listening_to": "Подписано на",
@@ -1785,7 +1785,7 @@
                         "caption": "Добавить устройства",
                         "description": "Добавить устройства в сеть Zigbee"
                     },
-                    "button": "Настройка",
+                    "button": "Настройки",
                     "caption": "Zigbee Home Automation",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Атрибуты выбранного кластера",
@@ -1906,7 +1906,7 @@
                     "no_zones_created_yet": "У Вас еще нет добавленных зон."
                 },
                 "zwave": {
-                    "button": "Настройка",
+                    "button": "Настройки",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "Индекс",
