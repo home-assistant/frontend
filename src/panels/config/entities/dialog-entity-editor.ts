@@ -13,8 +13,8 @@ import {
   TemplateResult,
 } from "lit-element";
 import { cache } from "lit-html/directives/cache";
-import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-dialog";
 import "../../../components/ha-svg-icon";
@@ -72,6 +72,7 @@ export class DialogEntityEditor extends LitElement {
 
   public closeDialog(): void {
     this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render(): TemplateResult {

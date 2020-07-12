@@ -20,6 +20,7 @@ import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
 import { formatSystemLogTime } from "./util";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 class DialogSystemLogDetail extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -32,6 +33,11 @@ class DialogSystemLogDetail extends LitElement {
     this._params = params;
     this._manifest = undefined;
     await this.updateComplete;
+  }
+
+  public closeDialog() {
+    this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected updated(changedProps) {
@@ -137,7 +143,7 @@ class DialogSystemLogDetail extends LitElement {
 
   private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
     if (!(ev.detail as any).value) {
-      this._params = undefined;
+      this.closeDialog();
     }
   }
 

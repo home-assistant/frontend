@@ -35,6 +35,7 @@ import "./step-flow-external";
 import "./step-flow-form";
 import "./step-flow-loading";
 import "./step-flow-pick-handler";
+import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTL } from "../../common/util/compute_rtl";
 
 let instance = 0;
@@ -114,6 +115,17 @@ class DataEntryFlowDialog extends LitElement {
     this._loading = false;
   }
 
+  public closeDialog() {
+    if (this._step) {
+      this._flowDone();
+    } else if (this._step === null) {
+      // Flow aborted during picking flow
+      this._step = undefined;
+      this._params = undefined;
+    }
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
   protected render(): TemplateResult {
     if (!this._params) {
       return html``;
@@ -122,7 +134,7 @@ class DataEntryFlowDialog extends LitElement {
     return html`
       <ha-dialog
         open
-        @closing=${this._close}
+        @closed=${this.closeDialog}
         scrimClickAction
         escapeKeyAction
         hideActions
@@ -294,16 +306,6 @@ class DataEntryFlowDialog extends LitElement {
     if (this._unsubDevices) {
       this._unsubDevices();
       this._unsubDevices = undefined;
-    }
-  }
-
-  private _close(): void {
-    if (this._step) {
-      this._flowDone();
-    } else if (this._step === null) {
-      // Flow aborted during picking flow
-      this._step = undefined;
-      this._params = undefined;
     }
   }
 
