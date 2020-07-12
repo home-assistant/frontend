@@ -71,7 +71,7 @@ export class MoreInfoDialog extends LitElement {
     this._stateHistory = undefined;
     clearInterval(this._historyRefreshInterval);
     this._historyRefreshInterval = undefined;
-    fireEvent(this, "dialog-closed");
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render() {

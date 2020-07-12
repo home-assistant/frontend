@@ -79,7 +79,7 @@ class DialogZoneDetail extends LitElement {
 
   public closeDialog(): void {
     this._params = undefined;
-    fireEvent(this, "dialog-closed");
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render(): TemplateResult {

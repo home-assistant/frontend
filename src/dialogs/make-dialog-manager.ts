@@ -6,12 +6,12 @@ declare global {
   interface HASSDomEvents {
     "show-dialog": ShowDialogParams<unknown>;
     "close-dialog": undefined;
-    "dialog-closed": undefined;
+    "dialog-closed": DialogClosedParams;
   }
   // for add event listener
   interface HTMLElementEventMap {
     "show-dialog": HASSDomEvent<ShowDialogParams<unknown>>;
-    "dialog-closed": HASSDomEvent<undefined>;
+    "dialog-closed": HASSDomEvent<DialogClosedParams>;
   }
 }
 
@@ -24,6 +24,10 @@ interface ShowDialogParams<T> {
   dialogTag: keyof HTMLElementTagNameMap;
   dialogImport: () => Promise<unknown>;
   dialogParams: T;
+}
+
+export interface DialogClosedParams {
+  dialog: string;
 }
 
 export interface DialogState {

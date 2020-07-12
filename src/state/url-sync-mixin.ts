@@ -3,6 +3,7 @@ import {
   closeDialog,
   showDialog,
   DialogState,
+  DialogClosedParams,
 } from "../dialogs/make-dialog-manager";
 import { Constructor } from "../types";
 import { HassBaseEl } from "./hass-base-mixin";
@@ -31,12 +32,13 @@ export const urlSyncMixin = <T extends Constructor<HassBaseEl>>(
           this.removeEventListener("dialog-closed", this._dialogClosedListener);
         }
 
-        private _dialogClosedListener = (ev: HASSDomEvent<undefined>) => {
-          const dialogElement = ev.composedPath()[0] as Element;
+        private _dialogClosedListener = (
+          ev: HASSDomEvent<DialogClosedParams>
+        ) => {
           // If not closed by navigating back, and not a new dialog is open, remove the open state from history
           if (
             history.state?.open &&
-            history.state?.dialog === dialogElement.localName
+            history.state?.dialog === ev.detail.dialog
           ) {
             this._ignoreNextPopState = true;
             history.back();

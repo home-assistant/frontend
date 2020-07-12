@@ -134,7 +134,7 @@ class DialogBox extends LitElement {
 
   private _close(): void {
     this._params = undefined;
-    fireEvent(this, "dialog-closed");
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   static get styles(): CSSResult[] {

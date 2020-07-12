@@ -37,7 +37,7 @@ class DialogSystemLogDetail extends LitElement {
 
   public closeDialog() {
     this._params = undefined;
-    fireEvent(this, "dialog-closed");
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected updated(changedProps) {
