@@ -8,6 +8,7 @@ import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { DOMAINS_MORE_INFO_NO_HISTORY } from "../../common/const";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { navigate } from "../../common/navigate";
+import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/state-history-charts";
 import { removeEntityRegistryEntry } from "../../data/entity_registry";
 import { showEntityEditorDialog } from "../../panels/config/entities/show-dialog-entity-editor";
@@ -24,7 +25,6 @@ import {
 } from "lit-element";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
-import { fireEvent } from "../../common/dom/fire_event";
 import { getRecentWithCache } from "../../data/cached-history";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { mdiClose, mdiCog, mdiPencil } from "@mdi/js";
@@ -34,6 +34,10 @@ const DOMAINS_NO_INFO = ["camera", "configurator", "history_graph"];
 const EDITABLE_DOMAINS_WITH_ID = ["scene", "automation"];
 const EDITABLE_DOMAINS = ["script"];
 
+export interface MoreInfoDialogParams {
+  entityId: string | null;
+}
+
 @customElement("ha-more-info-dialog")
 export class MoreInfoDialog extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -42,39 +46,39 @@ export class MoreInfoDialog extends LitElement {
 
   @internalProperty() private _stateHistory?: HistoryResult;
 
+  @internalProperty() private _entityId?: string | null;
+
   private _historyRefreshInterval?: number;
 
-  protected updated(changedProperties) {
-    super.updated(changedProperties);
-    if (!changedProperties.has("hass")) {
-      return;
+  public showDialog(params: MoreInfoDialogParams) {
+    this._entityId = params.entityId;
+    if (!this._entityId) {
+      this.closeDialog();
     }
-    const oldHass = changedProperties.get("hass");
-    if (oldHass && oldHass.moreInfoEntityId === this.hass.moreInfoEntityId) {
-      return;
-    }
-    if (this.hass.moreInfoEntityId) {
-      this.large = false;
-      this._stateHistory = undefined;
-      if (this._computeShowHistoryComponent(this.hass.moreInfoEntityId)) {
-        this._getStateHistory();
-        clearInterval(this._historyRefreshInterval);
-        this._historyRefreshInterval = window.setInterval(() => {
-          this._getStateHistory();
-        }, 60 * 1000);
-      }
-    } else {
-      this._stateHistory = undefined;
+    this.large = false;
+    this._stateHistory = undefined;
+    if (this._computeShowHistoryComponent(this._entityId)) {
+      this._getStateHistory();
       clearInterval(this._historyRefreshInterval);
-      this._historyRefreshInterval = undefined;
+      this._historyRefreshInterval = window.setInterval(() => {
+        this._getStateHistory();
+      }, 60 * 1000);
     }
   }
 
+  public closeDialog() {
+    this._entityId = undefined;
+    this._stateHistory = undefined;
+    clearInterval(this._historyRefreshInterval);
+    this._historyRefreshInterval = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
   protected render() {
-    if (!this.hass.moreInfoEntityId) {
+    if (!this._entityId) {
       return html``;
     }
-    const entityId = this.hass.moreInfoEntityId;
+    const entityId = this._entityId;
     const stateObj = this.hass.states[entityId];
     const domain = computeDomain(entityId);
 
@@ -85,7 +89,7 @@ export class MoreInfoDialog extends LitElement {
     return html`
       <ha-dialog
         open
-        @closed=${this._close}
+        @closed=${this.closeDialog}
         .heading=${true}
         hideActions
         data-domain=${domain}
@@ -174,15 +178,15 @@ export class MoreInfoDialog extends LitElement {
   }
 
   private async _getStateHistory(): Promise<void> {
-    if (!this.hass.moreInfoEntityId) {
+    if (!this._entityId) {
       return;
     }
     this._stateHistory = await getRecentWithCache(
       this.hass!,
-      this.hass.moreInfoEntityId,
+      this._entityId,
       {
         refresh: 60,
-        cacheKey: `more_info.${this.hass.moreInfoEntityId}`,
+        cacheKey: `more_info.${this._entityId}`,
         hoursToShow: 24,
       },
       this.hass!.localize,
@@ -198,7 +202,7 @@ export class MoreInfoDialog extends LitElement {
   }
 
   private _removeEntity() {
-    const entityId = this.hass.moreInfoEntityId!;
+    const entityId = this._entityId!;
     showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.dialogs.more_info_control.restored.confirm_remove_title"
@@ -216,14 +220,14 @@ export class MoreInfoDialog extends LitElement {
 
   private _gotoSettings() {
     showEntityEditorDialog(this, {
-      entity_id: this.hass.moreInfoEntityId!,
+      entity_id: this._entityId!,
     });
-    fireEvent(this, "hass-more-info", { entityId: null });
+    this.closeDialog();
   }
 
   private _gotoEdit() {
-    const stateObj = this.hass.states[this.hass.moreInfoEntityId!];
-    const domain = computeDomain(this.hass.moreInfoEntityId!);
+    const stateObj = this.hass.states[this._entityId!];
+    const domain = computeDomain(this._entityId!);
     navigate(
       this,
       `/config/${domain}/edit/${
@@ -232,11 +236,7 @@ export class MoreInfoDialog extends LitElement {
           : stateObj.entity_id
       }`
     );
-    this._close();
-  }
-
-  private _close() {
-    fireEvent(this, "hass-more-info", { entityId: null });
+    this.closeDialog();
   }
 
   static get styles() {
@@ -274,7 +274,7 @@ export class MoreInfoDialog extends LitElement {
             --mdc-dialog-max-width: 90vw;
           }
 
-          app-toolbar {
+          ha-dialog:not([data-domain="camera"]) app-toolbar {
             max-width: 368px;
           }
 
