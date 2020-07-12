@@ -100,6 +100,10 @@ export const haStyle = css`
     line-height: var(--paper-font-subhead_-_line-height);
   }
 
+  a {
+    color: var(--primary-color);
+  }
+
   .secondary {
     color: var(--secondary-text-color);
   }
