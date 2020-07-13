@@ -7,7 +7,6 @@ import {
   customElement,
   LitElement,
   property,
-  css,
   CSSResult,
 } from "lit-element";
 import { HassEntity } from "home-assistant-js-websocket";
