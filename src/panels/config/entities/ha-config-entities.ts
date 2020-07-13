@@ -768,8 +768,9 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         justify-content: space-between;
         align-items: center;
         color: var(--secondary-text-color);
-        position: relative;
-        top: -8px;
+      }
+      .search-toolbar ha-button-menu {
+        position: static;
       }
       .selected-txt {
         font-weight: bold;
