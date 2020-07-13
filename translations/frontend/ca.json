@@ -525,6 +525,9 @@
                 "clear": "Esborra",
                 "show_areas": "Mostra àrees"
             },
+            "data-table": {
+                "search": "Cerca"
+            },
             "date-range-picker": {
                 "end_date": "Data final",
                 "select": "Selecciona",
@@ -1356,6 +1359,7 @@
                             "confirm_text": "Les hauries d'eliminar de la configuració Lovelace i de les automatitzacions si contenen aquestes entitats.",
                             "confirm_title": "Vols eliminar {number} entitat/s?"
                         },
+                        "search": "Cerca entitats",
                         "selected": "{number} seleccionada/es",
                         "status": {
                             "disabled": "Desactivada/es",
@@ -1386,7 +1390,8 @@
                             "entity_id": "ID de l'entitat",
                             "name": "Nom",
                             "type": "Tipus"
-                        }
+                        },
+                        "no_helpers": "Sembla que encara no tens ajudants."
                     },
                     "types": {
                         "input_boolean": "Interruptor",
@@ -1490,7 +1495,8 @@
                     "note_about_integrations": "Encara no es poden configurar totes les integracions a través de la UI.",
                     "note_about_website_reference": "N'hi ha més disponibles al ",
                     "rename_dialog": "Edita el nom de l'entrada de configuració",
-                    "rename_input_label": "Nom de l'entrada"
+                    "rename_input_label": "Nom de l'entrada",
+                    "search": "Cerca integracions"
                 },
                 "introduction": "Aquí pots configurar Home Assistant i els seus components. Encara no és possible configurar-ho tot des de la interfície d'usuari, però hi estem treballant.",
                 "logs": {
@@ -2194,6 +2200,7 @@
                             "name": "Nom",
                             "no_theme": "Sense tema",
                             "refresh_interval": "Interval d'actualització",
+                            "search": "Cerca",
                             "secondary_info_attribute": "Atribut d’informació secundària",
                             "show_icon": "Mostra icona?",
                             "show_name": "Mostra nom?",
@@ -2314,7 +2321,8 @@
                     "edit_lovelace": {
                         "edit_title": "Edita el títol",
                         "explanation": "Aquest títol es mostra a sobre de cada panell Lovelace.",
-                        "header": "Títol de la interfície d'usuari Lovelace"
+                        "header": "Títol de la interfície d'usuari Lovelace",
+                        "title": "Títol"
                     },
                     "edit_view": {
                         "add": "Afegeix visualització",

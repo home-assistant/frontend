@@ -525,6 +525,9 @@
                 "clear": "Effacer",
                 "show_areas": "Afficher les pièces"
             },
+            "data-table": {
+                "search": "Chercher"
+            },
             "date-range-picker": {
                 "end_date": "Date de fin",
                 "select": "Sélectionner",
@@ -1356,6 +1359,7 @@
                             "confirm_text": "Les entités ne peuvent être supprimées que lorsque l'intégration ne fournit plus les entités.",
                             "confirm_title": "Voulez-vous supprimer {number} entités ?"
                         },
+                        "search": "Chercher les entités",
                         "selected": "{number} sélectionné",
                         "status": {
                             "disabled": "Désactivé",
@@ -1386,7 +1390,8 @@
                             "entity_id": "ID de l'entité",
                             "name": "Nom",
                             "type": "Type"
-                        }
+                        },
+                        "no_helpers": "On dirait que vous n'avez pas encore d'aide!"
                     },
                     "types": {
                         "input_boolean": "Interrupteur",
@@ -1490,7 +1495,8 @@
                     "note_about_integrations": "Toutes les intégrations ne peuvent pas encore être configurées via l'interface utilisateur.",
                     "note_about_website_reference": "D'autres sont disponibles sur le ",
                     "rename_dialog": "Modifier le nom de cette entrée de configuration",
-                    "rename_input_label": "Nom de l'entrée"
+                    "rename_input_label": "Nom de l'entrée",
+                    "search": "Chercher les intégrations"
                 },
                 "introduction": "Ici, il est possible de configurer vos composants et Home Assistant. Tout n'est pas encore possible de configurer à partir de l'interface utilisateur, mais nous y travaillons.",
                 "logs": {
@@ -2194,6 +2200,7 @@
                             "name": "Nom",
                             "no_theme": "Pas de thème",
                             "refresh_interval": "Intervalle de rafraîchissement",
+                            "search": "Chercher",
                             "secondary_info_attribute": "Attribut d'informations secondaires",
                             "show_icon": "Afficher l'icône ?",
                             "show_name": "Afficher le nom ?",
@@ -2314,7 +2321,8 @@
                     "edit_lovelace": {
                         "edit_title": "Éditer le titre",
                         "explanation": "Ce titre est affiché au-dessus de toutes vos vues dans Lovelace UI.",
-                        "header": "Titre de votre UI Lovelace"
+                        "header": "Titre de votre UI Lovelace",
+                        "title": "Titre"
                     },
                     "edit_view": {
                         "add": "Ajouter la vue",
