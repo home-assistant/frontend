@@ -525,6 +525,9 @@
                 "clear": "지우기",
                 "show_areas": "영역 표시"
             },
+            "data-table": {
+                "search": "검색"
+            },
             "date-range-picker": {
                 "end_date": "종료 날짜",
                 "select": "선택",
@@ -1356,6 +1359,7 @@
                             "confirm_text": "이러한 구성요소가 포함된 경우 Lovelace 구성 및 자동화에서 제거해야 합니다.",
                             "confirm_title": "{number} 개의 구성요소를 제거하시겠습니까?"
                         },
+                        "search": "구성요소 검색",
                         "selected": "{number} 개 선택됨",
                         "status": {
                             "disabled": "비활성화",
@@ -1386,7 +1390,8 @@
                             "entity_id": "구성요소 ID",
                             "name": "이름",
                             "type": "유형"
-                        }
+                        },
+                        "no_helpers": "아직 설정한 도우미가 없는 것 같습니다."
                     },
                     "types": {
                         "input_boolean": "토글",
@@ -1490,7 +1495,8 @@
                     "note_about_integrations": "아직 UI 에서 모든 통합 구성요소를 구성할 수 있는 것은 아닙니다.",
                     "note_about_website_reference": "더 많은 구성요소는 다음에서 살펴 봐주세요. ",
                     "rename_dialog": "이 구성 항목의 이름을 편집하기",
-                    "rename_input_label": "구성 항목의 이름"
+                    "rename_input_label": "구성 항목의 이름",
+                    "search": "통합 구성요소 검색"
                 },
                 "introduction": "여기에서 구성요소와  Home Assistant 를 설정할 수 있습니다. 아직 여기서 모두 설정할 수는 없지만, 모든 내용을 설정할 수 있도록 작업 중입니다.",
                 "logs": {
@@ -2194,6 +2200,7 @@
                             "name": "이름",
                             "no_theme": "테마 없음",
                             "refresh_interval": "새로 고침 간격",
+                            "search": "검색",
                             "secondary_info_attribute": "보조 정보 속성",
                             "show_icon": "아이콘 표시",
                             "show_name": "이름 표시",
@@ -2314,7 +2321,8 @@
                     "edit_lovelace": {
                         "edit_title": "제목 편집",
                         "explanation": "이 제목은 Lovelace UI 모든 뷰의 상단에 표시됩니다.",
-                        "header": "Lovelace UI 의 제목"
+                        "header": "Lovelace UI 의 제목",
+                        "title": "제목"
                     },
                     "edit_view": {
                         "add": "뷰 추가",

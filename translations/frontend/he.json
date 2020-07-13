@@ -525,6 +525,9 @@
                 "clear": "נקה",
                 "show_areas": "הצג אזורים"
             },
+            "data-table": {
+                "search": "חיפוש"
+            },
             "date-range-picker": {
                 "end_date": "תאריך סיום",
                 "select": "בחר",
@@ -1356,6 +1359,7 @@
                             "confirm_text": "עליך להסיר אותם מתצורת ה- Lovelace ומהאוטומציות שלך אם הם מכילים ישויות אלה.",
                             "confirm_title": "האם ברצונך להסיר {מספר} ישויות?"
                         },
+                        "search": "חיפוש ישויות",
                         "selected": "{number} נבחרו",
                         "status": {
                             "disabled": "מושבת",
@@ -1386,7 +1390,8 @@
                             "entity_id": "מזהה ישות",
                             "name": "שם",
                             "type": "סוג"
-                        }
+                        },
+                        "no_helpers": "נראה שאין לך עדיין עזרים!"
                     },
                     "types": {
                         "input_boolean": "החלף מצב",
@@ -1490,7 +1495,8 @@
                     "note_about_integrations": "קיימות אינטגרציות שלא ניתן עדיין להגדירן ע\"י ממשק המשתמש.",
                     "note_about_website_reference": "מידע נוסף זמין ב:",
                     "rename_dialog": "ערוך את שם ישות התצורה הזו",
-                    "rename_input_label": "שם ישות"
+                    "rename_input_label": "שם ישות",
+                    "search": "חיפוש אינטגרציות"
                 },
                 "introduction": "כאן ניתן להגדיר את הרכיבים ואת ה Home Assistant. לא הכל ניתן להגדיר את ממשק המשתמש עדיין, אבל אנחנו עובדים על זה.",
                 "logs": {
@@ -2194,6 +2200,7 @@
                             "name": "שם",
                             "no_theme": "אין ערכת נושא",
                             "refresh_interval": "מרווח זמן לרענון",
+                            "search": "חיפוש",
                             "secondary_info_attribute": "שדה מידע משני",
                             "show_icon": "הצג סמל?",
                             "show_name": "להציג שם?",
@@ -2314,7 +2321,8 @@
                     "edit_lovelace": {
                         "edit_title": "ערוך כותרת",
                         "explanation": "כותרת זו מוצגת מעל לכל התצוגות שלך ב- Lovelace.",
-                        "header": "כותרת ממשק ה- Lovelace שלך"
+                        "header": "כותרת ממשק ה- Lovelace שלך",
+                        "title": "כותרת"
                     },
                     "edit_view": {
                         "add": "הוסף תצוגה",
@@ -2639,7 +2647,7 @@
                     "delete_failed": "מחיקת אסימון הגישה נכשלה.",
                     "description": "צור אסימוני גישה ארוכי טווח כדי לאפשר לסקריפטים שלך לקיים אינטראקציה עם Home Assistant.\nאסימונים אלו פועלים כיום:",
                     "empty_state": "אין לך עדיין אסימוני גישה ארוכים.",
-                    "header": "אסימוני גישה ארוכים חיים",
+                    "header": "אסימוני גישה ארוכי חיים",
                     "last_used": "נעשה שימוש לאחרונה  {date} מ{location}",
                     "learn_auth_requests": "למד כיצד לבצע בקשות מאומתות.",
                     "not_used": "לא היה בשימוש",
