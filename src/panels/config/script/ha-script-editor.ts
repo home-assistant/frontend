@@ -10,6 +10,7 @@ import {
   property,
   PropertyValues,
   TemplateResult,
+  internalProperty,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
@@ -34,6 +35,7 @@ import { configSections } from "../ha-panel-config";
 import "../../../components/ha-svg-icon";
 import { mdiContentSave } from "@mdi/js";
 import { PaperListboxElement } from "@polymer/paper-listbox";
+import { slugify } from "../../../common/string/slugify";
 
 const MODES = ["single", "restart", "queued", "parallel"];
 const MODES_MAX = ["queued", "parallel"];
@@ -49,11 +51,15 @@ export class HaScriptEditor extends LitElement {
 
   @property() public narrow!: boolean;
 
-  @property() private _config?: ScriptConfig;
+  @internalProperty() private _config?: ScriptConfig;
 
-  @property() private _dirty?: boolean;
+  @internalProperty() private _entityId?: string;
 
-  @property() private _errors?: string;
+  @internalProperty() private _idError = false;
+
+  @internalProperty() private _dirty?: boolean;
+
+  @internalProperty() private _errors?: string;
 
   protected render(): TemplateResult {
     return html`
@@ -108,9 +114,23 @@ export class HaScriptEditor extends LitElement {
                           name="alias"
                           .value=${this._config.alias}
                           @value-changed=${this._valueChanged}
+                          @change=${this._aliasChanged}
                         >
                         </paper-input>
-
+                        ${!this.scriptEntityId
+                          ? html` <paper-input
+                              .label=${this.hass.localize(
+                                "ui.panel.config.script.editor.id"
+                              )}
+                              .errorMessage=${this.hass.localize(
+                                "ui.panel.config.script.editor.id_already_exists"
+                              )}
+                              .invalid=${this._idError}
+                              .value=${this._entityId}
+                              @value-changed=${this._idChanged}
+                            >
+                            </paper-input>`
+                          : ""}
                         <p>
                           ${this.hass.localize(
                             "ui.panel.config.script.editor.modes.description",
@@ -284,6 +304,30 @@ export class HaScriptEditor extends LitElement {
     this._dirty = true;
   }
 
+  private _aliasChanged(ev: CustomEvent) {
+    if (this.scriptEntityId || this._entityId) {
+      return;
+    }
+    const aliasSlugify = slugify((ev.target as any).value, "_");
+    let id = aliasSlugify;
+    let i = 1;
+    while (this.hass.states[`script.${id}`]) {
+      id = `${aliasSlugify}_${i}`;
+      i++;
+    }
+    this._entityId = id;
+  }
+
+  private _idChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    this._entityId = (ev.target as any).value;
+    if (this.hass.states[`script.${this._entityId}`]) {
+      this._idError = true;
+    } else {
+      this._idError = false;
+    }
+  }
+
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const target = ev.target as any;
@@ -338,9 +382,15 @@ export class HaScriptEditor extends LitElement {
   }
 
   private _saveScript(): void {
+    if (this._idError) {
+      this._errors = this.hass.localize(
+        "ui.panel.config.script.editor.id_already_exists_save_error"
+      );
+      return;
+    }
     const id = this.scriptEntityId
       ? computeObjectId(this.scriptEntityId)
-      : Date.now();
+      : this._entityId || Date.now();
     this.hass!.callApi("POST", "config/script/config/" + id, this._config).then(
       () => {
         this._dirty = false;
