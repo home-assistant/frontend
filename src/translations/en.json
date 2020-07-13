@@ -2319,7 +2319,7 @@
                 }
               },
               "abort": {
-                "not_whitelisted": "Your computer is not whitelisted."
+                "not_allowed": "Your computer is not allowed."
               }
             }
           }
