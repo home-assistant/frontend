@@ -1,6 +1,5 @@
-import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-tabs/paper-tab";
-import "@polymer/paper-tabs/paper-tabs";
+import "@material/mwc-tab-bar";
+import "@material/mwc-tab";
 import "@material/mwc-icon-button";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
@@ -17,6 +16,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-dialog";
+import "../../../components/ha-header-bar";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-related-items";
 import {
@@ -51,7 +51,7 @@ export class DialogEntityEditor extends LitElement {
     | ExtEntityRegistryEntry
     | null;
 
-  @property() private _curTab?: string;
+  @property() private _curTab = "tab-settings";
 
   @property() private _extraTabs: Tabs = {};
 
@@ -92,19 +92,21 @@ export class DialogEntityEditor extends LitElement {
         @close-dialog=${this.closeDialog}
       >
         <div slot="heading">
-          <app-toolbar>
+          <ha-header-bar>
             <mwc-icon-button
+              slot="navigationIcon"
               .label=${this.hass.localize("ui.dialogs.entity_registry.dismiss")}
               dialogAction="cancel"
             >
               <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
             </mwc-icon-button>
-            <div class="main-title" main-title>
+            <span slot="title">
               ${stateObj ? computeStateName(stateObj) : entry?.name || entityId}
-            </div>
+            </span>
             ${stateObj
               ? html`
                   <mwc-icon-button
+                    slot="actionItems"
                     .label=${this.hass.localize(
                       "ui.dialogs.entity_registry.control"
                     )}
@@ -114,25 +116,34 @@ export class DialogEntityEditor extends LitElement {
                   </mwc-icon-button>
                 `
               : ""}
-          </app-toolbar>
-          <paper-tabs
-            .selected=${this._curTabIndex}
-            @selected-item-changed=${this._handleTabSelected}
+          </ha-header-bar>
+          <mwc-tab-bar
+            .activeIndex=${this._curTabIndex}
+            @MDCTabBar:activated=${this._handleTabActivated}
+            @MDCTab:interacted=${this._handleTabInteracted}
           >
-            <paper-tab id="tab-settings">
-              ${this.hass.localize("ui.dialogs.entity_registry.settings")}
-            </paper-tab>
+            <mwc-tab
+              id="tab-settings"
+              .label=${this.hass.localize(
+                "ui.dialogs.entity_registry.settings"
+              )}
+            >
+            </mwc-tab>
             ${Object.entries(this._extraTabs).map(
               ([key, tab]) => html`
-                <paper-tab id=${key}>
-                  ${this.hass.localize(tab.translationKey) || key}
-                </paper-tab>
+                <mwc-tab
+                  id=${key}
+                  .label=${this.hass.localize(tab.translationKey) || key}
+                >
+                </mwc-tab>
               `
             )}
-            <paper-tab id="tab-related">
-              ${this.hass.localize("ui.dialogs.entity_registry.related")}
-            </paper-tab>
-          </paper-tabs>
+            <mwc-tab
+              id="tab-related"
+              .label=${this.hass.localize("ui.dialogs.entity_registry.related")}
+            >
+            </mwc-tab>
+          </mwc-tab-bar>
         </div>
         <div class="wrapper">
           ${cache(this._renderTab())}
@@ -187,11 +198,12 @@ export class DialogEntityEditor extends LitElement {
     }
   }
 
-  private _handleTabSelected(ev: CustomEvent): void {
-    if (!ev.detail.value) {
-      return;
-    }
-    this._curTab = ev.detail.value.id;
+  private _handleTabActivated(ev: CustomEvent): void {
+    this._curTabIndex = ev.detail.index;
+  }
+
+  private _handleTabInteracted(ev: CustomEvent): void {
+    this._curTab = ev.detail.tabId;
   }
 
   private async _loadPlatformSettingTabs(): Promise<void> {
@@ -220,24 +232,15 @@ export class DialogEntityEditor extends LitElement {
     return [
       haStyleDialog,
       css`
-        app-toolbar {
-          color: var(--primary-text-color);
-          background-color: var(--secondary-background-color);
-          margin: 0;
-          padding: 0 16px;
+        ha-header-bar {
+          --mdc-theme-on-primary: var(--primary-text-color);
+          --mdc-theme-primary: var(--card-background-color);
+          flex-shrink: 0;
         }
 
-        app-toolbar [main-title] {
-          /* Design guideline states 24px, changed to 16 to align with state info */
-          margin-left: 16px;
-          line-height: 1.3em;
-          max-height: 2.6em;
-          overflow: hidden;
-          /* webkit and blink still support simple multiline text-overflow */
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          text-overflow: ellipsis;
+        mwc-tab-bar {
+          border-bottom: 1px solid
+            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
         }
 
         ha-dialog {
@@ -245,10 +248,6 @@ export class DialogEntityEditor extends LitElement {
         }
 
         @media all and (min-width: 451px) and (min-height: 501px) {
-          .main-title {
-            pointer-events: auto;
-            cursor: default;
-          }
           .wrapper {
             width: 400px;
           }
@@ -261,9 +260,9 @@ export class DialogEntityEditor extends LitElement {
 
         /* overrule the ha-style-dialog max-height on small screens */
         @media all and (max-width: 450px), all and (max-height: 500px) {
-          app-toolbar {
-            background-color: var(--app-header-background-color);
-            color: var(--app-header-text-color, white);
+          ha-header-bar {
+            --mdc-theme-primary: var(--app-header-background-color);
+            --mdc-theme-on-primary: var(--app-header-text-color, white);
           }
         }
 
@@ -274,15 +273,6 @@ export class DialogEntityEditor extends LitElement {
         :host([rtl]) app-toolbar {
           direction: rtl;
           text-align: right;
-        }
-        :host {
-          --paper-font-title_-_white-space: normal;
-        }
-        paper-tabs {
-          --paper-tabs-selection-bar-color: var(--primary-color);
-          text-transform: uppercase;
-          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-          margin-top: 0;
         }
       `,
     ];
