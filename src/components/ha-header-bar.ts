@@ -1,30 +1,10 @@
-import {
-  customElement,
-  LitElement,
-  html,
-  unsafeCSS,
-  css,
-  property,
-} from "lit-element";
+import { customElement, LitElement, html, unsafeCSS, css } from "lit-element";
 // @ts-ignore
 import topAppBarStyles from "@material/top-app-bar/dist/mdc.top-app-bar.min.css";
 
 @customElement("ha-header-bar")
 export class HaHeaderBar extends LitElement {
-  @property({ type: Boolean }) centerTitle = false;
-
   protected render() {
-    let title = html`<span class="mdc-top-app-bar__title">
-      <slot name="title"></slot>
-    </span>`;
-    if (this.centerTitle) {
-      title = html`<section
-        class="mdc-top-app-bar__section mdc-top-app-bar__section--align-center"
-      >
-        ${title}
-      </section>`;
-    }
-
     return html`<header class="mdc-top-app-bar">
       <div class="mdc-top-app-bar__row">
         <section
@@ -32,9 +12,10 @@ export class HaHeaderBar extends LitElement {
           id="navigation"
         >
           <slot name="navigationIcon"></slot>
-          ${!this.centerTitle ? title : ""}
+          <span class="mdc-top-app-bar__title">
+            <slot name="title"></slot>
+          </span>
         </section>
-        ${this.centerTitle ? title : ""}
         <section
           class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end"
           id="actions"
