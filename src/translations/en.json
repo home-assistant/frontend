@@ -188,7 +188,9 @@
         "activate": "Activate"
       },
       "script": {
-        "execute": "Execute"
+        "execute": "Execute",
+        "cancel": "Cancel",
+        "cancel_multiple": "Cancel {number}"
       },
       "service": {
         "run": "Run"
