@@ -841,6 +841,19 @@
               "label": "Description",
               "placeholder": "Optional description"
             },
+            "modes": {
+              "label": "Mode",
+              "description": "The mode controls what happens when the automation is triggered while the actions are still running from a previous trigger. Check the {documentation_link} for more info.",
+              "documentation": "automation documentation",
+              "single": "Single",
+              "restart": "Restart",
+              "queued": "Queued",
+              "parallel": "Parallel (default)"
+            },
+            "max": {
+              "queued": "Queue length",
+              "parallel": "Max number of parallel runs"
+            },
             "edit_yaml": "Edit as YAML",
             "edit_ui": "Edit with UI",
             "triggers": {
@@ -1068,6 +1081,19 @@
             "introduction": "Use scripts to execute a sequence of actions.",
             "header": "Script: {name}",
             "default_name": "New Script",
+            "modes": {
+              "label": "Mode",
+              "description": "The mode controls what happens when script is invoked while it is still running from one or more previous invocations. Check the {documentation_link} for more info.",
+              "documentation": "script documentation",
+              "single": "Single (default)",
+              "restart": "Restart",
+              "queued": "Queued",
+              "parallel": "Parallel"
+            },
+            "max": {
+              "queued": "Queue length",
+              "parallel": "Max number of parallel runs"
+            },
             "load_error_not_editable": "Only scripts inside scripts.yaml are editable.",
             "delete_confirm": "Are you sure you want to delete this script?",
             "delete_script": "Delete script",

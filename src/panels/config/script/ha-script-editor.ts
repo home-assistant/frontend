@@ -1,4 +1,5 @@
 import "@polymer/app-layout/app-header/app-header";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "../../../components/ha-icon-button";
 import {
@@ -32,6 +33,10 @@ import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "../../../components/ha-svg-icon";
 import { mdiContentSave } from "@mdi/js";
+import { PaperListboxElement } from "@polymer/paper-listbox";
+
+const MODES = ["single", "restart", "queued", "parallel"];
+const MODES_MAX = ["queued", "parallel"];
 
 export class HaScriptEditor extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -105,6 +110,58 @@ export class HaScriptEditor extends LitElement {
                           @value-changed=${this._valueChanged}
                         >
                         </paper-input>
+
+                        <p>
+                          ${this.hass.localize(
+                            "ui.panel.config.script.editor.modes.description",
+                            "documentation_link",
+                            html`<a
+                              href="https://www.home-assistant.io/integrations/script/#script-modes"
+                              target="_blank"
+                              rel="noreferrer"
+                              >${this.hass.localize(
+                                "ui.panel.config.script.editor.modes.documentation"
+                              )}</a
+                            >`
+                          )}
+                        </p>
+                        <paper-dropdown-menu-light
+                          .label=${this.hass.localize(
+                            "ui.panel.config.script.editor.modes.label"
+                          )}
+                          no-animations
+                        >
+                          <paper-listbox
+                            slot="dropdown-content"
+                            .selected=${this._config.mode
+                              ? MODES.indexOf(this._config.mode)
+                              : 0}
+                            @iron-select=${this._modeChanged}
+                          >
+                            ${MODES.map(
+                              (mode) => html`
+                                <paper-item .mode=${mode}>
+                                  ${this.hass.localize(
+                                    `ui.panel.config.script.editor.modes.${mode}`
+                                  ) || mode}
+                                </paper-item>
+                              `
+                            )}
+                          </paper-listbox>
+                        </paper-dropdown-menu-light>
+                        ${this._config.mode &&
+                        MODES_MAX.includes(this._config.mode)
+                          ? html` <paper-input
+                              .label=${this.hass.localize(
+                                `ui.panel.config.script.editor.max.${this._config.mode}`
+                              )}
+                              type="number"
+                              name="max"
+                              .value=${this._config.max || "10"}
+                              @value-changed=${this._valueChanged}
+                            >
+                            </paper-input>`
+                          : html``}
                       </div>
                     </ha-card>
                   </ha-config-section>
@@ -216,14 +273,28 @@ export class HaScriptEditor extends LitElement {
     }
   }
 
+  private _modeChanged(ev: CustomEvent) {
+    const mode = ((ev.target as PaperListboxElement)?.selectedItem as any)
+      ?.mode;
+
+    this._config = { ...this._config!, mode };
+    if (!MODES_MAX.includes(mode)) {
+      delete this._config.max;
+    }
+    this._dirty = true;
+  }
+
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    const name = (ev.target as any)?.name;
+    const target = ev.target as any;
+    const name = target.name;
     if (!name) {
       return;
     }
-    const newVal = ev.detail.value;
-
+    let newVal = ev.detail.value;
+    if (target.type === "number") {
+      newVal = Number(newVal);
+    }
     if ((this._config![name] || "") === newVal) {
       return;
     }
@@ -291,6 +362,9 @@ export class HaScriptEditor extends LitElement {
       css`
         ha-card {
           overflow: hidden;
+        }
+        p {
+          margin-bottom: 0;
         }
         .errors {
           padding: 20px;
