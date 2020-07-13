@@ -679,7 +679,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           display: block;
           position: relative;
           left: -8px;
-          top: -7px;
           color: var(--secondary-text-color);
           margin-left: 16px;
         }

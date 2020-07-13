@@ -242,7 +242,6 @@ export class HaTabsSubpageDataTable extends LitElement {
       }
       search-input.header {
         left: -8px;
-        top: -7px;
       }
       .active-filters {
         color: var(--primary-text-color);
