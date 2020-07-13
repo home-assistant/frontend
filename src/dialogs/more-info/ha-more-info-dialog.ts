@@ -1,7 +1,6 @@
 import "@material/mwc-button";
 import "@material/mwc-icon-button";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import "../../components/ha-header-bar";
 import "../../components/ha-dialog";
 import "../../components/ha-svg-icon";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
@@ -94,18 +93,20 @@ export class MoreInfoDialog extends LitElement {
         hideActions
         data-domain=${domain}
       >
-        <app-toolbar slot="heading">
+        <ha-header-bar slot="heading">
           <mwc-icon-button
+            slot="navigationIcon"
             .label=${this.hass.localize("ui.dialogs.more_info_control.dismiss")}
             dialogAction="cancel"
           >
             <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
           </mwc-icon-button>
-          <div class="main-title" main-title @click=${this._enlarge}>
+          <div slot="title" class="main-title" @click=${this._enlarge}>
             ${computeStateName(stateObj)}
           </div>
           ${this.hass.user!.is_admin
             ? html`<mwc-icon-button
+                slot="actionItems"
                 .label=${this.hass.localize(
                   "ui.dialogs.more_info_control.settings"
                 )}
@@ -119,6 +120,7 @@ export class MoreInfoDialog extends LitElement {
             stateObj.attributes.id) ||
             EDITABLE_DOMAINS.includes(domain))
             ? html` <mwc-icon-button
+                slot="actionItems"
                 .label=${this.hass.localize(
                   "ui.dialogs.more_info_control.edit"
                 )}
@@ -127,7 +129,7 @@ export class MoreInfoDialog extends LitElement {
                 <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
               </mwc-icon-button>`
             : ""}
-        </app-toolbar>
+        </ha-header-bar>
         <div class="content">
           ${DOMAINS_NO_INFO.includes(domain)
             ? ""
@@ -247,29 +249,19 @@ export class MoreInfoDialog extends LitElement {
           --dialog-content-position: static;
         }
 
-        app-toolbar {
+        ha-header-bar {
+          --mdc-theme-on-primary: var(--primary-text-color);
+          --mdc-theme-primary: var(--card-background-color);
           flex-shrink: 0;
-          color: var(--primary-text-color);
-          background-color: var(--secondary-background-color);
-        }
-
-        app-toolbar [main-title] {
-          /* Design guideline states 24px, changed to 16 to align with state info */
-          margin-left: 16px;
-          line-height: 1.3em;
-          max-height: 2.6em;
-          overflow: hidden;
-          /* webkit and blink still support simple multiline text-overflow */
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          text-overflow: ellipsis;
+          border-bottom: 1px solid
+            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
         }
 
         @media all and (max-width: 450px), all and (max-height: 500px) {
-          app-toolbar {
-            background-color: var(--app-header-background-color);
-            color: var(--app-header-text-color, white);
+          ha-header-bar {
+            --mdc-theme-primary: var(--app-header-background-color);
+            --mdc-theme-on-primary: var(--app-header-text-color, white);
+            border-bottom: none;
           }
         }
 
@@ -287,7 +279,6 @@ export class MoreInfoDialog extends LitElement {
           }
 
           .main-title {
-            pointer-events: auto;
             cursor: default;
           }
 

@@ -57,7 +57,7 @@ export class HaDialog extends MwcDialog {
         .header_button {
           position: absolute;
           right: 16px;
-          top: 12px;
+          top: 10px;
           text-decoration: none;
           color: inherit;
         }
