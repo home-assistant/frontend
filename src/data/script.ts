@@ -15,8 +15,8 @@ export interface ScriptEntity extends HassEntityBase {
 
 export interface ScriptConfig {
   alias: string;
-  icon: string;
   sequence: Action[];
+  icon?: string;
   mode?: "single" | "restart" | "queued" | "parallel";
   max?: number;
 }

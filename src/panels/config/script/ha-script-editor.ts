@@ -339,7 +339,6 @@ export class HaScriptEditor extends LitElement {
   }
 
   private _valueChanged(ev: CustomEvent) {
-    console.log(ev.target.name, ev.target.value);
     ev.stopPropagation();
     const target = ev.target as any;
     const name = target.name;
