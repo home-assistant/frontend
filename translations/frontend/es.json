@@ -525,6 +525,9 @@
                 "clear": "Limpiar",
                 "show_areas": "Mostrar áreas"
             },
+            "data-table": {
+                "search": "Buscar"
+            },
             "date-range-picker": {
                 "end_date": "Fecha de finalización",
                 "select": "Seleccionar",
@@ -1356,6 +1359,7 @@
                             "confirm_text": "Debes eliminarlos de la configuración y las automatizaciones de Lovelace si contienen estas entidades.",
                             "confirm_title": "¿Deseas eliminar {number} entidades?"
                         },
+                        "search": "Buscar entidades",
                         "selected": "{number} seleccionadas",
                         "status": {
                             "disabled": "Deshabilitado",
@@ -1386,7 +1390,8 @@
                             "entity_id": "ID de la entidad",
                             "name": "Nombre",
                             "type": "Tipo"
-                        }
+                        },
+                        "no_helpers": "¡Parece que aún no tienes ayudantes!"
                     },
                     "types": {
                         "input_boolean": "Alternar",
@@ -1490,7 +1495,8 @@
                     "note_about_integrations": "Todavía no se pueden configurar todas las integraciones a través de la interfaz de usuario.",
                     "note_about_website_reference": "Hay más disponibles en el ",
                     "rename_dialog": "Edita el nombre de esta entrada de configuración",
-                    "rename_input_label": "Nombre de la entrada"
+                    "rename_input_label": "Nombre de la entrada",
+                    "search": "Buscar integraciones"
                 },
                 "introduction": "Aquí puedes configurar tus componentes y Home Assistant. Aún no es posible configurar todo desde la interfaz de usuario, pero estamos trabajando en ello.",
                 "logs": {
@@ -2194,6 +2200,7 @@
                             "name": "Nombre",
                             "no_theme": "Sin tema",
                             "refresh_interval": "Intervalo de actualización",
+                            "search": "Buscar",
                             "secondary_info_attribute": "Atributo de información secundaria",
                             "show_icon": "¿Mostrar icono?",
                             "show_name": "¿Mostrar nombre?",
@@ -2314,7 +2321,8 @@
                     "edit_lovelace": {
                         "edit_title": "Editar título",
                         "explanation": "Este título se muestra sobre todas tus vistas en la IU Lovelace.",
-                        "header": "Título de tu interfaz de usuario de Lovelace"
+                        "header": "Título de tu interfaz de usuario de Lovelace",
+                        "title": "Título"
                     },
                     "edit_view": {
                         "add": "Añadir vista",
