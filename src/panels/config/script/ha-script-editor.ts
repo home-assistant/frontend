@@ -8,6 +8,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -38,7 +39,7 @@ import { mdiContentSave } from "@mdi/js";
 import { PaperListboxElement } from "@polymer/paper-listbox";
 
 export class HaScriptEditor extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public scriptEntityId!: string;
 
@@ -48,11 +49,11 @@ export class HaScriptEditor extends LitElement {
 
   @property() public narrow!: boolean;
 
-  @property() private _config?: ScriptConfig;
+  @internalProperty() private _config?: ScriptConfig;
 
-  @property() private _dirty?: boolean;
+  @internalProperty() private _dirty?: boolean;
 
-  @property() private _errors?: string;
+  @internalProperty() private _errors?: string;
 
   protected render(): TemplateResult {
     return html`

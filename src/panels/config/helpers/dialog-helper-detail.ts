@@ -8,6 +8,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   query,
   TemplateResult,
 } from "lit-element";
@@ -40,17 +41,17 @@ const HELPERS = {
 
 @customElement("dialog-helper-detail")
 export class DialogHelperDetail extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _item?: Helper;
+  @internalProperty() private _item?: Helper;
 
-  @property() private _opened = false;
+  @internalProperty() private _opened = false;
 
-  @property() private _platform?: string;
+  @internalProperty() private _platform?: string;
 
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
-  @property() private _submitting = false;
+  @internalProperty() private _submitting = false;
 
   @query(".form") private _form?: HTMLDivElement;
 

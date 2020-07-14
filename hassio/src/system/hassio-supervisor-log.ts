@@ -9,6 +9,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../../src/components/ha-card";
@@ -55,11 +56,11 @@ const logProviders: LogProvider[] = [
 class HassioSupervisorLog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
-  @property() private _selectedLogProvider = "supervisor";
+  @internalProperty() private _selectedLogProvider = "supervisor";
 
-  @property() private _content?: string;
+  @internalProperty() private _content?: string;
 
   public async connectedCallback(): Promise<void> {
     super.connectedCallback();

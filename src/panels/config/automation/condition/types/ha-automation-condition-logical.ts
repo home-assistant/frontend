@@ -7,7 +7,7 @@ import { ConditionElement } from "../ha-automation-condition-row";
 
 @customElement("ha-automation-condition-logical")
 export class HaLogicalCondition extends LitElement implements ConditionElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public condition!: LogicalCondition;
 

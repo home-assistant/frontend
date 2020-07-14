@@ -22,7 +22,7 @@ import "./developer-tools-router";
 
 @customElement("ha-panel-developer-tools")
 class PanelDeveloperTools extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public route!: Route;
 

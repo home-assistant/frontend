@@ -17,8 +17,8 @@ import {
   customElement,
   html,
   LitElement,
-  property,
   TemplateResult,
+  internalProperty,
 } from "lit-element";
 import { CastManager, getCastManager } from "../../../../src/cast/cast_manager";
 import { castSendShowDemo } from "../../../../src/cast/receiver_messages";
@@ -60,19 +60,19 @@ const INTRO = html`
 
 @customElement("hc-connect")
 export class HcConnect extends LitElement {
-  @property() private loading = false;
+  @internalProperty() private loading = false;
 
   // If we had stored credentials but we cannot connect,
   // show a screen asking retry or logout.
-  @property() private cannotConnect = false;
+  @internalProperty() private cannotConnect = false;
 
-  @property() private error?: string | TemplateResult;
+  @internalProperty() private error?: string | TemplateResult;
 
-  @property() private auth?: Auth;
+  @internalProperty() private auth?: Auth;
 
-  @property() private connection?: Connection;
+  @internalProperty() private connection?: Connection;
 
-  @property() private castManager?: CastManager | null;
+  @internalProperty() private castManager?: CastManager | null;
 
   private openDemo = false;
 

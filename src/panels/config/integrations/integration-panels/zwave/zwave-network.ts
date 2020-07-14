@@ -8,6 +8,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../../../../components/buttons/ha-call-api-button";
@@ -29,15 +30,15 @@ import "../../../ha-config-section";
 
 @customElement("zwave-network")
 export class ZwaveNetwork extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public isWide!: boolean;
 
-  @property() private _showHelp = false;
+  @internalProperty() private _showHelp = false;
 
-  @property() private _networkStatus?: ZWaveNetworkStatus;
+  @internalProperty() private _networkStatus?: ZWaveNetworkStatus;
 
-  @property() private _unsubs: Array<Promise<UnsubscribeFunc>> = [];
+  @internalProperty() private _unsubs: Array<Promise<UnsubscribeFunc>> = [];
 
   public disconnectedCallback(): void {
     this._unsubscribe();

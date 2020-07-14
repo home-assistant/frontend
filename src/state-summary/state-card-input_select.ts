@@ -21,7 +21,7 @@ import type { HomeAssistant, InputSelectEntity } from "../types";
 
 @customElement("state-card-input_select")
 class StateCardInputSelect extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public stateObj!: InputSelectEntity;
 

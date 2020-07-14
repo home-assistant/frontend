@@ -26,7 +26,7 @@ import { mdiPlus } from "@mdi/js";
 
 @customElement("ha-config-users")
 export class HaConfigUsers extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public _users: User[] = [];
 

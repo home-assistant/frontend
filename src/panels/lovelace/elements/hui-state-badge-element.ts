@@ -3,6 +3,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -22,9 +23,9 @@ import { createEntityNotFoundWarning } from "../components/hui-warning";
 @customElement("hui-state-badge-element")
 export class HuiStateBadgeElement extends LitElement
   implements LovelaceElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: StateBadgeElementConfig;
+  @internalProperty() private _config?: StateBadgeElementConfig;
 
   public setConfig(config: StateBadgeElementConfig): void {
     if (!config.entity) {

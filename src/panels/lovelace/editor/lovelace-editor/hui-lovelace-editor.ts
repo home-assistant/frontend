@@ -22,7 +22,7 @@ declare global {
 
 @customElement("hui-lovelace-editor")
 export class HuiLovelaceEditor extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public config?: LovelaceConfig;
 

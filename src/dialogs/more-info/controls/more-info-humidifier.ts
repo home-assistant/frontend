@@ -24,7 +24,7 @@ import {
 import { HomeAssistant } from "../../../types";
 
 class MoreInfoHumidifier extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public stateObj?: HumidifierEntity;
 

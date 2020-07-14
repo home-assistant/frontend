@@ -16,7 +16,7 @@ import { HomeAssistant } from "../../../../types";
 export abstract class HaDeviceAutomationCard<
   T extends DeviceAutomation
 > extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public deviceId?: string;
 

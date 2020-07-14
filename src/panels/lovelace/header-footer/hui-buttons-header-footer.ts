@@ -19,7 +19,7 @@ export class HuiButtonsHeaderFooter extends LitElement
     return { entities: [] };
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   private _configEntities?: EntityConfig[];
 

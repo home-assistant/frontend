@@ -5,7 +5,7 @@ import {
   customElement,
   html,
   LitElement,
-  property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../components/dialog/ha-paper-dialog";
@@ -19,7 +19,7 @@ import { HaDomainTogglerDialogParams } from "./show-dialog-domain-toggler";
 class DomainTogglerDialog extends LitElement {
   public hass!: HomeAssistant;
 
-  @property() private _params?: HaDomainTogglerDialogParams;
+  @internalProperty() private _params?: HaDomainTogglerDialogParams;
 
   public async showDialog(params: HaDomainTogglerDialogParams): Promise<void> {
     this._params = params;

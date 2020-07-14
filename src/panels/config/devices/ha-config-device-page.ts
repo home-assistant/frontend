@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { ifDefined } from "lit-html/directives/if-defined";
@@ -50,7 +51,7 @@ export interface EntityRegistryStateEntry extends EntityRegistryEntry {
 
 @customElement("ha-config-device-page")
 export class HaConfigDevicePage extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public devices!: DeviceRegistryEntry[];
 
@@ -70,7 +71,7 @@ export class HaConfigDevicePage extends LitElement {
 
   @property() public route!: Route;
 
-  @property() private _related?: RelatedResult;
+  @internalProperty() private _related?: RelatedResult;
 
   private _device = memoizeOne(
     (

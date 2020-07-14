@@ -26,7 +26,7 @@ declare global {
 
 @customElement("ha-set-suspend-row")
 class HaSetSuspendRow extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
 

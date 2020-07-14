@@ -28,7 +28,7 @@ import { mdiPlus } from "@mdi/js";
 
 @customElement("ha-script-picker")
 class HaScriptPicker extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public scripts!: HassEntity[];
 

@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
   eventOptions,
@@ -36,7 +37,7 @@ export interface PageNavigation {
 
 @customElement("hass-tabs-subpage")
 class HassTabsSubpage extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public hassio = false;
 
@@ -52,7 +53,7 @@ class HassTabsSubpage extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property() private _activeTab?: PageNavigation;
+  @internalProperty() private _activeTab?: PageNavigation;
 
   // @ts-ignore
   @restoreScroll(".content") private _savedScrollPos?: number;

@@ -7,6 +7,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   query,
   TemplateResult,
@@ -32,7 +33,7 @@ class HassioAddonConfig extends LitElement {
 
   @property({ attribute: false }) public addon!: HassioAddonDetails;
 
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
   @property({ type: Boolean }) private _configHasChanged = false;
 

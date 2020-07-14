@@ -9,6 +9,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { cache } from "lit-html/directives/cache";
@@ -42,20 +43,20 @@ interface Tab {
 
 @customElement("dialog-entity-editor")
 export class DialogEntityEditor extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _params?: EntityRegistryDetailDialogParams;
+  @internalProperty() private _params?: EntityRegistryDetailDialogParams;
 
-  @property() private _entry?:
+  @internalProperty() private _entry?:
     | EntityRegistryEntry
     | ExtEntityRegistryEntry
     | null;
 
-  @property() private _curTab = "tab-settings";
+  @internalProperty() private _curTab = "tab-settings";
 
-  @property() private _extraTabs: Tabs = {};
+  @internalProperty() private _extraTabs: Tabs = {};
 
-  @property() private _settingsElementTag?: string;
+  @internalProperty() private _settingsElementTag?: string;
 
   private _curTabIndex = 0;
 

@@ -5,6 +5,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -22,17 +23,17 @@ type HLSModule = typeof import("hls.js");
 
 @customElement("ha-camera-stream")
 class HaCameraStream extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public stateObj?: CameraEntity;
 
   @property({ type: Boolean }) public showControls = false;
 
-  @property() private _attached = false;
+  @internalProperty() private _attached = false;
 
   // We keep track if we should force MJPEG with a string
   // that way it automatically resets if we change entity.
-  @property() private _forceMJPEG: string | undefined = undefined;
+  @internalProperty() private _forceMJPEG: string | undefined = undefined;
 
   private _hlsPolyfillInstance?: Hls;
 

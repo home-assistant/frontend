@@ -5,6 +5,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -62,9 +63,9 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     return { type: "weather-forecast", entity: foundEntities[0] || "" };
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: WeatherForecastCardConfig;
+  @internalProperty() private _config?: WeatherForecastCardConfig;
 
   @property({ type: Boolean, reflect: true, attribute: "veryverynarrow" })
   private _veryVeryNarrow = false;

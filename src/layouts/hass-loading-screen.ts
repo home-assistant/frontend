@@ -18,7 +18,7 @@ import { HomeAssistant } from "../types";
 class HassLoadingScreen extends LitElement {
   @property({ type: Boolean }) public rootnav? = false;
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public narrow?: boolean;
 

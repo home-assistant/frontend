@@ -18,7 +18,7 @@ import "../../../layouts/hass-tabs-subpage";
 
 @customElement("ha-config-logs")
 export class HaConfigLogs extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
 

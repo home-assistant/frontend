@@ -31,7 +31,7 @@ import { stateIcon } from "../../../common/entity/state_icon";
 
 @customElement("ha-scene-dashboard")
 class HaSceneDashboard extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
 

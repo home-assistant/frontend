@@ -9,6 +9,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../../components/buttons/ha-call-service-button";
@@ -26,11 +27,11 @@ import { formatSystemLogTime } from "./util";
 
 @customElement("system-log-card")
 export class SystemLogCard extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   public loaded = false;
 
-  @property() private _items?: LoggedError[];
+  @internalProperty() private _items?: LoggedError[];
 
   public async fetchData(): Promise<void> {
     this._items = undefined;

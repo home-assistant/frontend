@@ -1,4 +1,10 @@
-import { customElement, html, LitElement, property } from "lit-element";
+import {
+  customElement,
+  html,
+  LitElement,
+  property,
+  internalProperty,
+} from "lit-element";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/device/ha-device-condition-picker";
 import "../../../../../components/device/ha-device-picker";
@@ -12,13 +18,13 @@ import { HomeAssistant } from "../../../../../types";
 
 @customElement("ha-automation-condition-device")
 export class HaDeviceCondition extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public condition!: DeviceCondition;
 
-  @property() private _deviceId?: string;
+  @internalProperty() private _deviceId?: string;
 
-  @property() private _capabilities?;
+  @internalProperty() private _capabilities?;
 
   private _origCondition?: DeviceCondition;
 

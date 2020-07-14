@@ -8,6 +8,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   query,
 } from "lit-element";
@@ -45,15 +46,16 @@ export class ZHAGroupPage extends LitElement {
 
   @property({ type: Array }) public deviceEndpoints: ZHADeviceEndpoint[] = [];
 
-  @property() private _processingAdd = false;
+  @internalProperty() private _processingAdd = false;
 
-  @property() private _processingRemove = false;
+  @internalProperty() private _processingRemove = false;
 
-  @property() private _filteredDeviceEndpoints: ZHADeviceEndpoint[] = [];
+  @internalProperty()
+  private _filteredDeviceEndpoints: ZHADeviceEndpoint[] = [];
 
-  @property() private _selectedDevicesToAdd: string[] = [];
+  @internalProperty() private _selectedDevicesToAdd: string[] = [];
 
-  @property() private _selectedDevicesToRemove: string[] = [];
+  @internalProperty() private _selectedDevicesToRemove: string[] = [];
 
   @query("#addMembers")
   private _zhaAddMembersDataTable!: ZHADeviceEndpointDataTable;

@@ -27,7 +27,7 @@ import "./controls/more-info-water_heater";
 import "./controls/more-info-weather";
 
 class MoreInfoContent extends UpdatingElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public stateObj?: HassEntity;
 

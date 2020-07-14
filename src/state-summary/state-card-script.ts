@@ -16,7 +16,7 @@ import { canExcecute, ScriptEntity } from "../data/script";
 
 @customElement("state-card-script")
 export class StateCardScript extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public stateObj!: HassEntity;
 

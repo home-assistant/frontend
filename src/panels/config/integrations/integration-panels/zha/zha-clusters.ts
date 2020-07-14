@@ -8,6 +8,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -36,7 +37,7 @@ declare global {
 }
 
 export class ZHAClusters extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public isWide?: boolean;
 
@@ -44,9 +45,9 @@ export class ZHAClusters extends LitElement {
 
   @property() public showHelp = false;
 
-  @property() private _selectedClusterIndex = -1;
+  @internalProperty() private _selectedClusterIndex = -1;
 
-  @property() private _clusters: Cluster[] = [];
+  @internalProperty() private _clusters: Cluster[] = [];
 
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("selectedDevice")) {

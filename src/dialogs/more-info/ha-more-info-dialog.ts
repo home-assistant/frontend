@@ -18,9 +18,9 @@ import {
   customElement,
   LitElement,
   property,
+  internalProperty,
   css,
   html,
-  internalProperty,
 } from "lit-element";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
@@ -39,7 +39,7 @@ export interface MoreInfoDialogParams {
 
 @customElement("ha-more-info-dialog")
 export class MoreInfoDialog extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public large = false;
 
