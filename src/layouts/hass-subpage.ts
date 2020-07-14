@@ -36,7 +36,7 @@ class HassSubpage extends LitElement {
           class=${classMap({ hidden: !this.showBackButton })}
         ></ha-icon-button-arrow-prev>
 
-        <div main-title>${this.header}</div>
+        <div class="main-title">${this.header}</div>
         <slot name="toolbar-icon"></slot>
       </div>
       <div class="content" @scroll=${this._saveScrollPos}><slot></slot></div>
@@ -74,7 +74,6 @@ class HassSubpage extends LitElement {
         box-sizing: border-box;
       }
 
-      ha-menu-button,
       ha-icon-button-arrow-prev,
       ::slotted([slot="toolbar-icon"]) {
         pointer-events: auto;
@@ -84,7 +83,7 @@ class HassSubpage extends LitElement {
         visibility: hidden;
       }
 
-      [main-title] {
+      .main-title {
         margin: 0 0 0 24px;
         line-height: 20px;
         flex-grow: 1;
