@@ -29,7 +29,7 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { mdiClose, mdiCog, mdiPencil } from "@mdi/js";
 import { HistoryResult } from "../../data/history";
 
-const DOMAINS_NO_INFO = ["camera", "configurator", "history_graph"];
+const DOMAINS_NO_INFO = ["camera", "configurator"];
 const EDITABLE_DOMAINS_WITH_ID = ["scene", "automation"];
 const EDITABLE_DOMAINS = ["script"];
 
@@ -288,7 +288,6 @@ export class MoreInfoDialog extends LitElement {
             width: auto;
           }
 
-          ha-dialog[data-domain="history_graph"] .content,
           :host([large]) .content {
             width: calc(90vw - 48px);
           }
