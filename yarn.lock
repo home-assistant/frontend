@@ -11305,6 +11305,11 @@ sver-compat@^1.5.0:
     es6-iterator "^2.0.1"
     es6-symbol "^3.1.1"
 
+svg-gauge@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/svg-gauge/-/svg-gauge-1.0.6.tgz#1e84a366b1cce5b95dab3e33f41fdde867692d28"
+  integrity sha512-gRkznVhtS18eOM/GMPDXAvrLZOpqzNVDg4bFAPAEjiDKd1tZHFIe8Bwt3G6TFg/H+pFboetPPI+zoV+bOL26QQ==
+
 symbol-observable@^1.1.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/symbol-observable/-/symbol-observable-1.2.0.tgz#c22688aed4eab3cdc2dfeacbb561660560a00804"
