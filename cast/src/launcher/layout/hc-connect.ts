@@ -27,7 +27,7 @@ import {
   saveTokens,
 } from "../../../../src/common/auth/token_storage";
 import "../../../../src/components/ha-icon";
-import "../../../../src/layouts/loading-screen";
+import "../../../../src/layouts/hass-loading-screen";
 import { registerServiceWorker } from "../../../../src/util/register-service-worker";
 import "./hc-layout";
 
@@ -98,7 +98,7 @@ export class HcConnect extends LitElement {
     }
 
     if (this.castManager === undefined || this.loading) {
-      return html` <loading-screen></loading-screen> `;
+      return html` <hass-loading-screen no-toolbar></hass-loading-screen> `;
     }
 
     if (this.castManager === null) {

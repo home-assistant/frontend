@@ -525,6 +525,9 @@
                 "clear": "지우기",
                 "show_areas": "영역 표시"
             },
+            "data-table": {
+                "search": "검색"
+            },
             "date-range-picker": {
                 "end_date": "종료 날짜",
                 "select": "선택",
@@ -646,7 +649,7 @@
                     "pattern": "클라이언트 측 검증을 위한 정규표현식",
                     "text": "텍스트"
                 },
-                "platform_not_loaded": "{platform} 통합 구성요소가 로드되지 않았습니다. 'default_config:' 또는 \"{platform}:\" 을 추가하여 구성을 추가해주세요.",
+                "platform_not_loaded": "{platform} 통합 구성요소가 로드되지 않았습니다. 'default_config:' 또는 \"{platform}:\" 을 configuration.yaml 에 추가해주세요.",
                 "required_error_msg": "이 입력란은 필수 요소입니다",
                 "yaml_not_editable": "이 구성요소의 설정은 UI 에서 편집할 수 없습니다. UI 에서 설정한 구성요소만 UI 에서 구성할 수 있습니다."
             },
@@ -1126,7 +1129,7 @@
                         "title": "Alexa"
                     },
                     "caption": "Home Assistant Cloud",
-                    "description_features": "Alexa 및 Google 어시스턴트를 통해 집 밖에서도 집을 관리하세요.",
+                    "description_features": "Alexa 및 Google 어시스턴트를 통해 집 밖에서도 집을 관리합니다",
                     "description_login": "{email} 로(으로) 로그인 되어있습니다",
                     "description_not_login": "로그인이 되어있지 않습니다",
                     "dialog_certificate": {
@@ -1356,6 +1359,7 @@
                             "confirm_text": "이러한 구성요소가 포함된 경우 Lovelace 구성 및 자동화에서 제거해야 합니다.",
                             "confirm_title": "{number} 개의 구성요소를 제거하시겠습니까?"
                         },
+                        "search": "구성요소 검색",
                         "selected": "{number} 개 선택됨",
                         "status": {
                             "disabled": "비활성화",
@@ -1386,7 +1390,8 @@
                             "entity_id": "구성요소 ID",
                             "name": "이름",
                             "type": "유형"
-                        }
+                        },
+                        "no_helpers": "아직 설정한 도우미가 없는 것 같습니다."
                     },
                     "types": {
                         "input_boolean": "토글",
@@ -1400,7 +1405,7 @@
                     "built_using": "다음을 사용하여 제작",
                     "caption": "정보",
                     "custom_uis": "사용자 UI :",
-                    "description": "Home Assistant 설치에 대한 정보",
+                    "description": "설치된 Home Assistant 에 대한 정보입니다",
                     "developed_by": "Home Assistant 는 수많은 멋진 사람들에 의해 개발되었습니다.",
                     "documentation": "관련문서",
                     "frontend": "프런트엔드-UI",
@@ -1431,6 +1436,7 @@
                         "delete_confirm": "이 통합 구성요소를 제거하시겠습니까?",
                         "device_unavailable": "기기 사용불가",
                         "devices": "{count} {count, plural,\none {기기}\nother {기기}\n}",
+                        "documentation": "관련문서",
                         "entities": "{count} {count, plural,\none {구성요소}\nother {구성요소}\n}",
                         "entity_unavailable": "구성요소 사용불가",
                         "firmware": "펌웨어: {version}",
@@ -1489,13 +1495,14 @@
                     "note_about_integrations": "아직 UI 에서 모든 통합 구성요소를 구성할 수 있는 것은 아닙니다.",
                     "note_about_website_reference": "더 많은 구성요소는 다음에서 살펴 봐주세요. ",
                     "rename_dialog": "이 구성 항목의 이름을 편집하기",
-                    "rename_input_label": "구성 항목의 이름"
+                    "rename_input_label": "구성 항목의 이름",
+                    "search": "통합 구성요소 검색"
                 },
                 "introduction": "여기에서 구성요소와  Home Assistant 를 설정할 수 있습니다. 아직 여기서 모두 설정할 수는 없지만, 모든 내용을 설정할 수 있도록 작업 중입니다.",
                 "logs": {
                     "caption": "로그",
                     "clear": "지우기",
-                    "description": "Home Assistant 로그 보기",
+                    "description": "Home Assistant 로그 내역을 봅니다",
                     "details": "로그 상세정보 ({level})",
                     "load_full_log": "Home Assistant 로그 전부 불러오기",
                     "loading_log": "오류 로그를 읽는 중...",
@@ -2193,6 +2200,7 @@
                             "name": "이름",
                             "no_theme": "테마 없음",
                             "refresh_interval": "새로 고침 간격",
+                            "search": "검색",
                             "secondary_info_attribute": "보조 정보 속성",
                             "show_icon": "아이콘 표시",
                             "show_name": "이름 표시",
@@ -2218,8 +2226,8 @@
                             "name": "수평 모아보기"
                         },
                         "humidifier": {
-                            "description": "가습기 카드는 가습 기기를 제어합니다. 구성요소의 가습 모드를 변경할 수 있습니다.",
-                            "name": "가습기"
+                            "description": "습도 조절기 카드는 가습 및 제습 기기와 같은 습도 조절기기를 제어합니다. 구성요소의 습도 조절 모드를 변경할 수 있습니다.",
+                            "name": "습도 조절기"
                         },
                         "iframe": {
                             "description": "웹 페이지 카드를 사용하면 즐겨 찾는 웹 페이지를 Home Assistant 에 삽입할 수 있습니다.",
@@ -2313,7 +2321,8 @@
                     "edit_lovelace": {
                         "edit_title": "제목 편집",
                         "explanation": "이 제목은 Lovelace UI 모든 뷰의 상단에 표시됩니다.",
-                        "header": "Lovelace UI 의 제목"
+                        "header": "Lovelace UI 의 제목",
+                        "title": "제목"
                     },
                     "edit_view": {
                         "add": "뷰 추가",
@@ -2676,6 +2685,10 @@
                     "last_used": "{date} 에  {location} 에서 마지막으로 사용됨",
                     "not_used": "사용된 적이 없음",
                     "token_title": "{clientId} 의 리프레시 토큰"
+                },
+                "suspend": {
+                    "description": "Home Assistant UI 가 5분 동안 보이지 않는 경우 서버와의 연결을 종료시킬까요?",
+                    "header": "자동 연결 종료"
                 },
                 "themes": {
                     "dropdown_label": "테마",

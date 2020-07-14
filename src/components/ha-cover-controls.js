@@ -65,6 +65,7 @@ class HaCoverControls extends PolymerElement {
   computeOpenIcon(stateObj) {
     switch (stateObj.attributes.device_class) {
       case "awning":
+      case "door":
       case "gate":
         return "hass:arrow-expand-horizontal";
       default:
@@ -75,6 +76,7 @@ class HaCoverControls extends PolymerElement {
   computeCloseIcon(stateObj) {
     switch (stateObj.attributes.device_class) {
       case "awning":
+      case "door":
       case "gate":
         return "hass:arrow-collapse-horizontal";
       default:

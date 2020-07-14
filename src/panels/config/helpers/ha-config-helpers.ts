@@ -33,6 +33,7 @@ import { HELPER_DOMAINS } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
 import "../../../components/ha-svg-icon";
 import { mdiPlus } from "@mdi/js";
+import { computeRTL } from "../../../common/util/compute_rtl";
 
 @customElement("ha-config-helpers")
 export class HaConfigHelpers extends LitElement {
@@ -154,11 +155,15 @@ export class HaConfigHelpers extends LitElement {
         .data=${this._getItems(this._stateItems)}
         @row-click=${this._openEditDialog}
         hasFab
+        .noDataText=${this.hass.localize(
+          "ui.panel.config.helpers.picker.no_helpers"
+        )}
       >
       </hass-tabs-subpage-data-table>
       <mwc-fab
         ?is-wide=${this.isWide}
         ?narrow=${this.narrow}
+        ?rtl=${computeRTL(this.hass!)}
         title="${this.hass.localize(
           "ui.panel.config.helpers.picker.add_helper"
         )}"
@@ -224,6 +229,15 @@ export class HaConfigHelpers extends LitElement {
       }
       mwc-fab[narrow] {
         bottom: 84px;
+      }
+      mwc-fab[rtl] {
+        right: auto;
+        left: 16px;
+      }
+      mwc-fab[is-wide][rtl] {
+        bottom: 24px;
+        left: 24px;
+        right: auto;
       }
     `;
   }

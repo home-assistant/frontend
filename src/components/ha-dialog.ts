@@ -5,6 +5,7 @@ import "./ha-icon-button";
 import { css, CSSResult, customElement, html } from "lit-element";
 import type { Constructor, HomeAssistant } from "../types";
 import { mdiClose } from "@mdi/js";
+import { computeRTL } from "../common/util/compute_rtl";
 
 const MwcDialog = customElements.get("mwc-dialog") as Constructor<Dialog>;
 
@@ -13,6 +14,7 @@ export const createCloseHeading = (hass: HomeAssistant, title: string) => html`
   <mwc-icon-button
     aria-label=${hass.localize("ui.dialogs.generic.close")}
     dialogAction="close"
+    ?rtl=${computeRTL(hass)}
     class="header_button"
   >
     <ha-svg-icon path=${mdiClose}></ha-svg-icon>
@@ -21,6 +23,12 @@ export const createCloseHeading = (hass: HomeAssistant, title: string) => html`
 
 @customElement("ha-dialog")
 export class HaDialog extends MwcDialog {
+  protected renderHeading() {
+    return html`<slot name="heading">
+      ${super.renderHeading()}
+    </slot>`;
+  }
+
   protected static get styles(): CSSResult[] {
     return [
       style,
@@ -38,15 +46,24 @@ export class HaDialog extends MwcDialog {
           display: block;
           height: 20px;
         }
-        .mdc-dialog__content {
+        .mdc-dialog .mdc-dialog__content {
+          position: var(--dialog-content-position, relative);
           padding: var(--dialog-content-padding, 20px 24px);
+        }
+        .mdc-dialog .mdc-dialog__surface {
+          position: var(--dialog-content-position, relative);
+          min-height: var(--mdc-dialog-min-height, auto);
         }
         .header_button {
           position: absolute;
           right: 16px;
-          top: 12px;
+          top: 10px;
           text-decoration: none;
           color: inherit;
+        }
+        mwc-icon-button[rtl].header_button {
+          right: auto;
+          left: 16px;
         }
       `,
     ];

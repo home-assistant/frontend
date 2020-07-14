@@ -43,7 +43,7 @@ import {
   ThermostatCardConfig,
 } from "../cards/types";
 import { processEditorEntities } from "../editor/process-editor-entities";
-import { LovelaceRowConfig, WeblinkConfig } from "../entity-rows/types";
+import { LovelaceRowConfig } from "../entity-rows/types";
 
 const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
 const DOMAINS_BADGES = [
@@ -143,15 +143,6 @@ export const computeCards = (
         entity: entityId,
       };
       cards.push(cardConfig);
-    } else if (domain === "history_graph" && stateObj) {
-      const cardConfig = {
-        type: "history-graph",
-        entities: stateObj.attributes.entity_id,
-        hours_to_show: stateObj.attributes.hours_to_show,
-        title: stateObj.attributes.friendly_name,
-        refresh_interval: stateObj.attributes.refresh,
-      };
-      cards.push(cardConfig);
     } else if (domain === "humidifier") {
       const cardConfig: HumidifierCardConfig = {
         type: "humidifier",
@@ -182,15 +173,6 @@ export const computeCards = (
         entity: entityId,
       };
       cards.push(cardConfig);
-    } else if (domain === "weblink" && stateObj) {
-      const conf: WeblinkConfig = {
-        type: "weblink",
-        url: stateObj.state,
-      };
-      if ("icon" in stateObj.attributes) {
-        conf.icon = stateObj.attributes.icon;
-      }
-      entities.push(conf);
     } else if (
       domain === "sensor" &&
       stateObj?.attributes.device_class === SENSOR_DEVICE_CLASS_BATTERY

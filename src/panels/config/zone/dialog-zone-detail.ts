@@ -8,6 +8,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { addDistanceToCoord } from "../../../common/location/add_distance_to_coord";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-switch";
@@ -22,6 +23,7 @@ import {
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { ZoneDetailDialogParams } from "./show-dialog-zone-detail";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
 
 class DialogZoneDetail extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -44,7 +46,7 @@ class DialogZoneDetail extends LitElement {
 
   @property() private _submitting = false;
 
-  public async showDialog(params: ZoneDetailDialogParams): Promise<void> {
+  public showDialog(params: ZoneDetailDialogParams): void {
     this._params = params;
     this._error = undefined;
     if (this._params.entry) {
@@ -73,7 +75,11 @@ class DialogZoneDetail extends LitElement {
       this._passive = false;
       this._radius = 100;
     }
-    await this.updateComplete;
+  }
+
+  public closeDialog(): void {
+    this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render(): TemplateResult {
@@ -92,7 +98,7 @@ class DialogZoneDetail extends LitElement {
     return html`
       <ha-dialog
         open
-        @closing="${this._close}"
+        @closed="${this.closeDialog}"
         scrimClickAction=""
         escapeKeyAction=""
         .heading=${createCloseHeading(
@@ -186,6 +192,7 @@ class DialogZoneDetail extends LitElement {
               .label=${this.hass!.localize(
                 "ui.panel.config.zone.detail.passive"
               )}
+              .dir=${computeRTLDirection(this.hass)}
             >
               <ha-switch
                 .checked=${this._passive}
@@ -272,10 +279,6 @@ class DialogZoneDetail extends LitElement {
     } finally {
       this._submitting = false;
     }
-  }
-
-  private _close(): void {
-    this._params = undefined;
   }
 
   static get styles(): CSSResult[] {

@@ -1431,6 +1431,7 @@
                         "delete_confirm": "Czy na pewno chcesz usunąć tę integrację?",
                         "device_unavailable": "urządzenie niedostępne",
                         "devices": "{count} {count, plural,\n  one {urządzenie}\n  few {urządzenia}\n  many {urządzeń}\n  other {urządzeń}\n}",
+                        "documentation": "Dokumentacja",
                         "entities": "{count} {count, plural,\n  one {encja}\n  few {encje}\n  many {encji}\n  other {encji}\n}",
                         "entity_unavailable": "encja niedostępna",
                         "firmware": "oprogramowanie: {version}",
@@ -1583,7 +1584,7 @@
                     }
                 },
                 "mqtt": {
-                    "button": "Konfiguruj",
+                    "button": "Konfiguracja",
                     "description_listen": "Nasłuch tematu",
                     "description_publish": "Opublikuj pakiet",
                     "listening_to": "Nasłuchiwanie...",
@@ -1784,7 +1785,7 @@
                         "caption": "Dodaj urządzenia",
                         "description": "Dodaj urządzenia do sieci Zigbee"
                     },
-                    "button": "Konfiguruj",
+                    "button": "Konfiguracja",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atrybuty wybranego klastra",
@@ -1905,7 +1906,7 @@
                     "no_zones_created_yet": "Wygląda na to, że nie utworzyłeś jeszcze żadnych stref."
                 },
                 "zwave": {
-                    "button": "Konfiguruj",
+                    "button": "Konfiguracja",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "Indeks",
@@ -2676,6 +2677,10 @@
                     "last_used": "Ostatnio używany {date} z {location}",
                     "not_used": "Nigdy nie był używany",
                     "token_title": "Token dla {clientId}"
+                },
+                "suspend": {
+                    "description": "Czy połączenie z serwerem powinno być zamykane, jeśli jest ukryte przez 5 minut?",
+                    "header": "Automatyczne zamykanie połączenia"
                 },
                 "themes": {
                     "dropdown_label": "Motyw",

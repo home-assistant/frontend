@@ -48,6 +48,19 @@
                 "none": "Keine",
                 "sleep": "Schlafen"
             }
+        },
+        "humidifier": {
+            "mode": {
+                "auto": "Automatisch",
+                "away": "Abwesend",
+                "baby": "Baby",
+                "boost": "Boost",
+                "comfort": "Komfort",
+                "eco": "Eco",
+                "home": "Zu Hause",
+                "normal": "Normal",
+                "sleep": "Schlafen"
+            }
         }
     },
     "state_badge": {
@@ -388,6 +401,12 @@
                 "reverse": "Rückwärts",
                 "speed": "Geschwindigkeit"
             },
+            "humidifier": {
+                "humidity": "Soll-Luftfeuchtigkeit",
+                "mode": "Modus",
+                "on_entity": "{name} eingeschaltet",
+                "target_humidity_entity": "{name} Soll-Luftfeuchtigkeit"
+            },
             "light": {
                 "brightness": "Helligkeit",
                 "color_temperature": "Farbtemperatur",
@@ -483,6 +502,7 @@
             "menu": "Menü",
             "next": "Weiter",
             "no": "Nein",
+            "overflow_menu": "Überlauf-Menü",
             "previous": "Vorher",
             "refresh": "Aktualisieren",
             "save": "Speichern",
@@ -504,6 +524,14 @@
                 "area": "Bereich",
                 "clear": "Löschen",
                 "show_areas": "Bereiche anzeigen"
+            },
+            "data-table": {
+                "search": "Suche"
+            },
+            "date-range-picker": {
+                "end_date": "Enddatum",
+                "select": "Auswählen",
+                "start_date": "Anfangsdatum"
             },
             "device-picker": {
                 "clear": "Löschen",
@@ -694,6 +722,7 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Geräte über dieses Gerät hinzufügen",
+                    "clusters": "Cluster verwalten",
                     "reconfigure": "Gerät neu konfigurieren",
                     "remove": "Gerät entfernen",
                     "zigbee_information": "ZigBee-Gerätesignatur"
@@ -1330,6 +1359,7 @@
                             "confirm_text": "Du solltest sie aus deiner Lovelace-Konfiguration und deinen Automatisierungen entfernen, wenn sie diese Entitäten enthalten.",
                             "confirm_title": "Möchtest du {number} Entitäten entfernen?"
                         },
+                        "search": "Entitäten suchen",
                         "selected": "{number} ausgewählt",
                         "status": {
                             "disabled": "Deaktiviert",
@@ -1360,7 +1390,8 @@
                             "entity_id": "Entitäts-ID",
                             "name": "Name",
                             "type": "Typ"
-                        }
+                        },
+                        "no_helpers": "Sieht so aus, als hätten Sie noch keine Helfer!"
                     },
                     "types": {
                         "input_boolean": "Umschalten",
@@ -1390,6 +1421,11 @@
                     "system_health_error": "System Health-Komponente wird nicht geladen. Füge 'system_health:' zu configuration.yaml hinzu",
                     "title": "Info"
                 },
+                "integration_panel_move": {
+                    "link_integration_page": "Integrationsseite",
+                    "missing_zha": "Vermissen Sie das ZHA-Konfigurationspanel? Es wurde in den ZHA-Eintrag auf der {integrations_page} verschoben.",
+                    "missing_zwave": "Vermissen Sie das Z-Wave-Konfigurationspanel? Es wurde in den Z-Wave-Eintrag auf der {integrations_page} verschoben."
+                },
                 "integrations": {
                     "add_integration": "Integration hinzufügen",
                     "caption": "Integrationen",
@@ -1400,6 +1436,7 @@
                         "delete_confirm": "Möchtest du diese Integration wirklich löschen?",
                         "device_unavailable": "Gerät nicht verfügbar",
                         "devices": "{count} {count, plural,\n one {Gerät}\n other {Geräte}\n}",
+                        "documentation": "Dokumentation",
                         "entities": "{count} {count, plural,\none {Entität}\nother {Entitäten}\n}",
                         "entity_unavailable": "Entität nicht verfügbar",
                         "firmware": "Firmware: {version}",
@@ -1458,7 +1495,8 @@
                     "note_about_integrations": "Nicht alle Integrationen können über die Benutzeroberfläche konfiguriert werden.",
                     "note_about_website_reference": "Weitere Informationen findest Du auf der ",
                     "rename_dialog": "Bearbeite den Namen dieses Konfigurationseintrags",
-                    "rename_input_label": "Eintragsname"
+                    "rename_input_label": "Eintragsname",
+                    "search": "Such-Integrationen"
                 },
                 "introduction": "Hier ist es möglich, deine Komponenten und Home Assistant zu konfigurieren. Noch ist nicht alles über die GUI einstellbar, aber wir arbeiten daran.",
                 "logs": {
@@ -1552,6 +1590,7 @@
                     }
                 },
                 "mqtt": {
+                    "button": "Konfigurieren",
                     "description_listen": "Auf einen Topic hören",
                     "description_publish": "Ein Paket veröffentlichen",
                     "listening_to": "Anhören von",
@@ -1672,6 +1711,11 @@
                             "core": "Ort & Anpassungen neu laden",
                             "group": "Gruppen neu laden",
                             "heading": "Neuladen der YAML-Konfiguration",
+                            "input_boolean": "Eingabe-Booleans neu laden",
+                            "input_datetime": "Eingabe-Datums- und Zeitfelder neu laden",
+                            "input_number": "Eingabenummern neu laden",
+                            "input_select": "Eingabe-Auswahl neu laden",
+                            "input_text": "Eingabetexte neu laden",
                             "introduction": "Einige Komponenten von Home Assistant können ohne einen Neustart neu geladen werden. \"Neu laden\" entlädt dabei die aktuelle Konfiguration und lädt die neue Konfiguration.",
                             "person": "Personen neu laden",
                             "scene": "Szenen neu laden",
@@ -2024,11 +2068,23 @@
             },
             "history": {
                 "period": "Zeitraum",
+                "ranges": {
+                    "last_week": "Letzte Woche",
+                    "this_week": "Diese Woche",
+                    "today": "Heute",
+                    "yesterday": "Gestern"
+                },
                 "showing_entries": "Zeige Einträge für"
             },
             "logbook": {
                 "entries_not_found": "Keine Logbucheinträge gefunden.",
                 "period": "Zeitraum",
+                "ranges": {
+                    "last_week": "Letzte Woche",
+                    "this_week": "Diese Woche",
+                    "today": "Heute",
+                    "yesterday": "Gestern"
+                },
                 "showing_entries": "Zeige Einträge für"
             },
             "lovelace": {
@@ -2144,6 +2200,7 @@
                             "name": "Name",
                             "no_theme": "Kein Theme",
                             "refresh_interval": "Aktualisierungsintervall",
+                            "search": "Suche",
                             "secondary_info_attribute": "Zweites Infoattribut",
                             "show_icon": "Symbol anzeigen?",
                             "show_name": "Namen anzeigen?",
@@ -2167,6 +2224,10 @@
                         "horizontal-stack": {
                             "description": "Mit der Karte \"Horizontaler Stapel\" kannst du mehrere Karten so gruppieren, dass sie immer nebeneinander sitzen und gemeinsam die Breite einer Spalte einnehmen.",
                             "name": "Horizontaler Stapel"
+                        },
+                        "humidifier": {
+                            "description": "Die Luftbefeuchter-Karte gibt dir die Kontrolle über deine Luftbefeuchter-Entität. Sie ermöglicht es dir, die Luftfeuchtigkeit und den Modus der Entität zu ändern.",
+                            "name": "Luftbefeuchter"
                         },
                         "iframe": {
                             "description": "Mit der Webseiten-Karte kannst du deine Lieblingswebseite direkt in Home Assistant einbetten.",
@@ -2260,7 +2321,8 @@
                     "edit_lovelace": {
                         "edit_title": "Titel bearbeiten",
                         "explanation": "Dieser Titel wird überhalb aller deiner Lovelace Ansichten gezeigt.",
-                        "header": "Titel deiner Lovelace UI"
+                        "header": "Titel deiner Lovelace UI",
+                        "title": "Titel"
                     },
                     "edit_view": {
                         "add": "Ansicht hinzufügen",
@@ -2623,6 +2685,10 @@
                     "last_used": "Zuletzt verwendet am {date} in {location}",
                     "not_used": "Wurde noch nie benutzt",
                     "token_title": "Aktualisierungs-Token für {clientId}"
+                },
+                "suspend": {
+                    "description": "Sollen wir die Verbindung zum Server schließen, nachdem sie 5 Minuten lang versteckt war?",
+                    "header": "Verbindung automatisch schließen"
                 },
                 "themes": {
                     "dropdown_label": "Thema",

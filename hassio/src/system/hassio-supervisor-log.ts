@@ -13,7 +13,7 @@ import {
 } from "lit-element";
 import "../../../src/components/ha-card";
 import { fetchHassioLogs } from "../../../src/data/hassio/supervisor";
-import "../../../src/layouts/loading-screen";
+import "../../../src/layouts/hass-loading-screen";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import "../components/hassio-ansi-to-html";
@@ -98,7 +98,7 @@ class HassioSupervisorLog extends LitElement {
             ? html`<hassio-ansi-to-html
                 .content=${this._content}
               ></hassio-ansi-to-html>`
-            : html`<loading-screen></loading-screen>`}
+            : html`<hass-loading-screen no-toolbar></hass-loading-screen>`}
         </div>
         <div class="card-actions">
           <mwc-button @click=${this._refresh}>Refresh</mwc-button>

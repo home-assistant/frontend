@@ -52,9 +52,14 @@
         "humidifier": {
             "mode": {
                 "auto": "Auto",
+                "away": "Ausente",
+                "baby": "Bebê",
+                "boost": "Impulso",
                 "comfort": "Conforto",
                 "eco": "Eco",
-                "normal": "Normal"
+                "home": "Início",
+                "normal": "Normal",
+                "sleep": "Dormir"
             }
         }
     },
@@ -497,6 +502,7 @@
             "menu": "Menu",
             "next": "Seguinte",
             "no": "Não",
+            "overflow_menu": "Abrir menu Lovelace IU",
             "previous": "Anterior",
             "refresh": "Atualizar",
             "save": "Guardar",
@@ -518,6 +524,11 @@
                 "area": "Área",
                 "clear": "Limpar",
                 "show_areas": "Mostrar áreas"
+            },
+            "date-range-picker": {
+                "end_date": "Data de fim",
+                "select": "Selecione",
+                "start_date": "Data de início"
             },
             "device-picker": {
                 "clear": "Apagar",
@@ -617,6 +628,7 @@
                     "max": "Valor máximo",
                     "min": "Valor mínimo",
                     "mode": "Modo de exibição",
+                    "slider": "Controlador deslizante",
                     "step": "Tamanho do passo",
                     "unit_of_measurement": "Unidade de medida"
                 },
@@ -706,10 +718,11 @@
             },
             "zha_device_info": {
                 "buttons": {
-                    "add": "Adicionar Dispositivos",
+                    "add": "Adicionar dispositivos através deste dispositivo",
+                    "clusters": "Gerir utilizadores",
                     "reconfigure": "Reconfigurar Dispositivo",
                     "remove": "Remover Dispositivo",
-                    "zigbee_information": "Informação Zigbee"
+                    "zigbee_information": "Assinatura do dispositivo Zigbee"
                 },
                 "confirmations": {
                     "remove": "Tem a certeza que deseja remover este dispositivo?"
@@ -729,7 +742,7 @@
                 "unknown": "Desconhecido",
                 "zha_device_card": {
                     "area_picker_label": "Área",
-                    "device_name_placeholder": "Nome do utilizador",
+                    "device_name_placeholder": "Alterar o nome do dispositivo",
                     "update_name_button": "Atualizar Nome"
                 }
             }
@@ -756,7 +769,7 @@
             "connection_lost": "Ligação perdida. A ligar de novo...",
             "service_call_failed": "Falha ao chamar o serviço {service}.",
             "started": "Home Assistant já iniciou",
-            "starting": "Home Assistant está a inicializar, nem tudo estará disponivel até o processo concluir.",
+            "starting": "Home Assistant está a inicializar, nem tudo estará disponível até o processo concluir.",
             "triggered": "Despoletado {name}"
         },
         "panel": {
@@ -1076,7 +1089,7 @@
                         },
                         "integrations": "Integrações",
                         "integrations_introduction": "As integrações para o Home Assistant Cloud permitem-lhe ligar-se aos serviços na nuvem sem ter de expor publicamente o seu Home Assistant na Internet.",
-                        "integrations_introduction2": "Consulte o site para ",
+                        "integrations_introduction2": "Consulte o site para",
                         "integrations_link_all_features": " todas as funcionalidades disponíveis",
                         "manage_account": "Gerir conta",
                         "nabu_casa_account": "Conta Nabu Casa",
@@ -1135,12 +1148,12 @@
                         "webhook_for": "Webhook para {name}"
                     },
                     "forgot_password": {
-                        "check_your_email": "Verifique o seu e-mail para obter instruções sobre como redefinir a sua senha.",
+                        "check_your_email": "Verifique o seu e-mail para obter instruções sobre como redefinir a sua palavra-passe.",
                         "email": "",
                         "email_error_msg": "E-mail inválido",
                         "instructions": "Introduza o seu endereço de e-mail e nós lhe enviaremos um link para redefinir sua password.",
                         "send_reset_email": "Enviar e-mail de redefinição",
-                        "subtitle": "Esquecer a senha",
+                        "subtitle": "Esqueceu-se da palavra-passe?",
                         "title": "Esqueci-me da palavra-passe"
                     },
                     "google": {
@@ -1158,7 +1171,7 @@
                         "dismiss": "Fechar",
                         "email": "",
                         "email_error_msg": "E-mail inválido",
-                        "forgot_password": "Esqueceu-se da senha?",
+                        "forgot_password": "Esqueceu-se da palavra-passe?",
                         "introduction": "O Home Assistant Cloud fornece uma conexão remota segura à sua instância enquanto estiver fora de casa. Também permite que você se conecte com serviços que apenas utilizam a nuvem: Amazon Alexa e Google Assistant.",
                         "introduction2": "Este serviço é gerido pelo nosso parceiro ",
                         "introduction2a": ", uma empresa criada pelos fundadores do Home Assistant e do Hass.io.",
@@ -1185,7 +1198,7 @@
                         "information2": "A avaliação gratuita dará acesso a todos os benefícios do Home Assistant Cloud, incluindo:",
                         "information3": "Este serviço é executado pelo nosso parceiro",
                         "information3a": ", uma empresa criada pelos fundadores do Home Assistant e do Hass.io.",
-                        "information4": "Ao registrar uma conta, concorda com os seguintes termos e condições.",
+                        "information4": "Ao registar uma conta, concorda com os seguintes termos e condições.",
                         "link_privacy_policy": "Política de privacidade",
                         "link_terms_conditions": "Termos e condições",
                         "password": "Palavra-passe",
@@ -1235,6 +1248,7 @@
                     "attributes_set": "Os seguintes atributos de uma entidade são definidos por meio de programação.",
                     "caption": "Personalização",
                     "description": "Personalizar as suas entidades",
+                    "different_include": "Possivelmente através de um domínio, um glob ou um include diferente.",
                     "pick_attribute": "Escolha um atributo para substituir.",
                     "picker": {
                         "entity": "Entidade",
@@ -1283,7 +1297,7 @@
                     "device_not_found": "Dispositivo não encontrado.",
                     "entities": {
                         "add_entities_lovelace": "Adicionar ao Lovelace",
-                        "disabled_entities": "+{count} {count, plural,\n uma {entity}\n outras {entities}\n}",
+                        "disabled_entities": "+{count} {count, plural,\n  one {entidade inactiva}\n  other {entidades inactivas}\n}",
                         "entities": "Entidades",
                         "hide_disabled": "Mostrar entidades desativadas",
                         "none": "Este dispositivo não possui entidades"
@@ -1292,6 +1306,7 @@
                     "no_devices": "Sem dispositivos",
                     "scene": {
                         "create": "Criar cena com o dispositivo",
+                        "no_scenes": "Sem cenários",
                         "scenes": "Cenas"
                     },
                     "scenes": "Cenas",
@@ -1338,6 +1353,7 @@
                             "button": "Remover selecionado",
                             "confirm_partly_text": "Você pode remover apenas {removable} das {selected} entidades selecionadas. As entidades só podem ser removidas quando a integração deixar de suportá-las. Por vezes é necessário reiniciar o Home Assistant antes de poder remover as entidades de uma integração removida. Tem a certeza de que deseja remover as entidades removíveis?",
                             "confirm_partly_title": "Somente {número} entidades selecionadas podem ser removidas.",
+                            "confirm_text": "Deve remover da configuração do Lovelace e das automações se contêm estas entidades",
                             "confirm_title": "Deseja remover {number} entidades?"
                         },
                         "selected": "Selecionou {number}",
@@ -1376,12 +1392,15 @@
                         "input_boolean": "Interruptor",
                         "input_datetime": "Data e/ou hora",
                         "input_number": "Número",
+                        "input_select": "Lista de selecção",
                         "input_text": "Texto"
                     }
                 },
                 "info": {
                     "built_using": "Construído com",
+                    "caption": "Informação",
                     "custom_uis": "IUs personalizados:",
+                    "description": "Saiba mais sobre o Home Assistant Cloud",
                     "developed_by": "Desenvolvido por um punhado de pessoas incríveis.",
                     "documentation": "Documentação",
                     "frontend": "",
@@ -1397,6 +1416,11 @@
                     "system_health_error": "O componente System Health não está carregado. Adicione 'system_health:' ao configuration.yaml",
                     "title": "Informações"
                 },
+                "integration_panel_move": {
+                    "link_integration_page": "Página de Integrações",
+                    "missing_zha": "Falta o painel de configuração do Z-Wave? Foi movido para a entrada do Z-Wave na {integrations_page} .",
+                    "missing_zwave": "Falta o painel de configuração do Z-Wave? Foi movido para a entrada do Z-Wave na {integrations_page} ."
+                },
                 "integrations": {
                     "add_integration": "Adicionar integração",
                     "caption": "Integrações",
@@ -1406,8 +1430,9 @@
                         "delete_button": "Apagar {integration}",
                         "delete_confirm": "Tem a certeza que pretende apagar esta integração?",
                         "device_unavailable": "Dispositivo indisponível",
-                        "devices": "{count} {count, plural,\n um {entity}\n outros {entities}\n}",
-                        "entities": "{count} {count, plural,\n uma {entity}\n outras {entities}\n}",
+                        "devices": "{count} {count, plural,\n one {dispositivo}\n other {dispositivos}\n}",
+                        "documentation": "Documentação",
+                        "entities": "{count} {count, plural,\n  one {entidade}\n  other {entidades}\n}",
                         "entity_unavailable": "Entidade indisponível",
                         "firmware": "Firmware: {version}",
                         "hub": "Conectado via",
@@ -1469,7 +1494,9 @@
                 },
                 "introduction": "Aqui é possível configurar os seus componentes e o Home Assistant. Nem tudo é possível de ser configurado a partir da Interface Gráfica, mas estamos a trabalhar para isso.",
                 "logs": {
+                    "caption": "Logs",
                     "clear": "Limpar",
+                    "description": "Exibir os logs do Assistente Inicial",
                     "details": "Detalhes do log ( {level} )",
                     "load_full_log": "Carregar log completo do Home Assistant",
                     "loading_log": "A carregar o log de erros...",
@@ -1678,8 +1705,11 @@
                             "core": "Recarregar localização e personalizações",
                             "group": "Recarregar grupos",
                             "heading": "A recarregar a configuração YAML",
+                            "input_boolean": "Recarregar booleanos de entrada",
                             "input_datetime": "Recarregar input date times",
-                            "input_select": "Recarregar da",
+                            "input_number": "Recarregar input numbers",
+                            "input_select": "Recarregar input selects",
+                            "input_text": "Recarregar input texts",
                             "introduction": "Algumas partes do Home Assistant podem ser recarregadas sem a necessidade de reiniciar. Ao carregar em Recarregar a configuração irá descartar a configuração atual e carregar a nova.",
                             "person": "Recarregar pessoas",
                             "scene": "Recarregar cenas",
@@ -1728,7 +1758,7 @@
                         "owner": "Proprietário",
                         "system_generated": "Gerado pelo sistema",
                         "system_generated_users_not_editable": "Não foi possível atualizar os utilizadores gerados pelo sistema.",
-                        "system_generated_users_not_removable": "Não é possível remover usuários gerados pelo sistema.",
+                        "system_generated_users_not_removable": "Não é possível remover utilizadores gerados pelo sistema.",
                         "unnamed_user": "Utilizador sem nome",
                         "update_user": "Atualizar"
                     },
@@ -1738,12 +1768,16 @@
                             "name": "Nome",
                             "system": "Sistema"
                         }
-                    }
+                    },
+                    "users_privileges_note": "O grupo de utilizadores é um trabalho em progresso. O utilizador não poderá administrar a instância por meio da interface de utilizador. Ainda estamos a auditar todos os endpoints da API de gestão para garantir que eles limitam corretamente o acesso aos administradores."
                 },
                 "zha": {
                     "add_device_page": {
+                        "discovered_text": "Os dispositivos aparecem aqui uma vez descobertos.",
                         "discovery_text": "Os dispositivos descobertos aparecerão aqui. Siga as instruções para o(s) seu(s) dispositivo(s) e coloque o(s) dispositivo(s) em modo de emparelhamento.",
                         "header": "Zigbee Home Automation - Adicionar dispositivos",
+                        "no_devices_found": "Nenhum dispositivo encontrado, verifique se eles estão no modo de emparelhamento e mantenha-os acordados enquanto a descoberta está em execução.",
+                        "pairing_mode": "Verifique se seus dispositivos estão no modo de emparelhamento. Verifique as instruções do seu dispositivo sobre como fazer isso.",
                         "search_again": "Pesquisar Novamente",
                         "spinner": "À procura de dispositivos ZHA Zigbee..."
                     },
@@ -1751,6 +1785,7 @@
                         "caption": "Adicionar Dispositivos",
                         "description": "Adicionar dispositivos à rede Zigbee"
                     },
+                    "button": "Configurar",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributos do cluster selecionado",
@@ -1829,6 +1864,9 @@
                         "header": "Gestão ",
                         "introduction": "Comandos que afetam toda a rede"
                     },
+                    "network": {
+                        "caption": "Rede"
+                    },
                     "node_management": {
                         "header": "Gestão dispositivos",
                         "help_node_dropdown": "Selecione um dispositivo para visualizar as opções por dispositivo.",
@@ -1868,6 +1906,7 @@
                     "no_zones_created_yet": "Parece que você ainda não criou nenhuma zona."
                 },
                 "zwave": {
+                    "button": "Configurar UI",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "Índice",
@@ -1901,25 +1940,52 @@
                         "true": "Verdadeiro"
                     },
                     "node_management": {
-                        "exclude_entity": "Excluir esta entidade do Home Assistant"
+                        "add_to_group": "Adicionar ao Grupo",
+                        "entities": "Entidades deste nó",
+                        "entity_info": "Definições da entidade",
+                        "exclude_entity": "Excluir esta entidade do Home Assistant",
+                        "group": "Grupo",
+                        "header": "Gestão de nó Z-Wave",
+                        "introduction": "Execute comandos do Z-Wave que afetam um único nó. Escolha um nó para ver uma lista dos comandos disponíveis.",
+                        "max_associations": "Máximo de Associações:",
+                        "node_group_associations": "Associações de grupos de nós",
+                        "node_protection": "Proteção de nó",
+                        "node_to_control": "Configurar opçoes do nó",
+                        "nodes": "Nós",
+                        "nodes_hint": "Selecione o nó para visualizar as opções por nó",
+                        "nodes_in_group": "Outros nós neste grupo:",
+                        "pooling_intensity": "Intensidade de interrogação",
+                        "protection": "Proteção",
+                        "remove_broadcast": "Remover Difusão",
+                        "remove_from_group": "Remover do Grupo",
+                        "set_protection": "Definir proteção"
                     },
                     "ozw_log": {
                         "header": "Log OZW",
-                        "introduction": "Veja o log. 0 é o mínimo (carrega o log inteiro) e 1000 é o máximo. Ao carregar irá ser mostrado um log estático e a cauda será atualizada automaticamente com o último número especificado de linhas do log."
+                        "introduction": "Veja o log. 0 é o mínimo (carrega o log inteiro) e 1000 é o máximo. Ao carregar irá ser mostrado um log estático e a cauda será atualizada automaticamente com o último número especificado de linhas do log.",
+                        "last_log_lines": "Número de últimas linhas de registos",
+                        "load": "Carga",
+                        "tail": "Cauda"
                     },
                     "services": {
                         "add_node": "Adicionar nó",
                         "add_node_secure": "Adicionar nó seguro",
                         "cancel_command": "Cancelar comando",
                         "heal_network": "Curar a Rede",
+                        "heal_node": "Adicionar nó",
                         "node_info": "Informação do Nó",
+                        "print_node": "Nó de impressão",
                         "refresh_entity": "Actualizar entidade",
+                        "refresh_node": "Atualizar nó",
+                        "remove_failed_node": "Remover nó com falha",
                         "remove_node": "Remover nó",
+                        "replace_failed_node": "Substituir nó com falha",
                         "save_config": "Guardar configuração",
                         "soft_reset": "Reinicio suave",
                         "start_network": "Iniciar a rede",
                         "stop_network": "Parar a rede",
-                        "test_network": "Testar rede"
+                        "test_network": "Testar rede",
+                        "test_node": "Nó de Teste"
                     },
                     "values": {
                         "header": "Valores do Nó"
@@ -2109,12 +2175,14 @@
                             }
                         },
                         "generic": {
+                            "aspect_ratio": "Rácio de Proporção",
                             "attribute": "Atributo",
                             "camera_image": "Entidade de Câmera",
                             "camera_view": "Vista da Câmera",
                             "double_tap_action": "Ação de toque duplo",
                             "entities": "Entidades",
                             "entity": "Entidade",
+                            "hold_action": "Ação de retenção",
                             "hours_to_show": "Horas a mostrar",
                             "icon": "Ícone",
                             "icon_height": "Altura do ícone",
@@ -2151,6 +2219,7 @@
                             "name": "Agrupamento Horizontal"
                         },
                         "humidifier": {
+                            "description": "O cartão Termóstato dá-lhe o controle da sua entidade de climatização. Permitindo alterar a temperatura e o modo dessa entidade.",
                             "name": "Humidificador"
                         },
                         "iframe": {
@@ -2188,7 +2257,8 @@
                             "name": "Entidade de imagem"
                         },
                         "picture-glance": {
-                            "description": "O cartão Vista de imagem  mostra uma imagem e os estados das entidades correspondentes como um ícone. As entidades do lado direito permitem alternar ações, outras mostram a opção mais informações."
+                            "description": "O cartão Vista de imagem  mostra uma imagem e os estados das entidades correspondentes como um ícone. As entidades do lado direito permitem alternar ações, outras mostram a opção mais informações.",
+                            "name": "Vista sobre imagem"
                         },
                         "picture": {
                             "description": "O cartão de imagem permite definir uma imagem a ser usada para navegação em vários pontos na sua interface ou para chamar um serviço.",
@@ -2345,7 +2415,7 @@
                     "entity_non_numeric": "A entidade é não numérica: {entity}",
                     "entity_not_found": "Entidade não disponível: {entity}",
                     "entity_unavailable": "{entity} está indisponível no momento",
-                    "starting": "Home Assistant está a inicializar, nem tudo está já disponivel"
+                    "starting": "Home Assistant está a inicializar, nem tudo está já disponível"
                 }
             },
             "mailbox": {
@@ -2607,6 +2677,10 @@
                     "last_used": "Última utilização a {date} em {location}",
                     "not_used": "Nunca foi utilizado",
                     "token_title": "Atualizar o token de {clientId}"
+                },
+                "suspend": {
+                    "description": "Devemos fechar a conexão com o servidor depois de ficar oculto por 5 minutos?",
+                    "header": "Fechar automaticamente a conexão"
                 },
                 "themes": {
                     "dropdown_label": "Tema",

@@ -18,10 +18,6 @@ class CloudRegister extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="iron-flex ha-style">
-      .content {
-        direction: ltr;
-      }
-
       [slot=introduction] {
         margin: -1em 0;
       }

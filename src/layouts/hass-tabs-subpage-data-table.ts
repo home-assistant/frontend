@@ -20,6 +20,7 @@ import type {
 import type { HomeAssistant, Route } from "../types";
 import "./hass-tabs-subpage";
 import type { PageNavigation } from "./hass-tabs-subpage";
+import { computeRTLDirection } from "../common/util/compute_rtl";
 
 @customElement("hass-tabs-subpage-data-table")
 export class HaTabsSubpageDataTable extends LitElement {
@@ -126,6 +127,9 @@ export class HaTabsSubpageDataTable extends LitElement {
                       no-label-float
                       no-underline
                       @value-changed=${this._handleSearchChange}
+                      .label=${this.hass.localize(
+                        "ui.components.data-table.search"
+                      )}
                     ></search-input>
                     ${this.activeFilters
                       ? html`<div class="active-filters">
@@ -158,6 +162,7 @@ export class HaTabsSubpageDataTable extends LitElement {
           .hasFab=${this.hasFab}
           .id=${this.id}
           .noDataText=${this.noDataText}
+          .dir=${computeRTLDirection(this.hass)}
         >
           ${!this.narrow
             ? html`
@@ -170,6 +175,9 @@ export class HaTabsSubpageDataTable extends LitElement {
                           no-label-float
                           no-underline
                           @value-changed=${this._handleSearchChange}
+                          .label=${this.hass.localize(
+                            "ui.components.data-table.search"
+                          )}
                         >
                         </search-input>
                         ${this.activeFilters
@@ -234,7 +242,6 @@ export class HaTabsSubpageDataTable extends LitElement {
       }
       search-input.header {
         left: -8px;
-        top: -7px;
       }
       .active-filters {
         color: var(--primary-text-color);

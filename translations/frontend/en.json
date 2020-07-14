@@ -525,6 +525,9 @@
                 "clear": "Clear",
                 "show_areas": "Show areas"
             },
+            "data-table": {
+                "search": "Search"
+            },
             "date-range-picker": {
                 "end_date": "End date",
                 "select": "Select",
@@ -938,6 +941,19 @@
                         "introduction": "Use automations to bring your home alive.",
                         "load_error_not_editable": "Only automations in automations.yaml are editable.",
                         "load_error_unknown": "Error loading automation ({err_no}).",
+                        "max": {
+                            "parallel": "Max number of parallel runs",
+                            "queued": "Queue length"
+                        },
+                        "modes": {
+                            "description": "The mode controls what happens when the automation is triggered while the actions are still running from a previous trigger. Check the {documentation_link} for more info.",
+                            "documentation": "automation documentation",
+                            "label": "Mode",
+                            "parallel": "Parallel (default)",
+                            "queued": "Queued",
+                            "restart": "Restart",
+                            "single": "Single"
+                        },
                         "move_down": "Move down",
                         "move_up": "Move up",
                         "save": "Save",
@@ -1356,6 +1372,7 @@
                             "confirm_text": "You should remove them from your Lovelace config and automations if they contain these entities.",
                             "confirm_title": "Do you want to remove {number} entities?"
                         },
+                        "search": "Search entities",
                         "selected": "{number} selected",
                         "status": {
                             "disabled": "Disabled",
@@ -1386,7 +1403,8 @@
                             "entity_id": "Entity ID",
                             "name": "Name",
                             "type": "Type"
-                        }
+                        },
+                        "no_helpers": "Looks like you don't have any helpers yet!"
                     },
                     "types": {
                         "input_boolean": "Toggle",
@@ -1490,7 +1508,8 @@
                     "note_about_integrations": "Not all integrations can be configured via the UI yet.",
                     "note_about_website_reference": "More are available on the ",
                     "rename_dialog": "Edit the name of this config entry",
-                    "rename_input_label": "Entry name"
+                    "rename_input_label": "Entry name",
+                    "search": "Search integrations"
                 },
                 "introduction": "Here it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
                 "logs": {
@@ -1679,6 +1698,19 @@
                         "introduction": "Use scripts to execute a sequence of actions.",
                         "link_available_actions": "Learn more about available actions.",
                         "load_error_not_editable": "Only scripts inside scripts.yaml are editable.",
+                        "max": {
+                            "parallel": "Max number of parallel runs",
+                            "queued": "Queue length"
+                        },
+                        "modes": {
+                            "description": "The mode controls what happens when script is invoked while it is still running from one or more previous invocations. Check the {documentation_link} for more info.",
+                            "documentation": "script documentation",
+                            "label": "Mode",
+                            "parallel": "Parallel",
+                            "queued": "Queued",
+                            "restart": "Restart",
+                            "single": "Single (default)"
+                        },
                         "sequence": "Sequence",
                         "sequence_sentence": "The sequence of actions of this script."
                     },
@@ -2194,6 +2226,7 @@
                             "name": "Name",
                             "no_theme": "No theme",
                             "refresh_interval": "Refresh Interval",
+                            "search": "Search",
                             "secondary_info_attribute": "Secondary Info Attribute",
                             "show_icon": "Show Icon?",
                             "show_name": "Show Name?",
@@ -2314,7 +2347,8 @@
                     "edit_lovelace": {
                         "edit_title": "Edit title",
                         "explanation": "This title is shown above all your views in the Lovelace UI.",
-                        "header": "Title of your Lovelace UI"
+                        "header": "Title of your Lovelace UI",
+                        "title": "Title"
                     },
                     "edit_view": {
                         "add": "Add view",
@@ -2503,6 +2537,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "Your computer is not allowed.",
                                 "not_whitelisted": "Your computer is not whitelisted."
                             },
                             "step": {
@@ -2677,6 +2712,10 @@
                     "last_used": "Last used at {date} from {location}",
                     "not_used": "Has never been used",
                     "token_title": "Refresh token for {clientId}"
+                },
+                "suspend": {
+                    "description": "Should we close the connection to the server after being hidden for 5 minutes?",
+                    "header": "Automatically close connection"
                 },
                 "themes": {
                     "dropdown_label": "Theme",

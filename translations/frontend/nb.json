@@ -51,14 +51,14 @@
         },
         "humidifier": {
             "mode": {
-                "auto": "Auto",
+                "auto": "",
                 "away": "Borte",
-                "baby": "Baby",
+                "baby": "",
                 "boost": "Øke",
                 "comfort": "Komfort",
                 "eco": "Øko",
                 "home": "Hjem",
-                "normal": "Normal",
+                "normal": "",
                 "sleep": "Sove"
             }
         }
@@ -1418,8 +1418,8 @@
                 },
                 "integration_panel_move": {
                     "link_integration_page": "integrasjonsside",
-                    "missing_zha": "Mangler ZHA-konfigurasjonspanelet? Den ble flyttet til ZHA-oppføringen på {integrations_page} .",
-                    "missing_zwave": "Mangler Z-Wave-konfigurasjonspanelet? Den ble flyttet til Z-Wave-oppføringen på {integrations_page} ."
+                    "missing_zha": "Mangler ZHA konfigurasjonspanelet? Det ble flyttet til ZHA oppføringen på {integrations_page}.",
+                    "missing_zwave": "Mangler Z-Wave konfigurasjonspanelet? Det ble flyttet til Z-Wave oppføringen på {integrations_page}."
                 },
                 "integrations": {
                     "add_integration": "Legg til integrasjon",
@@ -1431,6 +1431,7 @@
                         "delete_confirm": "Er du sikker på at du vil slette denne integrasjonen?",
                         "device_unavailable": "enheten er utilgjengelig",
                         "devices": "{count} {count, plural,\n  one {enhet}\n  other {enheter}\n}",
+                        "documentation": "Dokumentasjon",
                         "entities": "{count} {count, plural,\n  one {entitet}\n  other {entiteter}\n}",
                         "entity_unavailable": "entiteten er utilgjengelig",
                         "firmware": "Fastvare: {version}",
@@ -2218,7 +2219,7 @@
                             "name": "Horisontal Stack"
                         },
                         "humidifier": {
-                            "description": "Luftfukterkortet gir kontroll over luftfukterenheten din. Lar deg endre fuktigheten og modusen til enheten.",
+                            "description": "Luftfukter kortet gir kontroll over luftfukter enheten din. Lar deg endre fuktigheten og modusen til enheten.",
                             "name": "Luftfukter"
                         },
                         "iframe": {
@@ -2676,6 +2677,10 @@
                     "last_used": "Sist brukt den {date} fra {location}",
                     "not_used": "Har aldri blitt brukt",
                     "token_title": "Oppdateringstoken for {clientId}"
+                },
+                "suspend": {
+                    "description": "Skal vi lukke tilkoblingen til serveren etter å ha vært gjemt i 5 minutter?",
+                    "header": "Lukk tilkoblingen automatisk"
                 },
                 "themes": {
                     "dropdown_label": "Tema",

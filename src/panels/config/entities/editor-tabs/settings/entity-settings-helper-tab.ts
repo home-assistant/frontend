@@ -12,7 +12,6 @@ import {
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { HaPaperDialog } from "../../../../../components/dialog/ha-paper-dialog";
 import {
   ExtEntityRegistryEntry,
   removeEntityRegistryEntry,
@@ -87,8 +86,6 @@ export class EntityRegistrySettingsHelper extends LitElement {
 
   @property() public entry!: ExtEntityRegistryEntry;
 
-  @property() public dialogElement!: HaPaperDialog;
-
   @property() private _error?: string;
 
   @property() private _item?: Helper | null;
@@ -120,32 +117,30 @@ export class EntityRegistrySettingsHelper extends LitElement {
     }
     const stateObj = this.hass.states[this.entry.entity_id];
     return html`
-      <paper-dialog-scrollable .dialogElement=${this.dialogElement}>
-        ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
-        <div class="form">
-          ${!this._componentLoaded
-            ? this.hass.localize(
-                "ui.dialogs.helper_settings.platform_not_loaded",
-                "platform",
-                this.entry.platform
-              )
-            : this._item === null
-            ? this.hass.localize("ui.dialogs.helper_settings.yaml_not_editable")
-            : html`
-                <div @value-changed=${this._valueChanged}>
-                  ${dynamicElement(`ha-${this.entry.platform}-form`, {
-                    hass: this.hass,
-                    item: this._item,
-                    entry: this.entry,
-                  })}
-                </div>
-              `}
-          <ha-registry-basic-editor
-            .hass=${this.hass}
-            .entry=${this.entry}
-          ></ha-registry-basic-editor>
-        </div>
-      </paper-dialog-scrollable>
+      ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
+      <div class="form">
+        ${!this._componentLoaded
+          ? this.hass.localize(
+              "ui.dialogs.helper_settings.platform_not_loaded",
+              "platform",
+              this.entry.platform
+            )
+          : this._item === null
+          ? this.hass.localize("ui.dialogs.helper_settings.yaml_not_editable")
+          : html`
+              <span @value-changed=${this._valueChanged}>
+                ${dynamicElement(`ha-${this.entry.platform}-form`, {
+                  hass: this.hass,
+                  item: this._item,
+                  entry: this.entry,
+                })}
+              </span>
+            `}
+        <ha-registry-basic-editor
+          .hass=${this.hass}
+          .entry=${this.entry}
+        ></ha-registry-basic-editor>
+      </div>
       <div class="buttons">
         <mwc-button
           class="warning"
@@ -173,8 +168,6 @@ export class EntityRegistrySettingsHelper extends LitElement {
   private async _getItem() {
     const items = await HELPERS[this.entry.platform].fetch(this.hass!);
     this._item = items.find((item) => item.id === this.entry.unique_id) || null;
-    await this.updateComplete;
-    fireEvent(this.dialogElement as HTMLElement, "iron-resize");
   }
 
   private async _updateItem(): Promise<void> {
@@ -232,7 +225,7 @@ export class EntityRegistrySettingsHelper extends LitElement {
         padding: 0 !important;
       }
       .form {
-        padding-bottom: 24px;
+        padding: 20px 24px;
       }
       .buttons {
         display: flex;

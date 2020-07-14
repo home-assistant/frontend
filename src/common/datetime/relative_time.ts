@@ -20,31 +20,24 @@ export default function relativeTime(
   let delta = (compareTime.getTime() - dateObj.getTime()) / 1000;
   const tense = delta >= 0 ? "past" : "future";
   delta = Math.abs(delta);
-
-  let timeDesc;
+  let roundedDelta = Math.round(delta);
+  let unit = "week";
 
   for (let i = 0; i < tests.length; i++) {
-    if (delta < tests[i]) {
-      delta = Math.floor(delta);
-      timeDesc = localize(
-        `ui.components.relative_time.duration.${langKey[i]}`,
-        "count",
-        delta
-      );
+    if (roundedDelta < tests[i]) {
+      unit = langKey[i];
       break;
     }
 
     delta /= tests[i];
+    roundedDelta = Math.round(delta);
   }
 
-  if (timeDesc === undefined) {
-    delta = Math.floor(delta);
-    timeDesc = localize(
-      "ui.components.relative_time.duration.week",
-      "count",
-      delta
-    );
-  }
+  const timeDesc = localize(
+    `ui.components.relative_time.duration.${unit}`,
+    "count",
+    roundedDelta
+  );
 
   return options.includeTense === false
     ? timeDesc
