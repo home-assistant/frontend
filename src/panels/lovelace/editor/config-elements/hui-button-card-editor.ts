@@ -38,6 +38,7 @@ const cardConfigStruct = struct({
   tap_action: struct.optional(actionConfigStruct),
   hold_action: struct.optional(actionConfigStruct),
   theme: "string?",
+  show_state: "boolean?",
 });
 
 @customElement("hui-button-card-editor")
@@ -62,6 +63,10 @@ export class HuiButtonCardEditor extends LitElement
 
   get _show_name(): boolean {
     return this._config!.show_name || true;
+  }
+
+  get _show_state(): boolean {
+    return this._config!.show_state || false;
   }
 
   get _icon(): string {
@@ -155,6 +160,20 @@ export class HuiButtonCardEditor extends LitElement
               <ha-switch
                 .checked="${this._config!.show_name !== false}"
                 .configValue="${"show_name"}"
+                @change="${this._valueChanged}"
+              ></ha-switch>
+            </ha-formfield>
+          </div>
+          <div>
+            <ha-formfield
+              .label=${this.hass.localize(
+                "ui.panel.lovelace.editor.card.generic.show_state"
+              )}
+              .dir=${dir}
+            >
+              <ha-switch
+                .checked="${this._config!.show_state !== false}"
+                .configValue="${"show_state"}"
                 @change="${this._valueChanged}"
               ></ha-switch>
             </ha-formfield>
