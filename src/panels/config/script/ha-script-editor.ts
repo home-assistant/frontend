@@ -11,7 +11,6 @@ import {
   internalProperty,
   PropertyValues,
   TemplateResult,
-  internalProperty,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
