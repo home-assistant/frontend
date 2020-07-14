@@ -3,7 +3,7 @@ import "../ha-icon";
 import { customElement, html, property, LitElement } from "lit-element";
 
 @customElement("ha-battery-icon")
-class HaBatteryIcon extends LitElement {
+export class HaBatteryIcon extends LitElement {
   @property() public batteryStateObj;
 
   @property() public batteryChargingStateObj;
@@ -16,5 +16,3 @@ class HaBatteryIcon extends LitElement {
     `;
   }
 }
-
-customElements.define("ha-battery-icon", HaBatteryIcon);
