@@ -16,7 +16,9 @@ import { HomeAssistant } from "../types";
 
 @customElement("hass-loading-screen")
 class HassLoadingScreen extends LitElement {
-  @property({ type: Boolean }) public rootnav? = false;
+  @property({ type: Boolean }) public toolbar = true;
+
+  @property({ type: Boolean }) public rootnav = false;
 
   @property() public hass?: HomeAssistant;
 
@@ -24,20 +26,22 @@ class HassLoadingScreen extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <app-toolbar>
-        ${this.rootnav
-          ? html`
-              <ha-menu-button
-                .hass=${this.hass}
-                .narrow=${this.narrow}
-              ></ha-menu-button>
-            `
-          : html`
-              <ha-icon-button-arrow-prev
-                @click=${this._handleBack}
-              ></ha-icon-button-arrow-prev>
-            `}
-      </app-toolbar>
+      ${this.toolbar
+        ? html`<div class="toolbar">
+            ${this.rootnav
+              ? html`
+                  <ha-menu-button
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                  ></ha-menu-button>
+                `
+              : html`
+                  <ha-icon-button-arrow-prev
+                    @click=${this._handleBack}
+                  ></ha-icon-button-arrow-prev>
+                `}
+          </div>`
+        : ""}
       <div class="content">
         <ha-circular-progress active></ha-circular-progress>
       </div>
@@ -56,6 +60,23 @@ class HassLoadingScreen extends LitElement {
           display: block;
           height: 100%;
           background-color: var(--primary-background-color);
+        }
+        .toolbar {
+          display: flex;
+          align-items: center;
+          font-size: 20px;
+          height: 65px;
+          padding: 0 16px;
+          pointer-events: none;
+          background-color: var(--app-header-background-color);
+          font-weight: 400;
+          color: var(--app-header-text-color, white);
+          border-bottom: var(--app-header-border-bottom, none);
+          box-sizing: border-box;
+        }
+        ha-menu-button,
+        ha-icon-button-arrow-prev {
+          pointer-events: auto;
         }
         .content {
           height: calc(100% - 64px);
