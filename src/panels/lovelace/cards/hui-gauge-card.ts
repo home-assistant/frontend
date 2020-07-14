@@ -1,4 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket/dist/types";
+import Gauge from "svg-gauge";
 import {
   css,
   CSSResult,
@@ -8,9 +9,8 @@ import {
   property,
   PropertyValues,
   TemplateResult,
+  query,
 } from "lit-element";
-import { styleMap } from "lit-html/directives/style-map";
-import "@thomasloven/round-slider";
 
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -23,8 +23,6 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { GaugeCardConfig } from "./types";
-import { debounce } from "../../../common/util/debounce";
-import { installResizeObserver } from "../common/install-resize-observer";
 
 export const severityMap = {
   red: "var(--label-badge-red)",
@@ -69,18 +67,9 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
   @property() private _config?: GaugeCardConfig;
 
-  private _resizeObserver?: ResizeObserver;
+  @property() private _gauge?: any;
 
-  public connectedCallback(): void {
-    super.connectedCallback();
-    this.updateComplete.then(() => this._attachObserver());
-  }
-
-  public disconnectedCallback(): void {
-    if (this._resizeObserver) {
-      this._resizeObserver.disconnect();
-    }
-  }
+  @query("#gauge") private _gaugeElement!: HTMLDivElement;
 
   public getCardSize(): number {
     return 2;
@@ -94,6 +83,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       throw new Error("Invalid Entity");
     }
     this._config = { min: 0, max: 100, ...config };
+    this._initGauge();
   }
 
   protected render(): TemplateResult {
@@ -125,42 +115,11 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const sliderBarColor = this._computeSeverity(state);
-
-    let value: number | undefined;
-
-    if (this._config.max === null || isNaN(this._config.max!)) {
-      value = undefined;
-    } else {
-      value = Math.min(this._config.max!, state);
-    }
-
     return html`
-      <ha-card
-        @click=${this._handleClick}
-        tabindex="0"
-        style=${styleMap({
-          "--round-slider-bar-color": sliderBarColor,
-        })}
-      >
-        <round-slider
-          readonly
-          arcLength="180"
-          startAngle="180"
-          .value=${value}
-          .min=${this._config.min}
-          .max=${this._config.max}
-        ></round-slider>
-        <div class="gauge-data">
-          <div class="percent">
-            ${stateObj.state}
-            ${this._config.unit ||
-            stateObj.attributes.unit_of_measurement ||
-            ""}
-          </div>
-          <div class="name">
-            ${this._config.name || computeStateName(stateObj)}
-          </div>
+      <ha-card @click=${this._handleClick} tabindex="0">
+        <div id="gauge"></div>
+        <div class="name">
+          ${this._config.name || computeStateName(stateObj)}
         </div>
       </ha-card>
     `;
@@ -170,9 +129,11 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  protected firstUpdated(): void {
-    this._measureCard();
-    this._attachObserver();
+  protected firstUpdated(changedProps: PropertyValues): void {
+    super.firstUpdated(changedProps);
+    if (!this._gauge) {
+      this._initGauge();
+    }
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -194,74 +155,70 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
+    const oldState = oldHass?.states[this._config.entity];
+    const stateObj = this.hass.states[this._config.entity];
+    if (oldState?.state !== stateObj.state) {
+      this._gauge.setValueAnimated(stateObj.state, 1);
+    }
   }
 
-  private _computeSeverity(numberValue: number): string {
-    const sections = this._config!.severity;
-
-    if (!sections) {
-      return severityMap.normal;
+  private _initGauge() {
+    if (!this._gaugeElement || !this._config || !this.hass) {
+      return;
     }
+    if (this._gauge) {
+      this._gaugeElement.removeChild(this._gaugeElement.lastChild!);
+      this._gauge = undefined;
+    }
+    this._gauge = Gauge(this._gaugeElement, {
+      min: this._config.min,
+      max: this._config.max,
+      dialStartAngle: 180,
+      dialEndAngle: 0,
+      viewBox: "0 0 100 55",
+      label: (value) => `${Math.round(value)}
+      ${
+        this._config!.unit ||
+        this.hass?.states[this._config!.entity].attributes
+          .unit_of_measurement ||
+        ""
+      }`,
+      color: (value) => {
+        const sections = this._config!.severity;
 
-    const sectionsArray = Object.keys(sections);
-    const sortable = sectionsArray.map((severity) => [
-      severity,
-      sections[severity],
-    ]);
+        if (!sections) {
+          return severityMap.normal;
+        }
 
-    for (const severity of sortable) {
-      if (severityMap[severity[0]] == null || isNaN(severity[1])) {
+        const sectionsArray = Object.keys(sections);
+        const sortable = sectionsArray.map((severity) => [
+          severity,
+          sections[severity],
+        ]);
+
+        for (const severity of sortable) {
+          if (severityMap[severity[0]] == null || isNaN(severity[1])) {
+            return severityMap.normal;
+          }
+        }
+        sortable.sort((a, b) => a[1] - b[1]);
+
+        if (value >= sortable[0][1] && value < sortable[1][1]) {
+          return severityMap[sortable[0][0]];
+        }
+        if (value >= sortable[1][1] && value < sortable[2][1]) {
+          return severityMap[sortable[1][0]];
+        }
+        if (value >= sortable[2][1]) {
+          return severityMap[sortable[2][0]];
+        }
         return severityMap.normal;
-      }
-    }
-    sortable.sort((a, b) => a[1] - b[1]);
-
-    if (numberValue >= sortable[0][1] && numberValue < sortable[1][1]) {
-      return severityMap[sortable[0][0]];
-    }
-    if (numberValue >= sortable[1][1] && numberValue < sortable[2][1]) {
-      return severityMap[sortable[1][0]];
-    }
-    if (numberValue >= sortable[2][1]) {
-      return severityMap[sortable[2][0]];
-    }
-    return severityMap.normal;
+      },
+    });
   }
 
   private _handleClick(): void {
     fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
-  }
-
-  private async _attachObserver(): Promise<void> {
-    if (!this._resizeObserver) {
-      await installResizeObserver();
-      this._resizeObserver = new ResizeObserver(
-        debounce(() => this._measureCard(), 250, false)
-      );
-    }
-    const card = this.shadowRoot!.querySelector("ha-card");
-    // If we show an error or warning there is no ha-card
-    if (!card) {
-      return;
-    }
-    this._resizeObserver.observe(card);
-  }
-
-  private _measureCard() {
-    if (!this.isConnected) {
-      return;
-    }
-
-    if (this.offsetWidth < 200) {
-      this.setAttribute("narrow", "");
-    } else {
-      this.removeAttribute("narrow");
-    }
-    if (this.offsetWidth < 150) {
-      this.setAttribute("veryNarrow", "");
-    } else {
-      this.removeAttribute("veryNarrow");
-    }
   }
 
   static get styles(): CSSResult {
@@ -286,73 +243,31 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         outline: none;
         background: var(--divider-color);
       }
-
-      round-slider {
-        max-width: 200px;
-        --round-slider-path-width: 35px;
-        --round-slider-path-color: var(--primary-background-color);
-        --round-slider-linecap: "butt";
+      #gauge {
+        width: 100%;
+        max-width: 300px;
       }
-
-      .gauge-data {
+      .dial {
+        stroke: #ccc;
+        stroke-width: 15;
+      }
+      .value {
+        stroke-width: 15;
+      }
+      .value-text {
+        fill: #000;
+        font-size: var(--gauge-value-font-size, 1.1em);
+        transform: translate(0, -5px);
+        font-family: inherit;
+      }
+      .name {
         text-align: center;
         line-height: initial;
         color: var(--primary-text-color);
-        margin-top: -26px;
         width: 100%;
-      }
-
-      .gauge-data .percent {
-        white-space: nowrap;
-        font-size: 28px;
-      }
-
-      .gauge-data .name {
         font-size: 15px;
       }
 
-      /* ============= NARROW ============= */
-
-      :host([narrow]) ha-card {
-        padding: 8px;
-      }
-
-      :host([narrow]) round-slider {
-        --round-slider-path-width: 22px;
-      }
-
-      :host([narrow]) .gauge-data {
-        margin-top: -22px;
-      }
-
-      :host([narrow]) .gauge-data .percent {
-        font-size: 24px;
-      }
-
-      :host([narrow]) .gauge-data .name {
-        font-size: 14px;
-      }
-
-      /* ============= VERY NARROW ============= */
-
-      :host([narrow]) ha-card {
-        padding: 4px;
-      }
-
-      :host([veryNarrow]) round-slider {
-        --round-slider-path-width: 15px;
-      }
-
-      :host([veryNarrow]) .gauge-data {
-        margin-top: -16px;
-      }
-
-      :host([veryNarrow]) .gauge-data .percent {
-        font-size: 16px;
-      }
-
-      :host([veryNarrow]) .gauge-data .name {
-        font-size: 12px;
       }
     `;
   }
