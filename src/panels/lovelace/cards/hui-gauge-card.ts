@@ -175,7 +175,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       max: this._config.max,
       dialStartAngle: 180,
       dialEndAngle: 0,
-      viewBox: "0 0 100 60",
+      viewBox: "0 0 100 55",
       label: (value) => `${Math.round(value)}
       ${
         this._config!.unit ||
@@ -245,8 +245,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       }
       #gauge {
         width: 100%;
-        height: 0;
-        padding-bottom: 50%;
+        max-width: 300px;
       }
       .dial {
         stroke: #ccc;
@@ -257,7 +256,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       }
       .value-text {
         fill: #000;
-        font-size: 1.1em;
+        font-size: var(--gauge-value-font-size, 1.1em);
         transform: translate(0, -5px);
         font-family: inherit;
       }
@@ -267,7 +266,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         color: var(--primary-text-color);
         width: 100%;
         font-size: 15px;
-        margin-top: 8px;
       }
 
       }
