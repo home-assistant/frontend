@@ -156,14 +156,16 @@ export class MoreInfoDialog extends LitElement {
           ></more-info-content>
 
           ${stateObj.attributes.restored
-            ? html`${this.hass.localize(
-                  "ui.dialogs.more_info_control.restored.not_provided"
-                )}
-                <br />
-                ${this.hass.localize(
-                  "ui.dialogs.more_info_control.restored.remove_intro"
-                )}
-                <br />
+            ? html`<p>
+                  ${this.hass.localize(
+                    "ui.dialogs.more_info_control.restored.not_provided"
+                  )}
+                </p>
+                <p>
+                  ${this.hass.localize(
+                    "ui.dialogs.more_info_control.restored.remove_intro"
+                  )}
+                </p>
                 <mwc-button class="warning" @click=${this._removeEntity}>
                   ${this.hass.localize(
                     "ui.dialogs.more_info_control.restored.remove_action"
