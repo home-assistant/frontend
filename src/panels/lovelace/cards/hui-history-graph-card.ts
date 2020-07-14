@@ -148,7 +148,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   }
 
   private async _getStateHistory(): Promise<void> {
-    this._stateHistory = getRecentWithCache(
+    this._stateHistory = await getRecentWithCache(
       this.hass!,
       this._cacheConfig!.cacheKey,
       this._cacheConfig!,
