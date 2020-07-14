@@ -1078,6 +1078,7 @@
           },
           "editor": {
             "alias": "Name",
+            "icon": "Icon",
             "id": "Entity ID",
             "id_already_exists_save_error": "You can't save this script because the ID is not unique, pick another ID or leave it black to autogenerate one.",
             "id_already_exists": "This ID already exists",

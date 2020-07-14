@@ -17,6 +17,7 @@ import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-card";
+import "../../../components/ha-icon-input";
 import "@material/mwc-fab";
 import {
   Action,
@@ -117,6 +118,15 @@ export class HaScriptEditor extends LitElement {
                           @change=${this._aliasChanged}
                         >
                         </paper-input>
+                        <ha-icon-input
+                          .label=${this.hass.localize(
+                            "ui.panel.config.script.editor.icon"
+                          )}
+                          .name=${"icon"}
+                          .value=${this._config.icon}
+                          @value-changed=${this._valueChanged}
+                        >
+                        </ha-icon-input>
                         ${!this.scriptEntityId
                           ? html` <paper-input
                               .label=${this.hass.localize(
@@ -329,6 +339,7 @@ export class HaScriptEditor extends LitElement {
   }
 
   private _valueChanged(ev: CustomEvent) {
+    console.log(ev.target.name, ev.target.value);
     ev.stopPropagation();
     const target = ev.target as any;
     const name = target.name;
