@@ -22,6 +22,8 @@ import {
   deleteScript,
   getScriptEditorInitData,
   ScriptConfig,
+  MODES,
+  MODES_MAX,
 } from "../../../data/script";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/ha-app-layout";
@@ -34,9 +36,6 @@ import { configSections } from "../ha-panel-config";
 import "../../../components/ha-svg-icon";
 import { mdiContentSave } from "@mdi/js";
 import { PaperListboxElement } from "@polymer/paper-listbox";
-
-const MODES = ["single", "restart", "queued", "parallel"];
-const MODES_MAX = ["queued", "parallel"];
 
 export class HaScriptEditor extends LitElement {
   @property() public hass!: HomeAssistant;
