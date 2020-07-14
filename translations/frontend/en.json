@@ -941,6 +941,19 @@
                         "introduction": "Use automations to bring your home alive.",
                         "load_error_not_editable": "Only automations in automations.yaml are editable.",
                         "load_error_unknown": "Error loading automation ({err_no}).",
+                        "max": {
+                            "parallel": "Max number of parallel runs",
+                            "queued": "Queue length"
+                        },
+                        "modes": {
+                            "description": "The mode controls what happens when the automation is triggered while the actions are still running from a previous trigger. Check the {documentation_link} for more info.",
+                            "documentation": "automation documentation",
+                            "label": "Mode",
+                            "parallel": "Parallel (default)",
+                            "queued": "Queued",
+                            "restart": "Restart",
+                            "single": "Single"
+                        },
                         "move_down": "Move down",
                         "move_up": "Move up",
                         "save": "Save",
@@ -1685,6 +1698,19 @@
                         "introduction": "Use scripts to execute a sequence of actions.",
                         "link_available_actions": "Learn more about available actions.",
                         "load_error_not_editable": "Only scripts inside scripts.yaml are editable.",
+                        "max": {
+                            "parallel": "Max number of parallel runs",
+                            "queued": "Queue length"
+                        },
+                        "modes": {
+                            "description": "The mode controls what happens when script is invoked while it is still running from one or more previous invocations. Check the {documentation_link} for more info.",
+                            "documentation": "script documentation",
+                            "label": "Mode",
+                            "parallel": "Parallel",
+                            "queued": "Queued",
+                            "restart": "Restart",
+                            "single": "Single (default)"
+                        },
                         "sequence": "Sequence",
                         "sequence_sentence": "The sequence of actions of this script."
                     },
@@ -2511,6 +2537,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "Your computer is not allowed.",
                                 "not_whitelisted": "Your computer is not whitelisted."
                             },
                             "step": {
