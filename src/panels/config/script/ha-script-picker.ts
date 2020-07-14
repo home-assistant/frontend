@@ -25,6 +25,7 @@ import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
 import "../../../components/ha-svg-icon";
 import { mdiPlus } from "@mdi/js";
+import { stateIcon } from "../../../common/entity/state_icon";
 
 @customElement("ha-script-picker")
 class HaScriptPicker extends LitElement {
@@ -43,6 +44,7 @@ class HaScriptPicker extends LitElement {
       return {
         ...script,
         name: computeStateName(script),
+        icon: stateIcon(script),
       };
     });
   });
@@ -64,6 +66,11 @@ class HaScriptPicker extends LitElement {
                 @click=${(ev: Event) => this._runScript(ev)}
               ></ha-icon-button>
             `,
+        },
+        icon: {
+          title: "",
+          type: "icon",
+          template: (icon) => html` <ha-icon .icon=${icon}></ha-icon> `,
         },
         name: {
           title: this.hass.localize(
