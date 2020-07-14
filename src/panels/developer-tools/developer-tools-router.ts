@@ -40,6 +40,18 @@ class DeveloperToolsRouter extends HassRouterPage {
     },
   };
 
+  protected createLoadingScreen() {
+    const loadingScreen = super.createLoadingScreen();
+    loadingScreen.noToolbar = true;
+    return loadingScreen;
+  }
+
+  protected createErrorScreen(error: string) {
+    const errorEl = super.createErrorScreen(error);
+    errorEl.toolbar = false;
+    return errorEl;
+  }
+
   protected updatePageEl(el) {
     if ("setProperties" in el) {
       // As long as we have Polymer pages
