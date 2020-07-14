@@ -16,6 +16,7 @@ import { PolymerChangedEvent } from "../../polymer-types";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { DialogParams } from "./show-dialog-box";
+import { fireEvent } from "../../common/dom/fire_event";
 
 @customElement("dialog-box")
 class DialogBox extends LitElement {
@@ -30,6 +31,17 @@ class DialogBox extends LitElement {
     if (params.prompt) {
       this._value = params.defaultValue;
     }
+  }
+
+  public closeDialog(): boolean {
+    if (this._params?.confirmation || this._params?.prompt) {
+      this._dismiss();
+      return true;
+    }
+    if (this._params) {
+      return false;
+    }
+    return true;
   }
 
   protected render(): TemplateResult {
@@ -100,11 +112,11 @@ class DialogBox extends LitElement {
     this._value = ev.detail.value;
   }
 
-  private async _dismiss(): Promise<void> {
+  private _dismiss(): void {
     if (this._params!.cancel) {
       this._params!.cancel();
     }
-    this._params = undefined;
+    this._close();
   }
 
   private _handleKeyUp(ev: KeyboardEvent) {
@@ -113,15 +125,16 @@ class DialogBox extends LitElement {
     }
   }
 
-  private async _confirm(): Promise<void> {
+  private _confirm(): void {
     if (this._params!.confirm) {
       this._params!.confirm(this._value);
     }
-    this._dismiss();
+    this._close();
   }
 
   private _close(): void {
     this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   static get styles(): CSSResult[] {

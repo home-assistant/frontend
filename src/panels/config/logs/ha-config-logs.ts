@@ -17,7 +17,7 @@ import { configSections } from "../ha-panel-config";
 import "../../../layouts/hass-tabs-subpage";
 
 @customElement("ha-config-logs")
-export class HaPanelDevLogs extends LitElement {
+export class HaConfigLogs extends LitElement {
   @property() public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
@@ -74,6 +74,6 @@ export class HaPanelDevLogs extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "developer-tools-logs": HaPanelDevLogs;
+    "ha-config-logs": HaConfigLogs;
   }
 }

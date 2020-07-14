@@ -2678,6 +2678,10 @@
                     "not_used": "從未使用過",
                     "token_title": "{clientId}更新密鑰"
                 },
+                "suspend": {
+                    "description": "於隱藏五分鐘後關閉連線？",
+                    "header": "自動關閉連線"
+                },
                 "themes": {
                     "dropdown_label": "主題",
                     "error_no_theme": "無主題可使用。",

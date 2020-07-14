@@ -24,8 +24,10 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
+import "../../../components/ha-icon";
 import "../../../components/ha-svg-icon";
 import { mdiPlus } from "@mdi/js";
+import { stateIcon } from "../../../common/entity/state_icon";
 
 @customElement("ha-scene-dashboard")
 class HaSceneDashboard extends LitElement {
@@ -44,6 +46,7 @@ class HaSceneDashboard extends LitElement {
       return {
         ...scene,
         name: computeStateName(scene),
+        icon: stateIcon(scene),
       };
     });
   });
@@ -65,6 +68,11 @@ class HaSceneDashboard extends LitElement {
                 @click=${(ev: Event) => this._activateScene(ev)}
               ></ha-icon-button>
             `,
+        },
+        icon: {
+          title: "",
+          type: "icon",
+          template: (icon) => html` <ha-icon .icon=${icon}></ha-icon> `,
         },
         name: {
           title: this.hass.localize(

@@ -21,7 +21,6 @@ export const derivedStyles = {
   "label-badge-grey": "var(--paper-grey-500)",
   "label-badge-background-color": "var(--card-background-color)",
   "label-badge-text-color": "rgba(var(--rgb-primary-text-color), 0.8)",
-  "paper-card-background-color": "var(--card-background-color)",
   "paper-listbox-background-color": "var(--card-background-color)",
   "paper-item-icon-color": "var(--state-icon-color)",
   "paper-item-icon-active-color": "var(--state-icon-active-color)",
@@ -49,6 +48,7 @@ export const derivedStyles = {
   "material-secondary-background-color": "var(--secondary-background-color)",
   "mdc-checkbox-unchecked-color": "rgba(var(--rgb-primary-text-color), 0.54)",
   "mdc-checkbox-disabled-color": "var(--disabled-text-color)",
+  "mdc-tab-text-label-color-default": "var(--primary-text-color)",
 };
 
 export const haStyle = css`
@@ -98,6 +98,10 @@ export const haStyle = css`
     font-size: var(--paper-font-subhead_-_font-size);
     font-weight: var(--paper-font-subhead_-_font-weight);
     line-height: var(--paper-font-subhead_-_line-height);
+  }
+
+  a {
+    color: var(--primary-color);
   }
 
   .secondary {
@@ -241,8 +245,10 @@ export const haStyleDialog = css`
   @media all and (max-width: 450px), all and (max-height: 500px) {
     ha-dialog {
       --mdc-dialog-min-width: 100vw;
-      --mdc-dialog-max-height: 100vh;
-      --mdc-dialog-shape-radius: 0px;
+      --mdc-dialog-max-width: 100vw;
+      --mdc-dialog-min-height: 100%;
+      --mdc-dialog-max-height: 100%;
+      --mdc-shape-medium: 0px;
       --vertial-align-dialog: flex-end;
     }
   }

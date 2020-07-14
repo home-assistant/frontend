@@ -22,7 +22,6 @@ export const DOMAINS_WITH_CARD = [
   "timer",
   "vacuum",
   "water_heater",
-  "weblink",
 ];
 
 /** Domains with separate more info dialog. */
@@ -36,7 +35,6 @@ export const DOMAINS_WITH_MORE_INFO = [
   "cover",
   "fan",
   "group",
-  "history_graph",
   "humidifier",
   "input_datetime",
   "light",
@@ -58,16 +56,10 @@ export const DOMAINS_HIDE_MORE_INFO = [
   "input_select",
   "input_text",
   "scene",
-  "weblink",
 ];
 
 /** Domains that should have the history hidden in the more info dialog. */
-export const DOMAINS_MORE_INFO_NO_HISTORY = [
-  "camera",
-  "configurator",
-  "history_graph",
-  "scene",
-];
+export const DOMAINS_MORE_INFO_NO_HISTORY = ["camera", "configurator", "scene"];
 
 /** States that we consider "off". */
 export const STATES_OFF = ["closed", "locked", "off"];

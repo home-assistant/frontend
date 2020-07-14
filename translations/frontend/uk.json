@@ -48,6 +48,11 @@
                 "none": "Немає",
                 "sleep": "Сон"
             }
+        },
+        "humidifier": {
+            "mode": {
+                "normal": "Нормальний"
+            }
         }
     },
     "state_badge": {
@@ -388,6 +393,9 @@
                 "reverse": "На себе",
                 "speed": "Швидкість"
             },
+            "humidifier": {
+                "mode": "Режим"
+            },
             "light": {
                 "brightness": "Яскравість",
                 "color_temperature": "Температура кольору",
@@ -474,6 +482,7 @@
             "close": "Закрити",
             "delete": "Видалити",
             "loading": "Завантаження",
+            "menu": "Меню",
             "no": "Ні",
             "save": "Зберегти",
             "successfully_deleted": "Успішно видалено",
@@ -486,6 +495,10 @@
                 "area": "Приміщення",
                 "clear": "Очистити",
                 "show_areas": "Показати приміщення"
+            },
+            "date-range-picker": {
+                "end_date": "Дата закінчення",
+                "select": "Вибрати"
             },
             "device-picker": {
                 "clear": "Очистити",
@@ -538,7 +551,8 @@
                 "editor": {
                     "confirm_delete": "Ви впевнені, що хочете видалити цей об'єкт?",
                     "delete": "Видалити",
-                    "entity_id": "Ідентифікатор об'єкта"
+                    "entity_id": "Ідентифікатор об'єкта",
+                    "update": "Оновити"
                 }
             },
             "generic": {
@@ -814,6 +828,8 @@
                         "introduction": "Використовуйте автоматизацію, щоб оживити ваш будинок",
                         "load_error_not_editable": "Можна редагувати лише секцію automations у файлі automations.yaml",
                         "load_error_unknown": "Помилка під час завантаження автоматизації ({err_no}).",
+                        "move_down": "Рухатися вниз",
+                        "move_up": "Рухатися вгору",
                         "save": "Зберегти",
                         "triggers": {
                             "add": "Додати тригер",
@@ -1089,7 +1105,9 @@
                                 "edit_requires_storage": "Редактор відключено, оскільки конфігурація вже збережена у configuration.yaml.",
                                 "elevation": "Висота",
                                 "elevation_meters": "метрів",
+                                "external_url": "Зовнішня URL-адреса",
                                 "imperial_example": "Фаренгейти, фунти",
+                                "internal_url": "Внутрішня URL-адреса",
                                 "latitude": "Широта",
                                 "location_name": "Заголовок для вашого Home Assistant",
                                 "longitude": "Довгота",
@@ -1116,6 +1134,7 @@
                     "different_include": "Можливо, через домен, glob або інше включення.",
                     "pick_attribute": "Виберіть атрибут, який слід замінити",
                     "picker": {
+                        "entity": "Об'єкт",
                         "header": "Налаштування",
                         "introduction": "Налаштування атрибутів на об'єкт. Додані / відредаговані налаштування набудуть чинності негайно. Видалені налаштування набудуть чинності після оновлення об'єкта."
                     },
@@ -1171,7 +1190,8 @@
                     },
                     "scripts": "Скрипти",
                     "unknown_error": "Невідома помилка",
-                    "unnamed_device": "Пристрій без імені"
+                    "unnamed_device": "Пристрій без імені",
+                    "update": "Оновити"
                 },
                 "entities": {
                     "caption": "Реєстр об'єктів",
@@ -1215,21 +1235,35 @@
                 },
                 "header": "Налаштуваня Home Assistant",
                 "helpers": {
+                    "caption": "Помічники",
+                    "description": "Елементи, які можуть допомогти побудувати автоматизацію.",
                     "dialog": {
+                        "add_helper": "Додати помічника",
+                        "add_platform": "Додати {platform}",
                         "create": "Створити"
                     },
                     "picker": {
+                        "add_helper": "Додати помічника",
                         "headers": {
-                            "name": "Назва"
+                            "editable": "Можна редагувати",
+                            "entity_id": "Ідентифікатор об'єкта",
+                            "name": "Назва",
+                            "type": "Тип"
                         }
                     },
                     "types": {
-                        "input_datetime": "Дата та/або час"
+                        "input_boolean": "Тумблер",
+                        "input_datetime": "Дата та/або час",
+                        "input_number": "Номер",
+                        "input_select": "Випадання",
+                        "input_text": "Текст"
                     }
                 },
                 "info": {
                     "built_using": "Побудований за допомогою",
+                    "caption": "Інформація",
                     "custom_uis": "Спеціальні інтерфейси користувача:",
+                    "description": "Інформація про інсталяцію Home Assistant",
                     "developed_by": "Розроблена купою дивовижних людей.",
                     "frontend": "інтерфейс користувача",
                     "frontend_version": "Версія Frontend: {version} - {type}",
@@ -1251,6 +1285,7 @@
                         "delete_button": "Видалити {integration}",
                         "delete_confirm": "Ви впевнені, що хочете видалити цю інтеграцію?",
                         "device_unavailable": "пристрій недоступний",
+                        "documentation": "Документація",
                         "entity_unavailable": "Недоступний",
                         "firmware": "Прошивка: {version}",
                         "hub": "Підключено через",
@@ -1309,6 +1344,7 @@
                 },
                 "introduction": "Тут можна налаштувати свої компоненти та Home Assistant. Не все можна налаштувати з інтерфейсу користувача, але ми працюємо над цим.",
                 "logs": {
+                    "caption": "Журнали",
                     "clear": "Очистити",
                     "details": "Деталі журналу ({level})",
                     "load_full_log": "Завантажте повний журнал Home Assistant",
@@ -1320,29 +1356,53 @@
                     "title": "Лог"
                 },
                 "lovelace": {
+                    "caption": "Інформаційні панелі Lovelace",
                     "dashboards": {
+                        "cant_edit_default": "Стандартну інформаційну панель Lovelace не можна редагувати з інтерфейсу користувача. Ви можете приховати це, встановивши іншу інформаційну панель за замовчуванням.",
+                        "cant_edit_yaml": "Інформаційні панелі, визначені в YAML, не можна редагувати з інтерфейсу користувача. Змініть їх у config.yaml.",
+                        "caption": "Інформаційні панелі",
                         "conf_mode": {
+                            "storage": "Керований інтерфейсом користувача",
                             "yaml": "Файл YAML"
                         },
+                        "confirm_delete": "Ви впевнені, що хочете видалити цю інформаційну панель?",
                         "default_dashboard": "Це стандартна панель",
                         "detail": {
                             "create": "Створити",
                             "delete": "Видалити",
                             "dismiss": "Закрити",
+                            "edit_dashboard": "Редагувати інформаційну панель",
+                            "icon": "Іконка",
+                            "new_dashboard": "Додати нову панель",
+                            "remove_default": "Видалити за замовчуванням на цьому пристрої",
                             "require_admin": "Лише адміністратор",
+                            "set_default": "Встановити за замовчуванням на цьому пристрої",
+                            "show_sidebar": "Показати на бічній панелі",
+                            "title": "Назва",
+                            "title_required": "Назва обов'язкова.",
                             "update": "Оновити",
-                            "url": "URL-адреса"
+                            "url": "URL-адреса",
+                            "url_error_msg": "URL-адреса повинна містити - і не може містити пробілів або спеціальних символів, за винятком _ та -"
                         },
                         "picker": {
+                            "add_dashboard": "Додати панель",
                             "headers": {
+                                "conf_mode": "Метод конфігурації",
+                                "default": "За замовчуванням",
                                 "filename": "Назва файлу",
-                                "require_admin": "Лише адміністратор"
+                                "require_admin": "Лише адміністратор",
+                                "sidebar": "Показати на бічній панелі",
+                                "title": "Назва"
                             },
                             "open": "Відкрити"
                         }
                     },
+                    "description": "Налаштуйте панелі Lovelace",
                     "resources": {
                         "caption": "Ресурси",
+                        "detail": {
+                            "update": "Оновити"
+                        },
                         "picker": {
                             "add_resource": "Додати ресурс",
                             "headers": {
@@ -1359,6 +1419,7 @@
                     }
                 },
                 "mqtt": {
+                    "button": "Налаштувати",
                     "description_listen": "Слухати тему",
                     "description_publish": "Опублікувати пакет",
                     "listening_to": "Слухати",
@@ -1526,6 +1587,7 @@
                         "name": "Назва",
                         "owner": "Власник",
                         "system_generated": "Системний",
+                        "system_generated_users_not_editable": "Не вдається оновити користувачів, створених системою.",
                         "system_generated_users_not_removable": "Не вдається видалити користувачів, створених системою.",
                         "unnamed_user": "Безіменний користувач",
                         "update_user": "Оновити"
@@ -1548,6 +1610,7 @@
                     "add": {
                         "caption": "Додати пристрій"
                     },
+                    "button": "Налаштувати",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Атрибути вибраного кластера",
@@ -1597,6 +1660,9 @@
                         "header": "Керування мережею",
                         "introduction": "Команди, які впливають на всю мережу"
                     },
+                    "network": {
+                        "caption": "Мережа"
+                    },
                     "node_management": {
                         "header": "Керування пристроями",
                         "help_node_dropdown": "Виберіть пристрій для перегляду параметрів на кожному пристрої.",
@@ -1616,7 +1682,8 @@
                         "longitude": "Довгота",
                         "passive": "Пасивний",
                         "passive_note": "Пасивні зони приховані у front-end-і і не використовуються як місце для відстеження пристроїв. Це корисно, якщо ви просто хочете використовувати його для автоматизації.",
-                        "radius": "Радіус"
+                        "radius": "Радіус",
+                        "update": "Оновити"
                     },
                     "go_to_core_config": "Перейти до загальних налаштувань?",
                     "home_zone_core_config": "Місцезнаходження вашої домашньої зони можна редагувати на сторінці загальних налаштувань. На даний час, радіус зони \"Головна\" не можна редагувати з адміністративної панелі. Ви хочете перейти до загальних налаштувань?",
@@ -1624,6 +1691,7 @@
                     "no_zones_created_yet": "Схоже, ви ще не створили жодної зони."
                 },
                 "zwave": {
+                    "button": "Налаштувати",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "Індекс",
@@ -1665,6 +1733,7 @@
                         "add_node_secure": "Додати захищений вузол",
                         "cancel_command": "Скасувати команду",
                         "heal_network": "Виправити мережу",
+                        "refresh_entity": "Оновити",
                         "remove_node": "Видалити вузол",
                         "save_config": "Зберегти конфігурацію",
                         "soft_reset": "Скидання",
@@ -1747,11 +1816,23 @@
             },
             "history": {
                 "period": "Період",
+                "ranges": {
+                    "last_week": "Минулого тижня",
+                    "this_week": "Цього тижня",
+                    "today": "Сьогодні",
+                    "yesterday": "Вчора"
+                },
                 "showing_entries": "Показані записи для"
             },
             "logbook": {
                 "entries_not_found": "Не знайдено записів журналу.",
                 "period": "Період",
+                "ranges": {
+                    "last_week": "Минулого тижня",
+                    "this_week": "Цього тижня",
+                    "today": "Сьогодні",
+                    "yesterday": "Вчора"
+                },
                 "showing_entries": "Відображення записів за"
             },
             "lovelace": {
@@ -1779,6 +1860,10 @@
                         "add_item": "Додати елемент",
                         "checked_items": "Позначені елементи",
                         "clear_items": "Очистити позначені елементи"
+                    },
+                    "starting": {
+                        "description": "Home Assistant запускається, будь ласка, зачекайте ...",
+                        "header": "Home Assistant запускається, будь ласка, зачекайте ..."
                     }
                 },
                 "changed_toast": {
@@ -1859,6 +1944,9 @@
                         },
                         "horizontal-stack": {
                             "name": "Горизонтальний стек"
+                        },
+                        "humidifier": {
+                            "name": "Зволожувач"
                         },
                         "iframe": {
                             "name": "iFrame"
@@ -1984,6 +2072,7 @@
                         "save": "Взяти під контроль"
                     },
                     "suggest_card": {
+                        "add": "Додати до Lovelace",
                         "create_own": "Вибрати іншу картку"
                     },
                     "view": {
@@ -2023,7 +2112,8 @@
                     "attribute_not_found": "Атрибут {attribute} недоступний у: {entity}",
                     "entity_non_numeric": "Об'єкт не є числовим: {entity}",
                     "entity_not_found": "Об'єкт не доступний: {entity}",
-                    "entity_unavailable": "{entity} наразі недоступний."
+                    "entity_unavailable": "{entity} наразі недоступний.",
+                    "starting": "Home Assistant запускається, ще не все може бути доступно"
                 }
             },
             "mailbox": {
@@ -2219,6 +2309,7 @@
                 },
                 "current_user": "Ви ввійшли як {fullName}.",
                 "dashboard": {
+                    "description": "Виберіть інформаційну панель за замовчуванням для цього пристрою.",
                     "dropdown_label": "Панель",
                     "header": "Панель"
                 },
@@ -2279,6 +2370,9 @@
                     "last_used": "Останнє використання в {date} з {location}",
                     "not_used": "Ніколи не використовувався",
                     "token_title": "Оновити токен для {clientId}"
+                },
+                "suspend": {
+                    "header": "Автоматично закривати з'єднання"
                 },
                 "themes": {
                     "dropdown_label": "Тема",

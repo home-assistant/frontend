@@ -123,7 +123,7 @@
             },
             "default": {
                 "off": "关闭",
-                "on": "开"
+                "on": "开启"
             },
             "door": {
                 "off": "关闭",
@@ -229,7 +229,7 @@
         },
         "fan": {
             "off": "关闭",
-            "on": "开"
+            "on": "开启"
         },
         "group": {
             "closed": "已关闭",
@@ -251,7 +251,7 @@
             "on": "开"
         },
         "light": {
-            "off": "关闭",
+            "off": "关",
             "on": "开"
         },
         "lock": {
@@ -261,7 +261,7 @@
         "media_player": {
             "idle": "空闲",
             "off": "关闭",
-            "on": "开",
+            "on": "开启",
             "paused": "已暂停",
             "playing": "正在播放",
             "standby": "待机"
@@ -286,7 +286,7 @@
         },
         "sensor": {
             "off": "关闭",
-            "on": "开"
+            "on": "开启"
         },
         "sun": {
             "above_horizon": "日出",
@@ -524,6 +524,9 @@
                 "area": "区域",
                 "clear": "清除",
                 "show_areas": "显示区域"
+            },
+            "data-table": {
+                "search": "搜索"
             },
             "date-range-picker": {
                 "end_date": "结束日期",
@@ -1356,6 +1359,7 @@
                             "confirm_text": "如果它们包含这些实体，则应将它们从 Lovelace 配置和自动化中删除。",
                             "confirm_title": "您要删除这 {number} 个实体吗？"
                         },
+                        "search": "搜索实体",
                         "selected": "选择了 {number} 项",
                         "status": {
                             "disabled": "已禁用",
@@ -1386,7 +1390,8 @@
                             "entity_id": "实体 ID",
                             "name": "名称",
                             "type": "类型"
-                        }
+                        },
+                        "no_helpers": "您还没有辅助元素。"
                     },
                     "types": {
                         "input_boolean": "开关",
@@ -1490,7 +1495,8 @@
                     "note_about_integrations": "并非所有集成都可以通过 UI 进行配置。",
                     "note_about_website_reference": "更多可用信息，尽在 ",
                     "rename_dialog": "编辑此配置项的名称",
-                    "rename_input_label": "条目名称"
+                    "rename_input_label": "条目名称",
+                    "search": "搜索集成"
                 },
                 "introduction": "您可以在此配置 Home Assistant 及组件。目前并非所有配置都能通过前端 UI 完成，但是我们在努力实现中。",
                 "logs": {
@@ -2194,6 +2200,7 @@
                             "name": "名称",
                             "no_theme": "没有主题",
                             "refresh_interval": "刷新间隔",
+                            "search": "搜索",
                             "secondary_info_attribute": "次要信息属性",
                             "show_icon": "显示图标？",
                             "show_name": "显示名称？",
@@ -2314,7 +2321,8 @@
                     "edit_lovelace": {
                         "edit_title": "编辑标题",
                         "explanation": "此标题将显示在 Lovelace 的所有视图之上。",
-                        "header": "Lovelace UI 标题"
+                        "header": "Lovelace UI 标题",
+                        "title": "标题"
                     },
                     "edit_view": {
                         "add": "添加视图",
@@ -2677,6 +2685,10 @@
                     "last_used": "上次使用于 {date} 来自 {location}",
                     "not_used": "从未使用过",
                     "token_title": "{clientId} 的刷新令牌"
+                },
+                "suspend": {
+                    "description": "是否要在转至后台 5 分钟后，关闭与服务器的连接？",
+                    "header": "自动关闭连接"
                 },
                 "themes": {
                     "dropdown_label": "主题",

@@ -263,6 +263,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                     no-label-float
                     no-underline
                     @value-changed=${this._handleSearchChange}
+                    .label=${this.hass.localize(
+                      "ui.panel.config.integrations.search"
+                    )}
                   ></search-input>
                 </slot>
               </div>
@@ -293,6 +296,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                   no-underline
                   .filter=${this._filter}
                   @value-changed=${this._handleSearchChange}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.integrations.search"
+                  )}
                 ></search-input>
               </div>
             `
@@ -673,7 +679,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           display: block;
           position: relative;
           left: -8px;
-          top: -7px;
           color: var(--secondary-text-color);
           margin-left: 16px;
         }
@@ -717,7 +722,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           right: auto;
           left: 16px;
         }
-        mwc-fab[is-wide].rtl {
+        mwc-fab[is-wide][rtl] {
           bottom: 24px;
           left: 24px;
           right: auto;

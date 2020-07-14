@@ -1,6 +1,4 @@
 import "@material/mwc-button";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "@polymer/paper-input/paper-input";
 import {
   css,
   CSSResult,
@@ -14,7 +12,7 @@ import { ifDefined } from "lit-html/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import "../../../components/dialog/ha-paper-dialog";
+import "../../../components/ha-card";
 import {
   AreaRegistryEntry,
   deleteAreaRegistryEntry,
@@ -106,7 +104,7 @@ class HaConfigAreaPage extends LitElement {
 
         <ha-icon-button
           slot="toolbar-icon"
-          icon="hass:settings"
+          icon="hass:cog"
           .entry=${area}
           @click=${this._showSettings}
         ></ha-icon-button>

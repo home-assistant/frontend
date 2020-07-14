@@ -1431,6 +1431,7 @@
                         "delete_confirm": "Weet je zeker dat je deze integratie wilt verwijderen?",
                         "device_unavailable": "apparaat niet beschikbaar",
                         "devices": "{count} {count, plural,\n  one {apparaat}\n  other {apparaten}\n}",
+                        "documentation": "Documentatie",
                         "entities": "{count} {count, plural,\n  one {entiteit}\n  other {entiteiten}\n}",
                         "entity_unavailable": "entiteit niet beschikbaar",
                         "firmware": "Firmware: {version}",
@@ -1940,29 +1941,43 @@
                     },
                     "node_management": {
                         "add_to_group": "Toevoegen aan groep",
+                        "entities": "Entiteiten van dit knooppunt",
                         "entity_info": "Entiteitsinformatie",
                         "exclude_entity": "Sluit deze entiteit uit van Home Assistant",
                         "group": "Groep",
+                        "header": "Z-Wave Knooppunt-beheer",
+                        "introduction": "Voer Z-Wave commando's uit die een enkel knooppunt beïnvloeden. Kies een knooppunt om een lijst met beschikbare commando's te zien.",
+                        "nodes": "Knooppunten",
+                        "nodes_hint": "Selecteer knooppunt om de opties per knooppunt te bekijken",
                         "protection": "Bescherming",
                         "remove_from_group": "Verwijderen uit groep",
                         "set_protection": "Bescherming instellen"
                     },
                     "ozw_log": {
                         "header": "OZW-logboek",
-                        "introduction": "Bekijk het logboek. 0 is het minimum (laadt het gehele logboek) en 1000 is het maximum. Laad toont een statisch logboek en staart wordt automatisch bijgewerkt met het laatst opgegeven aantal regels van het logboek."
+                        "introduction": "Bekijk het logboek. 0 is het minimum (laadt het gehele logboek) en 1000 is het maximum. Laad toont een statisch logboek en staart wordt automatisch bijgewerkt met het laatst opgegeven aantal regels van het logboek.",
+                        "load": "Laden",
+                        "tail": "Staart"
                     },
                     "services": {
                         "add_node": "Node toevoegen",
                         "add_node_secure": "Secure Node toevoegen",
                         "cancel_command": "Opdracht annuleren",
                         "heal_network": "Herstel Netwerk",
+                        "heal_node": "Herstel node",
+                        "node_info": "Node informatie",
+                        "print_node": "Print node",
                         "refresh_entity": "Entiteit vernieuwen",
+                        "refresh_node": "Node verwijderen",
+                        "remove_failed_node": "Verwijder gefaalde node",
                         "remove_node": "Node verwijderen",
+                        "replace_failed_node": "Vervang gefaalde node",
                         "save_config": "Configuratie Opslaan",
                         "soft_reset": "Soft Reset",
                         "start_network": "Start netwerk",
                         "stop_network": "Stop Netwerk",
-                        "test_network": "Test Netwerk"
+                        "test_network": "Test Netwerk",
+                        "test_node": "Test node"
                     },
                     "values": {
                         "header": "Knooppunt waarden"
@@ -2654,6 +2669,10 @@
                     "last_used": "Laatst gebruikt op {date} vanaf {location}",
                     "not_used": "Is nog nooit gebruikt",
                     "token_title": "Token voor {clientId}"
+                },
+                "suspend": {
+                    "description": "Moeten we de verbinding met de server verbreken na 5 minuten verborgen te zijn geweest?",
+                    "header": "Verbinding automatisch verbreken"
                 },
                 "themes": {
                     "dropdown_label": "Thema",

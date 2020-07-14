@@ -624,6 +624,7 @@
                 "yaml_not_editable": "Không thể sửa cài đặt của thực thể này từ giao diện người dùng. Chỉ các thực thể được thiết lập từ giao diện người dùng mới có thể được sửa chữa từ giao diện người dùng."
             },
             "more_info_control": {
+                "dismiss": "Bỏ qua hộp thoại",
                 "edit": "Chỉnh sửa thực thể",
                 "person": {
                     "create_zone": "Tạo vùng từ vị trí hiện tại"
@@ -639,6 +640,7 @@
                     "last_action": "Hành động cuối",
                     "last_triggered": "Lần kích hoạt cuối"
                 },
+                "settings": "Các cài đặt thực thể",
                 "sun": {
                     "elevation": "Độ cao",
                     "rising": "Mọc lên",
@@ -672,6 +674,8 @@
                 "triggers": "Các kích hoạt"
             },
             "voice_command": {
+                "did_not_hear": "Home Assistant không nghe thấy gì cả",
+                "how_can_i_help": "Tôi có thể giúp gì nào?",
                 "label": "Nhập câu hỏi và nhấn 'Enter'"
             },
             "zha_device_info": {
@@ -703,6 +707,7 @@
         },
         "notification_drawer": {
             "click_to_configure": "Nhấp vào nút để cấu hình {entity}",
+            "close": "Đóng",
             "empty": "Không có thông báo",
             "title": "Thông báo"
         },
@@ -850,6 +855,8 @@
                             "unsupported_condition": "Điều kiện không được hỗ trợ: {condition}"
                         },
                         "default_name": "Thêm Tự động hóa",
+                        "edit_ui": "Chỉnh sửa với UI",
+                        "edit_yaml": "Chỉnh sửa dưới dạng YAML",
                         "enable_disable": "Bật/Tắt tự động hóa",
                         "introduction": "Sử dụng tự động hóa để mang sự sống cho nhà bạn",
                         "load_error_not_editable": "Chỉ tự động hóa trong automations.yaml là có thể chỉnh sửa.",
@@ -1012,6 +1019,10 @@
                         "entity": "Thực thể",
                         "header": "Tùy chỉnh",
                         "introduction": "Tinh chỉnh thuộc tính mỗi thực thể. Các tùy chỉnh được thêm / chỉnh sửa sẽ có hiệu lực ngay lập tức. Các tùy chỉnh bị xóa sẽ có hiệu lực khi thực thể được cập nhật."
+                    },
+                    "warning": {
+                        "include_link": "bao gồm customize.yaml",
+                        "include_sentence": "Có vẻ như cấu hình trong configuration.yaml của bạn chưa đúng"
                     }
                 },
                 "devices": {
@@ -1071,10 +1082,13 @@
                     "description": "Tổng quan tất cả các thực thể đã biết.",
                     "picker": {
                         "disable_selected": {
-                            "button": "Vô hiệu hoá các mục đã chọn"
+                            "button": "Vô hiệu hoá các mục đã chọn",
+                            "confirm_text": "Các thực thể bị vô hiệu hoá sẽ không được thêm vào Home Assistant.",
+                            "confirm_title": "Bạn có muốn vô hiệu hoá {number} thực thể không?"
                         },
                         "enable_selected": {
-                            "button": "Kích hoạt các mục đã chọn"
+                            "button": "Kích hoạt các mục đã chọn",
+                            "confirm_title": "Bạn có muốn kích hoạt {number} thực thể?"
                         },
                         "filter": {
                             "filter": "Lọc",
@@ -1084,13 +1098,17 @@
                         },
                         "header": "Đăng ký thực thể",
                         "headers": {
+                            "entity_id": "Mã định danh Thực thể",
+                            "integration": "Tích hợp",
+                            "name": "Tên",
                             "status": "Trạng thái"
                         },
                         "introduction": "Home Assistant giữ một sổ đăng ký của mọi thực thể mà nó từng thấy có thể được xác định duy nhất. Mỗi thực thể này sẽ có một ID thực thể được gán sẽ chỉ dành riêng cho thực thể này.",
                         "introduction2": "Sử dụng sổ đăng ký thực thể để ghi đè tên, thay đổi ID thực thể hoặc xóa mục nhập khỏi Home Assistant. Lưu ý, xóa mục đăng ký thực thể sẽ không xóa thực thể. Để làm điều đó, hãy theo liên kết dưới đây và xóa nó khỏi trang tích hợp.",
                         "remove_selected": {
                             "button": "Loại bỏ mục đã chọn",
-                            "confirm_partly_title": "Chỉ {number} thực thể đã chọn có thể bị xoá."
+                            "confirm_partly_title": "Chỉ {number} thực thể đã chọn có thể bị xoá.",
+                            "confirm_title": "Bạn có muốn xoá bỏ {number} thực thể không?"
                         },
                         "selected": "{number} đã chọn",
                         "status": {
@@ -1162,6 +1180,7 @@
                         "delete_confirm": "Bạn chắc chắn muốn xóa bộ tích hợp này?",
                         "device_unavailable": "Thiết bị không khả dụng",
                         "devices": "{count} {count, plural,\n  one { thiết bị }\n  other { các thiết bị }\n}",
+                        "documentation": "Tài liệu",
                         "entities": "{count} {count, plural,\n  one { thực thể }\n  other { các thực thể }\n}",
                         "entity_unavailable": "Thiết bị không khả dụng",
                         "firmware": "Firmware: {version}",
@@ -1193,10 +1212,13 @@
                     "configure": "Cấu hình",
                     "configured": "Đã cấu hình",
                     "description": "Quản lý thiết bị và dịch vụ đã kết nối",
+                    "details": "Chi tiết về tích hợp",
                     "discovered": "Đã quét",
                     "ignore": {
                         "confirm_delete_ignore_title": "Ngừng bỏ qua {name}?",
+                        "confirm_ignore_title": "Bỏ qua tự động phát hiện {name}?",
                         "hide_ignored": "Ẩn các tích hợp bị bỏ qua",
+                        "ignore": "Bỏ qua",
                         "ignored": "Đã bỏ qua",
                         "show_ignored": "Hiển thị các tích hợp bị bỏ qua",
                         "stop_ignore": "Ngừng bỏ qua"
@@ -1373,6 +1395,7 @@
                     "caption": "Kịch bản",
                     "description": "Tạo và chỉnh sửa các tập lệnh",
                     "editor": {
+                        "alias": "Tên",
                         "delete_script": "Xóa kịch bản",
                         "link_available_actions": "Tìm hiểu thêm về các hành động khả dụng.",
                         "sequence": "Trình tự",
@@ -1440,6 +1463,7 @@
                         "deactivate_user": "Hủy kích hoạt người dùng",
                         "delete_user": "Xóa người dùng",
                         "name": "Tên",
+                        "system_generated_users_not_editable": "Không thể chỉnh sửa người dùng do hệ thống tạo ra.",
                         "update_user": "Cập nhật"
                     },
                     "picker": {
@@ -1481,7 +1505,9 @@
                         "bind_button_label": "Liên kết Nhóm",
                         "cluster_selection_help": "Chọn các cụm để liên kết với nhóm đã chọn.",
                         "group_picker_help": "Chọn một nhóm để thi hành một lệnh liên kết.",
+                        "group_picker_label": "Các nhóm có thể Liên kết",
                         "header": "Ràng buộc Nhóm",
+                        "introduction": "Liên kết và ngừng liên kết các nhóm.",
                         "unbind_button_help": "Hủy liên kết nhóm đã chọn khỏi cụm thiết bị đã chọn.",
                         "unbind_button_label": "Ngừng liên kết Nhóm"
                     },
@@ -1564,13 +1590,15 @@
                     },
                     "node_management": {
                         "add_to_group": "Thêm vào Nhóm",
+                        "entities": "Các thực thể của nút này",
                         "group": "Nhóm",
                         "node_to_control": "Nút để điều khiển",
                         "remove_from_group": "Xóa Khỏi Nhóm"
                     },
                     "ozw_log": {
                         "last_log_lines": "Số dòng nhật ký gần nhất",
-                        "load": "Tải"
+                        "load": "Tải",
+                        "tail": "Đuôi"
                     },
                     "services": {
                         "cancel_command": "Hủy lệnh",
@@ -1642,6 +1670,7 @@
                     },
                     "templates": {
                         "editor": "Trình soạn thảo bản mẫu",
+                        "jinja_documentation": "Tài liệu về Jinja2",
                         "title": "Mẫu sẵn",
                         "unknown_error_template": "Lỗi không xác định khi kết xuất bản mẫu"
                     }
@@ -1729,7 +1758,9 @@
                             "state_not_equal": "Trạng thái không bằng với"
                         },
                         "entities": {
-                            "description": "Thẻ Các Thực thể là loại thẻ phổ biến nhất. Nó nhóm các mục với nhau thành một danh sách."
+                            "description": "Thẻ Các Thực thể là loại thẻ phổ biến nhất. Nó nhóm các mục với nhau thành một danh sách.",
+                            "name": "Các Thực thể",
+                            "show_header_toggle": "Hiển thị Nút chuyển đổi ở Trên cùng"
                         },
                         "entity-filter": {
                             "description": "Thẻ Bộ lọc Thực thể cho phép bạn xác định danh sách các thực thể mà bạn muốn theo dõi chỉ khi chúng ở trạng thái nhất định.",
@@ -1745,6 +1776,7 @@
                         "generic": {
                             "attribute": "Thuộc tính",
                             "double_tap_action": "Hành động khi Nhấn Đôi",
+                            "entities": "Các Thực thể",
                             "manual": "Thủ công",
                             "manual_description": "Cần thêm một thẻ tuỳ chỉnh hay chỉ muốn viết cấu hình yaml thủ công?",
                             "no_theme": "Không có theme.",
@@ -1845,6 +1877,7 @@
                         "delete": "Xóa Tầm nhìn",
                         "edit": "Chỉnh sửa Tầm nhìn",
                         "header": "Cấu hình Tầm nhìn",
+                        "move_left": "Chuyển tầm nhìn sang trái",
                         "move_right": "Di chuyển tầm nhìn sang phải",
                         "tab_badges": "Huy hiệu",
                         "tab_settings": "Cài đặt",
@@ -1907,6 +1940,7 @@
                 "menu": {
                     "close": "Đóng",
                     "configure_ui": "Cấu hình giao diện",
+                    "exit_edit_mode": "Thoát khỏi chế độ chỉnh sửa với UI",
                     "help": "Trợ giúp",
                     "refresh": "Làm tươi",
                     "reload_resources": "Tải lại các tài nguyên"
@@ -2177,6 +2211,10 @@
                     "not_used": "Chưa bao giờ được sử dụng",
                     "token_title": "Làm mới token cho {clientId}"
                 },
+                "suspend": {
+                    "description": "Chúng ta có nên đóng kết nối đến máy chủ sau khi trình duyệt được ẩn trong 5 phút?",
+                    "header": "Tự động đóng kết nối"
+                },
                 "themes": {
                     "dropdown_label": "Giao diện",
                     "error_no_theme": "Không có giao diện nào.",
@@ -2191,7 +2229,8 @@
             }
         },
         "sidebar": {
-            "external_app_configuration": "Cấu hình ứng dụng"
+            "external_app_configuration": "Cấu hình ứng dụng",
+            "sidebar_toggle": "Ẩn/Hiện Thanh Bên"
         }
     }
 }

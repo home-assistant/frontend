@@ -22,6 +22,8 @@ const _load = (
         (element as HTMLScriptElement).async = true;
         if (type) {
           (element as HTMLScriptElement).type = type;
+          // https://github.com/home-assistant/frontend/pull/6328
+          (element as HTMLScriptElement).crossOrigin = url.substr(0, 1) === "/" ? "use-credentials" : "anonymous";
         }
         break;
       case "link":

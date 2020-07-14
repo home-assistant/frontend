@@ -35,6 +35,8 @@ import "./step-flow-external";
 import "./step-flow-form";
 import "./step-flow-loading";
 import "./step-flow-pick-handler";
+import { fireEvent } from "../../common/dom/fire_event";
+import { computeRTL } from "../../common/util/compute_rtl";
 
 let instance = 0;
 
@@ -113,6 +115,17 @@ class DataEntryFlowDialog extends LitElement {
     this._loading = false;
   }
 
+  public closeDialog() {
+    if (this._step) {
+      this._flowDone();
+    } else if (this._step === null) {
+      // Flow aborted during picking flow
+      this._step = undefined;
+      this._params = undefined;
+    }
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
   protected render(): TemplateResult {
     if (!this._params) {
       return html``;
@@ -121,7 +134,7 @@ class DataEntryFlowDialog extends LitElement {
     return html`
       <ha-dialog
         open
-        @closing=${this._close}
+        @closed=${this.closeDialog}
         scrimClickAction
         escapeKeyAction
         hideActions
@@ -147,6 +160,7 @@ class DataEntryFlowDialog extends LitElement {
                   )}
                   icon="hass:close"
                   dialogAction="close"
+                  ?rtl=${computeRTL(this.hass)}
                 ></ha-icon-button>
                 ${this._step === null
                   ? // Show handler picker
@@ -295,16 +309,6 @@ class DataEntryFlowDialog extends LitElement {
     }
   }
 
-  private _close(): void {
-    if (this._step) {
-      this._flowDone();
-    } else if (this._step === null) {
-      // Flow aborted during picking flow
-      this._step = undefined;
-      this._params = undefined;
-    }
-  }
-
   static get styles(): CSSResultArray {
     return [
       haStyleDialog,
@@ -317,6 +321,10 @@ class DataEntryFlowDialog extends LitElement {
           position: absolute;
           top: 0;
           right: 0;
+        }
+        ha-icon-button[rtl] {
+          right: auto;
+          left: 0;
         }
       `,
     ];

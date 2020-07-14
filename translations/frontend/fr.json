@@ -48,6 +48,19 @@
                 "none": "Aucun",
                 "sleep": "Veille"
             }
+        },
+        "humidifier": {
+            "mode": {
+                "auto": "Auto",
+                "away": "Absent",
+                "baby": "Bébé",
+                "boost": "Boost",
+                "comfort": "Confort",
+                "eco": "Éco",
+                "home": "Présent",
+                "normal": "Normal",
+                "sleep": "Sommeil"
+            }
         }
     },
     "state_badge": {
@@ -388,6 +401,12 @@
                 "reverse": "Sens inverse",
                 "speed": "Vitesse"
             },
+            "humidifier": {
+                "humidity": "Humidité cible",
+                "mode": "Mode",
+                "on_entity": "{name} on",
+                "target_humidity_entity": "{name} humidité cible"
+            },
             "light": {
                 "brightness": "Luminosité",
                 "color_temperature": "Température de couleur",
@@ -505,6 +524,9 @@
                 "area": "Pièce",
                 "clear": "Effacer",
                 "show_areas": "Afficher les pièces"
+            },
+            "data-table": {
+                "search": "Chercher"
             },
             "date-range-picker": {
                 "end_date": "Date de fin",
@@ -870,8 +892,8 @@
                                     "label": "Pas"
                                 },
                                 "numeric_state": {
-                                    "above": "Au-Dessus",
-                                    "below": "En-Dessous",
+                                    "above": "Au dessus de",
+                                    "below": "En-dessous de",
                                     "label": "Valeur numérique",
                                     "value_template": "Contenu du modèle (optionnel)"
                                 },
@@ -1337,6 +1359,7 @@
                             "confirm_text": "Les entités ne peuvent être supprimées que lorsque l'intégration ne fournit plus les entités.",
                             "confirm_title": "Voulez-vous supprimer {number} entités ?"
                         },
+                        "search": "Chercher les entités",
                         "selected": "{number} sélectionné",
                         "status": {
                             "disabled": "Désactivé",
@@ -1367,7 +1390,8 @@
                             "entity_id": "ID de l'entité",
                             "name": "Nom",
                             "type": "Type"
-                        }
+                        },
+                        "no_helpers": "On dirait que vous n'avez pas encore d'aide!"
                     },
                     "types": {
                         "input_boolean": "Interrupteur",
@@ -1412,6 +1436,7 @@
                         "delete_confirm": "Êtes-vous sûr de vouloir supprimer cette intégration?",
                         "device_unavailable": "appareil indisponible",
                         "devices": "{count} {count, plural,\n  zero {appareil}\n  one {appareil}\n  other {appareils}\n}",
+                        "documentation": "Documentation",
                         "entities": "{count} {count, plural,\n  zero {entité}\n  one {entité}\n  other {entités}\n}",
                         "entity_unavailable": "entité indisponible",
                         "firmware": "Firmware: {version}",
@@ -1470,7 +1495,8 @@
                     "note_about_integrations": "Toutes les intégrations ne peuvent pas encore être configurées via l'interface utilisateur.",
                     "note_about_website_reference": "D'autres sont disponibles sur le ",
                     "rename_dialog": "Modifier le nom de cette entrée de configuration",
-                    "rename_input_label": "Nom de l'entrée"
+                    "rename_input_label": "Nom de l'entrée",
+                    "search": "Chercher les intégrations"
                 },
                 "introduction": "Ici, il est possible de configurer vos composants et Home Assistant. Tout n'est pas encore possible de configurer à partir de l'interface utilisateur, mais nous y travaillons.",
                 "logs": {
@@ -2174,6 +2200,7 @@
                             "name": "Nom",
                             "no_theme": "Pas de thème",
                             "refresh_interval": "Intervalle de rafraîchissement",
+                            "search": "Chercher",
                             "secondary_info_attribute": "Attribut d'informations secondaires",
                             "show_icon": "Afficher l'icône ?",
                             "show_name": "Afficher le nom ?",
@@ -2197,6 +2224,10 @@
                         "horizontal-stack": {
                             "description": "La carte de pile horizontale vous permet d'empiler plusieurs cartes, de sorte qu'elles soient toujours côte à côte dans l'espace d'une colonne.",
                             "name": "Pile horizontale"
+                        },
+                        "humidifier": {
+                            "description": "La carte humidificateur donne le contrôle de votre entité humidificateur. Vous permettant de modifier l'humidité et le mode de l'entité.",
+                            "name": "Humidificateur"
                         },
                         "iframe": {
                             "description": "La carte Page Web vous permet d'intégrer votre page Web préférée directement dans Home Assistant.",
@@ -2290,7 +2321,8 @@
                     "edit_lovelace": {
                         "edit_title": "Éditer le titre",
                         "explanation": "Ce titre est affiché au-dessus de toutes vos vues dans Lovelace UI.",
-                        "header": "Titre de votre UI Lovelace"
+                        "header": "Titre de votre UI Lovelace",
+                        "title": "Titre"
                     },
                     "edit_view": {
                         "add": "Ajouter la vue",
@@ -2653,6 +2685,10 @@
                     "last_used": "Dernière utilisation le {date} à partir de {location}",
                     "not_used": "N'a jamais été utilisé",
                     "token_title": "Actualiser le jeton de {clientId}"
+                },
+                "suspend": {
+                    "description": "Faut-il fermer la connexion au serveur après avoir été caché pendant 5 minutes ?",
+                    "header": "Fermer automatiquement la connexion"
                 },
                 "themes": {
                     "dropdown_label": "Thème",
