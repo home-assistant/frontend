@@ -42,7 +42,7 @@ class DeveloperToolsRouter extends HassRouterPage {
 
   protected createLoadingScreen() {
     const loadingScreen = super.createLoadingScreen();
-    loadingScreen.toolbar = false;
+    loadingScreen.noToolbar = true;
     return loadingScreen;
   }
 

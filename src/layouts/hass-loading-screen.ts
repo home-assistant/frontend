@@ -16,7 +16,8 @@ import { HomeAssistant } from "../types";
 
 @customElement("hass-loading-screen")
 class HassLoadingScreen extends LitElement {
-  @property({ type: Boolean }) public toolbar = true;
+  @property({ type: Boolean, attribute: "no-toolbar" })
+  public noToolbar = false;
 
   @property({ type: Boolean }) public rootnav = false;
 
@@ -26,8 +27,9 @@ class HassLoadingScreen extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      ${this.toolbar
-        ? html`<div class="toolbar">
+      ${this.noToolbar
+        ? ""
+        : html`<div class="toolbar">
             ${this.rootnav
               ? html`
                   <ha-menu-button
@@ -40,8 +42,7 @@ class HassLoadingScreen extends LitElement {
                     @click=${this._handleBack}
                   ></ha-icon-button-arrow-prev>
                 `}
-          </div>`
-        : ""}
+          </div>`}
       <div class="content">
         <ha-circular-progress active></ha-circular-progress>
       </div>
