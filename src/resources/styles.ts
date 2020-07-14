@@ -21,7 +21,6 @@ export const derivedStyles = {
   "label-badge-grey": "var(--paper-grey-500)",
   "label-badge-background-color": "var(--card-background-color)",
   "label-badge-text-color": "rgba(var(--rgb-primary-text-color), 0.8)",
-  "paper-card-background-color": "var(--card-background-color)",
   "paper-listbox-background-color": "var(--card-background-color)",
   "paper-item-icon-color": "var(--state-icon-color)",
   "paper-item-icon-active-color": "var(--state-icon-active-color)",
@@ -49,6 +48,7 @@ export const derivedStyles = {
   "material-secondary-background-color": "var(--secondary-background-color)",
   "mdc-checkbox-unchecked-color": "rgba(var(--rgb-primary-text-color), 0.54)",
   "mdc-checkbox-disabled-color": "var(--disabled-text-color)",
+  "mdc-tab-text-label-color-default": "var(--primary-text-color)",
 };
 
 export const haStyle = css`

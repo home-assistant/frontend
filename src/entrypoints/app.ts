@@ -5,8 +5,6 @@ import "../layouts/home-assistant";
 import "../util/legacy-support";
 
 setPassiveTouchGestures(true);
-/* LastPass createElement workaround. See #428 */
-document.createElement = Document.prototype.createElement;
 
 (window as any).frontendVersion = __VERSION__;
 
