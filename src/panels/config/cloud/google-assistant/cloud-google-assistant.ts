@@ -361,7 +361,7 @@ class CloudGoogleAssistant extends LitElement {
         color: var(--primary-text-color);
         background-color: var(
           --ha-card-background,
-          var(--paper-card-background-color, white)
+          var(--card-background-color, white)
         );
         padding: 16px 8px;
         text-align: center;
