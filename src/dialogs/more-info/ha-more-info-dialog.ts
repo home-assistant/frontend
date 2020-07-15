@@ -248,6 +248,7 @@ export class MoreInfoDialog extends LitElement {
       haStyleDialog,
       css`
         ha-dialog {
+          --dialog-surface-position: static;
           --dialog-content-position: static;
         }
 
