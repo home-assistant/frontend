@@ -24,8 +24,6 @@ class HaAttributes extends LitElement {
       return html``;
     }
 
-    console.log(this.extraFilters);
-
     return html`
       <div>
         ${this.computeDisplayAttributes(
