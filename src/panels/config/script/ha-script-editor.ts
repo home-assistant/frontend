@@ -8,9 +8,9 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
-  internalProperty,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
@@ -41,7 +41,7 @@ import { PaperListboxElement } from "@polymer/paper-listbox";
 import { slugify } from "../../../common/string/slugify";
 
 export class HaScriptEditor extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public scriptEntityId!: string;
 

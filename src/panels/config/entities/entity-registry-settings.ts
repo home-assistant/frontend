@@ -8,6 +8,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -29,21 +30,21 @@ import type { HomeAssistant } from "../../../types";
 
 @customElement("entity-registry-settings")
 export class EntityRegistrySettings extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public entry!: ExtEntityRegistryEntry;
 
-  @property() private _name!: string;
+  @internalProperty() private _name!: string;
 
-  @property() private _icon!: string;
+  @internalProperty() private _icon!: string;
 
-  @property() private _entityId!: string;
+  @internalProperty() private _entityId!: string;
 
-  @property() private _disabledBy!: string | null;
+  @internalProperty() private _disabledBy!: string | null;
 
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
-  @property() private _submitting?: boolean;
+  @internalProperty() private _submitting?: boolean;
 
   private _origEntityId!: string;
 
@@ -225,19 +226,22 @@ export class EntityRegistrySettings extends LitElement {
       css`
         :host {
           display: block;
-          margin-bottom: 0 !important;
-          padding: 0 !important;
         }
         .form {
           padding: 20px 24px;
+          margin-bottom: 53px;
         }
         .buttons {
+          position: absolute;
+          bottom: 0;
+          width: 100%;
+          box-sizing: border-box;
+          border-top: 1px solid
+            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
           display: flex;
-          justify-content: flex-end;
+          justify-content: space-between;
           padding: 8px;
-        }
-        mwc-button.warning {
-          margin-right: auto;
+          background-color: var(--mdc-theme-surface, #fff);
         }
         ha-switch {
           margin-right: 16px;

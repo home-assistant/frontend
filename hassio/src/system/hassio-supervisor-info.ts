@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../src/common/dom/fire_event";
@@ -23,11 +24,11 @@ import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-supervisor-info")
 class HassioSupervisorInfo extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public supervisorInfo!: HassioSupervisorInfoType;
 
-  @property() private _errors?: string;
+  @internalProperty() private _errors?: string;
 
   public render(): TemplateResult | void {
     return html`

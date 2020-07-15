@@ -18,9 +18,9 @@ import {
   customElement,
   LitElement,
   property,
+  internalProperty,
   css,
   html,
-  internalProperty,
 } from "lit-element";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
@@ -39,7 +39,7 @@ export interface MoreInfoDialogParams {
 
 @customElement("ha-more-info-dialog")
 export class MoreInfoDialog extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public large = false;
 
@@ -248,6 +248,7 @@ export class MoreInfoDialog extends LitElement {
       haStyleDialog,
       css`
         ha-dialog {
+          --dialog-surface-position: static;
           --dialog-content-position: static;
         }
 
@@ -272,19 +273,22 @@ export class MoreInfoDialog extends LitElement {
             --mdc-dialog-max-width: 90vw;
           }
 
-          ha-dialog:not([data-domain="camera"]) app-toolbar {
-            max-width: 368px;
-          }
-
           .content {
             width: 352px;
           }
 
+          ha-header-bar {
+            width: 400px;
+          }
+
           .main-title {
+            overflow: hidden;
+            text-overflow: ellipsis;
             cursor: default;
           }
 
-          ha-dialog[data-domain="camera"] .content {
+          ha-dialog[data-domain="camera"] .content,
+          ha-dialog[data-domain="camera"] ha-header-bar {
             width: auto;
           }
 
@@ -292,8 +296,9 @@ export class MoreInfoDialog extends LitElement {
             width: calc(90vw - 48px);
           }
 
-          :host([large]) app-toolbar {
-            max-width: calc(90vw - 32px);
+          :host([large]) ha-dialog[data-domain="camera"] .content,
+          :host([large]) ha-header-bar {
+            width: 90vw;
           }
         }
 

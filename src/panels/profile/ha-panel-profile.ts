@@ -11,6 +11,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -38,13 +39,13 @@ import "./ha-set-vibrate-row";
 import "./ha-set-suspend-row";
 
 class HaPanelProfile extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
 
-  @property() private _refreshTokens?: unknown[];
+  @internalProperty() private _refreshTokens?: unknown[];
 
-  @property() private _coreUserData?: CoreFrontendUserData | null;
+  @internalProperty() private _coreUserData?: CoreFrontendUserData | null;
 
   private _unsubCoreData?: UnsubscribeFunc;
 

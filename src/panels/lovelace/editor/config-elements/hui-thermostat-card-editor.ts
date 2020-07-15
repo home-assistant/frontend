@@ -4,6 +4,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -28,9 +29,9 @@ const includeDomains = ["climate"];
 @customElement("hui-thermostat-card-editor")
 export class HuiThermostatCardEditor extends LitElement
   implements LovelaceCardEditor {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: ThermostatCardConfig;
+  @internalProperty() private _config?: ThermostatCardConfig;
 
   public setConfig(config: ThermostatCardConfig): void {
     config = cardConfigStruct(config);

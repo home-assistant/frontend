@@ -9,6 +9,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
@@ -68,21 +69,21 @@ interface FolderItem {
 
 @customElement("dialog-hassio-snapshot")
 class HassioSnapshotDialog extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
-  @property() private _snapshot?: HassioSnapshotDetail;
+  @internalProperty() private _snapshot?: HassioSnapshotDetail;
 
-  @property() private _folders!: FolderItem[];
+  @internalProperty() private _folders!: FolderItem[];
 
-  @property() private _addons!: AddonItem[];
+  @internalProperty() private _addons!: AddonItem[];
 
-  @property() private _dialogParams?: HassioSnapshotDialogParams;
+  @internalProperty() private _dialogParams?: HassioSnapshotDialogParams;
 
-  @property() private _snapshotPassword!: string;
+  @internalProperty() private _snapshotPassword!: string;
 
-  @property() private _restoreHass: boolean | null | undefined = true;
+  @internalProperty() private _restoreHass: boolean | null | undefined = true;
 
   public async showDialog(params: HassioSnapshotDialogParams) {
     this._snapshot = await fetchHassioSnapshotInfo(this.hass, params.slug);

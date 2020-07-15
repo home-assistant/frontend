@@ -5,6 +5,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -58,9 +59,9 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     };
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: PictureEntityCardConfig;
+  @internalProperty() private _config?: PictureEntityCardConfig;
 
   public getCardSize(): number {
     return 3;

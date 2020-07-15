@@ -31,7 +31,7 @@ declare global {
 
 @customElement("home-assistant-main")
 class HomeAssistantMain extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public route?: Route;
 

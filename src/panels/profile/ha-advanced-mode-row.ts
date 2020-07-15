@@ -18,7 +18,7 @@ import "./ha-settings-row";
 
 @customElement("ha-advanced-mode-row")
 class AdvancedModeRow extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
 

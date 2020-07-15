@@ -8,6 +8,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -18,23 +19,23 @@ import { HomeAssistant } from "../../../../types";
 
 @customElement("ha-input_text-form")
 class HaInputTextForm extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public new?: boolean;
 
   private _item?: InputText;
 
-  @property() private _name!: string;
+  @internalProperty() private _name!: string;
 
-  @property() private _icon!: string;
+  @internalProperty() private _icon!: string;
 
-  @property() private _max?: number;
+  @internalProperty() private _max?: number;
 
-  @property() private _min?: number;
+  @internalProperty() private _min?: number;
 
-  @property() private _mode?: string;
+  @internalProperty() private _mode?: string;
 
-  @property() private _pattern?: string;
+  @internalProperty() private _pattern?: string;
 
   set item(item: InputText) {
     this._item = item;

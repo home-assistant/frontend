@@ -15,6 +15,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -56,19 +57,19 @@ class HassioSnapshots extends LitElement {
 
   @property({ attribute: false }) public supervisorInfo!: HassioSupervisorInfo;
 
-  @property() private _snapshotName = "";
+  @internalProperty() private _snapshotName = "";
 
-  @property() private _snapshotPassword = "";
+  @internalProperty() private _snapshotPassword = "";
 
-  @property() private _snapshotHasPassword = false;
+  @internalProperty() private _snapshotHasPassword = false;
 
-  @property() private _snapshotType: HassioSnapshot["type"] = "full";
+  @internalProperty() private _snapshotType: HassioSnapshot["type"] = "full";
 
-  @property() private _snapshots?: HassioSnapshot[] = [];
+  @internalProperty() private _snapshots?: HassioSnapshot[] = [];
 
-  @property() private _addonList: CheckboxItem[] = [];
+  @internalProperty() private _addonList: CheckboxItem[] = [];
 
-  @property() private _folderList: CheckboxItem[] = [
+  @internalProperty() private _folderList: CheckboxItem[] = [
     {
       slug: "homeassistant",
       name: "Home Assistant configuration",
@@ -79,9 +80,9 @@ class HassioSnapshots extends LitElement {
     { slug: "addons/local", name: "Local add-ons", checked: true },
   ];
 
-  @property() private _creatingSnapshot = false;
+  @internalProperty() private _creatingSnapshot = false;
 
-  @property() private _error = "";
+  @internalProperty() private _error = "";
 
   public async refreshData() {
     await reloadHassioSnapshots(this.hass);

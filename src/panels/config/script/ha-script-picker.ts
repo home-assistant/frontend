@@ -29,7 +29,7 @@ import { stateIcon } from "../../../common/entity/state_icon";
 
 @customElement("ha-script-picker")
 class HaScriptPicker extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public scripts!: HassEntity[];
 

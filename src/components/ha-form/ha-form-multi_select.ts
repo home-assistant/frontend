@@ -11,6 +11,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   query,
   TemplateResult,
 } from "lit-element";
@@ -32,7 +33,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
 
   @property() public suffix!: string;
 
-  @property() private _init = false;
+  @internalProperty() private _init = false;
 
   @query("paper-menu-button") private _input?: HTMLElement;
 

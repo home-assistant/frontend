@@ -62,7 +62,7 @@ const integrationsWithPanel = {
 
 @customElement("ha-integration-card")
 export class HaIntegrationCard extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public domain!: string;
 

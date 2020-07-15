@@ -10,7 +10,7 @@ import {
   customElement,
   html,
   LitElement,
-  property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -54,23 +54,23 @@ declare global {
 class DataEntryFlowDialog extends LitElement {
   public hass!: HomeAssistant;
 
-  @property() private _params?: DataEntryFlowDialogParams;
+  @internalProperty() private _params?: DataEntryFlowDialogParams;
 
-  @property() private _loading = true;
+  @internalProperty() private _loading = true;
 
   private _instance = instance;
 
-  @property() private _step:
+  @internalProperty() private _step:
     | DataEntryFlowStep
     | undefined
     // Null means we need to pick a config flow
     | null;
 
-  @property() private _devices?: DeviceRegistryEntry[];
+  @internalProperty() private _devices?: DeviceRegistryEntry[];
 
-  @property() private _areas?: AreaRegistryEntry[];
+  @internalProperty() private _areas?: AreaRegistryEntry[];
 
-  @property() private _handlers?: string[];
+  @internalProperty() private _handlers?: string[];
 
   private _unsubAreas?: UnsubscribeFunc;
 

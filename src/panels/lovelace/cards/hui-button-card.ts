@@ -72,9 +72,9 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     };
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: ButtonCardConfig;
+  @internalProperty() private _config?: ButtonCardConfig;
 
   @queryAsync("mwc-ripple") private _ripple!: Promise<Ripple | null>;
 

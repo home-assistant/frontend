@@ -525,6 +525,9 @@
                 "clear": "未觸發",
                 "show_areas": "顯示分區"
             },
+            "data-table": {
+                "search": "搜尋"
+            },
             "date-range-picker": {
                 "end_date": "結束日期",
                 "select": "選擇",
@@ -938,6 +941,19 @@
                         "introduction": "使用自動化來讓你的智能家居更有魅力吧。",
                         "load_error_not_editable": "僅有 automations.yaml 內的自動化方能編輯。",
                         "load_error_unknown": "載入自動化錯誤（{err_no}）。",
+                        "max": {
+                            "parallel": "最高並行執行數",
+                            "queued": "佇列長度"
+                        },
+                        "modes": {
+                            "description": "該模式控制當執行自動化時、超過一個以上的自動化仍在執行時的狀況。請參閱 {documentation_link} 以獲得更詳細資訊。",
+                            "documentation": "自動化文件",
+                            "label": "模式",
+                            "parallel": "並行（預設）",
+                            "queued": "已佇列",
+                            "restart": "重啟",
+                            "single": "單一"
+                        },
                         "move_down": "向下移動",
                         "move_up": "向上移動",
                         "save": "儲存",
@@ -1356,6 +1372,7 @@
                             "confirm_text": "假如包含此些物件，應該從 Lovelace 設定與自動化中進行移除。",
                             "confirm_title": "是否要移除 {number} 個物件？"
                         },
+                        "search": "搜尋物件",
                         "selected": "已選擇 {number} 個",
                         "status": {
                             "disabled": "已關閉",
@@ -1386,7 +1403,8 @@
                             "entity_id": "物件 ID",
                             "name": "名稱",
                             "type": "類別"
-                        }
+                        },
+                        "no_helpers": "目前尚沒有任何 Helper！"
                     },
                     "types": {
                         "input_boolean": "開關",
@@ -1490,7 +1508,8 @@
                     "note_about_integrations": "目前並非所有整合皆可以透過 UI 進行設定。",
                     "note_about_website_reference": "更多資訊請參閱",
                     "rename_dialog": "編輯設定物件名稱",
-                    "rename_input_label": "物件名稱"
+                    "rename_input_label": "物件名稱",
+                    "search": "搜尋整合"
                 },
                 "introduction": "此處為 Home Assistant 和元件相關配置區，目前尚未支援透過 UI 進行所有設定，我們正在努力改進中。",
                 "logs": {
@@ -1679,6 +1698,19 @@
                         "introduction": "使用腳本以執行一連串的動作。",
                         "link_available_actions": "詳細了解可使用動作",
                         "load_error_not_editable": "僅有於 scripts.yaml 檔案內的腳本，方能進行編輯。",
+                        "max": {
+                            "parallel": "最高並行執行數",
+                            "queued": "佇列長度"
+                        },
+                        "modes": {
+                            "description": "該模式控制當執行腳本時、超過一個以上的腳本仍在執行時的狀況。請參閱 {documentation_link} 以獲得更詳細資訊。",
+                            "documentation": "腳本文件",
+                            "label": "模式",
+                            "parallel": "並行",
+                            "queued": "已佇列",
+                            "restart": "重啟",
+                            "single": "單一（預設）"
+                        },
                         "sequence": "連續",
                         "sequence_sentence": "此腳本所含的操作動作。"
                     },
@@ -2194,6 +2226,7 @@
                             "name": "名稱",
                             "no_theme": "沒有主題",
                             "refresh_interval": "更新間隔",
+                            "search": "搜尋",
                             "secondary_info_attribute": "次要資訊屬性",
                             "show_icon": "顯示圖示？",
                             "show_name": "顯示名稱？",
@@ -2314,7 +2347,8 @@
                     "edit_lovelace": {
                         "edit_title": "編輯標題",
                         "explanation": "此為 Lovelace UI 所有分視圖上方之標題。",
-                        "header": "Lovelace UI 的標題"
+                        "header": "Lovelace UI 的標題",
+                        "title": "標題"
                     },
                     "edit_view": {
                         "add": "新增視圖",
@@ -2503,6 +2537,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "電腦未被允許。",
                                 "not_whitelisted": "電腦尚未加入許可清單。"
                             },
                             "step": {

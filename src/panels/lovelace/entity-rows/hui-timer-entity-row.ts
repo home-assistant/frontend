@@ -4,6 +4,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -17,11 +18,11 @@ import { EntityConfig } from "./types";
 
 @customElement("hui-timer-entity-row")
 class HuiTimerEntityRow extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: EntityConfig;
+  @internalProperty() private _config?: EntityConfig;
 
-  @property() private _timeRemaining?: number;
+  @internalProperty() private _timeRemaining?: number;
 
   private _interval?: number;
 

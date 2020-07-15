@@ -7,6 +7,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -42,13 +43,13 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
     return { type: "shopping-list" };
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: ShoppingListCardConfig;
+  @internalProperty() private _config?: ShoppingListCardConfig;
 
-  @property() private _uncheckedItems?: ShoppingListItem[];
+  @internalProperty() private _uncheckedItems?: ShoppingListItem[];
 
-  @property() private _checkedItems?: ShoppingListItem[];
+  @internalProperty() private _checkedItems?: ShoppingListItem[];
 
   public getCardSize(): number {
     return (this._config ? (this._config.title ? 1 : 0) : 0) + 3;

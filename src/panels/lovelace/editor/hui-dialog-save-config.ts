@@ -8,6 +8,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   query,
   TemplateResult,
 } from "lit-element";
@@ -27,13 +28,13 @@ const EMPTY_CONFIG = { views: [] };
 
 @customElement("hui-dialog-save-config")
 export class HuiSaveConfig extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _params?: SaveDialogParams;
+  @internalProperty() private _params?: SaveDialogParams;
 
-  @property() private _emptyConfig = false;
+  @internalProperty() private _emptyConfig = false;
 
-  @property() private _saving: boolean;
+  @internalProperty() private _saving: boolean;
 
   @query("ha-paper-dialog") private _dialog?: HaPaperDialog;
 

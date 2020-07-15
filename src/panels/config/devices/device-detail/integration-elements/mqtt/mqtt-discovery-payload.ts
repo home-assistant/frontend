@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
@@ -18,7 +19,7 @@ class MQTTDiscoveryPayload extends LitElement {
 
   @property() public summary!: string;
 
-  @property() private _open = false;
+  @internalProperty() private _open = false;
 
   protected render(): TemplateResult {
     return html`

@@ -21,7 +21,7 @@ const equal = (a: AutomationEntity[], b: AutomationEntity[]): boolean => {
 
 @customElement("ha-config-automation")
 class HaConfigAutomation extends HassRouterPage {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
 

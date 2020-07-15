@@ -9,6 +9,7 @@ import {
   customElement,
   html,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -55,13 +56,13 @@ declare global {
 
 @customElement("ha-onboarding")
 class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   public translationFragment = "page-onboarding";
 
-  @property() private _loading = false;
+  @internalProperty() private _loading = false;
 
-  @property() private _steps?: OnboardingStep[];
+  @internalProperty() private _steps?: OnboardingStep[];
 
   protected render(): TemplateResult {
     const step = this._curStep()!;

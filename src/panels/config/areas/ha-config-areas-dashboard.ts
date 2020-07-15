@@ -42,7 +42,7 @@ import { computeRTL } from "../../../common/util/compute_rtl";
 
 @customElement("ha-config-areas-dashboard")
 export class HaConfigAreasDashboard extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public isWide?: boolean;
 

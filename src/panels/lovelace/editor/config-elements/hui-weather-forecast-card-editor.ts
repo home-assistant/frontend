@@ -3,6 +3,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -32,9 +33,9 @@ const includeDomains = ["weather"];
 @customElement("hui-weather-forecast-card-editor")
 export class HuiWeatherForecastCardEditor extends LitElement
   implements LovelaceCardEditor {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: WeatherForecastCardConfig;
+  @internalProperty() private _config?: WeatherForecastCardConfig;
 
   public setConfig(config: WeatherForecastCardConfig): void {
     config = cardConfigStruct(config);

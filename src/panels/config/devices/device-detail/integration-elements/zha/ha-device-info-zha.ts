@@ -4,6 +4,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
   css,
   PropertyValues,
@@ -16,11 +17,11 @@ import { formatAsPaddedHex } from "../../../../integrations/integration-panels/z
 
 @customElement("ha-device-info-zha")
 export class HaDeviceActionsZha extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public device!: DeviceRegistryEntry;
 
-  @property() private _zhaDevice?: ZHADevice;
+  @internalProperty() private _zhaDevice?: ZHADevice;
 
   protected updated(changedProperties: PropertyValues) {
     if (changedProperties.has("device")) {

@@ -8,7 +8,7 @@ import type { HomeAssistant } from "../../../../../types";
 
 @customElement("ha-automation-trigger-homeassistant")
 export default class HaHassTrigger extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public trigger!: HassTrigger;
 

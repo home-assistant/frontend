@@ -68,26 +68,15 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
         }
 
         .segmentationButton {
+          display: none;
           position: absolute;
-          top: 11%;
+          top: 5%;
           transform: translate(0%, 0%);
-          padding: 0px;
-          max-height: 0px;
-          width: 23px;
-          height: 23px;
-          opacity: var(--dark-secondary-opacity);
-          overflow: hidden;
-          transition: max-height 0.5s ease-in;
+          color: var(--secondary-text-color);
         }
 
-        .has-color.is-on .segmentationContainer .segmentationButton {
-          position: absolute;
-          top: 11%;
-          transform: translate(0%, 0%);
-          width: 23px;
-          height: 23px;
-          padding: 0px;
-          opacity: var(--dark-secondary-opacity);
+        .has-color.is-on .segmentationButton {
+          display: inline-block;
         }
 
         .has-effect_list.is-on .effect_list,
@@ -106,11 +95,6 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
         .has-color_temp.is-on .color_temp,
         .has-white_value.is-on .white_value {
           padding-top: 16px;
-        }
-
-        .has-color.is-on .segmentationButton {
-          max-height: 100px;
-          overflow: visible;
         }
 
         .has-color.is-on ha-color-picker {
@@ -189,7 +173,7 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
           <ha-icon-button
             icon="mdi:palette"
             on-click="segmentClick"
-            class="control segmentationButton"
+            class="segmentationButton"
           ></ha-icon-button>
         </div>
 
@@ -217,7 +201,7 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
         <ha-attributes
           state-obj="[[stateObj]]"
-          extra-filters="brightness,color_temp,white_value,effect_list,effect,hs_color,rgb_color,xy_color,min_mireds,max_mireds"
+          extra-filters="brightness,color_temp,white_value,effect_list,effect,hs_color,rgb_color,xy_color,min_mireds,max_mireds,entity_id"
         ></ha-attributes>
       </div>
     `;
