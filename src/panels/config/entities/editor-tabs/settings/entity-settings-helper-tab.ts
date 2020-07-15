@@ -52,6 +52,7 @@ import "../../../helpers/forms/ha-input_select-form";
 import "../../../helpers/forms/ha-input_text-form";
 import "../../entity-registry-basic-editor";
 import type { HaEntityRegistryBasicEditor } from "../../entity-registry-basic-editor";
+import { haStyle } from "../../../../../resources/styles";
 
 const HELPERS = {
   input_boolean: {
@@ -219,35 +220,42 @@ export class EntityRegistrySettingsHelper extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
-    return css`
-      :host {
-        display: block;
-        padding: 0 !important;
-      }
-      .form {
-        padding: 20px 24px;
-      }
-      .buttons {
-        display: flex;
-        justify-content: space-between;
-        padding: 8px;
-        margin-bottom: -20px;
-      }
-      mwc-button.warning {
-        --mdc-theme-primary: var(--error-color);
-      }
-      .error {
-        color: var(--error-color);
-      }
-      .row {
-        margin-top: 8px;
-        color: var(--primary-text-color);
-      }
-      .secondary {
-        color: var(--secondary-text-color);
-      }
-    `;
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
+        :host {
+          display: block;
+          padding: 0 !important;
+        }
+        .form {
+          padding: 20px 24px;
+          margin-bottom: 53px;
+        }
+        .buttons {
+          position: absolute;
+          bottom: 0;
+          width: 100%;
+          box-sizing: border-box;
+          border-top: 1px solid
+            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
+          display: flex;
+          justify-content: space-between;
+          padding: 8px;
+          background-color: var(--mdc-theme-surface, #fff);
+        }
+        .error {
+          color: var(--error-color);
+        }
+        .row {
+          margin-top: 8px;
+          color: var(--primary-text-color);
+        }
+        .secondary {
+          color: var(--secondary-text-color);
+        }
+      `,
+    ];
   }
 }
 
