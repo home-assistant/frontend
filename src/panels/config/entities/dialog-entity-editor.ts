@@ -245,6 +245,7 @@ export class DialogEntityEditor extends LitElement {
         }
 
         ha-dialog {
+          --dialog-content-position: static;
           --dialog-content-padding: 0;
         }
 
