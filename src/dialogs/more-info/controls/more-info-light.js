@@ -217,7 +217,7 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
         <ha-attributes
           state-obj="[[stateObj]]"
-          extra-filters="brightness,color_temp,white_value,effect_list,effect,hs_color,rgb_color,xy_color,min_mireds,max_mireds"
+          extra-filters="brightness,color_temp,white_value,effect_list,effect,hs_color,rgb_color,xy_color,min_mireds,max_mireds,entity_id"
         ></ha-attributes>
       </div>
     `;
