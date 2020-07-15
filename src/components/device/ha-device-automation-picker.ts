@@ -8,6 +8,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -24,7 +25,7 @@ const UNKNOWN_AUTOMATION_KEY = "UNKNOWN_AUTOMATION";
 export abstract class HaDeviceAutomationPicker<
   T extends DeviceAutomation
 > extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public label?: string;
 
@@ -36,11 +37,11 @@ export abstract class HaDeviceAutomationPicker<
 
   protected UNKNOWN_AUTOMATION_TEXT = "Unknown automation";
 
-  @property() private _automations: T[] = [];
+  @internalProperty() private _automations: T[] = [];
 
   // Trigger an empty render so we start with a clean DOM.
   // paper-listbox does not like changing things around.
-  @property() private _renderEmpty = false;
+  @internalProperty() private _renderEmpty = false;
 
   private _localizeDeviceAutomation: (
     hass: HomeAssistant,

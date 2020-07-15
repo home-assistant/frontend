@@ -11,6 +11,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../components/dialog/ha-paper-dialog";
@@ -23,15 +24,15 @@ import { DeviceRegistryDetailDialogParams } from "./show-dialog-device-registry-
 
 @customElement("dialog-device-registry-detail")
 class DialogDeviceRegistryDetail extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _nameByUser!: string;
+  @internalProperty() private _nameByUser!: string;
 
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
-  @property() private _params?: DeviceRegistryDetailDialogParams;
+  @internalProperty() private _params?: DeviceRegistryDetailDialogParams;
 
-  @property() private _areaId?: string;
+  @internalProperty() private _areaId?: string;
 
   private _submitting?: boolean;
 

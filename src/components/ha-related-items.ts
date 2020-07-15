@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -27,19 +28,19 @@ import "./ha-switch";
 
 @customElement("ha-related-items")
 export class HaRelatedItems extends SubscribeMixin(LitElement) {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public itemType!: ItemType;
 
   @property() public itemId!: string;
 
-  @property() private _entries?: ConfigEntry[];
+  @internalProperty() private _entries?: ConfigEntry[];
 
-  @property() private _devices?: DeviceRegistryEntry[];
+  @internalProperty() private _devices?: DeviceRegistryEntry[];
 
-  @property() private _areas?: AreaRegistryEntry[];
+  @internalProperty() private _areas?: AreaRegistryEntry[];
 
-  @property() private _related?: RelatedResult;
+  @internalProperty() private _related?: RelatedResult;
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [

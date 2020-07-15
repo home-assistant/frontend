@@ -8,6 +8,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../../../../components/buttons/ha-call-service-button";
@@ -18,11 +19,11 @@ import { HomeAssistant } from "../../../../../types";
 
 @customElement("zwave-values")
 export class ZwaveValues extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public values: ZWaveValue[] = [];
 
-  @property() private _selectedValue = -1;
+  @internalProperty() private _selectedValue = -1;
 
   protected render(): TemplateResult {
     return html`

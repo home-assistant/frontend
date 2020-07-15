@@ -11,6 +11,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -44,7 +45,7 @@ import { computeRTL } from "../../../../common/util/compute_rtl";
 
 @customElement("ha-config-lovelace-resources")
 export class HaConfigLovelaceRescources extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public isWide!: boolean;
 
@@ -52,7 +53,7 @@ export class HaConfigLovelaceRescources extends LitElement {
 
   @property() public route!: Route;
 
-  @property() private _resources: LovelaceResource[] = [];
+  @internalProperty() private _resources: LovelaceResource[] = [];
 
   private _columns = memoize(
     (_language): DataTableColumnContainer => {

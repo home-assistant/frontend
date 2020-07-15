@@ -10,6 +10,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -70,7 +71,7 @@ interface DeviceEntitiesLookup {
 
 @customElement("ha-scene-editor")
 export class HaSceneEditor extends SubscribeMixin(LitElement) {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
 
@@ -84,27 +85,29 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
 
   @property() public showAdvanced!: boolean;
 
-  @property() private _dirty = false;
+  @internalProperty() private _dirty = false;
 
-  @property() private _errors?: string;
+  @internalProperty() private _errors?: string;
 
-  @property() private _config?: SceneConfig;
+  @internalProperty() private _config?: SceneConfig;
 
-  @property() private _entities: string[] = [];
+  @internalProperty() private _entities: string[] = [];
 
-  @property() private _devices: string[] = [];
+  @internalProperty() private _devices: string[] = [];
 
-  @property() private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
+  @internalProperty()
+  private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
 
-  @property() private _entityRegistryEntries: EntityRegistryEntry[] = [];
+  @internalProperty()
+  private _entityRegistryEntries: EntityRegistryEntry[] = [];
 
-  @property() private _scene?: SceneEntity;
+  @internalProperty() private _scene?: SceneEntity;
 
   private _storedStates: SceneEntities = {};
 
   private _unsubscribeEvents?: () => void;
 
-  @property() private _deviceEntityLookup: DeviceEntitiesLookup = {};
+  @internalProperty() private _deviceEntityLookup: DeviceEntitiesLookup = {};
 
   private _activateContextId?: string;
 

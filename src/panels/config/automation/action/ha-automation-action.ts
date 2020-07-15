@@ -16,7 +16,7 @@ import { HaDeviceAction } from "./types/ha-automation-action-device_id";
 
 @customElement("ha-automation-action")
 export default class HaAutomationAction extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public actions!: Action[];
 

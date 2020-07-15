@@ -9,7 +9,7 @@ import {
 
 @customElement("ha-automation-trigger-mqtt")
 export class HaMQTTTrigger extends LitElement implements TriggerElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public trigger!: MqttTrigger;
 

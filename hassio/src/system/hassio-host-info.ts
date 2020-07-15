@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../../src/components/buttons/ha-call-api-button";
@@ -32,15 +33,15 @@ import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-host-info")
 class HassioHostInfo extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public hostInfo!: HassioHostInfoType;
 
   @property({ attribute: false }) public hassioInfo!: HassioInfo;
 
-  @property() public hassOsInfo!: HassioHassOSInfo;
+  @property({ attribute: false }) public hassOsInfo!: HassioHassOSInfo;
 
-  @property() private _errors?: string;
+  @internalProperty() private _errors?: string;
 
   public render(): TemplateResult | void {
     return html`

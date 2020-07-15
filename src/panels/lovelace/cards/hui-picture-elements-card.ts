@@ -5,6 +5,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -19,9 +20,9 @@ import { PictureElementsCardConfig } from "./types";
 
 @customElement("hui-picture-elements-card")
 class HuiPictureElementsCard extends LitElement implements LovelaceCard {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _elements?: LovelaceElement[];
+  @internalProperty() private _elements?: LovelaceElement[];
 
   public static getStubConfig(
     hass: HomeAssistant,
@@ -53,7 +54,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     };
   }
 
-  @property() private _config?: PictureElementsCardConfig;
+  @internalProperty() private _config?: PictureElementsCardConfig;
 
   public getCardSize(): number {
     return 4;

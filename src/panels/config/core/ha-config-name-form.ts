@@ -8,6 +8,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../../components/ha-card";
@@ -17,11 +18,11 @@ import type { HomeAssistant } from "../../../types";
 
 @customElement("ha-config-name-form")
 class ConfigNameForm extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _working = false;
+  @internalProperty() private _working = false;
 
-  @property() private _name!: ConfigUpdateValues["location_name"];
+  @internalProperty() private _name!: ConfigUpdateValues["location_name"];
 
   protected render(): TemplateResult {
     const canEdit = ["storage", "default"].includes(

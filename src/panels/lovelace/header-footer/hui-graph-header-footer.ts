@@ -7,6 +7,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -28,11 +29,11 @@ export class HuiGraphHeaderFooter extends LitElement
     return {};
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() protected _config?: GraphHeaderFooterConfig;
 
-  @property() private _coordinates?: number[][];
+  @internalProperty() private _coordinates?: number[][];
 
   private _date?: Date;
 

@@ -15,7 +15,7 @@ import { HomeAssistant } from "../../../types";
 
 @customElement("more-info-automation")
 class MoreInfoAutomation extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public stateObj?: HassEntity;
 

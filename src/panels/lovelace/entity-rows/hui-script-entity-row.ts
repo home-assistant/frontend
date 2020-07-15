@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -19,9 +20,9 @@ import { canExcecute, ScriptEntity } from "../../../data/script";
 
 @customElement("hui-script-entity-row")
 class HuiScriptEntityRow extends LitElement implements LovelaceRow {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: ActionRowConfig;
+  @internalProperty() private _config?: ActionRowConfig;
 
   public setConfig(config: ActionRowConfig): void {
     if (!config) {

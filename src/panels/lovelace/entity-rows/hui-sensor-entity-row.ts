@@ -5,6 +5,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -28,9 +29,9 @@ interface SensorEntityConfig extends EntitiesCardEntityConfig {
 
 @customElement("hui-sensor-entity-row")
 class HuiSensorEntityRow extends LitElement implements LovelaceRow {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: SensorEntityConfig;
+  @internalProperty() private _config?: SensorEntityConfig;
 
   public setConfig(config: SensorEntityConfig): void {
     if (!config) {

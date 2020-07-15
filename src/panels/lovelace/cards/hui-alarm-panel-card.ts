@@ -7,6 +7,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   query,
   TemplateResult,
@@ -69,9 +70,9 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     };
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: AlarmPanelCardConfig;
+  @internalProperty() private _config?: AlarmPanelCardConfig;
 
   @query("#alarmCode") private _input?: PaperInputElement;
 

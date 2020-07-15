@@ -24,7 +24,7 @@ import { showCloudCertificateDialog } from "../dialog-cloud-certificate/show-dia
 
 @customElement("cloud-remote-pref")
 export class CloudRemotePref extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public cloudStatus?: CloudStatusLoggedIn;
 

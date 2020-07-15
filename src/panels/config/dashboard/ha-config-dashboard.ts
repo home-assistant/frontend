@@ -24,7 +24,7 @@ import { mdiCloudLock } from "@mdi/js";
 
 @customElement("ha-config-dashboard")
 class HaConfigDashboard extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true })
   public narrow!: boolean;

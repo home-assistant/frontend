@@ -5,6 +5,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
@@ -16,13 +17,13 @@ import { HassioMarkdownDialogParams } from "./show-dialog-hassio-markdown";
 
 @customElement("dialog-hassio-markdown")
 class HassioMarkdownDialog extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public title!: string;
 
   @property() public content!: string;
 
-  @property() private _opened = false;
+  @internalProperty() private _opened = false;
 
   public showDialog(params: HassioMarkdownDialogParams) {
     this.title = params.title;

@@ -11,7 +11,7 @@ import {
 
 @customElement("ha-automation-trigger-event")
 export class HaEventTrigger extends LitElement implements TriggerElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public trigger!: EventTrigger;
 

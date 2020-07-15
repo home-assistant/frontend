@@ -51,7 +51,7 @@ const weatherIcons = {
 
 @customElement("more-info-weather")
 class MoreInfoWeather extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public stateObj?: HassEntity;
 

@@ -4,6 +4,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -28,9 +29,9 @@ const includeDomains = ["humidifier"];
 @customElement("hui-humidifier-card-editor")
 export class HuiHumidifierCardEditor extends LitElement
   implements LovelaceCardEditor {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: HumidifierCardConfig;
+  @internalProperty() private _config?: HumidifierCardConfig;
 
   public setConfig(config: HumidifierCardConfig): void {
     config = cardConfigStruct(config);

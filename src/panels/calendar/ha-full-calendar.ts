@@ -1,5 +1,6 @@
 import {
   property,
+  internalProperty,
   PropertyValues,
   LitElement,
   CSSResult,
@@ -56,9 +57,9 @@ class HAFullCalendar extends LitElement {
   @property({ type: Boolean, reflect: true })
   public narrow!: boolean;
 
-  @property() private calendar?: Calendar;
+  @internalProperty() private calendar?: Calendar;
 
-  @property() private _activeView = "dayGridMonth";
+  @internalProperty() private _activeView = "dayGridMonth";
 
   protected render(): TemplateResult {
     return html`
