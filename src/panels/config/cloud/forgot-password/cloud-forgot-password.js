@@ -45,9 +45,13 @@ class CloudForgotPassword extends LocalizeMixin(EventsMixin(PolymerElement)) {
           display: none;
         }
       </style>
-      <hass-subpage header=[[localize('ui.panel.config.cloud.forgot_password.title')]]>
+      <hass-subpage
+        header="[[localize('ui.panel.config.cloud.forgot_password.title')]]"
+      >
         <div class="content">
-          <ha-card header=[[localize('ui.panel.config.cloud.forgot_password.subtitle')]]>
+          <ha-card
+            header="[[localize('ui.panel.config.cloud.forgot_password.subtitle')]]"
+          >
             <div class="card-content">
               <p>
                 [[localize('ui.panel.config.cloud.forgot_password.instructions')]]
