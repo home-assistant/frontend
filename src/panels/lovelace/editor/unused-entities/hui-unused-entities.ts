@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -36,15 +37,15 @@ import { mdiPlus } from "@mdi/js";
 
 @customElement("hui-unused-entities")
 export class HuiUnusedEntities extends LitElement {
-  @property() public lovelace?: Lovelace;
+  @property({ attribute: false }) public lovelace?: Lovelace;
 
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow?: boolean;
 
-  @property() private _unusedEntities: string[] = [];
+  @internalProperty() private _unusedEntities: string[] = [];
 
-  @property() private _selectedEntities: string[] = [];
+  @internalProperty() private _selectedEntities: string[] = [];
 
   private get _config(): LovelaceConfig {
     return this.lovelace!.config;

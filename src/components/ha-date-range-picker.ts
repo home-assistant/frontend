@@ -24,7 +24,7 @@ export interface DateRangePickerRanges {
 
 @customElement("ha-date-range-picker")
 export class HaDateRangePicker extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public startDate!: Date;
 

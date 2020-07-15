@@ -2,6 +2,7 @@ import {
   customElement,
   LitElement,
   property,
+  internalProperty,
   CSSResultArray,
   css,
   TemplateResult,
@@ -33,14 +34,14 @@ import { getCalendars, fetchCalendarEvents } from "../../data/calendar";
 
 @customElement("ha-panel-calendar")
 class PanelCalendar extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true })
   public narrow!: boolean;
 
-  @property() private _calendars: SelectedCalendar[] = [];
+  @internalProperty() private _calendars: SelectedCalendar[] = [];
 
-  @property() private _events: CalendarEvent[] = [];
+  @internalProperty() private _events: CalendarEvent[] = [];
 
   private _start?: Date;
 

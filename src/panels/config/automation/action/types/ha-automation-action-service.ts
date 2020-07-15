@@ -22,7 +22,7 @@ import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-service")
 export class HaServiceAction extends LitElement implements ActionElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public action!: ServiceAction;
 

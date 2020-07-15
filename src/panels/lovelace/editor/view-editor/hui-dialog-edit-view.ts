@@ -10,6 +10,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
@@ -43,19 +44,19 @@ import { EditViewDialogParams } from "./show-edit-view-dialog";
 
 @customElement("hui-dialog-edit-view")
 export class HuiDialogEditView extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _params?: EditViewDialogParams;
+  @internalProperty() private _params?: EditViewDialogParams;
 
-  @property() private _config?: LovelaceViewConfig;
+  @internalProperty() private _config?: LovelaceViewConfig;
 
-  @property() private _badges?: LovelaceBadgeConfig[];
+  @internalProperty() private _badges?: LovelaceBadgeConfig[];
 
-  @property() private _cards?: LovelaceCardConfig[];
+  @internalProperty() private _cards?: LovelaceCardConfig[];
 
-  @property() private _saving = false;
+  @internalProperty() private _saving = false;
 
-  @property() private _curTab?: string;
+  @internalProperty() private _curTab?: string;
 
   private _curTabIndex = 0;
 

@@ -6,6 +6,7 @@ import {
   CSSResult,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
 } from "lit-element";
 import { html, TemplateResult } from "lit-html";
@@ -52,7 +53,7 @@ class HassioAddonStore extends LitElement {
 
   @property({ attribute: false }) private _repos?: HassioAddonRepository[];
 
-  @property() private _filter?: string;
+  @internalProperty() private _filter?: string;
 
   public async refreshData() {
     this._repos = undefined;

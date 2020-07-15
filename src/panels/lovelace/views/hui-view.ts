@@ -2,6 +2,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
   CSSResult,
@@ -49,17 +50,17 @@ const getColumnIndex = (columnSizes: number[], size: number) => {
 };
 
 export class HUIView extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public lovelace?: Lovelace;
+  @property({ attribute: false }) public lovelace?: Lovelace;
 
   @property({ type: Number }) public columns?: number;
 
   @property({ type: Number }) public index?: number;
 
-  @property() private _cards: Array<LovelaceCard | HuiErrorCard> = [];
+  @internalProperty() private _cards: Array<LovelaceCard | HuiErrorCard> = [];
 
-  @property() private _badges: LovelaceBadge[] = [];
+  @internalProperty() private _badges: LovelaceBadge[] = [];
 
   private _createColumnsIteration = 0;
 

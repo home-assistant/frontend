@@ -7,6 +7,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
@@ -20,11 +21,11 @@ import { fireEvent } from "../../common/dom/fire_event";
 
 @customElement("dialog-box")
 class DialogBox extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _params?: DialogParams;
+  @internalProperty() private _params?: DialogParams;
 
-  @property() private _value?: string;
+  @internalProperty() private _value?: string;
 
   public async showDialog(params: DialogParams): Promise<void> {
     this._params = params;

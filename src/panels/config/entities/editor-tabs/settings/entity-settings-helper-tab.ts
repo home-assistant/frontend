@@ -5,6 +5,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   query,
   TemplateResult,
@@ -82,17 +83,17 @@ const HELPERS = {
 
 @customElement("entity-settings-helper-tab")
 export class EntityRegistrySettingsHelper extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public entry!: ExtEntityRegistryEntry;
 
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
-  @property() private _item?: Helper | null;
+  @internalProperty() private _item?: Helper | null;
 
-  @property() private _submitting?: boolean;
+  @internalProperty() private _submitting?: boolean;
 
-  @property() private _componentLoaded?: boolean;
+  @internalProperty() private _componentLoaded?: boolean;
 
   @query("ha-registry-basic-editor")
   private _registryEditor?: HaEntityRegistryBasicEditor;

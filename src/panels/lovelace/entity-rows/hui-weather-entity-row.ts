@@ -5,6 +5,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -37,9 +38,9 @@ import { stateIcon } from "../../../common/entity/state_icon";
 
 @customElement("hui-weather-entity-row")
 class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: EntitiesCardEntityConfig;
+  @internalProperty() private _config?: EntitiesCardEntityConfig;
 
   public setConfig(config: EntitiesCardEntityConfig): void {
     if (!config?.entity) {

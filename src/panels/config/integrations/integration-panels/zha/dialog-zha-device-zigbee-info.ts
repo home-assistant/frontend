@@ -4,6 +4,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../../../../components/ha-code-editor";
@@ -14,9 +15,9 @@ import { ZHADeviceZigbeeInfoDialogParams } from "./show-dialog-zha-device-zigbee
 
 @customElement("dialog-zha-device-zigbee-info")
 class DialogZHADeviceZigbeeInfo extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _signature: any;
+  @internalProperty() private _signature: any;
 
   public async showDialog(
     params: ZHADeviceZigbeeInfoDialogParams

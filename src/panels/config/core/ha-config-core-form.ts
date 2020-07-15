@@ -10,6 +10,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { UNIT_C } from "../../../common/const";
@@ -22,17 +23,17 @@ import type { HomeAssistant } from "../../../types";
 
 @customElement("ha-config-core-form")
 class ConfigCoreForm extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _working = false;
+  @internalProperty() private _working = false;
 
-  @property() private _location!: [number, number];
+  @internalProperty() private _location!: [number, number];
 
-  @property() private _elevation!: string;
+  @internalProperty() private _elevation!: string;
 
-  @property() private _unitSystem!: ConfigUpdateValues["unit_system"];
+  @internalProperty() private _unitSystem!: ConfigUpdateValues["unit_system"];
 
-  @property() private _timeZone!: string;
+  @internalProperty() private _timeZone!: string;
 
   protected render(): TemplateResult {
     const canEdit = ["storage", "default"].includes(

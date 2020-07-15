@@ -31,7 +31,7 @@ export class HuiPictureHeaderFooter extends LitElement
     };
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() protected _config?: PictureHeaderFooterConfig;
 

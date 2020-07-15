@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   query,
   TemplateResult,
   PropertyValues,
@@ -45,23 +46,23 @@ declare global {
 export class HuiDialogEditCard extends LitElement {
   @property() protected hass!: HomeAssistant;
 
-  @property() private _params?: EditCardDialogParams;
+  @internalProperty() private _params?: EditCardDialogParams;
 
-  @property() private _cardConfig?: LovelaceCardConfig;
+  @internalProperty() private _cardConfig?: LovelaceCardConfig;
 
-  @property() private _viewConfig!: LovelaceViewConfig;
+  @internalProperty() private _viewConfig!: LovelaceViewConfig;
 
-  @property() private _saving = false;
+  @internalProperty() private _saving = false;
 
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
-  @property() private _guiModeAvailable? = true;
+  @internalProperty() private _guiModeAvailable? = true;
 
   @query("hui-card-editor") private _cardEditorEl?: HuiCardEditor;
 
-  @property() private _GUImode = true;
+  @internalProperty() private _GUImode = true;
 
-  @property() private _documentationURL?: string;
+  @internalProperty() private _documentationURL?: string;
 
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;

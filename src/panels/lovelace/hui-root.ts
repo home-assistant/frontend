@@ -19,6 +19,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -59,9 +60,9 @@ import type { HUIPanelView } from "./views/hui-panel-view";
 import { HUIView } from "./views/hui-view";
 
 class HUIRoot extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public lovelace?: Lovelace;
+  @property({ attribute: false }) public lovelace?: Lovelace;
 
   @property() public columns?: number;
 
@@ -69,7 +70,7 @@ class HUIRoot extends LitElement {
 
   @property() public route?: { path: string; prefix: string };
 
-  @property() private _curView?: number | "hass-unused-entities";
+  @internalProperty() private _curView?: number | "hass-unused-entities";
 
   private _viewCache?: { [viewId: string]: HUIView };
 

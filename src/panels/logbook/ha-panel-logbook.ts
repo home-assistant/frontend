@@ -10,6 +10,7 @@ import "./ha-logbook";
 import {
   LitElement,
   property,
+  internalProperty,
   customElement,
   html,
   css,
@@ -49,7 +50,7 @@ export class HaPanelLogbook extends LitElement {
 
   @property({ reflect: true, type: Boolean }) rtl = false;
 
-  @property() private _ranges?: DateRangePickerRanges;
+  @internalProperty() private _ranges?: DateRangePickerRanges;
 
   private _fetchUserDone?: Promise<unknown>;
 

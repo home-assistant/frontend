@@ -6,7 +6,7 @@ import {
   customElement,
   html,
   LitElement,
-  property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -24,9 +24,9 @@ declare global {
 
 @customElement("hui-views-list")
 class HuiViewsList extends LitElement {
-  @property() private lovelaceConfig?: LovelaceConfig | undefined;
+  @internalProperty() private lovelaceConfig?: LovelaceConfig | undefined;
 
-  @property() private selected?: number | undefined;
+  @internalProperty() private selected?: number | undefined;
 
   protected render(): TemplateResult {
     if (!this.lovelaceConfig) {

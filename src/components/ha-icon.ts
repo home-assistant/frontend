@@ -3,6 +3,7 @@ import {
   customElement,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   html,
   TemplateResult,
@@ -233,11 +234,11 @@ const cachedIcons: { [key: string]: string } = {};
 export class HaIcon extends LitElement {
   @property() public icon?: string;
 
-  @property() private _path?: string;
+  @internalProperty() private _path?: string;
 
-  @property() private _viewBox?;
+  @internalProperty() private _viewBox?;
 
-  @property() private _legacy = false;
+  @internalProperty() private _legacy = false;
 
   protected updated(changedProps: PropertyValues) {
     if (changedProps.has("icon")) {

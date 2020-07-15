@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   query,
   TemplateResult,
 } from "lit-element";
@@ -26,7 +27,7 @@ export class HaFormString extends LitElement implements HaFormElement {
 
   @property() public suffix!: string;
 
-  @property() private _unmaskedPassword = false;
+  @internalProperty() private _unmaskedPassword = false;
 
   @query("paper-input") private _input?: HTMLElement;
 

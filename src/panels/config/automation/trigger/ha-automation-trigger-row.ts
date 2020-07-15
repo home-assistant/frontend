@@ -13,6 +13,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
 } from "lit-element";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -78,11 +79,11 @@ export const handleChangeEvent = (element: TriggerElement, ev: CustomEvent) => {
 
 @customElement("ha-automation-trigger-row")
 export default class HaAutomationTriggerRow extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public trigger!: Trigger;
 
-  @property() private _yamlMode = false;
+  @internalProperty() private _yamlMode = false;
 
   protected render() {
     const selected = OPTIONS.indexOf(this.trigger.platform);

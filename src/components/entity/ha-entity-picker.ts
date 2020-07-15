@@ -59,7 +59,7 @@ class HaEntityPicker extends LitElement {
   @property({ type: Boolean, attribute: "allow-custom-entity" })
   public allowCustomEntity;
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public label?: string;
 

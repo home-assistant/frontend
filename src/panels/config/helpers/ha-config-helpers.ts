@@ -11,6 +11,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -37,7 +38,7 @@ import { computeRTL } from "../../../common/util/compute_rtl";
 
 @customElement("ha-config-helpers")
 export class HaConfigHelpers extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public isWide!: boolean;
 
@@ -45,7 +46,7 @@ export class HaConfigHelpers extends LitElement {
 
   @property() public route!: Route;
 
-  @property() private _stateItems: HassEntity[] = [];
+  @internalProperty() private _stateItems: HassEntity[] = [];
 
   private _columns = memoize(
     (narrow, _language): DataTableColumnContainer => {
