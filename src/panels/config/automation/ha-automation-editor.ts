@@ -47,7 +47,7 @@ import { HaDeviceTrigger } from "./trigger/types/ha-automation-trigger-device";
 import { mdiContentSave } from "@mdi/js";
 import { PaperListboxElement } from "@polymer/paper-listbox";
 
-const MODES = ["parallel", "single", "restart", "queued"];
+const MODES = ["single", "restart", "queued", "parallel"];
 const MODES_MAX = ["queued", "parallel"];
 
 export class HaAutomationEditor extends LitElement {
