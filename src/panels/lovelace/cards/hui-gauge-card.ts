@@ -256,7 +256,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         stroke-width: 15;
       }
       .value-text {
-        fill: #000;
+        fill: var(--primary-text-color);
         font-size: var(--gauge-value-font-size, 1.1em);
         transform: translate(0, -5px);
         font-family: inherit;
