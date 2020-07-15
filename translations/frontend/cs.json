@@ -65,13 +65,13 @@
     },
     "state_badge": {
         "alarm_control_panel": {
-            "armed": "Aktivní",
-            "armed_away": "Aktivní",
-            "armed_custom_bypass": "Aktivní",
-            "armed_home": "Aktivní",
-            "armed_night": "Aktivní",
+            "armed": "Zabezpečeno",
+            "armed_away": "Zabezpečeno",
+            "armed_custom_bypass": "Zabezpečeno",
+            "armed_home": "Zabezpečeno",
+            "armed_night": "Zabezpečeno",
             "arming": "Aktivace",
-            "disarmed": "Neaktivní",
+            "disarmed": "Nezabezpečeno",
             "disarming": "Deaktivace",
             "pending": "Čeká",
             "triggered": "Spuštěn"
@@ -93,15 +93,15 @@
     },
     "state": {
         "alarm_control_panel": {
-            "armed": "Aktivní",
-            "armed_away": "Aktivní režim mimo domov",
+            "armed": "Zabezpečeno",
+            "armed_away": "Režim nepřítomnost",
             "armed_custom_bypass": "Aktivní uživatelským obejitím",
-            "armed_home": "Aktivní režim doma",
-            "armed_night": "Aktivní noční režim",
-            "arming": "Aktivování",
-            "disarmed": "Neaktivní",
-            "disarming": "Deaktivování",
-            "pending": "Nadcházející",
+            "armed_home": "Režim domov",
+            "armed_night": "Noční režim",
+            "arming": "Zabezpečování",
+            "disarmed": "Nezabezpečeno",
+            "disarming": "Odbezpečování",
+            "pending": "Čekající",
             "triggered": "Spuštěno"
         },
         "automation": {
@@ -349,13 +349,13 @@
         },
         "card": {
             "alarm_control_panel": {
-                "arm_away": "Aktivovat režim mimo domov",
+                "arm_away": "Aktivovat režim nepřítomnost",
                 "arm_custom_bypass": "Vlastní obejítí",
                 "arm_home": "Aktivovat režim domov",
                 "arm_night": "Aktivovat noční režim",
                 "clear_code": "Zrušit",
                 "code": "Kód",
-                "disarm": "Deaktivovat"
+                "disarm": "Odbezpečit"
             },
             "automation": {
                 "last_triggered": "Naposledy spuštěno",
@@ -2116,7 +2116,7 @@
                         "clear_items": "Vymazat označené položky"
                     },
                     "starting": {
-                        "description": "Home Assistant se spouští, čekejte prosím.",
+                        "description": "Home Assistant se spouští, čekejte prosím...",
                         "header": "Home Assistant se spouští..."
                     }
                 },
@@ -2127,8 +2127,8 @@
                 "editor": {
                     "card": {
                         "alarm-panel": {
-                            "available_states": "Dostupné stavy",
-                            "description": "Karta Alarm panel umožňuje aktivovat či deaktivovat alarm integrací zabezpečovacích systémů.",
+                            "available_states": "Dostupné režimy",
+                            "description": "Karta Ovládací panel alarmu umožňuje aktivovat či deaktivovat alarm integrací zabezpečovacích systémů.",
                             "name": "Ovládací panel alarmu"
                         },
                         "button": {

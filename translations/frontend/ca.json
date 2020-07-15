@@ -941,6 +941,19 @@
                         "introduction": "Utilitza les automatitzacions per donar més vida a la teva casa",
                         "load_error_not_editable": "Només es poden editar les automatitzacions de l'arxiu automations.yaml.",
                         "load_error_unknown": "Error en carregar l'automatització ({err_no}).",
+                        "max": {
+                            "parallel": "Nombre màxim d'execucions paral·leles",
+                            "queued": "Longitud de la cua"
+                        },
+                        "modes": {
+                            "description": "El mode controla què passa quan es dispara l'automatització i encara hi ha accions executant-se d'un disparament anterior. Consulta {documentation_link} per a més informació.",
+                            "documentation": "documentació d'automatització",
+                            "label": "Mode",
+                            "parallel": "Paral·lel (per defecte)",
+                            "queued": "A la cua",
+                            "restart": "Reinicia",
+                            "single": "Individual"
+                        },
                         "move_down": "Mou avall",
                         "move_up": "Mou amunt",
                         "save": "Desa",
@@ -1685,6 +1698,19 @@
                         "introduction": "Utilitza els scripts per executar seqüències d'accions.",
                         "link_available_actions": "Més informació sobre les accions disponibles.",
                         "load_error_not_editable": "Només es poden editar els scripts dins de l'arxiu scripts.yaml.",
+                        "max": {
+                            "parallel": "Nombre màxim d'execucions paral·leles",
+                            "queued": "Longitud de la cua"
+                        },
+                        "modes": {
+                            "description": "El mode controla què passa quan s'invoca l'script mentre encara s'està executant a causa d'invocacions anteriors. Consulta {documentation_link} per a més informació.",
+                            "documentation": "documentació de scripts",
+                            "label": "Mode",
+                            "parallel": "Paral·lel",
+                            "queued": "A la cua",
+                            "restart": "Reinicia",
+                            "single": "Individual (per defecte)"
+                        },
                         "sequence": "Seqüència",
                         "sequence_sentence": "Seqüència d'accions de l'script."
                     },
@@ -2511,6 +2537,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "El teu equip no està permès.",
                                 "not_whitelisted": "El teu ordinador no es troba accessible a la llista."
                             },
                             "step": {
