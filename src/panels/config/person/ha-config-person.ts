@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { compare } from "../../../common/string/compare";
@@ -34,7 +35,7 @@ import { mdiPlus } from "@mdi/js";
 import { computeRTL } from "../../../common/util/compute_rtl";
 
 class HaConfigPerson extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public isWide?: boolean;
 
@@ -42,9 +43,9 @@ class HaConfigPerson extends LitElement {
 
   @property() public route!: Route;
 
-  @property() private _storageItems?: Person[];
+  @internalProperty() private _storageItems?: Person[];
 
-  @property() private _configItems?: Person[];
+  @internalProperty() private _configItems?: Person[];
 
   private _usersLoad?: Promise<User[]>;
 

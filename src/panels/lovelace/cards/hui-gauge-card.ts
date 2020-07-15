@@ -7,6 +7,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
   query,
@@ -63,11 +64,11 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     return { type: "gauge", entity: foundEntities[0] || "" };
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: GaugeCardConfig;
+  @internalProperty() private _config?: GaugeCardConfig;
 
-  @property() private _gauge?: any;
+  @internalProperty() private _gauge?: any;
 
   @query("#gauge") private _gaugeElement!: HTMLDivElement;
 
@@ -255,7 +256,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         stroke-width: 15;
       }
       .value-text {
-        fill: #000;
+        fill: var(--primary-text-color);
         font-size: var(--gauge-value-font-size, 1.1em);
         transform: translate(0, -5px);
         font-family: inherit;

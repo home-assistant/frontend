@@ -7,6 +7,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { formatTime } from "../../../../../common/datetime/format_time";
@@ -16,13 +17,13 @@ import { HomeAssistant } from "../../../../../types";
 
 @customElement("mqtt-subscribe-card")
 class MqttSubscribeCard extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _topic = "";
+  @internalProperty() private _topic = "";
 
-  @property() private _subscribed?: () => void;
+  @internalProperty() private _subscribed?: () => void;
 
-  @property() private _messages: Array<{
+  @internalProperty() private _messages: Array<{
     id: number;
     message: MQTTMessage;
     payload: string;

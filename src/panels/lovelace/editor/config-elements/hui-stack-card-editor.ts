@@ -8,6 +8,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   query,
   TemplateResult,
 } from "lit-element";
@@ -33,17 +34,17 @@ const cardConfigStruct = struct({
 @customElement("hui-stack-card-editor")
 export class HuiStackCardEditor extends LitElement
   implements LovelaceCardEditor {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public lovelace?: LovelaceConfig;
+  @property({ attribute: false }) public lovelace?: LovelaceConfig;
 
-  @property() private _config?: StackCardConfig;
+  @internalProperty() private _config?: StackCardConfig;
 
-  @property() private _selectedCard = 0;
+  @internalProperty() private _selectedCard = 0;
 
-  @property() private _GUImode = true;
+  @internalProperty() private _GUImode = true;
 
-  @property() private _guiModeAvailable? = true;
+  @internalProperty() private _guiModeAvailable? = true;
 
   @query("hui-card-editor") private _cardEditorEl?: HuiCardEditor;
 

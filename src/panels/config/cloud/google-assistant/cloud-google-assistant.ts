@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
@@ -50,13 +51,13 @@ const configIsExposed = (config: GoogleEntityConfig) =>
 
 @customElement("cloud-google-assistant")
 class CloudGoogleAssistant extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public cloudStatus!: CloudStatusLoggedIn;
 
   @property() public narrow!: boolean;
 
-  @property() private _entities?: GoogleEntity[];
+  @internalProperty() private _entities?: GoogleEntity[];
 
   @property()
   private _entityConfigs: CloudPreferences["google_entity_configs"] = {};

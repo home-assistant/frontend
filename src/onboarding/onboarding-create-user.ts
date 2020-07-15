@@ -8,6 +8,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -22,17 +23,17 @@ class OnboardingCreateUser extends LitElement {
 
   @property() public language!: string;
 
-  @property() private _name = "";
+  @internalProperty() private _name = "";
 
-  @property() private _username = "";
+  @internalProperty() private _username = "";
 
-  @property() private _password = "";
+  @internalProperty() private _password = "";
 
-  @property() private _passwordConfirm = "";
+  @internalProperty() private _passwordConfirm = "";
 
-  @property() private _loading = false;
+  @internalProperty() private _loading = false;
 
-  @property() private _errorMsg?: string = undefined;
+  @internalProperty() private _errorMsg?: string = undefined;
 
   protected render(): TemplateResult {
     return html`

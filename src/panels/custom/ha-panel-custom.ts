@@ -16,7 +16,7 @@ declare global {
 }
 
 export class HaPanelCustom extends UpdatingElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
 

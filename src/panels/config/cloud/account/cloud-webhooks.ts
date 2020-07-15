@@ -1,7 +1,13 @@
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import "../../../../components/ha-circular-progress";
-import { html, LitElement, property, PropertyValues } from "lit-element";
+import {
+  html,
+  LitElement,
+  property,
+  internalProperty,
+  PropertyValues,
+} from "lit-element";
 import "../../../../components/ha-card";
 import "../../../../components/ha-switch";
 import {
@@ -15,15 +21,17 @@ import { HomeAssistant, WebhookError } from "../../../../types";
 import { showManageCloudhookDialog } from "../dialog-manage-cloudhook/show-dialog-manage-cloudhook";
 
 export class CloudWebhooks extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public cloudStatus?: CloudStatusLoggedIn;
 
-  @property() private _cloudHooks?: { [webhookId: string]: CloudWebhook };
+  @internalProperty() private _cloudHooks?: {
+    [webhookId: string]: CloudWebhook;
+  };
 
-  @property() private _localHooks?: Webhook[];
+  @internalProperty() private _localHooks?: Webhook[];
 
-  @property() private _progress: string[];
+  @internalProperty() private _progress: string[];
 
   constructor() {
     super();

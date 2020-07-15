@@ -4,7 +4,7 @@ import {
   customElement,
   html,
   LitElement,
-  property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { CastManager } from "../../../src/cast/cast_manager";
@@ -20,7 +20,7 @@ import { HomeAssistant } from "../../../src/types";
 class CastDemoRow extends LitElement implements LovelaceRow {
   public hass!: HomeAssistant;
 
-  @property() private _castManager?: CastManager | null;
+  @internalProperty() private _castManager?: CastManager | null;
 
   public setConfig(_config: CastConfig): void {
     // No config possible.

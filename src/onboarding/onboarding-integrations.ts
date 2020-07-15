@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -30,13 +31,13 @@ import "./integration-badge";
 
 @customElement("onboarding-integrations")
 class OnboardingIntegrations extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public onboardingLocalize!: LocalizeFunc;
 
-  @property() private _entries?: ConfigEntry[];
+  @internalProperty() private _entries?: ConfigEntry[];
 
-  @property() private _discovered?: DataEntryFlowProgress[];
+  @internalProperty() private _discovered?: DataEntryFlowProgress[];
 
   private _unsubEvents?: () => void;
 

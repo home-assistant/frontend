@@ -4,6 +4,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
 } from "lit-element";
 import {
@@ -25,9 +26,9 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
 
   @property() public oauth2State?: string;
 
-  @property() private _authProvider?: AuthProvider;
+  @internalProperty() private _authProvider?: AuthProvider;
 
-  @property() private _authProviders?: AuthProvider[];
+  @internalProperty() private _authProviders?: AuthProvider[];
 
   constructor() {
     super();

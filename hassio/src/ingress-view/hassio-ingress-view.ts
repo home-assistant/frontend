@@ -5,6 +5,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -19,11 +20,11 @@ import { HomeAssistant, Route } from "../../../src/types";
 
 @customElement("hassio-ingress-view")
 class HassioIngressView extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public route!: Route;
 
-  @property() private _addon?: HassioAddonDetails;
+  @internalProperty() private _addon?: HassioAddonDetails;
 
   protected render(): TemplateResult {
     if (!this._addon) {

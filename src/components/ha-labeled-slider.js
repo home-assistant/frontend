@@ -15,7 +15,7 @@ class HaLabeledSlider extends PolymerElement {
 
         .title {
           margin-bottom: 16px;
-          opacity: var(--dark-primary-opacity);
+          color: var(--secondary-text-color);
         }
 
         .slider-container {
@@ -24,7 +24,7 @@ class HaLabeledSlider extends PolymerElement {
 
         ha-icon {
           margin-top: 4px;
-          opacity: var(--dark-secondary-opacity);
+          color: var(--secondary-text-color);
         }
 
         ha-paper-slider {

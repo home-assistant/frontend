@@ -21,7 +21,7 @@ import { HomeAssistant } from "../../types";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 
 class HaLogbook extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public userIdToName = {};
 

@@ -13,6 +13,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   query,
   TemplateResult,
 } from "lit-element";
@@ -39,11 +40,11 @@ class HassioRepositoriesDialog extends LitElement {
 
   @query("#repository_input") private _optionInput?: PaperInputElement;
 
-  @property() private _opened = false;
+  @internalProperty() private _opened = false;
 
-  @property() private _prosessing = false;
+  @internalProperty() private _prosessing = false;
 
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
   public async showDialog(_dialogParams: any): Promise<void> {
     this._dialogParams = _dialogParams;

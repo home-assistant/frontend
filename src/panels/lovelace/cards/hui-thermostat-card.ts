@@ -8,6 +8,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   svg,
   TemplateResult,
@@ -70,11 +71,11 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     return { type: "thermostat", entity: foundEntities[0] || "" };
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: ThermostatCardConfig;
+  @internalProperty() private _config?: ThermostatCardConfig;
 
-  @property() private _setTemp?: number | number[];
+  @internalProperty() private _setTemp?: number | number[];
 
   public getCardSize(): number {
     return 5;

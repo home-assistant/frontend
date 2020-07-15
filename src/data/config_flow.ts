@@ -5,7 +5,13 @@ import { HomeAssistant } from "../types";
 import { DataEntryFlowProgress, DataEntryFlowStep } from "./data_entry_flow";
 import { domainToName } from "./integration";
 
-export const DISCOVERY_SOURCES = ["unignore", "homekit", "ssdp", "zeroconf", "discovery"];
+export const DISCOVERY_SOURCES = [
+  "unignore",
+  "homekit",
+  "ssdp",
+  "zeroconf",
+  "discovery",
+];
 
 export const createConfigFlow = (hass: HomeAssistant, handler: string) =>
   hass.callApi<DataEntryFlowStep>("POST", "config/config_entries/flow", {

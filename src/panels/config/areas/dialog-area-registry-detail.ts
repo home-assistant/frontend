@@ -7,6 +7,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../../components/dialog/ha-paper-dialog";
@@ -17,15 +18,15 @@ import { HomeAssistant } from "../../../types";
 import { AreaRegistryDetailDialogParams } from "./show-dialog-area-registry-detail";
 
 class DialogAreaDetail extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _name!: string;
+  @internalProperty() private _name!: string;
 
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
-  @property() private _params?: AreaRegistryDetailDialogParams;
+  @internalProperty() private _params?: AreaRegistryDetailDialogParams;
 
-  @property() private _submitting?: boolean;
+  @internalProperty() private _submitting?: boolean;
 
   public async showDialog(
     params: AreaRegistryDetailDialogParams

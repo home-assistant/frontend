@@ -18,7 +18,7 @@ const includeDomains = ["zone"];
 
 @customElement("ha-automation-trigger-zone")
 export class HaZoneTrigger extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public trigger!: ZoneTrigger;
 

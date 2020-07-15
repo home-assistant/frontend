@@ -5,6 +5,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -59,9 +60,9 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     return { type: "glance", entities: foundEntities };
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: GlanceCardConfig;
+  @internalProperty() private _config?: GlanceCardConfig;
 
   private _configEntities?: GlanceConfigEntity[];
 

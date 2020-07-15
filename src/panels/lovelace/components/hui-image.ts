@@ -5,6 +5,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   query,
   TemplateResult,
@@ -26,7 +27,7 @@ export interface StateSpecificConfig {
 
 @customElement("hui-image")
 export class HuiImage extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public entity?: string;
 
@@ -44,9 +45,9 @@ export class HuiImage extends LitElement {
 
   @property() public stateFilter?: StateSpecificConfig;
 
-  @property() private _loadError?: boolean;
+  @internalProperty() private _loadError?: boolean;
 
-  @property() private _cameraImageSrc?: string;
+  @internalProperty() private _cameraImageSrc?: string;
 
   @query("img") private _image!: HTMLImageElement;
 

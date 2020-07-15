@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -26,25 +27,25 @@ import { ZoneDetailDialogParams } from "./show-dialog-zone-detail";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 
 class DialogZoneDetail extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _name!: string;
+  @internalProperty() private _name!: string;
 
-  @property() private _icon!: string;
+  @internalProperty() private _icon!: string;
 
-  @property() private _latitude!: number;
+  @internalProperty() private _latitude!: number;
 
-  @property() private _longitude!: number;
+  @internalProperty() private _longitude!: number;
 
-  @property() private _passive!: boolean;
+  @internalProperty() private _passive!: boolean;
 
-  @property() private _radius!: number;
+  @internalProperty() private _radius!: number;
 
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
-  @property() private _params?: ZoneDetailDialogParams;
+  @internalProperty() private _params?: ZoneDetailDialogParams;
 
-  @property() private _submitting = false;
+  @internalProperty() private _submitting = false;
 
   public showDialog(params: ZoneDetailDialogParams): void {
     this._params = params;

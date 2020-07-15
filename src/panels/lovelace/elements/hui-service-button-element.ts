@@ -4,7 +4,7 @@ import {
   customElement,
   html,
   LitElement,
-  property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../../components/buttons/ha-call-service-button";
@@ -16,7 +16,7 @@ export class HuiServiceButtonElement extends LitElement
   implements LovelaceElement {
   public hass?: HomeAssistant;
 
-  @property() private _config?: ServiceButtonElementConfig;
+  @internalProperty() private _config?: ServiceButtonElementConfig;
 
   private _domain?: string;
 

@@ -12,7 +12,7 @@ const includeDomains = ["zone"];
 
 @customElement("ha-automation-trigger-geo_location")
 export default class HaGeolocationTrigger extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public trigger!: GeoLocationTrigger;
 

@@ -9,7 +9,7 @@ import { handleChangeEvent } from "../ha-automation-condition-row";
 
 @customElement("ha-automation-condition-numeric_state")
 export default class HaNumericStateCondition extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public condition!: NumericStateCondition;
 

@@ -2,6 +2,7 @@ import { Editor } from "codemirror";
 import {
   customElement,
   property,
+  internalProperty,
   PropertyValues,
   UpdatingElement,
 } from "lit-element";
@@ -28,7 +29,7 @@ export class HaCodeEditor extends UpdatingElement {
 
   @property() public error = false;
 
-  @property() private _value = "";
+  @internalProperty() private _value = "";
 
   public set value(value: string) {
     this._value = value;

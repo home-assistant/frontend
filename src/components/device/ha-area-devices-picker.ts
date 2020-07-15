@@ -13,6 +13,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -87,7 +88,7 @@ const rowRenderer = (
 
 @customElement("ha-area-devices-picker")
 export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public label?: string;
 
@@ -124,13 +125,13 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
   @property({ type: Boolean })
   private _opened?: boolean;
 
-  @property() private _areaPicker = true;
+  @internalProperty() private _areaPicker = true;
 
-  @property() private _devices?: DeviceRegistryEntry[];
+  @internalProperty() private _devices?: DeviceRegistryEntry[];
 
-  @property() private _areas?: AreaRegistryEntry[];
+  @internalProperty() private _areas?: AreaRegistryEntry[];
 
-  @property() private _entities?: EntityRegistryEntry[];
+  @internalProperty() private _entities?: EntityRegistryEntry[];
 
   private _selectedDevices: string[] = [];
 

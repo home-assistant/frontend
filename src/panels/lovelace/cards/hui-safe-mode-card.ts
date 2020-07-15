@@ -15,7 +15,7 @@ import { LovelaceCard } from "../types";
 
 @customElement("hui-safe-mode-card")
 export class HuiSafeModeCard extends LitElement implements LovelaceCard {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   public getCardSize(): number {
     return 3;

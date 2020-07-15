@@ -87,7 +87,7 @@ const getRoutes = (panels: Panels): RouterOptions => {
 
 @customElement("partial-panel-resolver")
 class PartialPanelResolver extends HassRouterPage {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow?: boolean;
 
