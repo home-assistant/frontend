@@ -105,7 +105,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
             .min=${stateObj.attributes.min_humidity}
             .max=${stateObj.attributes.max_humidity}
             .rtl=${rtlDirection === "rtl"}
-            .step="1"
+            step="1"
             @value-changing=${this._dragEvent}
             @value-changed=${this._setHumidity}
           ></round-slider>
