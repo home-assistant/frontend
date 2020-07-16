@@ -10,6 +10,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -35,7 +36,7 @@ import {
 } from "./types";
 
 export class ZHAClusterAttributes extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public isWide?: boolean;
 
@@ -45,15 +46,16 @@ export class ZHAClusterAttributes extends LitElement {
 
   @property() public selectedCluster?: Cluster;
 
-  @property() private _attributes: Attribute[] = [];
+  @internalProperty() private _attributes: Attribute[] = [];
 
-  @property() private _selectedAttributeIndex = -1;
+  @internalProperty() private _selectedAttributeIndex = -1;
 
-  @property() private _attributeValue?: any = "";
+  @internalProperty() private _attributeValue?: any = "";
 
-  @property() private _manufacturerCodeOverride?: string | number;
+  @internalProperty() private _manufacturerCodeOverride?: string | number;
 
-  @property() private _setAttributeServiceData?: SetAttributeServiceData;
+  @internalProperty()
+  private _setAttributeServiceData?: SetAttributeServiceData;
 
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("selectedCluster")) {

@@ -9,6 +9,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -34,15 +35,15 @@ class HassioAddonAudio extends LitElement {
 
   @property({ attribute: false }) public addon!: HassioAddonDetails;
 
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
-  @property() private _inputDevices?: HassioHardwareAudioDevice[];
+  @internalProperty() private _inputDevices?: HassioHardwareAudioDevice[];
 
-  @property() private _outputDevices?: HassioHardwareAudioDevice[];
+  @internalProperty() private _outputDevices?: HassioHardwareAudioDevice[];
 
-  @property() private _selectedInput!: null | string;
+  @internalProperty() private _selectedInput!: null | string;
 
-  @property() private _selectedOutput!: null | string;
+  @internalProperty() private _selectedOutput!: null | string;
 
   protected render(): TemplateResult {
     return html`

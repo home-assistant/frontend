@@ -4,6 +4,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -25,6 +26,7 @@ import {
 import "../../../../components/ha-switch";
 import "../../../../components/ha-formfield";
 import { configElementStyle } from "./config-elements-style";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -37,14 +39,15 @@ const cardConfigStruct = struct({
   tap_action: struct.optional(actionConfigStruct),
   hold_action: struct.optional(actionConfigStruct),
   theme: "string?",
+  show_state: "boolean?",
 });
 
 @customElement("hui-button-card-editor")
 export class HuiButtonCardEditor extends LitElement
   implements LovelaceCardEditor {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: ButtonCardConfig;
+  @internalProperty() private _config?: ButtonCardConfig;
 
   public setConfig(config: ButtonCardConfig): void {
     config = cardConfigStruct(config);
@@ -61,6 +64,10 @@ export class HuiButtonCardEditor extends LitElement
 
   get _show_name(): boolean {
     return this._config!.show_name || true;
+  }
+
+  get _show_state(): boolean {
+    return this._config!.show_state || false;
   }
 
   get _icon(): string {
@@ -102,6 +109,7 @@ export class HuiButtonCardEditor extends LitElement
       "call-service",
       "none",
     ];
+    const dir = computeRTLDirection(this.hass!);
 
     return html`
       ${configElementStyle}
@@ -143,28 +151,48 @@ export class HuiButtonCardEditor extends LitElement
           ></ha-icon-input>
         </div>
         <div class="side-by-side">
-          <ha-formfield
-            .label=${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.show_name"
-            )}
-          >
-            <ha-switch
-              .checked="${this._config!.show_name !== false}"
-              .configValue="${"show_name"}"
-              @change="${this._valueChanged}"
-            ></ha-switch>
-          </ha-formfield>
-          <ha-formfield
-            .label=${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.show_icon"
-            )}
-          >
-            <ha-switch
-              .checked="${this._config!.show_icon !== false}"
-              .configValue="${"show_icon"}"
-              @change="${this._valueChanged}"
-            ></ha-switch>
-          </ha-formfield>
+          <div>
+            <ha-formfield
+              .label=${this.hass.localize(
+                "ui.panel.lovelace.editor.card.generic.show_name"
+              )}
+              .dir=${dir}
+            >
+              <ha-switch
+                .checked="${this._show_name !== false}"
+                .configValue="${"show_name"}"
+                @change="${this._valueChanged}"
+              ></ha-switch>
+            </ha-formfield>
+          </div>
+          <div>
+            <ha-formfield
+              .label=${this.hass.localize(
+                "ui.panel.lovelace.editor.card.generic.show_state"
+              )}
+              .dir=${dir}
+            >
+              <ha-switch
+                .checked=${this._show_state !== false}
+                .configValue=${"show_state"}
+                @change=${this._valueChanged}
+              ></ha-switch>
+            </ha-formfield>
+          </div>
+          <div>
+            <ha-formfield
+              .label=${this.hass.localize(
+                "ui.panel.lovelace.editor.card.generic.show_icon"
+              )}
+              .dir=${dir}
+            >
+              <ha-switch
+                .checked="${this._show_icon !== false}"
+                .configValue="${"show_icon"}"
+                @change="${this._valueChanged}"
+              ></ha-switch>
+            </ha-formfield>
+          </div>
         </div>
         <div class="side-by-side">
           <paper-input

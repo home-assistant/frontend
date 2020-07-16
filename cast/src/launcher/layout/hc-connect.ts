@@ -17,8 +17,8 @@ import {
   customElement,
   html,
   LitElement,
-  property,
   TemplateResult,
+  internalProperty,
 } from "lit-element";
 import { CastManager, getCastManager } from "../../../../src/cast/cast_manager";
 import { castSendShowDemo } from "../../../../src/cast/receiver_messages";
@@ -27,7 +27,7 @@ import {
   saveTokens,
 } from "../../../../src/common/auth/token_storage";
 import "../../../../src/components/ha-icon";
-import "../../../../src/layouts/loading-screen";
+import "../../../../src/layouts/hass-loading-screen";
 import { registerServiceWorker } from "../../../../src/util/register-service-worker";
 import "./hc-layout";
 
@@ -60,19 +60,19 @@ const INTRO = html`
 
 @customElement("hc-connect")
 export class HcConnect extends LitElement {
-  @property() private loading = false;
+  @internalProperty() private loading = false;
 
   // If we had stored credentials but we cannot connect,
   // show a screen asking retry or logout.
-  @property() private cannotConnect = false;
+  @internalProperty() private cannotConnect = false;
 
-  @property() private error?: string | TemplateResult;
+  @internalProperty() private error?: string | TemplateResult;
 
-  @property() private auth?: Auth;
+  @internalProperty() private auth?: Auth;
 
-  @property() private connection?: Connection;
+  @internalProperty() private connection?: Connection;
 
-  @property() private castManager?: CastManager | null;
+  @internalProperty() private castManager?: CastManager | null;
 
   private openDemo = false;
 
@@ -98,7 +98,7 @@ export class HcConnect extends LitElement {
     }
 
     if (this.castManager === undefined || this.loading) {
-      return html` <loading-screen></loading-screen> `;
+      return html` <hass-loading-screen no-toolbar></hass-loading-screen> `;
     }
 
     if (this.castManager === null) {

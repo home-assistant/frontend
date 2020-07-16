@@ -13,6 +13,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   query,
   TemplateResult,
@@ -50,10 +51,11 @@ import type { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import { showZoneDetailDialog } from "./show-dialog-zone-detail";
+import { computeRTL } from "../../../common/util/compute_rtl";
 
 @customElement("ha-config-zone")
 export class HaConfigZone extends SubscribeMixin(LitElement) {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public isWide?: boolean;
 
@@ -61,13 +63,13 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   @property() public route!: Route;
 
-  @property() private _storageItems?: Zone[];
+  @internalProperty() private _storageItems?: Zone[];
 
-  @property() private _stateItems?: HassEntity[];
+  @internalProperty() private _stateItems?: HassEntity[];
 
-  @property() private _activeEntry = "";
+  @internalProperty() private _activeEntry = "";
 
-  @property() private _canEditCore = false;
+  @internalProperty() private _canEditCore = false;
 
   @query("ha-locations-editor") private _map?: HaLocationsEditor;
 
@@ -258,6 +260,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       <mwc-fab
         ?is-wide=${this.isWide}
         ?narrow=${this.narrow}
+        ?rtl=${computeRTL(this.hass)}
         title="${hass.localize("ui.panel.config.zone.add_zone")}"
         @click=${this._createZone}
       >
@@ -553,6 +556,10 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       }
       mwc-fab[narrow] {
         bottom: 84px;
+      }
+      mwc-fab[rtl] {
+        left: 24px;
+        right: auto;
       }
     `;
   }

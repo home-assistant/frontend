@@ -23,6 +23,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
@@ -124,7 +125,7 @@ class HassioAddonInfo extends LitElement {
 
   @property({ attribute: false }) public addon!: HassioAddonDetails;
 
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
   @property({ type: Boolean }) private _installing = false;
 

@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
@@ -26,9 +27,9 @@ const cardConfigStruct = struct({
 @customElement("hui-shopping-list-card-editor")
 export class HuiShoppingListEditor extends LitElement
   implements LovelaceCardEditor {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: ShoppingListCardConfig;
+  @internalProperty() private _config?: ShoppingListCardConfig;
 
   public setConfig(config: ShoppingListCardConfig): void {
     config = cardConfigStruct(config);

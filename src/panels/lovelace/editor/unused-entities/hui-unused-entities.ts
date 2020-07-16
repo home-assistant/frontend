@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -14,7 +15,10 @@ import memoizeOne from "memoize-one";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
-import { computeRTL } from "../../../../common/util/compute_rtl";
+import {
+  computeRTL,
+  computeRTLDirection,
+} from "../../../../common/util/compute_rtl";
 import "../../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
@@ -33,15 +37,15 @@ import { mdiPlus } from "@mdi/js";
 
 @customElement("hui-unused-entities")
 export class HuiUnusedEntities extends LitElement {
-  @property() public lovelace?: Lovelace;
+  @property({ attribute: false }) public lovelace?: Lovelace;
 
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow?: boolean;
 
-  @property() private _unusedEntities: string[] = [];
+  @internalProperty() private _unusedEntities: string[] = [];
 
-  @property() private _selectedEntities: string[] = [];
+  @internalProperty() private _selectedEntities: string[] = [];
 
   private get _config(): LovelaceConfig {
     return this.lovelace!.config;
@@ -171,6 +175,7 @@ export class HuiUnusedEntities extends LitElement {
         .id=${"entity_id"}
         selectable
         @selection-changed=${this._handleSelectionChanged}
+        .dir=${computeRTLDirection(this.hass)}
       ></ha-data-table>
 
       ${this._selectedEntities.length

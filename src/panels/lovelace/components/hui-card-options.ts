@@ -23,9 +23,9 @@ import { mdiDotsVertical, mdiArrowDown, mdiArrowUp } from "@mdi/js";
 
 @customElement("hui-card-options")
 export class HuiCardOptions extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public lovelace?: Lovelace;
+  @property({ attribute: false }) public lovelace?: Lovelace;
 
   @property() public path?: [number, number];
 

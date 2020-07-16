@@ -1,5 +1,10 @@
 import { PolymerElement } from "@polymer/polymer";
-import { customElement, property, PropertyValues } from "lit-element";
+import {
+  customElement,
+  property,
+  internalProperty,
+  PropertyValues,
+} from "lit-element";
 import { applyThemesOnElement } from "../../src/common/dom/apply_themes_on_element";
 import { fireEvent } from "../../src/common/dom/fire_event";
 import { navigate } from "../../src/common/navigate";
@@ -37,7 +42,7 @@ import "./hassio-panel";
 
 @customElement("hassio-main")
 class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public panel!: HassioPanelInfo;
 
@@ -73,15 +78,15 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
     },
   };
 
-  @property() private _supervisorInfo: HassioSupervisorInfo;
+  @internalProperty() private _supervisorInfo: HassioSupervisorInfo;
 
-  @property() private _hostInfo: HassioHostInfo;
+  @internalProperty() private _hostInfo: HassioHostInfo;
 
-  @property() private _hassioInfo?: HassioInfo;
+  @internalProperty() private _hassioInfo?: HassioInfo;
 
-  @property() private _hassOsInfo?: HassioHassOSInfo;
+  @internalProperty() private _hassOsInfo?: HassioHassOSInfo;
 
-  @property() private _hassInfo: HassioHomeAssistantInfo;
+  @internalProperty() private _hassInfo: HassioHomeAssistantInfo;
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);

@@ -2,7 +2,7 @@ import {
   customElement,
   html,
   LitElement,
-  property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { toggleAttribute } from "../../../../common/dom/toggle_attribute";
@@ -14,7 +14,7 @@ import type { SelectViewDialogParams } from "./show-select-view-dialog";
 
 @customElement("hui-dialog-select-view")
 export class HuiDialogSelectView extends LitElement {
-  @property() private _params?: SelectViewDialogParams;
+  @internalProperty() private _params?: SelectViewDialogParams;
 
   public async showDialog(params: SelectViewDialogParams): Promise<void> {
     this._params = params;

@@ -430,6 +430,8 @@
                 "activate": "Activer"
             },
             "script": {
+                "cancel": "Annuler",
+                "cancel_multiple": "Annuler {number}",
                 "execute": "Exécuter"
             },
             "service": {
@@ -524,6 +526,9 @@
                 "area": "Pièce",
                 "clear": "Effacer",
                 "show_areas": "Afficher les pièces"
+            },
+            "data-table": {
+                "search": "Chercher"
             },
             "date-range-picker": {
                 "end_date": "Date de fin",
@@ -938,6 +943,18 @@
                         "introduction": "Utilisez les automatisations pour donner vie à votre maison",
                         "load_error_not_editable": "Seules les automatisations dans automations.yaml sont modifiables.",
                         "load_error_unknown": "Erreur lors du chargement de l'automatisation ( {err_no} ).",
+                        "max": {
+                            "parallel": "Nombre maximal de parcours parallèles",
+                            "queued": "Longueur de la file d'attente"
+                        },
+                        "modes": {
+                            "description": "Le mode contrôle ce qui se passe lorsque l’automatisation est déclenchée alors que les actions sont toujours en cours d’exécution à partir d’un déclencheur précédent. Consultez le {documentation_link} pour plus d’informations.",
+                            "documentation": "documentation d'automatisation",
+                            "label": "Mode",
+                            "parallel": "Parallèle (par défaut)",
+                            "queued": "En attente",
+                            "restart": "Redémarrer"
+                        },
                         "move_down": "Déplacer vers le bas",
                         "move_up": "Déplacer vers le haut",
                         "save": "Sauvegarder",
@@ -1356,6 +1373,7 @@
                             "confirm_text": "Les entités ne peuvent être supprimées que lorsque l'intégration ne fournit plus les entités.",
                             "confirm_title": "Voulez-vous supprimer {number} entités ?"
                         },
+                        "search": "Chercher les entités",
                         "selected": "{number} sélectionné",
                         "status": {
                             "disabled": "Désactivé",
@@ -1386,7 +1404,8 @@
                             "entity_id": "ID de l'entité",
                             "name": "Nom",
                             "type": "Type"
-                        }
+                        },
+                        "no_helpers": "On dirait que vous n'avez pas encore d'aide!"
                     },
                     "types": {
                         "input_boolean": "Interrupteur",
@@ -1490,7 +1509,8 @@
                     "note_about_integrations": "Toutes les intégrations ne peuvent pas encore être configurées via l'interface utilisateur.",
                     "note_about_website_reference": "D'autres sont disponibles sur le ",
                     "rename_dialog": "Modifier le nom de cette entrée de configuration",
-                    "rename_input_label": "Nom de l'entrée"
+                    "rename_input_label": "Nom de l'entrée",
+                    "search": "Chercher les intégrations"
                 },
                 "introduction": "Ici, il est possible de configurer vos composants et Home Assistant. Tout n'est pas encore possible de configurer à partir de l'interface utilisateur, mais nous y travaillons.",
                 "logs": {
@@ -1643,6 +1663,7 @@
                             "introduction": "Les entités n'appartenant pas à un périphérique peuvent être définies ici.",
                             "without_device": "Entités sans appareil"
                         },
+                        "icon": "Icône",
                         "introduction": "Utilisez des scènes pour donner vie à votre maison.",
                         "load_error_not_editable": "Seules les scènes de scenes.yaml sont modifiables.",
                         "load_error_unknown": "Erreur de chargement de la scène ({err_no})",
@@ -1676,9 +1697,26 @@
                         "delete_confirm": "Êtes-vous sûr de vouloir supprimer ce script?",
                         "delete_script": "Supprimer le script",
                         "header": "Script: {name}",
+                        "icon": "Icône",
+                        "id": "ID de l'entité",
+                        "id_already_exists": "Cet ID existe déjà",
+                        "id_already_exists_save_error": "Vous ne pouvez pas enregistrer ce script car l'ID n'est pas unique, choisissez un autre ID ou laissez-le vide pour en générer automatiquement un.",
                         "introduction": "Utiliser des scripts pour exécuter une séquence d'actions.",
                         "link_available_actions": "En savoir plus sur les actions disponibles.",
                         "load_error_not_editable": "Seuls les scripts dans scripts.yaml sont modifiables.",
+                        "max": {
+                            "parallel": "Nombre maximal de parcours parallèles",
+                            "queued": "Longueur de la file d'attente"
+                        },
+                        "modes": {
+                            "description": "Le mode contrôle ce qui se passe lorsque le script est appelé alors qu’il est toujours en cours d’exécution à partir d’une ou plusieurs invocations précédentes. Consultez le {documentation_link} pour plus d’informations.",
+                            "documentation": "documentation script",
+                            "label": "Mode",
+                            "parallel": "Parallèle",
+                            "queued": "En attente",
+                            "restart": "Redémarrer",
+                            "single": "Unique (par défaut)"
+                        },
                         "sequence": "Séquence",
                         "sequence_sentence": "La séquence d'actions de ce script."
                     },
@@ -2194,6 +2232,7 @@
                             "name": "Nom",
                             "no_theme": "Pas de thème",
                             "refresh_interval": "Intervalle de rafraîchissement",
+                            "search": "Chercher",
                             "secondary_info_attribute": "Attribut d'informations secondaires",
                             "show_icon": "Afficher l'icône ?",
                             "show_name": "Afficher le nom ?",
@@ -2314,7 +2353,8 @@
                     "edit_lovelace": {
                         "edit_title": "Éditer le titre",
                         "explanation": "Ce titre est affiché au-dessus de toutes vos vues dans Lovelace UI.",
-                        "header": "Titre de votre UI Lovelace"
+                        "header": "Titre de votre UI Lovelace",
+                        "title": "Titre"
                     },
                     "edit_view": {
                         "add": "Ajouter la vue",
@@ -2503,6 +2543,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "Votre ordinateur n'est pas autorisé.",
                                 "not_whitelisted": "Votre ordinateur n'est pas en liste blanche."
                             },
                             "step": {
@@ -2677,6 +2718,10 @@
                     "last_used": "Dernière utilisation le {date} à partir de {location}",
                     "not_used": "N'a jamais été utilisé",
                     "token_title": "Actualiser le jeton de {clientId}"
+                },
+                "suspend": {
+                    "description": "Faut-il fermer la connexion au serveur après avoir été caché pendant 5 minutes ?",
+                    "header": "Fermer automatiquement la connexion"
                 },
                 "themes": {
                     "dropdown_label": "Thème",

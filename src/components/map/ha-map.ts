@@ -22,7 +22,7 @@ import { HomeAssistant } from "../../types";
 
 @customElement("ha-map")
 class HaMap extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public entities?: string[];
 

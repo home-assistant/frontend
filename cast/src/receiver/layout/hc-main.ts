@@ -3,7 +3,12 @@ import {
   getAuth,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket";
-import { customElement, html, property, TemplateResult } from "lit-element";
+import {
+  customElement,
+  html,
+  internalProperty,
+  TemplateResult,
+} from "lit-element";
 import { CAST_NS } from "../../../../src/cast/const";
 import {
   ConnectMessage,
@@ -31,13 +36,13 @@ let resourcesLoaded = false;
 
 @customElement("hc-main")
 export class HcMain extends HassElement {
-  @property() private _showDemo = false;
+  @internalProperty() private _showDemo = false;
 
-  @property() private _lovelaceConfig?: LovelaceConfig;
+  @internalProperty() private _lovelaceConfig?: LovelaceConfig;
 
-  @property() private _lovelacePath: string | number | null = null;
+  @internalProperty() private _lovelacePath: string | number | null = null;
 
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
   private _unsubLovelace?: UnsubscribeFunc;
 

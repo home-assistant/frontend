@@ -66,7 +66,7 @@ const rowRenderer = (root: HTMLElement, _owner, model: { item: Device }) => {
 
 @customElement("ha-device-picker")
 export class HaDevicePicker extends SubscribeMixin(LitElement) {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public label?: string;
 

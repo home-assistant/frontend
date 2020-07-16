@@ -4,6 +4,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -34,9 +35,9 @@ const cardConfigStruct = struct({
 @customElement("hui-entity-card-editor")
 export class HuiEntityCardEditor extends LitElement
   implements LovelaceCardEditor {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: EntityCardConfig;
+  @internalProperty() private _config?: EntityCardConfig;
 
   public setConfig(config: EntityCardConfig): void {
     config = cardConfigStruct(config);

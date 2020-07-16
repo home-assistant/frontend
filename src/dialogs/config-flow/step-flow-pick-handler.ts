@@ -8,6 +8,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
@@ -31,13 +32,13 @@ interface HandlerObj {
 class StepFlowPickHandler extends LitElement {
   public flowConfig!: FlowConfig;
 
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public handlers!: string[];
 
   @property() public showAdvanced?: boolean;
 
-  @property() private filter?: string;
+  @internalProperty() private filter?: string;
 
   private _width?: number;
 
@@ -81,6 +82,7 @@ class StepFlowPickHandler extends LitElement {
         autofocus
         .filter=${this.filter}
         @value-changed=${this._filterChanged}
+        .label=${this.hass.localize("ui.panel.config.integrations.search")}
       ></search-input>
       <div
         style=${styleMap({

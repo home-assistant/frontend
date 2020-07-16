@@ -16,9 +16,9 @@ import "./hc-launch-screen";
 
 @customElement("hc-lovelace")
 class HcLovelace extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public lovelaceConfig!: LovelaceConfig;
+  @property({ attribute: false }) public lovelaceConfig!: LovelaceConfig;
 
   @property() public viewPath?: string | number;
 

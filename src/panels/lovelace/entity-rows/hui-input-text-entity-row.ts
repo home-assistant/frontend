@@ -4,6 +4,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -17,9 +18,9 @@ import { EntityConfig, LovelaceRow } from "./types";
 
 @customElement("hui-input-text-entity-row")
 class HuiInputTextEntityRow extends LitElement implements LovelaceRow {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: EntityConfig;
+  @internalProperty() private _config?: EntityConfig;
 
   public setConfig(config: EntityConfig): void {
     if (!config) {

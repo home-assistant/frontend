@@ -11,6 +11,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -40,10 +41,11 @@ import { lovelaceTabs } from "../ha-config-lovelace";
 import { showResourceDetailDialog } from "./show-dialog-lovelace-resource-detail";
 import "../../../../components/ha-svg-icon";
 import { mdiPlus } from "@mdi/js";
+import { computeRTL } from "../../../../common/util/compute_rtl";
 
 @customElement("ha-config-lovelace-resources")
 export class HaConfigLovelaceRescources extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public isWide!: boolean;
 
@@ -51,7 +53,7 @@ export class HaConfigLovelaceRescources extends LitElement {
 
   @property() public route!: Route;
 
-  @property() private _resources: LovelaceResource[] = [];
+  @internalProperty() private _resources: LovelaceResource[] = [];
 
   private _columns = memoize(
     (_language): DataTableColumnContainer => {
@@ -64,6 +66,7 @@ export class HaConfigLovelaceRescources extends LitElement {
           filterable: true,
           direction: "asc",
           grows: true,
+          forceLTR: true,
         },
         type: {
           title: this.hass.localize(
@@ -107,6 +110,7 @@ export class HaConfigLovelaceRescources extends LitElement {
       <mwc-fab
         ?is-wide=${this.isWide}
         ?narrow=${this.narrow}
+        ?rtl=${computeRTL(this.hass!)}
         title=${this.hass.localize(
           "ui.panel.config.lovelace.resources.picker.add_resource"
         )}
@@ -214,6 +218,15 @@ export class HaConfigLovelaceRescources extends LitElement {
       }
       mwc-fab[narrow] {
         bottom: 84px;
+      }
+      mwc-fab[rtl] {
+        right: auto;
+        left: 16px;
+      }
+      mwc-fab[is-wide][rtl] {
+        bottom: 24px;
+        left: 24px;
+        right: auto;
       }
     `;
   }

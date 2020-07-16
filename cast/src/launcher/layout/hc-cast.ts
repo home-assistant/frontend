@@ -8,6 +8,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { CastManager } from "../../../../src/cast/cast_manager";
@@ -28,7 +29,7 @@ import {
   getLovelaceCollection,
   LovelaceConfig,
 } from "../../../../src/data/lovelace";
-import "../../../../src/layouts/loading-screen";
+import "../../../../src/layouts/hass-loading-screen";
 import { generateDefaultViewConfig } from "../../../../src/panels/lovelace/common/generate-lovelace-config";
 import "./hc-layout";
 import "@material/mwc-button/mwc-button";
@@ -41,13 +42,13 @@ class HcCast extends LitElement {
 
   @property() public castManager!: CastManager;
 
-  @property() private askWrite = false;
+  @internalProperty() private askWrite = false;
 
-  @property() private lovelaceConfig?: LovelaceConfig | null;
+  @internalProperty() private lovelaceConfig?: LovelaceConfig | null;
 
   protected render(): TemplateResult {
     if (this.lovelaceConfig === undefined) {
-      return html` <loading-screen></loading-screen>> `;
+      return html` <hass-loading-screen no-toolbar></hass-loading-screen>> `;
     }
 
     const error =

@@ -1,7 +1,7 @@
 import "@material/mwc-icon-button";
 import {
   mdiBell,
-  mdiCellphoneSettingsVariant,
+  mdiCellphoneCog,
   mdiMenuOpen,
   mdiMenu,
   mdiViewDashboard,
@@ -18,6 +18,7 @@ import {
   customElement,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
@@ -111,7 +112,7 @@ const computePanels = (hass: HomeAssistant): [PanelInfo[], PanelInfo[]] => {
 
 @customElement("ha-sidebar")
 class HaSidebar extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
 
@@ -119,9 +120,9 @@ class HaSidebar extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
-  @property() private _externalConfig?: ExternalConfig;
+  @internalProperty() private _externalConfig?: ExternalConfig;
 
-  @property() private _notifications?: PersistentNotification[];
+  @internalProperty() private _notifications?: PersistentNotification[];
 
   // property used only in css
   // @ts-ignore
@@ -219,7 +220,7 @@ class HaSidebar extends LitElement {
                 <paper-icon-item>
                   <ha-svg-icon
                     slot="item-icon"
-                    .path=${mdiCellphoneSettingsVariant}
+                    .path=${mdiCellphoneCog}
                   ></ha-svg-icon>
                   <span class="item-text">
                     ${hass.localize("ui.sidebar.external_app_configuration")}

@@ -10,6 +10,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   query,
   TemplateResult,
@@ -36,7 +37,7 @@ import type { ZHAClustersDataTable } from "./zha-clusters-data-table";
 
 @customElement("zha-group-binding-control")
 export class ZHAGroupBindingControl extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public isWide?: boolean;
 
@@ -44,15 +45,15 @@ export class ZHAGroupBindingControl extends LitElement {
 
   @property() public selectedDevice?: ZHADevice;
 
-  @property() private _showHelp = false;
+  @internalProperty() private _showHelp = false;
 
-  @property() private _bindTargetIndex = -1;
+  @internalProperty() private _bindTargetIndex = -1;
 
-  @property() private groups: ZHAGroup[] = [];
+  @internalProperty() private groups: ZHAGroup[] = [];
 
-  @property() private _selectedClusters: string[] = [];
+  @internalProperty() private _selectedClusters: string[] = [];
 
-  @property() private _clusters: Cluster[] = [];
+  @internalProperty() private _clusters: Cluster[] = [];
 
   private _groupToBind?: ZHAGroup;
 

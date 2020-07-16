@@ -21,6 +21,7 @@ import type {
   ZHAEntityReference,
 } from "../../../../../data/zha";
 import type { HomeAssistant } from "../../../../../types";
+import { computeRTLDirection } from "../../../../../common/util/compute_rtl";
 
 export interface DeviceEndpointRowData extends DataTableRowData {
   id: string;
@@ -147,6 +148,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
         .data=${this._deviceEndpoints(this.deviceEndpoints)}
         .selectable=${this.selectable}
         auto-height
+        .dir=${computeRTLDirection(this.hass)}
       ></ha-data-table>
     `;
   }

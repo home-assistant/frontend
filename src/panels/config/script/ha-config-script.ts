@@ -21,7 +21,7 @@ const equal = (a: ScriptEntity[], b: ScriptEntity[]): boolean => {
 
 @customElement("ha-config-script")
 class HaConfigScript extends HassRouterPage {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
 

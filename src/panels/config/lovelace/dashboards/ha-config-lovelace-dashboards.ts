@@ -7,6 +7,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -36,10 +37,11 @@ import { lovelaceTabs } from "../ha-config-lovelace";
 import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
 import "../../../../components/ha-svg-icon";
 import { mdiPlus } from "@mdi/js";
+import { computeRTL } from "../../../../common/util/compute_rtl";
 
 @customElement("ha-config-lovelace-dashboards")
 export class HaConfigLovelaceDashboards extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public isWide!: boolean;
 
@@ -47,7 +49,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   @property() public route!: Route;
 
-  @property() private _dashboards: LovelaceDashboard[] = [];
+  @internalProperty() private _dashboards: LovelaceDashboard[] = [];
 
   private _columns = memoize(
     (narrow: boolean, _language, dashboards): DataTableColumnContainer => {
@@ -227,6 +229,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
       <mwc-fab
         ?is-wide=${this.isWide}
         ?narrow=${this.narrow}
+        ?rtl=${computeRTL(this.hass)}
         title="${this.hass.localize(
           "ui.panel.config.lovelace.dashboards.picker.add_dashboard"
         )}"
@@ -323,6 +326,10 @@ export class HaConfigLovelaceDashboards extends LitElement {
       }
       mwc-fab[narrow] {
         bottom: 84px;
+      }
+      mwc-fab[rtl] {
+        left: 16px;
+        right: auto;
       }
     `;
   }

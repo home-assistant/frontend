@@ -48,6 +48,19 @@
                 "none": "Ingen",
                 "sleep": "Sover"
             }
+        },
+        "humidifier": {
+            "mode": {
+                "auto": "Automatisk",
+                "away": "Borta",
+                "baby": "Baby",
+                "boost": "Boost-läge",
+                "comfort": "Komfort",
+                "eco": "Eco",
+                "home": "Hemma",
+                "normal": "Normal",
+                "sleep": "Viloläge"
+            }
         }
     },
     "state_badge": {
@@ -388,6 +401,12 @@
                 "reverse": "Baklänges",
                 "speed": "Hastighet"
             },
+            "humidifier": {
+                "humidity": "Målfuktighet",
+                "mode": "Läge",
+                "on_entity": "{name} på",
+                "target_humidity_entity": "{name} målfuktighet"
+            },
             "light": {
                 "brightness": "Ljusstyrka",
                 "color_temperature": "Färgtemperatur",
@@ -505,6 +524,11 @@
                 "area": "Område",
                 "clear": "Rensa",
                 "show_areas": "Visa områden"
+            },
+            "date-range-picker": {
+                "end_date": "Slutdatum",
+                "select": "Välj",
+                "start_date": "Startdatum"
             },
             "device-picker": {
                 "clear": "Rensa",
@@ -695,6 +719,7 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Lägg till enheter via den här enheten",
+                    "clusters": "Hantera kluster",
                     "reconfigure": "Konfigurera om enheten",
                     "remove": "Ta bort enhet",
                     "zigbee_information": "Zigbee-information"
@@ -1391,6 +1416,11 @@
                     "system_health_error": "Systemhälsokomponenten har inte lästs in. Lägg till 'system_health:' i configuration.yaml",
                     "title": "Info"
                 },
+                "integration_panel_move": {
+                    "link_integration_page": "integrationssidan",
+                    "missing_zha": "Saknar du konfigurationspanelen för ZHA? Den är flyttad till {integrations_page} ",
+                    "missing_zwave": "Saknar du konfigurationspanelen för Z-Wave? Den är flyttad till {integrations_page} "
+                },
                 "integrations": {
                     "add_integration": "Lägg till integration",
                     "caption": "Integrationer",
@@ -1401,6 +1431,7 @@
                         "delete_confirm": "Är du säker på att du vill radera denna integration?",
                         "device_unavailable": "enhet otillgänglig",
                         "devices": "{count} {count, plural,\n  one {enhet}\n  other {enheter}\n}",
+                        "documentation": "Dokumentation",
                         "entities": "{count} {count, plural,\n  one {entitet}\n  other {entiteter}\n}",
                         "entity_unavailable": "entitet otillgänglig",
                         "firmware": "Firmware: {version}",
@@ -1553,6 +1584,7 @@
                     }
                 },
                 "mqtt": {
+                    "button": "Konfigurera",
                     "description_listen": "Lyssna på ett ämne",
                     "description_publish": "Publicera ett paket",
                     "listening_to": "Lyssnar på",
@@ -1737,7 +1769,7 @@
                             "system": "System"
                         }
                     },
-                    "users_privileges_note": "Användar gruppen är under konstruktion. Användaren kommer inte att kunna administrera instansen via användargränssnittet. Vi granskar fortfarande alla API-slutpunkter för att försäkra att de korrekt begränsar åtkomst till endast administratörer."
+                    "users_privileges_note": "Användargruppen är under konstruktion. Användaren kommer inte att kunna administrera instansen via användargränssnittet. Vi granskar fortfarande alla API-slutpunkter för att försäkra att de korrekt begränsar åtkomst till endast administratörer."
                 },
                 "zha": {
                     "add_device_page": {
@@ -1930,10 +1962,10 @@
                     },
                     "ozw_log": {
                         "header": "OZW-logg",
-                        "introduction": "Visa loggen. 0 är det minsta (laddar hela loggen) och 1000 är det maximala. Ladda visar en statisk logg och svansen uppdateras automatiskt med det sist angivna antalet rader i loggen.",
+                        "introduction": "Visa loggen. 0 är det minsta (laddar hela loggen) och 1000 är det maximala. Ladda visar en statisk logg och medan Följ uppdateras automatiskt med det sist angivna antalet rader i loggen.",
                         "last_log_lines": "Antal sista loggrader",
                         "load": "Ladda",
-                        "tail": "Svans"
+                        "tail": "Följ"
                     },
                     "services": {
                         "add_node": "Lägg till nod",
@@ -2030,11 +2062,23 @@
             },
             "history": {
                 "period": "Period",
+                "ranges": {
+                    "last_week": "Föregående vecka",
+                    "this_week": "Denna vecka",
+                    "today": "Idag",
+                    "yesterday": "Igår"
+                },
                 "showing_entries": "Visar poster för"
             },
             "logbook": {
                 "entries_not_found": "Inga loggboksposter hittades.",
                 "period": "Period",
+                "ranges": {
+                    "last_week": "Föregående vecka",
+                    "this_week": "Denna vecka",
+                    "today": "Idag",
+                    "yesterday": "Igår"
+                },
                 "showing_entries": "Visar poster för"
             },
             "lovelace": {
@@ -2173,6 +2217,10 @@
                         "horizontal-stack": {
                             "description": "Med Horizontal Stack-kortet kan du stapla ihop flera kort, så att de alltid sitter bredvid varandra i utrymmet av en kolumn.",
                             "name": "Vågrät trave"
+                        },
+                        "humidifier": {
+                            "description": "Termostatkortet kontrollerar din klimatenhet så att du kan ändra luftfuktigheten och läge.",
+                            "name": "Luftfuktare"
                         },
                         "iframe": {
                             "description": "Webbsidakortet låter dig bädda in din favoritwebbplats direkt i Home Assistant.",
@@ -2629,6 +2677,10 @@
                     "last_used": "Senast använt den {date} från {location}",
                     "not_used": "Har aldrig använts",
                     "token_title": "Uppdatera token för {clientId}"
+                },
+                "suspend": {
+                    "description": "Ska vi stänga anslutningen till servern efter att den varit gömd i 5 minuter?",
+                    "header": "Stäng anslutningen automatiskt"
                 },
                 "themes": {
                     "dropdown_label": "Tema",

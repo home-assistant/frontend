@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -19,6 +20,7 @@ import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -36,9 +38,9 @@ const includeDomains = ["sensor"];
 @customElement("hui-gauge-card-editor")
 export class HuiGaugeCardEditor extends LitElement
   implements LovelaceCardEditor {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: GaugeCardConfig;
+  @internalProperty() private _config?: GaugeCardConfig;
 
   public setConfig(config: GaugeCardConfig): void {
     config = cardConfigStruct(config);
@@ -146,6 +148,7 @@ export class HuiGaugeCardEditor extends LitElement
           .label=${this.hass.localize(
             "ui.panel.lovelace.editor.card.gauge.severity.define"
           )}
+          .dir=${computeRTLDirection(this.hass)}
         >
           <ha-switch
             .checked="${this._config!.severity !== undefined}"

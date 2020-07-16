@@ -15,7 +15,7 @@ import type { HaEntityPickerEntityFilterFunc } from "./ha-entity-picker";
 
 @customElement("ha-entities-picker")
 class HaEntitiesPickerLight extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public value?: string[];
 

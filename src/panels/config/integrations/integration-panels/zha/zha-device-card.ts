@@ -8,6 +8,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -36,13 +37,13 @@ import { getIeeeTail } from "./functions";
 
 @customElement("zha-device-card")
 class ZHADeviceCard extends SubscribeMixin(LitElement) {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public device?: ZHADevice;
 
   @property({ type: Boolean }) public narrow?: boolean;
 
-  @property() private _entities: EntityRegistryEntry[] = [];
+  @internalProperty() private _entities: EntityRegistryEntry[] = [];
 
   private _deviceEntities = memoizeOne(
     (

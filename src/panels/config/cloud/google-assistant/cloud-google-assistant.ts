@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
@@ -39,6 +40,7 @@ import "../../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import "../../../../components/ha-formfield";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 
 const DEFAULT_CONFIG_EXPOSE = true;
 
@@ -49,13 +51,13 @@ const configIsExposed = (config: GoogleEntityConfig) =>
 
 @customElement("cloud-google-assistant")
 class CloudGoogleAssistant extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public cloudStatus!: CloudStatusLoggedIn;
 
   @property() public narrow!: boolean;
 
-  @property() private _entities?: GoogleEntity[];
+  @internalProperty() private _entities?: GoogleEntity[];
 
   @property()
   private _entityConfigs: CloudPreferences["google_entity_configs"] = {};
@@ -83,6 +85,7 @@ class CloudGoogleAssistant extends LitElement {
     const filterFunc = this._getEntityFilterFunc(
       this.cloudStatus.google_entities
     );
+    const dir = computeRTLDirection(this.hass!);
 
     // We will only generate `isInitialExposed` during first render.
     // On each subsequent render we will use the same set so that cards
@@ -128,32 +131,38 @@ class CloudGoogleAssistant extends LitElement {
                 .map((trait) => trait.substr(trait.lastIndexOf(".") + 1))
                 .join(", ")}
             </state-info>
-            <ha-formfield
-              .label=${this.hass!.localize(
-                "ui.panel.config.cloud.google.expose"
-              )}
-            >
-              <ha-switch
-                .entityId=${entity.entity_id}
-                .disabled=${!emptyFilter}
-                .checked=${isExposed}
-                @change=${this._exposeChanged}
+            <div>
+              <ha-formfield
+                .label=${this.hass!.localize(
+                  "ui.panel.config.cloud.google.expose"
+                )}
+                .dir=${dir}
               >
-              </ha-switch>
-            </ha-formfield>
+                <ha-switch
+                  .entityId=${entity.entity_id}
+                  .disabled=${!emptyFilter}
+                  .checked=${isExposed}
+                  @change=${this._exposeChanged}
+                >
+                </ha-switch>
+              </ha-formfield>
+            </div>
             ${entity.might_2fa
               ? html`
-                  <ha-formfield
-                    .label=${this.hass!.localize(
-                      "ui.panel.config.cloud.google.disable_2FA"
-                    )}
-                  >
-                    <ha-switch
-                      .entityId=${entity.entity_id}
-                      .checked=${Boolean(config.disable_2fa)}
-                      @change=${this._disable2FAChanged}
-                    ></ha-switch>
-                  </ha-formfield>
+                  <div>
+                    <ha-formfield
+                      .label=${this.hass!.localize(
+                        "ui.panel.config.cloud.google.disable_2FA"
+                      )}
+                      .dir=${dir}
+                    >
+                      <ha-switch
+                        .entityId=${entity.entity_id}
+                        .checked=${Boolean(config.disable_2fa)}
+                        @change=${this._disable2FAChanged}
+                      ></ha-switch>
+                    </ha-formfield>
+                  </div>
                 `
               : ""}
           </div>
@@ -353,7 +362,7 @@ class CloudGoogleAssistant extends LitElement {
         color: var(--primary-text-color);
         background-color: var(
           --ha-card-background,
-          var(--paper-card-background-color, white)
+          var(--card-background-color, white)
         );
         padding: 16px 8px;
         text-align: center;
@@ -376,9 +385,6 @@ class CloudGoogleAssistant extends LitElement {
       }
       state-info {
         cursor: pointer;
-      }
-      ha-formfield {
-        display: block;
       }
       ha-switch {
         padding: 8px 0;

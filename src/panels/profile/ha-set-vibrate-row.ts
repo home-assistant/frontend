@@ -14,7 +14,7 @@ import "./ha-settings-row";
 
 @customElement("ha-set-vibrate-row")
 class HaSetVibrateRow extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
 

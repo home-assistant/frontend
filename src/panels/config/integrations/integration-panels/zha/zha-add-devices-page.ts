@@ -8,6 +8,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
   PropertyValues,
 } from "lit-element";
@@ -23,7 +24,7 @@ import { IronAutogrowTextareaElement } from "@polymer/iron-autogrow-textarea";
 
 @customElement("zha-add-devices-page")
 class ZHAAddDevicesPage extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow?: boolean;
 
@@ -31,17 +32,17 @@ class ZHAAddDevicesPage extends LitElement {
 
   @property() public route?: Route;
 
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
-  @property() private _discoveredDevices: ZHADevice[] = [];
+  @internalProperty() private _discoveredDevices: ZHADevice[] = [];
 
-  @property() private _formattedEvents = "";
+  @internalProperty() private _formattedEvents = "";
 
-  @property() private _active = false;
+  @internalProperty() private _active = false;
 
-  @property() private _showHelp = false;
+  @internalProperty() private _showHelp = false;
 
-  @property() private _showLogs = false;
+  @internalProperty() private _showLogs = false;
 
   private _ieeeAddress?: string;
 

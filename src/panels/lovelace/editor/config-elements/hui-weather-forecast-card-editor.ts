@@ -3,6 +3,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -16,6 +17,7 @@ import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -31,9 +33,9 @@ const includeDomains = ["weather"];
 @customElement("hui-weather-forecast-card-editor")
 export class HuiWeatherForecastCardEditor extends LitElement
   implements LovelaceCardEditor {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: WeatherForecastCardConfig;
+  @internalProperty() private _config?: WeatherForecastCardConfig;
 
   public setConfig(config: WeatherForecastCardConfig): void {
     config = cardConfigStruct(config);
@@ -114,6 +116,7 @@ export class HuiWeatherForecastCardEditor extends LitElement
             .label=${this.hass.localize(
               "ui.panel.lovelace.editor.card.weather-forecast.show_forecast"
             )}
+            .dir=${computeRTLDirection(this.hass)}
           >
             <ha-switch
               .checked=${this._config!.show_forecast !== false}

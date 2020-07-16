@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -27,19 +28,19 @@ import "./ha-switch";
 
 @customElement("ha-related-items")
 export class HaRelatedItems extends SubscribeMixin(LitElement) {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public itemType!: ItemType;
 
   @property() public itemId!: string;
 
-  @property() private _entries?: ConfigEntry[];
+  @internalProperty() private _entries?: ConfigEntry[];
 
-  @property() private _devices?: DeviceRegistryEntry[];
+  @internalProperty() private _devices?: DeviceRegistryEntry[];
 
-  @property() private _areas?: AreaRegistryEntry[];
+  @internalProperty() private _areas?: AreaRegistryEntry[];
 
-  @property() private _related?: RelatedResult;
+  @internalProperty() private _related?: RelatedResult;
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -96,7 +97,6 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
               </h3>
               <a
                 href=${`/config/integrations#config_entry=${relatedConfigEntryId}`}
-                @click=${this._close}
               >
                 ${this.hass.localize(`component.${entry.domain}.title`)}:
                 ${entry.title}
@@ -116,10 +116,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
               <h3>
                 ${this.hass.localize("ui.components.related-items.device")}:
               </h3>
-              <a
-                href="/config/devices/device/${relatedDeviceId}"
-                @click=${this._close}
-              >
+              <a href="/config/devices/device/${relatedDeviceId}">
                 ${device.name_by_user || device.name}
               </a>
             `;
@@ -137,7 +134,9 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
               <h3>
                 ${this.hass.localize("ui.components.related-items.area")}:
               </h3>
-              ${area.name}
+              <a href="/config/areas/area/${relatedAreaId}">
+                ${area.name}
+              </a>
             `;
           })
         : ""}
@@ -288,10 +287,6 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
   private _openMoreInfo(ev: CustomEvent) {
     const entityId = (ev.target as any).entityId;
     fireEvent(this, "hass-more-info", { entityId });
-  }
-
-  private _close() {
-    fireEvent(this, "close-dialog");
   }
 
   static get styles(): CSSResult {

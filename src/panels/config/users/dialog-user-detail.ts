@@ -8,6 +8,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { createCloseHeading } from "../../../components/ha-dialog";
@@ -21,20 +22,21 @@ import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { UserDetailDialogParams } from "./show-dialog-user-detail";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
 
 @customElement("dialog-user-detail")
 class DialogUserDetail extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _name!: string;
+  @internalProperty() private _name!: string;
 
-  @property() private _isAdmin?: boolean;
+  @internalProperty() private _isAdmin?: boolean;
 
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
-  @property() private _params?: UserDetailDialogParams;
+  @internalProperty() private _params?: UserDetailDialogParams;
 
-  @property() private _submitting = false;
+  @internalProperty() private _submitting = false;
 
   public async showDialog(params: UserDetailDialogParams): Promise<void> {
     this._params = params;
@@ -102,6 +104,7 @@ class DialogUserDetail extends LitElement {
             ></paper-input>
             <ha-formfield
               .label=${this.hass.localize("ui.panel.config.users.editor.admin")}
+              .dir=${computeRTLDirection(this.hass)}
             >
               <ha-switch
                 .disabled=${user.system_generated}

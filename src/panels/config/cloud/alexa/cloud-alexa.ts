@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
@@ -34,6 +35,7 @@ import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../../types";
 import "../../../../components/ha-formfield";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 
 const DEFAULT_CONFIG_EXPOSE = true;
 const IGNORE_INTERFACES = ["Alexa.EndpointHealth"];
@@ -45,14 +47,14 @@ const configIsExposed = (config: AlexaEntityConfig) =>
 
 @customElement("cloud-alexa")
 class CloudAlexa extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property()
   public cloudStatus!: CloudStatusLoggedIn;
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @property() private _entities?: AlexaEntity[];
+  @internalProperty() private _entities?: AlexaEntity[];
 
   @property()
   private _entityConfigs: CloudPreferences["alexa_entity_configs"] = {};
@@ -132,6 +134,7 @@ class CloudAlexa extends LitElement {
               .label=${this.hass!.localize(
                 "ui.panel.config.cloud.alexa.expose"
               )}
+              .dir=${computeRTLDirection(this.hass!)}
             >
               <ha-switch
                 .entityId=${entity.entity_id}
@@ -321,7 +324,7 @@ class CloudAlexa extends LitElement {
         color: var(--primary-text-color);
         background-color: var(
           --ha-card-background,
-          var(--paper-card-background-color, white)
+          var(--card-background-color, white)
         );
         padding: 16px 8px;
         text-align: center;

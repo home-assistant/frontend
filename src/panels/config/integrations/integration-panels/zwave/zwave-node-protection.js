@@ -7,9 +7,10 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../../../../components/buttons/ha-call-api-button";
 import "../../../../../components/ha-card";
+import LocalizeMixin from "../../../../../mixins/localize-mixin";
 import "../../../../../styles/polymer-ha-style";
 
-class ZwaveNodeProtection extends PolymerElement {
+class ZwaveNodeProtection extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="iron-flex ha-style">

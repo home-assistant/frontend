@@ -8,6 +8,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   query,
   TemplateResult,
 } from "lit-element";
@@ -21,18 +22,19 @@ import type { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { SaveDialogParams } from "./show-save-config-dialog";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
 
 const EMPTY_CONFIG = { views: [] };
 
 @customElement("hui-dialog-save-config")
 export class HuiSaveConfig extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _params?: SaveDialogParams;
+  @internalProperty() private _params?: SaveDialogParams;
 
-  @property() private _emptyConfig = false;
+  @internalProperty() private _emptyConfig = false;
 
-  @property() private _saving: boolean;
+  @internalProperty() private _saving: boolean;
 
   @query("ha-paper-dialog") private _dialog?: HaPaperDialog;
 
@@ -77,6 +79,7 @@ export class HuiSaveConfig extends LitElement {
                   .label=${this.hass!.localize(
                     "ui.panel.lovelace.editor.save_config.empty_config"
                   )}
+                  .dir=${computeRTLDirection(this.hass!)}
                 >
                   <ha-switch
                     .checked=${this._emptyConfig}

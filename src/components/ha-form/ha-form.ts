@@ -15,8 +15,10 @@ import "./ha-form-multi_select";
 import "./ha-form-positive_time_period_dict";
 import "./ha-form-select";
 import "./ha-form-string";
+import "./ha-form-constant";
 
 export type HaFormSchema =
+  | HaFormConstantSchema
   | HaFormStringSchema
   | HaFormIntegerSchema
   | HaFormFloatSchema
@@ -31,6 +33,11 @@ export interface HaFormBaseSchema {
   required?: boolean;
   optional?: boolean;
   description?: { suffix?: string; suggested_value?: HaFormData };
+}
+
+export interface HaFormConstantSchema extends HaFormBaseSchema {
+  type: "constant";
+  value: string;
 }
 
 export interface HaFormIntegerSchema extends HaFormBaseSchema {

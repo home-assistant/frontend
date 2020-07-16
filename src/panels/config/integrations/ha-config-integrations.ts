@@ -12,6 +12,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -91,7 +92,7 @@ const groupByIntegration = (
 
 @customElement("ha-config-integrations")
 class HaConfigIntegrations extends SubscribeMixin(LitElement) {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
 
@@ -101,24 +102,28 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
 
   @property() public route!: Route;
 
-  @property() private _configEntries?: ConfigEntryExtended[];
+  @internalProperty() private _configEntries?: ConfigEntryExtended[];
 
   @property()
   private _configEntriesInProgress: DataEntryFlowProgressExtended[] = [];
 
-  @property() private _entityRegistryEntries: EntityRegistryEntry[] = [];
+  @internalProperty()
+  private _entityRegistryEntries: EntityRegistryEntry[] = [];
 
-  @property() private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
+  @internalProperty()
+  private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
 
-  @property() private _manifests!: { [domain: string]: IntegrationManifest };
+  @internalProperty() private _manifests!: {
+    [domain: string]: IntegrationManifest;
+  };
 
-  @property() private _showIgnored = false;
+  @internalProperty() private _showIgnored = false;
 
-  @property() private _searchParms = new URLSearchParams(
+  @internalProperty() private _searchParms = new URLSearchParams(
     window.location.hash.substring(1)
   );
 
-  @property() private _filter?: string;
+  @internalProperty() private _filter?: string;
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -263,6 +268,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                     no-label-float
                     no-underline
                     @value-changed=${this._handleSearchChange}
+                    .label=${this.hass.localize(
+                      "ui.panel.config.integrations.search"
+                    )}
                   ></search-input>
                 </slot>
               </div>
@@ -293,6 +301,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                   no-underline
                   .filter=${this._filter}
                   @value-changed=${this._handleSearchChange}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.integrations.search"
+                  )}
                 ></search-input>
               </div>
             `
@@ -673,7 +684,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           display: block;
           position: relative;
           left: -8px;
-          top: -7px;
           color: var(--secondary-text-color);
           margin-left: 16px;
         }
@@ -717,7 +727,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           right: auto;
           left: 16px;
         }
-        mwc-fab[is-wide].rtl {
+        mwc-fab[is-wide][rtl] {
           bottom: 24px;
           left: 24px;
           right: auto;

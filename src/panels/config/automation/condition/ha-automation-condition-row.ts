@@ -10,6 +10,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
 } from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
@@ -49,11 +50,11 @@ export const handleChangeEvent = (
 
 @customElement("ha-automation-condition-row")
 export default class HaAutomationConditionRow extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public condition!: Condition;
 
-  @property() private _yamlMode = false;
+  @internalProperty() private _yamlMode = false;
 
   protected render() {
     if (!this.condition) {

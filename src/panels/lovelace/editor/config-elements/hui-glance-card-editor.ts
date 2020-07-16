@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -27,6 +28,7 @@ import {
   EntitiesEditorEvent,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -42,11 +44,11 @@ const cardConfigStruct = struct({
 @customElement("hui-glance-card-editor")
 export class HuiGlanceCardEditor extends LitElement
   implements LovelaceCardEditor {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: GlanceCardConfig;
+  @internalProperty() private _config?: GlanceCardConfig;
 
-  @property() private _configEntities?: ConfigEntity[];
+  @internalProperty() private _configEntities?: ConfigEntity[];
 
   public setConfig(config: GlanceCardConfig): void {
     config = cardConfigStruct(config);
@@ -83,6 +85,8 @@ export class HuiGlanceCardEditor extends LitElement
       return html``;
     }
 
+    const dir = computeRTLDirection(this.hass!);
+
     return html`
       ${configElementStyle}
       <div class="card-config">
@@ -116,41 +120,50 @@ export class HuiGlanceCardEditor extends LitElement
           ></paper-input>
         </div>
         <div class="side-by-side">
-          <ha-formfield
-            .label=${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.show_name"
-            )}
-          >
-            <ha-switch
-              .checked=${this._config!.show_name !== false}
-              .configValue="${"show_name"}"
-              @change="${this._valueChanged}"
-            ></ha-switch>
-          </ha-formfield>
-          <ha-formfield
-            .label=${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.show_icon"
-            )}
-          >
-            <ha-switch
-              .checked=${this._config!.show_icon !== false}
-              .configValue="${"show_icon"}"
-              @change="${this._valueChanged}"
+          <div>
+            <ha-formfield
+              .label=${this.hass.localize(
+                "ui.panel.lovelace.editor.card.generic.show_name"
+              )}
+              .dir=${dir}
             >
-            </ha-switch>
-          </ha-formfield>
-          <ha-formfield
-            .label=${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.show_state"
-            )}
-          >
-            <ha-switch
-              .checked=${this._config!.show_state !== false}
-              .configValue="${"show_state"}"
-              @change="${this._valueChanged}"
+              <ha-switch
+                .checked=${this._config!.show_name !== false}
+                .configValue="${"show_name"}"
+                @change="${this._valueChanged}"
+              ></ha-switch>
+            </ha-formfield>
+          </div>
+          <div>
+            <ha-formfield
+              .label=${this.hass.localize(
+                "ui.panel.lovelace.editor.card.generic.show_icon"
+              )}
+              .dir=${dir}
             >
-            </ha-switch>
-          </ha-formfield>
+              <ha-switch
+                .checked=${this._config!.show_icon !== false}
+                .configValue="${"show_icon"}"
+                @change="${this._valueChanged}"
+              >
+              </ha-switch>
+            </ha-formfield>
+          </div>
+          <div>
+            <ha-formfield
+              .label=${this.hass.localize(
+                "ui.panel.lovelace.editor.card.generic.show_state"
+              )}
+              .dir=${dir}
+            >
+              <ha-switch
+                .checked=${this._config!.show_state !== false}
+                .configValue="${"show_state"}"
+                @change="${this._valueChanged}"
+              >
+              </ha-switch>
+            </ha-formfield>
+          </div>
         </div>
       </div>
       <hui-entity-editor

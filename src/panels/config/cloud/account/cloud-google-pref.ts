@@ -18,7 +18,7 @@ import type { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 
 export class CloudGooglePref extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public cloudStatus?: CloudStatusLoggedIn;
 
@@ -204,6 +204,10 @@ export class CloudGooglePref extends LitElement {
         position: absolute;
         right: 24px;
         top: 32px;
+      }
+      :host([dir="rtl"]) .switch {
+        right: auto;
+        left: 24px;
       }
       ha-call-api-button {
         color: var(--primary-color);

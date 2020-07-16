@@ -5,7 +5,7 @@ import { HomeAssistant } from "../../types";
 
 @customElement("developer-tools-router")
 class DeveloperToolsRouter extends HassRouterPage {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
 
@@ -39,6 +39,18 @@ class DeveloperToolsRouter extends HassRouterPage {
       },
     },
   };
+
+  protected createLoadingScreen() {
+    const loadingScreen = super.createLoadingScreen();
+    loadingScreen.noToolbar = true;
+    return loadingScreen;
+  }
+
+  protected createErrorScreen(error: string) {
+    const errorEl = super.createErrorScreen(error);
+    errorEl.toolbar = false;
+    return errorEl;
+  }
 
   protected updatePageEl(el) {
     if ("setProperties" in el) {

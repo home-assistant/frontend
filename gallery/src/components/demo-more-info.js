@@ -2,7 +2,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../../src/components/ha-card";
-import "../../../src/dialogs/more-info/controls/more-info-content";
+import "../../../src/dialogs/more-info/more-info-content";
 import "../../../src/state-summary/state-card-content";
 
 class DemoMoreInfo extends PolymerElement {

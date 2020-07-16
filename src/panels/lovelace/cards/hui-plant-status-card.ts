@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -57,9 +58,9 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
     return { type: "plant-status", entity: foundEntities[0] || "" };
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: PlantStatusCardConfig;
+  @internalProperty() private _config?: PlantStatusCardConfig;
 
   public getCardSize(): number {
     return 3;

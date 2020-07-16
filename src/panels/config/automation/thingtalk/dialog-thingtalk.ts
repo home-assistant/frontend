@@ -10,6 +10,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   query,
   TemplateResult,
 } from "lit-element";
@@ -37,17 +38,17 @@ export interface PlaceholderContainer {
 
 @customElement("ha-dialog-thinktalk")
 class DialogThingtalk extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
-  @property() private _params?: ThingtalkDialogParams;
+  @internalProperty() private _params?: ThingtalkDialogParams;
 
-  @property() private _submitting = false;
+  @internalProperty() private _submitting = false;
 
-  @property() private _opened = false;
+  @internalProperty() private _opened = false;
 
-  @property() private _placeholders?: PlaceholderContainer;
+  @internalProperty() private _placeholders?: PlaceholderContainer;
 
   @query("#input") private _input?: PaperInputElement;
 

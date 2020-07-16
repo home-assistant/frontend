@@ -5,6 +5,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -23,9 +24,9 @@ import { createEntityNotFoundWarning } from "../components/hui-warning";
 
 @customElement("hui-state-label-element")
 class HuiStateLabelElement extends LitElement implements LovelaceElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: StateLabelElementConfig;
+  @internalProperty() private _config?: StateLabelElementConfig;
 
   public setConfig(config: StateLabelElementConfig): void {
     if (!config.entity) {

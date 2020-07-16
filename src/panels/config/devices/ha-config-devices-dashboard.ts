@@ -3,6 +3,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
@@ -14,7 +15,7 @@ import {
   DataTableRowData,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
-import "../../../components/entity/ha-state-icon";
+import "../../../components/entity/ha-battery-icon";
 import { AreaRegistryEntry } from "../../../data/area_registry";
 import { ConfigEntry } from "../../../data/config_entries";
 import {
@@ -25,6 +26,7 @@ import {
 import {
   EntityRegistryEntry,
   findBatteryEntity,
+  findBatteryChargingEntity,
 } from "../../../data/entity_registry";
 import { domainToName } from "../../../data/integration";
 import "../../../layouts/hass-tabs-subpage-data-table";
@@ -35,12 +37,12 @@ interface DeviceRowData extends DeviceRegistryEntry {
   device?: DeviceRowData;
   area?: string;
   integration?: string;
-  battery_entity?: string;
+  battery_entity?: [string | undefined, string | undefined];
 }
 
 @customElement("ha-config-devices-dashboard")
 export class HaConfigDeviceDashboard extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow = false;
 
@@ -56,7 +58,7 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   @property() public route!: Route;
 
-  @property() private _searchParms = new URLSearchParams(
+  @internalProperty() private _searchParms = new URLSearchParams(
     window.location.search
   );
 
@@ -167,7 +169,10 @@ export class HaConfigDeviceDashboard extends LitElement {
                 )
                 .join(", ")
             : "No integration",
-          battery_entity: this._batteryEntity(device.id, deviceEntityLookup),
+          battery_entity: [
+            this._batteryEntity(device.id, deviceEntityLookup),
+            this._batteryChargingEntity(device.id, deviceEntityLookup),
+          ],
         };
       });
 
@@ -201,17 +206,25 @@ export class HaConfigDeviceDashboard extends LitElement {
               sortable: true,
               type: "numeric",
               width: "90px",
-              template: (batteryEntity: string) => {
-                const battery = batteryEntity
-                  ? this.hass.states[batteryEntity]
-                  : undefined;
+              template: (
+                batteryEntityPair: DeviceRowData["battery_entity"]
+              ) => {
+                const battery =
+                  batteryEntityPair && batteryEntityPair[0]
+                    ? this.hass.states[batteryEntityPair[0]]
+                    : undefined;
+                const batteryCharging =
+                  batteryEntityPair && batteryEntityPair[1]
+                    ? this.hass.states[batteryEntityPair[1]]
+                    : undefined;
                 return battery
                   ? html`
                       ${isNaN(battery.state as any) ? "-" : battery.state}%
-                      <ha-state-icon
+                      <ha-battery-icon
                         .hass=${this.hass!}
-                        .stateObj=${battery}
-                      ></ha-state-icon>
+                        .batteryStateObj=${battery}
+                        .batteryChargingStateObj=${batteryCharging}
+                      ></ha-battery-icon>
                     `
                   : html` - `;
               },
@@ -267,17 +280,25 @@ export class HaConfigDeviceDashboard extends LitElement {
               type: "numeric",
               width: "15%",
               maxWidth: "90px",
-              template: (batteryEntity: string) => {
-                const battery = batteryEntity
-                  ? this.hass.states[batteryEntity]
-                  : undefined;
+              template: (
+                batteryEntityPair: DeviceRowData["battery_entity"]
+              ) => {
+                const battery =
+                  batteryEntityPair && batteryEntityPair[0]
+                    ? this.hass.states[batteryEntityPair[0]]
+                    : undefined;
+                const batteryCharging =
+                  batteryEntityPair && batteryEntityPair[1]
+                    ? this.hass.states[batteryEntityPair[1]]
+                    : undefined;
                 return battery && !isNaN(battery.state as any)
                   ? html`
                       ${battery.state}%
-                      <ha-state-icon
+                      <ha-battery-icon
                         .hass=${this.hass!}
-                        .stateObj=${battery}
-                      ></ha-state-icon>
+                        .batteryStateObj=${battery}
+                        .batteryChargingStateObj=${batteryCharging}
+                      ></ha-battery-icon>
                     `
                   : html` - `;
               },
@@ -334,6 +355,17 @@ export class HaConfigDeviceDashboard extends LitElement {
       deviceEntityLookup[deviceId] || []
     );
     return batteryEntity ? batteryEntity.entity_id : undefined;
+  }
+
+  private _batteryChargingEntity(
+    deviceId: string,
+    deviceEntityLookup: DeviceEntityLookup
+  ): string | undefined {
+    const batteryChargingEntity = findBatteryChargingEntity(
+      this.hass,
+      deviceEntityLookup[deviceId] || []
+    );
+    return batteryChargingEntity ? batteryChargingEntity.entity_id : undefined;
   }
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {

@@ -4,6 +4,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -39,20 +40,20 @@ let resourcesLoaded = false;
 class LovelacePanel extends LitElement {
   @property() public panel?: PanelInfo<LovelacePanelConfig>;
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public narrow?: boolean;
 
   @property() public route?: Route;
 
-  @property() private _columns?: number;
+  @internalProperty() private _columns?: number;
 
   @property()
   private _state?: "loading" | "loaded" | "error" | "yaml-editor" = "loading";
 
-  @property() private _errorMsg?: string;
+  @internalProperty() private _errorMsg?: string;
 
-  @property() private lovelace?: Lovelace;
+  @internalProperty() private lovelace?: Lovelace;
 
   private mqls?: MediaQueryList[];
 

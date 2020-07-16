@@ -2678,6 +2678,10 @@
                     "not_used": "Nigdy nie był używany",
                     "token_title": "Token dla {clientId}"
                 },
+                "suspend": {
+                    "description": "Czy połączenie z serwerem powinno być zamykane, jeśli jest ukryte przez 5 minut?",
+                    "header": "Automatyczne zamykanie połączenia"
+                },
                 "themes": {
                     "dropdown_label": "Motyw",
                     "error_no_theme": "Brak dostępnych motywów.",

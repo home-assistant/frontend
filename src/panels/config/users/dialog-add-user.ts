@@ -8,6 +8,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -26,25 +27,26 @@ import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { AddUserDialogParams } from "./show-dialog-add-user";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
 
 @customElement("dialog-add-user")
 export class DialogAddUser extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _loading = false;
+  @internalProperty() private _loading = false;
 
   // Error message when can't talk to server etc
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
-  @property() private _params?: AddUserDialogParams;
+  @internalProperty() private _params?: AddUserDialogParams;
 
-  @property() private _name?: string;
+  @internalProperty() private _name?: string;
 
-  @property() private _username?: string;
+  @internalProperty() private _username?: string;
 
-  @property() private _password?: string;
+  @internalProperty() private _password?: string;
 
-  @property() private _isAdmin?: boolean;
+  @internalProperty() private _isAdmin?: boolean;
 
   public showDialog(params: AddUserDialogParams) {
     this._params = params;
@@ -115,6 +117,7 @@ export class DialogAddUser extends LitElement {
           ></paper-input>
           <ha-formfield
             .label=${this.hass.localize("ui.panel.config.users.editor.admin")}
+            .dir=${computeRTLDirection(this.hass)}
           >
             <ha-switch .checked=${this._isAdmin} @change=${this._adminChanged}>
             </ha-switch>

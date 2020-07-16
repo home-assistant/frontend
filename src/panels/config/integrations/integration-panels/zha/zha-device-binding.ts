@@ -10,6 +10,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -24,19 +25,19 @@ import { ItemSelectedEvent } from "./types";
 
 @customElement("zha-device-binding-control")
 export class ZHADeviceBindingControl extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public isWide?: boolean;
 
   @property() public selectedDevice?: ZHADevice;
 
-  @property() private _showHelp = false;
+  @internalProperty() private _showHelp = false;
 
-  @property() private _bindTargetIndex = -1;
+  @internalProperty() private _bindTargetIndex = -1;
 
-  @property() private bindableDevices: ZHADevice[] = [];
+  @internalProperty() private bindableDevices: ZHADevice[] = [];
 
-  @property() private _deviceToBind?: ZHADevice;
+  @internalProperty() private _deviceToBind?: ZHADevice;
 
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("selectedDevice")) {

@@ -6,6 +6,7 @@ import {
   CSSResult,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
 } from "lit-element";
 import { html, TemplateResult } from "lit-html";
@@ -19,7 +20,7 @@ import {
   reloadHassioAddons,
 } from "../../../src/data/hassio/addon";
 import "../../../src/layouts/hass-tabs-subpage";
-import "../../../src/layouts/loading-screen";
+import "../../../src/layouts/hass-loading-screen";
 import { HomeAssistant, Route } from "../../../src/types";
 import { showRepositoriesDialog } from "../dialogs/repositories/show-dialog-repositories";
 import { supervisorTabs } from "../hassio-tabs";
@@ -52,7 +53,7 @@ class HassioAddonStore extends LitElement {
 
   @property({ attribute: false }) private _repos?: HassioAddonRepository[];
 
-  @property() private _filter?: string;
+  @internalProperty() private _filter?: string;
 
   public async refreshData() {
     this._repos = undefined;
@@ -108,7 +109,7 @@ class HassioAddonStore extends LitElement {
           </mwc-list-item>
         </ha-button-menu>
         ${repos.length === 0
-          ? html`<loading-screen></loading-screen>`
+          ? html`<hass-loading-screen no-toolbar></hass-loading-screen>`
           : html`
               <div class="search">
                 <search-input

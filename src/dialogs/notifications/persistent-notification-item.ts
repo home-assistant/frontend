@@ -17,7 +17,7 @@ import "./notification-item-template";
 
 @customElement("persistent-notification-item")
 export class HuiPersistentNotificationItem extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public notification?: PersistentNotification;
 
