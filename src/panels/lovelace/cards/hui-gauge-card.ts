@@ -1,5 +1,4 @@
 import { HassEntity } from "home-assistant-js-websocket/dist/types";
-import Gauge from "svg-gauge";
 import {
   css,
   CSSResult,
@@ -10,7 +9,6 @@ import {
   internalProperty,
   PropertyValues,
   TemplateResult,
-  query,
 } from "lit-element";
 
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -24,6 +22,8 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { GaugeCardConfig } from "./types";
+import "../../../components/ha-gauge";
+import { styleMap } from "lit-html/directives/style-map";
 
 export const severityMap = {
   red: "var(--label-badge-red)",
@@ -68,10 +68,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
   @internalProperty() private _config?: GaugeCardConfig;
 
-  @internalProperty() private _gauge?: any;
-
-  @query("#gauge") private _gaugeElement!: HTMLDivElement;
-
   public getCardSize(): number {
     return 2;
   }
@@ -84,7 +80,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       throw new Error("Invalid Entity");
     }
     this._config = { min: 0, max: 100, ...config };
-    this._initGauge();
   }
 
   protected render(): TemplateResult {
@@ -118,7 +113,18 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card @click=${this._handleClick} tabindex="0">
-        <div id="gauge"></div>
+        <ha-gauge
+          .min=${this._config.min!}
+          .max=${this._config.max!}
+          .value=${state}
+          .label=${this._config!.unit ||
+          this.hass?.states[this._config!.entity].attributes
+            .unit_of_measurement ||
+          ""}
+          style=${styleMap({
+            "--gauge-color": this._computeSeverity(state),
+          })}
+        ></ha-gauge>
         <div class="name">
           ${this._config.name || computeStateName(stateObj)}
         </div>
@@ -128,13 +134,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
-  }
-
-  protected firstUpdated(changedProps: PropertyValues): void {
-    super.firstUpdated(changedProps);
-    if (!this._gauge) {
-      this._initGauge();
-    }
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -156,66 +155,38 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
-    const oldState = oldHass?.states[this._config.entity];
-    const stateObj = this.hass.states[this._config.entity];
-    if (oldState?.state !== stateObj.state) {
-      this._gauge.setValueAnimated(stateObj.state, 1);
-    }
   }
 
-  private _initGauge() {
-    if (!this._gaugeElement || !this._config || !this.hass) {
-      return;
+  private _computeSeverity(numberValue: number): string {
+    const sections = this._config!.severity;
+
+    if (!sections) {
+      return severityMap.normal;
     }
-    if (this._gauge) {
-      this._gaugeElement.removeChild(this._gaugeElement.lastChild!);
-      this._gauge = undefined;
-    }
-    this._gauge = Gauge(this._gaugeElement, {
-      min: this._config.min,
-      max: this._config.max,
-      dialStartAngle: 180,
-      dialEndAngle: 0,
-      viewBox: "0 0 100 55",
-      label: (value) => `${Math.round(value)}
-      ${
-        this._config!.unit ||
-        this.hass?.states[this._config!.entity].attributes
-          .unit_of_measurement ||
-        ""
-      }`,
-      color: (value) => {
-        const sections = this._config!.severity;
 
-        if (!sections) {
-          return severityMap.normal;
-        }
+    const sectionsArray = Object.keys(sections);
+    const sortable = sectionsArray.map((severity) => [
+      severity,
+      sections[severity],
+    ]);
 
-        const sectionsArray = Object.keys(sections);
-        const sortable = sectionsArray.map((severity) => [
-          severity,
-          sections[severity],
-        ]);
-
-        for (const severity of sortable) {
-          if (severityMap[severity[0]] == null || isNaN(severity[1])) {
-            return severityMap.normal;
-          }
-        }
-        sortable.sort((a, b) => a[1] - b[1]);
-
-        if (value >= sortable[0][1] && value < sortable[1][1]) {
-          return severityMap[sortable[0][0]];
-        }
-        if (value >= sortable[1][1] && value < sortable[2][1]) {
-          return severityMap[sortable[1][0]];
-        }
-        if (value >= sortable[2][1]) {
-          return severityMap[sortable[2][0]];
-        }
+    for (const severity of sortable) {
+      if (severityMap[severity[0]] == null || isNaN(severity[1])) {
         return severityMap.normal;
-      },
-    });
+      }
+    }
+    sortable.sort((a, b) => a[1] - b[1]);
+
+    if (numberValue >= sortable[0][1] && numberValue < sortable[1][1]) {
+      return severityMap[sortable[0][0]];
+    }
+    if (numberValue >= sortable[1][1] && numberValue < sortable[2][1]) {
+      return severityMap[sortable[1][0]];
+    }
+    if (numberValue >= sortable[2][1]) {
+      return severityMap[sortable[2][0]];
+    }
+    return severityMap.normal;
   }
 
   private _handleClick(): void {
@@ -244,31 +215,20 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         outline: none;
         background: var(--divider-color);
       }
-      #gauge {
+
+      ha-gauge {
+        --gauge-color: var(--label-badge-blue);
         width: 100%;
-        max-width: 300px;
+        max-width: 250px;
       }
-      .dial {
-        stroke: #ccc;
-        stroke-width: 15;
-      }
-      .value {
-        stroke-width: 15;
-      }
-      .value-text {
-        fill: var(--primary-text-color);
-        font-size: var(--gauge-value-font-size, 1.1em);
-        transform: translate(0, -5px);
-        font-family: inherit;
-      }
+
       .name {
         text-align: center;
         line-height: initial;
         color: var(--primary-text-color);
         width: 100%;
         font-size: 15px;
-      }
-
+        margin-top: 8px;
       }
     `;
   }

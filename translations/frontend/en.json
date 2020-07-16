@@ -951,10 +951,10 @@
                             "description": "The mode controls what happens when the automation is triggered while the actions are still running from a previous trigger. Check the {documentation_link} for more info.",
                             "documentation": "automation documentation",
                             "label": "Mode",
-                            "parallel": "Parallel (default)",
+                            "parallel": "Parallel",
                             "queued": "Queued",
                             "restart": "Restart",
-                            "single": "Single"
+                            "single": "Single (default)"
                         },
                         "move_down": "Move down",
                         "move_up": "Move up",
