@@ -430,6 +430,8 @@
                 "activate": "啟用"
             },
             "script": {
+                "cancel": "取消",
+                "cancel_multiple": "取消 {number}",
                 "execute": "執行"
             },
             "service": {
@@ -1662,6 +1664,7 @@
                             "introduction": "不屬於設備的物件可以於此設置。",
                             "without_device": "無設備物件"
                         },
+                        "icon": "圖示",
                         "introduction": "使用場景來讓你的智能家居更有魅力吧。",
                         "load_error_not_editable": "僅有於 scenes.yaml 檔案內的場景、方能進行編輯。",
                         "load_error_unknown": "載入場景錯誤（{err_no}）。",
@@ -1695,6 +1698,10 @@
                         "delete_confirm": "確定要刪除此腳本？",
                         "delete_script": "刪除腳本",
                         "header": "腳本：{name}",
+                        "icon": "圖示",
+                        "id": "物件 ID",
+                        "id_already_exists": "該 ID 已存在",
+                        "id_already_exists_save_error": "由於該 ID 非獨一 ID，因此無法儲存此腳本。請選擇其他 ID 或者保留空白以自動產生。",
                         "introduction": "使用腳本以執行一連串的動作。",
                         "link_available_actions": "詳細了解可使用動作",
                         "load_error_not_editable": "僅有於 scripts.yaml 檔案內的腳本，方能進行編輯。",

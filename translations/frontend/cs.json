@@ -70,9 +70,9 @@
             "armed_custom_bypass": "Zabezpečeno",
             "armed_home": "Zabezpečeno",
             "armed_night": "Zabezpečeno",
-            "arming": "Aktivace",
+            "arming": "Zabezpečování",
             "disarmed": "Nezabezpečeno",
-            "disarming": "Deaktivace",
+            "disarming": "Odbezpečování",
             "pending": "Čeká",
             "triggered": "Spuštěn"
         },
@@ -95,7 +95,7 @@
         "alarm_control_panel": {
             "armed": "Zabezpečeno",
             "armed_away": "Režim nepřítomnost",
-            "armed_custom_bypass": "Aktivní uživatelským obejitím",
+            "armed_custom_bypass": "Zabezpečeno uživatelským obejitím",
             "armed_home": "Režim domov",
             "armed_night": "Noční režim",
             "arming": "Zabezpečování",
@@ -430,6 +430,8 @@
                 "activate": "Aktivovat"
             },
             "script": {
+                "cancel": "Zrušit",
+                "cancel_multiple": "Zrušit {number}",
                 "execute": "Vykonat"
             },
             "service": {
@@ -524,6 +526,9 @@
                 "area": "Oblast",
                 "clear": "Vymazat",
                 "show_areas": "Zobrazit oblasti"
+            },
+            "data-table": {
+                "search": "Hledat"
             },
             "date-range-picker": {
                 "end_date": "Koncové datum",
@@ -938,6 +943,19 @@
                         "introduction": "Použijte automatizace k oživení svého domova",
                         "load_error_not_editable": "Lze upravovat pouze automatizace v automations.yaml.",
                         "load_error_unknown": "Chyba při načítání automatizace ({err_no}).",
+                        "max": {
+                            "parallel": "Maximální počet paralelních spuštění",
+                            "queued": "Délka fronty"
+                        },
+                        "modes": {
+                            "description": "Režim určuje, co se stane, když je automatizace spuštěna a zároveň stále ještě běží akce na základě předchozího spuštění. Další informace naleznete na {documentation_link}.",
+                            "documentation": "Dokumentace automatizací",
+                            "label": "Režim",
+                            "parallel": "Paralelní (výchozí)",
+                            "queued": "Fronta",
+                            "restart": "Restart",
+                            "single": "Jediný"
+                        },
                         "move_down": "Posunout dolů",
                         "move_up": "Posunout nahoru",
                         "save": "Uložit",
@@ -1356,6 +1374,7 @@
                             "confirm_text": "Entity lze odebrat pouze v případě, že integrace již entity neposkytuje.",
                             "confirm_title": "Chcete odstranit {number} entit?"
                         },
+                        "search": "Hledat entitu",
                         "selected": "{number} vybraných",
                         "status": {
                             "disabled": "Zakázáno",
@@ -1386,7 +1405,8 @@
                             "entity_id": "ID entity",
                             "name": "Název",
                             "type": "Typ"
-                        }
+                        },
+                        "no_helpers": "Vypadá to, že ještě nemáte žádné pomocníky!"
                     },
                     "types": {
                         "input_boolean": "Přepnout",
@@ -1490,7 +1510,8 @@
                     "note_about_integrations": "Ne všechny integrace lze prozatím konfigurovat prostřednictvím uživatelského rozhraní.",
                     "note_about_website_reference": "Další jsou k dispozici na ",
                     "rename_dialog": "Upravit název této položky nastavení",
-                    "rename_input_label": "Název položky"
+                    "rename_input_label": "Název položky",
+                    "search": "Hledat integraci"
                 },
                 "introduction": "Zde je možné konfigurovat vaše komponenty a Home Assistant.\nZ uživatelského rozhraní sice zatím není možné konfigurovat vše, ale pracujeme na tom.",
                 "logs": {
@@ -1643,6 +1664,7 @@
                             "introduction": "Zde lze nastavit entity, které nepatří k zařízení.",
                             "without_device": "Entity bez zařízení"
                         },
+                        "icon": "Ikona",
                         "introduction": "Pomocí scén oživte svůj domov.",
                         "load_error_not_editable": "Lze upravovat pouze scény v souboru scenes.yaml.",
                         "load_error_unknown": "Chyba při načítání scény ({err_no}).",
@@ -1676,9 +1698,26 @@
                         "delete_confirm": "Opravdu chcete tento skript smazat?",
                         "delete_script": "Smazat skript",
                         "header": "Skript: {name}",
+                        "icon": "Ikona",
+                        "id": "ID entity",
+                        "id_already_exists": "Toto ID již existuje",
+                        "id_already_exists_save_error": "Tento skript nelze uložit, protože ID není jedinečné, vyberte jiné ID nebo jej nechte prázdné a bude automaticky vygenerováno.",
                         "introduction": "K provedení posloupnosti akcí použijte skripty.",
                         "link_available_actions": "Další informace o dostupných akcích.",
                         "load_error_not_editable": "Upravovat lze pouze skripty uvnitř scripts.yaml.",
+                        "max": {
+                            "parallel": "Maximální počet paralelních spuštění",
+                            "queued": "Délka fronty"
+                        },
+                        "modes": {
+                            "description": "Režim určuje, co se stane, když je skript spuštěn a zároveň stále ještě běží na základě předchozího spuštění. Další informace naleznete na {documentation_link}.",
+                            "documentation": "Dokumentace skriptů",
+                            "label": "Režim",
+                            "parallel": "Paralelní (výchozí)",
+                            "queued": "Fronta",
+                            "restart": "Restart",
+                            "single": "Jediný (výchozí)"
+                        },
                         "sequence": "Sekvence",
                         "sequence_sentence": "Posloupnost akcí tohoto skriptu."
                     },
@@ -2194,6 +2233,7 @@
                             "name": "Název",
                             "no_theme": "Žádný motiv",
                             "refresh_interval": "Interval obnovení",
+                            "search": "Hledat",
                             "secondary_info_attribute": "Sekundární informační atribut",
                             "show_icon": "Zobrazit ikonu?",
                             "show_name": "Zobrazit název?",
@@ -2314,7 +2354,8 @@
                     "edit_lovelace": {
                         "edit_title": "Upravit titulek",
                         "explanation": "Tento název je zobrazen nad všemi vašimi zobrazeními v Lovelace.",
-                        "header": "Název vašeho uživatelského rozhraní Lovelace"
+                        "header": "Název vašeho uživatelského rozhraní Lovelace",
+                        "title": "Název"
                     },
                     "edit_view": {
                         "add": "Přidat pohled",
@@ -2503,6 +2544,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "Váš počítač není povolen.",
                                 "not_whitelisted": "Váš počítač není na seznamu povolených."
                             },
                             "step": {
@@ -2677,6 +2719,10 @@
                     "last_used": "Naposledy použito {date} z {location}",
                     "not_used": "Nikdy nebylo použito",
                     "token_title": "Obnovovací token pro {clientId}"
+                },
+                "suspend": {
+                    "description": "Měli bychom ukončit spojení se serverem, pokud není Home Assistant viditelný po dobu delší než 5 minut?",
+                    "header": "Automaticky ukončovat spojení"
                 },
                 "themes": {
                     "dropdown_label": "Motiv",
