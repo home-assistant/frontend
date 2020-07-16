@@ -430,6 +430,8 @@
                 "activate": "Activar"
             },
             "script": {
+                "cancel": "Cancelar",
+                "cancel_multiple": "Cancelar {number}",
                 "execute": "Ejecutar"
             },
             "service": {
@@ -941,6 +943,19 @@
                         "introduction": "Utiliza automatizaciones para darle vida a tu hogar.",
                         "load_error_not_editable": "Solo las automatizaciones en automations.yaml son editables.",
                         "load_error_unknown": "Error al cargar la automatización ({err_no}).",
+                        "max": {
+                            "parallel": "Número máximo de ejecuciones paralelas",
+                            "queued": "Longitud de la cola"
+                        },
+                        "modes": {
+                            "description": "El modo controla lo que sucede cuando se activa la automatización mientras las acciones aún se ejecutan desde una activación anterior. Consulta la {documentation_link} para obtener más información.",
+                            "documentation": "documentación de automatización",
+                            "label": "Modo",
+                            "parallel": "Paralelo (predeterminado)",
+                            "queued": "En cola",
+                            "restart": "Reiniciar",
+                            "single": "Único"
+                        },
                         "move_down": "Mover hacia abajo",
                         "move_up": "Mover hacia arriba",
                         "save": "Guardar",
@@ -1649,6 +1664,7 @@
                             "introduction": "Las entidades que no pertenecen a un dispositivo se pueden configurar aquí.",
                             "without_device": "Entidades sin dispositivo"
                         },
+                        "icon": "Icono",
                         "introduction": "Usa escenas para dar vida a tu hogar.",
                         "load_error_not_editable": "Solo las escenas de scenes.yaml son editables.",
                         "load_error_unknown": "Error al cargar la escena ({err_no}).",
@@ -1682,9 +1698,26 @@
                         "delete_confirm": "¿Seguro que quieres eliminar este script?",
                         "delete_script": "Eliminar script",
                         "header": "Script: {name}",
+                        "icon": "Icono",
+                        "id": "ID de la entidad",
+                        "id_already_exists": "Este ID ya existe",
+                        "id_already_exists_save_error": "No puedes guardar este script porque el ID no es único, elije otro ID o déjalo en blanco para generar uno automáticamente.",
                         "introduction": "Utiliza scripts para ejecutar una secuencia de acciones.",
                         "link_available_actions": "Saber más sobre las acciones disponibles.",
                         "load_error_not_editable": "Solo los scripts dentro de scripts.yaml son editables.",
+                        "max": {
+                            "parallel": "Número máximo de ejecuciones paralelas",
+                            "queued": "Longitud de la cola"
+                        },
+                        "modes": {
+                            "description": "El modo controla lo que sucede cuando se invoca el script mientras aún se ejecuta desde una o más invocaciones anteriores. Consulta la {documentation_link} para obtener más información.",
+                            "documentation": "documentación de script",
+                            "label": "Modo",
+                            "parallel": "Paralelo",
+                            "queued": "En cola",
+                            "restart": "Reiniciar",
+                            "single": "Único (predeterminado)"
+                        },
                         "sequence": "Secuencia",
                         "sequence_sentence": "La secuencia de acciones de este script."
                     },
@@ -2511,6 +2544,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "Tu equipo no está permitido.",
                                 "not_whitelisted": "Tu equipo no está en la lista de autorizados."
                             },
                             "step": {
