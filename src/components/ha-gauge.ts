@@ -33,7 +33,7 @@ export class Gauge extends LitElement {
 
   @property({ type: Number }) public max = 100;
 
-  @property({ type: Number }) public value = 45;
+  @property({ type: Number }) public value = 0;
 
   @property() public label = "";
 
