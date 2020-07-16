@@ -219,7 +219,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       ha-gauge {
         --gauge-color: var(--label-badge-blue);
         width: 100%;
-        max-width: 300px;
+        max-width: 250px;
       }
 
       .name {
