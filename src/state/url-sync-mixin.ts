@@ -9,7 +9,7 @@ import { Constructor } from "../types";
 import { HassBaseEl } from "./hass-base-mixin";
 import { HASSDomEvent } from "../common/dom/fire_event";
 
-const DEBUG = true;
+const DEBUG = false;
 
 export const urlSyncMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
