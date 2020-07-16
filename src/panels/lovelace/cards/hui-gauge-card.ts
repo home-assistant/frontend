@@ -268,8 +268,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         width: 100%;
         font-size: 15px;
       }
-
-      }
     `;
   }
 }
