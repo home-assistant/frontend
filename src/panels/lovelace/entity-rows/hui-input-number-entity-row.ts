@@ -98,7 +98,7 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
                 no-label-float
                 auto-validate
                 .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
-                .pattern="[0-9]+([\\.][0-9]+)?"
+                pattern="[0-9]+([\\.][0-9]+)?"
                 .step="${Number(stateObj.attributes.step)}"
                 .min="${Number(stateObj.attributes.min)}"
                 .max="${Number(stateObj.attributes.max)}"
