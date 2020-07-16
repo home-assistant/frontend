@@ -9,7 +9,6 @@ import {
   internalProperty,
   PropertyValues,
   TemplateResult,
-  query,
 } from "lit-element";
 
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -69,10 +68,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
   @internalProperty() private _config?: GaugeCardConfig;
 
-  @internalProperty() private _gauge?: any;
-
-  @query("#gauge") private _gaugeElement!: HTMLDivElement;
-
   public getCardSize(): number {
     return 2;
   }
@@ -119,8 +114,8 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card @click=${this._handleClick} tabindex="0">
         <ha-gauge
-          .min=${this._config.min}
-          .max=${this._config.max}
+          .min=${this._config.min!}
+          .max=${this._config.max!}
           .value=${state}
           .label=${this._config!.unit ||
           this.hass?.states[this._config!.entity].attributes
