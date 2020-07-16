@@ -108,7 +108,6 @@
     "resize-observer-polyfill": "^1.5.1",
     "roboto-fontface": "^0.10.0",
     "superstruct": "^0.6.1",
-    "svg-gauge": "^1.0.6",
     "unfetch": "^4.1.0",
     "vue": "^2.6.11",
     "vue2-daterange-picker": "^0.5.1",
