@@ -151,6 +151,7 @@ const mdiRenameMapping = {
   "textbox-lock": "form-textbox-lock",
   "textbox-password": "form-textbox-password",
   "syllabary-katakana-half-width": "syllabary-katakana-halfwidth",
+  "visual-studio-code": "microsoft-visual-studio-code",
 };
 
 const mdiRemovedIcons = new Set([
