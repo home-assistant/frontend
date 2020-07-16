@@ -109,13 +109,15 @@ export class Gauge extends LitElement {
         transition: all 1000ms ease 0s;
         transform-origin: 50% 100%;
       }
+      .gauge {
+        display: block;
+      }
       .text {
         position: absolute;
         max-height: 40%;
         max-width: 55%;
-        left: 0;
         left: 50%;
-        bottom: 4%;
+        bottom: -6%;
         transform: translate(-50%, 0%);
       }
       .value-text {
