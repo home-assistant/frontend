@@ -9,7 +9,7 @@ import {
 } from "lit-element";
 
 @customElement("ha-card")
-class HaCard extends LitElement {
+export class HaCard extends LitElement {
   @property() public header?: string;
 
   @property({ type: Boolean, reflect: true }) public outlined = false;
