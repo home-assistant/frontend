@@ -90,7 +90,7 @@ class HaPanelShoppingList extends LocalizeMixin(PolymerElement) {
                 slot="trigger"
               >
               </ha-icon-button>
-              <mwc-list-item on-click="_clearCompleted">
+              <mwc-list-item on-request-selected="_clearCompleted">
                 [[localize('ui.panel.shopping-list.clear_completed')]]
               </mwc-list-item>
             </ha-button-menu>

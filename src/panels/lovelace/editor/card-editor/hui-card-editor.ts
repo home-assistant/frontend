@@ -302,6 +302,10 @@ export class HuiCardEditor extends LitElement {
       .yaml-editor {
         padding: 8px 0px;
       }
+      .error,
+      .warning {
+        word-break: break-word;
+      }
       .error {
         color: var(--error-color);
       }

@@ -160,14 +160,16 @@ class HUIRoot extends LitElement {
                             aria-label=${this.hass!.localize(
                               "ui.panel.lovelace.unused_entities.title"
                             )}
-                            @tap="${this._handleUnusedEntities}"
+                            @request-selected="${this._handleUnusedEntities}"
                           >
                             ${this.hass!.localize(
                               "ui.panel.lovelace.unused_entities.title"
                             )}
                           </mwc-list-item>
                         `}
-                    <mwc-list-item @tap="${this.lovelace!.enableFullEditMode}">
+                    <mwc-list-item
+                      @request-selected="${this.lovelace!.enableFullEditMode}"
+                    >
                       ${this.hass!.localize(
                         "ui.panel.lovelace.editor.menu.raw_editor"
                       )}
@@ -210,7 +212,7 @@ class HUIRoot extends LitElement {
                             aria-label=${this.hass!.localize(
                               "ui.panel.lovelace.menu.refresh"
                             )}
-                            @tap="${this._handleRefresh}"
+                            @request-selected="${this._handleRefresh}"
                           >
                             ${this.hass!.localize(
                               "ui.panel.lovelace.menu.refresh"
@@ -220,7 +222,7 @@ class HUIRoot extends LitElement {
                             aria-label=${this.hass!.localize(
                               "ui.panel.lovelace.unused_entities.title"
                             )}
-                            @tap="${this._handleUnusedEntities}"
+                            @request-selected="${this._handleUnusedEntities}"
                           >
                             ${this.hass!.localize(
                               "ui.panel.lovelace.unused_entities.title"
@@ -235,7 +237,7 @@ class HUIRoot extends LitElement {
                             aria-label=${this.hass!.localize(
                               "ui.panel.lovelace.menu.reload_resources"
                             )}
-                            @tap="${this._handleReloadResources}"
+                            @request-selected=${this._handleReloadResources}
                           >
                             ${this.hass!.localize(
                               "ui.panel.lovelace.menu.reload_resources"
@@ -249,7 +251,7 @@ class HUIRoot extends LitElement {
                             aria-label=${this.hass!.localize(
                               "ui.panel.lovelace.menu.configure_ui"
                             )}
-                            @tap="${this._editModeEnable}"
+                            @request-selected=${this._editModeEnable}
                           >
                             ${this.hass!.localize(
                               "ui.panel.lovelace.menu.configure_ui"
@@ -261,7 +263,7 @@ class HUIRoot extends LitElement {
                       aria-label=${this.hass!.localize(
                         "ui.panel.lovelace.menu.help"
                       )}
-                      @tap="${this._handleHelp}"
+                      @request-selected=${this._handleHelp}
                     >
                       ${this.hass!.localize("ui.panel.lovelace.menu.help")}
                     </mwc-list-item>

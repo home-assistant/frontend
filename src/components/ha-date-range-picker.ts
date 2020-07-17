@@ -77,7 +77,7 @@ export class HaDateRangePicker extends LitElement {
         </div>
         ${this.ranges
           ? html`<div slot="ranges" class="date-range-ranges">
-              <mwc-list @click=${this._setDateRange}>
+              <mwc-list @request-selected=${this._setDateRange}>
                 ${Object.entries(this.ranges).map(
                   ([name, dates]) => html`<mwc-list-item
                     .activated=${this.startDate.getTime() ===
