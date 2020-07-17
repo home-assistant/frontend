@@ -49,7 +49,9 @@ export class HuiCardOptions extends LitElement {
           </div>
           <div class="secondary-actions">
             <mwc-icon-button
-              title="Move card down"
+              .label=${this.hass!.localize(
+                "ui.panel.lovelace.editor.edit_card.move_card_down"
+              )}
               class="move-arrow"
               @click=${this._cardDown}
               ?disabled=${this.lovelace!.config.views[this.path![0]].cards!
@@ -59,7 +61,9 @@ export class HuiCardOptions extends LitElement {
               <ha-svg-icon path=${mdiArrowDown}></ha-svg-icon>
             </mwc-icon-button>
             <mwc-icon-button
-              title="Move card up"
+              .label=${this.hass!.localize(
+                "ui.panel.lovelace.editor.edit_card.move_card_up"
+              )}
               class="move-arrow"
               @click=${this._cardUp}
               ?disabled=${this.path![1] === 0}

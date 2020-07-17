@@ -1910,7 +1910,11 @@
             "delete": "Delete Card",
             "duplicate": "Duplicate Card",
             "move": "Move to View",
-            "options": "More options"
+            "options": "More options",
+            "move_card_down": "Move card down",
+            "move_card_up": "Move card up",
+            "move_card_before": "Move card before",
+            "move_card_after": "Move card after"
           },
           "suggest_card": {
             "header": "We created a suggestion for you",

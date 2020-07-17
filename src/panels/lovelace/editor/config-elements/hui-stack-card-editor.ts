@@ -107,7 +107,9 @@ export class HuiStackCardEditor extends LitElement
                   </mwc-button>
                   <ha-icon-button
                     id="move-before"
-                    title="Move card before"
+                    .label=${this.hass!.localize(
+                      "ui.panel.lovelace.editor.edit_card.move_card_before"
+                    )}
                     icon="hass:arrow-left"
                     .disabled=${selected === 0}
                     @click=${this._handleMove}
@@ -115,7 +117,9 @@ export class HuiStackCardEditor extends LitElement
 
                   <ha-icon-button
                     id="move-after"
-                    title="Move card after"
+                    .label=${this.hass!.localize(
+                      "ui.panel.lovelace.editor.edit_card.move_card_after"
+                    )}
                     icon="hass:arrow-right"
                     .disabled=${selected === numcards - 1}
                     @click=${this._handleMove}
