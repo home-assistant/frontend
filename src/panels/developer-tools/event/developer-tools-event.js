@@ -29,7 +29,6 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
           -moz-user-select: initial;
           @apply --paper-font-body1;
           padding: 16px;
-          direction: ltr;
           display: block;
         }
 

@@ -13,6 +13,7 @@ import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import "../../../styles/polymer-ha-style";
 import { mdiInformationOutline } from "@mdi/js";
+import { computeRTL } from "../../../common/util/compute_rtl";
 
 const ERROR_SENTINEL = {};
 /*
@@ -29,7 +30,6 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           -moz-user-select: initial;
           display: block;
           padding: 16px;
-          direction: ltr;
         }
 
         .inputs {
@@ -44,8 +44,13 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           text-align: left;
         }
 
+        :host([rtl]) .entities th {
+          text-align: right;
+        }
+
         .entities tr {
           vertical-align: top;
+          direction: ltr;
         }
 
         .entities tr:nth-child(odd) {
@@ -232,6 +237,10 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         computed:
           "computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter)",
       },
+      rtl: {
+        reflectToAttribute: true,
+        computed: "_computeRTL(hass)",
+      },
     };
   }
 
@@ -395,6 +404,10 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   _yamlChanged(ev) {
     this._stateAttributes = ev.detail.value;
+  }
+
+  _computeRTL(hass) {
+    return computeRTL(hass);
   }
 }
 
