@@ -430,6 +430,8 @@
                 "activate": "הפעל"
             },
             "script": {
+                "cancel": "בטל",
+                "cancel_multiple": "בטל {number}",
                 "execute": "הפעל"
             },
             "service": {
@@ -941,6 +943,19 @@
                         "introduction": "השתמש/י באוטומציות להפיח חיים בביתך.",
                         "load_error_not_editable": "רק אוטומציה ב automations.yaml ניתנים לעריכה.",
                         "load_error_unknown": "שגיאה בטעינת האוטומציה ( {err_no} ).",
+                        "max": {
+                            "parallel": "המספר המרבי של ריצות מקבילות",
+                            "queued": "אורך התור"
+                        },
+                        "modes": {
+                            "description": "המצב שולט במתרחש כאשר האוטומציה מופעלת בזמן שהפעולות עדיין פועלות מהטריגר הקודם. עיין ב {documentation_link} למידע נוסף.",
+                            "documentation": "תיעוד אוטומציה",
+                            "label": "מצב",
+                            "parallel": "במקביל",
+                            "queued": "בתור",
+                            "restart": "אתחול",
+                            "single": "יחיד (ברירת מחדל)"
+                        },
                         "move_down": "הזז למטה",
                         "move_up": "הזז למעלה",
                         "save": "שמור",
@@ -1649,6 +1664,7 @@
                             "introduction": "ניתן להגדיר כאן ישויות שאינן שייכות להתקנים.",
                             "without_device": "ישויות ללא מכשיר"
                         },
+                        "icon": "סמל",
                         "introduction": "השתמש בסצינות כדי להחיות את הבית שלך.",
                         "load_error_not_editable": "רק סצינות ב scenes.yaml ניתנות לעריכה.",
                         "load_error_unknown": "שגיאה בטעינת סצנה ({err_no}).",
@@ -1682,9 +1698,26 @@
                         "delete_confirm": "האם אתה בטוח שברצונך למחוק את הסקריפט הזה?",
                         "delete_script": "מחק סקריפט",
                         "header": "סקריפט: {name}",
+                        "icon": "סמל",
+                        "id": "מזהה ישות",
+                        "id_already_exists": "מזהה זה כבר קיים",
+                        "id_already_exists_save_error": "אינך יכול לשמור סקריפט זה מכיוון שהמזהה אינו ייחודי, בחר מזהה אחר או השאר אותו ריק כדי ליצור אוטומטית.",
                         "introduction": "השתמש בסקריפטים כדי לבצע רצף של פעולות.",
                         "link_available_actions": "למד עוד אודות פעולות זמינות.",
                         "load_error_not_editable": "רק סקריפטים בתוך קובץ scripts.yaml ניתנים לעריכה.",
+                        "max": {
+                            "parallel": "המספר המרבי של ריצות מקבילות",
+                            "queued": "אורך התור"
+                        },
+                        "modes": {
+                            "description": "המצב שולט במה שקורה כאשר מופעל סקריפט בזמן שהוא עדיין פועל מהפעלה קודמת אחת או יותר. עיין ב {documentation_link} למידע נוסף.",
+                            "documentation": "תיעוד סקריפט",
+                            "label": "מצב",
+                            "parallel": "מַקְבִּיל",
+                            "queued": "בתור",
+                            "restart": "אתחול",
+                            "single": "יחיד (ברירת מחדל)"
+                        },
                         "sequence": "סדר פעולות",
                         "sequence_sentence": "רצף הפעולות של סקריפט זה."
                     },
@@ -2057,12 +2090,12 @@
                         "title": "מצבים"
                     },
                     "templates": {
-                        "description": "התבניות מוצגות באמצעות מנוע התבניות Jinja2 עם כמה תוספים ספציפיים של Home Assistant.",
-                        "editor": "עורך התבניות",
-                        "jinja_documentation": "תיעוד תבנית Jinja2",
-                        "template_extensions": "הרחבות תבנית של Home Assistant",
+                        "description": "Templates are rendered using the Jinja2 template engine with some Home Assistant specific extensions.",
+                        "editor": "Template editor",
+                        "jinja_documentation": "Jinja2 template documentation",
+                        "template_extensions": "Home Assistant template extensions",
                         "title": "תבניות",
-                        "unknown_error_template": "שגיאה לא ידועה בעיבוד התבנית"
+                        "unknown_error_template": "Unknown error rendering template"
                     }
                 }
             },
@@ -2511,6 +2544,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "המחשב שלך אינו מורשה.",
                                 "not_whitelisted": "המחשב שלך אינו רשום ברשימת ההיתרים."
                             },
                             "step": {

@@ -940,7 +940,7 @@
                         "edit_ui": "Modifier avec l'interface utilisateur",
                         "edit_yaml": "Modifier en tant que YAML",
                         "enable_disable": "Activer/Désactiver l'automatisation",
-                        "introduction": "Utilisez les automatisations pour donner vie à votre maison",
+                        "introduction": "Utiliser les automatisations pour donner vie à votre maison.",
                         "load_error_not_editable": "Seules les automatisations dans automations.yaml sont modifiables.",
                         "load_error_unknown": "Erreur lors du chargement de l'automatisation ( {err_no} ).",
                         "max": {
@@ -953,7 +953,8 @@
                             "label": "Mode",
                             "parallel": "Parallèle (par défaut)",
                             "queued": "En attente",
-                            "restart": "Redémarrer"
+                            "restart": "Redémarrer",
+                            "single": "Unique (par défaut)"
                         },
                         "move_down": "Déplacer vers le bas",
                         "move_up": "Déplacer vers le haut",
