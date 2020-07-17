@@ -15,7 +15,8 @@ declare global {
   }
 }
 
-interface HassDialog<T = HASSDomEvents[ValidHassDomEvent]> extends HTMLElement {
+export interface HassDialog<T = HASSDomEvents[ValidHassDomEvent]>
+  extends HTMLElement {
   showDialog(params: T);
   closeDialog?: () => boolean | void;
 }
