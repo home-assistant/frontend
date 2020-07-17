@@ -11,6 +11,7 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import "../../../styles/polymer-ha-style";
 import "../../../util/app-localstorage-document";
+import { computeRTL } from "../../../common/util/compute_rtl";
 
 const ERROR_SENTINEL = {};
 /*
@@ -26,7 +27,6 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
           -moz-user-select: initial;
           display: block;
           padding: 16px;
-          direction: ltr;
         }
 
         .ha-form {
@@ -51,8 +51,13 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
           text-align: left;
         }
 
+        :host([rtl]) .attributes th {
+          text-align: right;
+        }
+
         .attributes tr {
           vertical-align: top;
+          direction: ltr;
         }
 
         .attributes tr:nth-child(odd) {
@@ -82,6 +87,14 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
 
         .error {
           color: var(--error-color);
+        }
+
+        :host([rtl]) .desc-container {
+          text-align: right;
+        }
+
+        :host([rtl]) .desc-container h3 {
+          direction: ltr;
         }
       </style>
 
@@ -141,7 +154,9 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
             </h1>
           </template>
           <template is="dom-if" if="[[_description]]">
-            <h3>[[_description]]</h3>
+            <div class="desc-container">
+              <h3>[[_description]]</h3>
+            </div>
 
             <table class="attributes">
               <tr>
@@ -226,6 +241,10 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
       _description: {
         type: String,
         computed: "_computeDescription(hass, _domain, _service)",
+      },
+      rtl: {
+        reflectToAttribute: true,
+        computed: "_computeRTL(hass)",
       },
     };
   }
@@ -328,6 +347,10 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
 
   _yamlChanged(ev) {
     this.serviceData = ev.detail.value;
+  }
+
+  _computeRTL(hass) {
+    return computeRTL(hass);
   }
 }
 
