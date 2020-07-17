@@ -48,6 +48,15 @@
                 "none": "Nenhum",
                 "sleep": "Suspender"
             }
+        },
+        "humidifier": {
+            "mode": {
+                "auto": "Auto",
+                "comfort": "Confortável",
+                "eco": "Econômico",
+                "normal": "Normal",
+                "sleep": "Suspender"
+            }
         }
     },
     "state_badge": {
@@ -388,6 +397,10 @@
                 "reverse": "Reverter",
                 "speed": "Velocidade"
             },
+            "humidifier": {
+                "mode": "Modo",
+                "on_entity": "{name} ligado"
+            },
             "light": {
                 "brightness": "Brilho",
                 "color_temperature": "Temperatura de cor",
@@ -411,6 +424,7 @@
                 "activate": "Ativar"
             },
             "script": {
+                "cancel": "Cancelar",
                 "execute": "Executar"
             },
             "service": {
@@ -480,6 +494,7 @@
             "delete": "Eliminar",
             "error_required": "Obrigatório",
             "loading": "Carregando",
+            "menu": "Menu",
             "next": "Próximo",
             "no": "Não",
             "previous": "Anterior",
@@ -503,6 +518,14 @@
                 "area": "Área",
                 "clear": "Limpar",
                 "show_areas": "Mostrar áreas"
+            },
+            "data-table": {
+                "search": "Procurar"
+            },
+            "date-range-picker": {
+                "end_date": "Data final",
+                "select": "Selecione",
+                "start_date": "Data de início"
             },
             "device-picker": {
                 "clear": "Limpar",
@@ -620,7 +643,7 @@
                     "pattern": "Padrão Regex para validação do lado do cliente",
                     "text": "Texto"
                 },
-                "platform_not_loaded": "A integração {platform} não está carregada. Por favor, adicione sua configuração adicionando 'default_config:' ou ''{platform}:''.",
+                "platform_not_loaded": "A integração {plataforma} não está carregada. Por favor adicione-a em sua configuração adicionando 'default_config:' ou ''{platform}:''.",
                 "required_error_msg": "Este campo é obrigatório",
                 "yaml_not_editable": "As configurações desta entidade não podem ser editadas a partir da interface do usuário. Somente entidades configuradas a partir da interface do usuário são configuráveis a partir da interface do usuário."
             },
@@ -692,10 +715,10 @@
             },
             "zha_device_info": {
                 "buttons": {
-                    "add": "Adicionar Dispositivos",
+                    "add": "Adicionar dispositivos através deste dispositivo",
                     "reconfigure": "Reconfigurar O Dispositivo",
                     "remove": "Remover dispositivo",
-                    "zigbee_information": "Informações sobre o Zigbee"
+                    "zigbee_information": "Assinatura de dispositivo Zigbee"
                 },
                 "confirmations": {
                     "remove": "Tem a certeza que quer remover o dispositivo?"
@@ -715,7 +738,7 @@
                 "unknown": "Desconhecido",
                 "zha_device_card": {
                     "area_picker_label": "Área",
-                    "device_name_placeholder": "Nome",
+                    "device_name_placeholder": "Alterar o nome do dispositivo",
                     "update_name_button": "Atualizar Nome"
                 }
             }
@@ -911,6 +934,16 @@
                         "introduction": "Use automações para trazer vida à sua casa",
                         "load_error_not_editable": "Somente automações em automations.yaml são editáveis.",
                         "load_error_unknown": "Erro ao carregar a automação ({err_no}).",
+                        "max": {
+                            "parallel": "Número máximo de execuções paralelas"
+                        },
+                        "modes": {
+                            "documentation": "documentação da automação",
+                            "label": "Modo",
+                            "parallel": "Paralelo",
+                            "restart": "Reiniciar",
+                            "single": "Único (padrão)"
+                        },
                         "move_down": "Mover para baixo",
                         "move_up": "Mover para cima",
                         "save": "Salvar",
@@ -954,7 +987,7 @@
                                     "start": "Iniciar"
                                 },
                                 "mqtt": {
-                                    "label": "",
+                                    "label": "MQTT",
                                     "payload": "Valor (opcional)",
                                     "topic": "Tópico"
                                 },
@@ -1373,6 +1406,7 @@
                     "built_using": "Construído usando",
                     "caption": "Informações",
                     "custom_uis": "UIs personalizadas:",
+                    "description": "Informações sobre a instalação do Home Assistant",
                     "developed_by": "Desenvolvido por um monte de pessoas incríveis.",
                     "documentation": "Documentação",
                     "frontend": "frontend-ui",
@@ -1401,6 +1435,7 @@
                         "delete_confirm": "Tem certeza de que deseja excluir essa integração?",
                         "device_unavailable": "dispositivo indisponível",
                         "devices": "{count} {count, plural,\none {dispositivo}\nother {dispositivos}\n}",
+                        "documentation": "Documentação",
                         "entities": "{count} {count, plural,\none {entidade}\nother {entidades}\n}",
                         "entity_unavailable": "entidade indisponível",
                         "firmware": "Firmware: {version}",
@@ -1465,6 +1500,7 @@
                 "logs": {
                     "caption": "Logs",
                     "clear": "Limpar",
+                    "description": "Exibir os logs do Home Assistant",
                     "details": "Detalhes do log ({Level})",
                     "load_full_log": "Carregar todos os logs do Home Assistant",
                     "loading_log": "Carregando log de erros…",
@@ -1552,6 +1588,7 @@
                     }
                 },
                 "mqtt": {
+                    "button": "Configurar",
                     "description_listen": "Ouvir um tópico",
                     "description_publish": "Publicar um pacote",
                     "listening_to": "Ouvindo",
@@ -1610,6 +1647,7 @@
                             "introduction": "Entidades que não pertencem a um dispositivo podem ser definidas aqui.",
                             "without_device": "Entidades sem dispositivos"
                         },
+                        "icon": "Ícone",
                         "introduction": "Use cenas para dar vida à sua casa.",
                         "load_error_not_editable": "Somente cenas em scenes.yaml são editáveis.",
                         "load_error_unknown": "Erro ao carregar a automação ({err_no}).",
@@ -1643,9 +1681,18 @@
                         "delete_confirm": "Tem certeza de que deseja excluir este script?",
                         "delete_script": "Excluir script",
                         "header": "Script: {name}",
+                        "icon": "Ícone",
+                        "id_already_exists": "Este ID já existe",
                         "introduction": "Use scripts para executar uma sequência de ações.",
                         "link_available_actions": "Saiba mais sobre as ações disponíveis.",
                         "load_error_not_editable": "Apenas scripts dentro scripts.yaml são editáveis.",
+                        "modes": {
+                            "documentation": "documentação do script",
+                            "label": "Modo",
+                            "parallel": "Paralelo",
+                            "queued": "Enfileirado",
+                            "restart": "Reiniciar"
+                        },
                         "sequence": "Seqüência",
                         "sequence_sentence": "A sequência de ações deste script."
                     },
@@ -1900,12 +1947,16 @@
                         "true": "Verdadeiro"
                     },
                     "node_management": {
-                        "add_to_group": "Adicionar ao grupo",
+                        "add_to_group": "Adicionar ao Grupo",
+                        "entities": "Entidades deste nó",
+                        "exclude_entity": "Excluir esta entidade do Home Assistant",
                         "group": "Grupo",
+                        "header": "Gerenciamento de nó Z-Wave",
                         "node_group_associations": "Associações de grupos de nós",
                         "node_protection": "Proteção dos nós",
                         "nodes": "Nós",
                         "protection": "Proteção",
+                        "remove_from_group": "Remover do Grupo",
                         "set_protection": "Definir proteção"
                     },
                     "ozw_log": {
@@ -2007,11 +2058,21 @@
             },
             "history": {
                 "period": "Período",
+                "ranges": {
+                    "last_week": "Semana Anterior",
+                    "this_week": "Esta semana",
+                    "today": "Hoje",
+                    "yesterday": "Ontem"
+                },
                 "showing_entries": "Exibindo entradas para"
             },
             "logbook": {
                 "entries_not_found": "Não foram encontradas registros no diário de bordo.",
                 "period": "Período",
+                "ranges": {
+                    "this_week": "Esta semana",
+                    "today": "Hoje"
+                },
                 "showing_entries": "Exibindo registros de"
             },
             "lovelace": {
@@ -2127,6 +2188,7 @@
                             "name": "Nome",
                             "no_theme": "Nenhum tema",
                             "refresh_interval": "Intervalo de atualização",
+                            "search": "Procurar",
                             "secondary_info_attribute": "Atributo de informação secundária",
                             "show_icon": "Mostrar Icone?",
                             "show_name": "Mostrar nome?",
@@ -2150,6 +2212,9 @@
                         "horizontal-stack": {
                             "description": "O cartão Pilha Horizontal permite empilhar vários cartões, para que eles sempre fiquem próximos um do outro no espaço de uma coluna.",
                             "name": "Pilha horizontal"
+                        },
+                        "humidifier": {
+                            "name": "Umidificador"
                         },
                         "iframe": {
                             "description": "O cartão de Página Web permite incorporar sua página web favorita diretamente no Home Assistant.",
@@ -2243,7 +2308,8 @@
                     "edit_lovelace": {
                         "edit_title": "Editar título",
                         "explanation": "Este título é mostrado acima de todas as suas visualizações no Lovelace.",
-                        "header": "Título da sua interface do Lovelace"
+                        "header": "Título da sua interface do Lovelace",
+                        "title": "Título"
                     },
                     "edit_view": {
                         "add": "Editar visualização",
@@ -2606,6 +2672,10 @@
                     "last_used": "Usado pela última vez em {date} em {location}",
                     "not_used": "Nunca foi usado",
                     "token_title": "Atualizar o token para {clientId}"
+                },
+                "suspend": {
+                    "description": "A conexão com o servidor deverá ser fechada depois de ficar oculto por 5 minutos inativa?",
+                    "header": "Fechar a conexão automaticamente"
                 },
                 "themes": {
                     "dropdown_label": "Tema",
