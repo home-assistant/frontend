@@ -78,17 +78,20 @@ export class HuiCardOptions extends LitElement {
                 <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
               </mwc-icon-button>
 
-              <mwc-list-item @tap=${this._moveCard}>
+              <mwc-list-item @request-selected=${this._moveCard}>
                 ${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.move"
                 )}</mwc-list-item
               >
-              <mwc-list-item @tap=${this._duplicateCard}
+              <mwc-list-item @request-selected=${this._duplicateCard}
                 >${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.duplicate"
                 )}</mwc-list-item
               >
-              <mwc-list-item class="delete-item" @tap=${this._deleteCard}>
+              <mwc-list-item
+                class="delete-item"
+                @request-selected=${this._deleteCard}
+              >
                 ${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.delete"
                 )}</mwc-list-item

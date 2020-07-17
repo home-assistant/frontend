@@ -136,7 +136,7 @@ export default class HaAutomationActionRow extends LitElement {
                 ><ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
               </mwc-icon-button>
               <mwc-list-item
-                @tap=${this._switchYamlMode}
+                @request-selected=${this._switchYamlMode}
                 .disabled=${selected === -1}
               >
                 ${yamlMode
@@ -152,7 +152,7 @@ export default class HaAutomationActionRow extends LitElement {
                   "ui.panel.config.automation.editor.actions.duplicate"
                 )}
               </mwc-list-item>
-              <mwc-list-item @tap=${this._onDelete}>
+              <mwc-list-item @request-selected=${this._onDelete}>
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.actions.delete"
                 )}

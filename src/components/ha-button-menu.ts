@@ -10,7 +10,6 @@ import {
 } from "lit-element";
 import "@material/mwc-button";
 import "@material/mwc-menu";
-import "@material/mwc-list/mwc-list-item";
 import type { Menu, Corner } from "@material/mwc-menu";
 
 import "./ha-icon-button";
