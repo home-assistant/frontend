@@ -47,14 +47,18 @@ export class HuiEntityEditor extends LitElement {
                 allow-custom-entity
               ></ha-entity-picker>
               <ha-icon-button
-                title="Move entity down"
+                .label=${this.hass!.localize(
+                  "ui.panel.lovelace.editor.card.move_entity_down"
+                )}
                 icon="hass:arrow-down"
                 .index="${index}"
                 @click="${this._entityDown}"
                 ?disabled="${index === this.entities!.length - 1}"
               ></ha-icon-button>
               <ha-icon-button
-                title="Move entity up"
+                .label=${this.hass!.localize(
+                  "ui.panel.lovelace.editor.card.move_entity_up"
+                )}
                 icon="hass:arrow-up"
                 .index="${index}"
                 @click="${this._entityUp}"

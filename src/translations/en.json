@@ -1964,7 +1964,9 @@
               "name": "Entities",
               "show_header_toggle": "Show Header Toggle?",
               "toggle": "Toggle entities.",
-              "description": "The Entities card is the most common type of card. It groups items together into lists."
+              "description": "The Entities card is the most common type of card. It groups items together into lists.",
+              "move_entity_down": "Move entity down",
+              "move_entity_up": "Move entity up"
             },
             "entity": {
               "name": "Entity",
