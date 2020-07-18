@@ -35,6 +35,7 @@
     "@material/mwc-icon-button": "^0.17.2",
     "@material/mwc-list": "^0.17.2",
     "@material/mwc-menu": "^0.17.2",
+    "@material/mwc-radio": "^0.17.2",
     "@material/mwc-ripple": "^0.17.2",
     "@material/mwc-switch": "^0.17.2",
     "@material/mwc-tab": "^0.17.2",

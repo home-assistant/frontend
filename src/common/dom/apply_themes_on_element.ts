@@ -1,4 +1,4 @@
-import { derivedStyles } from "../../resources/styles";
+import { derivedStyles, darkStyles } from "../../resources/styles";
 import { HomeAssistant, Theme } from "../../types";
 
 interface ProcessedTheme {
@@ -33,16 +33,46 @@ let PROCESSED_THEMES: { [key: string]: ProcessedTheme } = {};
 export const applyThemesOnElement = (
   element,
   themes: HomeAssistant["themes"],
-  selectedTheme?: string
+  selectedTheme?: string,
+  themeOptions?: Partial<HomeAssistant["selectedTheme"]>
 ) => {
-  const newTheme = selectedTheme
-    ? PROCESSED_THEMES[selectedTheme] || processTheme(selectedTheme, themes)
-    : undefined;
+  let cacheKey = selectedTheme;
+  let themeRules: Partial<Theme> | undefined;
 
-  if (!element._themes && !newTheme) {
+  if (selectedTheme === "default" && themeOptions) {
+    if (themeOptions.dark) {
+      cacheKey = `${cacheKey}__dark`;
+      themeRules = { ...themeRules, ...darkStyles };
+    }
+    if (themeOptions.primaryColor) {
+      cacheKey = `${cacheKey}__primary_${themeOptions.primaryColor}`;
+      themeRules = {
+        ...themeRules,
+        "primary-color": themeOptions.primaryColor,
+      };
+    }
+    if (themeOptions.accentColor) {
+      cacheKey = `${cacheKey}__accent_${themeOptions.accentColor}`;
+      themeRules = {
+        ...themeRules,
+        "accent-color": themeOptions.accentColor,
+      };
+    }
+  }
+
+  if (selectedTheme && themes.themes[selectedTheme]) {
+    themeRules = { ...themeRules, ...themes.themes[selectedTheme] };
+  }
+
+  if (!element._themes && !themeRules) {
     // No styles to reset, and no styles to set
     return;
   }
+
+  const newTheme =
+    themeRules && cacheKey
+      ? PROCESSED_THEMES[cacheKey] || processTheme(cacheKey, themeRules)
+      : undefined;
 
   // Add previous set keys to reset them, and new theme
   const styles = { ...element._themes, ...newTheme?.styles };
@@ -58,21 +88,21 @@ export const applyThemesOnElement = (
 };
 
 const processTheme = (
-  themeName: string,
-  themes: HomeAssistant["themes"]
+  cacheKey: string,
+  theme: Partial<Theme>
 ): ProcessedTheme | undefined => {
-  if (!themes.themes[themeName]) {
+  if (!theme) {
     return undefined;
   }
-  const theme: Theme = {
+  const combinedTheme: Partial<Theme> = {
     ...derivedStyles,
-    ...themes.themes[themeName],
+    ...theme,
   };
   const styles = {};
   const keys = {};
-  for (const key of Object.keys(theme)) {
+  for (const key of Object.keys(combinedTheme)) {
     const prefixedKey = `--${key}`;
-    const value = theme[key];
+    const value = combinedTheme[key]!;
     styles[prefixedKey] = value;
     keys[prefixedKey] = "";
 
@@ -82,7 +112,7 @@ const processTheme = (
       continue;
     }
     const rgbKey = `rgb-${key}`;
-    if (theme[rgbKey] !== undefined) {
+    if (combinedTheme[rgbKey] !== undefined) {
       // Theme has it's own rgb value
       continue;
     }
@@ -93,7 +123,7 @@ const processTheme = (
       keys[prefixedRgbKey] = "";
     }
   }
-  PROCESSED_THEMES[themeName] = { styles, keys };
+  PROCESSED_THEMES[cacheKey] = { styles, keys };
   return { styles, keys };
 };
 

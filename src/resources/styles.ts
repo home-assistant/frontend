@@ -1,5 +1,15 @@
 import { css } from "lit-element";
 
+export const darkStyles = {
+  "primary-background-color": "#111111",
+  "card-background-color": "#1c1c1c",
+  "secondary-background-color": "#1e1e1e",
+  "primary-text-color": "#e1e1e1",
+  "secondary-text-color": "#9b9b9b",
+  "app-header-text-color": "#e1e1e1",
+  "app-header-background-color": "#1c1c1c",
+};
+
 export const derivedStyles = {
   "error-state-color": "var(--error-color)",
   "state-icon-unavailable-color": "var(--disabled-text-color)",
