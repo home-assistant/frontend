@@ -8,7 +8,6 @@ import {
   TemplateResult,
   PropertyValues,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
 import { HomeAssistant } from "../types";
 import { mdiCalendar } from "@mdi/js";
 import { formatDateTime } from "../common/datetime/format_date_time";
@@ -18,7 +17,7 @@ import "./ha-svg-icon";
 import "@polymer/paper-input/paper-input";
 import "@material/mwc-list/mwc-list";
 import "./date-range-picker";
-import { computeRTL } from "../common/util/compute_rtl";
+import { computeRTLDirection } from "../common/util/compute_rtl";
 
 export interface DateRangePickerRanges {
   [key: string]: [Date, Date];
@@ -38,7 +37,7 @@ export class HaDateRangePicker extends LitElement {
 
   @property({ type: Boolean }) private _hour24format = false;
 
-  @property({ type: Boolean }) private _rtl = false;
+  @property({ type: String }) private _rtlDirection = "ltr";
 
   protected updated(changedProps: PropertyValues) {
     if (changedProps.has("hass")) {
@@ -46,8 +45,11 @@ export class HaDateRangePicker extends LitElement {
       if (!oldHass || oldHass.language !== this.hass.language) {
         this._hour24format = this._compute24hourFormat();
       }
-      if (!oldHass || computeRTL(oldHass) !== computeRTL(this.hass)) {
-        this._rtl = computeRTL(this.hass);
+      if (
+        !oldHass ||
+        computeRTLDirection(oldHass) !== computeRTLDirection(this.hass)
+      ) {
+        this._rtlDirection = computeRTLDirection(this.hass);
       }
     }
   }
@@ -85,7 +87,8 @@ export class HaDateRangePicker extends LitElement {
         ${this.ranges
           ? html`<div
               slot="ranges"
-              class=${classMap({ "date-range-ranges": true, rtl: this._rtl })}
+              class="date-range-ranges"
+              .dir=${this._rtlDirection}
             >
               <mwc-list @click=${this._setDateRange}>
                 ${Object.entries(this.ranges).map(
