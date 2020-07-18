@@ -78,7 +78,7 @@ export class HaPickThemeRow extends LitElement {
                 @change=${this._handleDarkMode}
                 name="dark_mode"
                 value="auto"
-                checked
+                ?checked=${this.hass.selectedTheme?.dark === undefined}
               ></mwc-radio>
             </ha-formfield>
             <ha-formfield
@@ -90,6 +90,7 @@ export class HaPickThemeRow extends LitElement {
                 @change=${this._handleDarkMode}
                 name="dark_mode"
                 value="light"
+                ?checked=${this.hass.selectedTheme?.dark === false}
               >
               </mwc-radio>
             </ha-formfield>
@@ -102,6 +103,7 @@ export class HaPickThemeRow extends LitElement {
                 @change=${this._handleDarkMode}
                 name="dark_mode"
                 value="dark"
+                ?checked=${this.hass.selectedTheme?.dark === true}
               >
               </mwc-radio>
             </ha-formfield>

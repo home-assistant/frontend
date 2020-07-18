@@ -1,25 +1,11 @@
 import { derivedStyles, darkStyles } from "../../resources/styles";
 import { HomeAssistant, Theme } from "../../types";
+import Color from "color";
 
 interface ProcessedTheme {
   keys: { [key: string]: "" };
   styles: { [key: string]: string };
 }
-
-const hexToRgb = (hex: string): string | null => {
-  const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-  const checkHex = hex.replace(shorthandRegex, (_m, r, g, b) => {
-    return r + r + g + g + b + b;
-  });
-
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(checkHex);
-  return result
-    ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(
-        result[3],
-        16
-      )}`
-    : null;
-};
 
 let PROCESSED_THEMES: { [key: string]: ProcessedTheme } = {};
 
@@ -46,9 +32,15 @@ export const applyThemesOnElement = (
     }
     if (themeOptions.primaryColor) {
       cacheKey = `${cacheKey}__primary_${themeOptions.primaryColor}`;
+      const primaryColor = Color(themeOptions.primaryColor);
       themeRules = {
         ...themeRules,
         "primary-color": themeOptions.primaryColor,
+        "light-primary-color": primaryColor.lighten(0.5).hex(),
+        "dark-primary-color": primaryColor.darken(0.5).hex(),
+        "text-primary-color":
+          primaryColor.contrast(Color("#ffffff")) > 2.6 ? "#fff" : "#212121",
+        "state-icon-color": primaryColor.darken(0.3).hex(),
       };
     }
     if (themeOptions.accentColor) {
@@ -106,21 +98,24 @@ const processTheme = (
     styles[prefixedKey] = value;
     keys[prefixedKey] = "";
 
-    // Try to create a rgb value for this key if it is a hex color
-    if (!value.startsWith("#")) {
-      // Not a hex color
+    // Try to create a rgb value for this key if it is not a var
+    if (value.startsWith("var")) {
+      // Can't convert var
       continue;
     }
+
     const rgbKey = `rgb-${key}`;
     if (combinedTheme[rgbKey] !== undefined) {
       // Theme has it's own rgb value
       continue;
     }
-    const rgbValue = hexToRgb(value);
-    if (rgbValue !== null) {
+    try {
+      const rgbValue = Color(value).rgb();
       const prefixedRgbKey = `--${rgbKey}`;
       styles[prefixedRgbKey] = rgbValue;
       keys[prefixedRgbKey] = "";
+    } catch (e) {
+      continue;
     }
   }
   PROCESSED_THEMES[cacheKey] = { styles, keys };

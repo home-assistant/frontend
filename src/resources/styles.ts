@@ -8,6 +8,9 @@ export const darkStyles = {
   "secondary-text-color": "#9b9b9b",
   "app-header-text-color": "#e1e1e1",
   "app-header-background-color": "#1c1c1c",
+  "switch-unchecked-button-color": "#999999",
+  "switch-unchecked-track-color": "#9b9b9b",
+  blabla: "var(--primary-text-color)",
 };
 
 export const derivedStyles = {
