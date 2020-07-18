@@ -49,7 +49,7 @@ class HaLogbook extends LitElement {
   protected render(): TemplateResult {
     if (!this.entries?.length) {
       return html`
-        <div class=${classMap({ container: true, rtl: this._rtl })}>
+        <div class="container ${classMap({ rtl: this._rtl })}">
           ${this.hass.localize("ui.panel.logbook.entries_not_found")}
         </div>
       `;
