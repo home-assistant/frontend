@@ -65,18 +65,29 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         options
       );
 
-      const meta = document.querySelector("meta[name=theme-color]");
+      const schemeMeta = document.querySelector("meta[name=color-scheme]");
+      if (schemeMeta) {
+        schemeMeta.setAttribute(
+          "content",
+          options ? (options.dark ? "dark" : "light") : "dark light"
+        );
+      }
+
+      const themeMeta = document.querySelector("meta[name=theme-color]");
       const headerColor = getComputedStyle(
         document.documentElement
       ).getPropertyValue("--app-header-background-color");
-      if (meta) {
-        if (!meta.hasAttribute("default-content")) {
-          meta.setAttribute("default-content", meta.getAttribute("content")!);
+      if (themeMeta) {
+        if (!themeMeta.hasAttribute("default-content")) {
+          themeMeta.setAttribute(
+            "default-content",
+            themeMeta.getAttribute("content")!
+          );
         }
         const themeColor =
           headerColor.trim() ||
-          (meta.getAttribute("default-content") as string);
-        meta.setAttribute("content", themeColor);
+          (themeMeta.getAttribute("default-content") as string);
+        themeMeta.setAttribute("content", themeColor);
       }
     }
   };
