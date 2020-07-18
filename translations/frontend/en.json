@@ -2339,6 +2339,7 @@
                     },
                     "edit_card": {
                         "add": "Add Card",
+                        "confirm_cancel": "Are you sure you want to cancel?",
                         "delete": "Delete Card",
                         "duplicate": "Duplicate Card",
                         "edit": "Edit",
@@ -2349,7 +2350,8 @@
                         "pick_card_view_title": "Which card would you like to add to your {name} view?",
                         "show_code_editor": "Show Code Editor",
                         "show_visual_editor": "Show Visual Editor",
-                        "toggle_editor": "Toggle Editor"
+                        "toggle_editor": "Toggle Editor",
+                        "unsaved_changes": "You have unsaved changes"
                     },
                     "edit_lovelace": {
                         "edit_title": "Edit title",

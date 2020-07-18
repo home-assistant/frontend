@@ -430,6 +430,8 @@
                 "activate": "Activar"
             },
             "script": {
+                "cancel": "Cancel·la",
+                "cancel_multiple": "Cancel·la {number}",
                 "execute": "Executar"
             },
             "service": {
@@ -1662,6 +1664,7 @@
                             "introduction": "Les entitats que no pertanyen a un dispositiu es poden configurar aquí.",
                             "without_device": "Entitats sense dispositiu"
                         },
+                        "icon": "Icona",
                         "introduction": "Utilitza les escenes per donar més vida a la teva llar.",
                         "load_error_not_editable": "Només es poden editar les escenes de l'arxiu scenes.yaml.",
                         "load_error_unknown": "Error en carregar l'escena ({err_no}).",
@@ -1695,6 +1698,10 @@
                         "delete_confirm": "Estàs segur que vols eliminar aquest script?",
                         "delete_script": "Elimina l'script",
                         "header": "Script: {name}",
+                        "icon": "Icona",
+                        "id": "ID de l'entitat",
+                        "id_already_exists": "Aquest ID ja existeix",
+                        "id_already_exists_save_error": "No pots desar aquest script perquè l'ID no és únic, tria'n un altre o deixa-ho en blanc perquè se'n generi un automàticament.",
                         "introduction": "Utilitza els scripts per executar seqüències d'accions.",
                         "link_available_actions": "Més informació sobre les accions disponibles.",
                         "load_error_not_editable": "Només es poden editar els scripts dins de l'arxiu scripts.yaml.",

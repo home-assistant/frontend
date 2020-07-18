@@ -951,10 +951,10 @@
                             "description": "該模式控制當執行自動化時、超過一個以上的自動化仍在執行時的狀況。請參閱 {documentation_link} 以獲得更詳細資訊。",
                             "documentation": "自動化文件",
                             "label": "模式",
-                            "parallel": "並行（預設）",
+                            "parallel": "並行",
                             "queued": "已佇列",
                             "restart": "重啟",
-                            "single": "單一"
+                            "single": "單一（預設）"
                         },
                         "move_down": "向下移動",
                         "move_up": "向上移動",
