@@ -178,9 +178,6 @@ class HaLogbook extends LitElement {
       .container {
         padding: 0 16px;
       }
-      .container.rtl {
-        direction: rtl;
-      }
 
       .uni-virtualizer-host {
         display: block;
