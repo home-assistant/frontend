@@ -19,6 +19,7 @@ import "../../components/ha-icon";
 import { LogbookEntry } from "../../data/logbook";
 import { HomeAssistant } from "../../types";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
+import { classMap } from "lit-html/directives/class-map";
 
 class HaLogbook extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -48,7 +49,7 @@ class HaLogbook extends LitElement {
   protected render(): TemplateResult {
     if (!this.entries?.length) {
       return html`
-        <div class="container">
+        <div class=${classMap({ container: true, rtl: this._rtl })}>
           ${this.hass.localize("ui.panel.logbook.entries_not_found")}
         </div>
       `;
@@ -106,9 +107,8 @@ class HaLogbook extends LitElement {
                     @click=${this._entityClicked}
                     .entityId=${item.entity_id}
                     class="name"
+                    >${item.name}</a
                   >
-                    ${item.name}
-                  </a>
                 `}
             <span
               >${item.message}${item_username
@@ -176,6 +176,9 @@ class HaLogbook extends LitElement {
 
       .container {
         padding: 0 16px;
+      }
+      .container.rtl {
+        direction: rtl;
       }
 
       .uni-virtualizer-host {
