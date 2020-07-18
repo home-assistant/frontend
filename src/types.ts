@@ -92,7 +92,7 @@ export interface Theme {
 
 export interface Themes {
   default_theme: string;
-  default_dark_theme: string;
+  default_dark_theme: string | null;
   themes: { [key: string]: Theme };
 }
 
