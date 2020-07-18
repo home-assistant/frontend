@@ -180,6 +180,7 @@ export const provideHass = (
     config: demoConfig,
     themes: {
       default_theme: "default",
+      default_dark_theme: null,
       themes: {},
     },
     panels: demoPanels,
