@@ -1601,7 +1601,7 @@
             "spinner": "Searching for ZHA Zigbee devices...",
             "pairing_mode": "Make sure your devices are in pairing mode. Check the instructions of your device on how to do this.",
             "discovered_text": "Devices will show up here once discovered.",
-            "no_devices_found": "No devices where found, make sure they are in paring mode and keep them awake while discovering is running.",
+            "no_devices_found": "No devices were found, make sure they are in paring mode and keep them awake while discovering is running.",
             "search_again": "Search Again"
           },
           "network_management": {
