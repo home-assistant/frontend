@@ -23,7 +23,6 @@ class HaMarkdownElement extends UpdatingElement {
       {
         breaks: this.breaks,
         gfm: true,
-        tables: true,
       },
       {
         allowSvg: this.allowSvg,
