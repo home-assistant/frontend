@@ -14,12 +14,11 @@ import { formatTimeWithSeconds } from "../../common/datetime/format_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { stateIcon } from "../../common/entity/state_icon";
-import { computeRTL } from "../../common/util/compute_rtl";
+import { computeRTL, emitRTLDirection } from "../../common/util/compute_rtl";
 import "../../components/ha-icon";
 import { LogbookEntry } from "../../data/logbook";
 import { HomeAssistant } from "../../types";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
-import { classMap } from "lit-html/directives/class-map";
 
 class HaLogbook extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -39,7 +38,9 @@ class HaLogbook extends LitElement {
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const languageChanged =
       oldHass === undefined || oldHass.language !== this.hass.language;
-    return changedProps.has("entries") || languageChanged;
+    const rtlChanged =
+      oldHass === undefined || computeRTL(oldHass) !== computeRTL(this.hass);
+    return changedProps.has("entries") || languageChanged || rtlChanged;
   }
 
   protected updated(_changedProps: PropertyValues) {
@@ -49,7 +50,7 @@ class HaLogbook extends LitElement {
   protected render(): TemplateResult {
     if (!this.entries?.length) {
       return html`
-        <div class="container ${classMap({ rtl: this._rtl })}">
+        <div class="container" .dir=${emitRTLDirection(this._rtl)}>
           ${this.hass.localize("ui.panel.logbook.entries_not_found")}
         </div>
       `;
