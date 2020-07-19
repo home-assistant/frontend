@@ -2339,6 +2339,7 @@
                     },
                     "edit_card": {
                         "add": "Afegir targeta",
+                        "confirm_cancel": "Segur que vols cancel·lar?",
                         "delete": "Elimina targeta",
                         "duplicate": "Duplica targeta",
                         "edit": "Editar",
@@ -2349,7 +2350,8 @@
                         "pick_card_view_title": "Quina targeta vols afegir a la visualització {name}?",
                         "show_code_editor": "Mostra l'editor de codi",
                         "show_visual_editor": "Mostra l'editor visual",
-                        "toggle_editor": "Commutar l'editor"
+                        "toggle_editor": "Commutar l'editor",
+                        "unsaved_changes": "Hi ha canvis no desats"
                     },
                     "edit_lovelace": {
                         "edit_title": "Edita el títol",

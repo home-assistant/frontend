@@ -430,6 +430,8 @@
                 "activate": "Aktiver"
             },
             "script": {
+                "cancel": "Avbryt",
+                "cancel_multiple": "Avbryt {number}",
                 "execute": "Utfør"
             },
             "service": {
@@ -524,6 +526,9 @@
                 "area": "Område",
                 "clear": "Tøm",
                 "show_areas": "Vis områder"
+            },
+            "data-table": {
+                "search": "Søk"
             },
             "date-range-picker": {
                 "end_date": "Sluttdato",
@@ -938,6 +943,19 @@
                         "introduction": "Bruk automasjon for å få liv i hjemmet ditt",
                         "load_error_not_editable": "Kun automasjoner i automations.yaml kan redigeres.",
                         "load_error_unknown": "Feil ved lasting av automasjon ({err_no}).",
+                        "max": {
+                            "parallel": "Maks antall parallelle kjøringer",
+                            "queued": "Kølengde"
+                        },
+                        "modes": {
+                            "description": "Modusen styrer hva som skjer når automatiseringen utløses mens handlingene fremdeles kjører fra en tidligere trigger. Sjekk {documentation_link} for mer info.",
+                            "documentation": "automatisering dokumentasjon",
+                            "label": "Modus",
+                            "parallel": "Parallell",
+                            "queued": "I kø",
+                            "restart": "Omstart",
+                            "single": "Enkel (standard)"
+                        },
                         "move_down": "Flytt ned",
                         "move_up": "Flytt opp",
                         "save": "Lagre",
@@ -1356,6 +1374,7 @@
                             "confirm_text": "Du bør fjerne dem fra Lovelace-konfigurasjonen og automasjoner hvis de inneholder disse entitetene.",
                             "confirm_title": "Vil du fjerne {number} enheter?"
                         },
+                        "search": "Søk entiteter",
                         "selected": "{number} valgte",
                         "status": {
                             "disabled": "Deaktivert",
@@ -1386,7 +1405,8 @@
                             "entity_id": "Entitets-ID",
                             "name": "Navn",
                             "type": ""
-                        }
+                        },
+                        "no_helpers": "Det ser ut som om du ikke har noen hjelpere ennå!"
                     },
                     "types": {
                         "input_boolean": "Veksle",
@@ -1490,7 +1510,8 @@
                     "note_about_integrations": "Ikke alle integrasjoner kan konfigureres via brukergrensesnittet ennå.",
                     "note_about_website_reference": "Flere er tilgjengelige på",
                     "rename_dialog": "Redigere navnet på denne config-oppføringen",
-                    "rename_input_label": "Navn på oppføring"
+                    "rename_input_label": "Navn på oppføring",
+                    "search": "Søk integrasjoner"
                 },
                 "introduction": "Her er det mulig å konfigurere dine komponenter og Home Assistant. Ikke alt er mulig å konfigurere fra brukergrensesnittet enda, men vi jobber med det.",
                 "logs": {
@@ -1643,6 +1664,7 @@
                             "introduction": "Enheter som ikke tilhører en enhet kan angis her.",
                             "without_device": "Entiteter uten enhet"
                         },
+                        "icon": "Ikon",
                         "introduction": "Bruk scener for å gjøre hjemmet ditt mer levende.",
                         "load_error_not_editable": "Bare scener i scener.yaml kan redigeres.",
                         "load_error_unknown": "Feil ved lasting av scene ({err_no}).",
@@ -1676,9 +1698,26 @@
                         "delete_confirm": "Er du sikker på at du vil slette dette skriptet?",
                         "delete_script": "Slett skript",
                         "header": "Skript: {name}",
+                        "icon": "Ikon",
+                        "id": "Entitets-ID",
+                        "id_already_exists": "Denne IDen finnes allerede",
+                        "id_already_exists_save_error": "Du kan ikke lagre dette skriptet fordi IDen ikke er unik, velg en annen ID eller la den stå tom for automatisk å generere en.",
                         "introduction": "Bruk skript til å utføre en sekvens med handlinger.",
                         "link_available_actions": "Finn ut mer om tilgjengelige handlinger.",
                         "load_error_not_editable": "Bare skript inne i skript.yaml kan redigeres.",
+                        "max": {
+                            "parallel": "Maks antall parallelle kjøringer",
+                            "queued": "Kølengde"
+                        },
+                        "modes": {
+                            "description": "Modusen styrer hva som skjer når skriptet utløses mens det fremdeles kjører fra en eller flere tidligere påkallinger. Sjekk {documentation_link} for mer info.",
+                            "documentation": "skript dokumentasjon",
+                            "label": "Modus",
+                            "parallel": "Parallell",
+                            "queued": "I kø",
+                            "restart": "Omstart",
+                            "single": "Enkel (standard)"
+                        },
                         "sequence": "Sekvens",
                         "sequence_sentence": "Sekvensen av handlingene til dette skriptet."
                     },
@@ -2194,6 +2233,7 @@
                             "name": "Navn",
                             "no_theme": "Ingen tema",
                             "refresh_interval": "Oppdateringsintervall",
+                            "search": "Søk",
                             "secondary_info_attribute": "Sekundær informasjonsattributt",
                             "show_icon": "Vis ikon?",
                             "show_name": "Vis navn?",
@@ -2299,6 +2339,7 @@
                     },
                     "edit_card": {
                         "add": "Legg til kort",
+                        "confirm_cancel": "Er du sikker på at du vil avbryte?",
                         "delete": "Slett kort",
                         "duplicate": "Dupliser kort",
                         "edit": "Rediger",
@@ -2309,12 +2350,14 @@
                         "pick_card_view_title": "Hvilket kort vil du legge til i {name} visningen?",
                         "show_code_editor": "Vis koderedigering",
                         "show_visual_editor": "Vis visuell redigering",
-                        "toggle_editor": "Bytt redigering"
+                        "toggle_editor": "Bytt redigering",
+                        "unsaved_changes": "Du har endringer som ikke er lagret"
                     },
                     "edit_lovelace": {
                         "edit_title": "Rediger tittel",
                         "explanation": "Denne tittelen vises over alle visningene dine i Lovelace brukergrensesnittet.",
-                        "header": "Tittel på ditt Lovelace brukergrensesnitt"
+                        "header": "Tittel på ditt Lovelace brukergrensesnitt",
+                        "title": "Tittel"
                     },
                     "edit_view": {
                         "add": "Legg til visning",
@@ -2503,6 +2546,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "Datamaskinen din er ikke tillatt.",
                                 "not_whitelisted": "Datamaskinen din er ikke hvitelistet."
                             },
                             "step": {
