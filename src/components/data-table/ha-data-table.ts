@@ -98,7 +98,7 @@ export class HaDataTable extends LitElement {
 
   @property({ type: String }) public noDataText?: string;
 
-  @property({ type: String }) public searchLabel = "";
+  @property({ type: String }) public searchLabel?: string;
 
   @property({ type: String }) public filter = "";
 
