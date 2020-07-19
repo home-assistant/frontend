@@ -335,7 +335,8 @@
         "automation": "Part of the following automations"
       },
       "data-table": {
-        "search": "Search"
+        "search": "Search",
+        "no-data": "No data"
       }
     },
     "dialogs": {

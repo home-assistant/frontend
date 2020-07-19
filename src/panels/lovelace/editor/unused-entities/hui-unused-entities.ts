@@ -177,6 +177,7 @@ export class HuiUnusedEntities extends LitElement {
         @selection-changed=${this._handleSelectionChanged}
         .dir=${computeRTLDirection(this.hass)}
         .searchLabel=${this.hass.localize("ui.components.data-table.search")}
+        .noDataText=${this.hass.localize("ui.components.data-table.no-data")}
       ></ha-data-table>
 
       ${this._selectedEntities.length
