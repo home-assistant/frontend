@@ -98,6 +98,8 @@ export class HaDataTable extends LitElement {
 
   @property({ type: String }) public noDataText?: string;
 
+  @property({ type: String }) public searchLabel = "";
+
   @property({ type: String }) public filter = "";
 
   @internalProperty() private _filterable = false;
@@ -202,6 +204,7 @@ export class HaDataTable extends LitElement {
                 <div class="table-header">
                   <search-input
                     @value-changed=${this._handleSearchChange}
+                    .label=${this.searchLabel}
                   ></search-input>
                 </div>
               `
