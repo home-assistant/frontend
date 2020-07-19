@@ -28,7 +28,6 @@ class HaLogbook extends LitElement {
   @property() public entries: LogbookEntry[] = [];
 
   @property({ attribute: "rtl", type: Boolean, reflect: true })
-  // @ts-ignore
   private _rtl = false;
 
   // @ts-ignore
