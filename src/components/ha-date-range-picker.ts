@@ -174,9 +174,6 @@ export class HaDateRangePicker extends LitElement {
       .date-range-ranges {
         border-right: 1px solid var(--divider-color);
       }
-      .date-range-ranges.rtl {
-        direction: rtl;
-      }
 
       @media only screen and (max-width: 800px) {
         .date-range-ranges {
