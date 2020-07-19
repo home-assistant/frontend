@@ -2339,6 +2339,7 @@
                     },
                     "edit_card": {
                         "add": "카드 추가하기",
+                        "confirm_cancel": "취소하시겠습니까?",
                         "delete": "카드 삭제",
                         "duplicate": "카드 복사",
                         "edit": "편집",
@@ -2349,7 +2350,8 @@
                         "pick_card_view_title": "{name} 뷰에 어떤 카드를 추가하시겠습니까?",
                         "show_code_editor": "코드 편집기 보기",
                         "show_visual_editor": "비주얼 편집기 보기",
-                        "toggle_editor": "에디터 전환"
+                        "toggle_editor": "에디터 전환",
+                        "unsaved_changes": "저장하지 않은 변경 사항이 있습니다"
                     },
                     "edit_lovelace": {
                         "edit_title": "제목 편집",

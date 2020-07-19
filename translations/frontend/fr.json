@@ -2339,6 +2339,7 @@
                     },
                     "edit_card": {
                         "add": "Ajouter une action",
+                        "confirm_cancel": "Êtes-vous sûrs de vouloir annuler ?",
                         "delete": "Supprimer",
                         "duplicate": "Dupliquer la carte",
                         "edit": "Modifier",
@@ -2349,7 +2350,8 @@
                         "pick_card_view_title": "Quelle carte souhaitez-vous ajouter à votre vue {name} ?",
                         "show_code_editor": "Afficher l'éditeur de code",
                         "show_visual_editor": "Afficher l'éditeur visuel",
-                        "toggle_editor": "Permuter l’éditeur"
+                        "toggle_editor": "Permuter l’éditeur",
+                        "unsaved_changes": "Vous avez des changements non enregistrés"
                     },
                     "edit_lovelace": {
                         "edit_title": "Éditer le titre",
