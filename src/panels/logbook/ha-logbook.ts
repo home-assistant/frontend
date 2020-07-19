@@ -37,9 +37,8 @@ class HaLogbook extends LitElement {
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const languageChanged =
       oldHass === undefined || oldHass.language !== this.hass.language;
-    const rtlChanged =
-      oldHass === undefined || computeRTL(oldHass) !== computeRTL(this.hass);
-    return changedProps.has("entries") || languageChanged || rtlChanged;
+
+    return changedProps.has("entries") || languageChanged;
   }
 
   protected updated(_changedProps: PropertyValues) {
