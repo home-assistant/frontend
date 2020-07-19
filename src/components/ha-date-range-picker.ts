@@ -44,11 +44,6 @@ export class HaDateRangePicker extends LitElement {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
       if (!oldHass || oldHass.language !== this.hass.language) {
         this._hour24format = this._compute24hourFormat();
-      }
-      if (
-        !oldHass ||
-        computeRTLDirection(oldHass) !== computeRTLDirection(this.hass)
-      ) {
         this._rtlDirection = computeRTLDirection(this.hass);
       }
     }
