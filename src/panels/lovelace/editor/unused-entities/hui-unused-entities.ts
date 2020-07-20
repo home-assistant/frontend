@@ -180,7 +180,7 @@ export class HuiUnusedEntities extends LitElement {
           "ui.panel.lovelace.unused_entities.search"
         )}
         .noDataText=${this.hass.localize(
-          "ui.panel.lovelace.unused_entities.no-data"
+          "ui.panel.lovelace.unused_entities.no_data"
         )}
       ></ha-data-table>
 
