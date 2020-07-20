@@ -101,10 +101,10 @@ class HassioAddonStore extends LitElement {
           <mwc-icon-button slot="trigger" alt="menu">
             <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
           </mwc-icon-button>
-          <mwc-list-item @tap=${this._manageRepositories}>
+          <mwc-list-item @request-selected=${this._manageRepositories}>
             Repositories
           </mwc-list-item>
-          <mwc-list-item @tap=${this.refreshData}>
+          <mwc-list-item @request-selected=${this.refreshData}>
             Reload
           </mwc-list-item>
         </ha-button-menu>

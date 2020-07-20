@@ -1815,7 +1815,7 @@
                         "discovered_text": "Devices will show up here once discovered.",
                         "discovery_text": "Discovered devices will show up here. Follow the instructions for your device(s) and place the device(s) in pairing mode.",
                         "header": "Zigbee Home Automation - Add Devices",
-                        "no_devices_found": "No devices where found, make sure they are in paring mode and keep them awake while discovering is running.",
+                        "no_devices_found": "No devices were found, make sure they are in paring mode and keep them awake while discovering is running.",
                         "pairing_mode": "Make sure your devices are in pairing mode. Check the instructions of your device on how to do this.",
                         "search_again": "Search Again",
                         "spinner": "Searching for ZHA Zigbee devices..."
@@ -2339,6 +2339,7 @@
                     },
                     "edit_card": {
                         "add": "Add Card",
+                        "confirm_cancel": "Are you sure you want to cancel?",
                         "delete": "Delete Card",
                         "duplicate": "Duplicate Card",
                         "edit": "Edit",
@@ -2349,7 +2350,8 @@
                         "pick_card_view_title": "Which card would you like to add to your {name} view?",
                         "show_code_editor": "Show Code Editor",
                         "show_visual_editor": "Show Visual Editor",
-                        "toggle_editor": "Toggle Editor"
+                        "toggle_editor": "Toggle Editor",
+                        "unsaved_changes": "You have unsaved changes"
                     },
                     "edit_lovelace": {
                         "edit_title": "Edit title",

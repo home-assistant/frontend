@@ -284,7 +284,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           >
             <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
           </mwc-icon-button>
-          <mwc-list-item @click=${this._toggleShowIgnored}>
+          <mwc-list-item @request-selected=${this._toggleShowIgnored}>
             ${this.hass.localize(
               this._showIgnored
                 ? "ui.panel.config.integrations.ignore.hide_ignored"

@@ -71,7 +71,7 @@ export default class HaAutomationConditionRow extends LitElement {
                 slot="trigger"
                 ><ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon
               ></mwc-icon-button>
-              <mwc-list-item @tap=${this._switchYamlMode}>
+              <mwc-list-item @request-selected=${this._switchYamlMode}>
                 ${this._yamlMode
                   ? this.hass.localize(
                       "ui.panel.config.automation.editor.edit_ui"
@@ -85,7 +85,7 @@ export default class HaAutomationConditionRow extends LitElement {
                   "ui.panel.config.automation.editor.actions.duplicate"
                 )}
               </mwc-list-item>
-              <mwc-list-item @tap=${this._onDelete}>
+              <mwc-list-item @request-selected=${this._onDelete}>
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.actions.delete"
                 )}

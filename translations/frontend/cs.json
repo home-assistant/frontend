@@ -2339,6 +2339,7 @@
                     },
                     "edit_card": {
                         "add": "Přidat kartu",
+                        "confirm_cancel": "Opravdu chcete zahodit změny?",
                         "delete": "Odstranit",
                         "duplicate": "Duplikovat Kartu",
                         "edit": "Upravit",
@@ -2349,7 +2350,8 @@
                         "pick_card_view_title": "Kterou kartu byste chtěli přidat do svého {name} pohledu?",
                         "show_code_editor": "Zobrazit editor kódu",
                         "show_visual_editor": "Zobrazit vizuální editor",
-                        "toggle_editor": "Přepnout Editor"
+                        "toggle_editor": "Přepnout Editor",
+                        "unsaved_changes": "Změny nejsou uloženy"
                     },
                     "edit_lovelace": {
                         "edit_title": "Upravit titulek",
