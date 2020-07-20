@@ -30,10 +30,7 @@ import "./hui-card-preview";
 import type { EditCardDialogParams } from "./show-edit-card-dialog";
 import { getCardDocumentationURL } from "../get-card-documentation-url";
 import { mdiHelpCircle } from "@mdi/js";
-import {
-  computeRTL,
-  computeRTLDirection,
-} from "../../../../common/util/compute_rtl";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 
