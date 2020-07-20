@@ -34,6 +34,7 @@ import "./types/ha-automation-trigger-time";
 import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
+import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 
 const OPTIONS = [
   "device",
@@ -218,7 +219,10 @@ export default class HaAutomationTriggerRow extends LitElement {
     fireEvent(this, "value-changed", { value: ev.detail.value });
   }
 
-  private _switchYamlMode() {
+  private _switchYamlMode(ev: CustomEvent<RequestSelectedDetail>) {
+    if (ev.detail.source !== "interaction") {
+      return;
+    }
     this._yamlMode = !this._yamlMode;
   }
 

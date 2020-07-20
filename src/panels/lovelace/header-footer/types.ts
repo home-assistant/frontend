@@ -1,5 +1,5 @@
 import { ActionConfig } from "../../../data/lovelace";
-import { struct } from "../common/structs/struct";
+import { object, optional, union, string, number, array } from "superstruct";
 import { actionConfigStruct, entitiesConfigStruct } from "../editor/types";
 import { EntityConfig } from "../entity-rows/types";
 
@@ -24,27 +24,27 @@ export interface PictureHeaderFooterConfig extends LovelaceHeaderFooterConfig {
   double_tap_action?: ActionConfig;
 }
 
-export const pictureHeaderFooterConfigStruct = struct({
-  type: "string",
-  image: "string",
-  tap_action: struct.optional(actionConfigStruct),
-  hold_action: struct.optional(actionConfigStruct),
-  double_tap_action: struct.optional(actionConfigStruct),
+export const pictureHeaderFooterConfigStruct = object({
+  type: string(),
+  image: string(),
+  tap_action: optional(actionConfigStruct),
+  hold_action: optional(actionConfigStruct),
+  double_tap_action: optional(actionConfigStruct),
 });
 
-export const buttonsHeaderFooterConfigStruct = struct({
-  type: "string",
-  entities: [entitiesConfigStruct],
+export const buttonsHeaderFooterConfigStruct = object({
+  type: string(),
+  entities: array(entitiesConfigStruct),
 });
 
-export const graphHeaderFooterConfigStruct = struct({
-  type: "string",
-  entity: "string",
-  detail: "number?",
-  hours_to_show: "number?",
+export const graphHeaderFooterConfigStruct = object({
+  type: string(),
+  entity: string(),
+  detail: optional(string()),
+  hours_to_show: optional(number()),
 });
 
-export const headerFooterConfigStructs = struct.union([
+export const headerFooterConfigStructs = union([
   pictureHeaderFooterConfigStruct,
   buttonsHeaderFooterConfigStruct,
   graphHeaderFooterConfigStruct,

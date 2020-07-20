@@ -11,7 +11,6 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { ActionConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import { PictureCardConfig } from "../../cards/types";
-import { struct } from "../../common/structs/struct";
 import "../../components/hui-action-editor";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
@@ -21,13 +20,14 @@ import {
   EntitiesEditorEvent,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { string, object, optional, assert } from "superstruct";
 
-const cardConfigStruct = struct({
-  type: "string",
-  image: "string?",
-  tap_action: struct.optional(actionConfigStruct),
-  hold_action: struct.optional(actionConfigStruct),
-  theme: "string?",
+const cardConfigStruct = object({
+  type: string(),
+  image: optional(string()),
+  tap_action: optional(actionConfigStruct),
+  hold_action: optional(actionConfigStruct),
+  theme: optional(string()),
 });
 
 @customElement("hui-picture-card-editor")
@@ -38,7 +38,7 @@ export class HuiPictureCardEditor extends LitElement
   @internalProperty() private _config?: PictureCardConfig;
 
   public setConfig(config: PictureCardConfig): void {
-    config = cardConfigStruct(config);
+    assert(config, cardConfigStruct);
     this._config = config;
   }
 
@@ -128,6 +128,7 @@ export class HuiPictureCardEditor extends LitElement
     }
     if (target.configValue) {
       if (target.value === "") {
+        this._config = { ...this._config };
         delete this._config[target.configValue!];
       } else {
         this._config = {

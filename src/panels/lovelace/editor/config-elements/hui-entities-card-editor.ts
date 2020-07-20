@@ -20,7 +20,6 @@ import {
   EntitiesCardConfig,
   EntitiesCardEntityConfig,
 } from "../../cards/types";
-import { struct } from "../../common/structs/struct";
 import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
 import { headerFooterConfigStructs } from "../../header-footer/types";
@@ -33,15 +32,24 @@ import {
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import {
+  string,
+  optional,
+  object,
+  boolean,
+  array,
+  union,
+  assert,
+} from "superstruct";
 
-const cardConfigStruct = struct({
-  type: "string",
-  title: "string|number?",
-  theme: "string?",
-  show_header_toggle: "boolean?",
-  entities: [entitiesConfigStruct],
-  header: struct.optional(headerFooterConfigStructs),
-  footer: struct.optional(headerFooterConfigStructs),
+const cardConfigStruct = object({
+  type: string(),
+  title: optional(union([string(), boolean()])),
+  theme: optional(string()),
+  show_header_toggle: optional(boolean()),
+  entities: array(entitiesConfigStruct),
+  header: optional(headerFooterConfigStructs),
+  footer: optional(headerFooterConfigStructs),
 });
 
 @customElement("hui-entities-card-editor")
@@ -54,7 +62,7 @@ export class HuiEntitiesCardEditor extends LitElement
   @internalProperty() private _configEntities?: EntitiesCardEntityConfig[];
 
   public setConfig(config: EntitiesCardConfig): void {
-    config = cardConfigStruct(config);
+    assert(config, cardConfigStruct);
     this._config = config;
     this._configEntities = processEditorEntities(config.entities);
   }
@@ -131,6 +139,7 @@ export class HuiEntitiesCardEditor extends LitElement
       this._configEntities = processEditorEntities(this._config.entities);
     } else if (target.configValue) {
       if (target.value === "") {
+        this._config = { ...this._config };
         delete this._config[target.configValue!];
       } else {
         this._config = {

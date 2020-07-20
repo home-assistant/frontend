@@ -10,13 +10,13 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import { HomeAssistant } from "../../../../types";
 import { MediaControlCardConfig } from "../../cards/types";
-import { struct } from "../../common/structs/struct";
 import { LovelaceCardEditor } from "../../types";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
+import { assert, object, string, optional } from "superstruct";
 
-const cardConfigStruct = struct({
-  type: "string",
-  entity: "string?",
+const cardConfigStruct = object({
+  type: string(),
+  entity: optional(string()),
 });
 
 const includeDomains = ["media_player"];
@@ -29,7 +29,7 @@ export class HuiMediaControlCardEditor extends LitElement
   @internalProperty() private _config?: MediaControlCardConfig;
 
   public setConfig(config: MediaControlCardConfig): void {
-    config = cardConfigStruct(config);
+    assert(config, cardConfigStruct);
     this._config = config;
   }
 
@@ -71,6 +71,7 @@ export class HuiMediaControlCardEditor extends LitElement
     }
     if (target.configValue) {
       if (target.value === "") {
+        this._config = { ...this._config };
         delete this._config[target.configValue!];
       } else {
         this._config = {

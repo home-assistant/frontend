@@ -17,7 +17,6 @@ import "../../../../components/ha-switch";
 import "../../../../components/ha-formfield";
 import { HomeAssistant } from "../../../../types";
 import { ConfigEntity, GlanceCardConfig } from "../../cards/types";
-import { struct } from "../../common/structs/struct";
 import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
@@ -29,16 +28,26 @@ import {
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import {
+  string,
+  union,
+  object,
+  optional,
+  number,
+  boolean,
+  assert,
+  array,
+} from "superstruct";
 
-const cardConfigStruct = struct({
-  type: "string",
-  title: "string|number?",
-  theme: "string?",
-  columns: "number?",
-  show_name: "boolean?",
-  show_state: "boolean?",
-  show_icon: "boolean?",
-  entities: [entitiesConfigStruct],
+const cardConfigStruct = object({
+  type: string(),
+  title: optional(union([string(), number()])),
+  theme: optional(string()),
+  columns: optional(number()),
+  show_name: optional(boolean()),
+  show_state: optional(boolean()),
+  show_icon: optional(boolean()),
+  entities: array(entitiesConfigStruct),
 });
 
 @customElement("hui-glance-card-editor")
@@ -51,7 +60,7 @@ export class HuiGlanceCardEditor extends LitElement
   @internalProperty() private _configEntities?: ConfigEntity[];
 
   public setConfig(config: GlanceCardConfig): void {
-    config = cardConfigStruct(config);
+    assert(config, cardConfigStruct);
     this._config = config;
     this._configEntities = processEditorEntities(config.entities);
   }
@@ -191,6 +200,7 @@ export class HuiGlanceCardEditor extends LitElement
         target.value === "" ||
         (target.type === "number" && isNaN(Number(target.value)))
       ) {
+        this._config = { ...this._config };
         delete this._config[target.configValue!];
       } else {
         let value: any = target.value;

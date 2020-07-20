@@ -46,8 +46,8 @@ export interface MqttTrigger {
 
 export interface GeoLocationTrigger {
   platform: "geo_location";
-  source: "string";
-  zone: "string";
+  source: string;
+  zone: string;
   event: "enter" | "leave";
 }
 

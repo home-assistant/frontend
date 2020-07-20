@@ -13,7 +13,6 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { PolymerChangedEvent } from "../../../../polymer-types";
 import { HomeAssistant } from "../../../../types";
 import { MapCardConfig } from "../../cards/types";
-import { struct } from "../../common/structs/struct";
 import "../../components/hui-entity-editor";
 import "../../components/hui-input-list-editor";
 import { EntityConfig } from "../../entity-rows/types";
@@ -28,16 +27,25 @@ import "../../../../components/ha-switch";
 import "../../../../components/ha-formfield";
 import { configElementStyle } from "./config-elements-style";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import {
+  string,
+  optional,
+  object,
+  number,
+  boolean,
+  array,
+  assert,
+} from "superstruct";
 
-const cardConfigStruct = struct({
-  type: "string",
-  title: "string?",
-  aspect_ratio: "string?",
-  default_zoom: "number?",
-  dark_mode: "boolean?",
-  entities: [entitiesConfigStruct],
-  hours_to_show: "number?",
-  geo_location_sources: "array?",
+const cardConfigStruct = object({
+  type: string(),
+  title: optional(string()),
+  aspect_ratio: optional(string()),
+  default_zoom: optional(number()),
+  dark_mode: optional(boolean()),
+  entities: array(entitiesConfigStruct),
+  hours_to_show: optional(number()),
+  geo_location_sources: optional(array()),
 });
 
 @customElement("hui-map-card-editor")
@@ -49,7 +57,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   @internalProperty() private _configEntities?: EntityConfig[];
 
   public setConfig(config: MapCardConfig): void {
-    config = cardConfigStruct(config);
+    assert(config, cardConfigStruct);
     this._config = config;
     this._configEntities = config.entities
       ? processEditorEntities(config.entities)
@@ -195,6 +203,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       value = Number(value);
     }
     if (target.value === "" || (target.type === "number" && isNaN(value))) {
+      this._config = { ...this._config };
       delete this._config[target.configValue!];
     } else if (target.configValue) {
       this._config = {
