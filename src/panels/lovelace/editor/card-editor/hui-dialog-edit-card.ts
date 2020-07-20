@@ -30,6 +30,7 @@ import "./hui-card-preview";
 import type { EditCardDialogParams } from "./show-edit-card-dialog";
 import { getCardDocumentationURL } from "../get-card-documentation-url";
 import { mdiHelpCircle } from "@mdi/js";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 
 declare global {
   // for fire event
@@ -133,6 +134,7 @@ export class HuiDialogEditCard extends LitElement {
                 title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
                 target="_blank"
                 rel="noreferrer"
+                dir=${computeRTLDirection(this.hass)}
               >
                 <mwc-icon-button>
                   <ha-svg-icon path=${mdiHelpCircle}></ha-svg-icon>
