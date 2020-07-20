@@ -30,7 +30,10 @@ import "./hui-card-preview";
 import type { EditCardDialogParams } from "./show-edit-card-dialog";
 import { getCardDocumentationURL } from "../get-card-documentation-url";
 import { mdiHelpCircle } from "@mdi/js";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import {
+  computeRTL,
+  computeRTLDirection,
+} from "../../../../common/util/compute_rtl";
 
 declare global {
   // for fire event
@@ -101,9 +104,16 @@ export class HuiDialogEditCard extends LitElement {
 
     let heading: string;
     if (this._cardConfig && this._cardConfig.type) {
-      heading = `${this.hass!.localize(
-        `ui.panel.lovelace.editor.card.${this._cardConfig.type}.name`
-      )} ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.header")}`;
+      heading = computeRTL(this.hass)
+        ? `${this.hass!.localize("ui.panel.lovelace.editor.edit_card.header")} 
+           ${this.hass!.localize(
+             `ui.panel.lovelace.editor.card.${this._cardConfig.type}.name`
+           )}`
+        : `${this.hass!.localize(
+            `ui.panel.lovelace.editor.card.${this._cardConfig.type}.name`
+          )} ${this.hass!.localize(
+            "ui.panel.lovelace.editor.edit_card.header"
+          )}`;
     } else if (!this._cardConfig) {
       heading = this._viewConfig.title
         ? this.hass!.localize(
