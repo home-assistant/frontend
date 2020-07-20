@@ -1898,6 +1898,7 @@
           },
           "edit_card": {
             "header": "Card Configuration",
+            "typed_header": "{type} Card Configuration",
             "pick_card": "Which card would you like to add?",
             "pick_card_view_title": "Which card would you like to add to your {name} view?",
             "toggle_editor": "Toggle Editor",
