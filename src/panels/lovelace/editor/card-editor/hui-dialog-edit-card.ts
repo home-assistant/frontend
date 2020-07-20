@@ -104,16 +104,13 @@ export class HuiDialogEditCard extends LitElement {
 
     let heading: string;
     if (this._cardConfig && this._cardConfig.type) {
-      heading = computeRTL(this.hass)
-        ? `${this.hass!.localize("ui.panel.lovelace.editor.edit_card.header")} 
-           ${this.hass!.localize(
-             `ui.panel.lovelace.editor.card.${this._cardConfig.type}.name`
-           )}`
-        : `${this.hass!.localize(
-            `ui.panel.lovelace.editor.card.${this._cardConfig.type}.name`
-          )} ${this.hass!.localize(
-            "ui.panel.lovelace.editor.edit_card.header"
-          )}`;
+      heading = this.hass!.localize(
+        "ui.panel.lovelace.editor.edit_card.typed_header",
+        "type",
+        this.hass!.localize(
+          `ui.panel.lovelace.editor.card.${this._cardConfig.type}.name`
+        )
+      );
     } else if (!this._cardConfig) {
       heading = this._viewConfig.title
         ? this.hass!.localize(
