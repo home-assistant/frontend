@@ -84,6 +84,7 @@ export class HaDateRangePicker extends LitElement {
               slot="ranges"
               class="date-range-ranges"
               .dir=${this._rtlDirection}
+            >
               <mwc-list @request-selected=${this._setDateRange}>
                 ${Object.entries(this.ranges).map(
                   ([name, dates]) => html`<mwc-list-item
