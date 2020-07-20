@@ -1830,7 +1830,9 @@
           "entity": "Entity",
           "entity_id": "Entity ID",
           "domain": "Domain",
-          "last_changed": "Last Changed"
+          "last_changed": "Last Changed",
+          "search": "Search entities",
+          "no_data": "No unused entities found"
         },
         "add_entities": {
           "yaml_unsupported": "You cannot use this function when using Lovelace UI in YAML mode.",
