@@ -1601,7 +1601,7 @@
             "spinner": "Searching for ZHA Zigbee devices...",
             "pairing_mode": "Make sure your devices are in pairing mode. Check the instructions of your device on how to do this.",
             "discovered_text": "Devices will show up here once discovered.",
-            "no_devices_found": "No devices where found, make sure they are in paring mode and keep them awake while discovering is running.",
+            "no_devices_found": "No devices were found, make sure they are in paring mode and keep them awake while discovering is running.",
             "search_again": "Search Again"
           },
           "network_management": {
@@ -1902,6 +1902,8 @@
             "pick_card": "Which card would you like to add?",
             "pick_card_view_title": "Which card would you like to add to your {name} view?",
             "toggle_editor": "Toggle Editor",
+            "unsaved_changes": "You have unsaved changes",
+            "confirm_cancel": "Are you sure you want to cancel?",
             "show_visual_editor": "Show Visual Editor",
             "show_code_editor": "Show Code Editor",
             "add": "Add Card",

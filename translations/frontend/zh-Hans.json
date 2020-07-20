@@ -2339,6 +2339,7 @@
                     },
                     "edit_card": {
                         "add": "添加卡片",
+                        "confirm_cancel": "确实要取消吗？",
                         "delete": "删除",
                         "duplicate": "复制卡片",
                         "edit": "编辑",
@@ -2349,7 +2350,8 @@
                         "pick_card_view_title": "您想将哪张卡片添加到 {name} 视图？",
                         "show_code_editor": "显示代码编辑器",
                         "show_visual_editor": "显示可视化编辑器",
-                        "toggle_editor": "切换编辑器"
+                        "toggle_editor": "切换编辑器",
+                        "unsaved_changes": "有更改尚未保存"
                     },
                     "edit_lovelace": {
                         "edit_title": "编辑标题",

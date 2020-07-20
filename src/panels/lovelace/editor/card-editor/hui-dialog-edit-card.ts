@@ -11,7 +11,7 @@ import {
   TemplateResult,
   PropertyValues,
 } from "lit-element";
-import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-dialog";
 import type {
   LovelaceCardConfig,
@@ -34,6 +34,8 @@ import {
   computeRTL,
   computeRTLDirection,
 } from "../../../../common/util/compute_rtl";
+import { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 
 declare global {
   // for fire event
@@ -47,7 +49,7 @@ declare global {
 }
 
 @customElement("hui-dialog-edit-card")
-export class HuiDialogEditCard extends LitElement {
+export class HuiDialogEditCard extends LitElement implements HassDialog {
   @property() protected hass!: HomeAssistant;
 
   @internalProperty() private _params?: EditCardDialogParams;
@@ -68,6 +70,8 @@ export class HuiDialogEditCard extends LitElement {
 
   @internalProperty() private _documentationURL?: string;
 
+  @internalProperty() private _dirty = false;
+
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
     this._GUImode = true;
@@ -79,6 +83,20 @@ export class HuiDialogEditCard extends LitElement {
     if (this._cardConfig && !Object.isFrozen(this._cardConfig)) {
       this._cardConfig = deepFreeze(this._cardConfig);
     }
+  }
+
+  public closeDialog(): boolean {
+    if (this._dirty) {
+      this._confirmCancel();
+      return false;
+    }
+    this._params = undefined;
+    this._cardConfig = undefined;
+    this._error = undefined;
+    this._documentationURL = undefined;
+    this._dirty = false;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+    return true;
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -130,7 +148,7 @@ export class HuiDialogEditCard extends LitElement {
         open
         scrimClickAction
         @keydown=${this._ignoreKeydown}
-        @closed=${this._close}
+        @closed=${this._cancel}
         @opened=${this._opened}
         .heading=${html`${heading}
         ${this._documentationURL !== undefined
@@ -206,7 +224,7 @@ export class HuiDialogEditCard extends LitElement {
             `
           : ""}
         <div slot="primaryAction" @click=${this._save}>
-          <mwc-button @click=${this._close}>
+          <mwc-button @click=${this._cancel}>
             ${this.hass!.localize("ui.common.cancel")}
           </mwc-button>
           ${this._cardConfig !== undefined
@@ -223,7 +241,9 @@ export class HuiDialogEditCard extends LitElement {
                           size="small"
                         ></ha-circular-progress>
                       `
-                    : this.hass!.localize("ui.common.save")}
+                    : this._dirty
+                    ? this.hass!.localize("ui.common.save")
+                    : this.hass!.localize("ui.common.close")}
                 </mwc-button>
               `
             : ``}
@@ -353,12 +373,14 @@ export class HuiDialogEditCard extends LitElement {
     }
     this._cardConfig = deepFreeze(config);
     this._error = ev.detail.error;
+    this._dirty = true;
   }
 
   private _handleConfigChanged(ev: HASSDomEvent<ConfigChangedEvent>) {
     this._cardConfig = deepFreeze(ev.detail.config);
     this._error = ev.detail.error;
     this._guiModeAvailable = ev.detail.guiModeAvailable;
+    this._dirty = true;
   }
 
   private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {
@@ -375,13 +397,6 @@ export class HuiDialogEditCard extends LitElement {
     this._cardEditorEl?.refreshYamlEditor();
   }
 
-  private _close(): void {
-    this._params = undefined;
-    this._cardConfig = undefined;
-    this._error = undefined;
-    this._documentationURL = undefined;
-  }
-
   private get _canSave(): boolean {
     if (this._saving) {
       return false;
@@ -395,8 +410,38 @@ export class HuiDialogEditCard extends LitElement {
     return true;
   }
 
+  private async _confirmCancel() {
+    // Make sure the open state of this dialog is handled before the open state of confirm dialog
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    const confirm = await showConfirmationDialog(this, {
+      title: this.hass!.localize(
+        "ui.panel.lovelace.editor.edit_card.unsaved_changes"
+      ),
+      text: this.hass!.localize(
+        "ui.panel.lovelace.editor.edit_card.confirm_cancel"
+      ),
+      dismissText: this.hass!.localize("ui.common.no"),
+      confirmText: this.hass!.localize("ui.common.yes"),
+    });
+    if (confirm) {
+      this._cancel();
+    }
+  }
+
+  private _cancel(ev?: Event) {
+    if (ev) {
+      ev.stopPropagation();
+    }
+    this._dirty = false;
+    this.closeDialog();
+  }
+
   private async _save(): Promise<void> {
-    if (!this._canSave || this._saving) {
+    if (!this._canSave) {
+      return;
+    }
+    if (!this._dirty) {
+      this.closeDialog();
       return;
     }
     this._saving = true;
@@ -414,8 +459,9 @@ export class HuiDialogEditCard extends LitElement {
           )
     );
     this._saving = false;
+    this._dirty = false;
     showSaveSuccessToast(this, this.hass);
-    this._close();
+    this.closeDialog();
   }
 }
 
