@@ -4,7 +4,6 @@ export const handleStructError = (err: Error): string[] => {
   if (err instanceof StructError) {
     const errors: string[] = [];
     for (const failure of err.failures()) {
-      console.log(failure);
       if (failure.type === "never") {
         errors.push(
           `Key "${failure.path[0]}" is not supported by the UI editor.`
