@@ -30,6 +30,7 @@ import "./hui-card-preview";
 import type { EditCardDialogParams } from "./show-edit-card-dialog";
 import { getCardDocumentationURL } from "../get-card-documentation-url";
 import { mdiHelpCircle } from "@mdi/js";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 
@@ -118,9 +119,13 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
 
     let heading: string;
     if (this._cardConfig && this._cardConfig.type) {
-      heading = `${this.hass!.localize(
-        `ui.panel.lovelace.editor.card.${this._cardConfig.type}.name`
-      )} ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.header")}`;
+      heading = this.hass!.localize(
+        "ui.panel.lovelace.editor.edit_card.typed_header",
+        "type",
+        this.hass!.localize(
+          `ui.panel.lovelace.editor.card.${this._cardConfig.type}.name`
+        )
+      );
     } else if (!this._cardConfig) {
       heading = this._viewConfig.title
         ? this.hass!.localize(
@@ -151,6 +156,7 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
                 title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
                 target="_blank"
                 rel="noreferrer"
+                dir=${computeRTLDirection(this.hass)}
               >
                 <mwc-icon-button>
                   <ha-svg-icon path=${mdiHelpCircle}></ha-svg-icon>
