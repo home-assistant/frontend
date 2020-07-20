@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -31,7 +32,7 @@ export class StateBadge extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: "icon" })
   private _showIcon = true;
 
-  @property() private _iconStyle: { [name: string]: string } = {};
+  @internalProperty() private _iconStyle: { [name: string]: string } = {};
 
   protected render(): TemplateResult {
     const stateObj = this.stateObj;

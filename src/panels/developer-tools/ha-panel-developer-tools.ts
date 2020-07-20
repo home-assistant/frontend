@@ -1,6 +1,6 @@
-import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "../../layouts/ha-app-layout";
 import "../../components/ha-icon-button";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
@@ -22,7 +22,7 @@ import "./developer-tools-router";
 
 @customElement("ha-panel-developer-tools")
 class PanelDeveloperTools extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public route!: Route;
 
@@ -36,7 +36,7 @@ class PanelDeveloperTools extends LitElement {
   protected render(): TemplateResult {
     const page = this._page;
     return html`
-      <app-header-layout>
+      <ha-app-layout>
         <app-header fixed slot="header">
           <app-toolbar>
             <ha-menu-button
@@ -78,7 +78,7 @@ class PanelDeveloperTools extends LitElement {
           .narrow=${this.narrow}
           .hass=${this.hass}
         ></developer-tools-router>
-      </app-header-layout>
+      </ha-app-layout>
     `;
   }
 
@@ -106,6 +106,10 @@ class PanelDeveloperTools extends LitElement {
         :host {
           color: var(--primary-text-color);
           --paper-card-header-color: var(--primary-text-color);
+        }
+        developer-tools-router {
+          display: block;
+          height: calc(100vh - 112px);
         }
         paper-tabs {
           margin-left: 12px;

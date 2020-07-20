@@ -7,15 +7,22 @@ import { navigate } from "../common/navigate";
 import { HomeAssistant } from "../types";
 import { Condition } from "./automation";
 
+export const MODES = ["single", "restart", "queued", "parallel"];
+export const MODES_MAX = ["queued", "parallel"];
+
 export interface ScriptEntity extends HassEntityBase {
   attributes: HassEntityAttributeBase & {
     last_triggered: string;
+    mode: "single" | "restart" | "queued" | "parallel";
+    current?: number;
+    max?: number;
   };
 }
 
 export interface ScriptConfig {
   alias: string;
   sequence: Action[];
+  icon?: string;
   mode?: "single" | "restart" | "queued" | "parallel";
   max?: number;
 }
@@ -65,6 +72,20 @@ export const triggerScript = (
   entityId: string,
   variables?: {}
 ) => hass.callService("script", computeObjectId(entityId), variables);
+
+export const canExcecute = (state: ScriptEntity) => {
+  if (state.state === "off") {
+    return true;
+  }
+  if (
+    state.state === "on" &&
+    MODES_MAX.includes(state.attributes.mode) &&
+    state.attributes.current! < state.attributes.max!
+  ) {
+    return true;
+  }
+  return false;
+};
 
 export const deleteScript = (hass: HomeAssistant, objectId: string) =>
   hass.callApi("DELETE", `config/script/config/${objectId}`);

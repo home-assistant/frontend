@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -37,9 +38,9 @@ class HassioAddonNetwork extends LitElement {
 
   @property({ attribute: false }) public addon!: HassioAddonDetails;
 
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
-  @property() private _config?: NetworkItem[];
+  @internalProperty() private _config?: NetworkItem[];
 
   public connectedCallback(): void {
     super.connectedCallback();

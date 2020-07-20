@@ -5,6 +5,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   svg,
   TemplateResult,
@@ -16,7 +17,7 @@ import { getPath } from "../common/graph/get-path";
 export class HuiGraphBase extends LitElement {
   @property() public coordinates?: any;
 
-  @property() private _path?: string;
+  @internalProperty() private _path?: string;
 
   protected render(): TemplateResult {
     return html`

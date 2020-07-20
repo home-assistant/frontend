@@ -10,6 +10,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
@@ -29,21 +30,21 @@ const amsterdam = [52.3731339, 4.8903147];
 
 @customElement("onboarding-core-config")
 class OnboardingCoreConfig extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public onboardingLocalize!: LocalizeFunc;
 
-  @property() private _working = false;
+  @internalProperty() private _working = false;
 
-  @property() private _name!: ConfigUpdateValues["location_name"];
+  @internalProperty() private _name!: ConfigUpdateValues["location_name"];
 
-  @property() private _location!: [number, number];
+  @internalProperty() private _location!: [number, number];
 
-  @property() private _elevation!: string;
+  @internalProperty() private _elevation!: string;
 
-  @property() private _unitSystem!: ConfigUpdateValues["unit_system"];
+  @internalProperty() private _unitSystem!: ConfigUpdateValues["unit_system"];
 
-  @property() private _timeZone!: string;
+  @internalProperty() private _timeZone!: string;
 
   protected render(): TemplateResult {
     return html`

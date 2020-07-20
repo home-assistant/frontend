@@ -1,6 +1,7 @@
 import {
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
   html,
   customElement,
@@ -13,7 +14,7 @@ import "./ha-svg-icon";
 export class HaIconButtonArrowPrev extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
-  @property() private _icon = mdiArrowLeft;
+  @internalProperty() private _icon = mdiArrowLeft;
 
   public connectedCallback() {
     super.connectedCallback();

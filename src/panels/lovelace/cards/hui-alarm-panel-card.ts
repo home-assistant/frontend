@@ -7,6 +7,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   query,
   TemplateResult,
@@ -69,9 +70,9 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     };
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: AlarmPanelCardConfig;
+  @internalProperty() private _config?: AlarmPanelCardConfig;
 
   @query("#alarmCode") private _input?: PaperInputElement;
 
@@ -190,7 +191,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
           : html`
               <paper-input
                 id="alarmCode"
-                label="Alarm Code"
+                .label=${this.hass.localize('ui.card.alarm_control_panel.code')}
                 type="password"
               ></paper-input>
             `}
@@ -280,7 +281,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       ha-label-badge {
         --ha-label-badge-color: var(--alarm-state-color);
         --label-badge-text-color: var(--alarm-state-color);
-        --label-badge-background-color: var(--paper-card-background-color);
+        --label-badge-background-color: var(--card-background-color);
         color: var(--alarm-state-color);
         position: absolute;
         right: 12px;

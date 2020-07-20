@@ -8,6 +8,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   svg,
   TemplateResult,
@@ -53,11 +54,11 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     return { type: "humidifier", entity: foundEntities[0] || "" };
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: HumidifierCardConfig;
+  @internalProperty() private _config?: HumidifierCardConfig;
 
-  @property() private _setHum?: number;
+  @internalProperty() private _setHum?: number;
 
   public getCardSize(): number {
     return 5;
@@ -104,7 +105,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
             .min=${stateObj.attributes.min_humidity}
             .max=${stateObj.attributes.max_humidity}
             .rtl=${rtlDirection === "rtl"}
-            .step="1"
+            step="1"
             @value-changing=${this._dragEvent}
             @value-changed=${this._setHumidity}
           ></round-slider>

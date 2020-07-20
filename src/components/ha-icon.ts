@@ -3,6 +3,7 @@ import {
   customElement,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   html,
   TemplateResult,
@@ -88,7 +89,7 @@ const mdiRenameMapping = {
   "library-movie": "filmstrip-box-multiple",
   "library-music": "music-box-multiple",
   "library-music-outline": "music-box-multiple-outline",
-  "library-video": "play-box-mutiple",
+  "library-video": "play-box-multiple",
   markdown: "language-markdown",
   "markdown-outline": "language-markdown-outline",
   "message-settings-variant": "message-cog",
@@ -150,6 +151,8 @@ const mdiRenameMapping = {
   "textbox-lock": "form-textbox-lock",
   "textbox-password": "form-textbox-password",
   "syllabary-katakana-half-width": "syllabary-katakana-halfwidth",
+  "visual-studio-code": "microsoft-visual-studio-code",
+  "visual-studio": "microsoft-visual-studio",
 };
 
 const mdiRemovedIcons = new Set([
@@ -233,11 +236,11 @@ const cachedIcons: { [key: string]: string } = {};
 export class HaIcon extends LitElement {
   @property() public icon?: string;
 
-  @property() private _path?: string;
+  @internalProperty() private _path?: string;
 
-  @property() private _viewBox?;
+  @internalProperty() private _viewBox?;
 
-  @property() private _legacy = false;
+  @internalProperty() private _legacy = false;
 
   protected updated(changedProps: PropertyValues) {
     if (changedProps.has("icon")) {

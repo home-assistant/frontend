@@ -9,6 +9,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   query,
 } from "lit-element";
@@ -37,9 +38,9 @@ export class ZHAAddGroupPage extends LitElement {
 
   @property({ type: Array }) public deviceEndpoints: ZHADeviceEndpoint[] = [];
 
-  @property() private _processingAdd = false;
+  @internalProperty() private _processingAdd = false;
 
-  @property() private _groupName = "";
+  @internalProperty() private _groupName = "";
 
   @query("zha-device-endpoint-data-table")
   private _zhaDevicesDataTable!: ZHADeviceEndpointDataTable;

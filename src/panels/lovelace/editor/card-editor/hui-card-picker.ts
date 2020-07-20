@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -42,23 +43,23 @@ interface CardElement {
 
 @customElement("hui-card-picker")
 export class HuiCardPicker extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _cards: CardElement[] = [];
+  @internalProperty() private _cards: CardElement[] = [];
 
   public lovelace?: LovelaceConfig;
 
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
 
-  @property() private _filter = "";
+  @internalProperty() private _filter = "";
 
   private _unusedEntities?: string[];
 
   private _usedEntities?: string[];
 
-  @property() private _width?: number;
+  @internalProperty() private _width?: number;
 
-  @property() private _height?: number;
+  @internalProperty() private _height?: number;
 
   private _filterCards = memoizeOne(
     (cardElements: CardElement[], filter?: string): CardElement[] => {
@@ -266,7 +267,7 @@ export class HuiCardPicker extends LitElement {
           text-align: center;
           background: var(
             --ha-card-background,
-            var(--paper-card-background-color, white)
+            var(--card-background-color, white)
           );
           border-radius: 0 0 4px 4px;
           border-bottom: 1px solid var(--divider-color);

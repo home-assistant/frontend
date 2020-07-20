@@ -430,6 +430,8 @@
                 "activate": "Ativar"
             },
             "script": {
+                "cancel": "Cancelar",
+                "cancel_multiple": "Cancelar {número}",
                 "execute": "Executar"
             },
             "service": {
@@ -524,6 +526,9 @@
                 "area": "Área",
                 "clear": "Limpar",
                 "show_areas": "Mostrar áreas"
+            },
+            "data-table": {
+                "search": "Procurar"
             },
             "date-range-picker": {
                 "end_date": "Data de fim",
@@ -938,6 +943,13 @@
                         "introduction": "Crie automações para dar vida à sua casa",
                         "load_error_not_editable": "Apenas as automações em automations.yaml são editáveis.",
                         "load_error_unknown": "Erro ao carregar a automação ({err_no}).",
+                        "modes": {
+                            "description": "Este modo controla apenas o que acontece quando o script é chamado quando ainda está a ser executado por uma ou mais chamadas anteriores. Ver documentação (link_para_documentação) para mais informações.",
+                            "documentation": "Documentação de automaçōes",
+                            "label": "Modo",
+                            "queued": "Em lista de espera",
+                            "restart": "Reiniciar"
+                        },
                         "move_down": "Mover para baixo",
                         "move_up": "Mover para cima",
                         "save": "Guardar",
@@ -1356,6 +1368,7 @@
                             "confirm_text": "Deve remover da configuração do Lovelace e das automações se contêm estas entidades",
                             "confirm_title": "Deseja remover {number} entidades?"
                         },
+                        "search": "Procurar entidades",
                         "selected": "Selecionou {number}",
                         "status": {
                             "disabled": "Desativado",
@@ -1490,7 +1503,8 @@
                     "note_about_integrations": "De momento nem todas as integrações podem ser configuradas via UI.",
                     "note_about_website_reference": "Existem mais disponíveis no",
                     "rename_dialog": "Edite o nome desta entrada de configuração.",
-                    "rename_input_label": "Nome da entrada"
+                    "rename_input_label": "Nome da entrada",
+                    "search": "Procurar integrações"
                 },
                 "introduction": "Aqui é possível configurar os seus componentes e o Home Assistant. Nem tudo é possível de ser configurado a partir da Interface Gráfica, mas estamos a trabalhar para isso.",
                 "logs": {
@@ -1643,6 +1657,7 @@
                             "introduction": "Entidades que não pertencem a um dispositivo podem ser definidas aqui.",
                             "without_device": "Entidades sem dispositivo"
                         },
+                        "icon": "Ícone",
                         "introduction": "Crie cenários para dar vida à sua casa.",
                         "load_error_not_editable": "Apenas cenários em scenes.yaml são editáveis.",
                         "load_error_unknown": "Erro ao carregar cena ({err_no}).",
@@ -1676,9 +1691,21 @@
                         "delete_confirm": "Tem a certeza que quer apagar este script?",
                         "delete_script": "Apagar script",
                         "header": "Script: {name}",
+                        "icon": "Ícone",
+                        "id": "ID da entidade",
+                        "id_already_exists": "Este ID já existe",
+                        "id_already_exists_save_error": "Nāo pode gravar este script porque este ID não é único, escolha outro ID ou deixe em branco para ser gerado automaticamente.",
                         "introduction": "Use scripts para executar uma seqüência de ações.",
                         "link_available_actions": "Saiba mais sobre ações disponíveis.",
                         "load_error_not_editable": "Apenas os scripts em scripts.yaml são editáveis.",
+                        "modes": {
+                            "description": "Este modo controla apenas o que acontece quando o script é chamado quando ainda está a ser executado por uma ou mais chamadas anteriores. Ver documentação (link_para_documentação) para mais informações.",
+                            "documentation": "Documentação de scripts",
+                            "label": "Modo",
+                            "parallel": "Paralelo",
+                            "queued": "Lista de espera",
+                            "restart": "Reiniciar"
+                        },
                         "sequence": "Seqüência",
                         "sequence_sentence": "A seqüência de ações para este script."
                     },
@@ -2194,6 +2221,7 @@
                             "name": "Nome",
                             "no_theme": "Nenhum tema",
                             "refresh_interval": "Intervalo entre atualizações",
+                            "search": "Procurar",
                             "secondary_info_attribute": "Atributo de informação secundária",
                             "show_icon": "Mostrar Ícone?",
                             "show_name": "Mostrar nome?",
@@ -2314,7 +2342,8 @@
                     "edit_lovelace": {
                         "edit_title": "Editar título",
                         "explanation": "Este título é mostrado acima de todas as suas vistas na interface Lovelace.",
-                        "header": "Título da sua interface do Lovelace"
+                        "header": "Título da sua interface do Lovelace",
+                        "title": "Título"
                     },
                     "edit_view": {
                         "add": "Acrescentar vista",
@@ -2503,6 +2532,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "O seu computador não está na lista de endereços permitidos.",
                                 "not_whitelisted": "O seu computador não está na lista de endereços permitidos."
                             },
                             "step": {

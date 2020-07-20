@@ -7,6 +7,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../../src/components/buttons/ha-call-api-button";
@@ -23,15 +24,15 @@ import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-update")
 export class HassioUpdate extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public hassInfo: HassioHomeAssistantInfo;
+  @property({ attribute: false }) public hassInfo: HassioHomeAssistantInfo;
 
-  @property() public hassOsInfo?: HassioHassOSInfo;
+  @property({ attribute: false }) public hassOsInfo?: HassioHassOSInfo;
 
   @property() public supervisorInfo: HassioSupervisorInfo;
 
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
   protected render(): TemplateResult {
     const updatesAvailable: number = [

@@ -19,7 +19,7 @@ import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-addons")
 class HassioAddons extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public addons?: HassioAddonInfo[];
 

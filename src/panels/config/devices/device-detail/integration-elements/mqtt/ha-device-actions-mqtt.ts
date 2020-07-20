@@ -16,7 +16,7 @@ import { HomeAssistant } from "../../../../../../types";
 
 @customElement("ha-device-actions-mqtt")
 export class HaDeviceActionsMqtt extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public device!: DeviceRegistryEntry;
 

@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -20,13 +21,13 @@ import {
 import type { CameraEntity, HomeAssistant } from "../../../types";
 
 class MoreInfoCamera extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public stateObj?: CameraEntity;
 
-  @property() private _cameraPrefs?: CameraPreferences;
+  @internalProperty() private _cameraPrefs?: CameraPreferences;
 
-  @property() private _attached = false;
+  @internalProperty() private _attached = false;
 
   public connectedCallback() {
     super.connectedCallback();

@@ -10,6 +10,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   query,
   TemplateResult,
@@ -41,20 +42,20 @@ interface Results {
 
 @customElement("ha-voice-command-dialog")
 export class HaVoiceCommandDialog extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public results: Results | null = null;
 
-  @property() private _conversation: Message[] = [
+  @internalProperty() private _conversation: Message[] = [
     {
       who: "hass",
       text: "",
     },
   ];
 
-  @property() private _opened = false;
+  @internalProperty() private _opened = false;
 
-  @property() private _agentInfo?: AgentInfo;
+  @internalProperty() private _agentInfo?: AgentInfo;
 
   @query("#messages") private messages!: PaperDialogScrollableElement;
 

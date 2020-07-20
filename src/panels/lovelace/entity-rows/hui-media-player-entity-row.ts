@@ -7,6 +7,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -37,13 +38,13 @@ import { computeStateDisplay } from "../../../common/entity/compute_state_displa
 
 @customElement("hui-media-player-entity-row")
 class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: EntityConfig;
+  @internalProperty() private _config?: EntityConfig;
 
-  @property() private _narrow?: boolean = false;
+  @internalProperty() private _narrow?: boolean = false;
 
-  @property() private _veryNarrow?: boolean = false;
+  @internalProperty() private _veryNarrow?: boolean = false;
 
   private _resizeObserver?: ResizeObserver;
 

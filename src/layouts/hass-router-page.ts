@@ -169,9 +169,9 @@ export class HassRouterPage extends UpdatingElement {
       }
 
       // Show error screen
-      const errorEl = document.createElement("hass-error-screen");
-      errorEl.error = `Error while loading page ${newPage}.`;
-      this.appendChild(errorEl);
+      this.appendChild(
+        this.createErrorScreen(`Error while loading page ${newPage}.`)
+      );
     });
 
     // If we don't show loading screen, just show the panel.
@@ -250,6 +250,12 @@ export class HassRouterPage extends UpdatingElement {
 
   protected createLoadingScreen() {
     return document.createElement("hass-loading-screen");
+  }
+
+  protected createErrorScreen(error: string) {
+    const errorEl = document.createElement("hass-error-screen");
+    errorEl.error = error;
+    return errorEl;
   }
 
   /**

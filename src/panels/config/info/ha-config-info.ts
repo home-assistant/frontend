@@ -17,7 +17,7 @@ const JS_TYPE = __BUILD__;
 const JS_VERSION = __VERSION__;
 
 class HaConfigInfo extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
 

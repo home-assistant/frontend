@@ -430,6 +430,8 @@
                 "activate": "啟用"
             },
             "script": {
+                "cancel": "取消",
+                "cancel_multiple": "取消 {number}",
                 "execute": "執行"
             },
             "service": {
@@ -524,6 +526,9 @@
                 "area": "分區",
                 "clear": "未觸發",
                 "show_areas": "顯示分區"
+            },
+            "data-table": {
+                "search": "搜尋"
             },
             "date-range-picker": {
                 "end_date": "結束日期",
@@ -938,6 +943,19 @@
                         "introduction": "使用自動化來讓你的智能家居更有魅力吧。",
                         "load_error_not_editable": "僅有 automations.yaml 內的自動化方能編輯。",
                         "load_error_unknown": "載入自動化錯誤（{err_no}）。",
+                        "max": {
+                            "parallel": "最高並行執行數",
+                            "queued": "佇列長度"
+                        },
+                        "modes": {
+                            "description": "該模式控制當執行自動化時、超過一個以上的自動化仍在執行時的狀況。請參閱 {documentation_link} 以獲得更詳細資訊。",
+                            "documentation": "自動化文件",
+                            "label": "模式",
+                            "parallel": "並行",
+                            "queued": "已佇列",
+                            "restart": "重啟",
+                            "single": "單一（預設）"
+                        },
                         "move_down": "向下移動",
                         "move_up": "向上移動",
                         "save": "儲存",
@@ -1356,6 +1374,7 @@
                             "confirm_text": "假如包含此些物件，應該從 Lovelace 設定與自動化中進行移除。",
                             "confirm_title": "是否要移除 {number} 個物件？"
                         },
+                        "search": "搜尋物件",
                         "selected": "已選擇 {number} 個",
                         "status": {
                             "disabled": "已關閉",
@@ -1386,7 +1405,8 @@
                             "entity_id": "物件 ID",
                             "name": "名稱",
                             "type": "類別"
-                        }
+                        },
+                        "no_helpers": "目前尚沒有任何 Helper！"
                     },
                     "types": {
                         "input_boolean": "開關",
@@ -1490,7 +1510,8 @@
                     "note_about_integrations": "目前並非所有整合皆可以透過 UI 進行設定。",
                     "note_about_website_reference": "更多資訊請參閱",
                     "rename_dialog": "編輯設定物件名稱",
-                    "rename_input_label": "物件名稱"
+                    "rename_input_label": "物件名稱",
+                    "search": "搜尋整合"
                 },
                 "introduction": "此處為 Home Assistant 和元件相關配置區，目前尚未支援透過 UI 進行所有設定，我們正在努力改進中。",
                 "logs": {
@@ -1643,6 +1664,7 @@
                             "introduction": "不屬於設備的物件可以於此設置。",
                             "without_device": "無設備物件"
                         },
+                        "icon": "圖示",
                         "introduction": "使用場景來讓你的智能家居更有魅力吧。",
                         "load_error_not_editable": "僅有於 scenes.yaml 檔案內的場景、方能進行編輯。",
                         "load_error_unknown": "載入場景錯誤（{err_no}）。",
@@ -1676,9 +1698,26 @@
                         "delete_confirm": "確定要刪除此腳本？",
                         "delete_script": "刪除腳本",
                         "header": "腳本：{name}",
+                        "icon": "圖示",
+                        "id": "物件 ID",
+                        "id_already_exists": "該 ID 已存在",
+                        "id_already_exists_save_error": "由於該 ID 非獨一 ID，因此無法儲存此腳本。請選擇其他 ID 或者保留空白以自動產生。",
                         "introduction": "使用腳本以執行一連串的動作。",
                         "link_available_actions": "詳細了解可使用動作",
                         "load_error_not_editable": "僅有於 scripts.yaml 檔案內的腳本，方能進行編輯。",
+                        "max": {
+                            "parallel": "最高並行執行數",
+                            "queued": "佇列長度"
+                        },
+                        "modes": {
+                            "description": "該模式控制當執行腳本時、超過一個以上的腳本仍在執行時的狀況。請參閱 {documentation_link} 以獲得更詳細資訊。",
+                            "documentation": "腳本文件",
+                            "label": "模式",
+                            "parallel": "並行",
+                            "queued": "已佇列",
+                            "restart": "重啟",
+                            "single": "單一（預設）"
+                        },
                         "sequence": "連續",
                         "sequence_sentence": "此腳本所含的操作動作。"
                     },
@@ -1776,7 +1815,7 @@
                         "discovered_text": "於探索到設備後將顯示於此處。",
                         "discovery_text": "所發現的設備將會顯示於此。跟隨設備的指示並將其設定為配對模式。",
                         "header": "Zigbee 家庭自動化 - 新增設備",
-                        "no_devices_found": "找不到設備，請確定設備處於配對模式、並於探索時保成喚醒狀態。",
+                        "no_devices_found": "找不到設備，請確定設備處於配對模式、並於探索時保持喚醒狀態。",
                         "pairing_mode": "請確定設備處於配對模式中，參閱設備的手冊以了解如何進行操作。",
                         "search_again": "再次搜尋",
                         "spinner": "正在搜尋 ZHA Zigbee 設備..."
@@ -2194,6 +2233,7 @@
                             "name": "名稱",
                             "no_theme": "沒有主題",
                             "refresh_interval": "更新間隔",
+                            "search": "搜尋",
                             "secondary_info_attribute": "次要資訊屬性",
                             "show_icon": "顯示圖示？",
                             "show_name": "顯示名稱？",
@@ -2299,6 +2339,7 @@
                     },
                     "edit_card": {
                         "add": "新增面板",
+                        "confirm_cancel": "確定要取消？",
                         "delete": "刪除面板",
                         "duplicate": "複製面板",
                         "edit": "編輯",
@@ -2309,12 +2350,14 @@
                         "pick_card_view_title": "要加入 {name} 視圖的面板？",
                         "show_code_editor": "顯示編碼編輯器",
                         "show_visual_editor": "顯示視覺編輯器",
-                        "toggle_editor": "切換編輯器"
+                        "toggle_editor": "切換編輯器",
+                        "unsaved_changes": "有未儲存變更"
                     },
                     "edit_lovelace": {
                         "edit_title": "編輯標題",
                         "explanation": "此為 Lovelace UI 所有分視圖上方之標題。",
-                        "header": "Lovelace UI 的標題"
+                        "header": "Lovelace UI 的標題",
+                        "title": "標題"
                     },
                     "edit_view": {
                         "add": "新增視圖",
@@ -2503,6 +2546,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "電腦未被允許。",
                                 "not_whitelisted": "電腦尚未加入許可清單。"
                             },
                             "step": {

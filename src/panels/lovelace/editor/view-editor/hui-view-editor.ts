@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -30,11 +31,11 @@ declare global {
 
 @customElement("hui-view-editor")
 export class HuiViewEditor extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public isNew!: boolean;
 
-  @property() private _config!: LovelaceViewConfig;
+  @internalProperty() private _config!: LovelaceViewConfig;
 
   private _suggestedPath = false;
 

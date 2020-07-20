@@ -12,6 +12,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
@@ -36,15 +37,15 @@ const lovelaceStruct = struct.interface({
 
 @customElement("hui-editor")
 class LovelaceFullConfigEditor extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public lovelace?: Lovelace;
+  @property({ attribute: false }) public lovelace?: Lovelace;
 
   @property() public closeEditor?: () => void;
 
-  @property() private _saving?: boolean;
+  @internalProperty() private _saving?: boolean;
 
-  @property() private _changed?: boolean;
+  @internalProperty() private _changed?: boolean;
 
   private _generation = 1;
 

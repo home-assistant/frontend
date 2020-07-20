@@ -188,7 +188,9 @@
         "activate": "Activate"
       },
       "script": {
-        "execute": "Execute"
+        "execute": "Execute",
+        "cancel": "Cancel",
+        "cancel_multiple": "Cancel {number}"
       },
       "service": {
         "run": "Run"
@@ -845,10 +847,10 @@
               "label": "Mode",
               "description": "The mode controls what happens when the automation is triggered while the actions are still running from a previous trigger. Check the {documentation_link} for more info.",
               "documentation": "automation documentation",
-              "single": "Single",
+              "single": "Single (default)",
               "restart": "Restart",
               "queued": "Queued",
-              "parallel": "Parallel (default)"
+              "parallel": "Parallel"
             },
             "max": {
               "queued": "Queue length",
@@ -1078,6 +1080,10 @@
           },
           "editor": {
             "alias": "Name",
+            "icon": "Icon",
+            "id": "Entity ID",
+            "id_already_exists_save_error": "You can't save this script because the ID is not unique, pick another ID or leave it blank to automatically generate one.",
+            "id_already_exists": "This ID already exists",
             "introduction": "Use scripts to execute a sequence of actions.",
             "header": "Script: {name}",
             "default_name": "New Script",
@@ -1130,6 +1136,7 @@
             "save": "Save",
             "unsaved_confirm": "You have unsaved changes. Are you sure you want to leave?",
             "name": "Name",
+            "icon": "Icon",
             "devices": {
               "header": "Devices",
               "introduction": "Add the devices that you want to be included in your scene. Set all the devices to the state you want for this scene.",
@@ -1594,7 +1601,7 @@
             "spinner": "Searching for ZHA Zigbee devices...",
             "pairing_mode": "Make sure your devices are in pairing mode. Check the instructions of your device on how to do this.",
             "discovered_text": "Devices will show up here once discovered.",
-            "no_devices_found": "No devices where found, make sure they are in paring mode and keep them awake while discovering is running.",
+            "no_devices_found": "No devices were found, make sure they are in paring mode and keep them awake while discovering is running.",
             "search_again": "Search Again"
           },
           "network_management": {
@@ -1894,6 +1901,8 @@
             "pick_card": "Which card would you like to add?",
             "pick_card_view_title": "Which card would you like to add to your {name} view?",
             "toggle_editor": "Toggle Editor",
+            "unsaved_changes": "You have unsaved changes",
+            "confirm_cancel": "Are you sure you want to cancel?",
             "show_visual_editor": "Show Visual Editor",
             "show_code_editor": "Show Code Editor",
             "add": "Add Card",

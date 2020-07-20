@@ -12,6 +12,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   query,
   TemplateResult,
 } from "lit-element";
@@ -71,7 +72,7 @@ export interface EntityRow extends StateEntity {
 
 @customElement("ha-config-entities")
 export class HaConfigEntities extends SubscribeMixin(LitElement) {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public isWide!: boolean;
 
@@ -79,25 +80,25 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   @property() public route!: Route;
 
-  @property() private _entities?: EntityRegistryEntry[];
+  @internalProperty() private _entities?: EntityRegistryEntry[];
 
-  @property() private _stateEntities: StateEntity[] = [];
+  @internalProperty() private _stateEntities: StateEntity[] = [];
 
   @property() public _entries?: ConfigEntry[];
 
-  @property() private _showDisabled = false;
+  @internalProperty() private _showDisabled = false;
 
-  @property() private _showUnavailable = true;
+  @internalProperty() private _showUnavailable = true;
 
-  @property() private _showReadOnly = true;
+  @internalProperty() private _showReadOnly = true;
 
-  @property() private _filter = "";
+  @internalProperty() private _filter = "";
 
-  @property() private _searchParms = new URLSearchParams(
+  @internalProperty() private _searchParms = new URLSearchParams(
     window.location.search
   );
 
-  @property() private _selectedEntities: string[] = [];
+  @internalProperty() private _selectedEntities: string[] = [];
 
   @query("hass-tabs-subpage-data-table")
   private _dataTable!: HaTabsSubpageDataTable;
@@ -461,7 +462,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               <ha-svg-icon path=${mdiFilterVariant}></ha-svg-icon>
             </mwc-icon-button>
             <mwc-list-item
-              @click="${this._showDisabledChanged}"
+              @request-selected="${this._showDisabledChanged}"
               graphic="control"
             >
               <ha-checkbox
@@ -473,7 +474,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               )}
             </mwc-list-item>
             <mwc-list-item
-              @click="${this._showRestoredChanged}"
+              @request-selected="${this._showRestoredChanged}"
               graphic="control"
             >
               <ha-checkbox
@@ -485,7 +486,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               )}
             </mwc-list-item>
             <mwc-list-item
-              @click="${this._showReadOnlyChanged}"
+              @request-selected="${this._showReadOnlyChanged}"
               graphic="control"
             >
               <ha-checkbox

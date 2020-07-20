@@ -420,15 +420,6 @@ export default {
     last_changed: "2018-07-19T10:44:46.105940+00:00",
     last_updated: "2018-07-19T10:44:46.105940+00:00",
   },
-  "weblink.router": {
-    entity_id: "weblink.router",
-    state: "http://192.168.1.1",
-    attributes: {
-      friendly_name: "Router",
-    },
-    last_changed: "2018-07-19T10:44:46.107286+00:00",
-    last_updated: "2018-07-19T10:44:46.107286+00:00",
-  },
   "group.all_plants": {
     entity_id: "group.all_plants",
     state: "ok",
@@ -1089,18 +1080,6 @@ export default {
     },
     last_changed: "2018-07-19T10:44:46.510448+00:00",
     last_updated: "2018-07-19T10:44:46.510448+00:00",
-  },
-  "history_graph.recent_switches": {
-    entity_id: "history_graph.recent_switches",
-    state: "unknown",
-    attributes: {
-      hours_to_show: 1,
-      refresh: 60,
-      entity_id: ["switch.ac", "switch.decorative_lights"],
-      friendly_name: "Recent Switches",
-    },
-    last_changed: "2018-07-19T10:44:46.512351+00:00",
-    last_updated: "2018-07-19T10:44:46.512351+00:00",
   },
   "scene.switch_on_and_off": {
     entity_id: "scene.switch_on_and_off",

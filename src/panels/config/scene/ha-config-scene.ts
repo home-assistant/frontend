@@ -21,7 +21,7 @@ const equal = (a: SceneEntity[], b: SceneEntity[]): boolean => {
 
 @customElement("ha-config-scene")
 class HaConfigScene extends HassRouterPage {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
 

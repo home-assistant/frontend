@@ -1,3 +1,4 @@
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import deepFreeze from "deep-freeze";
 import {
   css,
@@ -6,6 +7,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   query,
   TemplateResult,
 } from "lit-element";
@@ -27,13 +29,13 @@ import { SuggestCardDialogParams } from "./show-suggest-card-dialog";
 export class HuiDialogSuggestCard extends LitElement {
   @property() protected hass!: HomeAssistant;
 
-  @property() private _params?: SuggestCardDialogParams;
+  @internalProperty() private _params?: SuggestCardDialogParams;
 
-  @property() private _cardConfig?: LovelaceCardConfig[];
+  @internalProperty() private _cardConfig?: LovelaceCardConfig[];
 
-  @property() private _saving = false;
+  @internalProperty() private _saving = false;
 
-  @property() private _yamlMode = false;
+  @internalProperty() private _yamlMode = false;
 
   @query("ha-paper-dialog") private _dialog?: HaPaperDialog;
 

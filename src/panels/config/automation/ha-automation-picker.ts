@@ -35,7 +35,7 @@ import { mdiPlus } from "@mdi/js";
 
 @customElement("ha-automation-picker")
 class HaAutomationPicker extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public isWide!: boolean;
 

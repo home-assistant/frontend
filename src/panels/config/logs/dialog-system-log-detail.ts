@@ -5,6 +5,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../../components/dialog/ha-paper-dialog";
@@ -23,11 +24,11 @@ import { formatSystemLogTime } from "./util";
 import { fireEvent } from "../../../common/dom/fire_event";
 
 class DialogSystemLogDetail extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _params?: SystemLogDetailDialogParams;
+  @internalProperty() private _params?: SystemLogDetailDialogParams;
 
-  @property() private _manifest?: IntegrationManifest;
+  @internalProperty() private _manifest?: IntegrationManifest;
 
   public async showDialog(params: SystemLogDetailDialogParams): Promise<void> {
     this._params = params;

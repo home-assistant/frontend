@@ -34,7 +34,7 @@ export interface GroupRowData extends ZHAGroup {
 
 @customElement("zha-groups-dashboard")
 export class ZHAGroupsDashboard extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Object }) public route!: Route;
 

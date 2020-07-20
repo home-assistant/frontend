@@ -5,6 +5,7 @@ import { configSections } from "../ha-panel-config";
 import {
   LitElement,
   property,
+  internalProperty,
   customElement,
   html,
   css,
@@ -38,7 +39,7 @@ const reloadableDomains = [
 
 @customElement("ha-config-server-control")
 export class HaConfigServerControl extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public isWide!: boolean;
 
@@ -48,7 +49,7 @@ export class HaConfigServerControl extends LitElement {
 
   @property() public showAdvanced!: boolean;
 
-  @property() private _validating = false;
+  @internalProperty() private _validating = false;
 
   private _validateLog = "";
 

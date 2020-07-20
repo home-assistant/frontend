@@ -4,7 +4,7 @@ import {
   customElement,
   html,
   LitElement,
-  property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { CastManager } from "../../../src/cast/cast_manager";
@@ -20,7 +20,7 @@ import { HomeAssistant } from "../../../src/types";
 class CastDemoRow extends LitElement implements LovelaceRow {
   public hass!: HomeAssistant;
 
-  @property() private _castManager?: CastManager | null;
+  @internalProperty() private _castManager?: CastManager | null;
 
   public setConfig(_config: CastConfig): void {
     // No config possible.
@@ -52,7 +52,6 @@ class CastDemoRow extends LitElement implements LovelaceRow {
         });
         mgr.castContext.addEventListener(
           // eslint-disable-next-line no-undef
-          // @ts-ignore
           cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
           (ev) => {
             // On Android, opening a new session always results in SESSION_RESUMED.

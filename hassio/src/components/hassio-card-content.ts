@@ -14,7 +14,7 @@ import { HomeAssistant } from "../../../src/types";
 
 @customElement("hassio-card-content")
 class HassioCardContent extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public title!: string;
 

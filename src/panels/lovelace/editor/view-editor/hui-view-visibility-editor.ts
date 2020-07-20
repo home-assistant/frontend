@@ -7,6 +7,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -34,13 +35,13 @@ export class HuiViewVisibilityEditor extends LitElement {
       this._config.visible === undefined ? true : this._config.visible;
   }
 
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public _config!: LovelaceViewConfig;
 
-  @property() private _users!: User[];
+  @internalProperty() private _users!: User[];
 
-  @property() private _visible!: boolean | ShowViewConfig[];
+  @internalProperty() private _visible!: boolean | ShowViewConfig[];
 
   private _sortedUsers = memoizeOne((users: User[]) => {
     return users.sort((a, b) => compare(a.name, b.name));

@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -35,13 +36,13 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     };
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: MarkdownCardConfig;
+  @internalProperty() private _config?: MarkdownCardConfig;
 
-  @property() private _content = "";
+  @internalProperty() private _content = "";
 
-  @property() private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
+  @internalProperty() private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
 
   public getCardSize(): number {
     return this._config === undefined

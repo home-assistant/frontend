@@ -430,6 +430,8 @@
                 "activate": "Activer"
             },
             "script": {
+                "cancel": "Annuler",
+                "cancel_multiple": "Annuler {number}",
                 "execute": "Exécuter"
             },
             "service": {
@@ -938,9 +940,22 @@
                         "edit_ui": "Modifier avec l'interface utilisateur",
                         "edit_yaml": "Modifier en tant que YAML",
                         "enable_disable": "Activer/Désactiver l'automatisation",
-                        "introduction": "Utilisez les automatisations pour donner vie à votre maison",
+                        "introduction": "Utiliser les automatisations pour donner vie à votre maison.",
                         "load_error_not_editable": "Seules les automatisations dans automations.yaml sont modifiables.",
                         "load_error_unknown": "Erreur lors du chargement de l'automatisation ( {err_no} ).",
+                        "max": {
+                            "parallel": "Nombre maximal de parcours parallèles",
+                            "queued": "Longueur de la file d'attente"
+                        },
+                        "modes": {
+                            "description": "Le mode contrôle ce qui se passe lorsque l’automatisation est déclenchée alors que les actions sont toujours en cours d’exécution à partir d’un déclencheur précédent. Consultez le {documentation_link} pour plus d’informations.",
+                            "documentation": "documentation d'automatisation",
+                            "label": "Mode",
+                            "parallel": "Parallèle",
+                            "queued": "En attente",
+                            "restart": "Redémarrer",
+                            "single": "Unique (par défaut)"
+                        },
                         "move_down": "Déplacer vers le bas",
                         "move_up": "Déplacer vers le haut",
                         "save": "Sauvegarder",
@@ -1649,6 +1664,7 @@
                             "introduction": "Les entités n'appartenant pas à un périphérique peuvent être définies ici.",
                             "without_device": "Entités sans appareil"
                         },
+                        "icon": "Icône",
                         "introduction": "Utilisez des scènes pour donner vie à votre maison.",
                         "load_error_not_editable": "Seules les scènes de scenes.yaml sont modifiables.",
                         "load_error_unknown": "Erreur de chargement de la scène ({err_no})",
@@ -1682,9 +1698,26 @@
                         "delete_confirm": "Êtes-vous sûr de vouloir supprimer ce script?",
                         "delete_script": "Supprimer le script",
                         "header": "Script: {name}",
+                        "icon": "Icône",
+                        "id": "ID de l'entité",
+                        "id_already_exists": "Cet ID existe déjà",
+                        "id_already_exists_save_error": "Vous ne pouvez pas enregistrer ce script car l'ID n'est pas unique, choisissez un autre ID ou laissez-le vide pour en générer automatiquement un.",
                         "introduction": "Utiliser des scripts pour exécuter une séquence d'actions.",
                         "link_available_actions": "En savoir plus sur les actions disponibles.",
                         "load_error_not_editable": "Seuls les scripts dans scripts.yaml sont modifiables.",
+                        "max": {
+                            "parallel": "Nombre maximal de parcours parallèles",
+                            "queued": "Longueur de la file d'attente"
+                        },
+                        "modes": {
+                            "description": "Le mode contrôle ce qui se passe lorsque le script est appelé alors qu’il est toujours en cours d’exécution à partir d’une ou plusieurs invocations précédentes. Consultez le {documentation_link} pour plus d’informations.",
+                            "documentation": "documentation script",
+                            "label": "Mode",
+                            "parallel": "Parallèle",
+                            "queued": "En attente",
+                            "restart": "Redémarrer",
+                            "single": "Unique (par défaut)"
+                        },
                         "sequence": "Séquence",
                         "sequence_sentence": "La séquence d'actions de ce script."
                     },
@@ -2306,6 +2339,7 @@
                     },
                     "edit_card": {
                         "add": "Ajouter une action",
+                        "confirm_cancel": "Êtes-vous sûrs de vouloir annuler ?",
                         "delete": "Supprimer",
                         "duplicate": "Dupliquer la carte",
                         "edit": "Modifier",
@@ -2316,7 +2350,8 @@
                         "pick_card_view_title": "Quelle carte souhaitez-vous ajouter à votre vue {name} ?",
                         "show_code_editor": "Afficher l'éditeur de code",
                         "show_visual_editor": "Afficher l'éditeur visuel",
-                        "toggle_editor": "Permuter l’éditeur"
+                        "toggle_editor": "Permuter l’éditeur",
+                        "unsaved_changes": "Vous avez des changements non enregistrés"
                     },
                     "edit_lovelace": {
                         "edit_title": "Éditer le titre",
@@ -2511,6 +2546,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "Votre ordinateur n'est pas autorisé.",
                                 "not_whitelisted": "Votre ordinateur n'est pas en liste blanche."
                             },
                             "step": {

@@ -4,7 +4,7 @@ import {
   customElement,
   html,
   LitElement,
-  property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -53,7 +53,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     return { type: "entities", title: "My Title", entities: foundEntities };
   }
 
-  @property() private _config?: EntitiesCardConfig;
+  @internalProperty() private _config?: EntitiesCardConfig;
 
   private _hass?: HomeAssistant;
 

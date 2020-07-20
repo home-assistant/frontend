@@ -9,11 +9,12 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../../src/components/ha-card";
 import { fetchHassioLogs } from "../../../src/data/hassio/supervisor";
-import "../../../src/layouts/loading-screen";
+import "../../../src/layouts/hass-loading-screen";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import "../components/hassio-ansi-to-html";
@@ -55,11 +56,11 @@ const logProviders: LogProvider[] = [
 class HassioSupervisorLog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
-  @property() private _selectedLogProvider = "supervisor";
+  @internalProperty() private _selectedLogProvider = "supervisor";
 
-  @property() private _content?: string;
+  @internalProperty() private _content?: string;
 
   public async connectedCallback(): Promise<void> {
     super.connectedCallback();
@@ -98,7 +99,7 @@ class HassioSupervisorLog extends LitElement {
             ? html`<hassio-ansi-to-html
                 .content=${this._content}
               ></hassio-ansi-to-html>`
-            : html`<loading-screen></loading-screen>`}
+            : html`<hass-loading-screen no-toolbar></hass-loading-screen>`}
         </div>
         <div class="card-actions">
           <mwc-button @click=${this._refresh}>Refresh</mwc-button>

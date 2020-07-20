@@ -13,7 +13,6 @@ import "./controls/more-info-cover";
 import "./controls/more-info-default";
 import "./controls/more-info-fan";
 import "./controls/more-info-group";
-import "./controls/more-info-history_graph";
 import "./controls/more-info-humidifier";
 import "./controls/more-info-input_datetime";
 import "./controls/more-info-light";
@@ -28,7 +27,7 @@ import "./controls/more-info-water_heater";
 import "./controls/more-info-weather";
 
 class MoreInfoContent extends UpdatingElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public stateObj?: HassEntity;
 
