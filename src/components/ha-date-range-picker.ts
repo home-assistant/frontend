@@ -25,7 +25,7 @@ export interface DateRangePickerRanges {
 
 @customElement("ha-date-range-picker")
 export class HaDateRangePicker extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public startDate!: Date;
 
@@ -84,8 +84,7 @@ export class HaDateRangePicker extends LitElement {
               slot="ranges"
               class="date-range-ranges"
               .dir=${this._rtlDirection}
-            >
-              <mwc-list @click=${this._setDateRange}>
+              <mwc-list @request-selected=${this._setDateRange}>
                 ${Object.entries(this.ranges).map(
                   ([name, dates]) => html`<mwc-list-item
                     .activated=${this.startDate.getTime() ===

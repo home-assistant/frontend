@@ -5,6 +5,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../../../src/components/ha-markdown";
@@ -12,7 +13,7 @@ import {
   fetchHassioAddonDocumentation,
   HassioAddonDetails,
 } from "../../../../src/data/hassio/addon";
-import "../../../../src/layouts/loading-screen";
+import "../../../../src/layouts/hass-loading-screen";
 import "../../../../src/components/ha-circular-progress";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
@@ -24,9 +25,9 @@ class HassioAddonDocumentationDashboard extends LitElement {
 
   @property({ attribute: false }) public addon?: HassioAddonDetails;
 
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
-  @property() private _content?: string;
+  @internalProperty() private _content?: string;
 
   public async connectedCallback(): Promise<void> {
     super.connectedCallback();
@@ -44,7 +45,7 @@ class HassioAddonDocumentationDashboard extends LitElement {
           <div class="card-content">
             ${this._content
               ? html`<ha-markdown .content=${this._content}></ha-markdown>`
-              : html`<loading-screen></loading-screen>`}
+              : html`<hass-loading-screen no-toolbar></hass-loading-screen>`}
           </div>
         </ha-card>
       </div>

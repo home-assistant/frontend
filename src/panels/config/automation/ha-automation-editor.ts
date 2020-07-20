@@ -9,6 +9,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -46,11 +47,11 @@ import { HaDeviceTrigger } from "./trigger/types/ha-automation-trigger-device";
 import { mdiContentSave } from "@mdi/js";
 import { PaperListboxElement } from "@polymer/paper-listbox";
 
-const MODES = ["parallel", "single", "restart", "queued"];
+const MODES = ["single", "restart", "queued", "parallel"];
 const MODES_MAX = ["queued", "parallel"];
 
 export class HaAutomationEditor extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public automationId!: string;
 
@@ -62,13 +63,13 @@ export class HaAutomationEditor extends LitElement {
 
   @property() public route!: Route;
 
-  @property() private _config?: AutomationConfig;
+  @internalProperty() private _config?: AutomationConfig;
 
-  @property() private _dirty?: boolean;
+  @internalProperty() private _dirty?: boolean;
 
-  @property() private _errors?: string;
+  @internalProperty() private _errors?: string;
 
-  @property() private _entityId?: string;
+  @internalProperty() private _entityId?: string;
 
   protected render(): TemplateResult {
     const stateObj = this._entityId

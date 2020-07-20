@@ -7,6 +7,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -59,9 +60,9 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     return { type: "light", entity: foundEntities[0] || "" };
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: LightCardConfig;
+  @internalProperty() private _config?: LightCardConfig;
 
   private _brightnessTimout?: number;
 

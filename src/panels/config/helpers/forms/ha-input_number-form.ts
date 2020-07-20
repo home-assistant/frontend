@@ -8,6 +8,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -18,26 +19,26 @@ import { HomeAssistant } from "../../../../types";
 
 @customElement("ha-input_number-form")
 class HaInputNumberForm extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public new?: boolean;
 
   private _item?: Partial<InputNumber>;
 
-  @property() private _name!: string;
+  @internalProperty() private _name!: string;
 
-  @property() private _icon!: string;
+  @internalProperty() private _icon!: string;
 
-  @property() private _max?: number;
+  @internalProperty() private _max?: number;
 
-  @property() private _min?: number;
+  @internalProperty() private _min?: number;
 
-  @property() private _mode?: string;
+  @internalProperty() private _mode?: string;
 
-  @property() private _step?: number;
+  @internalProperty() private _step?: number;
 
   // eslint-disable-next-line: variable-name
-  @property() private _unit_of_measurement?: string;
+  @internalProperty() private _unit_of_measurement?: string;
 
   set item(item: InputNumber) {
     this._item = item;

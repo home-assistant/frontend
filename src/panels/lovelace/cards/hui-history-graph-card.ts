@@ -5,6 +5,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -46,11 +47,11 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     return { type: "history-graph", entities: foundEntities };
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _stateHistory?: any;
+  @internalProperty() private _stateHistory?: any;
 
-  @property() private _config?: HistoryGraphCardConfig;
+  @internalProperty() private _config?: HistoryGraphCardConfig;
 
   private _configEntities?: EntityConfig[];
 
@@ -148,7 +149,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   }
 
   private async _getStateHistory(): Promise<void> {
-    this._stateHistory = getRecentWithCache(
+    this._stateHistory = await getRecentWithCache(
       this.hass!,
       this._cacheConfig!.cacheKey,
       this._cacheConfig!,

@@ -25,7 +25,7 @@ export interface ClusterRowData extends Cluster {
 
 @customElement("zha-clusters-data-table")
 export class ZHAClustersDataTable extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow = false;
 

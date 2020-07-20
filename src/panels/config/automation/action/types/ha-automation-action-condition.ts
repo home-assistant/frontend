@@ -7,7 +7,7 @@ import { ActionElement } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-condition")
 export class HaConditionAction extends LitElement implements ActionElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public action!: Condition;
 

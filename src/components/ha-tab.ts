@@ -4,10 +4,10 @@ import {
   customElement,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
   html,
   queryAsync,
-  internalProperty,
   eventOptions,
 } from "lit-element";
 import "@material/mwc-ripple/mwc-ripple";

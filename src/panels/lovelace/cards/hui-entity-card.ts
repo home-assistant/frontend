@@ -5,6 +5,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -60,9 +61,9 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     };
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: EntityCardConfig;
+  @internalProperty() private _config?: EntityCardConfig;
 
   private _footerElement?: HuiErrorCard | LovelaceHeaderFooter;
 

@@ -6,15 +6,16 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fetchErrorLog } from "../../../data/error_log";
 import { HomeAssistant } from "../../../types";
 
 class ErrorLogCard extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _errorLog?: string;
+  @internalProperty() private _errorLog?: string;
 
   protected render(): TemplateResult {
     return html`

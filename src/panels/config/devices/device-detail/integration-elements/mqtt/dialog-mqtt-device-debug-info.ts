@@ -5,7 +5,7 @@ import {
   customElement,
   html,
   LitElement,
-  property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { computeStateName } from "../../../../../../common/entity/compute_state_name";
@@ -29,13 +29,13 @@ import { computeRTLDirection } from "../../../../../../common/util/compute_rtl";
 class DialogMQTTDeviceDebugInfo extends LitElement {
   public hass!: HomeAssistant;
 
-  @property() private _params?: MQTTDeviceDebugInfoDialogParams;
+  @internalProperty() private _params?: MQTTDeviceDebugInfoDialogParams;
 
-  @property() private _debugInfo?: MQTTDeviceDebugInfo;
+  @internalProperty() private _debugInfo?: MQTTDeviceDebugInfo;
 
-  @property() private _showAsYaml = true;
+  @internalProperty() private _showAsYaml = true;
 
-  @property() private _showDeserialized = true;
+  @internalProperty() private _showDeserialized = true;
 
   public async showDialog(
     params: MQTTDeviceDebugInfoDialogParams

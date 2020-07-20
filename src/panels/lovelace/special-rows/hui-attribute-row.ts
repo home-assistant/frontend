@@ -5,6 +5,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -16,9 +17,9 @@ import { createEntityNotFoundWarning } from "../components/hui-warning";
 
 @customElement("hui-attribute-row")
 class HuiAttributeRow extends LitElement implements LovelaceRow {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: AttributeRowConfig;
+  @internalProperty() private _config?: AttributeRowConfig;
 
   public setConfig(config: AttributeRowConfig): void {
     if (!config) {

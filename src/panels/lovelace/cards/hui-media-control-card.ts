@@ -8,6 +8,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   query,
   TemplateResult,
@@ -188,23 +189,23 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     return { type: "media-control", entity: foundEntities[0] || "" };
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: MediaControlCardConfig;
+  @internalProperty() private _config?: MediaControlCardConfig;
 
-  @property() private _foregroundColor?: string;
+  @internalProperty() private _foregroundColor?: string;
 
-  @property() private _backgroundColor?: string;
+  @internalProperty() private _backgroundColor?: string;
 
-  @property() private _narrow = false;
+  @internalProperty() private _narrow = false;
 
-  @property() private _veryNarrow = false;
+  @internalProperty() private _veryNarrow = false;
 
-  @property() private _cardHeight = 0;
+  @internalProperty() private _cardHeight = 0;
 
   @query("paper-progress") private _progressBar?: PaperProgressElement;
 
-  @property() private _marqueeActive = false;
+  @internalProperty() private _marqueeActive = false;
 
   private _progressInterval?: number;
 

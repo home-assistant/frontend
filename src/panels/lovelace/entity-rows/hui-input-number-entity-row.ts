@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -21,9 +22,9 @@ import { createEntityNotFoundWarning } from "../components/hui-warning";
 
 @customElement("hui-input-number-entity-row")
 class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: EntityConfig;
+  @internalProperty() private _config?: EntityConfig;
 
   private _loaded?: boolean;
 
@@ -97,7 +98,7 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
                 no-label-float
                 auto-validate
                 .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
-                .pattern="[0-9]+([\\.][0-9]+)?"
+                pattern="[0-9]+([\\.][0-9]+)?"
                 .step="${Number(stateObj.attributes.step)}"
                 .min="${Number(stateObj.attributes.min)}"
                 .max="${Number(stateObj.attributes.max)}"

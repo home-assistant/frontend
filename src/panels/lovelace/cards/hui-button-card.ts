@@ -36,6 +36,7 @@ import { hasAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { ButtonCardConfig } from "./types";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 
 @customElement("hui-button-card")
 export class HuiButtonCard extends LitElement implements LovelaceCard {
@@ -66,13 +67,14 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
       hold_action: { action: "more-info" },
       show_icon: true,
       show_name: true,
+      show_state: false,
       entity: foundEntities[0] || "",
     };
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: ButtonCardConfig;
+  @internalProperty() private _config?: ButtonCardConfig;
 
   @queryAsync("mwc-ripple") private _ripple!: Promise<Ripple | null>;
 
@@ -203,6 +205,15 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
               </span>
             `
           : ""}
+        ${this._config.show_state && stateObj
+          ? html`<span class="state">
+              ${computeStateDisplay(
+                this.hass.localize,
+                stateObj,
+                this.hass.language
+              )}
+            </span>`
+          : ""}
         ${this._shouldRenderRipple ? html`<mwc-ripple></mwc-ripple>` : ""}
       </ha-card>
     `;
@@ -280,6 +291,11 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
       ha-icon,
       span {
         outline: none;
+      }
+
+      .state {
+        font-size: 0.9rem;
+        color: var(--secondary-text-color);
       }
 
       ${iconColorCSS}

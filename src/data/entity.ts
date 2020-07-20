@@ -17,7 +17,6 @@ export const ENTITY_COMPONENT_DOMAINS = [
   "fan",
   "geo_location",
   "group",
-  "history_graph",
   "image_processing",
   "input_boolean",
   "input_datetime",

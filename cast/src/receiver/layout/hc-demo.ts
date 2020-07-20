@@ -1,4 +1,10 @@
-import { customElement, html, property, TemplateResult } from "lit-element";
+import {
+  customElement,
+  html,
+  property,
+  internalProperty,
+  TemplateResult,
+} from "lit-element";
 import { mockHistory } from "../../../../demo/src/stubs/history";
 import { LovelaceConfig } from "../../../../src/data/lovelace";
 import {
@@ -13,9 +19,9 @@ import "./hc-lovelace";
 
 @customElement("hc-demo")
 class HcDemo extends HassElement {
-  @property() public lovelacePath!: string;
+  @property({ attribute: false }) public lovelacePath!: string;
 
-  @property() private _lovelaceConfig?: LovelaceConfig;
+  @internalProperty() private _lovelaceConfig?: LovelaceConfig;
 
   protected render(): TemplateResult {
     if (!this._lovelaceConfig) {

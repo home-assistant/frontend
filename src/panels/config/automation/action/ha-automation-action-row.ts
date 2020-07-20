@@ -14,6 +14,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
 } from "lit-element";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -78,7 +79,7 @@ export const handleChangeEvent = (element: ActionElement, ev: CustomEvent) => {
 
 @customElement("ha-automation-action-row")
 export default class HaAutomationActionRow extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public action!: Action;
 
@@ -86,7 +87,7 @@ export default class HaAutomationActionRow extends LitElement {
 
   @property() public totalActions!: number;
 
-  @property() private _yamlMode = false;
+  @internalProperty() private _yamlMode = false;
 
   protected render() {
     const type = getType(this.action);
@@ -135,7 +136,7 @@ export default class HaAutomationActionRow extends LitElement {
                 ><ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
               </mwc-icon-button>
               <mwc-list-item
-                @tap=${this._switchYamlMode}
+                @request-selected=${this._switchYamlMode}
                 .disabled=${selected === -1}
               >
                 ${yamlMode
@@ -151,7 +152,7 @@ export default class HaAutomationActionRow extends LitElement {
                   "ui.panel.config.automation.editor.actions.duplicate"
                 )}
               </mwc-list-item>
-              <mwc-list-item @tap=${this._onDelete}>
+              <mwc-list-item @request-selected=${this._onDelete}>
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.actions.delete"
                 )}

@@ -11,7 +11,7 @@ import { HomeAssistant } from "../../../types";
 
 @customElement("more-info-script")
 class MoreInfoScript extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public stateObj?: HassEntity;
 

@@ -18,9 +18,9 @@ import {
   customElement,
   LitElement,
   property,
+  internalProperty,
   css,
   html,
-  internalProperty,
 } from "lit-element";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
@@ -29,7 +29,7 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { mdiClose, mdiCog, mdiPencil } from "@mdi/js";
 import { HistoryResult } from "../../data/history";
 
-const DOMAINS_NO_INFO = ["camera", "configurator", "history_graph"];
+const DOMAINS_NO_INFO = ["camera", "configurator"];
 const EDITABLE_DOMAINS_WITH_ID = ["scene", "automation"];
 const EDITABLE_DOMAINS = ["script"];
 
@@ -39,7 +39,7 @@ export interface MoreInfoDialogParams {
 
 @customElement("ha-more-info-dialog")
 export class MoreInfoDialog extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public large = false;
 
@@ -156,14 +156,16 @@ export class MoreInfoDialog extends LitElement {
           ></more-info-content>
 
           ${stateObj.attributes.restored
-            ? html`${this.hass.localize(
-                  "ui.dialogs.more_info_control.restored.not_provided"
-                )}
-                <br />
-                ${this.hass.localize(
-                  "ui.dialogs.more_info_control.restored.remove_intro"
-                )}
-                <br />
+            ? html`<p>
+                  ${this.hass.localize(
+                    "ui.dialogs.more_info_control.restored.not_provided"
+                  )}
+                </p>
+                <p>
+                  ${this.hass.localize(
+                    "ui.dialogs.more_info_control.restored.remove_intro"
+                  )}
+                </p>
                 <mwc-button class="warning" @click=${this._removeEntity}>
                   ${this.hass.localize(
                     "ui.dialogs.more_info_control.restored.remove_action"
@@ -246,6 +248,7 @@ export class MoreInfoDialog extends LitElement {
       haStyleDialog,
       css`
         ha-dialog {
+          --dialog-surface-position: static;
           --dialog-content-position: static;
         }
 
@@ -270,38 +273,43 @@ export class MoreInfoDialog extends LitElement {
             --mdc-dialog-max-width: 90vw;
           }
 
-          ha-dialog:not([data-domain="camera"]) app-toolbar {
-            max-width: 368px;
-          }
-
           .content {
             width: 352px;
           }
 
+          ha-header-bar {
+            width: 400px;
+          }
+
           .main-title {
+            overflow: hidden;
+            text-overflow: ellipsis;
             cursor: default;
           }
 
-          ha-dialog[data-domain="camera"] .content {
+          ha-dialog[data-domain="camera"] .content,
+          ha-dialog[data-domain="camera"] ha-header-bar {
             width: auto;
           }
 
-          ha-dialog[data-domain="history_graph"] .content,
           :host([large]) .content {
             width: calc(90vw - 48px);
           }
 
-          :host([large]) app-toolbar {
-            max-width: calc(90vw - 32px);
+          :host([large]) ha-dialog[data-domain="camera"] .content,
+          :host([large]) ha-header-bar {
+            width: 90vw;
           }
-        }
-
-        state-history-charts {
-          margin-top: 16px 0;
         }
 
         ha-dialog[data-domain="camera"] {
           --dialog-content-padding: 0;
+        }
+
+        state-card-content,
+        state-history-charts {
+          display: block;
+          margin-bottom: 16px;
         }
       `,
     ];

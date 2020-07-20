@@ -4,7 +4,7 @@ import {
   customElement,
   html,
   LitElement,
-  property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { ifDefined } from "lit-html/directives/if-defined";
@@ -21,7 +21,7 @@ import { IconElementConfig, LovelaceElement } from "./types";
 export class HuiIconElement extends LitElement implements LovelaceElement {
   public hass?: HomeAssistant;
 
-  @property() private _config?: IconElementConfig;
+  @internalProperty() private _config?: IconElementConfig;
 
   public setConfig(config: IconElementConfig): void {
     if (!config.icon) {

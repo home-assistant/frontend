@@ -62,7 +62,7 @@ const integrationsWithPanel = {
 
 @customElement("ha-integration-card")
 export class HaIntegrationCard extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public domain!: string;
 
@@ -231,7 +231,7 @@ export class HaIntegrationCard extends LitElement {
             >
               <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
             </mwc-icon-button>
-            <mwc-list-item @click=${this._showSystemOptions}>
+            <mwc-list-item @request-selected=${this._showSystemOptions}>
               ${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.system_options"
               )}
@@ -255,7 +255,10 @@ export class HaIntegrationCard extends LitElement {
                     </mwc-list-item>
                   </a>
                 `}
-            <mwc-list-item class="warning" @click=${this._removeIntegration}>
+            <mwc-list-item
+              class="warning"
+              @request-selected=${this._removeIntegration}
+            >
               ${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.delete"
               )}

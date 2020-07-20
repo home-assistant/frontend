@@ -1,5 +1,10 @@
 import "@polymer/app-route/app-location";
-import { html, property, PropertyValues, customElement } from "lit-element";
+import {
+  html,
+  internalProperty,
+  PropertyValues,
+  customElement,
+} from "lit-element";
 import { navigate } from "../common/navigate";
 import { getStorageDefaultPanelUrlPath } from "../data/panel";
 import "../resources/custom-card-support";
@@ -15,11 +20,11 @@ import { storeState } from "../util/ha-pref-storage";
 
 @customElement("home-assistant")
 export class HomeAssistantAppEl extends HassElement {
-  @property() private _route?: Route;
+  @internalProperty() private _route?: Route;
 
-  @property() private _error = false;
+  @internalProperty() private _error = false;
 
-  @property() private _panelUrl?: string;
+  @internalProperty() private _panelUrl?: string;
 
   private _haVersion?: string;
 

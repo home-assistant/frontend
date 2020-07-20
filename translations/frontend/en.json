@@ -430,6 +430,8 @@
                 "activate": "Activate"
             },
             "script": {
+                "cancel": "Cancel",
+                "cancel_multiple": "Cancel {number}",
                 "execute": "Execute"
             },
             "service": {
@@ -949,10 +951,10 @@
                             "description": "The mode controls what happens when the automation is triggered while the actions are still running from a previous trigger. Check the {documentation_link} for more info.",
                             "documentation": "automation documentation",
                             "label": "Mode",
-                            "parallel": "Parallel (default)",
+                            "parallel": "Parallel",
                             "queued": "Queued",
                             "restart": "Restart",
-                            "single": "Single"
+                            "single": "Single (default)"
                         },
                         "move_down": "Move down",
                         "move_up": "Move up",
@@ -1662,6 +1664,7 @@
                             "introduction": "Entities that do not belong to a device can be set here.",
                             "without_device": "Entities without device"
                         },
+                        "icon": "Icon",
                         "introduction": "Use scenes to bring your home alive.",
                         "load_error_not_editable": "Only scenes in scenes.yaml are editable.",
                         "load_error_unknown": "Error loading scene ({err_no}).",
@@ -1695,6 +1698,10 @@
                         "delete_confirm": "Are you sure you want to delete this script?",
                         "delete_script": "Delete script",
                         "header": "Script: {name}",
+                        "icon": "Icon",
+                        "id": "Entity ID",
+                        "id_already_exists": "This ID already exists",
+                        "id_already_exists_save_error": "You can't save this script because the ID is not unique, pick another ID or leave it blank to automatically generate one.",
                         "introduction": "Use scripts to execute a sequence of actions.",
                         "link_available_actions": "Learn more about available actions.",
                         "load_error_not_editable": "Only scripts inside scripts.yaml are editable.",
@@ -1808,7 +1815,7 @@
                         "discovered_text": "Devices will show up here once discovered.",
                         "discovery_text": "Discovered devices will show up here. Follow the instructions for your device(s) and place the device(s) in pairing mode.",
                         "header": "Zigbee Home Automation - Add Devices",
-                        "no_devices_found": "No devices where found, make sure they are in paring mode and keep them awake while discovering is running.",
+                        "no_devices_found": "No devices were found, make sure they are in paring mode and keep them awake while discovering is running.",
                         "pairing_mode": "Make sure your devices are in pairing mode. Check the instructions of your device on how to do this.",
                         "search_again": "Search Again",
                         "spinner": "Searching for ZHA Zigbee devices..."
@@ -2332,6 +2339,7 @@
                     },
                     "edit_card": {
                         "add": "Add Card",
+                        "confirm_cancel": "Are you sure you want to cancel?",
                         "delete": "Delete Card",
                         "duplicate": "Duplicate Card",
                         "edit": "Edit",
@@ -2342,7 +2350,8 @@
                         "pick_card_view_title": "Which card would you like to add to your {name} view?",
                         "show_code_editor": "Show Code Editor",
                         "show_visual_editor": "Show Visual Editor",
-                        "toggle_editor": "Toggle Editor"
+                        "toggle_editor": "Toggle Editor",
+                        "unsaved_changes": "You have unsaved changes"
                     },
                     "edit_lovelace": {
                         "edit_title": "Edit title",

@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
@@ -46,14 +47,14 @@ const configIsExposed = (config: AlexaEntityConfig) =>
 
 @customElement("cloud-alexa")
 class CloudAlexa extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property()
   public cloudStatus!: CloudStatusLoggedIn;
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @property() private _entities?: AlexaEntity[];
+  @internalProperty() private _entities?: AlexaEntity[];
 
   @property()
   private _entityConfigs: CloudPreferences["alexa_entity_configs"] = {};
@@ -323,7 +324,7 @@ class CloudAlexa extends LitElement {
         color: var(--primary-text-color);
         background-color: var(
           --ha-card-background,
-          var(--paper-card-background-color, white)
+          var(--card-background-color, white)
         );
         padding: 16px 8px;
         text-align: center;

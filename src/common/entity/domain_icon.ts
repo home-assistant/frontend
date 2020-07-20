@@ -20,7 +20,6 @@ const fixedIcons = {
   fan: "hass:fan",
   google_assistant: "hass:google-assistant",
   group: "hass:google-circles-communities",
-  history_graph: "hass:chart-line",
   homeassistant: "hass:home-assistant",
   homekit: "hass:home-automation",
   humidifier: "hass:air-humidifier",
@@ -49,7 +48,6 @@ const fixedIcons = {
   vacuum: "hass:robot-vacuum",
   water_heater: "hass:thermometer",
   weather: "hass:weather-cloudy",
-  weblink: "hass:open-in-new",
   zone: "hass:map-marker-radius",
 };
 

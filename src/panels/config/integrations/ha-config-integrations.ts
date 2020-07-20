@@ -12,6 +12,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -91,7 +92,7 @@ const groupByIntegration = (
 
 @customElement("ha-config-integrations")
 class HaConfigIntegrations extends SubscribeMixin(LitElement) {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
 
@@ -101,24 +102,28 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
 
   @property() public route!: Route;
 
-  @property() private _configEntries?: ConfigEntryExtended[];
+  @internalProperty() private _configEntries?: ConfigEntryExtended[];
 
   @property()
   private _configEntriesInProgress: DataEntryFlowProgressExtended[] = [];
 
-  @property() private _entityRegistryEntries: EntityRegistryEntry[] = [];
+  @internalProperty()
+  private _entityRegistryEntries: EntityRegistryEntry[] = [];
 
-  @property() private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
+  @internalProperty()
+  private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
 
-  @property() private _manifests!: { [domain: string]: IntegrationManifest };
+  @internalProperty() private _manifests!: {
+    [domain: string]: IntegrationManifest;
+  };
 
-  @property() private _showIgnored = false;
+  @internalProperty() private _showIgnored = false;
 
-  @property() private _searchParms = new URLSearchParams(
+  @internalProperty() private _searchParms = new URLSearchParams(
     window.location.hash.substring(1)
   );
 
-  @property() private _filter?: string;
+  @internalProperty() private _filter?: string;
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -279,7 +284,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           >
             <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
           </mwc-icon-button>
-          <mwc-list-item @click=${this._toggleShowIgnored}>
+          <mwc-list-item @request-selected=${this._toggleShowIgnored}>
             ${this.hass.localize(
               this._showIgnored
                 ? "ui.panel.config.integrations.ignore.hide_ignored"
