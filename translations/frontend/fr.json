@@ -951,7 +951,7 @@
                             "description": "Le mode contrôle ce qui se passe lorsque l’automatisation est déclenchée alors que les actions sont toujours en cours d’exécution à partir d’un déclencheur précédent. Consultez le {documentation_link} pour plus d’informations.",
                             "documentation": "documentation d'automatisation",
                             "label": "Mode",
-                            "parallel": "Parallèle (par défaut)",
+                            "parallel": "Parallèle",
                             "queued": "En attente",
                             "restart": "Redémarrer",
                             "single": "Unique (par défaut)"
