@@ -17,6 +17,7 @@ import "./ha-svg-icon";
 import "@polymer/paper-input/paper-input";
 import "@material/mwc-list/mwc-list";
 import "./date-range-picker";
+import { computeRTLDirection } from "../common/util/compute_rtl";
 
 export interface DateRangePickerRanges {
   [key: string]: [Date, Date];
@@ -36,11 +37,14 @@ export class HaDateRangePicker extends LitElement {
 
   @property({ type: Boolean }) private _hour24format = false;
 
+  @property({ type: String }) private _rtlDirection = "ltr";
+
   protected updated(changedProps: PropertyValues) {
     if (changedProps.has("hass")) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
       if (!oldHass || oldHass.language !== this.hass.language) {
         this._hour24format = this._compute24hourFormat();
+        this._rtlDirection = computeRTLDirection(this.hass);
       }
     }
   }
@@ -76,7 +80,11 @@ export class HaDateRangePicker extends LitElement {
           ></paper-input>
         </div>
         ${this.ranges
-          ? html`<div slot="ranges" class="date-range-ranges">
+          ? html`<div
+              slot="ranges"
+              class="date-range-ranges"
+              .dir=${this._rtlDirection}
+            >
               <mwc-list @request-selected=${this._setDateRange}>
                 ${Object.entries(this.ranges).map(
                   ([name, dates]) => html`<mwc-list-item
