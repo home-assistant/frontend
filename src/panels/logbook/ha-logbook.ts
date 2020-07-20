@@ -42,7 +42,11 @@ class HaLogbook extends LitElement {
   }
 
   protected updated(_changedProps: PropertyValues) {
-    this._rtl = computeRTL(this.hass);
+    const oldHass = _changedProps.get("hass") as HomeAssistant | undefined;
+
+    if (oldHass === undefined || oldHass.language !== this.hass.language) {
+      this._rtl = computeRTL(this.hass);
+    }
   }
 
   protected render(): TemplateResult {
