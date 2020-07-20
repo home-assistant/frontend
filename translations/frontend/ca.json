@@ -951,10 +951,10 @@
                             "description": "El mode controla què passa quan es dispara l'automatització i encara hi ha accions executant-se d'un disparament anterior. Consulta {documentation_link} per a més informació.",
                             "documentation": "documentació d'automatització",
                             "label": "Mode",
-                            "parallel": "Paral·lel (per defecte)",
+                            "parallel": "Paral·lel",
                             "queued": "A la cua",
                             "restart": "Reinicia",
-                            "single": "Individual"
+                            "single": "Individual (per defecte)"
                         },
                         "move_down": "Mou avall",
                         "move_up": "Mou amunt",
@@ -1815,7 +1815,7 @@
                         "discovered_text": "Els dispositius apareixeran aquí un cop descoberts.",
                         "discovery_text": "Els dispositius descoberts apareixeran aquí. Segueix les instruccions del/s teu/s dispositiu/s i posa el dispositiu/s en mode d'emparellament.",
                         "header": "Domòtica amb Zigbee - Afegir dispositius",
-                        "no_devices_found": "No s'han trobat dispositius, assegura't que estiguin en mode vinculació i manten-los desperts mentre estiguin intentant ser descoberts.",
+                        "no_devices_found": "No s'han trobat dispositius, assegura't que estiguin en mode vinculació i manten-los desperts mentre s'estiguin descoberint.",
                         "pairing_mode": "Assegura't que els dispositiu estiguin en mode vinculació. Consulta les instruccions del dispositiu per saber com fer-ho.",
                         "search_again": "Torna a cercar",
                         "spinner": "S'estan cercant dispositius ZHA Zigbee..."

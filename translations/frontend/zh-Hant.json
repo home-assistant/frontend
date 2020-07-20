@@ -1815,7 +1815,7 @@
                         "discovered_text": "於探索到設備後將顯示於此處。",
                         "discovery_text": "所發現的設備將會顯示於此。跟隨設備的指示並將其設定為配對模式。",
                         "header": "Zigbee 家庭自動化 - 新增設備",
-                        "no_devices_found": "找不到設備，請確定設備處於配對模式、並於探索時保成喚醒狀態。",
+                        "no_devices_found": "找不到設備，請確定設備處於配對模式、並於探索時保持喚醒狀態。",
                         "pairing_mode": "請確定設備處於配對模式中，參閱設備的手冊以了解如何進行操作。",
                         "search_again": "再次搜尋",
                         "spinner": "正在搜尋 ZHA Zigbee 設備..."
@@ -2339,6 +2339,7 @@
                     },
                     "edit_card": {
                         "add": "新增面板",
+                        "confirm_cancel": "確定要取消？",
                         "delete": "刪除面板",
                         "duplicate": "複製面板",
                         "edit": "編輯",
@@ -2349,7 +2350,8 @@
                         "pick_card_view_title": "要加入 {name} 視圖的面板？",
                         "show_code_editor": "顯示編碼編輯器",
                         "show_visual_editor": "顯示視覺編輯器",
-                        "toggle_editor": "切換編輯器"
+                        "toggle_editor": "切換編輯器",
+                        "unsaved_changes": "有未儲存變更"
                     },
                     "edit_lovelace": {
                         "edit_title": "編輯標題",
