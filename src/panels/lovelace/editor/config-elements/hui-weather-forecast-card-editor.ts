@@ -39,7 +39,7 @@ export class HuiWeatherForecastCardEditor extends LitElement
 
   public setConfig(config: WeatherForecastCardConfig): void {
     assert(config, cardConfigStruct);
-    this._config = { ...config };
+    this._config = config;
   }
 
   get _entity(): string {
@@ -139,6 +139,7 @@ export class HuiWeatherForecastCardEditor extends LitElement
     }
     if (target.configValue) {
       if (target.value === "") {
+        this._config = { ...this._config };
         delete this._config[target.configValue!];
       } else {
         this._config = {
