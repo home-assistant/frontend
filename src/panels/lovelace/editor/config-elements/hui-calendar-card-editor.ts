@@ -8,23 +8,28 @@ import {
 } from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { HomeAssistant } from "../../../../types";
-import type {
-  CalendarCardConfig,
-  EntitiesCardEntityConfig,
-} from "../../cards/types";
-import { struct } from "../../common/structs/struct";
+import type { CalendarCardConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
 import "../../../../components/entity/ha-entities-picker";
 import "../../components/hui-theme-select-editor";
 import type { LovelaceCardEditor } from "../../types";
 import type { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import {
+  string,
+  optional,
+  object,
+  boolean,
+  array,
+  union,
+  assert,
+} from "superstruct";
 
-const cardConfigStruct = struct({
-  type: "string",
-  title: "string|number?",
-  theme: "string?",
-  entities: ["string"],
+const cardConfigStruct = object({
+  type: string(),
+  title: optional(union([string(), boolean()])),
+  theme: optional(string()),
+  entities: array(string()),
 });
 
 @customElement("hui-calendar-card-editor")
@@ -34,11 +39,12 @@ export class HuiCalendarCardEditor extends LitElement
 
   @property({ attribute: false }) private _config?: CalendarCardConfig;
 
-  @internalProperty() private _configEntities?: EntitiesCardEntityConfig[];
+  @internalProperty() private _configEntities?: string[];
 
   public setConfig(config: CalendarCardConfig): void {
-    config = cardConfigStruct(config);
+    assert(config, cardConfigStruct);
     this._config = config;
+    this._configEntities = config.entities;
   }
 
   get _title(): string {
@@ -83,8 +89,8 @@ export class HuiCalendarCardEditor extends LitElement
         ")"}
       </h3>
       <ha-entities-picker
-        .hass=${this.hass}
-        .value=${this._configEntities?.map((e) => e.entity)}
+        .hass=${this.hass!}
+        .value=${this._configEntities}
         .includeDomains=${["calendar"]}
         @value-changed=${this._valueChanged}
       >
@@ -104,7 +110,9 @@ export class HuiCalendarCardEditor extends LitElement
     }
 
     if (ev.detail && ev.detail.value && Array.isArray(ev.detail.value)) {
-      this._config.entities = ev.detail.value;
+      this._config = { ...this._config, entities: ev.detail.value };
+
+      console.log(ev);
     } else if (target.configValue) {
       if (target.value === "") {
         delete this._config[target.configValue!];
