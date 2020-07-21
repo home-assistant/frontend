@@ -205,6 +205,7 @@
             "stopped": "Stöðvuð"
         },
         "default": {
+            "off": "Slökkt",
             "on": "Á",
             "unavailable": "Ekki tiltækt",
             "unknown": "Óþekkt"
@@ -402,6 +403,8 @@
                 "activate": "Virkja"
             },
             "script": {
+                "cancel": "Hætta við",
+                "cancel_multiple": "Hætta við {number}",
                 "execute": "Framkvæma"
             },
             "service": {
@@ -489,6 +492,9 @@
                 "clear": "Hreinsa",
                 "show_areas": "Birta svæði"
             },
+            "data-table": {
+                "search": "Leita"
+            },
             "date-range-picker": {
                 "end_date": "Loka dagsetning",
                 "select": "Velja",
@@ -568,6 +574,7 @@
                     "time": "Tími"
                 },
                 "input_number": {
+                    "box": "Innsláttarreitur",
                     "max": "Hámarksgildi",
                     "min": "Lágmarksgildi",
                     "mode": "Birtingarmáti",
@@ -607,6 +614,7 @@
                     "title": "Uppfærslu leiðbeiningar"
                 },
                 "vacuum": {
+                    "locate": "Staðsetja",
                     "pause": "Hlé",
                     "start": "Byrja",
                     "status": "Staða",
@@ -645,6 +653,7 @@
                 "unknown": "Óþekkt",
                 "zha_device_card": {
                     "area_picker_label": "Svæði",
+                    "device_name_placeholder": "Breyta nafni á tæki",
                     "update_name_button": "Uppfæra nafn"
                 }
             }
@@ -686,6 +695,7 @@
                     "description": "Yfirlit yfir öll svæði á heimilinu þínu.",
                     "editor": {
                         "create": "STOFNA",
+                        "default_name": "Nýtt svæði",
                         "delete": "EYÐA",
                         "name": "Nafn",
                         "name_required": "Nafn er skilyrt",
@@ -817,10 +827,16 @@
                             "label": "Lýsing",
                             "placeholder": "Valfrjáls lýsing"
                         },
+                        "edit_ui": "Breyta í viðmóti",
+                        "edit_yaml": "Breyta sem YAML",
                         "enable_disable": "Virkja/slökkva á sjálfvirkni",
                         "introduction": "Notaðu sjálfvirkni til að glæða húsið þitt lífi",
                         "load_error_not_editable": "Eingöngu er hægt að breyta sjálfvirkni í automations.yaml",
                         "load_error_unknown": "Villa kom upp við að hlaða inn sjálfvirkni  ({err_no}).",
+                        "modes": {
+                            "label": "Hamur",
+                            "restart": "Endurræsa"
+                        },
                         "move_down": "Færa niður",
                         "move_up": "Færa upp",
                         "save": "Vista",
@@ -966,6 +982,7 @@
                     "description_login": "Innskráð(ur) sem {email}",
                     "description_not_login": "Ekki skráð(ur) inn",
                     "dialog_certificate": {
+                        "certificate_information": "Upplýsingar um skilríki",
                         "close": "Loka",
                         "fingerprint": "Fingrafar skilríkis:"
                     },
@@ -1055,9 +1072,11 @@
                         "actions": {
                             "caption": "Þegar eitthvað er ræst af kveikju..."
                         },
+                        "automations": "Sjálfvirkni",
                         "conditions": {
                             "caption": "Bara framkvæma eitthvað ef..."
                         },
+                        "no_automations": "Engin sjálfvirkni",
                         "triggers": {
                             "caption": "Framkvæma eitthvað þegar..."
                         }
@@ -1070,6 +1089,7 @@
                         "device": "Tæki",
                         "integration": "Samþætting",
                         "manufacturer": "Framleiðandi",
+                        "model": "Gerð",
                         "no_area": "Ekkert svæði",
                         "no_devices": "Engin tæki"
                     },
@@ -1121,6 +1141,7 @@
                             "button": "Fjarlægja val",
                             "confirm_title": "Viltu fjarlægja {number} einingar?"
                         },
+                        "search": "Leita í einingum",
                         "selected": "{number} valin",
                         "status": {
                             "disabled": "Afvirkjað",
@@ -1155,6 +1176,7 @@
                     }
                 },
                 "info": {
+                    "built_using": "Byggt með",
                     "caption": "Upplýsingar",
                     "documentation": "Skjölun",
                     "icons_by": "Smátákn eftir",
@@ -1214,7 +1236,9 @@
                     "integration_not_found": "Samþætting fannst ekki.",
                     "new": "Setja upp nýja samþættingu",
                     "none": "Ekkert skilgreint sem stendur",
-                    "none_found": "Engar samþættingar fundust"
+                    "none_found": "Engar samþættingar fundust",
+                    "note_about_integrations": "Það er ekki er hægt að stilla allar samþættingar í gegnum viðmótið ennþá.",
+                    "search": "Leita í samþættingum"
                 },
                 "introduction": "Hér er mögulegt að stilla af íhluti og Home Assistant. Því miður er ekki hægt að breyta öllu í gegnum viðmótið ennþá, en við erum að vinna í því.",
                 "logs": {
@@ -1319,8 +1343,10 @@
                         "entities": {
                             "add": "Bæta við einingu",
                             "delete": "Eyða einingu",
-                            "header": "Einingar"
+                            "header": "Einingar",
+                            "without_device": "Einingar án tækja"
                         },
+                        "icon": "Táknmynd",
                         "load_error_not_editable": "Það er eingöngu hægt að breyta senum í scenes.yaml.",
                         "name": "Nafn",
                         "save": "Vista"
@@ -1345,7 +1371,13 @@
                     "description": "Búa til og breyta skriftum",
                     "editor": {
                         "alias": "Nafn",
-                        "link_available_actions": "Læra meira um tiltækar aðgerðir."
+                        "icon": "Táknmynd",
+                        "link_available_actions": "Læra meira um tiltækar aðgerðir.",
+                        "modes": {
+                            "label": "Hamur",
+                            "restart": "Endurræsa"
+                        },
+                        "sequence": "Röð"
                     },
                     "picker": {
                         "headers": {
@@ -1508,10 +1540,12 @@
                     "node_management": {
                         "add_to_group": "Bæta í hóp",
                         "entity_info": "Upplýsingar um einingu",
-                        "group": "Hópur"
+                        "group": "Hópur",
+                        "remove_from_group": "Fjarlægja úr hóp"
                     },
                     "ozw_log": {
-                        "header": "OZW annáll"
+                        "header": "OZW annáll",
+                        "load": "Hlaða"
                     },
                     "services": {
                         "cancel_command": "Hætta við skipun",
@@ -1545,7 +1579,9 @@
                     },
                     "states": {
                         "current_entities": "Tiltækar einingar",
+                        "entity": "Eining",
                         "more_info": "Frekari upplýsingar",
+                        "no_entities": "Engar einingar",
                         "set_state": "Setja stöðu",
                         "state": "Staða",
                         "title": "Stöður"
@@ -1652,6 +1688,7 @@
                             "minimum": "Lágmark",
                             "name": "Nafn",
                             "no_theme": "Ekkert þema",
+                            "search": "Leita",
                             "show_icon": "Birta táknmynd?",
                             "show_name": "Birta nafn?",
                             "show_state": "Birta stöðu?",
@@ -1693,6 +1730,7 @@
                             "name": "Mynd"
                         },
                         "plant-status": {
+                            "description": "Staða plöntu kortið er fyrir alla grasafræðingana þarna úti.",
                             "name": "Staða plöntu"
                         },
                         "sensor": {
@@ -1718,6 +1756,7 @@
                     },
                     "edit_card": {
                         "add": "Bæta við spjaldi",
+                        "confirm_cancel": "Ertu viss um að þú viljir hætta við?",
                         "delete": "Eyða",
                         "edit": "Breyta",
                         "header": "Stillingar spjalds",
@@ -1726,10 +1765,12 @@
                         "pick_card": "Veldu spjald sem þú vilt bæta við.",
                         "show_code_editor": "Birta kóða ritil",
                         "show_visual_editor": "Birta sjónrænan ritil",
-                        "toggle_editor": "Víxla ritli"
+                        "toggle_editor": "Víxla ritli",
+                        "unsaved_changes": "Þú ert með óvistaðar breytingar"
                     },
                     "edit_lovelace": {
-                        "edit_title": "Breyta titli"
+                        "edit_title": "Breyta titli",
+                        "title": "Titill"
                     },
                     "edit_view": {
                         "add": "Bæta við sýn",
@@ -1748,6 +1789,7 @@
                         "migrate": "Uppfæra stillingar"
                     },
                     "raw_editor": {
+                        "error_save_yaml": "Ekki tókst að vista YAML: {error}",
                         "header": "Breyta stillingum",
                         "save": "Vista",
                         "saved": "Vistað",
@@ -1865,6 +1907,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "Tölvan þín er ekki leyfð.",
                                 "not_whitelisted": "Tölvan þín er ekki hvítlistuð."
                             },
                             "step": {

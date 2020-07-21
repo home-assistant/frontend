@@ -48,6 +48,19 @@
                 "none": "Noben",
                 "sleep": "Spanje"
             }
+        },
+        "humidifier": {
+            "mode": {
+                "auto": "Samodejno",
+                "away": "Odsoten",
+                "baby": "Otrok",
+                "boost": "Povečanje",
+                "comfort": "Udobje",
+                "eco": "Eko",
+                "home": "Doma",
+                "normal": "Normalno",
+                "sleep": "Spanje"
+            }
         }
     },
     "state_badge": {
@@ -388,6 +401,12 @@
                 "reverse": "Obratno",
                 "speed": "Hitrost"
             },
+            "humidifier": {
+                "humidity": "Ciljna vlažnost",
+                "mode": "Način",
+                "on_entity": "{name} vklopljeno",
+                "target_humidity_entity": "{name} ciljna vlažnost"
+            },
             "light": {
                 "brightness": "Svetlost",
                 "color_temperature": "Temperatura barve",
@@ -411,6 +430,8 @@
                 "activate": "Aktiviraj"
             },
             "script": {
+                "cancel": "Prekliči",
+                "cancel_multiple": "Prekliči {number}",
                 "execute": "Izvedi"
             },
             "service": {
@@ -505,6 +526,14 @@
                 "area": "Območje",
                 "clear": "Počisti",
                 "show_areas": "Pokaži cone"
+            },
+            "data-table": {
+                "search": "Iskanje"
+            },
+            "date-range-picker": {
+                "end_date": "Končni datum",
+                "select": "Izberite",
+                "start_date": "Začetni datum"
             },
             "device-picker": {
                 "clear": "Počisti",
@@ -622,7 +651,7 @@
                     "pattern": "Vzorec Regex za validacijo na strani odjemalca",
                     "text": "Besedilo"
                 },
-                "platform_not_loaded": "Integracija {platform} ni naložena. Dodajte svojo konfiguracijo bodisi tako, da dodate 'default_config:' 'ali \"{platform} :\".",
+                "platform_not_loaded": "Integracija {platform} ni naložena. Prosimo, dodajte ga v svojo konfiguracijo tako, da dodate 'default_config: 'ali' ' {platform} :' '.",
                 "required_error_msg": "To polje je obvezno",
                 "yaml_not_editable": "Nastavitev te entitete ni mogoče urejati iz uporabniškega vmesnika. Od tam se lahko konfigurirajo samo entitete, nastavljene iz uporabniškega vmesnika."
             },
@@ -695,6 +724,7 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Dodajte naprave prek te naprave",
+                    "clusters": "Upravljanje gruč",
                     "reconfigure": "Ponovno konfigurirajte napravo",
                     "remove": "Odstranite napravo",
                     "zigbee_information": "Podpis naprave Zigbee"
@@ -913,6 +943,19 @@
                         "introduction": "Uporabite avtomatizacije za oživitev vašega doma.",
                         "load_error_not_editable": "Urejati je mogoče le avtomatizacije v automations.yaml.",
                         "load_error_unknown": "Napaka pri nalaganju avtomatizacije ({err_no}).",
+                        "max": {
+                            "parallel": "Največje število vzporednih tokov",
+                            "queued": "Dolžina čakalne vrste"
+                        },
+                        "modes": {
+                            "description": "Način nadzoruje, kaj se zgodi, ko se avtomatizacija sproži, medtem, ko dejanja od prejšnjega sprožilca še vedno tečejo. Oglejte si {documentation_link} za več informacij.",
+                            "documentation": "dokumentacija za avtomatizacijo",
+                            "label": "Način",
+                            "parallel": "Vzporedno",
+                            "queued": "V čakalni vrsti",
+                            "restart": "Ponovni zagon",
+                            "single": "Enojno (privzeta nastavitev)"
+                        },
                         "move_down": "Premakni navzdol",
                         "move_up": "Premakni navzgor",
                         "save": "Shrani",
@@ -1331,6 +1374,7 @@
                             "confirm_text": "Če vsebujejo te entitete, bi jih morali odstraniti iz vašega Lovelace config-a in avtomatizacije.",
                             "confirm_title": "Ali želite odstraniti {number} entiteto-i/e?"
                         },
+                        "search": "Iskanje subjektov",
                         "selected": "{številka} izbrana/ih",
                         "status": {
                             "disabled": "Onemogočeno",
@@ -1361,7 +1405,8 @@
                             "entity_id": "ID subjekta",
                             "name": "Ime",
                             "type": "Vrsta"
-                        }
+                        },
+                        "no_helpers": "Zdi se, da še nimate pomočnikov!"
                     },
                     "types": {
                         "input_boolean": "Preklopite",
@@ -1406,6 +1451,7 @@
                         "delete_confirm": "Ali ste prepričani, da želite izbrisati to integracijo?",
                         "device_unavailable": "naprava ni na voljo",
                         "devices": "{count} {count, plural,\n  one {naprava}\n  other {naprav}\n}",
+                        "documentation": "Dokumentacija",
                         "entities": "{count} {count, plural,\n  one {entiteta}\n  other {entitet}\n}",
                         "entity_unavailable": "entiteta ni na voljo",
                         "firmware": "Firmware: {version}",
@@ -1464,7 +1510,8 @@
                     "note_about_integrations": "Vseh integracij še ni mogoče konfigurirati prek uporabniškega vmesnika.",
                     "note_about_website_reference": "Več jih je na voljo prek",
                     "rename_dialog": "Uredite ime tega vnosa konfiguracije",
-                    "rename_input_label": "Ime vnosa"
+                    "rename_input_label": "Ime vnosa",
+                    "search": "Iskanje integracij"
                 },
                 "introduction": "Tukaj je mogoče konfigurirati vaše komponente in Home Assistanta. Vsega ni mogoče konfigurirati iz uporabniškega vmesnika (vendar delamo na tem).",
                 "logs": {
@@ -1558,6 +1605,7 @@
                     }
                 },
                 "mqtt": {
+                    "button": "Konfiguriraj",
                     "description_listen": "Poslušajte temi",
                     "description_publish": "Objavi paket",
                     "listening_to": "Poslušanje",
@@ -1616,6 +1664,7 @@
                             "introduction": "Tu lahko nastavite subjekte, ki ne pripadajo napravi.",
                             "without_device": "Entitete brez naprave"
                         },
+                        "icon": "Ikona",
                         "introduction": "Uporabite scene, da oživite svoj dom.",
                         "load_error_not_editable": "Urejajo se lahko samo scene v scene.yaml.",
                         "load_error_unknown": "Napaka pri nalaganju scene ({err_no}).",
@@ -1649,9 +1698,26 @@
                         "delete_confirm": "Ali ste prepričani, da želite izbrisati to skripto?",
                         "delete_script": "Izbriši skripto",
                         "header": "Skripta: {name}",
+                        "icon": "Ikona",
+                        "id": "ID subjekta",
+                        "id_already_exists": "Ta ID že obstaja",
+                        "id_already_exists_save_error": "Te skripte ne morete shraniti, ker ID ni edinstven, izberite drug ID ali ga pustite prazno, da ga samodejno ustvari.",
                         "introduction": "Uporabite skripte za izvajanje zaporedij dejanj.",
                         "link_available_actions": "Preberite več o razpoložljivih dejanjih.",
                         "load_error_not_editable": "Urejati je mogoče le skripte znotraj scripts.yaml.",
+                        "max": {
+                            "parallel": "Največje število vzporednih tokov",
+                            "queued": "Dolžina čakalne vrste"
+                        },
+                        "modes": {
+                            "description": "Način nadzoruje, kaj se zgodi, ko se prikliče skripta, medtem ko še vedno teče iz enega ali več prejšnjih klicev. Oglejte si {documentation_link} za več informacij.",
+                            "documentation": "skripta dokumentacija",
+                            "label": "Način",
+                            "parallel": "Vzporedno",
+                            "queued": "V čakalni vrsti",
+                            "restart": "Ponovni zagon",
+                            "single": "Enojno (privzeta nastavitev)"
+                        },
                         "sequence": "Zaporedje",
                         "sequence_sentence": "Zaporedje dejanj te skripte."
                     },
@@ -1749,7 +1815,7 @@
                         "discovered_text": "Naprave se bodo prikazale tukaj, ko jih odkrijemo.",
                         "discovery_text": "Tukaj bodo prikazane odkrite naprave. Sledite navodilom za napravo in jo postavite v način seznanjanja.",
                         "header": "Zigbee Home Automation - Dodaj naprave",
-                        "no_devices_found": "Najdene ni bilo nobene naprave, preverite, ali so v načinu združevanje ter jih držite budne medtem, ko je v odkrivanje v teku.",
+                        "no_devices_found": "Nobene naprave ni bilo mogoče najti, preverite, ali so v stanju pripravljenosti, in bodite budni, medtem ko odkritje teče.",
                         "pairing_mode": "Prepričajte se, da so vaše naprave v načinu združevanja. Preverite navodila svoje naprave, kako to storiti.",
                         "search_again": "Ponovno iskanje",
                         "spinner": "Iskanje ZHA Zigbee naprav..."
@@ -2035,11 +2101,23 @@
             },
             "history": {
                 "period": "Obdobje",
+                "ranges": {
+                    "last_week": "Prejšnji teden",
+                    "this_week": "Ta teden",
+                    "today": "Danes",
+                    "yesterday": "Včeraj"
+                },
                 "showing_entries": "Prikaz vnosov za"
             },
             "logbook": {
                 "entries_not_found": "Ni vpisov v dnevnike.",
                 "period": "Obdobje",
+                "ranges": {
+                    "last_week": "Prejšnji teden",
+                    "this_week": "Ta teden",
+                    "today": "Danes",
+                    "yesterday": "Včeraj"
+                },
                 "showing_entries": "Prikaz vnosov za"
             },
             "lovelace": {
@@ -2155,6 +2233,7 @@
                             "name": "Ime",
                             "no_theme": "Brez teme",
                             "refresh_interval": "Interval osveževanja",
+                            "search": "Iskanje",
                             "secondary_info_attribute": "Atributi sekundarnih informacij",
                             "show_icon": "Prikaži ikono?",
                             "show_name": "Prikaži ime?",
@@ -2178,6 +2257,10 @@
                         "horizontal-stack": {
                             "description": "Kartica Horizontal stack vam omogoča, da skupaj zložite več kart, tako da vedno stojijo drug poleg drugega v razmaku enega stolpca.",
                             "name": "Vodoravna skladnica"
+                        },
+                        "humidifier": {
+                            "description": "Kartica \"humidifier\" omogoča nadzor nad vašo vlažilno enoto. Omogoča vam, da spremenite vlažnost in način dela entitete.",
+                            "name": "Vlažilec"
                         },
                         "iframe": {
                             "description": "Kartica webpage vam omogoča, da svojo najljubšo spletno stran vdelate Home Assistant.",
@@ -2256,6 +2339,7 @@
                     },
                     "edit_card": {
                         "add": "Dodaj kartico",
+                        "confirm_cancel": "Ali ste prepričani, da želite preklicati?",
                         "delete": "Izbriši kartico",
                         "duplicate": "Podvoji kartico",
                         "edit": "Uredi",
@@ -2266,12 +2350,14 @@
                         "pick_card_view_title": "Katero kartico želite dodati v pogled {name}?",
                         "show_code_editor": "Pokaži urejevalnik kode",
                         "show_visual_editor": "Pokaži vizualni urejevalnik",
-                        "toggle_editor": "Preklop na urejevalnik"
+                        "toggle_editor": "Preklop na urejevalnik",
+                        "unsaved_changes": "Imate neshranjene spremembe"
                     },
                     "edit_lovelace": {
                         "edit_title": "Uredi naslov",
                         "explanation": "Ta naslov je prikazan predvsem nad vašimi pogledi v uporabniškem vmesniku Lovelace.",
-                        "header": "Naslov vašega uporabniškega vmesnika Lovelace"
+                        "header": "Naslov vašega uporabniškega vmesnika Lovelace",
+                        "title": "Naslov"
                     },
                     "edit_view": {
                         "add": "Dodaj pogled",
@@ -2460,6 +2546,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "Vaš računalnik ni dovoljen.",
                                 "not_whitelisted": "Vaš računalnik ni dodan med zaupanja vredne."
                             },
                             "step": {
@@ -2634,6 +2721,10 @@
                     "last_used": "Nazadnje uporabljen {date} iz {location}",
                     "not_used": "Nikoli ni bil uporabljen",
                     "token_title": "Žeton za osveževanje za {clientId}"
+                },
+                "suspend": {
+                    "description": "Ali bi morali zapreti povezavo s strežnikom, potem ko je skrita za 5 minut?",
+                    "header": "Samodejno zapri povezavo"
                 },
                 "themes": {
                     "dropdown_label": "Tema",
