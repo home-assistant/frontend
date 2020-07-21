@@ -15,11 +15,15 @@ import type { ToggleButton } from "../types";
 
 @customElement("ha-button-toggle-group")
 export class HaButtonToggleGroup extends LitElement {
-  @property() public buttons!: ToggleButton[];
+  @property({ attribute: false }) public buttons!: ToggleButton[];
 
   @property() public active?: string;
 
   protected render(): TemplateResult {
+    if (this.buttons.length <= 1) {
+      return html``;
+    }
+
     return html`
       <div>
         ${this.buttons.map(

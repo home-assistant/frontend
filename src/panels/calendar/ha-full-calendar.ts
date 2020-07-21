@@ -75,7 +75,7 @@ class HAFullCalendar extends LitElement {
 
   @internalProperty() private calendar?: Calendar;
 
-  @internalProperty() private _activeView = "dayGridMonth";
+  @internalProperty() private _activeView: FullCalendarView = "dayGridMonth";
 
   protected render(): TemplateResult {
     const viewToggleButtons = viewButtons.filter((button) =>
@@ -177,6 +177,12 @@ class HAFullCalendar extends LitElement {
       this.calendar.removeAllEventSources();
       this.calendar.addEventSource(this.events);
     }
+
+    if (changedProps.has("views") && !this.views.includes(this._activeView)) {
+      this._activeView = this.views[0];
+      this.calendar!.changeView(this._activeView);
+      this._fireViewChanged();
+    }
   }
 
   protected firstUpdated(): void {
@@ -184,33 +190,14 @@ class HAFullCalendar extends LitElement {
       ...defaultFullCalendarConfig,
       locale: this.hass.language,
     };
-
-    // if (this.narrow) {
-    //   config.views = {
-    //     dayGridMonth: {
-    //       eventContent: function (arg) {
-    //         const italicEl = document.createElement("i");
-
-    //         if (arg.event.extendedProps.isUrgent) {
-    //           italicEl.innerHTML = "urgent event";
-    //         } else {
-    //           italicEl.innerHTML = "normal event";
-    //         }
-
-    //         const arrayOfDomNodes = [italicEl];
-    //         return { domNodes: arrayOfDomNodes };
-    //       },
-    //     },
-    //   };
-    //   config.dateClick = (info) => {
-    //     if (info.view.type !== "dayGridMonth") {
-    //       return;
-    //     }
-    //     this._activeView = "dayGridDay";
-    //     this.calendar!.changeView("dayGridDay");
-    //     this.calendar!.gotoDate(info.dateStr);
-    //   };
-    // }
+    config.dateClick = (info) => {
+      if (info.view.type !== "dayGridMonth") {
+        return;
+      }
+      this._activeView = "dayGridDay";
+      this.calendar!.changeView("dayGridDay");
+      this.calendar!.gotoDate(info.dateStr);
+    };
 
     this.calendar = new Calendar(
       this.shadowRoot!.getElementById("calendar")!,
@@ -309,6 +296,14 @@ class HAFullCalendar extends LitElement {
           flex-grow: 1;
           background-color: var(--card-background-color);
           min-height: 400px;
+          --fc-neutral-bg-color: var(--card-background-color);
+          --fc-list-event-hover-bg-color: var(--card-background-color);
+          --fc-theme-standard-border-color: var(--divider-color);
+          --fc-border-color: var(--divider-color);
+        }
+
+        a {
+            color: inherit !important; 
         }
 
         .fc-scrollgrid-section-header td {
@@ -316,15 +311,20 @@ class HAFullCalendar extends LitElement {
         }
 
         th.fc-col-header-cell.fc-day {
-          color: #70757a;
+          color: var(--secondary-text-color);
           font-size: 11px;
           font-weight: 400;
           text-transform: uppercase;
         }
 
+        .fc-daygrid-dot-event:hover {
+          background-color: inherit
+        }
+
         .fc-daygrid-day-top {
           text-align: center;
-          padding-top: 8px;
+          padding-top: 5px;
+          justify-content: center;
         }
 
         table.fc-scrollgrid-sync-table
@@ -339,7 +339,11 @@ class HAFullCalendar extends LitElement {
           font-size: 12px;
         }
 
-        td.fc-day-today {
+        .fc .fc-daygrid-day-number {
+            padding: 3px !important;
+        }
+
+        .fc .fc-daygrid-day.fc-day-today {
           background: inherit;
         }
 
@@ -349,7 +353,7 @@ class HAFullCalendar extends LitElement {
 
         td.fc-day-today .fc-daygrid-day-number {
           height: 24px;
-          color: #fff;
+          color: #fff !important;
           background-color: #1a73e8;
           border-radius: 50%;
           display: inline-block;
@@ -420,28 +424,32 @@ class HAFullCalendar extends LitElement {
           padding-bottom: 12px;
         }
 
-        :host([narrow])
+        :host([narrow]) .fc-dayGridMonth-view
           .fc-daygrid-dot-event
           .fc-event-time,
-        :host([narrow])
+        :host([narrow]) .fc-dayGridMonth-view
           .fc-daygrid-dot-event
           .fc-event-title,
-          :host([narrow]) .fc-daygrid-day-bottom {
+          :host([narrow]) .fc-dayGridMonth-view .fc-daygrid-day-bottom {
           display: none;
         }
 
-        :host([narrow]) .fc .fc-daygrid-event-harness-abs {
+        :host([narrow]) .fc .fc-dayGridMonth-view .fc-daygrid-event-harness-abs {
           visibility: visible !important;
           position: static;
         }
 
-        :host([narrow]) .fc-daygrid-day-events {
+        :host([narrow]) .fc-dayGridMonth-view .fc-daygrid-day-events {
           display: flex;
           min-height: 2em !important;
           justify-content: center;
           flex-wrap: wrap;
           max-height: 2em;
           height: 2em;
+          overflow: hidden;
+        }
+
+        :host([narrow]) .fc-dayGridMonth-view .fc-scrollgrid-sync-table {
           overflow: hidden;
         }
       `,

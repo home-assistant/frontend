@@ -29,6 +29,8 @@ import "../components/hui-warning";
 import { fetchCalendarEvents } from "../../../data/calendar";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { HA_COLOR_PALETTE } from "../../../common/const";
+import { debounce } from "../../../common/util/debounce";
+import { installResizeObserver } from "../common/install-resize-observer";
 
 @customElement("hui-calendar-card")
 export class HuiCalendarCard extends LitElement implements LovelaceCard {
@@ -67,6 +69,12 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
   @internalProperty() private _calendars: Calendar[] = [];
 
+  @internalProperty() private _narrow = false;
+
+  @internalProperty() private _veryNarrow = false;
+
+  private _resizeObserver?: ResizeObserver;
+
   public setConfig(config: CalendarCardConfig): void {
     if (!config.entities) {
       throw new Error("Entities must be defined");
@@ -90,19 +98,34 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     return 4;
   }
 
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this.updateComplete.then(() => this._attachObserver());
+  }
+
+  public disconnectedCallback(): void {
+    if (this._resizeObserver) {
+      this._resizeObserver.disconnect();
+    }
+  }
+
   protected render(): TemplateResult {
     if (!this._config || !this.hass || !this._calendars.length) {
       return html``;
     }
 
+    const views: FullCalendarView[] = this._veryNarrow
+      ? ["listWeek"]
+      : ["listWeek", "dayGridMonth", "dayGridDay"];
+
     return html`
       <ha-card>
         <div class="header">${this._config.title}</div>
         <ha-full-calendar
-          narrow
+          .narrow=${this._narrow}
           .events=${this._events}
           .hass=${this.hass}
-          .views=${["listWeek", "dayGridMonth"] as FullCalendarView[]}
+          .views=${views}
           @view-changed=${this._handleViewChanged}
         ></ha-full-calendar>
       </ha-card>
@@ -141,19 +164,43 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     );
   }
 
+  private _measureCard() {
+    const card = this.shadowRoot!.querySelector("ha-card");
+    if (!card) {
+      return;
+    }
+    this._narrow = card.offsetWidth < 870;
+    this._veryNarrow = card.offsetWidth < 350;
+  }
+
+  private async _attachObserver(): Promise<void> {
+    if (!this._resizeObserver) {
+      await installResizeObserver();
+      this._resizeObserver = new ResizeObserver(
+        debounce(() => this._measureCard(), 250, false)
+      );
+    }
+    const card = this.shadowRoot!.querySelector("ha-card");
+    // If we show an error or warning there is no ha-card
+    if (!card) {
+      return;
+    }
+    this._resizeObserver.observe(card);
+  }
+
   static get styles(): CSSResult {
     return css`
       ha-card {
         position: relative;
+        padding: 0 8px 8px;
       }
 
       .header {
         color: var(--ha-card-header-color, --primary-text-color);
-        font-family: var(--ha-card-header-font-family, inherit);
         font-size: var(--ha-card-header-font-size, 24px);
-        letter-spacing: -0.012em;
-        line-height: 32px;
-        padding: 16px 8px 0;
+        line-height: 1.2;
+        padding-top: 16px;
+        padding-left: 8px;
       }
     `;
   }
