@@ -16,7 +16,6 @@ import "../../../../components/ha-formfield";
 import { ActionConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import { PictureEntityCardConfig } from "../../cards/types";
-import { struct } from "../../common/structs/struct";
 import "../../components/hui-action-editor";
 import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
@@ -28,20 +27,21 @@ import {
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import { assert, object, string, optional, boolean } from "superstruct";
 
-const cardConfigStruct = struct({
-  type: "string",
-  entity: "string",
-  image: "string?",
-  name: "string?",
-  camera_image: "string?",
-  camera_view: "string?",
-  aspect_ratio: "string?",
-  tap_action: struct.optional(actionConfigStruct),
-  hold_action: struct.optional(actionConfigStruct),
-  show_name: "boolean?",
-  show_state: "boolean?",
-  theme: "string?",
+const cardConfigStruct = object({
+  type: string(),
+  entity: string(),
+  image: optional(string()),
+  name: optional(string()),
+  camera_image: optional(string()),
+  camera_view: optional(string()),
+  aspect_ratio: optional(string()),
+  tap_action: optional(actionConfigStruct),
+  hold_action: optional(actionConfigStruct),
+  show_name: optional(boolean()),
+  show_state: optional(boolean()),
+  theme: optional(string()),
 });
 
 const includeDomains = ["camera"];
@@ -54,7 +54,7 @@ export class HuiPictureEntityCardEditor extends LitElement
   @internalProperty() private _config?: PictureEntityCardConfig;
 
   public setConfig(config: PictureEntityCardConfig): void {
-    config = cardConfigStruct(config);
+    assert(config, cardConfigStruct);
     this._config = config;
   }
 
@@ -275,6 +275,7 @@ export class HuiPictureEntityCardEditor extends LitElement
     }
     if (target.configValue) {
       if (value === "") {
+        this._config = { ...this._config };
         delete this._config[target.configValue!];
       } else {
         this._config = {

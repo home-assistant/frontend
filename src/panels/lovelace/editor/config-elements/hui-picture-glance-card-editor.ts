@@ -15,7 +15,6 @@ import "../../../../components/entity/ha-entity-picker";
 import { ActionConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import { PictureGlanceCardConfig } from "../../cards/types";
-import { struct } from "../../common/structs/struct";
 import "../../components/hui-action-editor";
 import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
@@ -29,19 +28,20 @@ import {
   EntitiesEditorEvent,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { assert, string, object, optional, array } from "superstruct";
 
-const cardConfigStruct = struct({
-  type: "string",
-  title: "string?",
-  entity: "string?",
-  image: "string?",
-  camera_image: "string?",
-  camera_view: "string?",
-  aspect_ratio: "string?",
-  tap_action: struct.optional(actionConfigStruct),
-  hold_action: struct.optional(actionConfigStruct),
-  entities: [entitiesConfigStruct],
-  theme: "string?",
+const cardConfigStruct = object({
+  type: string(),
+  title: optional(string()),
+  entity: optional(string()),
+  image: optional(string()),
+  camera_image: optional(string()),
+  camera_view: optional(string()),
+  aspect_ratio: optional(string()),
+  tap_action: optional(actionConfigStruct),
+  hold_action: optional(actionConfigStruct),
+  entities: array(entitiesConfigStruct),
+  theme: optional(string()),
 });
 
 const includeDomains = ["camera"];
@@ -56,7 +56,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
   @internalProperty() private _configEntities?: EntityConfig[];
 
   public setConfig(config: PictureGlanceCardConfig): void {
-    config = cardConfigStruct(config);
+    assert(config, cardConfigStruct);
     this._config = config;
     this._configEntities = processEditorEntities(config.entities);
   }
@@ -262,6 +262,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
       }
 
       if (value === "") {
+        this._config = { ...this._config };
         delete this._config[target.configValue!];
       } else {
         this._config = {

@@ -13,7 +13,6 @@ import "../../../../components/ha-icon-input";
 import { ActionConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import { LightCardConfig } from "../../cards/types";
-import { struct } from "../../common/structs/struct";
 import "../../components/hui-action-editor";
 import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
@@ -24,15 +23,16 @@ import {
   EntitiesEditorEvent,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { string, object, optional, assert } from "superstruct";
 
-const cardConfigStruct = struct({
-  type: "string",
-  name: "string?",
-  entity: "string?",
-  theme: "string?",
-  icon: "string?",
-  hold_action: struct.optional(actionConfigStruct),
-  double_tap_action: struct.optional(actionConfigStruct),
+const cardConfigStruct = object({
+  type: string(),
+  name: optional(string()),
+  entity: optional(string()),
+  theme: optional(string()),
+  icon: optional(string()),
+  hold_action: optional(actionConfigStruct),
+  double_tap_action: optional(actionConfigStruct),
 });
 
 const includeDomains = ["light"];
@@ -45,7 +45,8 @@ export class HuiLightCardEditor extends LitElement
   @internalProperty() private _config?: LightCardConfig;
 
   public setConfig(config: LightCardConfig): void {
-    this._config = cardConfigStruct(config);
+    assert(config, cardConfigStruct);
+    this._config = config;
   }
 
   get _name(): string {
@@ -177,6 +178,7 @@ export class HuiLightCardEditor extends LitElement
     }
     if (target.configValue) {
       if (target.value === "") {
+        this._config = { ...this._config };
         delete this._config[target.configValue!];
       } else {
         this._config = {

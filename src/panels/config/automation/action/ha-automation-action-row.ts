@@ -29,6 +29,8 @@ import "./types/ha-automation-action-event";
 import "./types/ha-automation-action-scene";
 import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-wait_template";
+import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
+import { handleStructError } from "../../../lovelace/common/structs/handle-errors";
 
 const OPTIONS = [
   "condition",
@@ -87,12 +89,16 @@ export default class HaAutomationActionRow extends LitElement {
 
   @property() public totalActions!: number;
 
+  @internalProperty() private _warnings?: string[];
+
+  @internalProperty() private _uiModeAvailable = true;
+
   @internalProperty() private _yamlMode = false;
 
   protected render() {
     const type = getType(this.action);
     const selected = type ? OPTIONS.indexOf(type) : -1;
-    const yamlMode = this._yamlMode || selected === -1;
+    const yamlMode = this._yamlMode;
 
     return html`
       <ha-card>
@@ -137,7 +143,7 @@ export default class HaAutomationActionRow extends LitElement {
               </mwc-icon-button>
               <mwc-list-item
                 @request-selected=${this._switchYamlMode}
-                .disabled=${selected === -1}
+                .disabled=${!this._uiModeAvailable}
               >
                 ${yamlMode
                   ? this.hass.localize(
@@ -159,6 +165,16 @@ export default class HaAutomationActionRow extends LitElement {
               </mwc-list-item>
             </ha-button-menu>
           </div>
+          ${this._warnings
+            ? html`<div class="warning">
+                UI editor is not supported for this config:
+                <br />
+                <ul>
+                  ${this._warnings.map((warning) => html`<li>${warning}</li>`)}
+                </ul>
+                You can still edit your config in yaml.
+              </div>`
+            : ""}
           ${yamlMode
             ? html`
                 <div style="margin-right: 24px;">
@@ -200,7 +216,7 @@ export default class HaAutomationActionRow extends LitElement {
                     )}
                   </paper-listbox>
                 </paper-dropdown-menu-light>
-                <div>
+                <div @ui-mode-not-available=${this._handleUiModeNotAvailable}>
                   ${dynamicElement(`ha-automation-action-${type}`, {
                     hass: this.hass,
                     action: this.action,
@@ -210,6 +226,13 @@ export default class HaAutomationActionRow extends LitElement {
         </div>
       </ha-card>
     `;
+  }
+
+  private _handleUiModeNotAvailable(ev: CustomEvent) {
+    this._warnings = handleStructError(ev.detail);
+    if (!this._yamlMode) {
+      this._yamlMode = true;
+    }
   }
 
   private _moveUp() {
@@ -241,6 +264,11 @@ export default class HaAutomationActionRow extends LitElement {
       return;
     }
 
+    this._uiModeAvailable = OPTIONS.includes(type);
+    if (!this._uiModeAvailable && !this._yamlMode) {
+      this._yamlMode = false;
+    }
+
     if (type !== getType(this.action)) {
       const elClass = customElements.get(`ha-automation-action-${type}`);
 
@@ -260,7 +288,10 @@ export default class HaAutomationActionRow extends LitElement {
     fireEvent(this, "value-changed", { value: ev.detail.value });
   }
 
-  private _switchYamlMode() {
+  private _switchYamlMode(ev: CustomEvent<RequestSelectedDetail>) {
+    if (ev.detail.source !== "interaction") {
+      return;
+    }
     this._yamlMode = !this._yamlMode;
   }
 
@@ -282,6 +313,13 @@ export default class HaAutomationActionRow extends LitElement {
       }
       mwc-list-item[disabled] {
         --mdc-theme-text-primary-on-background: var(--disabled-text-color);
+      }
+      .warning {
+        color: var(--warning-color);
+        margin-bottom: 8px;
+      }
+      .warning ul {
+        margin: 4px 0;
       }
     `;
   }
