@@ -20,6 +20,7 @@ import { confDeleteCard } from "../editor/delete-card";
 import { Lovelace, LovelaceCard } from "../types";
 import { computeCardSize } from "../common/compute-card-size";
 import { mdiDotsVertical, mdiArrowDown, mdiArrowUp } from "@mdi/js";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 
 @customElement("hui-card-options")
 export class HuiCardOptions extends LitElement {
@@ -65,7 +66,7 @@ export class HuiCardOptions extends LitElement {
               ?disabled=${this.path![1] === 0}
               ><ha-svg-icon path=${mdiArrowUp}></ha-svg-icon
             ></mwc-icon-button>
-            <ha-button-menu corner="BOTTOM_START">
+            <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
               <mwc-icon-button
                 slot="trigger"
                 aria-label=${this.hass!.localize(
@@ -78,20 +79,17 @@ export class HuiCardOptions extends LitElement {
                 <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
               </mwc-icon-button>
 
-              <mwc-list-item @request-selected=${this._moveCard}>
+              <mwc-list-item>
                 ${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.move"
                 )}</mwc-list-item
               >
-              <mwc-list-item @request-selected=${this._duplicateCard}
+              <mwc-list-item
                 >${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.duplicate"
                 )}</mwc-list-item
               >
-              <mwc-list-item
-                class="delete-item"
-                @request-selected=${this._deleteCard}
-              >
+              <mwc-list-item class="delete-item">
                 ${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.delete"
                 )}</mwc-list-item
@@ -148,6 +146,20 @@ export class HuiCardOptions extends LitElement {
         color: var(--error-color);
       }
     `;
+  }
+
+  private _handleAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        this._moveCard();
+        break;
+      case 1:
+        this._duplicateCard();
+        break;
+      case 2:
+        this._deleteCard();
+        break;
+    }
   }
 
   private _duplicateCard(): void {

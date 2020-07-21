@@ -57,6 +57,7 @@ import {
   showEntityEditorDialog,
 } from "./show-dialog-entity-editor";
 import { mdiFilterVariant } from "@mdi/js";
+import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 
 export interface StateEntity extends EntityRegistryEntry {
   readonly?: boolean;
@@ -449,7 +450,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                 >
               </div>`
             : ""}
-          <ha-button-menu corner="BOTTOM_START">
+          <ha-button-menu corner="BOTTOM_START" multi>
             <mwc-icon-button
               slot="trigger"
               .label=${this.hass!.localize(
@@ -464,6 +465,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             <mwc-list-item
               @request-selected="${this._showDisabledChanged}"
               graphic="control"
+              .selected=${this._showDisabled}
             >
               <ha-checkbox
                 slot="graphic"
@@ -476,6 +478,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             <mwc-list-item
               @request-selected="${this._showRestoredChanged}"
               graphic="control"
+              .selected=${this._showUnavailable}
             >
               <ha-checkbox
                 slot="graphic"
@@ -488,6 +491,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             <mwc-list-item
               @request-selected="${this._showReadOnlyChanged}"
               graphic="control"
+              .selected=${this._showReadOnly}
             >
               <ha-checkbox
                 slot="graphic"
@@ -579,16 +583,25 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _showDisabledChanged() {
-    this._showDisabled = !this._showDisabled;
+  private _showDisabledChanged(ev: CustomEvent<RequestSelectedDetail>) {
+    if (ev.detail.source !== "property") {
+      return;
+    }
+    this._showDisabled = ev.detail.selected;
   }
 
-  private _showRestoredChanged() {
-    this._showUnavailable = !this._showUnavailable;
+  private _showRestoredChanged(ev: CustomEvent<RequestSelectedDetail>) {
+    if (ev.detail.source !== "property") {
+      return;
+    }
+    this._showUnavailable = ev.detail.selected;
   }
 
-  private _showReadOnlyChanged() {
-    this._showReadOnly = !this._showReadOnly;
+  private _showReadOnlyChanged(ev: CustomEvent<RequestSelectedDetail>) {
+    if (ev.detail.source !== "property") {
+      return;
+    }
+    this._showReadOnly = ev.detail.selected;
   }
 
   private _handleSearchChange(ev: CustomEvent) {
