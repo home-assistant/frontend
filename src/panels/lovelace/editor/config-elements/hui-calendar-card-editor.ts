@@ -111,8 +111,6 @@ export class HuiCalendarCardEditor extends LitElement
 
     if (ev.detail && ev.detail.value && Array.isArray(ev.detail.value)) {
       this._config = { ...this._config, entities: ev.detail.value };
-
-      console.log(ev);
     } else if (target.configValue) {
       if (target.value === "") {
         delete this._config[target.configValue!];
