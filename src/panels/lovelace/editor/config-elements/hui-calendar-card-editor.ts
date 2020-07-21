@@ -4,6 +4,7 @@ import {
   LitElement,
   property,
   TemplateResult,
+  internalProperty,
 } from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { HomeAssistant } from "../../../../types";
@@ -17,24 +18,23 @@ import "../../../../components/entity/ha-entities-picker";
 import "../../components/hui-theme-select-editor";
 import type { LovelaceCardEditor } from "../../types";
 import type { EditorTarget, EntitiesEditorEvent } from "../types";
-import { entitiesConfigStruct } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = struct({
   type: "string",
   title: "string|number?",
   theme: "string?",
-  entities: [entitiesConfigStruct],
+  entities: ["string"],
 });
 
 @customElement("hui-calendar-card-editor")
 export class HuiCalendarCardEditor extends LitElement
   implements LovelaceCardEditor {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: CalendarCardConfig;
+  @property({ attribute: false }) private _config?: CalendarCardConfig;
 
-  @property() private _configEntities?: EntitiesCardEntityConfig[];
+  @internalProperty() private _configEntities?: EntitiesCardEntityConfig[];
 
   public setConfig(config: CalendarCardConfig): void {
     config = cardConfigStruct(config);
