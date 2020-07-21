@@ -16,7 +16,6 @@ import "../../../../components/entity/ha-entity-picker";
 import { LovelaceConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import { ConditionalCardConfig } from "../../cards/types";
-import { struct } from "../../common/structs/struct";
 import { LovelaceCardEditor } from "../../types";
 import {
   ConfigChangedEvent,
@@ -24,16 +23,17 @@ import {
 } from "../card-editor/hui-card-editor";
 import "../card-editor/hui-card-picker";
 import { GUIModeChangedEvent } from "../types";
+import { string, any, object, optional, array, assert } from "superstruct";
 
-const conditionStruct = struct({
-  entity: "string",
-  state: "string?",
-  state_not: "string?",
+const conditionStruct = object({
+  entity: string(),
+  state: optional(string()),
+  state_not: optional(string()),
 });
-const cardConfigStruct = struct({
-  type: "string",
-  card: "any",
-  conditions: struct.optional([conditionStruct]),
+const cardConfigStruct = object({
+  type: string(),
+  card: any(),
+  conditions: optional(array(conditionStruct)),
 });
 
 @customElement("hui-conditional-card-editor")
@@ -54,7 +54,8 @@ export class HuiConditionalCardEditor extends LitElement
   @query("hui-card-editor") private _cardEditorEl?: HuiCardEditor;
 
   public setConfig(config: ConditionalCardConfig): void {
-    this._config = cardConfigStruct(config);
+    assert(config, cardConfigStruct);
+    this._config = config;
   }
 
   public refreshYamlEditor(focus) {
@@ -217,7 +218,7 @@ export class HuiConditionalCardEditor extends LitElement
     }
     this._setMode(true);
     this._guiModeAvailable = true;
-    this._config.card = ev.detail.config;
+    this._config = { ...this._config, card: ev.detail.config };
     fireEvent(this, "config-changed", { config: this._config });
   }
 
@@ -226,7 +227,7 @@ export class HuiConditionalCardEditor extends LitElement
     if (!this._config) {
       return;
     }
-    this._config.card = ev.detail.config;
+    this._config = { ...this._config, card: ev.detail.config };
     this._guiModeAvailable = ev.detail.guiModeAvailable;
     fireEvent(this, "config-changed", { config: this._config });
   }
@@ -236,7 +237,8 @@ export class HuiConditionalCardEditor extends LitElement
       return;
     }
     // @ts-ignore
-    this._config.card = {};
+    this._config = { ...this._config, card: {} };
+    // @ts-ignore
     fireEvent(this, "config-changed", { config: this._config });
   }
 
@@ -245,10 +247,12 @@ export class HuiConditionalCardEditor extends LitElement
     if (target.value === "" || !this._config) {
       return;
     }
-    this._config.conditions.push({
+    const conditions = [...this._config.conditions];
+    conditions.push({
       entity: target.value,
       state: "",
     });
+    this._config = { ...this._config, conditions };
     target.value = "";
     fireEvent(this, "config-changed", { config: this._config });
   }
@@ -258,10 +262,11 @@ export class HuiConditionalCardEditor extends LitElement
     if (!this._config || !target) {
       return;
     }
+    const conditions = [...this._config.conditions];
     if (target.configValue === "entity" && target.value === "") {
-      this._config.conditions.splice(target.index, 1);
+      conditions.splice(target.index, 1);
     } else {
-      const condition = this._config.conditions[target.index];
+      const condition = { ...conditions[target.index] };
       if (target.configValue === "entity") {
         condition.entity = target.value;
       } else if (target.configValue === "state") {
@@ -281,8 +286,9 @@ export class HuiConditionalCardEditor extends LitElement
           delete condition.state_not;
         }
       }
-      this._config.conditions[target.index] = condition;
+      conditions[target.index] = condition;
     }
+    this._config = { ...this._config, conditions };
     fireEvent(this, "config-changed", { config: this._config });
   }
 

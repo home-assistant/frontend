@@ -34,7 +34,7 @@ documentContainer.innerHTML = `<custom-style>
       --scrollbar-thumb-color: rgb(194, 194, 194);
 
       --error-color: #db4437;
-      --warning-color: #f4b400;
+      --warning-color: #FF9800;
       --success-color: #0f9d58;
       --info-color: #4285f4;
 

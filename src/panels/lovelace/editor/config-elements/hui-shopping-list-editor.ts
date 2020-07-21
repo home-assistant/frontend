@@ -13,15 +13,15 @@ import { isComponentLoaded } from "../../../../common/config/is_component_loaded
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../types";
 import { ShoppingListCardConfig } from "../../cards/types";
-import { struct } from "../../common/structs/struct";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
+import { string, assert, object, optional } from "superstruct";
 
-const cardConfigStruct = struct({
-  type: "string",
-  title: "string?",
-  theme: "string?",
+const cardConfigStruct = object({
+  type: string(),
+  title: optional(string()),
+  theme: optional(string()),
 });
 
 @customElement("hui-shopping-list-card-editor")
@@ -32,7 +32,7 @@ export class HuiShoppingListEditor extends LitElement
   @internalProperty() private _config?: ShoppingListCardConfig;
 
   public setConfig(config: ShoppingListCardConfig): void {
-    config = cardConfigStruct(config);
+    assert(config, cardConfigStruct);
     this._config = config;
   }
 
@@ -91,6 +91,7 @@ export class HuiShoppingListEditor extends LitElement
     }
     if (target.configValue) {
       if (target.value === "") {
+        this._config = { ...this._config };
         delete this._config[target.configValue!];
       } else {
         this._config = {

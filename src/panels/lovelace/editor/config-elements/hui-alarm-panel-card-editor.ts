@@ -16,18 +16,18 @@ import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-icon";
 import { HomeAssistant } from "../../../../types";
 import { AlarmPanelCardConfig } from "../../cards/types";
-import { struct } from "../../common/structs/struct";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { assert, object, string, optional, array } from "superstruct";
 
-const cardConfigStruct = struct({
-  type: "string",
-  entity: "string?",
-  name: "string?",
-  states: "array?",
-  theme: "string?",
+const cardConfigStruct = object({
+  type: string(),
+  entity: optional(string()),
+  name: optional(string()),
+  states: optional(array()),
+  theme: optional(string()),
 });
 
 const includeDomains = ["alarm_control_panel"];
@@ -40,7 +40,7 @@ export class HuiAlarmPanelCardEditor extends LitElement
   @internalProperty() private _config?: AlarmPanelCardConfig;
 
   public setConfig(config: AlarmPanelCardConfig): void {
-    config = cardConfigStruct(config);
+    assert(config, cardConfigStruct);
     this._config = config;
   }
 
@@ -194,6 +194,7 @@ export class HuiAlarmPanelCardEditor extends LitElement
     }
     if (target.configValue) {
       if (target.value === "") {
+        this._config = { ...this._config };
         delete this._config[target.configValue!];
       } else {
         this._config = {

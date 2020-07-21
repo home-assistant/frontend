@@ -27,12 +27,12 @@ import {
 } from "../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import { struct } from "./common/structs/struct";
 import type { Lovelace } from "./types";
+import { optional, array, string, object, type, assert } from "superstruct";
 
-const lovelaceStruct = struct.interface({
-  title: "string?",
-  views: ["object"],
+const lovelaceStruct = type({
+  title: optional(string()),
+  views: array(object()),
 });
 
 @customElement("hui-editor")
@@ -251,7 +251,7 @@ class LovelaceFullConfigEditor extends LitElement {
       return;
     }
     try {
-      config = lovelaceStruct(config);
+      assert(config, lovelaceStruct);
     } catch (err) {
       showAlertDialog(this, {
         text: this.hass.localize(

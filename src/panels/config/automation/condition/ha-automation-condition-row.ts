@@ -18,6 +18,7 @@ import { Condition } from "../../../../data/automation";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../../../../types";
 import "./ha-automation-condition-editor";
+import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
@@ -115,7 +116,10 @@ export default class HaAutomationConditionRow extends LitElement {
     });
   }
 
-  private _switchYamlMode() {
+  private _switchYamlMode(ev: CustomEvent<RequestSelectedDetail>) {
+    if (ev.detail.source !== "interaction") {
+      return;
+    }
     this._yamlMode = !this._yamlMode;
   }
 
