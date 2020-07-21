@@ -61,6 +61,8 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   private _interval?: number;
 
+  private _fetching = false;
+
   public getCardSize(): number {
     return 4;
   }
@@ -138,6 +140,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
         >
           <state-history-charts
             .hass=${this.hass}
+            .isLoadingData=${!this._stateHistory}
             .historyData=${this._stateHistory}
             .names=${this._names}
             .upToNow=${true}
@@ -149,6 +152,10 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   }
 
   private async _getStateHistory(): Promise<void> {
+    if (this._fetching) {
+      return;
+    }
+    this._fetching = true;
     this._stateHistory = await getRecentWithCache(
       this.hass!,
       this._cacheConfig!.cacheKey,
@@ -156,6 +163,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       this.hass!.localize,
       this.hass!.language
     );
+    this._fetching = false;
   }
 
   private _clearInterval(): void {
