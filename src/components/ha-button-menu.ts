@@ -28,6 +28,10 @@ export class HaButtonMenu extends LitElement {
     return this._menu?.items;
   }
 
+  public get selected() {
+    return this._menu?.selected;
+  }
+
   protected render(): TemplateResult {
     return html`
       <div @click=${this._handleClick}>
