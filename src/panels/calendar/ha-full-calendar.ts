@@ -36,6 +36,9 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { haStyle } from "../../resources/styles";
 
 declare global {
+  interface HTMLElementTagNameMap {
+    "ha-full-calendar": HAFullCalendar;
+  }
   interface HASSDomEvents {
     "view-changed": CalendarViewChanged;
   }
@@ -60,7 +63,7 @@ const viewButtons: ToggleButton[] = [
 class HAFullCalendar extends LitElement {
   public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ attribute: false }) public events: CalendarEvent[] = [];
 
@@ -418,17 +421,21 @@ class HAFullCalendar extends LitElement {
         }
 
         :host([narrow])
-          .fc-dayGridMonth-view
           .fc-daygrid-dot-event
           .fc-event-time,
         :host([narrow])
-          .fc-dayGridMonth-view
           .fc-daygrid-dot-event
-          .fc-event-title {
+          .fc-event-title,
+          :host([narrow]) .fc-daygrid-day-bottom {
           display: none;
         }
 
-        :host([narrow]) .fc-dayGridMonth-view .fc-daygrid-day-events {
+        :host([narrow]) .fc .fc-daygrid-event-harness-abs {
+          visibility: visible !important;
+          position: static;
+        }
+
+        :host([narrow]) .fc-daygrid-day-events {
           display: flex;
           min-height: 2em !important;
           justify-content: center;
