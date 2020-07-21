@@ -31,6 +31,7 @@ import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-wait_template";
 import { handleStructError } from "../../../lovelace/common/structs/handle-errors";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import { haStyle } from "../../../../resources/styles";
 
 const OPTIONS = [
   "condition",
@@ -174,21 +175,20 @@ export default class HaAutomationActionRow extends LitElement {
             : ""}
           ${yamlMode
             ? html`
-                <div style="margin-right: 24px;">
-                  ${selected === -1
-                    ? html`
-                        ${this.hass.localize(
-                          "ui.panel.config.automation.editor.actions.unsupported_action",
-                          "action",
-                          type
-                        )}
-                      `
-                    : ""}
-                  <ha-yaml-editor
-                    .defaultValue=${this.action}
-                    @value-changed=${this._onYamlChange}
-                  ></ha-yaml-editor>
-                </div>
+                ${selected === -1
+                  ? html`
+                      ${this.hass.localize(
+                        "ui.panel.config.automation.editor.actions.unsupported_action",
+                        "action",
+                        type
+                      )}
+                    `
+                  : ""}
+                <h2>Edit in YAML</h2>
+                <ha-yaml-editor
+                  .defaultValue=${this.action}
+                  @value-changed=${this._onYamlChange}
+                ></ha-yaml-editor>
               `
             : html`
                 <paper-dropdown-menu-light
@@ -302,33 +302,30 @@ export default class HaAutomationActionRow extends LitElement {
     this._yamlMode = !this._yamlMode;
   }
 
-  static get styles(): CSSResult {
-    return css`
-      .card-menu {
-        position: absolute;
-        top: 0;
-        right: 0;
-        z-index: 3;
-        --mdc-theme-text-primary-on-background: var(--primary-text-color);
-      }
-      .rtl .card-menu {
-        right: auto;
-        left: 0;
-      }
-      ha-button-menu {
-        margin: 8px;
-      }
-      mwc-list-item[disabled] {
-        --mdc-theme-text-primary-on-background: var(--disabled-text-color);
-      }
-      .warning {
-        color: var(--warning-color);
-        margin-bottom: 8px;
-      }
-      .warning ul {
-        margin: 4px 0;
-      }
-    `;
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
+        .card-menu {
+          float: right;
+          z-index: 3;
+          --mdc-theme-text-primary-on-background: var(--primary-text-color);
+        }
+        .rtl .card-menu {
+          float: left;
+        }
+        mwc-list-item[disabled] {
+          --mdc-theme-text-primary-on-background: var(--disabled-text-color);
+        }
+        .warning {
+          color: var(--warning-color);
+          margin-bottom: 8px;
+        }
+        .warning ul {
+          margin: 4px 0;
+        }
+      `,
+    ];
   }
 }
 

@@ -35,6 +35,7 @@ import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import { haStyle } from "../../../../resources/styles";
 
 const OPTIONS = [
   "device",
@@ -124,21 +125,20 @@ export default class HaAutomationTriggerRow extends LitElement {
           </div>
           ${yamlMode
             ? html`
-                <div style="margin-right: 24px;">
-                  ${selected === -1
-                    ? html`
-                        ${this.hass.localize(
-                          "ui.panel.config.automation.editor.triggers.unsupported_platform",
-                          "platform",
-                          this.trigger.platform
-                        )}
-                      `
-                    : ""}
-                  <ha-yaml-editor
-                    .defaultValue=${this.trigger}
-                    @value-changed=${this._onYamlChange}
-                  ></ha-yaml-editor>
-                </div>
+                ${selected === -1
+                  ? html`
+                      ${this.hass.localize(
+                        "ui.panel.config.automation.editor.triggers.unsupported_platform",
+                        "platform",
+                        this.trigger.platform
+                      )}
+                    `
+                  : ""}
+                <h2>Edit in YAML</h2>
+                <ha-yaml-editor
+                  .defaultValue=${this.trigger}
+                  @value-changed=${this._onYamlChange}
+                ></ha-yaml-editor>
               `
             : html`
                 <paper-dropdown-menu-light
@@ -233,26 +233,23 @@ export default class HaAutomationTriggerRow extends LitElement {
     this._yamlMode = !this._yamlMode;
   }
 
-  static get styles(): CSSResult {
-    return css`
-      .card-menu {
-        position: absolute;
-        top: 0;
-        right: 0;
-        z-index: 3;
-        --mdc-theme-text-primary-on-background: var(--primary-text-color);
-      }
-      .rtl .card-menu {
-        right: auto;
-        left: 0;
-      }
-      ha-button-menu {
-        margin: 8px;
-      }
-      mwc-list-item[disabled] {
-        --mdc-theme-text-primary-on-background: var(--disabled-text-color);
-      }
-    `;
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
+        .card-menu {
+          float: right;
+          z-index: 3;
+          --mdc-theme-text-primary-on-background: var(--primary-text-color);
+        }
+        .rtl .card-menu {
+          float: left;
+        }
+        mwc-list-item[disabled] {
+          --mdc-theme-text-primary-on-background: var(--disabled-text-color);
+        }
+      `,
+    ];
   }
 }
 

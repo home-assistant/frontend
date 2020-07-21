@@ -136,18 +136,12 @@ export default class HaAutomationConditionRow extends LitElement {
   static get styles(): CSSResult {
     return css`
       .card-menu {
-        position: absolute;
-        top: 0;
-        right: 0;
+        float: right;
         z-index: 3;
         --mdc-theme-text-primary-on-background: var(--primary-text-color);
       }
       .rtl .card-menu {
-        right: auto;
-        left: 0;
-      }
-      ha-button-menu {
-        margin: 8px;
+        float: left;
       }
       mwc-list-item[disabled] {
         --mdc-theme-text-primary-on-background: var(--disabled-text-color);
