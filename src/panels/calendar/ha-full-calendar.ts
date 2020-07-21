@@ -199,6 +199,16 @@ class HAFullCalendar extends LitElement {
       this.calendar!.gotoDate(info.dateStr);
     };
 
+    config.eventClick = (info) => {
+      if (info.view.type !== "dayGridMonth") {
+        return;
+      }
+
+      this._activeView = "dayGridDay";
+      this.calendar!.changeView("dayGridDay");
+      this.calendar!.gotoDate(info.event.startStr);
+    };
+
     this.calendar = new Calendar(
       this.shadowRoot!.getElementById("calendar")!,
       // @ts-ignore
