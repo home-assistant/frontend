@@ -7,6 +7,7 @@ import {
   property,
   PropertyValues,
   TemplateResult,
+  internalProperty,
 } from "lit-element";
 
 import "../../../components/ha-card";
@@ -58,13 +59,13 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     };
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: CalendarCardConfig;
+  @property({ attribute: false }) public _events: CalendarEvent[] = [];
 
-  @property() public _events: CalendarEvent[] = [];
+  @internalProperty() private _config?: CalendarCardConfig;
 
-  @property() private _calendars: Calendar[] = [];
+  @internalProperty() private _calendars: Calendar[] = [];
 
   public setConfig(config: CalendarCardConfig): void {
     if (!config.entities) {
@@ -75,16 +76,12 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       throw new Error("Entities need to be an array");
     }
 
-    const calendars: Calendar[] = [];
-
-    config!.entities.forEach((entity, idx) => {
-      calendars.push({
+    this._calendars = config!.entities.map((entity, idx) => {
+      return {
         entity_id: entity,
         backgroundColor: `#${HA_COLOR_PALETTE[idx % HA_COLOR_PALETTE.length]}`,
-      });
+      };
     });
-
-    this._calendars = calendars;
 
     this._config = config;
   }
@@ -103,7 +100,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
         <div class="header">${this._config.title}</div>
         <ha-full-calendar
           .events=${this._events}
-          .narrow=${this.offsetWidth < 870}
+          .narrow=${false}
           .hass=${this.hass}
           .views=${["listWeek", "dayGridMonth"] as FullCalendarView[]}
           @view-changed=${this._handleViewChanged}

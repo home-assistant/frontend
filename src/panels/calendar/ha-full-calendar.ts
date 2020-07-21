@@ -60,12 +60,11 @@ const viewButtons: ToggleButton[] = [
 class HAFullCalendar extends LitElement {
   public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true })
-  public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
 
-  @property() public events: CalendarEvent[] = [];
+  @property({ attribute: false }) public events: CalendarEvent[] = [];
 
-  @property() public views: FullCalendarView[] = [
+  @property({ attribute: false }) public views: FullCalendarView[] = [
     "dayGridMonth",
     "dayGridWeek",
     "dayGridDay",
@@ -184,22 +183,22 @@ class HAFullCalendar extends LitElement {
     };
 
     // if (this.narrow) {
-    //   // config.views = {
-    //   //   dayGridMonth: {
-    //   //     eventContent: function (arg) {
-    //   //       const italicEl = document.createElement("i");
+    //   config.views = {
+    //     dayGridMonth: {
+    //       eventContent: function (arg) {
+    //         const italicEl = document.createElement("i");
 
-    //   //       if (arg.event.extendedProps.isUrgent) {
-    //   //         italicEl.innerHTML = "urgent event";
-    //   //       } else {
-    //   //         italicEl.innerHTML = "normal event";
-    //   //       }
+    //         if (arg.event.extendedProps.isUrgent) {
+    //           italicEl.innerHTML = "urgent event";
+    //         } else {
+    //           italicEl.innerHTML = "normal event";
+    //         }
 
-    //   //       const arrayOfDomNodes = [italicEl];
-    //   //       return { domNodes: arrayOfDomNodes };
-    //   //     },
-    //   //   },
-    //   // };
+    //         const arrayOfDomNodes = [italicEl];
+    //         return { domNodes: arrayOfDomNodes };
+    //       },
+    //     },
+    //   };
     //   config.dateClick = (info) => {
     //     if (info.view.type !== "dayGridMonth") {
     //       return;
