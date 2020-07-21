@@ -440,7 +440,7 @@ export class HaScriptEditor extends LitElement {
           position: fixed;
           bottom: 16px;
           right: 16px;
-          z-index: 1;
+          z-index: 3;
           margin-bottom: -80px;
           transition: margin-bottom 0.3s;
         }

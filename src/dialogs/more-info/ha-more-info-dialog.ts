@@ -302,12 +302,14 @@ export class MoreInfoDialog extends LitElement {
           }
         }
 
-        state-history-charts {
-          margin-top: 16px 0;
-        }
-
         ha-dialog[data-domain="camera"] {
           --dialog-content-padding: 0;
+        }
+
+        state-card-content,
+        state-history-charts {
+          display: block;
+          margin-bottom: 16px;
         }
       `,
     ];

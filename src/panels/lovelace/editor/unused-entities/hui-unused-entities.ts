@@ -176,6 +176,12 @@ export class HuiUnusedEntities extends LitElement {
         selectable
         @selection-changed=${this._handleSelectionChanged}
         .dir=${computeRTLDirection(this.hass)}
+        .searchLabel=${this.hass.localize(
+          "ui.panel.lovelace.unused_entities.search"
+        )}
+        .noDataText=${this.hass.localize(
+          "ui.panel.lovelace.unused_entities.no_data"
+        )}
       ></ha-data-table>
 
       ${this._selectedEntities.length

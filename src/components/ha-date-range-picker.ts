@@ -17,6 +17,8 @@ import "./ha-svg-icon";
 import "@polymer/paper-input/paper-input";
 import "@material/mwc-list/mwc-list";
 import "./date-range-picker";
+import { computeRTLDirection } from "../common/util/compute_rtl";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 
 export interface DateRangePickerRanges {
   [key: string]: [Date, Date];
@@ -36,11 +38,14 @@ export class HaDateRangePicker extends LitElement {
 
   @property({ type: Boolean }) private _hour24format = false;
 
+  @property({ type: String }) private _rtlDirection = "ltr";
+
   protected updated(changedProps: PropertyValues) {
     if (changedProps.has("hass")) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
       if (!oldHass || oldHass.language !== this.hass.language) {
         this._hour24format = this._compute24hourFormat();
+        this._rtlDirection = computeRTLDirection(this.hass);
       }
     }
   }
@@ -76,16 +81,14 @@ export class HaDateRangePicker extends LitElement {
           ></paper-input>
         </div>
         ${this.ranges
-          ? html`<div slot="ranges" class="date-range-ranges">
-              <mwc-list @click=${this._setDateRange}>
-                ${Object.entries(this.ranges).map(
-                  ([name, dates]) => html`<mwc-list-item
-                    .activated=${this.startDate.getTime() ===
-                      dates[0].getTime() &&
-                    this.endDate.getTime() === dates[1].getTime()}
-                    .startDate=${dates[0]}
-                    .endDate=${dates[1]}
-                  >
+          ? html`<div
+              slot="ranges"
+              class="date-range-ranges"
+              .dir=${this._rtlDirection}
+            >
+              <mwc-list @action=${this._setDateRange} activatable>
+                ${Object.keys(this.ranges).map(
+                  (name) => html`<mwc-list-item>
                     ${name}
                   </mwc-list-item>`
                 )}
@@ -116,12 +119,10 @@ export class HaDateRangePicker extends LitElement {
     );
   }
 
-  private _setDateRange(ev: Event) {
-    const target = ev.target as any;
-    const startDate = target.startDate;
-    const endDate = target.endDate;
+  private _setDateRange(ev: CustomEvent<ActionDetail>) {
+    const dateRange = Object.values(this.ranges!)[ev.detail.index];
     const dateRangePicker = this._dateRangePicker;
-    dateRangePicker.clickRange([startDate, endDate]);
+    dateRangePicker.clickRange(dateRange);
     dateRangePicker.clickedApply();
   }
 

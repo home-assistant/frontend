@@ -97,6 +97,7 @@ export class HaDeviceAction extends LitElement {
   protected updated(changedPros) {
     const prevAction = changedPros.get("action");
     if (prevAction && !deviceAutomationsEqual(prevAction, this.action)) {
+      this._deviceId = undefined;
       this._getCapabilities();
     }
   }

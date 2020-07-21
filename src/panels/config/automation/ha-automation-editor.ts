@@ -50,6 +50,13 @@ import { PaperListboxElement } from "@polymer/paper-listbox";
 const MODES = ["single", "restart", "queued", "parallel"];
 const MODES_MAX = ["queued", "parallel"];
 
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "ui-mode-not-available": Error;
+  }
+}
+
 export class HaAutomationEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -534,7 +541,7 @@ export class HaAutomationEditor extends LitElement {
           position: fixed;
           bottom: 16px;
           right: 16px;
-          z-index: 1;
+          z-index: 3;
           margin-bottom: -80px;
           transition: margin-bottom 0.3s;
         }

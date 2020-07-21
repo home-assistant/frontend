@@ -26,6 +26,8 @@ import type { LovelaceCardEditor } from "../../types";
 import type { GUIModeChangedEvent } from "../types";
 import "../../../../components/ha-circular-progress";
 import { deepEqual } from "../../../../common/util/deep-equal";
+import { handleStructError } from "../../common/structs/handle-errors";
+import { GUISupportError } from "../gui-support-error";
 
 export interface ConfigChangedEvent {
   config: LovelaceCardConfig;
@@ -69,7 +71,7 @@ export class HuiCardEditor extends LitElement {
   @internalProperty() private _error?: string;
 
   // Warning: GUI editor can't handle configuration - ok to save
-  @internalProperty() private _warning?: string;
+  @internalProperty() private _warnings?: string[];
 
   @internalProperty() private _loading = false;
 
@@ -121,7 +123,7 @@ export class HuiCardEditor extends LitElement {
   }
 
   public get hasWarning(): boolean {
-    return this._warning !== undefined;
+    return this._warnings !== undefined;
   }
 
   public get hasError(): boolean {
@@ -194,10 +196,15 @@ export class HuiCardEditor extends LitElement {
               </div>
             `
           : ""}
-        ${this._warning
+        ${this._warnings
           ? html`
               <div class="warning">
-                ${this._warning}
+                UI editor is not supported for this config:
+                <br />
+                <ul>
+                  ${this._warnings.map((warning) => html`<li>${warning}</li>`)}
+                </ul>
+                You can still edit your config in yaml.
               </div>
             `
           : ""}
@@ -238,7 +245,7 @@ export class HuiCardEditor extends LitElement {
     let configElement = this._configElement;
     try {
       this._error = undefined;
-      this._warning = undefined;
+      this._warnings = undefined;
 
       if (this._configElType !== cardType) {
         // If the card type has changed, we need to load a new GUI editor
@@ -254,7 +261,9 @@ export class HuiCardEditor extends LitElement {
           configElement = await elClass.getConfigElement();
         } else {
           configElement = undefined;
-          throw Error(`WARNING: No visual editor available for: ${cardType}`);
+          throw new GUISupportError(
+            `No visual editor available for: ${cardType}`
+          );
         }
 
         this._configElement = configElement;
@@ -272,11 +281,14 @@ export class HuiCardEditor extends LitElement {
       try {
         this._configElement!.setConfig(this.value);
       } catch (err) {
-        throw Error(`WARNING: ${err.message}`);
+        throw new GUISupportError(
+          "Config is not supported",
+          handleStructError(err)
+        );
       }
     } catch (err) {
-      if (err.message.startsWith("WARNING:")) {
-        this._warning = err.message.substr(8);
+      if (err instanceof GUISupportError) {
+        this._warnings = err.warnings ?? [err.message];
       } else {
         this._error = err;
       }
@@ -302,11 +314,18 @@ export class HuiCardEditor extends LitElement {
       .yaml-editor {
         padding: 8px 0px;
       }
+      .error,
+      .warning {
+        word-break: break-word;
+      }
       .error {
         color: var(--error-color);
       }
       .warning {
         color: var(--warning-color);
+      }
+      .warning ul {
+        margin: 4px 0;
       }
       ha-circular-progress {
         display: block;

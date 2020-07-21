@@ -19,12 +19,20 @@ import { ServiceAction } from "../../../../../data/script";
 import type { PolymerChangedEvent } from "../../../../../polymer-types";
 import type { HomeAssistant } from "../../../../../types";
 import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
+import { assert, optional, object, string } from "superstruct";
+import { EntityId } from "../../../../lovelace/common/structs/is-entity-id";
+
+const actionStruct = object({
+  service: optional(string()),
+  entity_id: optional(EntityId),
+  data: optional(object()),
+});
 
 @customElement("ha-automation-action-service")
 export class HaServiceAction extends LitElement implements ActionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public action!: ServiceAction;
+  @property({ attribute: false }) public action!: ServiceAction;
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
@@ -59,6 +67,11 @@ export class HaServiceAction extends LitElement implements ActionElement {
   protected updated(changedProperties: PropertyValues) {
     if (!changedProperties.has("action")) {
       return;
+    }
+    try {
+      assert(this.action, actionStruct);
+    } catch (error) {
+      fireEvent(this, "ui-mode-not-available", error);
     }
     if (this._actionData && this._actionData !== this.action.data) {
       if (this._yamlEditor) {

@@ -25,6 +25,7 @@ import { HomeAssistant, Route } from "../../../src/types";
 import { showRepositoriesDialog } from "../dialogs/repositories/show-dialog-repositories";
 import { supervisorTabs } from "../hassio-tabs";
 import "./hassio-addon-repository";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 
 const sortRepos = (a: HassioAddonRepository, b: HassioAddonRepository) => {
   if (a.slug === "local") {
@@ -97,14 +98,18 @@ class HassioAddonStore extends LitElement {
         .tabs=${supervisorTabs}
       >
         <span slot="header">Add-on store</span>
-        <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
+        <ha-button-menu
+          corner="BOTTOM_START"
+          slot="toolbar-icon"
+          @action=${this._handleAction}
+        >
           <mwc-icon-button slot="trigger" alt="menu">
             <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
           </mwc-icon-button>
-          <mwc-list-item @tap=${this._manageRepositories}>
+          <mwc-list-item>
             Repositories
           </mwc-list-item>
-          <mwc-list-item @tap=${this.refreshData}>
+          <mwc-list-item>
             Reload
           </mwc-list-item>
         </ha-button-menu>
@@ -141,6 +146,17 @@ class HassioAddonStore extends LitElement {
     super.firstUpdated(changedProps);
     this.addEventListener("hass-api-called", (ev) => this.apiCalled(ev));
     this._loadData();
+  }
+
+  private _handleAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        this._manageRepositories();
+        break;
+      case 1:
+        this.refreshData();
+        break;
+    }
   }
 
   private apiCalled(ev) {

@@ -430,6 +430,8 @@
                 "activate": "Activar"
             },
             "script": {
+                "cancel": "Cancel·la",
+                "cancel_multiple": "Cancel·la {number}",
                 "execute": "Executar"
             },
             "service": {
@@ -949,10 +951,10 @@
                             "description": "El mode controla què passa quan es dispara l'automatització i encara hi ha accions executant-se d'un disparament anterior. Consulta {documentation_link} per a més informació.",
                             "documentation": "documentació d'automatització",
                             "label": "Mode",
-                            "parallel": "Paral·lel (per defecte)",
+                            "parallel": "Paral·lel",
                             "queued": "A la cua",
                             "restart": "Reinicia",
-                            "single": "Individual"
+                            "single": "Individual (per defecte)"
                         },
                         "move_down": "Mou avall",
                         "move_up": "Mou amunt",
@@ -1662,6 +1664,7 @@
                             "introduction": "Les entitats que no pertanyen a un dispositiu es poden configurar aquí.",
                             "without_device": "Entitats sense dispositiu"
                         },
+                        "icon": "Icona",
                         "introduction": "Utilitza les escenes per donar més vida a la teva llar.",
                         "load_error_not_editable": "Només es poden editar les escenes de l'arxiu scenes.yaml.",
                         "load_error_unknown": "Error en carregar l'escena ({err_no}).",
@@ -1695,6 +1698,10 @@
                         "delete_confirm": "Estàs segur que vols eliminar aquest script?",
                         "delete_script": "Elimina l'script",
                         "header": "Script: {name}",
+                        "icon": "Icona",
+                        "id": "ID de l'entitat",
+                        "id_already_exists": "Aquest ID ja existeix",
+                        "id_already_exists_save_error": "No pots desar aquest script perquè l'ID no és únic, tria'n un altre o deixa-ho en blanc perquè se'n generi un automàticament.",
                         "introduction": "Utilitza els scripts per executar seqüències d'accions.",
                         "link_available_actions": "Més informació sobre les accions disponibles.",
                         "load_error_not_editable": "Només es poden editar els scripts dins de l'arxiu scripts.yaml.",
@@ -1808,7 +1815,7 @@
                         "discovered_text": "Els dispositius apareixeran aquí un cop descoberts.",
                         "discovery_text": "Els dispositius descoberts apareixeran aquí. Segueix les instruccions del/s teu/s dispositiu/s i posa el dispositiu/s en mode d'emparellament.",
                         "header": "Domòtica amb Zigbee - Afegir dispositius",
-                        "no_devices_found": "No s'han trobat dispositius, assegura't que estiguin en mode vinculació i manten-los desperts mentre estiguin intentant ser descoberts.",
+                        "no_devices_found": "No s'han trobat dispositius, assegura't que estiguin en mode vinculació i manten-los desperts mentre s'estiguin descoberint.",
                         "pairing_mode": "Assegura't que els dispositiu estiguin en mode vinculació. Consulta les instruccions del dispositiu per saber com fer-ho.",
                         "search_again": "Torna a cercar",
                         "spinner": "S'estan cercant dispositius ZHA Zigbee..."
@@ -2332,6 +2339,7 @@
                     },
                     "edit_card": {
                         "add": "Afegir targeta",
+                        "confirm_cancel": "Segur que vols cancel·lar?",
                         "delete": "Elimina targeta",
                         "duplicate": "Duplica targeta",
                         "edit": "Editar",
@@ -2342,7 +2350,8 @@
                         "pick_card_view_title": "Quina targeta vols afegir a la visualització {name}?",
                         "show_code_editor": "Mostra l'editor de codi",
                         "show_visual_editor": "Mostra l'editor visual",
-                        "toggle_editor": "Commutar l'editor"
+                        "toggle_editor": "Commutar l'editor",
+                        "unsaved_changes": "Hi ha canvis no desats"
                     },
                     "edit_lovelace": {
                         "edit_title": "Edita el títol",

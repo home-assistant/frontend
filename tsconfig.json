@@ -23,7 +23,8 @@
           "no-missing-import": "error",
           "no-unclosed-tag": "error",
           "no-incompatible-type-binding": "warning",
-          "no-invalid-css": "warning"
+          "no-invalid-css": "warning",
+          "no-missing-element-type-definition": "warning"
         }
       }
     ]
