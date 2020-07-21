@@ -58,6 +58,8 @@ import type { Lovelace } from "./types";
 import "./views/hui-panel-view";
 import type { HUIPanelView } from "./views/hui-panel-view";
 import { HUIView } from "./views/hui-view";
+import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
+import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 
 class HUIRoot extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -133,14 +135,19 @@ class HUIRoot extends LitElement {
                       <ha-svg-icon path=${mdiPencil}></ha-svg-icon>
                     </mwc-icon-button>
                   </div>
-                  <mwc-icon-button
-                    title="${this.hass!.localize(
-                      "ui.panel.lovelace.menu.help"
-                    )}"
-                    @click="${this._handleHelp}"
+                  <a
+                    href="https://www.home-assistant.io/lovelace/"
+                    rel="noreferrer"
+                    target="_blank"
                   >
-                    <ha-svg-icon path=${mdiHelpCircle}></ha-svg-icon>
-                  </mwc-icon-button>
+                    <mwc-icon-button
+                      title="${this.hass!.localize(
+                        "ui.panel.lovelace.menu.help"
+                      )}"
+                    >
+                      <ha-svg-icon path=${mdiHelpCircle}></ha-svg-icon>
+                    </mwc-icon-button>
+                  </a>
                   <ha-button-menu corner="BOTTOM_START">
                     <mwc-icon-button
                       slot="trigger"
@@ -167,9 +174,7 @@ class HUIRoot extends LitElement {
                             )}
                           </mwc-list-item>
                         `}
-                    <mwc-list-item
-                      @request-selected="${this.lovelace!.enableFullEditMode}"
-                    >
+                    <mwc-list-item @request-selected="${this._handleRawEditor}">
                       ${this.hass!.localize(
                         "ui.panel.lovelace.editor.menu.raw_editor"
                       )}
@@ -251,7 +256,7 @@ class HUIRoot extends LitElement {
                             aria-label=${this.hass!.localize(
                               "ui.panel.lovelace.menu.configure_ui"
                             )}
-                            @request-selected=${this._editModeEnable}
+                            @request-selected=${this._handleEnableEditMode}
                           >
                             ${this.hass!.localize(
                               "ui.panel.lovelace.menu.configure_ui"
@@ -259,14 +264,19 @@ class HUIRoot extends LitElement {
                           </mwc-list-item>
                         `
                       : ""}
-                    <mwc-list-item
-                      aria-label=${this.hass!.localize(
-                        "ui.panel.lovelace.menu.help"
-                      )}
-                      @request-selected=${this._handleHelp}
+                    <a
+                      href="https://www.home-assistant.io/lovelace/"
+                      rel="noreferrer"
+                      target="_blank"
                     >
-                      ${this.hass!.localize("ui.panel.lovelace.menu.help")}
-                    </mwc-list-item>
+                      <mwc-list-item
+                        aria-label=${this.hass!.localize(
+                          "ui.panel.lovelace.menu.help"
+                        )}
+                      >
+                        ${this.hass!.localize("ui.panel.lovelace.menu.help")}
+                      </mwc-list-item>
+                    </a>
                   </ha-button-menu>
                 </app-toolbar>
               `}
@@ -476,11 +486,17 @@ class HUIRoot extends LitElement {
     return this.shadowRoot!.getElementById("view") as HTMLDivElement;
   }
 
-  private _handleRefresh(): void {
+  private _handleRefresh(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
     fireEvent(this, "config-refresh");
   }
 
-  private _handleReloadResources(): void {
+  private _handleReloadResources(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
     this.hass.callService("lovelace", "reload_resources");
     showConfirmationDialog(this, {
       title: this.hass!.localize(
@@ -493,7 +509,17 @@ class HUIRoot extends LitElement {
     });
   }
 
-  private _handleUnusedEntities(): void {
+  private _handleRawEditor(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+    this.lovelace!.enableFullEditMode();
+  }
+
+  private _handleUnusedEntities(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
     navigate(this, `${this.route?.prefix}/hass-unused-entities`);
   }
 
@@ -501,17 +527,20 @@ class HUIRoot extends LitElement {
     showVoiceCommandDialog(this);
   }
 
-  private _handleHelp(): void {
-    window.open("https://www.home-assistant.io/lovelace/", "_blank");
-  }
-
-  private _editModeEnable(): void {
+  private _handleEnableEditMode(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
     if (this._yamlMode) {
       showAlertDialog(this, {
         text: "The edit UI is not available when in YAML mode.",
       });
       return;
     }
+    this._enableEditMode();
+  }
+
+  private _enableEditMode(): void {
     this.lovelace!.setEditMode(true);
   }
 
@@ -616,7 +645,7 @@ class HUIRoot extends LitElement {
     const viewConfig = this.config.views[viewIndex];
 
     if (!viewConfig) {
-      this._editModeEnable();
+      this._enableEditMode();
       return;
     }
 

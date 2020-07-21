@@ -18,7 +18,7 @@ import { Condition } from "../../../../data/automation";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../../../../types";
 import "./ha-automation-condition-editor";
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
@@ -65,14 +65,14 @@ export default class HaAutomationConditionRow extends LitElement {
       <ha-card>
         <div class="card-content">
           <div class="card-menu">
-            <ha-button-menu corner="BOTTOM_START">
+            <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
               <mwc-icon-button
                 .title=${this.hass.localize("ui.common.menu")}
                 .label=${this.hass.localize("ui.common.overflow_menu")}
                 slot="trigger"
                 ><ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon
               ></mwc-icon-button>
-              <mwc-list-item @request-selected=${this._switchYamlMode}>
+              <mwc-list-item>
                 ${this._yamlMode
                   ? this.hass.localize(
                       "ui.panel.config.automation.editor.edit_ui"
@@ -86,7 +86,7 @@ export default class HaAutomationConditionRow extends LitElement {
                   "ui.panel.config.automation.editor.actions.duplicate"
                 )}
               </mwc-list-item>
-              <mwc-list-item @request-selected=${this._onDelete}>
+              <mwc-list-item>
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.actions.delete"
                 )}
@@ -103,6 +103,19 @@ export default class HaAutomationConditionRow extends LitElement {
     `;
   }
 
+  private _handleAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        this._switchYamlMode();
+        break;
+      case 1:
+        break;
+      case 2:
+        this._onDelete();
+        break;
+    }
+  }
+
   private _onDelete() {
     showConfirmationDialog(this, {
       text: this.hass.localize(
@@ -116,28 +129,19 @@ export default class HaAutomationConditionRow extends LitElement {
     });
   }
 
-  private _switchYamlMode(ev: CustomEvent<RequestSelectedDetail>) {
-    if (ev.detail.source !== "interaction") {
-      return;
-    }
+  private _switchYamlMode() {
     this._yamlMode = !this._yamlMode;
   }
 
   static get styles(): CSSResult {
     return css`
       .card-menu {
-        position: absolute;
-        top: 0;
-        right: 0;
+        float: right;
         z-index: 3;
         --mdc-theme-text-primary-on-background: var(--primary-text-color);
       }
       .rtl .card-menu {
-        right: auto;
-        left: 0;
-      }
-      ha-button-menu {
-        margin: 8px;
+        float: left;
       }
       mwc-list-item[disabled] {
         --mdc-theme-text-primary-on-background: var(--disabled-text-color);

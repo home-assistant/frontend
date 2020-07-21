@@ -29,8 +29,9 @@ import "./types/ha-automation-action-event";
 import "./types/ha-automation-action-scene";
 import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-wait_template";
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { handleStructError } from "../../../lovelace/common/structs/handle-errors";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import { haStyle } from "../../../../resources/styles";
 
 const OPTIONS = [
   "condition",
@@ -134,17 +135,14 @@ export default class HaAutomationActionRow extends LitElement {
                   </mwc-icon-button>
                 `
               : ""}
-            <ha-button-menu corner="BOTTOM_START">
+            <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
               <mwc-icon-button
                 slot="trigger"
                 .title=${this.hass.localize("ui.common.menu")}
                 .label=${this.hass.localize("ui.common.overflow_menu")}
                 ><ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
               </mwc-icon-button>
-              <mwc-list-item
-                @request-selected=${this._switchYamlMode}
-                .disabled=${!this._uiModeAvailable}
-              >
+              <mwc-list-item .disabled=${!this._uiModeAvailable}>
                 ${yamlMode
                   ? this.hass.localize(
                       "ui.panel.config.automation.editor.edit_ui"
@@ -158,7 +156,7 @@ export default class HaAutomationActionRow extends LitElement {
                   "ui.panel.config.automation.editor.actions.duplicate"
                 )}
               </mwc-list-item>
-              <mwc-list-item @request-selected=${this._onDelete}>
+              <mwc-list-item>
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.actions.delete"
                 )}
@@ -177,21 +175,20 @@ export default class HaAutomationActionRow extends LitElement {
             : ""}
           ${yamlMode
             ? html`
-                <div style="margin-right: 24px;">
-                  ${selected === -1
-                    ? html`
-                        ${this.hass.localize(
-                          "ui.panel.config.automation.editor.actions.unsupported_action",
-                          "action",
-                          type
-                        )}
-                      `
-                    : ""}
-                  <ha-yaml-editor
-                    .defaultValue=${this.action}
-                    @value-changed=${this._onYamlChange}
-                  ></ha-yaml-editor>
-                </div>
+                ${selected === -1
+                  ? html`
+                      ${this.hass.localize(
+                        "ui.panel.config.automation.editor.actions.unsupported_action",
+                        "action",
+                        type
+                      )}
+                    `
+                  : ""}
+                <h2>Edit in YAML</h2>
+                <ha-yaml-editor
+                  .defaultValue=${this.action}
+                  @value-changed=${this._onYamlChange}
+                ></ha-yaml-editor>
               `
             : html`
                 <paper-dropdown-menu-light
@@ -243,6 +240,19 @@ export default class HaAutomationActionRow extends LitElement {
     fireEvent(this, "move-action", { direction: "down" });
   }
 
+  private _handleAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        this._switchYamlMode();
+        break;
+      case 1:
+        break;
+      case 2:
+        this._onDelete();
+        break;
+    }
+  }
+
   private _onDelete() {
     showConfirmationDialog(this, {
       text: this.hass.localize(
@@ -288,40 +298,34 @@ export default class HaAutomationActionRow extends LitElement {
     fireEvent(this, "value-changed", { value: ev.detail.value });
   }
 
-  private _switchYamlMode(ev: CustomEvent<RequestSelectedDetail>) {
-    if (ev.detail.source !== "interaction") {
-      return;
-    }
+  private _switchYamlMode() {
     this._yamlMode = !this._yamlMode;
   }
 
-  static get styles(): CSSResult {
-    return css`
-      .card-menu {
-        position: absolute;
-        top: 0;
-        right: 0;
-        z-index: 3;
-        --mdc-theme-text-primary-on-background: var(--primary-text-color);
-      }
-      .rtl .card-menu {
-        right: auto;
-        left: 0;
-      }
-      ha-button-menu {
-        margin: 8px;
-      }
-      mwc-list-item[disabled] {
-        --mdc-theme-text-primary-on-background: var(--disabled-text-color);
-      }
-      .warning {
-        color: var(--warning-color);
-        margin-bottom: 8px;
-      }
-      .warning ul {
-        margin: 4px 0;
-      }
-    `;
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
+        .card-menu {
+          float: right;
+          z-index: 3;
+          --mdc-theme-text-primary-on-background: var(--primary-text-color);
+        }
+        .rtl .card-menu {
+          float: left;
+        }
+        mwc-list-item[disabled] {
+          --mdc-theme-text-primary-on-background: var(--disabled-text-color);
+        }
+        .warning {
+          color: var(--warning-color);
+          margin-bottom: 8px;
+        }
+        .warning ul {
+          margin: 4px 0;
+        }
+      `,
+    ];
   }
 }
 

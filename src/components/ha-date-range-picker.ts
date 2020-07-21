@@ -18,6 +18,7 @@ import "@polymer/paper-input/paper-input";
 import "@material/mwc-list/mwc-list";
 import "./date-range-picker";
 import { computeRTLDirection } from "../common/util/compute_rtl";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 
 export interface DateRangePickerRanges {
   [key: string]: [Date, Date];
@@ -85,15 +86,9 @@ export class HaDateRangePicker extends LitElement {
               class="date-range-ranges"
               .dir=${this._rtlDirection}
             >
-              <mwc-list @request-selected=${this._setDateRange}>
-                ${Object.entries(this.ranges).map(
-                  ([name, dates]) => html`<mwc-list-item
-                    .activated=${this.startDate.getTime() ===
-                      dates[0].getTime() &&
-                    this.endDate.getTime() === dates[1].getTime()}
-                    .startDate=${dates[0]}
-                    .endDate=${dates[1]}
-                  >
+              <mwc-list @action=${this._setDateRange} activatable>
+                ${Object.keys(this.ranges).map(
+                  (name) => html`<mwc-list-item>
                     ${name}
                   </mwc-list-item>`
                 )}
@@ -124,12 +119,10 @@ export class HaDateRangePicker extends LitElement {
     );
   }
 
-  private _setDateRange(ev: Event) {
-    const target = ev.target as any;
-    const startDate = target.startDate;
-    const endDate = target.endDate;
+  private _setDateRange(ev: CustomEvent<ActionDetail>) {
+    const dateRange = Object.values(this.ranges!)[ev.detail.index];
     const dateRangePicker = this._dateRangePicker;
-    dateRangePicker.clickRange([startDate, endDate]);
+    dateRangePicker.clickRange(dateRange);
     dateRangePicker.clickedApply();
   }
 
