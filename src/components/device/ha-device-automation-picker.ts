@@ -117,11 +117,7 @@ export abstract class HaDeviceAutomationPicker<
           >
             ${this.NO_AUTOMATION_TEXT}
           </paper-item>
-          <paper-item
-            key=${UNKNOWN_AUTOMATION_KEY}
-            .automation=${this.value}
-            hidden
-          >
+          <paper-item key=${UNKNOWN_AUTOMATION_KEY} hidden>
             ${this.UNKNOWN_AUTOMATION_TEXT}
           </paper-item>
           ${this._automations.map(
@@ -175,18 +171,17 @@ export abstract class HaDeviceAutomationPicker<
   }
 
   private _automationChanged(ev) {
-    this._setValue(ev.detail.item.automation);
+    if (ev.detail.item.automation) {
+      this._setValue(ev.detail.item.automation);
+    }
   }
 
   private _setValue(automation: T) {
     if (this.value && deviceAutomationsEqual(automation, this.value)) {
       return;
     }
-    this.value = automation;
-    setTimeout(() => {
-      fireEvent(this, "change");
-      fireEvent(this, "value-changed", { value: automation });
-    }, 0);
+    fireEvent(this, "change");
+    fireEvent(this, "value-changed", { value: automation });
   }
 
   static get styles(): CSSResult {
