@@ -2339,6 +2339,7 @@
                     },
                     "edit_card": {
                         "add": "הוסף כרטיסייה",
+                        "confirm_cancel": "האם אתה בטוח שברצונך לבטל?",
                         "delete": "מחק",
                         "duplicate": "שכפול כרטיס",
                         "edit": "ערוך",
@@ -2349,7 +2350,8 @@
                         "pick_card_view_title": "איזה כרטיס ברצונך להוסיף לתצוגת {name}?",
                         "show_code_editor": "הצג עורך קוד",
                         "show_visual_editor": "הצג עורך ויזואלי",
-                        "toggle_editor": "החלף מצב עורך"
+                        "toggle_editor": "החלף מצב עורך",
+                        "unsaved_changes": "יש לך שינויים שלא נשמרו"
                     },
                     "edit_lovelace": {
                         "edit_title": "ערוך כותרת",

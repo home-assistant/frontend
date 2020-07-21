@@ -497,9 +497,12 @@
             "cancel": "İptal",
             "close": "Kapat",
             "delete": "Sil",
+            "error_required": "Gerekli",
             "loading": "Yükleniyor",
+            "menu": "Menü",
             "next": "Sonraki",
             "no": "Hayır",
+            "overflow_menu": "Taşma menüsü",
             "previous": "Önceki",
             "refresh": "Yenile",
             "save": "Kaydet",
@@ -935,6 +938,8 @@
                             "restart": "Yeniden başlat",
                             "single": "Tek (varsayılan)"
                         },
+                        "move_down": "Aşağı taşı",
+                        "move_up": "Yukarı Taşı",
                         "save": "Kaydet",
                         "triggers": {
                             "add": "Tetikleyici ekle",
@@ -1222,6 +1227,7 @@
                     "description": "Varlıklarınızı kişiselleştirin",
                     "pick_attribute": "Geçersiz kılmak için bir özellik seçin",
                     "picker": {
+                        "entity": "Varlık",
                         "header": "Özelleştirmeler"
                     },
                     "warning": {
@@ -1358,7 +1364,9 @@
                 },
                 "info": {
                     "built_using": "Kullanılan oluşturma",
+                    "caption": "Bilgi",
                     "custom_uis": "Özel kullanıcı arayüzleri:",
+                    "description": "Home Assistant kurulumunuz hakkında bilgi",
                     "developed_by": "Bir sürü harika insan tarafından geliştirildi.",
                     "documentation": "Belgeleri",
                     "frontend": "ön uç-ui",
@@ -1444,6 +1452,7 @@
                 },
                 "introduction": "Buradan bileşenlerinizi ve Home Assistant'ınızı yapılandırabilirsiniz. Herşeyi kullanıcı arayüzü ile ayarlamak henüz mümkün değil fakat üzerinde çalışıyoruz",
                 "logs": {
+                    "caption": "Günlükler",
                     "clear": "Temizle",
                     "details": "Günlük Ayrıntıları ( {level} )",
                     "load_full_log": "Tam Home Assistant Günlüğünü Yükle",
@@ -1718,7 +1727,10 @@
                 },
                 "zha": {
                     "add_device_page": {
+                        "discovered_text": "Cihazlar keşfedildikten sonra burada görünecektir.",
                         "header": "Zigbee Ev Otomasyonu - Cihaz Ekle",
+                        "no_devices_found": "Hiçbir cihaz bulunamadı, eşleştirme modunda olduklarından emin olun ve keşfetme sırasında cihazı açık tutun.",
+                        "pairing_mode": "Cihazlarınızın eşleme modunda olduğundan emin olun. Bunun nasıl yapılacağı konusunda cihazınızın talimatlarını kontrol edin.",
                         "search_again": "Yeniden Ara",
                         "spinner": "ZHA Zigbee cihazları aranıyor ..."
                     },
@@ -1726,6 +1738,7 @@
                         "caption": "Cihaz Ekle",
                         "description": "Zigbee ağına cihaz ekleme"
                     },
+                    "button": "Yapılandır",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "get_zigbee_attribute": "Zigbee Özelliğini al",
@@ -1863,6 +1876,7 @@
                         "add_node_secure": "Güvenli Düğüm Ekle",
                         "cancel_command": "Komutu İptal Et",
                         "heal_network": "Ağı İyileştir",
+                        "refresh_entity": "Varlığı Yenile",
                         "remove_node": "Düğümü Kaldır",
                         "save_config": "Config'i Kaydet",
                         "start_network": "Ağı Başlat",

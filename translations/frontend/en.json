@@ -528,6 +528,7 @@
                 "show_areas": "Show areas"
             },
             "data-table": {
+                "no-data": "No data",
                 "search": "Search"
             },
             "date-range-picker": {
@@ -2351,6 +2352,7 @@
                         "show_code_editor": "Show Code Editor",
                         "show_visual_editor": "Show Visual Editor",
                         "toggle_editor": "Toggle Editor",
+                        "typed_header": "{type} Card Configuration",
                         "unsaved_changes": "You have unsaved changes"
                     },
                     "edit_lovelace": {
@@ -2444,6 +2446,8 @@
                     "entity": "Entity",
                     "entity_id": "Entity ID",
                     "last_changed": "Last Changed",
+                    "no_data": "No unused entities found",
+                    "search": "Search entities",
                     "select_to_add": "Select the entities you want to add to a card and then click the add card button.",
                     "title": "Unused entities"
                 },
