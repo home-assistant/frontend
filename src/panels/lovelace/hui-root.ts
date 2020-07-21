@@ -59,7 +59,7 @@ import "./views/hui-panel-view";
 import type { HUIPanelView } from "./views/hui-panel-view";
 import { HUIView } from "./views/hui-view";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
-import { shouldHandleRequestSelectedEvent } from "../../common/util/handle-request-selected-event";
+import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 
 class HUIRoot extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
