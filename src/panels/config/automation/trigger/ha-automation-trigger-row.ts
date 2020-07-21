@@ -34,7 +34,7 @@ import "./types/ha-automation-trigger-time";
 import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 
 const OPTIONS = [
   "device",
@@ -94,17 +94,14 @@ export default class HaAutomationTriggerRow extends LitElement {
       <ha-card>
         <div class="card-content">
           <div class="card-menu">
-            <ha-button-menu corner="BOTTOM_START">
+            <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
               <mwc-icon-button
                 slot="trigger"
                 .title=${this.hass.localize("ui.common.menu")}
                 .label=${this.hass.localize("ui.common.overflow_menu")}
                 ><ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon
               ></mwc-icon-button>
-              <mwc-list-item
-                @request-selected=${this._switchYamlMode}
-                .disabled=${selected === -1}
-              >
+              <mwc-list-item .disabled=${selected === -1}>
                 ${yamlMode
                   ? this.hass.localize(
                       "ui.panel.config.automation.editor.edit_ui"
@@ -118,7 +115,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                   "ui.panel.config.automation.editor.actions.duplicate"
                 )}
               </mwc-list-item>
-              <mwc-list-item @request-selected=${this._onDelete}>
+              <mwc-list-item>
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.actions.delete"
                 )}
@@ -178,6 +175,19 @@ export default class HaAutomationTriggerRow extends LitElement {
     `;
   }
 
+  private _handleAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        this._switchYamlMode();
+        break;
+      case 1:
+        break;
+      case 2:
+        this._onDelete();
+        break;
+    }
+  }
+
   private _onDelete() {
     showConfirmationDialog(this, {
       text: this.hass.localize(
@@ -219,10 +229,7 @@ export default class HaAutomationTriggerRow extends LitElement {
     fireEvent(this, "value-changed", { value: ev.detail.value });
   }
 
-  private _switchYamlMode(ev: CustomEvent<RequestSelectedDetail>) {
-    if (ev.detail.source !== "interaction") {
-      return;
-    }
+  private _switchYamlMode() {
     this._yamlMode = !this._yamlMode;
   }
 

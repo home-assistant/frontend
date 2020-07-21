@@ -83,14 +83,14 @@ class HaPanelShoppingList extends LocalizeMixin(PolymerElement) {
               icon="hass:microphone"
               on-click="_showVoiceCommandDialog"
             ></ha-icon-button>
-            <ha-button-menu corner="BOTTOM_START">
+            <ha-button-menu corner="BOTTOM_START" on-action="_clearCompleted">
               <ha-icon-button
                 icon="hass:dots-vertical"
                 label="Menu"
                 slot="trigger"
               >
               </ha-icon-button>
-              <mwc-list-item on-request-selected="_clearCompleted">
+              <mwc-list-item>
                 [[localize('ui.panel.shopping-list.clear_completed')]]
               </mwc-list-item>
             </ha-button-menu>

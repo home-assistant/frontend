@@ -276,7 +276,11 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
               </div>
             `
           : ""}
-        <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
+        <ha-button-menu
+          corner="BOTTOM_START"
+          slot="toolbar-icon"
+          @action=${this._toggleShowIgnored}
+        >
           <mwc-icon-button
             .title=${this.hass.localize("ui.common.menu")}
             .label=${this.hass.localize("ui.common.overflow_menu")}
@@ -284,7 +288,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           >
             <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
           </mwc-icon-button>
-          <mwc-list-item @request-selected=${this._toggleShowIgnored}>
+          <mwc-list-item>
             ${this.hass.localize(
               this._showIgnored
                 ? "ui.panel.config.integrations.ignore.hide_ignored"
