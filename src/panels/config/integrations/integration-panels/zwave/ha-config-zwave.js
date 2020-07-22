@@ -301,7 +301,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
                   </paper-checkbox>
                   <paper-input
                     disabled="{{entityIgnored}}"
-                    label="[[localize('ui.panel.config.zwave.node_management.pooling_intensity')]]"
+                    label="[[localize('ui.panel.config.zwave.node_management.polling_intensity')]]"
                     type="number"
                     min="0"
                     value="{{entityPollingIntensity}}"
