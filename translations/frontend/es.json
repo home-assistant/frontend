@@ -528,6 +528,7 @@
                 "show_areas": "Mostrar áreas"
             },
             "data-table": {
+                "no-data": "Sin datos",
                 "search": "Buscar"
             },
             "date-range-picker": {
@@ -2351,6 +2352,7 @@
                         "show_code_editor": "Mostrar editor de código",
                         "show_visual_editor": "Mostrar editor visual",
                         "toggle_editor": "Alternar editor",
+                        "typed_header": "{type} Configuración de tarjeta",
                         "unsaved_changes": "Tienes cambios sin guardar"
                     },
                     "edit_lovelace": {
@@ -2444,6 +2446,8 @@
                     "entity": "Entidad",
                     "entity_id": "ID de entidad",
                     "last_changed": "Última modificación",
+                    "no_data": "No se han encontrado entidades sin utilizar",
+                    "search": "Buscar entidades",
                     "select_to_add": "Selecciona las entidades que quieres añadir a una tarjeta y, a continuación, haz clic en el botón Añadir tarjeta.",
                     "title": "Entidades no utilizadas"
                 },

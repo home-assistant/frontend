@@ -324,6 +324,9 @@
             "save": "Gorde"
         },
         "components": {
+            "data-table": {
+                "no-data": "Daturik ez"
+            },
             "relative_time": {
                 "duration": {
                     "day": "{count} {count, plural,\n  one {egun}\n  other {egun}\n}",
@@ -744,6 +747,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "Zure ordenagailua ez dago baimenduta.",
                                 "not_whitelisted": "Zure ordenagailua ez dago baimenduta."
                             },
                             "step": {

@@ -528,6 +528,7 @@
                 "show_areas": "Bereiche anzeigen"
             },
             "data-table": {
+                "no-data": "Keine Daten",
                 "search": "Suche"
             },
             "date-range-picker": {

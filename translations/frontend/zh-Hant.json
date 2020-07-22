@@ -528,6 +528,7 @@
                 "show_areas": "顯示分區"
             },
             "data-table": {
+                "no-data": "沒有資料",
                 "search": "搜尋"
             },
             "date-range-picker": {
@@ -2351,6 +2352,7 @@
                         "show_code_editor": "顯示編碼編輯器",
                         "show_visual_editor": "顯示視覺編輯器",
                         "toggle_editor": "切換編輯器",
+                        "typed_header": "{type} 面板設定",
                         "unsaved_changes": "有未儲存變更"
                     },
                     "edit_lovelace": {
@@ -2444,6 +2446,8 @@
                     "entity": "物件",
                     "entity_id": "物件 ID",
                     "last_changed": "上次變更",
+                    "no_data": "找不到未使用物件",
+                    "search": "搜尋物件",
                     "select_to_add": "選擇所要新增至面板的物件、並點選新增至面板按鈕。",
                     "title": "未使用物件"
                 },
