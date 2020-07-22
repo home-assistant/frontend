@@ -25,35 +25,35 @@ export const applyThemesOnElement = (
   themeOptions?: Partial<HomeAssistant["selectedTheme"]>
 ) => {
   let cacheKey = selectedTheme;
-  let themeRules: Partial<Theme> | undefined;
+  let themeRules: Partial<Theme> = {};
 
   if (selectedTheme === "default" && themeOptions) {
     if (themeOptions.dark) {
       cacheKey = `${cacheKey}__dark`;
-      themeRules = { ...themeRules, ...darkStyles };
+      themeRules = darkStyles;
     }
     if (themeOptions.primaryColor) {
       cacheKey = `${cacheKey}__primary_${themeOptions.primaryColor}`;
       const rgbPrimaryColor = hex2rgb(themeOptions.primaryColor);
       const hslPrimaryColor = rgb2hsl(rgbPrimaryColor);
-      themeRules = {
-        ...themeRules,
-        "primary-color": themeOptions.primaryColor,
-        "light-primary-color": hsl2hex(hslLighten(hslPrimaryColor, 0.5)),
-        "dark-primary-color": hsl2hex(hslDarken(hslPrimaryColor, 0.5)),
-        "text-primary-color":
-          rgbContrast(rgbPrimaryColor, [255, 255, 255]) > 2.6
-            ? "#fff"
-            : "#212121",
-        "state-icon-color": hsl2hex(hslDesaturate(hslPrimaryColor, 0.5)),
-      };
+      themeRules["primary-color"] = themeOptions.primaryColor;
+      themeRules["light-primary-color"] = hsl2hex(
+        hslLighten(hslPrimaryColor, 0.5)
+      );
+      themeRules["dark-primary-color"] = hsl2hex(
+        hslDarken(hslPrimaryColor, 0.5)
+      );
+      themeRules["text-primary-color"] =
+        rgbContrast(rgbPrimaryColor, [255, 255, 255]) > 2.6
+          ? "#fff"
+          : "#212121";
+      themeRules["state-icon-color"] = hsl2hex(
+        hslDesaturate(hslPrimaryColor, 0.5)
+      );
     }
     if (themeOptions.accentColor) {
       cacheKey = `${cacheKey}__accent_${themeOptions.accentColor}`;
-      themeRules = {
-        ...themeRules,
-        "accent-color": themeOptions.accentColor,
-      };
+      themeRules["accent-color"] = themeOptions.accentColor;
     }
   }
 
@@ -61,7 +61,7 @@ export const applyThemesOnElement = (
     themeRules = { ...themeRules, ...themes.themes[selectedTheme] };
   }
 
-  if (!element._themes && !themeRules) {
+  if (!element._themes && !Object.keys(themeRules).length) {
     // No styles to reset, and no styles to set
     return;
   }
