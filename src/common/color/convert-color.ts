@@ -1,23 +1,21 @@
 const expandhex = (hex: string): string => {
-  let result = "#";
-
-  for (var i = 1; i < hex.length; i++) {
-    var val = hex.charAt(i);
+  let result = "";
+  for (const val of hex) {
     result += val + val;
   }
-
   return result;
 };
 
 export const hex2rgb = (hex: string): [number, number, number] => {
-  if (hex.length === 4) {
+  hex = hex.replace("#", "");
+  if (hex.length === 3) {
     hex = expandhex(hex);
   }
 
   const rgb: [number, number, number] = [
-    parseInt(hex.substring(1, 3), 16),
-    parseInt(hex.substring(3, 5), 16),
-    parseInt(hex.substring(5, 7), 16),
+    parseInt(hex.substring(0, 2), 16),
+    parseInt(hex.substring(2, 4), 16),
+    parseInt(hex.substring(4, 6), 16),
   ];
 
   return rgb;
