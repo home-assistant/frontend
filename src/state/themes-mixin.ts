@@ -72,7 +72,13 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       if (schemeMeta) {
         schemeMeta.setAttribute(
           "content",
-          options ? (options.dark ? "dark" : "light") : "dark light"
+          themeName === "default"
+            ? options?.dark
+              ? "dark"
+              : "light"
+            : dark && this.hass!.themes.default_dark_theme
+            ? "dark"
+            : "dark light"
         );
       }
 
