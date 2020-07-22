@@ -61,6 +61,8 @@ export const derivedStyles = {
   "material-secondary-background-color": "var(--secondary-background-color)",
   "mdc-checkbox-unchecked-color": "rgba(var(--rgb-primary-text-color), 0.54)",
   "mdc-checkbox-disabled-color": "var(--disabled-text-color)",
+  "mdc-radio-unchecked-color": "rgba(var(--rgb-primary-text-color), 0.54)",
+  "mdc-radio-disabled-color": "var(--disabled-text-color)",
   "mdc-tab-text-label-color-default": "var(--primary-text-color)",
 };
 
