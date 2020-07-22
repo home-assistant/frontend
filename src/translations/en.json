@@ -2177,7 +2177,8 @@
             "dark": "Dark"
           },
           "primary_color": "Primary color",
-          "accent_color": "Accent color"
+          "accent_color": "Accent color",
+          "reset": "Reset"
         },
         "dashboard": {
           "header": "Dashboard",

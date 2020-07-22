@@ -18,6 +18,7 @@ import "../../components/ha-formfield";
 import "../../components/ha-radio";
 import "@polymer/paper-input/paper-input";
 import type { HaRadio } from "../../components/ha-radio";
+import "@material/mwc-button/mwc-button";
 
 @customElement("ha-pick-theme-row")
 export class HaPickThemeRow extends LitElement {
@@ -126,6 +127,12 @@ export class HaPickThemeRow extends LitElement {
                 .name=${"accentColor"}
                 @change=${this._handleColorChange}
               ></paper-input>
+              ${this.hass!.selectedTheme?.primaryColor ||
+              this.hass!.selectedTheme?.accentColor
+                ? html` <mwc-button @click=${this._resetColors}>
+                    ${this.hass!.localize("ui.panel.profile.themes.reset")}
+                  </mwc-button>`
+                : ""}
             </div>
           </div>`
         : ""}
@@ -164,6 +171,13 @@ export class HaPickThemeRow extends LitElement {
   private _handleColorChange(ev: CustomEvent) {
     const target = ev.target as any;
     fireEvent(this, "settheme", { [target.name]: target.value });
+  }
+
+  private _resetColors() {
+    fireEvent(this, "settheme", {
+      primaryColor: undefined,
+      accentColor: undefined,
+    });
   }
 
   private _handleDarkMode(ev: CustomEvent) {
@@ -207,6 +221,7 @@ export class HaPickThemeRow extends LitElement {
       .color-pickers {
         display: flex;
         justify-content: flex-end;
+        align-items: center;
         flex-grow: 1;
       }
       paper-input {
