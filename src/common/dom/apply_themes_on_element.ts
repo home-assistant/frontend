@@ -40,7 +40,7 @@ export const applyThemesOnElement = (
         "dark-primary-color": primaryColor.darken(0.5).hex(),
         "text-primary-color":
           primaryColor.contrast(Color("#ffffff")) > 2.6 ? "#fff" : "#212121",
-        "state-icon-color": primaryColor.darken(0.3).hex(),
+        "state-icon-color": primaryColor.desaturate(0.5).hex(),
       };
     }
     if (themeOptions.accentColor) {
