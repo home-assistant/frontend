@@ -135,7 +135,8 @@ export class HuiEntitiesCardEditor extends LitElement
     }
 
     if (ev.detail && ev.detail.entities) {
-      this._config.entities = ev.detail.entities;
+      this._config = { ...this._config, entities: ev.detail.entities };
+
       this._configEntities = processEditorEntities(this._config.entities);
     } else if (target.configValue) {
       if (target.value === "") {
