@@ -1,6 +1,8 @@
 import { derivedStyles, darkStyles } from "../../resources/styles";
 import { HomeAssistant, Theme } from "../../types";
-import Color from "color";
+import { hsl2hex, hex2rgb, rgb2hsl } from "../color/convert-color";
+import { hslLighten, hslDarken, hslDesaturate } from "../color/hsl";
+import { rgbContrast } from "../color/rgb";
 
 interface ProcessedTheme {
   keys: { [key: string]: "" };
@@ -32,15 +34,18 @@ export const applyThemesOnElement = (
     }
     if (themeOptions.primaryColor) {
       cacheKey = `${cacheKey}__primary_${themeOptions.primaryColor}`;
-      const primaryColor = Color(themeOptions.primaryColor);
+      const rgbPrimaryColor = hex2rgb(themeOptions.primaryColor);
+      const hslPrimaryColor = rgb2hsl(rgbPrimaryColor);
       themeRules = {
         ...themeRules,
         "primary-color": themeOptions.primaryColor,
-        "light-primary-color": primaryColor.lighten(0.5).hex(),
-        "dark-primary-color": primaryColor.darken(0.5).hex(),
+        "light-primary-color": hsl2hex(hslLighten(hslPrimaryColor, 0.5)),
+        "dark-primary-color": hsl2hex(hslDarken(hslPrimaryColor, 0.5)),
         "text-primary-color":
-          primaryColor.contrast(Color("#ffffff")) > 2.6 ? "#fff" : "#212121",
-        "state-icon-color": primaryColor.desaturate(0.5).hex(),
+          rgbContrast(rgbPrimaryColor, [255, 255, 255]) > 2.6
+            ? "#fff"
+            : "#212121",
+        "state-icon-color": hsl2hex(hslDesaturate(hslPrimaryColor, 0.5)),
       };
     }
     if (themeOptions.accentColor) {
@@ -99,8 +104,8 @@ const processTheme = (
     keys[prefixedKey] = "";
 
     // Try to create a rgb value for this key if it is not a var
-    if (value.startsWith("var")) {
-      // Can't convert var
+    if (!value.startsWith("#")) {
+      // Can't convert non hex value
       continue;
     }
 
@@ -110,7 +115,7 @@ const processTheme = (
       continue;
     }
     try {
-      const rgbValue = Color(value).rgb();
+      const rgbValue = hex2rgb(value).join(",");
       const prefixedRgbKey = `--${rgbKey}`;
       styles[prefixedRgbKey] = rgbValue;
       keys[prefixedRgbKey] = "";
