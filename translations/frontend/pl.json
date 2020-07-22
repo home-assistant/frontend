@@ -528,6 +528,7 @@
                 "show_areas": "Pokaż obszary"
             },
             "data-table": {
+                "no-data": "Brak danych",
                 "search": "Szukaj"
             },
             "date-range-picker": {
@@ -2351,6 +2352,7 @@
                         "show_code_editor": "Edytor kodu",
                         "show_visual_editor": "Edytor wizualny",
                         "toggle_editor": "Przełącz edytor",
+                        "typed_header": "Konfiguracja karty {type}",
                         "unsaved_changes": "Masz niezapisane zmiany"
                     },
                     "edit_lovelace": {
@@ -2444,6 +2446,8 @@
                     "entity": "Encja",
                     "entity_id": "Identyfikator encji",
                     "last_changed": "Ostatnia zmiana",
+                    "no_data": "Brak nieużywanych encji",
+                    "search": "Wyszukaj encje",
                     "select_to_add": "Wybierz encje, które chcesz dodać do karty, a następnie kliknij przycisk dodawania karty.",
                     "title": "Nieużywane encje"
                 },

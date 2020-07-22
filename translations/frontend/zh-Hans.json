@@ -528,6 +528,7 @@
                 "show_areas": "显示区域"
             },
             "data-table": {
+                "no-data": "没有数据",
                 "search": "搜索"
             },
             "date-range-picker": {
@@ -2351,6 +2352,7 @@
                         "show_code_editor": "显示代码编辑器",
                         "show_visual_editor": "显示可视化编辑器",
                         "toggle_editor": "切换编辑器",
+                        "typed_header": "{type}卡片配置",
                         "unsaved_changes": "有更改尚未保存"
                     },
                     "edit_lovelace": {
@@ -2444,6 +2446,8 @@
                     "entity": "实体",
                     "entity_id": "实体 ID",
                     "last_changed": "最后更改",
+                    "no_data": "没有未使用的实体",
+                    "search": "搜索实体",
                     "select_to_add": "选择要添加到卡片中的实体，然后单击添加卡片按钮。",
                     "title": "未使用的实体"
                 },

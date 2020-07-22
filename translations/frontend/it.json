@@ -430,6 +430,8 @@
                 "activate": "Attiva"
             },
             "script": {
+                "cancel": "Annulla",
+                "cancel_multiple": "Annulla {number}",
                 "execute": "Esegui"
             },
             "service": {
@@ -524,6 +526,10 @@
                 "area": "Area",
                 "clear": "Cancella",
                 "show_areas": "Mostra le aree"
+            },
+            "data-table": {
+                "no-data": "Nessun dato",
+                "search": "Ricerca"
             },
             "date-range-picker": {
                 "end_date": "Data di fine",
@@ -938,6 +944,19 @@
                         "introduction": "Usa le automazioni per dare vita alla tua casa.",
                         "load_error_not_editable": "Solo le Automazioni in automations.yaml sono modificabili.",
                         "load_error_unknown": "Errore durante il caricamento dell'Automazione ({err_no}).",
+                        "max": {
+                            "parallel": "Numero massimo di esecuzioni parallele",
+                            "queued": "Lunghezza della coda"
+                        },
+                        "modes": {
+                            "description": "La modalità controlla cosa succede quando l'automazione viene attivata mentre le azioni sono ancora in esecuzione da una attivazione precedente. Controllare {documentation_link} per maggiori informazioni.",
+                            "documentation": "documentazione di automazione",
+                            "label": "Modalità",
+                            "parallel": "Parallelo",
+                            "queued": "In coda",
+                            "restart": "Riavviare",
+                            "single": "Singolo (predefinito)"
+                        },
                         "move_down": "Sposta sotto",
                         "move_up": "Sposta sopra",
                         "save": "Salva",
@@ -1356,6 +1375,7 @@
                             "confirm_text": "Dovresti rimuoverli dalla configurazione di Lovelace e dalle automazioni se contengono queste entità.",
                             "confirm_title": "Vuoi rimuovere {number} entità?"
                         },
+                        "search": "Cerca entità",
                         "selected": "{number} selezionato",
                         "status": {
                             "disabled": "Disabilitato",
@@ -1386,7 +1406,8 @@
                             "entity_id": "ID Entità",
                             "name": "Nome",
                             "type": "Tipo"
-                        }
+                        },
+                        "no_helpers": "Sembra che tu non abbia ancora nessun aiutante!"
                     },
                     "types": {
                         "input_boolean": "Commutatore",
@@ -1490,7 +1511,8 @@
                     "note_about_integrations": "Non tutte le integrazioni possono ancora essere configurate tramite l'interfaccia utente.",
                     "note_about_website_reference": "Ulteriori informazioni sono disponibili su ",
                     "rename_dialog": "Modifica il nome di questa voce di configurazione",
-                    "rename_input_label": "Nome della voce"
+                    "rename_input_label": "Nome della voce",
+                    "search": "Cerca integrazioni"
                 },
                 "introduction": "Qui è possibile configurare i componenti e Home Assistant. Non è ancora possibile configurare tutto dall'Interfaccia Utente, ma ci stiamo lavorando.",
                 "logs": {
@@ -1643,6 +1665,7 @@
                             "introduction": "Le entità che non appartengono a un dispositivo possono essere impostate qui.",
                             "without_device": "Entità senza dispositivo"
                         },
+                        "icon": "Icona",
                         "introduction": "Usa le scene per dare vita alla tua casa.",
                         "load_error_not_editable": "Solo le scene in scene.yaml sono modificabili.",
                         "load_error_unknown": "Errore durante il caricamento della scena ({err_no}).",
@@ -1676,9 +1699,26 @@
                         "delete_confirm": "Sei sicuro di voler eliminare questo script?",
                         "delete_script": "Elimina script",
                         "header": "Script: {name}",
+                        "icon": "Icona",
+                        "id": "ID Entità",
+                        "id_already_exists": "Questo ID esiste già",
+                        "id_already_exists_save_error": "Non è possibile salvare questo script perché l'ID non è univoco, scegliere un altro ID o lasciarlo vuoto per generarne automaticamente uno.",
                         "introduction": "Utilizzare gli script per eseguire una sequenza di azioni.",
                         "link_available_actions": "Ulteriori informazioni sulle azioni disponibili.",
                         "load_error_not_editable": "Solo gli script all'interno di scripts.yaml sono modificabili.",
+                        "max": {
+                            "parallel": "Numero massimo di esecuzioni parallele",
+                            "queued": "Lunghezza della coda"
+                        },
+                        "modes": {
+                            "description": "La modalità controlla cosa succede quando lo script viene invocato mentre è ancora in esecuzione da una o più invocazioni precedenti. Controllare il {documentation_link} per maggiori informazioni.",
+                            "documentation": "documentazione dello script",
+                            "label": "Modalità",
+                            "parallel": "Parallelo",
+                            "queued": "In coda",
+                            "restart": "Riavviare",
+                            "single": "Singolo (predefinito)"
+                        },
                         "sequence": "Sequenza",
                         "sequence_sentence": "Sequenza di azioni di questo script."
                     },
@@ -1776,7 +1816,7 @@
                         "discovered_text": "I dispositivi verranno visualizzati qui una volta scoperti.",
                         "discovery_text": "I dispositivi rilevati verranno visualizzati qui. Seguire le istruzioni per il / i dispositivo / i e posizionare il / i dispositivo / i in modalità accoppiamento.",
                         "header": "Zigbee Home Automation - Aggiungi dispositivi",
-                        "no_devices_found": "Nessun dispositivo trovato, assicurati che siano in modalità di associazione e tienili svegli mentre la scansione è in esecuzione.",
+                        "no_devices_found": "Nessun dispositivo trovato, assicurati che siano in modalità di associazione e tienili attivi mentre la scansione è in esecuzione.",
                         "pairing_mode": "Assicurati che i tuoi dispositivi siano in modalità di associazione. Controlla le istruzioni del tuo dispositivo su come eseguire questa operazione.",
                         "search_again": "Cerca di nuovo",
                         "spinner": "Ricerca di dispositivi ZHA Zigbee ..."
@@ -2194,6 +2234,7 @@
                             "name": "Nome",
                             "no_theme": "Nessun tema",
                             "refresh_interval": "Intervallo di aggiornamento",
+                            "search": "Ricerca",
                             "secondary_info_attribute": "Attributo informazioni secondarie",
                             "show_icon": "Mostrare l'icona?",
                             "show_name": "Mostrare il nome?",
@@ -2299,6 +2340,7 @@
                     },
                     "edit_card": {
                         "add": "Aggiungi scheda",
+                        "confirm_cancel": "Sei sicuro di voler annullare?",
                         "delete": "Elimina scheda",
                         "duplicate": "Duplica scheda",
                         "edit": "Modifica",
@@ -2309,12 +2351,15 @@
                         "pick_card_view_title": "Quale scheda vorresti aggiungere alla tua vista {name}?",
                         "show_code_editor": "Mostra Editor di Codice",
                         "show_visual_editor": "Mostra Editor Visivo",
-                        "toggle_editor": "Attiva / disattiva l'editor"
+                        "toggle_editor": "Attiva / disattiva l'editor",
+                        "typed_header": "{type} Configurazione Scheda",
+                        "unsaved_changes": "Sono state apportate modifiche non salvate"
                     },
                     "edit_lovelace": {
                         "edit_title": "Modifica titolo",
                         "explanation": "Questo titolo è mostrato sopra tutte le tue viste nell'Interfaccia Utente di Lovelace.",
-                        "header": "Titolo della tua interfaccia utente di Lovelace"
+                        "header": "Titolo della tua interfaccia utente di Lovelace",
+                        "title": "Titolo"
                     },
                     "edit_view": {
                         "add": "Aggiungi vista",
@@ -2401,6 +2446,8 @@
                     "entity": "Entità",
                     "entity_id": "ID entità",
                     "last_changed": "Ultima modifica",
+                    "no_data": "Trovate entità non utilizzate",
+                    "search": "Cerca entità",
                     "select_to_add": "Selezionare le entità che si desidera aggiungere a una scheda, quindi fare clic sul pulsante Aggiungi scheda.",
                     "title": "Entità non utilizzate"
                 },
@@ -2503,6 +2550,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "Il tuo computer non è consentito.",
                                 "not_whitelisted": "Il tuo computer non è nella whitelist."
                             },
                             "step": {
