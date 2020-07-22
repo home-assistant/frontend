@@ -24,10 +24,11 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
           height: calc(100% - 64px);
           width: 100%;
           z-index: 0;
+          background: inherit;
         }
 
-        .light {
-          color: #000000;
+        .icon {
+          color: var(--primary-text-color);
         }
       </style>
 
@@ -153,7 +154,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
         icon = this.Leaflet.divIcon({
           html: iconHTML,
           iconSize: [24, 24],
-          className: "light",
+          className: "icon",
         });
 
         // create marker with the icon

@@ -290,7 +290,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   private async loadMap(): Promise<void> {
     [this._leafletMap, this.Leaflet] = await setupLeafletMap(
       this._mapEl,
-      this._config !== undefined ? this._config.dark_mode === true : false
+      this._config!.dark_mode
     );
     this._drawEntities();
     this._leafletMap.invalidateSize();
@@ -493,7 +493,11 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             icon: Leaflet.divIcon({
               html: iconHTML,
               iconSize: [24, 24],
-              className: this._config!.dark_mode === true ? "dark" : "light",
+              className: this._config!.dark_mode
+                ? "dark"
+                : this._config!.dark_mode === false
+                ? "light"
+                : "",
             }),
             interactive: false,
             title,
@@ -649,11 +653,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         left: 0;
         width: 100%;
         height: 100%;
-        background: #fafaf8;
-      }
-
-      #map.dark {
-        background: #090909;
+        background: inherit;
       }
 
       ha-icon-button {

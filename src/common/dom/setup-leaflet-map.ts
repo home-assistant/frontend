@@ -6,7 +6,7 @@ export type LeafletDrawModuleType = typeof import("leaflet-draw");
 
 export const setupLeafletMap = async (
   mapElement: HTMLElement,
-  darkMode = false,
+  darkMode?: boolean,
   draw = false
 ): Promise<[Map, LeafletModuleType]> => {
   if (!mapElement.parentNode) {
@@ -28,6 +28,14 @@ export const setupLeafletMap = async (
   style.setAttribute("rel", "stylesheet");
   mapElement.parentNode.appendChild(style);
   map.setView([52.3731339, 4.8903147], 13);
+
+  if (darkMode === undefined) {
+    darkMode =
+      document
+        .querySelector("meta[name=color-scheme]")
+        ?.getAttribute("content") === "dark";
+  }
+
   createTileLayer(Leaflet, darkMode).addTo(map);
 
   return [map, Leaflet];
