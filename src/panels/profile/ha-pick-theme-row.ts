@@ -1,6 +1,5 @@
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "@material/mwc-radio";
 import "../../components/ha-paper-dropdown-menu";
 import { TemplateResult, html } from "lit-html";
 import {
@@ -16,8 +15,9 @@ import { HomeAssistant } from "../../types";
 import "./ha-settings-row";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-formfield";
+import "../../components/ha-radio";
 import "@polymer/paper-input/paper-input";
-import type { Radio } from "@material/mwc-radio";
+import type { HaRadio } from "../../components/ha-radio";
 
 @customElement("ha-pick-theme-row")
 export class HaPickThemeRow extends LitElement {
@@ -74,38 +74,38 @@ export class HaPickThemeRow extends LitElement {
                 "ui.panel.profile.themes.dark_mode.auto"
               )}
             >
-              <mwc-radio
+              <ha-radio
                 @change=${this._handleDarkMode}
                 name="dark_mode"
                 value="auto"
                 ?checked=${this.hass.selectedTheme?.dark === undefined}
-              ></mwc-radio>
+              ></ha-radio>
             </ha-formfield>
             <ha-formfield
               .label=${this.hass!.localize(
                 "ui.panel.profile.themes.dark_mode.light"
               )}
             >
-              <mwc-radio
+              <ha-radio
                 @change=${this._handleDarkMode}
                 name="dark_mode"
                 value="light"
                 ?checked=${this.hass.selectedTheme?.dark === false}
               >
-              </mwc-radio>
+              </ha-radio>
             </ha-formfield>
             <ha-formfield
               .label=${this.hass!.localize(
                 "ui.panel.profile.themes.dark_mode.dark"
               )}
             >
-              <mwc-radio
+              <ha-radio
                 @change=${this._handleDarkMode}
                 name="dark_mode"
                 value="dark"
                 ?checked=${this.hass.selectedTheme?.dark === true}
               >
-              </mwc-radio>
+              </ha-radio>
             </ha-formfield>
             <div class="color-pickers">
               <paper-input
@@ -168,7 +168,7 @@ export class HaPickThemeRow extends LitElement {
 
   private _handleDarkMode(ev: CustomEvent) {
     let dark: boolean | undefined;
-    switch ((ev.target as Radio).value) {
+    switch ((ev.target as HaRadio).value) {
       case "light":
         dark = false;
         break;
