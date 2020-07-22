@@ -10,7 +10,6 @@ export const darkStyles = {
   "app-header-background-color": "#1c1c1c",
   "switch-unchecked-button-color": "#999999",
   "switch-unchecked-track-color": "#9b9b9b",
-  blabla: "var(--primary-text-color)",
 };
 
 export const derivedStyles = {
@@ -46,6 +45,7 @@ export const derivedStyles = {
   "paper-slider-secondary-color": "var(--slider-secondary-color)",
   "paper-slider-container-color": "var(--slider-bar-color)",
   "data-table-background-color": "var(--card-background-color)",
+  "markdown-code-background-color": "var(--primary-background-color)",
   "mdc-theme-primary": "var(--primary-color)",
   "mdc-theme-secondary": "var(--accent-color)",
   "mdc-theme-background": "var(--primary-background-color)",

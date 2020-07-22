@@ -83,9 +83,6 @@ documentContainer.innerHTML = `<custom-style>
       /* set our slider style */
       --ha-paper-slider-pin-font-size: 15px;
 
-      /* markdown styles */
-      --markdown-code-background-color: #f6f8fa;
-
       /* rgb */
       --rgb-primary-color: 3, 169, 244;
       --rgb-accent-color: 255, 152, 0;
