@@ -125,7 +125,7 @@ export class HaLocationsEditor extends LitElement {
   private async _initMap(): Promise<void> {
     [this._leafletMap, this.Leaflet] = await setupLeafletMap(
       this._mapEl,
-      false,
+      undefined,
       true
     );
     this._updateMarkers();
@@ -289,9 +289,6 @@ export class HaLocationsEditor extends LitElement {
       }
       #map {
         height: 100%;
-      }
-      .light {
-        color: #000000;
       }
       .leaflet-marker-draggable {
         cursor: move !important;
