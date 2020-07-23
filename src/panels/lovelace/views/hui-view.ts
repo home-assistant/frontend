@@ -394,18 +394,6 @@ export class HUIView extends LitElement {
         left: 16px;
       }
 
-      @media (max-width: 500px) {
-        :host {
-          padding-left: 0;
-          padding-right: 0;
-        }
-
-        .column > * {
-          margin-left: 0;
-          margin-right: 0;
-        }
-      }
-
       @media (max-width: 599px) {
         .column {
           max-width: 600px;
