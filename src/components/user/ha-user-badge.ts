@@ -57,7 +57,7 @@ class StateBadge extends LitElement {
         text-align: center;
         background-color: var(--light-primary-color);
         text-decoration: none;
-        color: var(--primary-text-color);
+        color: var(--text-light-primary-color, var(--primary-text-color));
         overflow: hidden;
       }
 

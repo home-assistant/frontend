@@ -1,7 +1,13 @@
 import { derivedStyles, darkStyles } from "../../resources/styles";
 import { HomeAssistant, Theme } from "../../types";
-import { hsl2hex, hex2rgb, rgb2hsl } from "../color/convert-color";
-import { hslLighten, hslDarken, hslDesaturate } from "../color/hsl";
+import {
+  hsl2hex,
+  hex2rgb,
+  rgb2hsl,
+  hsl2rgb,
+  rgb2hex,
+} from "../color/convert-color";
+import { hslLighten, hslDarken } from "../color/hsl";
 import { rgbContrast } from "../color/rgb";
 
 interface ProcessedTheme {
@@ -37,9 +43,8 @@ export const applyThemesOnElement = (
       const rgbPrimaryColor = hex2rgb(themeOptions.primaryColor);
       const hslPrimaryColor = rgb2hsl(rgbPrimaryColor);
       themeRules["primary-color"] = themeOptions.primaryColor;
-      themeRules["light-primary-color"] = hsl2hex(
-        hslLighten(hslPrimaryColor, 0.5)
-      );
+      const rgbLigthPrimaryColor = hsl2rgb(hslLighten(hslPrimaryColor, 0.5));
+      themeRules["light-primary-color"] = rgb2hex(rgbLigthPrimaryColor);
       themeRules["dark-primary-color"] = hsl2hex(
         hslDarken(hslPrimaryColor, 0.5)
       );
@@ -47,9 +52,10 @@ export const applyThemesOnElement = (
         rgbContrast(rgbPrimaryColor, [255, 255, 255]) > 2.6
           ? "#fff"
           : "#212121";
-      themeRules["state-icon-color"] = hsl2hex(
-        hslDesaturate(hslPrimaryColor, 0.5)
-      );
+      if (rgbContrast(rgbLigthPrimaryColor, [33, 33, 33]) < 6) {
+        themeRules["text-light-primary-color"] = "#fff";
+      }
+      themeRules["state-icon-color"] = themeRules["dark-primary-color"];
     }
     if (themeOptions.accentColor) {
       cacheKey = `${cacheKey}__accent_${themeOptions.accentColor}`;
@@ -58,7 +64,7 @@ export const applyThemesOnElement = (
   }
 
   if (selectedTheme && themes.themes[selectedTheme]) {
-    themeRules = { ...themeRules, ...themes.themes[selectedTheme] };
+    themeRules = themes.themes[selectedTheme];
   }
 
   if (!element._themes && !Object.keys(themeRules).length) {
@@ -88,7 +94,7 @@ const processTheme = (
   cacheKey: string,
   theme: Partial<Theme>
 ): ProcessedTheme | undefined => {
-  if (!theme) {
+  if (!theme || !Object.keys(theme).length) {
     return undefined;
   }
   const combinedTheme: Partial<Theme> = {
