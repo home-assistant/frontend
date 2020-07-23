@@ -1,3 +1,6 @@
+// From https://github.com/gka/chroma.js
+// Copyright (c) 2011-2019, Gregor Aisch
+
 export const labDarken = (
   lab: [number, number, number],
   amount = 1

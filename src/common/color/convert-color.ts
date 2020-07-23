@@ -1,4 +1,4 @@
-const expandhex = (hex: string): string => {
+const expand_hex = (hex: string): string => {
   let result = "";
   for (const val of hex) {
     result += val + val;
@@ -6,14 +6,8 @@ const expandhex = (hex: string): string => {
   return result;
 };
 
-const clamp = (val: number, min: number, max: number): number => {
-  return Math.min(Math.max(val, min), max);
-};
-
-const component2hex = (component: number): string => {
-  const value = Math.round(clamp(component, 0, 255));
-  const hex = value.toString(16);
-
+const rgb_hex = (component: number): string => {
+  const hex = Math.round(Math.min(Math.max(component, 0), 255)).toString(16);
   return hex.length === 1 ? `0${hex}` : hex;
 };
 
@@ -22,25 +16,24 @@ const component2hex = (component: number): string => {
 export const hex2rgb = (hex: string): [number, number, number] => {
   hex = hex.replace("#", "");
   if (hex.length === 3 || hex.length === 4) {
-    hex = expandhex(hex);
+    hex = expand_hex(hex);
   }
 
-  const rgb: [number, number, number] = [
+  return [
     parseInt(hex.substring(0, 2), 16),
     parseInt(hex.substring(2, 4), 16),
     parseInt(hex.substring(4, 6), 16),
   ];
-
-  return rgb;
 };
 
 export const rgb2hex = (rgb: [number, number, number]): string => {
-  return `#${component2hex(rgb[0])}${component2hex(rgb[1])}${component2hex(
-    rgb[2]
-  )}`;
+  return `#${rgb_hex(rgb[0])}${rgb_hex(rgb[1])}${rgb_hex(rgb[2])}`;
 };
 
-// Constants for LAB conversion
+// Conversion between LAB, XYZ and RGB from https://github.com/gka/chroma.js
+// Copyright (c) 2011-2019, Gregor Aisch
+
+// Constants for XYZ and LAB conversion
 const Xn = 0.95047;
 const Yn = 1;
 const Zn = 1.08883;
@@ -72,6 +65,8 @@ const xyz_rgb = (r: number) => {
 const lab_xyz = (t: number) => {
   return t > t1 ? t * t * t : t2 * (t - t0);
 };
+
+// Conversions between RGB and LAB
 
 const rgb2xyz = (rgb: [number, number, number]): [number, number, number] => {
   let [r, g, b] = rgb;
