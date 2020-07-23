@@ -559,7 +559,7 @@
                 "device": "Enhet",
                 "entity": "Beslektede entiteter",
                 "group": "Del av følgende grupper",
-                "integration": "Integrasjoner",
+                "integration": "Integrasjon",
                 "no_related_found": "Ingen relaterte elementer funnet.",
                 "scene": "Del av følgende scener",
                 "script": "Del av følgende skript"
@@ -1437,7 +1437,7 @@
                     "title": "Informasjon"
                 },
                 "integration_panel_move": {
-                    "link_integration_page": "integrasjonsside",
+                    "link_integration_page": "integrasjonssiden",
                     "missing_zha": "Mangler ZHA konfigurasjonspanelet? Det ble flyttet til ZHA oppføringen på {integrations_page}.",
                     "missing_zwave": "Mangler Z-Wave konfigurasjonspanelet? Det ble flyttet til Z-Wave oppføringen på {integrations_page}."
                 },
