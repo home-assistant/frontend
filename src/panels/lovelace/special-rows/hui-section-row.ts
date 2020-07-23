@@ -41,14 +41,14 @@ class HuiSectionRow extends LitElement implements LovelaceRow {
   static get styles(): CSSResult {
     return css`
       .label {
-        color: var(--primary-color);
+        color: var(--secondary-text-color);
         margin-left: 8px;
         margin-bottom: 16px;
         margin-top: 16px;
       }
       .divider {
         height: 1px;
-        background-color: var(--secondary-text-color);
+        background-color: var(--divider-color);
         opacity: 0.25;
         margin-left: -16px;
         margin-right: -16px;
