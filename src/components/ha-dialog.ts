@@ -34,6 +34,7 @@ export class HaDialog extends MwcDialog {
       style,
       css`
         .mdc-dialog {
+          --mdc-dialog-scroll-divider-color: var(--divider-color);
           z-index: var(--dialog-z-index, 7);
         }
         .mdc-dialog__actions {
