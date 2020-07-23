@@ -47,9 +47,7 @@ export const applyThemesOnElement = (
       themeRules["light-primary-color"] = rgb2hex(rgbLigthPrimaryColor);
       themeRules["dark-primary-color"] = lab2hex(labDarken(labPrimaryColor));
       themeRules["text-primary-color"] =
-        rgbContrast(rgbPrimaryColor, [255, 255, 255]) > 2.6
-          ? "#fff"
-          : "#212121";
+        rgbContrast(rgbPrimaryColor, [33, 33, 33]) < 6 ? "#fff" : "#212121";
       themeRules["text-light-primary-color"] =
         rgbContrast(rgbLigthPrimaryColor, [33, 33, 33]) < 6
           ? "#fff"
@@ -59,6 +57,9 @@ export const applyThemesOnElement = (
     if (themeOptions.accentColor) {
       cacheKey = `${cacheKey}__accent_${themeOptions.accentColor}`;
       themeRules["accent-color"] = themeOptions.accentColor;
+      const rgbAccentColor = hex2rgb(themeOptions.accentColor);
+      themeRules["text-accent-color"] =
+        rgbContrast(rgbAccentColor, [33, 33, 33]) < 6 ? "#fff" : "#212121";
     }
   }
 

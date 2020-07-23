@@ -6,9 +6,22 @@ const expandhex = (hex: string): string => {
   return result;
 };
 
+const clamp = (val: number, min: number, max: number): number => {
+  return Math.min(Math.max(val, min), max);
+};
+
+const component2hex = (component: number): string => {
+  const value = Math.round(clamp(component, 0, 255));
+  const hex = value.toString(16);
+
+  return hex.length === 1 ? `0${hex}` : hex;
+};
+
+// Conversion between HEX and RGB
+
 export const hex2rgb = (hex: string): [number, number, number] => {
   hex = hex.replace("#", "");
-  if (hex.length === 3) {
+  if (hex.length === 3 || hex.length === 4) {
     hex = expandhex(hex);
   }
 
@@ -19,17 +32,6 @@ export const hex2rgb = (hex: string): [number, number, number] => {
   ];
 
   return rgb;
-};
-
-const clamp = (val: number, min: number, max: number): number => {
-  return Math.min(Math.max(val, min), max);
-};
-
-const component2hex = (component: number): string => {
-  const value = Math.round(clamp(component, 0, 255));
-  const hex = value.toString(16);
-
-  return hex.length === 1 ? `0${hex}` : hex;
 };
 
 export const rgb2hex = (rgb: [number, number, number]): string => {
