@@ -22,6 +22,7 @@ documentContainer.innerHTML = `<custom-style>
       --primary-text-color: #212121;
       --secondary-text-color: #727272;
       --text-primary-color: #ffffff;
+      --text-light-primary-color: #212121;
       --disabled-text-color: #bdbdbd;
 
       /* main interface colors */

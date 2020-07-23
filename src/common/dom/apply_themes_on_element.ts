@@ -52,9 +52,10 @@ export const applyThemesOnElement = (
         rgbContrast(rgbPrimaryColor, [255, 255, 255]) > 2.6
           ? "#fff"
           : "#212121";
-      if (rgbContrast(rgbLigthPrimaryColor, [33, 33, 33]) < 6) {
-        themeRules["text-light-primary-color"] = "#fff";
-      }
+      themeRules["text-light-primary-color"] =
+        rgbContrast(rgbLigthPrimaryColor, [33, 33, 33]) < 6
+          ? "#fff"
+          : "#212121";
       themeRules["state-icon-color"] = themeRules["dark-primary-color"];
     }
     if (themeOptions.accentColor) {
