@@ -949,6 +949,7 @@
                             "queued": "Lengte van de wachtrij"
                         },
                         "modes": {
+                            "description": "De modus bepaalt wat er gebeurt wanneer de automatisering wordt geactiveerd terwijl de acties nog steeds worden uitgevoerd door een vorige trigger. Controleer de {documentation_link} voor meer informatie.",
                             "documentation": "Automatisering documentatie",
                             "label": "Modus",
                             "parallel": "Parallel",
@@ -1710,6 +1711,7 @@
                             "queued": "Lengte van de wachtrij"
                         },
                         "modes": {
+                            "description": "De modus bepaalt wat er gebeurt wanneer het script wordt aangeroepen terwijl het nog steeds wordt uitgevoerd vanuit een of meer eerdere aanroepen. Controleer de {documentation_link} voor meer informatie.",
                             "documentation": "Scriptdocumentatie",
                             "label": "Modus",
                             "parallel": "Parallel",
@@ -1990,6 +1992,7 @@
                         "nodes": "Knooppunten",
                         "nodes_hint": "Selecteer knooppunt om de opties per knooppunt te bekijken",
                         "nodes_in_group": "Andere nodes in deze groep:",
+                        "pooling_intensity": "Polling intensiteit",
                         "protection": "Bescherming",
                         "remove_broadcast": "Broadcast verwijderen",
                         "remove_from_group": "Verwijderen uit groep",
@@ -2316,7 +2319,7 @@
                             "name": "Boodschappenlijst"
                         },
                         "thermostat": {
-                            "description": "De Thermostat-kaart geeft controle over uw klimaateenheid. Hiermee kunt u de temperatuur en modus van de entiteit wijzigen.",
+                            "description": "De Thermostaat-kaart geeft controle over uw klimaateenheid. Hiermee kunt u de temperatuur en modus van de entiteit wijzigen.",
                             "name": "Thermostaat"
                         },
                         "vertical-stack": {

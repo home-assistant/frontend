@@ -528,6 +528,7 @@
                 "show_areas": "Zobrazit oblasti"
             },
             "data-table": {
+                "no-data": "Žádná data",
                 "search": "Hledat"
             },
             "date-range-picker": {
@@ -951,7 +952,7 @@
                             "description": "Režim určuje, co se stane, když je automatizace spuštěna a zároveň stále ještě běží akce na základě předchozího spuštění. Další informace naleznete na {documentation_link}.",
                             "documentation": "Dokumentace automatizací",
                             "label": "Režim",
-                            "parallel": "Paralelní (výchozí)",
+                            "parallel": "Paralelní",
                             "queued": "Fronta",
                             "restart": "Restart",
                             "single": "Jediný"
@@ -1409,7 +1410,7 @@
                         "no_helpers": "Vypadá to, že ještě nemáte žádné pomocníky!"
                     },
                     "types": {
-                        "input_boolean": "Přepnout",
+                        "input_boolean": "Přepínač",
                         "input_datetime": "Datum a/nebo čas",
                         "input_number": "Číslo",
                         "input_select": "Rozbalovací nabídka",
@@ -1713,7 +1714,7 @@
                             "description": "Režim určuje, co se stane, když je skript spuštěn a zároveň stále ještě běží na základě předchozího spuštění. Další informace naleznete na {documentation_link}.",
                             "documentation": "Dokumentace skriptů",
                             "label": "Režim",
-                            "parallel": "Paralelní (výchozí)",
+                            "parallel": "Paralelní",
                             "queued": "Fronta",
                             "restart": "Restart",
                             "single": "Jediný (výchozí)"
@@ -1730,7 +1731,7 @@
                         },
                         "introduction": "Editor skriptů umožňuje vytvářet a upravovat skripty. Postupujte podle níže uvedeného odkazu a přečtěte si pokyny, abyste se ujistili, že jste Home Assistant nakonfigurovali správně.",
                         "learn_more": "Další informace o skriptech",
-                        "no_scripts": "Nemohli jsme najít žádné editovatelné skripty",
+                        "no_scripts": "Nemohli jsme najít žádné upravitelné skripty",
                         "show_info": "Zobrazit informace o skriptu",
                         "trigger_script": "Spustit skript"
                     }
@@ -2351,6 +2352,7 @@
                         "show_code_editor": "Zobrazit editor kódu",
                         "show_visual_editor": "Zobrazit vizuální editor",
                         "toggle_editor": "Přepnout Editor",
+                        "typed_header": "{type} Konfigurace karty",
                         "unsaved_changes": "Změny nejsou uloženy"
                     },
                     "edit_lovelace": {
@@ -2406,7 +2408,7 @@
                         "empty_config": "Začít s prázdným dashboardem",
                         "header": "Převzít kontrolu nad vaší Lovelace UI",
                         "para": "Ve výchozím nastavení bude Home Assistant spravovat vaše uživatelské rozhraní – aktualizovat jej při přidání nové entity nebo Lovelace komponenty. Pokud převezmete kontrolu, nebudeme již provádět změny automaticky za vás.",
-                        "para_sure": "Opravdu chcete převzít kontrolu nad uživalským rohraním ?",
+                        "para_sure": "Opravdu chcete převzít kontrolu nad uživalským rozhraním ?",
                         "save": "Převzít kontrolu",
                         "yaml_config": "Abyste mohli snadněji začít, zde aktuální konfigurace tohoto dashboardu:",
                         "yaml_control": "Chcete-li převzít kontrolu v režimu YAML, vytvořte soubor YAML s názvem, který jste uvedli ve své konfiguraci pro tento dashboard nebo výchozí 'ui-lovelace.yaml'.",
@@ -2444,6 +2446,8 @@
                     "entity": "Entita",
                     "entity_id": "ID entity",
                     "last_changed": "Naposledy změněno",
+                    "no_data": "Nebyly nalezeny žádné nepoužívané entity",
+                    "search": "Hledat entitu",
                     "select_to_add": "Vyberte entity, které chcete přidat do karty, a poté klikněte na tlačítko přidat kartu.",
                     "title": "Nepoužité entity"
                 },

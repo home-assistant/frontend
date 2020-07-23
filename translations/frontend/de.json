@@ -2352,6 +2352,7 @@
                         "show_code_editor": "Code-Editor anzeigen",
                         "show_visual_editor": "Visuellen Editor anzeigen",
                         "toggle_editor": "Editor umschalten",
+                        "typed_header": "{type} Kartenkonfiguration",
                         "unsaved_changes": "Nicht gespeicherte Änderungen"
                     },
                     "edit_lovelace": {
@@ -2445,6 +2446,8 @@
                     "entity": "Entität",
                     "entity_id": "Entitäts-ID",
                     "last_changed": "Zuletzt geändert",
+                    "no_data": "Keine ungenutzten Entitäten gefunden",
+                    "search": "Entitäten durchsuchen",
                     "select_to_add": "Wähle die Entitäten aus, die du zur Karte hinzufügen möchtest und klicke auf den Karte hinzufügen-Button.",
                     "title": "Nicht verwendete Entitäten"
                 },
