@@ -1,14 +1,14 @@
 import { derivedStyles, darkStyles } from "../../resources/styles";
 import { HomeAssistant, Theme } from "../../types";
 import {
-  hsl2hex,
   hex2rgb,
-  rgb2hsl,
-  hsl2rgb,
   rgb2hex,
+  rgb2lab,
+  lab2rgb,
+  lab2hex,
 } from "../color/convert-color";
-import { hslLighten, hslDarken } from "../color/hsl";
 import { rgbContrast } from "../color/rgb";
+import { labDarken, labBrighten } from "../color/lab";
 
 interface ProcessedTheme {
   keys: { [key: string]: "" };
@@ -41,13 +41,11 @@ export const applyThemesOnElement = (
     if (themeOptions.primaryColor) {
       cacheKey = `${cacheKey}__primary_${themeOptions.primaryColor}`;
       const rgbPrimaryColor = hex2rgb(themeOptions.primaryColor);
-      const hslPrimaryColor = rgb2hsl(rgbPrimaryColor);
+      const labPrimaryColor = rgb2lab(rgbPrimaryColor);
       themeRules["primary-color"] = themeOptions.primaryColor;
-      const rgbLigthPrimaryColor = hsl2rgb(hslLighten(hslPrimaryColor, 0.5));
+      const rgbLigthPrimaryColor = lab2rgb(labBrighten(labPrimaryColor));
       themeRules["light-primary-color"] = rgb2hex(rgbLigthPrimaryColor);
-      themeRules["dark-primary-color"] = hsl2hex(
-        hslDarken(hslPrimaryColor, 0.5)
-      );
+      themeRules["dark-primary-color"] = lab2hex(labDarken(labPrimaryColor));
       themeRules["text-primary-color"] =
         rgbContrast(rgbPrimaryColor, [255, 255, 255]) > 2.6
           ? "#fff"

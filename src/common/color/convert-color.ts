@@ -38,101 +38,79 @@ export const rgb2hex = (rgb: [number, number, number]): string => {
   )}`;
 };
 
-export const rgb2hsl = (
+// Constants for LAB conversion
+const Xn = 0.95047;
+const Yn = 1;
+const Zn = 1.08883;
+
+const t0 = 0.137931034; // 4 / 29
+const t1 = 0.206896552; // 6 / 29
+const t2 = 0.12841855; // 3 * t1 * t1
+const t3 = 0.008856452; // t1 * t1 * t1
+
+const rgb_xyz = (r: number) => {
+  r /= 255;
+  if (r <= 0.04045) {
+    return r / 12.92;
+  }
+  return ((r + 0.055) / 1.055) ** 2.4;
+};
+
+const xyz_lab = (t: number) => {
+  if (t > t3) {
+    return t ** (1 / 3);
+  }
+  return t / t2 + t0;
+};
+
+const xyz_rgb = (r: number) => {
+  return 255 * (r <= 0.00304 ? 12.92 * r : 1.055 * r ** (1 / 2.4) - 0.055);
+};
+
+const lab_xyz = (t: number) => {
+  return t > t1 ? t * t * t : t2 * (t - t0);
+};
+
+const rgb2xyz = (rgb: [number, number, number]): [number, number, number] => {
+  let [r, g, b] = rgb;
+  r = rgb_xyz(r);
+  g = rgb_xyz(g);
+  b = rgb_xyz(b);
+  const x = xyz_lab((0.4124564 * r + 0.3575761 * g + 0.1804375 * b) / Xn);
+  const y = xyz_lab((0.2126729 * r + 0.7151522 * g + 0.072175 * b) / Yn);
+  const z = xyz_lab((0.0193339 * r + 0.119192 * g + 0.9503041 * b) / Zn);
+  return [x, y, z];
+};
+
+export const rgb2lab = (
   rgb: [number, number, number]
 ): [number, number, number] => {
-  const r = rgb[0] / 255;
-  const g = rgb[1] / 255;
-  const b = rgb[2] / 255;
-  const min = Math.min(r, g, b);
-  const max = Math.max(r, g, b);
-  const delta = max - min;
-  let h = 0;
-  let s = 0;
-
-  if (max === min) {
-    h = 0;
-  } else if (r === max) {
-    h = (g - b) / delta;
-  } else if (g === max) {
-    h = 2 + (b - r) / delta;
-  } else if (b === max) {
-    h = 4 + (r - g) / delta;
-  }
-
-  h = Math.min(h * 60, 360);
-
-  if (h < 0) {
-    h += 360;
-  }
-
-  const l = (min + max) / 2;
-
-  if (max === min) {
-    s = 0;
-  } else if (l <= 0.5) {
-    s = delta / (max + min);
-  } else {
-    s = delta / (2 - max - min);
-  }
-
-  return [h, s * 100, l * 100];
+  const [x, y, z] = rgb2xyz(rgb);
+  const l = 116 * y - 16;
+  return [l < 0 ? 0 : l, 500 * (x - y), 200 * (y - z)];
 };
 
-export const hsl2rgb = (
-  hsl: [number, number, number]
+export const lab2rgb = (
+  lab: [number, number, number]
 ): [number, number, number] => {
-  const h = hsl[0] / 360;
-  const s = hsl[1] / 100;
-  const l = hsl[2] / 100;
-  let t2: number;
-  let t3: number;
-  let val: number;
+  const [l, a, b] = lab;
 
-  if (s === 0) {
-    val = l * 255;
-    return [val, val, val];
-  }
+  let y = (l + 16) / 116;
+  let x = isNaN(a) ? y : y + a / 500;
+  let z = isNaN(b) ? y : y - b / 200;
 
-  if (l < 0.5) {
-    t2 = l * (1 + s);
-  } else {
-    t2 = l + s - l * s;
-  }
-  const t1 = 2 * l - t2;
+  y = Yn * lab_xyz(y);
+  x = Xn * lab_xyz(x);
+  z = Zn * lab_xyz(z);
 
-  const rgb: [number, number, number] = [0, 0, 0];
-  for (let i = 0; i < 3; i++) {
-    t3 = h + (1 / 3) * -(i - 1);
-    if (t3 < 0) {
-      t3++;
-    }
-    if (t3 > 1) {
-      t3--;
-    }
+  const r = xyz_rgb(3.2404542 * x - 1.5371385 * y - 0.4985314 * z); // D65 -> sRGB
+  const g = xyz_rgb(-0.969266 * x + 1.8760108 * y + 0.041556 * z);
+  const b_ = xyz_rgb(0.0556434 * x - 0.2040259 * y + 1.0572252 * z);
 
-    if (6 * t3 < 1) {
-      val = t1 + (t2 - t1) * 6 * t3;
-    } else if (2 * t3 < 1) {
-      val = t2;
-    } else if (3 * t3 < 2) {
-      val = t1 + (t2 - t1) * (2 / 3 - t3) * 6;
-    } else {
-      val = t1;
-    }
-
-    rgb[i] = val * 255;
-  }
-
-  return rgb;
+  return [r, g, b_];
 };
 
-export const hex2hsl = (hex: string): [number, number, number] => {
-  const rgb = hex2rgb(hex);
-  return rgb2hsl(rgb);
-};
-
-export const hsl2hex = (hsl: [number, number, number]): string => {
-  const rgb = hsl2rgb(hsl);
+export const lab2hex = (lab: [number, number, number]): string => {
+  const rgb = lab2rgb(lab);
   return rgb2hex(rgb);
 };
