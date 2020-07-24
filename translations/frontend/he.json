@@ -528,6 +528,7 @@
                 "show_areas": "הצג אזורים"
             },
             "data-table": {
+                "no-data": "אין נתונים",
                 "search": "חיפוש"
             },
             "date-range-picker": {
@@ -1597,7 +1598,7 @@
                         "refresh_body": "אתה צריך לרענן את הדף כדי להשלים את ההסרה, האם אתה רוצה לרענן עכשיו?",
                         "refresh_header": "האם אתה רוצה לרענן?",
                         "types": {
-                            "css": "סגנון עיצוב",
+                            "css": "Stylesheet",
                             "html": "HTML (הוצא משימוש)",
                             "js": "קובץ JavaScript (הוצא משימוש)",
                             "module": "JavaScript Module"
@@ -2351,6 +2352,7 @@
                         "show_code_editor": "הצג עורך קוד",
                         "show_visual_editor": "הצג עורך ויזואלי",
                         "toggle_editor": "החלף מצב עורך",
+                        "typed_header": "תצורת כרטיס {type}",
                         "unsaved_changes": "יש לך שינויים שלא נשמרו"
                     },
                     "edit_lovelace": {
@@ -2444,6 +2446,8 @@
                     "entity": "ישות",
                     "entity_id": "מזהה ישות",
                     "last_changed": "שונה לאחרונה",
+                    "no_data": "לא נמצאו ישויות שאינן בשימוש",
+                    "search": "חיפוש ישויות",
                     "select_to_add": "בחר את הישויות שברצונך להוסיף לכרטיס ולחץ על כפתור הוסף כרטיס.",
                     "title": "ישויות שאינן בשימוש"
                 },
