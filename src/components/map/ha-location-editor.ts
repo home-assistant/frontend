@@ -27,9 +27,9 @@ import { defaultRadiusColor } from "../../data/zone";
 
 @customElement("ha-location-editor")
 class LocationEditor extends LitElement {
-  @property() public location?: [number, number];
+  @property({ type: Array }) public location?: [number, number];
 
-  @property() public radius?: number;
+  @property({ type: Number }) public radius?: number;
 
   @property() public radiusColor?: string;
 
@@ -106,7 +106,7 @@ class LocationEditor extends LitElement {
   private async _initMap(): Promise<void> {
     [this._leafletMap, this.Leaflet] = await setupLeafletMap(
       this._mapEl,
-      false,
+      undefined,
       Boolean(this.radius)
     );
     this._leafletMap.addEventListener(
@@ -254,9 +254,6 @@ class LocationEditor extends LitElement {
       }
       #map {
         height: 100%;
-      }
-      .light {
-        color: #000000;
       }
       .leaflet-edit-move {
         border-radius: 50%;
