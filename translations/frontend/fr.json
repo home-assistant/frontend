@@ -528,6 +528,7 @@
                 "show_areas": "Afficher les pièces"
             },
             "data-table": {
+                "no-data": "Pas de données",
                 "search": "Chercher"
             },
             "date-range-picker": {
@@ -2351,6 +2352,7 @@
                         "show_code_editor": "Afficher l'éditeur de code",
                         "show_visual_editor": "Afficher l'éditeur visuel",
                         "toggle_editor": "Permuter l’éditeur",
+                        "typed_header": "{type} Configuration de la carte",
                         "unsaved_changes": "Vous avez des changements non enregistrés"
                     },
                     "edit_lovelace": {
@@ -2444,6 +2446,8 @@
                     "entity": "Entité",
                     "entity_id": "ID de l'entité",
                     "last_changed": "Dernière modification",
+                    "no_data": "Aucune entité inutilisée trouvée",
+                    "search": "Rechercher des entités",
                     "select_to_add": "Sélectionner les entités que vous souhaitez ajouter à une carte, puis cliquez sur le bouton Ajouter une carte.",
                     "title": "Entités inutilisées"
                 },
