@@ -430,6 +430,8 @@
                 "activate": "Aktivéieren"
             },
             "script": {
+                "cancel": "Ofbriechen",
+                "cancel_multiple": "{number} ofbriechen",
                 "execute": "Ausféieren"
             },
             "service": {
@@ -524,6 +526,10 @@
                 "area": "Beräich",
                 "clear": "Läschen",
                 "show_areas": "Beräicher uweisen"
+            },
+            "data-table": {
+                "no-data": "Keng Donnée",
+                "search": "Sichen"
             },
             "date-range-picker": {
                 "end_date": "End Datum",
@@ -938,6 +944,16 @@
                         "introduction": "Benotzt Automatismen fir däin Haus zum Liewen ze bréngen",
                         "load_error_not_editable": "Nëmmen Automatiounen am automations.yaml kënnen editéiert ginn.",
                         "load_error_unknown": "Feeler beim luede vun der Automatioun ({err_no}).",
+                        "max": {
+                            "parallel": "Max. Unzuel vun parallelen Duerchleef."
+                        },
+                        "modes": {
+                            "documentation": "Dokumentatioun vum Automatisme",
+                            "label": "Modus",
+                            "parallel": "Parrallel",
+                            "restart": "Neistart",
+                            "single": "Eenzel (Standard)"
+                        },
                         "move_down": "No ënne réckelen",
                         "move_up": "No uewe réckelen",
                         "save": "Späicheren",
@@ -1356,6 +1372,7 @@
                             "confirm_text": "Du solls déi vun der Lovelace Konfiguratioun an Automatisme läschen falls se dës Entitéiten enthalen.",
                             "confirm_title": "Wëllt dir {number} Entitéite läschen?"
                         },
+                        "search": "Entitéite sichen",
                         "selected": "{number} ausgewielt",
                         "status": {
                             "disabled": "Deaktivéiert",
@@ -1386,7 +1403,8 @@
                             "entity_id": "ID vun der Entitéit",
                             "name": "Numm",
                             "type": "Typ"
-                        }
+                        },
+                        "no_helpers": "Et gesäit sou aus wéi wann nach keng Helpers erstallt goufen."
                     },
                     "types": {
                         "input_boolean": "Ëmschalten",
@@ -1431,6 +1449,7 @@
                         "delete_confirm": "Sécher fir dës Integratioun ze läsche?",
                         "device_unavailable": "Apparat net erreechbar",
                         "devices": "{count} {count, plural,\n  one {Apparat}\n  other {Apparaten}\n}",
+                        "documentation": "Dokumentatioun",
                         "entities": "{count} {count, plural,\n  one {Entitéit}\n  other {Entitéiten}\n}",
                         "entity_unavailable": "Entitéit net erreechbar",
                         "firmware": "Firmware: {version}",
@@ -1489,7 +1508,8 @@
                     "note_about_integrations": "Net all Integratioune könne nach via den Benotzer Interface konfiguréiert ginn.",
                     "note_about_website_reference": "Méi sin der disponibel op der ",
                     "rename_dialog": "Numm vun dësem Objet läschen",
-                    "rename_input_label": "Numm"
+                    "rename_input_label": "Numm",
+                    "search": "Integratioune sichen"
                 },
                 "introduction": "Hei ass et méiglech är Komponenten vum Home Assistant ze konfiguréieren. Net alles ass méiglech fir iwwert den Interface anzestellen, mee mir schaffen drun.",
                 "logs": {
@@ -1642,6 +1662,7 @@
                             "introduction": "Entitéiten déi zu kengem Apparat gehéiere kënnen hei definéiert ginn.",
                             "without_device": "Entitéiten ouni Apparater"
                         },
+                        "icon": "Ikon",
                         "introduction": "Benotzt Zeene fir äert Haus zum Liewen ze bréngen",
                         "load_error_not_editable": "Nëmme Zeene am scenes.yaml kënnen editéiert ginn.",
                         "load_error_unknown": "Feeler beim luede vun der Zeen ({err_no}).",
@@ -1675,9 +1696,23 @@
                         "delete_confirm": "Sécher fir dësen Skript ze läsche?",
                         "delete_script": "Skript läschen",
                         "header": "Skript: {name}",
+                        "icon": "Ikon",
+                        "id": "ID vun der Entitéit",
+                        "id_already_exists": "Dës ID gëtt et schonn",
+                        "id_already_exists_save_error": "Du kanns dëse Skript net späicheren well d'ID net eenzegarteg ass. Wiel eng aaner ID aus oder loss se eidel fir automatesch eng z'erstellen.",
                         "introduction": "Benotzt Skripter fir eng Sequenz vun Aktiounen auszeféieren.",
                         "link_available_actions": "Méi iwwert verfügbar Aktioune liesen.",
                         "load_error_not_editable": "Nëmme Skripten am scripts.yaml kënnen editéiert ginn.",
+                        "max": {
+                            "parallel": "Max. Unzuel vun parallelen Duerchleef."
+                        },
+                        "modes": {
+                            "documentation": "Dokumentatioun vum Skript",
+                            "label": "Modus",
+                            "parallel": "Parrallel",
+                            "restart": "Neistart",
+                            "single": "Eenzel (Standard)"
+                        },
                         "sequence": "Sequenz",
                         "sequence_sentence": "D'Sequenz vun Aktiounen an dësem Skript."
                     },
@@ -2188,6 +2223,7 @@
                             "name": "Numm",
                             "no_theme": "Kee Thema",
                             "refresh_interval": "Aktualiséierungs Intervall",
+                            "search": "Sichen",
                             "secondary_info_attribute": "Sekundär Informatiouns Attribut",
                             "show_icon": "Ikon uweisen?",
                             "show_name": "Numm uweisen?",
@@ -2293,6 +2329,7 @@
                     },
                     "edit_card": {
                         "add": "Kaart dobäisetzen",
+                        "confirm_cancel": "Sécher fir ofzebriechen ?",
                         "delete": "Kaart läschen",
                         "duplicate": "Kaart Replikéieren",
                         "edit": "Änneren",
@@ -2303,12 +2340,15 @@
                         "pick_card_view_title": "Wéieng Kaart wëllt dir zu ärer {name}Usiicht dobäisetzen?",
                         "show_code_editor": "Code Editeur uweisen",
                         "show_visual_editor": "Visuellen Editeur uweisen",
-                        "toggle_editor": "Editeur ëmschalten"
+                        "toggle_editor": "Editeur ëmschalten",
+                        "typed_header": "{type} Kaart Konfiguratioun",
+                        "unsaved_changes": "Du hues ongespäichert Ännerungen"
                     },
                     "edit_lovelace": {
                         "edit_title": "Titel änneren",
                         "explanation": "Dësen Titel gëtt iwwert den Usiichte vu Lovelace ugewisen.",
-                        "header": "Titel vun ärem Lovelace Benotzer Interface"
+                        "header": "Titel vun ärem Lovelace Benotzer Interface",
+                        "title": "Titel"
                     },
                     "edit_view": {
                         "add": "Vue dobäisetzen",
@@ -2395,6 +2435,8 @@
                     "entity": "Entitéit",
                     "entity_id": "ID vun der Entitéit",
                     "last_changed": "Läscht Ännerung",
+                    "no_data": "Keng onbenotzten Entitéite fonnt",
+                    "search": "Entitéite sichen",
                     "select_to_add": "Wielt d'Entitéite aus déi zu enger Kaart dobäigesaat solle ginn an klickt den Kaart dobäisetzen Knäppchen",
                     "title": "Onbenotzten Entitéiten"
                 },
@@ -2497,6 +2539,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "Däi Computer ass net erlaabt.",
                                 "not_whitelisted": "Äre Computer ass net fräigeschalt."
                             },
                             "step": {
@@ -2671,6 +2714,10 @@
                     "last_used": "Fir d'Läscht benotzt um {date} vun {location}",
                     "not_used": "Nach nie benotzt ginn",
                     "token_title": "Jeton erneiren fir {clientId}"
+                },
+                "suspend": {
+                    "description": "Soll d'Verbindung automateschzougemaach gin nodeems se 5 Minutten verstoppt war?",
+                    "header": "Verbindung autmatesch zoumaachen"
                 },
                 "themes": {
                     "dropdown_label": "Thema",

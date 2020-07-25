@@ -952,10 +952,10 @@
                             "description": "Režim určuje, co se stane, když je automatizace spuštěna a zároveň stále ještě běží akce na základě předchozího spuštění. Další informace naleznete na {documentation_link}.",
                             "documentation": "Dokumentace automatizací",
                             "label": "Režim",
-                            "parallel": "Paralelní",
+                            "parallel": "Paralelně",
                             "queued": "Fronta",
                             "restart": "Restart",
-                            "single": "Jediný"
+                            "single": "Jediný (výchozí)"
                         },
                         "move_down": "Posunout dolů",
                         "move_up": "Posunout nahoru",
@@ -1413,7 +1413,7 @@
                         "input_boolean": "Přepínač",
                         "input_datetime": "Datum a/nebo čas",
                         "input_number": "Číslo",
-                        "input_select": "Rozbalovací nabídka",
+                        "input_select": "Výběr",
                         "input_text": "Text"
                     }
                 },
@@ -1714,7 +1714,7 @@
                             "description": "Režim určuje, co se stane, když je skript spuštěn a zároveň stále ještě běží na základě předchozího spuštění. Další informace naleznete na {documentation_link}.",
                             "documentation": "Dokumentace skriptů",
                             "label": "Režim",
-                            "parallel": "Paralelní",
+                            "parallel": "Paralelně",
                             "queued": "Fronta",
                             "restart": "Restart",
                             "single": "Jediný (výchozí)"
@@ -1745,11 +1745,11 @@
                             "core": "Znovu načíst umístění a přizpůsobení",
                             "group": "Znovu načíst skupiny",
                             "heading": "Konfigurace se načítá",
-                            "input_boolean": "Znovu načíst logické hodnoty",
-                            "input_datetime": "Znovu načíst časy",
-                            "input_number": "Znovu načíst vstupní čísla",
-                            "input_select": "Znovu načíst výběr",
-                            "input_text": "Znovu načíst text",
+                            "input_boolean": "Znovu načíst pomocníky - čísla",
+                            "input_datetime": "Znovu načíst pomocníky - data/časy",
+                            "input_number": "Znovu načíst pomocníky - přepínače",
+                            "input_select": "Znovu načíst pomocníky - výběry",
+                            "input_text": "Znovu načíst pomocníky - texty",
                             "introduction": "Některé části Home Assistant lze načíst bez nutnosti restartování. Volba načtení zahodí jejich aktuální konfiguraci a načte novou.",
                             "person": "Znovu načíst osoby",
                             "scene": "Znovu načíst scény",
@@ -1939,9 +1939,9 @@
                         "update": "Aktualizovat"
                     },
                     "edit_home_zone": "Poloměr domovské zóny zatím nelze upravit z frontendu. Z frontendu se dá změnit jen poloha domovské zóny.",
-                    "edit_home_zone_narrow": "Poloměr domovské zóny zatím nelze upravit z frontendu. Umístění lze změnit z obecné konfigurace.",
+                    "edit_home_zone_narrow": "Poloměr domovské zóny zatím nelze upravit z rozhraní. Umístění lze změnit z obecné konfigurace.",
                     "go_to_core_config": "Přejít na obecnou konfiguraci?",
-                    "home_zone_core_config": "Umístění vaší domovské zóny lze upravit na stránce obecné konfigurace. Poloměr domovské zóny zatím nelze upravit z frontendu. Chcete přejít na obecnou konfiguraci?",
+                    "home_zone_core_config": "Umístění vaší domovské zóny lze upravit na stránce obecné konfigurace. Poloměr domovské zóny zatím nelze upravit z rozhraní. Chcete přejít na obecnou konfiguraci?",
                     "introduction": "Zóny umožňují určit určité oblasti na zemi. Když je osoba v zóně, stav převezme název ze zóny. Zóny lze také použít jako aktivační událost nebo podmínku v nastavení automatizace.",
                     "no_zones_created_yet": "Vypadá to, že nejsou vytvořené žádné zóny."
                 },
