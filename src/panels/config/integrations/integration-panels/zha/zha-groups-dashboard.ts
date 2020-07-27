@@ -23,7 +23,6 @@ import "../../../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../../../types";
 import { sortZHAGroups, formatAsPaddedHex } from "./functions";
 import { zhaTabs } from "./zha-config-dashboard";
-import { computeRTL } from "../../../../../common/util/compute_rtl";
 import { mdiPlus } from "@mdi/js";
 import { haStyle } from "../../../../../resources/styles";
 

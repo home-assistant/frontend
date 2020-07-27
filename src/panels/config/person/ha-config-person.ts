@@ -32,7 +32,6 @@ import {
 } from "./show-dialog-person-detail";
 import "../../../components/ha-svg-icon";
 import { mdiPlus } from "@mdi/js";
-import { computeRTL } from "../../../common/util/compute_rtl";
 
 class HaConfigPerson extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;

@@ -1,5 +1,4 @@
 import {
-  css,
   customElement,
   LitElement,
   property,
@@ -8,7 +7,6 @@ import {
 import { html } from "lit-html";
 import memoizeOne from "memoize-one";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
-import { computeRTL } from "../../../common/util/compute_rtl";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
