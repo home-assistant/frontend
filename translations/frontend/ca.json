@@ -528,6 +528,7 @@
                 "show_areas": "Mostra àrees"
             },
             "data-table": {
+                "no-data": "No hi ha dades",
                 "search": "Cerca"
             },
             "date-range-picker": {
@@ -2351,6 +2352,7 @@
                         "show_code_editor": "Mostra l'editor de codi",
                         "show_visual_editor": "Mostra l'editor visual",
                         "toggle_editor": "Commutar l'editor",
+                        "typed_header": "Configuració de la targeta {type}",
                         "unsaved_changes": "Hi ha canvis no desats"
                     },
                     "edit_lovelace": {
@@ -2444,6 +2446,8 @@
                     "entity": "Entitat",
                     "entity_id": "ID de l'entitat",
                     "last_changed": "Últim canvi",
+                    "no_data": "No s'han trobat entitats sense utilitzar",
+                    "search": "Cerca entitats",
                     "select_to_add": "Selecciona les entitats que vols afegir a una targeta i fés clic al botó d'afegir targeta.",
                     "title": "Entitats sense utilitzar"
                 },

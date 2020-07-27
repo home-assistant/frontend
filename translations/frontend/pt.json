@@ -1389,7 +1389,7 @@
                     "description": "Elementos que podem ajudar a construir automações.",
                     "dialog": {
                         "add_helper": "Adicionar auxiliar",
-                        "add_platform": "Adicione {platform}",
+                        "add_platform": "Adicionar {platform}",
                         "create": "Criar"
                     },
                     "picker": {
