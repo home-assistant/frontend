@@ -1395,7 +1395,7 @@
                     "description": "Elementos que podem ajudar a construir automações.",
                     "dialog": {
                         "add_helper": "Adicionar ajudante",
-                        "add_platform": "Adicionar {plataform}",
+                        "add_platform": "Adicionar {platform}",
                         "create": "Criar"
                     },
                     "picker": {
@@ -1749,7 +1749,7 @@
                             "input_number": "Recarregar entradas numéricas",
                             "input_select": "Recarregar entradas de seleção",
                             "input_text": "Recarregar entradas de texto",
-                            "introduction": "Algumas partes do Home Assistant podem ser recarregadas sem a necessidade de reiniciar. Pressionar recarregar, descarregará sua configuração YAML atual e carregará a nova.",
+                            "introduction": "Algumas partes do Home Assistant podem ser recarregadas sem precisar reiniciar. Pressionar recarregar descarregará sua configuração YAML atual e carregará a nova.",
                             "person": "Recarregar pessoas",
                             "scene": "Recarregar cenas",
                             "script": "Recarregar os scripts",
@@ -1766,7 +1766,7 @@
                         "validation": {
                             "check_config": "Verificar a configuração",
                             "heading": "Validação da configuração",
-                            "introduction": "Valide sua configuração se você recentemente fez algumas mudanças na sua configuração e quiser certificar-se de que tudo é válido.",
+                            "introduction": "Valide sua configuração se você recentemente fez algumas mudanças na sua configuração e quer ter certeza de que tudo é valido",
                             "invalid": "Configuração inválida",
                             "valid": "Configuração válida!"
                         }
@@ -2678,7 +2678,7 @@
                     "description": "Crie tokens de acesso de longa duração para permitir que seus scripts interajam com sua instância do Home Assistant. Cada token será válido por 10 anos a partir da criação. Os seguintes tokens de acesso de longa duração estão atualmente ativos.",
                     "empty_state": "Você ainda não tem tokens de acesso de longa duração.",
                     "header": "Tokens de acesso de longa duração",
-                    "last_used": "Usado pela última vez em {date} em {location}",
+                    "last_used": "Usado pela última vez em {date} de {location}",
                     "learn_auth_requests": "Aprenda como fazer solicitações autenticadas.",
                     "not_used": "Nunca foi usado",
                     "prompt_copy_token": "Copie seu token de acesso. Ele não será mostrado novamente.",
@@ -2711,10 +2711,10 @@
                     "current_token_tooltip": "Não é possível excluir o token de atualização atual",
                     "delete_failed": "Falha ao excluir o token de acesso.",
                     "description": "Cada token de atualização representa uma sessão de login. Os tokens de atualização serão removidos automaticamente quando você clicar em efetuar logout. Os tokens de atualização a seguir estão ativos na sua conta no momento.",
-                    "header": "Atualizar tokens",
-                    "last_used": "Usado pela última vez em {date} em {location}",
+                    "header": "Tokens de atualização",
+                    "last_used": "Usado pela última vez em {date} de {location}",
                     "not_used": "Nunca foi usado",
-                    "token_title": "Atualizar o token para {clientId}"
+                    "token_title": "Token de atualização para {clientId}"
                 },
                 "suspend": {
                     "description": "Devemos fechar a conexão com o servidor depois de ficar oculto por 5 minutos?",
