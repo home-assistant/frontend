@@ -98,16 +98,14 @@ export class HaConfigUsers extends LitElement {
         @row-click=${this._editUser}
         hasFab
       >
+        <mwc-fab
+          slot="fab"
+          .title=${this.hass.localize("ui.panel.config.users.picker.add_user")}
+          @click=${this._addUser}
+        >
+          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+        </mwc-fab>
       </hass-tabs-subpage-data-table>
-      <mwc-fab
-        ?is-wide=${this.isWide}
-        ?narrow=${this.narrow}
-        .title=${this.hass.localize("ui.panel.config.users.picker.add_user")}
-        @click=${this._addUser}
-        ?rtl=${computeRTL(this.hass)}
-      >
-        <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
-      </mwc-fab>
     `;
   }
 
@@ -165,32 +163,5 @@ export class HaConfigUsers extends LitElement {
         }
       },
     });
-  }
-
-  static get styles() {
-    return css`
-      mwc-fab {
-        position: fixed;
-        bottom: 16px;
-        right: 16px;
-        z-index: 1;
-      }
-      mwc-fab[is-wide] {
-        bottom: 24px;
-        right: 24px;
-      }
-      mwc-fab[rtl] {
-        right: auto;
-        left: 16px;
-      }
-      mwc-fab[narrow] {
-        bottom: 84px;
-      }
-      mwc-fab[rtl][is-wide] {
-        bottom: 24px;
-        right: auto;
-        left: 24px;
-      }
-    `;
   }
 }

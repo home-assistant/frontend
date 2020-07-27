@@ -152,15 +152,12 @@ class HomeAssistantMain extends LitElement {
         --app-drawer-width: 64px;
       }
       :host([expanded]) {
-        --app-drawer-width: 256px;
+        --app-drawer-width: calc(256px + env(safe-area-inset-left));
       }
       partial-panel-resolver,
       ha-sidebar {
         /* allow a light tap highlight on the actual interface elements  */
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-      }
-      partial-panel-resolver {
-        height: 100%;
       }
     `;
   }

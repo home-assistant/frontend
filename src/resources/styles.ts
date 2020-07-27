@@ -214,7 +214,9 @@ export const haStyleDialog = css`
     paper-dialog,
     ha-paper-dialog {
       margin: 0;
-      width: 100% !important;
+      width: calc(
+        100% - env(safe-area-inset-right) - env(safe-area-inset-left)
+      ) !important;
       max-height: calc(100% - 64px);
 
       position: fixed !important;
@@ -244,8 +246,12 @@ export const haStyleDialog = css`
   /* make dialog fullscreen on small screens */
   @media all and (max-width: 450px), all and (max-height: 500px) {
     ha-dialog {
-      --mdc-dialog-min-width: 100vw;
-      --mdc-dialog-max-width: 100vw;
+      --mdc-dialog-min-width: calc(
+        100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
+      );
+      --mdc-dialog-max-width: calc(
+        100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
+      );
       --mdc-dialog-min-height: 100%;
       --mdc-dialog-max-height: 100%;
       --mdc-shape-medium: 0px;

@@ -91,7 +91,7 @@ class PanelDeveloperTools extends LitElement {
     scrollToTarget(
       this,
       // @ts-ignore
-      this.shadowRoot!.querySelector("app-header-layout").header.scrollTarget
+      this.shadowRoot!.querySelector("ha-app-layout").header.scrollTarget
     );
   }
 

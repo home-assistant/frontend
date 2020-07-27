@@ -68,7 +68,7 @@ class HUIRoot extends LitElement {
 
   @property() public columns?: number;
 
-  @property() public narrow?: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property() public route?: { path: string; prefix: string };
 
@@ -694,7 +694,8 @@ class HUIRoot extends LitElement {
           min-height: 100%;
         }
         paper-tabs {
-          margin-left: 12px;
+          margin-left: max(env(safe-area-inset-left), 12px);
+          margin-right: env(safe-area-inset-right);
           --paper-tabs-selection-bar-color: var(--text-primary-color, #fff);
           text-transform: uppercase;
         }

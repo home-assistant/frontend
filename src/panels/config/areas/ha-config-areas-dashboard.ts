@@ -38,7 +38,6 @@ import {
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
 import { mdiPlus } from "@mdi/js";
-import { computeRTL } from "../../../common/util/compute_rtl";
 
 @customElement("ha-config-areas-dashboard")
 export class HaConfigAreasDashboard extends LitElement {
@@ -106,6 +105,7 @@ export class HaConfigAreasDashboard extends LitElement {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
+        .isWide=${this.isWide}
         back-path="/config"
         .tabs=${configSections.integrations}
         .route=${this.route}
@@ -123,18 +123,16 @@ export class HaConfigAreasDashboard extends LitElement {
           icon="hass:help-circle"
           @click=${this._showHelp}
         ></ha-icon-button>
+        <mwc-fab
+          slot="fab"
+          title="${this.hass.localize(
+            "ui.panel.config.areas.picker.create_area"
+          )}"
+          @click=${this._createArea}
+        >
+          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+        </mwc-fab>
       </hass-tabs-subpage-data-table>
-      <mwc-fab
-        ?is-wide=${this.isWide}
-        ?narrow=${this.narrow}
-        ?rtl=${computeRTL(this.hass!)}
-        title="${this.hass.localize(
-          "ui.panel.config.areas.picker.create_area"
-        )}"
-        @click=${this._createArea}
-      >
-        <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
-      </mwc-fab>
     `;
   }
 
@@ -182,28 +180,6 @@ export class HaConfigAreasDashboard extends LitElement {
       hass-loading-screen {
         --app-header-background-color: var(--sidebar-background-color);
         --app-header-text-color: var(--sidebar-text-color);
-      }
-      mwc-fab {
-        position: fixed;
-        bottom: 16px;
-        right: 16px;
-        z-index: 1;
-      }
-      mwc-fab[is-wide] {
-        bottom: 24px;
-        right: 24px;
-      }
-      mwc-fab[narrow] {
-        bottom: 84px;
-      }
-      mwc-fab[rtl] {
-        right: auto;
-        left: 16px;
-      }
-      mwc-fab[is-wide][rtl] {
-        bottom: 24px;
-        left: 24px;
-        right: auto;
       }
     `;
   }

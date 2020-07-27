@@ -399,14 +399,10 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
             : ""}
         </div>
         <mwc-fab
-          ?is-wide=${this.isWide}
-          ?narrow=${this.narrow}
-          ?dirty=${this._dirty}
+          slot="fab"
           .title=${this.hass.localize("ui.panel.config.scene.editor.save")}
           @click=${this._saveScene}
-          class=${classMap({
-            rtl: computeRTL(this.hass),
-          })}
+          class=${classMap({ dirty: this._dirty })}
         >
           <ha-svg-icon slot="icon" path=${mdiContentSave}></ha-svg-icon>
         </mwc-fab>
@@ -778,35 +774,12 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
           color: var(--primary-color);
         }
         mwc-fab {
-          position: fixed;
-          bottom: 16px;
-          right: 16px;
-          z-index: 1;
-          margin-bottom: -80px;
-          transition: margin-bottom 0.3s;
+          position: relative;
+          bottom: calc(-80px - env(safe-area-inset-bottom));
+          transition: bottom 0.3s;
         }
-
-        mwc-fab[is-wide] {
-          bottom: 24px;
-          right: 24px;
-        }
-        mwc-fab[narrow] {
-          bottom: 84px;
-          margin-bottom: -140px;
-        }
-        mwc-fab[dirty] {
-          margin-bottom: 0;
-        }
-
-        mwc-fab.rtl {
-          right: auto;
-          left: 16px;
-        }
-
-        mwc-fab[is-wide].rtl {
-          bottom: 24px;
-          right: auto;
-          left: 24px;
+        mwc-fab.dirty {
+          bottom: 0;
         }
       `,
     ];
