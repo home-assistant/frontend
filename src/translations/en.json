@@ -1916,6 +1916,9 @@
             "move": "Move to View",
             "options": "More options"
           },
+          "move_card": {
+            "header": "Choose a view to move the card to"
+          },
           "suggest_card": {
             "header": "We created a suggestion for you",
             "create_own": "Pick different card",
