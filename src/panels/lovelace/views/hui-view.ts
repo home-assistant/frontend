@@ -350,7 +350,7 @@ export class HUIView extends LitElement {
       :host {
         display: block;
         box-sizing: border-box;
-        padding: 4px 4px 0;
+        padding: 4px 4px env(safe-area-inset-bottom);
         transform: translateZ(0);
         position: relative;
         color: var(--primary-text-color);

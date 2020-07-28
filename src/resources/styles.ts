@@ -218,10 +218,13 @@ export const haStyleDialog = css`
       width: calc(
         100% - env(safe-area-inset-right) - env(safe-area-inset-left)
       ) !important;
-      max-height: calc(100% - 64px);
+      min-width: calc(
+        100% - env(safe-area-inset-right) - env(safe-area-inset-left)
+      ) !important;
       max-width: calc(
         100% - env(safe-area-inset-right) - env(safe-area-inset-left)
       ) !important;
+      max-height: calc(100% - 64px);
 
       position: fixed !important;
       bottom: 0px;
