@@ -949,12 +949,12 @@
                             "queued": "Longitud de la cua"
                         },
                         "modes": {
-                            "description": "El mode controla què passa quan es dispara l'automatització i encara hi ha accions executant-se d'un disparament anterior. Consulta {documentation_link} per a més informació.",
+                            "description": "El mode controla què passa quan es dispara l'automatització i encara hi ha accions d'un disparament anterior executant-se. Consulta {documentation_link} per a més informació.",
                             "documentation": "documentació d'automatització",
                             "label": "Mode",
                             "parallel": "Paral·lel",
-                            "queued": "A la cua",
-                            "restart": "Reinicia",
+                            "queued": "Afegeix al final",
+                            "restart": "Reinici",
                             "single": "Individual (per defecte)"
                         },
                         "move_down": "Mou avall",
@@ -1715,8 +1715,8 @@
                             "documentation": "documentació de scripts",
                             "label": "Mode",
                             "parallel": "Paral·lel",
-                            "queued": "A la cua",
-                            "restart": "Reinicia",
+                            "queued": "Afegeix al final",
+                            "restart": "Reinici",
                             "single": "Individual (per defecte)"
                         },
                         "sequence": "Seqüència",
