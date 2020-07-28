@@ -775,7 +775,7 @@
             "connection_lost": "Verbindung getrennt. Verbinde erneut...",
             "service_call_failed": "Fehler beim Aufrufen des Service {service}.",
             "started": "Home Assistant wurde vollständig gestartet!",
-            "starting": "Home Assistant startet, währenddessen kann es sein, dass nicht alles verfügbar ist.",
+            "starting": "Home Assistant startet. Währenddessen kann es sein, dass nicht alles verfügbar ist.",
             "triggered": "{name} ausgelöst"
         },
         "panel": {

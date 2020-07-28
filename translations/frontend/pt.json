@@ -528,6 +528,7 @@
                 "show_areas": "Mostrar áreas"
             },
             "data-table": {
+                "no-data": "Dados do evento",
                 "search": "Procurar"
             },
             "date-range-picker": {
@@ -943,12 +944,18 @@
                         "introduction": "Crie automações para dar vida à sua casa",
                         "load_error_not_editable": "Apenas as automações em automations.yaml são editáveis.",
                         "load_error_unknown": "Erro ao carregar a automação ({err_no}).",
+                        "max": {
+                            "parallel": "Número de últimas linhas de registos",
+                            "queued": "Comprimento mínimo"
+                        },
                         "modes": {
                             "description": "Este modo controla apenas o que acontece quando o script é chamado quando ainda está a ser executado por uma ou mais chamadas anteriores. Ver documentação (link_para_documentação) para mais informações.",
                             "documentation": "Documentação de automaçōes",
                             "label": "Modo",
+                            "parallel": "Paralelo",
                             "queued": "Em lista de espera",
-                            "restart": "Reiniciar"
+                            "restart": "Reiniciar",
+                            "single": "Predefinição"
                         },
                         "move_down": "Mover para baixo",
                         "move_up": "Mover para cima",
@@ -1399,7 +1406,8 @@
                             "entity_id": "ID da entidade",
                             "name": "Nome",
                             "type": "Tipo"
-                        }
+                        },
+                        "no_helpers": "Parece que ainda não tem áreas!"
                     },
                     "types": {
                         "input_boolean": "Interruptor",
@@ -1698,13 +1706,18 @@
                         "introduction": "Use scripts para executar uma seqüência de ações.",
                         "link_available_actions": "Saiba mais sobre ações disponíveis.",
                         "load_error_not_editable": "Apenas os scripts em scripts.yaml são editáveis.",
+                        "max": {
+                            "parallel": "Número de últimas linhas de registos",
+                            "queued": "Comprimento mínimo"
+                        },
                         "modes": {
                             "description": "Este modo controla apenas o que acontece quando o script é chamado quando ainda está a ser executado por uma ou mais chamadas anteriores. Ver documentação (link_para_documentação) para mais informações.",
                             "documentation": "Documentação de scripts",
                             "label": "Modo",
                             "parallel": "Paralelo",
                             "queued": "Lista de espera",
-                            "restart": "Reiniciar"
+                            "restart": "Reiniciar",
+                            "single": "Predefinição"
                         },
                         "sequence": "Seqüência",
                         "sequence_sentence": "A seqüência de ações para este script."
@@ -2327,6 +2340,7 @@
                     },
                     "edit_card": {
                         "add": "Adicionar Cartão",
+                        "confirm_cancel": "Tem certeza que deseja terminar a sessão?",
                         "delete": "Apagar Cartão",
                         "duplicate": "Duplicar cartão",
                         "edit": "Editar",
@@ -2337,7 +2351,9 @@
                         "pick_card_view_title": "Que cartão você gostaria de adicionar à sua vista {name}?",
                         "show_code_editor": "Mostrar Editor de Código",
                         "show_visual_editor": "Mostrar Editor Visual",
-                        "toggle_editor": "Alternar Editor"
+                        "toggle_editor": "Alternar Editor",
+                        "typed_header": "{tipo} Configuração do Cartão",
+                        "unsaved_changes": "Alterações não guardadas"
                     },
                     "edit_lovelace": {
                         "edit_title": "Editar título",
@@ -2430,6 +2446,8 @@
                     "entity": "Entidade",
                     "entity_id": "ID da Entidade",
                     "last_changed": "Última ocorrência",
+                    "no_data": "Entidades não utilizadas",
+                    "search": "Procurar entidades",
                     "select_to_add": "Selecione as entidades que deseja adicionar a um cartão e depois clique no botão adicionar cartão.",
                     "title": "Entidades não expostas"
                 },
