@@ -13,7 +13,6 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import scrollToTarget from "../../common/dom/scroll-to-target";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-menu-button";
 import { haStyle } from "../../resources/styles";
@@ -86,13 +85,9 @@ class PanelDeveloperTools extends LitElement {
     const newPage = ev.detail.item.getAttribute("page-name");
     if (newPage !== this._page) {
       navigate(this, `/developer-tools/${newPage}`);
+    } else {
+      scrollTo(0, 0);
     }
-
-    scrollToTarget(
-      this,
-      // @ts-ignore
-      this.shadowRoot!.querySelector("app-header-layout").header.scrollTarget
-    );
   }
 
   private get _page() {
