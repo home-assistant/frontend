@@ -306,6 +306,10 @@ export class HaScriptEditor extends LitElement {
     const mode = ((ev.target as PaperListboxElement)?.selectedItem as any)
       ?.mode;
 
+    if (mode === this._config!.mode) {
+      return;
+    }
+
     this._config = { ...this._config!, mode };
     if (!MODES_MAX.includes(mode)) {
       delete this._config.max;
