@@ -528,6 +528,7 @@
                 "show_areas": "Vis områder"
             },
             "data-table": {
+                "no-data": "Ingen data",
                 "search": "Søk"
             },
             "date-range-picker": {
@@ -651,7 +652,7 @@
                     "pattern": "Regex-mønster for validering på klientsiden",
                     "text": "Tekst"
                 },
-                "platform_not_loaded": "Integrasjonen {platform} er ikke lastet. Legg til konfigurasjonen din enten ved å legge til 'default_config:' eller '' {platform} : ''.",
+                "platform_not_loaded": "Integrasjonen av {platform} er ikke lastet. Legg den til i konfigurasjonen din enten ved å legge til 'default_config:' eller '' {platform} : ''.",
                 "required_error_msg": "Dette feltet er påkrevd",
                 "yaml_not_editable": "Innstillingene for denne entiteten kan ikke redigeres fra brukergrensesnittet. Bare entiteter som er satt opp fra brukergrensesnittet, kan konfigureres fra brukergrensesnittet."
             },
@@ -1815,7 +1816,7 @@
                         "discovered_text": "Enheter vises her når de er oppdaget.",
                         "discovery_text": "Oppdagede enheter vises her. Følg instruksjonene for enheten(e) og sett enheten(e) i paringsmodus.",
                         "header": "Zigbee Home Automation - Legg til enheter",
-                        "no_devices_found": "Ingen enheter ble funnet, sørg for at de er i paringsmodus og holde dem våken mens oppdagelse pågår.",
+                        "no_devices_found": "Ingen enheter ble funnet, sørg for at de er i paring-modus og hold dem våkne mens oppdagelsen kjører.",
                         "pairing_mode": "Kontroller at enhetene er i paringsmodus. Sjekk instruksjonene til enheten om hvordan du gjør dette.",
                         "search_again": "Søk på nytt",
                         "spinner": "Søker etter ZHA Zigbee-enheter..."
@@ -2351,6 +2352,7 @@
                         "show_code_editor": "Vis koderedigering",
                         "show_visual_editor": "Vis visuell redigering",
                         "toggle_editor": "Bytt redigering",
+                        "typed_header": "{type} Kortkonfigurasjon",
                         "unsaved_changes": "Du har endringer som ikke er lagret"
                     },
                     "edit_lovelace": {
@@ -2444,6 +2446,8 @@
                     "entity": "Entitet",
                     "entity_id": "Entitets-ID",
                     "last_changed": "Sist endret",
+                    "no_data": "Ingen ubrukte enheter funnet",
+                    "search": "Søk etter enheter",
                     "select_to_add": "Velg enhetene du vil legge til et kort, og klikk deretter på knappen Legg til kort.",
                     "title": "Ubrukte entiteter"
                 },
