@@ -727,7 +727,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
           font-weight: bold;
           color: var(--error-color);
         }
-        .content {
+        ha-config-section:last-child {
           padding-bottom: 20px;
         }
         .triggers,

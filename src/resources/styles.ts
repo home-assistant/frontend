@@ -202,9 +202,10 @@ export const haStyleDialog = css`
   .paper-dialog-buttons {
     align-items: flex-end;
     padding: 8px;
+    padding-bottom: max(env(safe-area-inset-bottom), 8px);
   }
 
-  @media all and (min-width: 450px) {
+  @media all and (min-width: 450px) and (min-height: 500px) {
     ha-paper-dialog {
       min-width: 400px;
     }
@@ -218,11 +219,14 @@ export const haStyleDialog = css`
         100% - env(safe-area-inset-right) - env(safe-area-inset-left)
       ) !important;
       max-height: calc(100% - 64px);
+      max-width: calc(
+        100% - env(safe-area-inset-right) - env(safe-area-inset-left)
+      ) !important;
 
       position: fixed !important;
       bottom: 0px;
-      left: 0px;
-      right: 0px;
+      left: env(safe-area-inset-left);
+      right: env(safe-area-inset-right);
       overflow: scroll;
       border-bottom-left-radius: 0px;
       border-bottom-right-radius: 0px;

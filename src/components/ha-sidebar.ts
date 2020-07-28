@@ -564,7 +564,7 @@ class HaSidebar extends LitElement {
         display: flex;
         flex-direction: column;
         box-sizing: border-box;
-        height: calc(100% - 196px);
+        height: calc(100% - 196px - env(safe-area-inset-bottom));
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-color: var(--scrollbar-thumb-color) transparent;
