@@ -12,7 +12,7 @@ import {
   internalProperty,
   TemplateResult,
 } from "lit-element";
-import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+import { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { navigate } from "../../../../common/navigate";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-circular-progress";
