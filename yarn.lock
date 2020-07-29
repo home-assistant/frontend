@@ -1875,15 +1875,15 @@
     "@material/feature-targeting" "8.0.0-canary.a78ceb112.0"
     "@material/theme" "8.0.0-canary.a78ceb112.0"
 
-"@mdi/js@5.3.45":
-  version "5.3.45"
-  resolved "https://registry.yarnpkg.com/@mdi/js/-/js-5.3.45.tgz#c6f523311bf77e339051e24aaa3eddabf565a027"
-  integrity sha512-r05JoeUhokSERwW6yYi3WcKCBePHHqBvIikOD0X/dWyaZb6gIRth5Lya7VVTItvGo1qlpp8LpMJKmE6o49+G+Q==
+"@mdi/js@5.4.55":
+  version "5.4.55"
+  resolved "https://registry.yarnpkg.com/@mdi/js/-/js-5.4.55.tgz#7798c38da36a705ee6d635eb4507be63e914b05f"
+  integrity sha512-9kWM1mGB8KiiKgGjPV1CRoF4aQifzAegvIR2zODm6VpuXDHDOVn7yOFH4D/K6imKVp9HE02N9uxHuxUKB0gjRg==
 
-"@mdi/svg@5.3.45":
-  version "5.3.45"
-  resolved "https://registry.yarnpkg.com/@mdi/svg/-/svg-5.3.45.tgz#27456a94ffa16b71c0a6581b584f24ed9d4f6b2e"
-  integrity sha512-MHUZBDSRDG6uWcRlQs4nALliPRT8u4gg5E+knk7FuFBUb3NjFgjT0PjdnTyEN0f3mwVLzLvggs7v7G/NVO+gaw==
+"@mdi/svg@5.4.55":
+  version "5.4.55"
+  resolved "https://registry.yarnpkg.com/@mdi/svg/-/svg-5.4.55.tgz#3bff467d65efceba14af39027d4c7cba0115e824"
+  integrity sha512-ZsVup6j9WWApjBsBtC8rM1CQ8Udu8025WJOCXVCofneVCVLKXClE5eSddYNYm565BCG/3ac9b0WPkfRV42Dh6w==
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
