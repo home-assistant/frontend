@@ -193,6 +193,7 @@ const mdiRemovedIcons = new Set([
   "medium",
   "meetup",
   "mixcloud",
+  "mixer",
   "nfc-off",
   "npm-variant",
   "npm-variant-outline",
