@@ -8,7 +8,6 @@ import {
 import { applyThemesOnElement } from "../../src/common/dom/apply_themes_on_element";
 import { fireEvent } from "../../src/common/dom/fire_event";
 import { navigate } from "../../src/common/navigate";
-import { fetchHassioAddonInfo } from "../../src/data/hassio/addon";
 import {
   fetchHassioHassOsInfo,
   fetchHassioHostInfo,
@@ -16,7 +15,6 @@ import {
   HassioHostInfo,
 } from "../../src/data/hassio/host";
 import {
-  createHassioSession,
   fetchHassioHomeAssistantInfo,
   fetchHassioSupervisorInfo,
   fetchHassioInfo,
@@ -25,10 +23,6 @@ import {
   HassioPanelInfo,
   HassioSupervisorInfo,
 } from "../../src/data/hassio/supervisor";
-import {
-  AlertDialogParams,
-  showAlertDialog,
-} from "../../src/dialogs/generic/show-dialog-box";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
 import {
   HassRouterPage,
@@ -39,9 +33,10 @@ import "../../src/resources/ha-style";
 import { HomeAssistant } from "../../src/types";
 // Don't codesplit it, that way the dashboard always loads fast.
 import "./hassio-panel";
+import { urlSyncMixin } from "../../src/state/url-sync-mixin";
 
 @customElement("hassio-main")
-class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
+class HassioMain extends urlSyncMixin(ProvideHassLitMixin(HassRouterPage)) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public panel!: HassioPanelInfo;
@@ -97,19 +92,6 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
       this.hass.selectedTheme || this.hass.themes.default_theme
     );
 
-    this.style.setProperty(
-      "--app-header-background-color",
-      "var(--sidebar-background-color)"
-    );
-    this.style.setProperty(
-      "--app-header-text-color",
-      "var(--sidebar-text-color)"
-    );
-    this.style.setProperty(
-      "--app-header-border-bottom",
-      "1px solid var(--divider-color)"
-    );
-
     this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
     // Paulus - March 17, 2019
     // We went to a single hass-toggle-menu event in HA 0.90. However, the
@@ -143,7 +125,7 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
       });
     });
 
-    makeDialogManager(this, document.body);
+    makeDialogManager(this, this);
   }
 
   protected updatePageEl(el) {
@@ -176,7 +158,7 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
 
   private async _fetchData() {
     if (this.panel.config && this.panel.config.ingress) {
-      await this._redirectIngress(this.panel.config.ingress);
+      this._redirectIngress(this.panel.config.ingress);
       return;
     }
 
@@ -196,82 +178,8 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
     }
   }
 
-  private async _redirectIngress(addonSlug: string) {
-    // When we trigger a navigation, we sleep to make sure we don't
-    // show the hassio dashboard before navigating away.
-    const awaitAlert = async (
-      alertParams: AlertDialogParams,
-      action: () => void
-    ) => {
-      await new Promise((resolve) => {
-        alertParams.confirm = resolve;
-        showAlertDialog(this, alertParams);
-      });
-      action();
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    };
-
-    const createSessionPromise = createHassioSession(this.hass).then(
-      () => true,
-      () => false
-    );
-
-    let addon;
-
-    try {
-      addon = await fetchHassioAddonInfo(this.hass, addonSlug);
-    } catch (err) {
-      await awaitAlert(
-        {
-          text: "Unable to fetch add-on info to start Ingress",
-          title: "Supervisor",
-        },
-        () => history.back()
-      );
-
-      return;
-    }
-
-    if (!addon.ingress_url) {
-      await awaitAlert(
-        {
-          text: "Add-on does not support Ingress",
-          title: addon.name,
-        },
-        () => history.back()
-      );
-
-      return;
-    }
-
-    if (addon.state !== "started") {
-      await awaitAlert(
-        {
-          text: "Add-on is not running. Please start it first",
-          title: addon.name,
-        },
-        () => navigate(this, `/hassio/addon/${addon.slug}/info`, true)
-      );
-
-      return;
-    }
-
-    if (!(await createSessionPromise)) {
-      await awaitAlert(
-        {
-          text: "Unable to create an Ingress session",
-          title: addon.name,
-        },
-        () => history.back()
-      );
-
-      return;
-    }
-
-    location.assign(addon.ingress_url);
-    // await a promise that doesn't resolve, so we show the loading screen
-    // while we load the next page.
-    await new Promise(() => undefined);
+  private _redirectIngress(addonSlug: string) {
+    this.route = { prefix: "/hassio", path: `/ingress/${addonSlug}` };
   }
 
   private _apiCalled(ev) {

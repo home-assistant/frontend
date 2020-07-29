@@ -17,6 +17,9 @@ import { createHassioSession } from "../../../src/data/hassio/supervisor";
 import "../../../src/layouts/hass-loading-screen";
 import "../../../src/layouts/hass-subpage";
 import { HomeAssistant, Route } from "../../../src/types";
+import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
+import { navigate } from "../../../src/common/navigate";
+import { classMap } from "lit-html/directives/class-map";
 
 @customElement("hassio-ingress-view")
 class HassioIngressView extends LitElement {
@@ -26,14 +29,24 @@ class HassioIngressView extends LitElement {
 
   @internalProperty() private _addon?: HassioAddonDetails;
 
+  @property({ type: Boolean })
+  public narrow = false;
+
   protected render(): TemplateResult {
     if (!this._addon) {
       return html` <hass-loading-screen></hass-loading-screen> `;
     }
-
     return html`
-      <hass-subpage .header=${this._addon.name} hassio>
-        <iframe src=${this._addon.ingress_url}></iframe>
+      <hass-subpage
+        .rootnav=${!location.pathname.startsWith("/hassio/ingress")}
+        .hass=${this.hass}
+        .header=${this._addon.name}
+        .narrow=${this.narrow}
+        class=${classMap({
+          config: location.pathname.startsWith("/hassio/ingress"),
+        })}
+      >
+        <iframe src=${this._addon.ingress_url!}></iframe>
       </hass-subpage>
     `;
   }
@@ -56,27 +69,52 @@ class HassioIngressView extends LitElement {
   }
 
   private async _fetchData(addonSlug: string) {
+    const createSessionPromise = createHassioSession(this.hass).then(
+      () => true,
+      () => false
+    );
+
+    let addon;
+
     try {
-      const [addon] = await Promise.all([
-        fetchHassioAddonInfo(this.hass, addonSlug).catch(() => {
-          throw new Error("Failed to fetch add-on info");
-        }),
-        createHassioSession(this.hass).catch(() => {
-          throw new Error("Failed to create an ingress session");
-        }),
-      ]);
-
-      if (!addon.ingress) {
-        throw new Error("This add-on does not support ingress");
-      }
-
-      this._addon = addon;
+      addon = await fetchHassioAddonInfo(this.hass, addonSlug);
     } catch (err) {
-      // eslint-disable-next-line
-      console.error(err);
-      alert(err.message || "Unknown error starting ingress.");
+      await showAlertDialog(this, {
+        text: "Unable to fetch add-on info to start Ingress",
+        title: "Supervisor",
+      });
       history.back();
+      return;
     }
+
+    if (!addon.ingress_url) {
+      await showAlertDialog(this, {
+        text: "Add-on does not support Ingress",
+        title: addon.name,
+      });
+      history.back();
+      return;
+    }
+
+    if (addon.state !== "started") {
+      await showAlertDialog(this, {
+        text: "Add-on is not running. Please start it first",
+        title: addon.name,
+      });
+      navigate(this, `/hassio/addon/${addon.slug}/info`, true);
+      return;
+    }
+
+    if (!(await createSessionPromise)) {
+      await showAlertDialog(this, {
+        text: "Unable to create an Ingress session",
+        title: addon.name,
+      });
+      history.back();
+      return;
+    }
+
+    this._addon = addon;
   }
 
   static get styles(): CSSResult {
@@ -86,6 +124,12 @@ class HassioIngressView extends LitElement {
         width: 100%;
         height: 100%;
         border: 0;
+      }
+
+      hass-subpage.config {
+        --app-header-background-color: var(--sidebar-background-color);
+        --app-header-text-color: var(--sidebar-text-color);
+        --app-header-border-bottom: 1px solid var(--divider-color);
       }
     `;
   }

@@ -12,17 +12,23 @@ import { classMap } from "lit-html/directives/class-map";
 import "../components/ha-menu-button";
 import "../components/ha-icon-button-arrow-prev";
 import { restoreScroll } from "../common/decorators/restore-scroll";
+import { HomeAssistant } from "../types";
 
 @customElement("hass-subpage")
 class HassSubpage extends LitElement {
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
   @property()
   public header?: string;
+
+  @property({ type: Boolean })
+  public rootnav = false;
 
   @property({ type: Boolean })
   public showBackButton = true;
 
   @property({ type: Boolean })
-  public hassio = false;
+  public narrow = false;
 
   // @ts-ignore
   @restoreScroll(".content") private _savedScrollPos?: number;
@@ -30,11 +36,20 @@ class HassSubpage extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="toolbar">
-        <ha-icon-button-arrow-prev
-          aria-label="Back"
-          @click=${this._backTapped}
-          class=${classMap({ hidden: !this.showBackButton })}
-        ></ha-icon-button-arrow-prev>
+        ${this.rootnav && this.hass
+          ? html`
+              <ha-menu-button
+                .hass=${this.hass}
+                .narrow=${this.narrow}
+              ></ha-menu-button>
+            `
+          : html`
+              <ha-icon-button-arrow-prev
+                aria-label="Back"
+                @click=${this._backTapped}
+                class=${classMap({ hidden: !this.showBackButton })}
+              ></ha-icon-button-arrow-prev>
+            `}
 
         <div class="main-title">${this.header}</div>
         <slot name="toolbar-icon"></slot>
