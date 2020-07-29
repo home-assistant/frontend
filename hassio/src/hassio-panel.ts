@@ -54,9 +54,11 @@ class HassioPanel extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      --app-header-background-color: var(--sidebar-background-color);
-      --app-header-text-color: var(--sidebar-text-color);
-      --app-header-border-bottom: 1px solid var(--divider-color);
+      :host {
+        --app-header-background-color: var(--sidebar-background-color);
+        --app-header-text-color: var(--sidebar-text-color);
+        --app-header-border-bottom: 1px solid var(--divider-color);
+      }
     `;
   }
 }
