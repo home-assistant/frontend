@@ -7,7 +7,6 @@ import {
 } from "lit-element";
 import { applyThemesOnElement } from "../../src/common/dom/apply_themes_on_element";
 import { fireEvent } from "../../src/common/dom/fire_event";
-import { navigate } from "../../src/common/navigate";
 import {
   fetchHassioHassOsInfo,
   fetchHassioHostInfo,

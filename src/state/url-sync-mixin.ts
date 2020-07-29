@@ -8,10 +8,13 @@ import {
 import { Constructor } from "../types";
 import { HASSDomEvent } from "../common/dom/fire_event";
 import { UpdatingElement } from "lit-element";
+import { ProvideHassElement } from "../mixins/provide-hass-lit-mixin";
 
 const DEBUG = false;
 
-export const urlSyncMixin = <T extends Constructor<UpdatingElement>>(
+export const urlSyncMixin = <
+  T extends Constructor<UpdatingElement & ProvideHassElement>
+>(
   superClass: T
 ) =>
   // Disable this functionality in the demo.
