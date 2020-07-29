@@ -52,7 +52,7 @@ class HassioIngressView extends LitElement {
   }
 
   protected updated(changedProps: PropertyValues) {
-    super.firstUpdated(changedProps);
+    super.updated(changedProps);
 
     if (!changedProps.has("route")) {
       return;
