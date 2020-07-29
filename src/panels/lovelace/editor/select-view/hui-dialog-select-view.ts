@@ -37,7 +37,9 @@ export class HuiDialogSelectView extends LitElement {
     this._config = params.lovelaceConfig;
     this._urlPath = params.urlPath;
     this._params = params;
-    this._getDashboards();
+    if (this._params.allowDashboardChange) {
+      this._getDashboards();
+    }
   }
 
   public closeDialog(): void {
