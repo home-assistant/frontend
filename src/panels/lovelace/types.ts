@@ -17,6 +17,7 @@ declare global {
 export interface Lovelace {
   config: LovelaceConfig;
   editMode: boolean;
+  urlPath: string | null;
   mode: "generated" | "yaml" | "storage";
   language: string;
   enableFullEditMode: () => void;

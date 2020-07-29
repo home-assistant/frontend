@@ -22,6 +22,8 @@ class HcLovelace extends LitElement {
 
   @property() public viewPath?: string | number;
 
+  public urlPath?: string | null;
+
   protected render(): TemplateResult {
     const index = this._viewIndex;
     if (index === undefined) {
@@ -35,6 +37,7 @@ class HcLovelace extends LitElement {
     const lovelace: Lovelace = {
       config: this.lovelaceConfig,
       editMode: false,
+      urlPath: this.urlPath!,
       enableFullEditMode: () => undefined,
       mode: "storage",
       language: "en",

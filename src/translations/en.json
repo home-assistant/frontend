@@ -1919,6 +1919,10 @@
           "move_card": {
             "header": "Choose a view to move the card to"
           },
+          "select_view": {
+            "header": "Choose a view",
+            "dashboard_label": "Dashboard"
+          },
           "suggest_card": {
             "header": "We created a suggestion for you",
             "create_own": "Pick different card",
