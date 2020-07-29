@@ -27,6 +27,7 @@ export const addEntitiesToLovelaceView = async (
     // no storage dashboards, just show the YAML config
     showSuggestCardDialog(element, {
       entities,
+      yaml: true,
     });
     return;
   }
@@ -64,6 +65,7 @@ export const addEntitiesToLovelaceView = async (
       // all storage dashboards are generated, but we have YAML dashboards just show the YAML config
       showSuggestCardDialog(element, {
         entities,
+        yaml: true,
       });
     } else {
       // all storage dashboards are generated

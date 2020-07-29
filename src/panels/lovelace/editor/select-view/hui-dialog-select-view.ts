@@ -120,9 +120,9 @@ export class HuiDialogSelectView extends LitElement {
     if (urlPath === "lovelace") {
       urlPath = null;
     }
+    this._urlPath = urlPath;
     try {
       this._config = await fetchConfig(this.hass.connection, urlPath, false);
-      this._urlPath = urlPath;
     } catch (e) {
       this._config = undefined;
     }
