@@ -77,6 +77,8 @@ class HaAppLayout extends customElements.get("app-header-layout") {
           /* Using 'transform' will cause 'position: fixed' elements to behave like
            'position: absolute' relative to this element. */
           transform: translate(0);
+          margin-left: env(safe-area-inset-left);
+          margin-right: env(safe-area-inset-right);
         }
 
         @media print {

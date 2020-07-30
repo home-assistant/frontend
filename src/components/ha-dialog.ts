@@ -38,6 +38,7 @@ export class HaDialog extends MwcDialog {
         }
         .mdc-dialog__actions {
           justify-content: var(--justify-action-buttons, flex-end);
+          padding-bottom: max(env(safe-area-inset-bottom), 8px);
         }
         .mdc-dialog__container {
           align-items: var(--vertial-align-dialog, center);
@@ -49,6 +50,12 @@ export class HaDialog extends MwcDialog {
         .mdc-dialog .mdc-dialog__content {
           position: var(--dialog-content-position, relative);
           padding: var(--dialog-content-padding, 20px 24px);
+        }
+        :host([hideactions]) .mdc-dialog .mdc-dialog__content {
+          padding-bottom: max(
+            var(--dialog-content-padding, 20px),
+            env(safe-area-inset-bottom)
+          );
         }
         .mdc-dialog .mdc-dialog__surface {
           position: var(--dialog-surface-position, relative);

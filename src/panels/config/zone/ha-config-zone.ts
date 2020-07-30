@@ -51,7 +51,6 @@ import type { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import { showZoneDetailDialog } from "./show-dialog-zone-detail";
-import { computeRTL } from "../../../common/util/compute_rtl";
 
 @customElement("ha-config-zone")
 export class HaConfigZone extends SubscribeMixin(LitElement) {
@@ -255,17 +254,14 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
               </div>
             `
           : ""}
+        <mwc-fab
+          slot="fab"
+          title=${hass.localize("ui.panel.config.zone.add_zone")}
+          @click=${this._createZone}
+        >
+          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+        </mwc-fab>
       </hass-tabs-subpage>
-
-      <mwc-fab
-        ?is-wide=${this.isWide}
-        ?narrow=${this.narrow}
-        ?rtl=${computeRTL(this.hass)}
-        title="${hass.localize("ui.panel.config.zone.add_zone")}"
-        @click=${this._createZone}
-      >
-        <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
-      </mwc-fab>
     `;
   }
 
@@ -543,23 +539,6 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       }
       ha-card paper-item {
         cursor: pointer;
-      }
-      mwc-fab {
-        position: fixed;
-        bottom: 16px;
-        right: 16px;
-        z-index: 1;
-      }
-      mwc-fab[is-wide] {
-        bottom: 24px;
-        right: 24px;
-      }
-      mwc-fab[narrow] {
-        bottom: 84px;
-      }
-      mwc-fab[rtl] {
-        left: 24px;
-        right: auto;
       }
     `;
   }

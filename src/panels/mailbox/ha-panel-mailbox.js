@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import "@polymer/app-layout/app-header-layout/app-header-layout";
+import "../../layouts/ha-app-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-input/paper-textarea";
@@ -76,7 +76,7 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
         }
       </style>
 
-      <app-header-layout>
+      <ha-app-layout>
         <app-header slot="header" fixed>
           <app-toolbar>
             <ha-menu-button
@@ -124,7 +124,7 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
             </template>
           </ha-card>
         </div>
-      </app-header-layout>
+      </ha-app-layout>
     `;
   }
 

@@ -5,8 +5,6 @@ import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
-  css,
-  CSSResult,
   customElement,
   html,
   LitElement,
@@ -34,7 +32,6 @@ import { HELPER_DOMAINS } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
 import "../../../components/ha-svg-icon";
 import { mdiPlus } from "@mdi/js";
-import { computeRTL } from "../../../common/util/compute_rtl";
 
 @customElement("ha-config-helpers")
 export class HaConfigHelpers extends LitElement {
@@ -160,18 +157,16 @@ export class HaConfigHelpers extends LitElement {
           "ui.panel.config.helpers.picker.no_helpers"
         )}
       >
+        <mwc-fab
+          slot="fab"
+          title="${this.hass.localize(
+            "ui.panel.config.helpers.picker.add_helper"
+          )}"
+          @click=${this._createHelpler}
+        >
+          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+        </mwc-fab>
       </hass-tabs-subpage-data-table>
-      <mwc-fab
-        ?is-wide=${this.isWide}
-        ?narrow=${this.narrow}
-        ?rtl=${computeRTL(this.hass!)}
-        title="${this.hass.localize(
-          "ui.panel.config.helpers.picker.add_helper"
-        )}"
-        @click=${this._createHelpler}
-      >
-        <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
-      </mwc-fab>
     `;
   }
 
@@ -214,32 +209,5 @@ export class HaConfigHelpers extends LitElement {
 
   private _createHelpler() {
     showHelperDetailDialog(this);
-  }
-
-  static get styles(): CSSResult {
-    return css`
-      mwc-fab {
-        position: fixed;
-        bottom: 16px;
-        right: 16px;
-        z-index: 1;
-      }
-      mwc-fab[is-wide] {
-        bottom: 24px;
-        right: 24px;
-      }
-      mwc-fab[narrow] {
-        bottom: 84px;
-      }
-      mwc-fab[rtl] {
-        right: auto;
-        left: 16px;
-      }
-      mwc-fab[is-wide][rtl] {
-        bottom: 24px;
-        left: 24px;
-        right: auto;
-      }
-    `;
   }
 }

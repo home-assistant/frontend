@@ -1,13 +1,12 @@
 import "../../../components/ha-icon-button";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
-  css,
-  CSSResultArray,
   customElement,
   html,
   LitElement,
   property,
   TemplateResult,
+  CSSResult,
 } from "lit-element";
 import { ifDefined } from "lit-html/directives/if-defined";
 import memoizeOne from "memoize-one";
@@ -15,7 +14,6 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { computeRTL } from "../../../common/util/compute_rtl";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import "../../../components/entity/ha-entity-toggle";
 import "@material/mwc-fab";
@@ -169,19 +167,16 @@ class HaAutomationPicker extends LitElement {
         )}
         hasFab
       >
+        <mwc-fab
+          slot="fab"
+          title=${this.hass.localize(
+            "ui.panel.config.automation.picker.add_automation"
+          )}
+          @click=${this._createNew}
+        >
+          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+        </mwc-fab>
       </hass-tabs-subpage-data-table>
-      <mwc-fab
-        slot="fab"
-        ?is-wide=${this.isWide}
-        ?narrow=${this.narrow}
-        title=${this.hass.localize(
-          "ui.panel.config.automation.picker.add_automation"
-        )}
-        ?rtl=${computeRTL(this.hass)}
-        @click=${this._createNew}
-      >
-        <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
-      </mwc-fab>
     `;
   }
 
@@ -207,37 +202,8 @@ class HaAutomationPicker extends LitElement {
     });
   }
 
-  static get styles(): CSSResultArray {
-    return [
-      haStyle,
-      css`
-        mwc-fab {
-          position: fixed;
-          bottom: 16px;
-          right: 16px;
-          z-index: 1;
-          cursor: pointer;
-        }
-
-        mwc-fab[is-wide] {
-          bottom: 24px;
-          right: 24px;
-        }
-        mwc-fab[narrow] {
-          bottom: 84px;
-        }
-        mwc-fab[rtl] {
-          right: auto;
-          left: 16px;
-        }
-
-        mwc-fab[rtl][is-wide] {
-          bottom: 24px;
-          right: auto;
-          left: 24px;
-        }
-      `,
-    ];
+  static get styles(): CSSResult {
+    return haStyle;
   }
 }
 
