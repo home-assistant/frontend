@@ -45,7 +45,6 @@
     "func-names": 0,
     "prefer-arrow-callback": 0,
     "no-underscore-dangle": 0,
-    "no-var": 1,
     "strict": 0,
     "prefer-spread": 0,
     "no-plusplus": 0,

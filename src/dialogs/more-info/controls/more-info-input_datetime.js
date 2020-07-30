@@ -78,14 +78,14 @@ class DatetimeInput extends PolymerElement {
     if (stateObj.state === "unknown") {
       return "";
     }
-    var monthFiller;
+    let monthFiller;
     if (stateObj.attributes.month < 10) {
       monthFiller = "0";
     } else {
       monthFiller = "";
     }
 
-    var dayFiller;
+    let dayFiller;
     if (stateObj.attributes.day < 10) {
       dayFiller = "0";
     } else {

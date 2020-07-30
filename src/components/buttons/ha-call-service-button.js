@@ -54,8 +54,8 @@ class HaCallServiceButton extends EventsMixin(PolymerElement) {
   callService() {
     this.progress = true;
     // eslint-disable-next-line @typescript-eslint/no-this-alias
-    var el = this;
-    var eventData = {
+    const el = this;
+    const eventData = {
       domain: this.domain,
       service: this.service,
       serviceData: this.serviceData,
