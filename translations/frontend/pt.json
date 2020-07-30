@@ -862,7 +862,7 @@
                                 "wait_template": {
                                     "label": "Esperar",
                                     "timeout": "Tempo limite (opcional)",
-                                    "wait_template": "Modelo de espera"
+                                    "wait_template": "Template de espera"
                                 }
                             },
                             "unsupported_action": "Ação não suportada: {action}"
@@ -874,7 +874,7 @@
                             "delete_confirm": "Tem certeza que deseja apagar?",
                             "duplicate": "Duplicar",
                             "header": "Condições",
-                            "introduction": "As condições são uma parte opcional de uma regra de automação e podem ser usadas para impedir que uma ação ocorra quando um acionador é despoletado. As condições embora pareçam muito semelhantes aos acionadores, são muito diferentes. Um acionador examinará os eventos que acontecem no sistema, enquanto uma condição apenas analisa a forma como o sistema parece no momento. Um acionador pode observar que um interruptor está a ser ligado. Uma condição só pode ver se um interruptor está ligado ou desligado. \n\n [Saiba mais sobre as condições.] (Https://home-assistant.io/docs/scripts/conditions/)",
+                            "introduction": "As condições são opcionais e impedem a execução a menos que todas as condições sejam satisfeitas.",
                             "learn_more": "Saber mais sobre condições",
                             "name": "Condição",
                             "type_select": "Tipo de condição",
@@ -898,7 +898,7 @@
                                     "above": "Acima",
                                     "below": "Abaixo",
                                     "label": "Estado numérico",
-                                    "value_template": "Valor para o modelo (opcional)"
+                                    "value_template": "Valor para o template (opcional)"
                                 },
                                 "or": {
                                     "label": "Ou"
@@ -917,8 +917,8 @@
                                     "sunset": "Pôr do sol"
                                 },
                                 "template": {
-                                    "label": "Modelo",
-                                    "value_template": "Modelo para o valor"
+                                    "label": "Template",
+                                    "value_template": "Template para o valor"
                                 },
                                 "time": {
                                     "after": "Depois das",
@@ -1008,7 +1008,7 @@
                                     "above": "Acima",
                                     "below": "Abaixo",
                                     "label": "Estado numérico",
-                                    "value_template": "Valor para o modelo (opcional)"
+                                    "value_template": "Valor para o template (opcional)"
                                 },
                                 "state": {
                                     "for": "Durante",
@@ -1024,8 +1024,8 @@
                                     "sunset": "Pôr do sol"
                                 },
                                 "template": {
-                                    "label": "Modelo",
-                                    "value_template": "Modelo para o valor"
+                                    "label": "Template",
+                                    "value_template": "Template para o valor"
                                 },
                                 "time_pattern": {
                                     "hours": "Horas",
@@ -1367,7 +1367,7 @@
                             "status": "Estado"
                         },
                         "introduction": "O Home Assistant mantém um registo de todas as entidades que foram alguma vez detetadas e que podem ser identificadas de uma forma única. Cada uma dessas entidades terá um ID de entidade atribuído, que será reservado apenas para essa entidade.",
-                        "introduction2": "Use o registo da entidade para substituir o nome, alterar o ID da entidade ou remover a entrada do Home Assistant. Note que a remoção da entrada do registo de entidade não removerá a entidade. Para fazer isso, siga o link abaixo e remova-o da página de integrações.",
+                        "introduction2": "Use o registo da entidade para substituir o nome, alterar o ID da entidade ou remover a entrada do Home Assistant.",
                         "remove_selected": {
                             "button": "Remover selecionado",
                             "confirm_partly_text": "Você pode remover apenas {removable} das {selected} entidades selecionadas. As entidades só podem ser removidas quando a integração deixar de suportá-las. Por vezes é necessário reiniciar o Home Assistant antes de poder remover as entidades de uma integração removida. Tem a certeza de que deseja remover as entidades removíveis?",
@@ -2095,7 +2095,7 @@
                         "editor": "Editor de Templates",
                         "jinja_documentation": "Documentação do template Jinja2",
                         "template_extensions": "Extensões de templates do Home Assistant",
-                        "title": "Modelo",
+                        "title": "Template",
                         "unknown_error_template": "Erro desconhecido ao processar o template"
                     }
                 }

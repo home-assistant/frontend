@@ -2446,7 +2446,7 @@
                     "entity": "Entitet",
                     "entity_id": "Entitets-ID",
                     "last_changed": "Sist endret",
-                    "no_data": "Ingen ubrukte enheter funnet",
+                    "no_data": "Ingen ubrukte entiteter funnet",
                     "search": "Søk etter enheter",
                     "select_to_add": "Velg enhetene du vil legge til et kort, og klikk deretter på knappen Legg til kort.",
                     "title": "Ubrukte entiteter"
