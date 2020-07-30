@@ -1058,6 +1058,31 @@
                 },
                 "scene": {
                   "label": "Activate scene"
+                },
+                "repeat": {
+                  "label": "Repeat",
+                  "type_select": "Repeat type",
+                  "type": {
+                    "count": { "label": "Count" },
+                    "while": {
+                      "label": "While",
+                      "conditions": "While conditions"
+                    },
+                    "until": {
+                      "label": "Until",
+                      "conditions": "Until conditions"
+                    }
+                  },
+                  "sequence": "Actions"
+                },
+                "choose": {
+                  "label": "Choose",
+                  "default": "Default actions",
+                  "option": "Option {number}",
+                  "add_option": "Add option",
+                  "remove_option": "Remove option",
+                  "conditions": "Conditions",
+                  "sequence": "Actions"
                 }
               }
             }

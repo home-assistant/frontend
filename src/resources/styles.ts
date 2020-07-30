@@ -79,6 +79,17 @@ export const haStyle = css`
   }
 
   h1 {
+    font-family: var(--paper-font-headline_-_font-family);
+    -webkit-font-smoothing: var(--paper-font-headline_-_-webkit-font-smoothing);
+    white-space: var(--paper-font-headline_-_white-space);
+    overflow: var(--paper-font-headline_-_overflow);
+    text-overflow: var(--paper-font-headline_-_text-overflow);
+    font-size: var(--paper-font-headline_-_font-size);
+    font-weight: var(--paper-font-headline_-_font-weight);
+    line-height: var(--paper-font-headline_-_line-height);
+  }
+
+  h2 {
     font-family: var(--paper-font-title_-_font-family);
     -webkit-font-smoothing: var(--paper-font-title_-_-webkit-font-smoothing);
     white-space: var(--paper-font-title_-_white-space);
@@ -89,7 +100,7 @@ export const haStyle = css`
     line-height: var(--paper-font-title_-_line-height);
   }
 
-  h2 {
+  h3 {
     font-family: var(--paper-font-subhead_-_font-family);
     -webkit-font-smoothing: var(--paper-font-subhead_-_-webkit-font-smoothing);
     white-space: var(--paper-font-subhead_-_white-space);
