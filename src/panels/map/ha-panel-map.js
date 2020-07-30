@@ -12,6 +12,7 @@ import { defaultRadiusColor } from "../../data/zone";
 import LocalizeMixin from "../../mixins/localize-mixin";
 import "./ha-entity-marker";
 import "../../styles/polymer-ha-style";
+import "../../layouts/ha-app-layout";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -21,7 +22,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
     return html`
       <style include="ha-style">
         #map {
-          height: calc(100% - 64px);
+          height: calc(100vh - 64px);
           width: 100%;
           z-index: 0;
         }
@@ -31,18 +32,24 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
         }
       </style>
 
-      <app-toolbar>
-        <ha-menu-button hass="[[hass]]" narrow="[[narrow]]"></ha-menu-button>
-        <div main-title>[[localize('panel.map')]]</div>
-        <template is="dom-if" if="[[computeShowEditZone(hass)]]">
-          <ha-icon-button
-            icon="hass:pencil"
-            on-click="openZonesEditor"
-          ></ha-icon-button>
-        </template>
-      </app-toolbar>
-
-      <div id="map"></div>
+      <ha-app-layout>
+        <app-header fixed slot="header">
+          <app-toolbar>
+            <ha-menu-button
+              hass="[[hass]]"
+              narrow="[[narrow]]"
+            ></ha-menu-button>
+            <div main-title>[[localize('panel.map')]]</div>
+            <template is="dom-if" if="[[computeShowEditZone(hass)]]">
+              <ha-icon-button
+                icon="hass:pencil"
+                on-click="openZonesEditor"
+              ></ha-icon-button>
+            </template>
+          </app-toolbar>
+        </app-header>
+        <div id="map"></div>
+      </ha-app-layout>
     `;
   }
 

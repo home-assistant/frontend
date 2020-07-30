@@ -57,7 +57,7 @@ export class HaScriptEditor extends LitElement {
 
   @internalProperty() private _idError = false;
 
-  @internalProperty() private _dirty?: boolean;
+  @internalProperty() private _dirty = false;
 
   @internalProperty() private _errors?: string;
 
@@ -228,14 +228,12 @@ export class HaScriptEditor extends LitElement {
           </div>
         </div>
         <mwc-fab
-          ?is-wide=${this.isWide}
-          ?narrow=${this.narrow}
-          ?dirty=${this._dirty}
-          .title="${this.hass.localize("ui.common.save")}"
+          slot="fab"
+          .title=${this.hass.localize("ui.common.save")}
           @click=${this._saveScript}
-          class="${classMap({
-            rtl: computeRTL(this.hass),
-          })}"
+          class=${classMap({
+            dirty: this._dirty,
+          })}
         >
           <ha-svg-icon slot="icon" path=${mdiContentSave}></ha-svg-icon>
         </mwc-fab>
@@ -441,35 +439,12 @@ export class HaScriptEditor extends LitElement {
           color: var(--primary-color);
         }
         mwc-fab {
-          position: fixed;
-          bottom: 16px;
-          right: 16px;
-          z-index: 3;
-          margin-bottom: -80px;
-          transition: margin-bottom 0.3s;
+          position: relative;
+          bottom: calc(-80px - env(safe-area-inset-bottom));
+          transition: bottom 0.3s;
         }
-
-        mwc-fab[is-wide] {
-          bottom: 24px;
-          right: 24px;
-        }
-        mwc-fab[narrow] {
-          bottom: 84px;
-          margin-bottom: -140px;
-        }
-        mwc-fab[dirty] {
-          margin-bottom: 0;
-        }
-
-        mwc-fab.rtl {
-          right: auto;
-          left: 16px;
-        }
-
-        mwc-fab[is-wide].rtl {
-          bottom: 24px;
-          right: auto;
-          left: 24px;
+        mwc-fab.dirty {
+          bottom: 0;
         }
       `,
     ];

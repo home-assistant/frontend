@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import "@polymer/app-layout/app-header-layout/app-header-layout";
+import "../../layouts/ha-app-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-item/paper-item";
@@ -70,7 +70,7 @@ class HaPanelProfile extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <app-header-layout>
+      <ha-app-layout>
         <app-header slot="header" fixed>
           <app-toolbar>
             <ha-menu-button
@@ -178,7 +178,7 @@ class HaPanelProfile extends LitElement {
             @hass-refresh-tokens=${this._refreshRefreshTokens}
           ></ha-long-lived-access-tokens-card>
         </div>
-      </app-header-layout>
+      </ha-app-layout>
     `;
   }
 
@@ -211,6 +211,7 @@ class HaPanelProfile extends LitElement {
           display: block;
           max-width: 600px;
           margin: 0 auto;
+          padding-bottom: env(safe-area-inset-bottom);
         }
 
         .content > * {
