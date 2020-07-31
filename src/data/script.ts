@@ -66,15 +66,15 @@ interface BaseRepeat {
   sequence: Action[];
 }
 
-interface CountRepeat extends BaseRepeat {
+export interface CountRepeat extends BaseRepeat {
   count: number;
 }
 
-interface WhileRepeat extends BaseRepeat {
+export interface WhileRepeat extends BaseRepeat {
   while: Condition[];
 }
 
-interface UntilRepeat extends BaseRepeat {
+export interface UntilRepeat extends BaseRepeat {
   until: Condition[];
 }
 

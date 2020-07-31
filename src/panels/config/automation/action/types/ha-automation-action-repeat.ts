@@ -1,7 +1,13 @@
 import "@polymer/paper-input/paper-input";
 import { customElement, LitElement, property, CSSResult } from "lit-element";
 import { html } from "lit-html";
-import { RepeatAction, Action } from "../../../../../data/script";
+import {
+  RepeatAction,
+  Action,
+  CountRepeat,
+  WhileRepeat,
+  UntilRepeat,
+} from "../../../../../data/script";
 import { HomeAssistant } from "../../../../../types";
 import { ActionElement } from "../ha-automation-action-row";
 import "../../condition/ha-automation-condition-editor";
@@ -63,7 +69,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
               "ui.panel.config.automation.editor.actions.type.repeat.type.count.label"
             )}
             name="count"
-            .value=${action.count || "0"}
+            .value=${(action as CountRepeat).count || "0"}
             @value-changed=${this._countChanged}
           ></paper-input>`
         : ""}
@@ -74,7 +80,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
               )}:
             </h3>
             <ha-automation-condition
-              .conditions=${action.while || []}
+              .conditions=${(action as WhileRepeat).while || []}
               .hass=${this.hass}
               @value-changed=${this._conditionChanged}
             ></ha-automation-condition>`
@@ -86,7 +92,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
               )}:
             </h3>
             <ha-automation-condition
-              .conditions=${action.until || []}
+              .conditions=${(action as UntilRepeat).until || []}
               .hass=${this.hass}
               @value-changed=${this._conditionChanged}
             ></ha-automation-condition>`
@@ -149,7 +155,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
 
   private _countChanged(ev: CustomEvent): void {
     const newVal = ev.detail.value;
-    if (this.action.repeat.count === newVal) {
+    if ((this.action.repeat as CountRepeat).count === newVal) {
       return;
     }
     fireEvent(this, "value-changed", {
