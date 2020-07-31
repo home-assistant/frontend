@@ -1,7 +1,11 @@
 import { LitElement, property, PropertyValues } from "lit-element";
 import { computeLocalize, LocalizeFunc } from "../common/translations/localize";
 import { Constructor, Resources } from "../types";
-import { getLocalLanguage, getTranslation } from "../util/hass-translation";
+import {
+  getLocalLanguage,
+  getTranslation,
+  isRTL,
+} from "../util/hass-translation";
 
 const empty = () => "";
 
@@ -18,6 +22,8 @@ export const litLocalizeLiteMixin = <T extends Constructor<LitElement>>(
     @property() public language?: string = getLocalLanguage();
 
     @property() public translationFragment?: string;
+
+    @property() public isRTL = false;
 
     public connectedCallback(): void {
       super.connectedCallback();
@@ -74,6 +80,7 @@ export const litLocalizeLiteMixin = <T extends Constructor<LitElement>>(
       this.resources = {
         [language]: data,
       };
+      this.isRTL = await isRTL(this.language!);
     }
   }
   return LitLocalizeLiteClass;

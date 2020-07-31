@@ -71,33 +71,35 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     );
 
     return html`
-      <p>
-        ${this.localize(
-          "ui.panel.page-authorize.authorizing_client",
-          "clientId",
-          this.clientId
-        )}
-      </p>
-      ${loggingInWith}
+      <div dir="${this.isRTL ? "RTL" : "LTR"}">
+        <p>
+          ${this.localize(
+            "ui.panel.page-authorize.authorizing_client",
+            "clientId",
+            this.clientId
+          )}
+        </p>
+        ${loggingInWith}
 
-      <ha-auth-flow
-        .resources="${this.resources}"
-        .clientId="${this.clientId}"
-        .redirectUri="${this.redirectUri}"
-        .oauth2State="${this.oauth2State}"
-        .authProvider="${this._authProvider}"
-      ></ha-auth-flow>
+        <ha-auth-flow
+          .resources="${this.resources}"
+          .clientId="${this.clientId}"
+          .redirectUri="${this.redirectUri}"
+          .oauth2State="${this.oauth2State}"
+          .authProvider="${this._authProvider}"
+        ></ha-auth-flow>
 
-      ${inactiveProviders.length > 0
-        ? html`
-            <ha-pick-auth-provider
-              .resources="${this.resources}"
-              .clientId="${this.clientId}"
-              .authProviders="${inactiveProviders}"
-              @pick-auth-provider="${this._handleAuthProviderPick}"
-            ></ha-pick-auth-provider>
-          `
-        : ""}
+        ${inactiveProviders.length > 0
+          ? html`
+              <ha-pick-auth-provider
+                .resources="${this.resources}"
+                .clientId="${this.clientId}"
+                .authProviders="${inactiveProviders}"
+                @pick-auth-provider="${this._handleAuthProviderPick}"
+              ></ha-pick-auth-provider>
+            `
+          : ""}
+      </div>
     `;
   }
 

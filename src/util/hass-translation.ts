@@ -142,6 +142,10 @@ export async function getTranslation(
   return translations[fingerprint];
 }
 
+export async function isRTL(language: string) {
+  return translationMetadata.translations[language].isRTL;
+}
+
 // Load selected translation into memory immediately so it is ready when Polymer
 // initializes.
 getTranslation(null, getLocalLanguage());
