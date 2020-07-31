@@ -15,6 +15,7 @@ import {
   fetchDeviceTriggerCapabilities,
 } from "../../../../../data/device_automation";
 import { HomeAssistant } from "../../../../../types";
+import memoizeOne from "memoize-one";
 
 @customElement("ha-automation-trigger-device")
 export class HaDeviceTrigger extends LitElement {
@@ -36,15 +37,28 @@ export class HaDeviceTrigger extends LitElement {
     };
   }
 
+  private _extraFieldsData = memoizeOne(
+    (capabilities, trigger: DeviceTrigger) => {
+      let extraFieldsData: { [key: string]: any } | undefined;
+      if (capabilities && capabilities.extra_fields) {
+        extraFieldsData = {};
+        this._capabilities.extra_fields.forEach((item) => {
+          if (trigger[item.name] !== undefined) {
+            extraFieldsData![item.name] = trigger[item.name];
+          }
+        });
+      }
+      return extraFieldsData;
+    }
+  );
+
   protected render() {
     const deviceId = this._deviceId || this.trigger.device_id;
 
-    const extraFieldsData =
-      this._capabilities && this._capabilities.extra_fields
-        ? this._capabilities.extra_fields.map((item) => {
-            return { [item.name]: this.trigger[item.name] };
-          })
-        : undefined;
+    const extraFieldsData = this._extraFieldsData(
+      this._capabilities,
+      this.trigger
+    );
 
     return html`
       <ha-device-picker
@@ -67,7 +81,7 @@ export class HaDeviceTrigger extends LitElement {
       ${extraFieldsData
         ? html`
             <ha-form
-              .data=${Object.assign({}, ...extraFieldsData)}
+              .data=${extraFieldsData}
               .schema=${this._capabilities.extra_fields}
               .computeLabel=${this._extraFieldsComputeLabelCallback(
                 this.hass.localize
@@ -120,7 +134,8 @@ export class HaDeviceTrigger extends LitElement {
     fireEvent(this, "value-changed", { value: trigger });
   }
 
-  private _extraFieldsChanged(ev) {
+  private _extraFieldsChanged(ev: CustomEvent) {
+    console.log("extra", ev.detail.value);
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: {

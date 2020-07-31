@@ -36,15 +36,28 @@ export class HaDeviceCondition extends LitElement {
     };
   }
 
+  private _extraFieldsData = memoizeOne(
+    (capabilities, condition: DeviceCondition) => {
+      let extraFieldsData: { [key: string]: any } | undefined;
+      if (capabilities && capabilities.extra_fields) {
+        extraFieldsData = {};
+        this._capabilities.extra_fields.forEach((item) => {
+          if (condition[item.name] !== undefined) {
+            extraFieldsData![item.name] = condition[item.name];
+          }
+        });
+      }
+      return extraFieldsData;
+    }
+  );
+
   protected render() {
     const deviceId = this._deviceId || this.condition.device_id;
 
-    const extraFieldsData =
-      this._capabilities && this._capabilities.extra_fields
-        ? this._capabilities.extra_fields.map((item) => {
-            return { [item.name]: this.condition[item.name] };
-          })
-        : undefined;
+    const extraFieldsData = this._extraFieldsData(
+      this._capabilities,
+      this.condition
+    );
 
     return html`
       <ha-device-picker
@@ -67,7 +80,7 @@ export class HaDeviceCondition extends LitElement {
       ${extraFieldsData
         ? html`
             <ha-form
-              .data=${Object.assign({}, ...extraFieldsData)}
+              .data=${extraFieldsData}
               .schema=${this._capabilities.extra_fields}
               .computeLabel=${this._extraFieldsComputeLabelCallback(
                 this.hass.localize

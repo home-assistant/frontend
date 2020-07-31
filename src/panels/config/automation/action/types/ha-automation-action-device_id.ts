@@ -37,12 +37,19 @@ export class HaDeviceAction extends LitElement {
     };
   }
 
-  private _extraFieldsData = memoizeOne((capabilities, action: DeviceAction) =>
-    capabilities && capabilities.extra_fields
-      ? capabilities.extra_fields.map((item) => {
-          return { [item.name]: action[item.name] };
-        })
-      : undefined
+  private _extraFieldsData = memoizeOne(
+    (capabilities, action: DeviceAction) => {
+      let extraFieldsData: { [key: string]: any } | undefined;
+      if (capabilities && capabilities.extra_fields) {
+        extraFieldsData = {};
+        this._capabilities.extra_fields.forEach((item) => {
+          if (action[item.name] !== undefined) {
+            extraFieldsData![item.name] = action[item.name];
+          }
+        });
+      }
+      return extraFieldsData;
+    }
   );
 
   protected render() {
@@ -73,7 +80,7 @@ export class HaDeviceAction extends LitElement {
       ${extraFieldsData
         ? html`
             <ha-form
-              .data=${Object.assign({}, ...extraFieldsData)}
+              .data=${extraFieldsData}
               .schema=${this._capabilities.extra_fields}
               .computeLabel=${this._extraFieldsComputeLabelCallback(
                 this.hass.localize
