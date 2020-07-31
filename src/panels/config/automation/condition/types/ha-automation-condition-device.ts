@@ -13,8 +13,10 @@ import {
   deviceAutomationsEqual,
   DeviceCondition,
   fetchDeviceConditionCapabilities,
+  DeviceCapabilities,
 } from "../../../../../data/device_automation";
 import { HomeAssistant } from "../../../../../types";
+import memoizeOne from "memoize-one";
 
 @customElement("ha-automation-condition-device")
 export class HaDeviceCondition extends LitElement {
@@ -24,7 +26,7 @@ export class HaDeviceCondition extends LitElement {
 
   @internalProperty() private _deviceId?: string;
 
-  @internalProperty() private _capabilities?;
+  @internalProperty() private _capabilities?: DeviceCapabilities;
 
   private _origCondition?: DeviceCondition;
 
@@ -37,27 +39,19 @@ export class HaDeviceCondition extends LitElement {
   }
 
   private _extraFieldsData = memoizeOne(
-    (capabilities, condition: DeviceCondition) => {
-      let extraFieldsData: { [key: string]: any } | undefined;
-      if (capabilities && capabilities.extra_fields) {
-        extraFieldsData = {};
-        this._capabilities.extra_fields.forEach((item) => {
-          if (condition[item.name] !== undefined) {
-            extraFieldsData![item.name] = condition[item.name];
-          }
-        });
-      }
+    (condition: DeviceCondition, capabilities: DeviceCapabilities) => {
+      const extraFieldsData: { [key: string]: any } = {};
+      capabilities.extra_fields.forEach((item) => {
+        if (condition[item.name] !== undefined) {
+          extraFieldsData![item.name] = condition[item.name];
+        }
+      });
       return extraFieldsData;
     }
   );
 
   protected render() {
     const deviceId = this._deviceId || this.condition.device_id;
-
-    const extraFieldsData = this._extraFieldsData(
-      this._capabilities,
-      this.condition
-    );
 
     return html`
       <ha-device-picker
@@ -77,10 +71,10 @@ export class HaDeviceCondition extends LitElement {
           "ui.panel.config.automation.editor.conditions.type.device.condition"
         )}
       ></ha-device-condition-picker>
-      ${extraFieldsData
+      ${this._capabilities?.extra_fields
         ? html`
             <ha-form
-              .data=${extraFieldsData}
+              .data=${this._extraFieldsData(this.condition, this._capabilities)}
               .schema=${this._capabilities.extra_fields}
               .computeLabel=${this._extraFieldsComputeLabelCallback(
                 this.hass.localize
@@ -116,7 +110,7 @@ export class HaDeviceCondition extends LitElement {
 
     this._capabilities = condition.domain
       ? await fetchDeviceConditionCapabilities(this.hass, condition)
-      : null;
+      : undefined;
   }
 
   private _devicePicked(ev) {

@@ -13,6 +13,7 @@ import {
   deviceAutomationsEqual,
   DeviceTrigger,
   fetchDeviceTriggerCapabilities,
+  DeviceCapabilities,
 } from "../../../../../data/device_automation";
 import { HomeAssistant } from "../../../../../types";
 import memoizeOne from "memoize-one";
@@ -25,7 +26,7 @@ export class HaDeviceTrigger extends LitElement {
 
   @internalProperty() private _deviceId?: string;
 
-  @internalProperty() private _capabilities?;
+  @internalProperty() private _capabilities?: DeviceCapabilities;
 
   private _origTrigger?: DeviceTrigger;
 
@@ -38,27 +39,19 @@ export class HaDeviceTrigger extends LitElement {
   }
 
   private _extraFieldsData = memoizeOne(
-    (capabilities, trigger: DeviceTrigger) => {
-      let extraFieldsData: { [key: string]: any } | undefined;
-      if (capabilities && capabilities.extra_fields) {
-        extraFieldsData = {};
-        this._capabilities.extra_fields.forEach((item) => {
-          if (trigger[item.name] !== undefined) {
-            extraFieldsData![item.name] = trigger[item.name];
-          }
-        });
-      }
+    (trigger: DeviceTrigger, capabilities: DeviceCapabilities) => {
+      const extraFieldsData: { [key: string]: any } = {};
+      capabilities.extra_fields.forEach((item) => {
+        if (trigger[item.name] !== undefined) {
+          extraFieldsData![item.name] = trigger[item.name];
+        }
+      });
       return extraFieldsData;
     }
   );
 
   protected render() {
     const deviceId = this._deviceId || this.trigger.device_id;
-
-    const extraFieldsData = this._extraFieldsData(
-      this._capabilities,
-      this.trigger
-    );
 
     return html`
       <ha-device-picker
@@ -78,10 +71,10 @@ export class HaDeviceTrigger extends LitElement {
           "ui.panel.config.automation.editor.triggers.type.device.trigger"
         )}
       ></ha-device-trigger-picker>
-      ${extraFieldsData
+      ${this._capabilities?.extra_fields
         ? html`
             <ha-form
-              .data=${extraFieldsData}
+              .data=${this._extraFieldsData(this.trigger, this._capabilities)}
               .schema=${this._capabilities.extra_fields}
               .computeLabel=${this._extraFieldsComputeLabelCallback(
                 this.hass.localize
@@ -114,7 +107,7 @@ export class HaDeviceTrigger extends LitElement {
 
     this._capabilities = trigger.domain
       ? await fetchDeviceTriggerCapabilities(this.hass, trigger)
-      : null;
+      : undefined;
   }
 
   private _devicePicked(ev) {
