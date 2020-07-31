@@ -307,6 +307,11 @@ class HaPanelConfig extends HassRouterPage {
         load: () =>
           import("./integrations/integration-panels/ozw/ozw-config-router"),
       },
+      insteon: {
+        tag: "insteon-config-router",
+        load: () =>
+          import("./integrations/integration-panels/insteon/insteon-config-router"),
+      },
     },
   };
 

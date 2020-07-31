@@ -2356,6 +2356,31 @@
             "node_info": "Node Information",
             "refresh_entity": "Refresh Entity"
           }
+        },
+        "insteon": {
+          "caption": "Insteon",
+          "device": {
+            "aldb": {
+              "caption": "All-Link Database",
+              "status": {
+                "caption": "ALDB Load Status",
+                "empty": "Not loaded",
+                "loading": "Loading",
+                "loaded": "Loaded",
+                "partial": "Partially loaded",
+                "failed": "Failed to load"
+              },
+              "actions": {
+                "manage": "Manage All-Link Database",
+                "load": "Load",
+                "write": "Write",
+                "warn_save": "This will write the records to the device."
+              }
+            },
+            "properties": {
+              "caption": "Properties"
+            }
+          }
         }
       },
       "history": {
