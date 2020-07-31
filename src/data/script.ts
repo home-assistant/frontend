@@ -59,12 +59,23 @@ export interface WaitAction {
 }
 
 export interface RepeatAction {
-  repeat: {
-    count?: number;
-    while?: Condition[];
-    until?: Condition[];
-    sequence: Action[];
-  };
+  repeat: CountRepeat | WhileRepeat | UntilRepeat;
+}
+
+interface BaseRepeat {
+  sequence: Action[];
+}
+
+interface CountRepeat extends BaseRepeat {
+  count: number;
+}
+
+interface WhileRepeat extends BaseRepeat {
+  while: Condition[];
+}
+
+interface UntilRepeat extends BaseRepeat {
+  until: Condition[];
 }
 
 export interface ChooseAction {
