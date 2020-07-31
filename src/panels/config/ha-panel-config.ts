@@ -358,6 +358,11 @@ class HaPanelConfig extends HassRouterPage {
         load: () =>
           import(
             /* webpackChunkName: "panel-config-ozw" */ "./integrations/integration-panels/ozw/ozw-config-router"
+      insteon: {
+        tag: "insteon-config-router",
+        load: () =>
+          import(
+            /* webpackChunkName: "panel-config-insteon" */ "./integrations/integration-panels/insteon/insteon-config-router"
           ),
       },
     },
