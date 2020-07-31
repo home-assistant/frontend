@@ -544,6 +544,26 @@ export class HaConfigDevicePage extends LitElement {
         </div>
       `);
     }
+    if (integrations.includes("insteon")) {
+      import(
+        "./device-detail/integration-elements/insteon/ha-device-actions-insteon"
+      );
+      import(
+        "./device-detail/integration-elements/insteon/ha-device-info-insteon"
+      );
+      templates.push(html`
+        <ha-device-info-insteon
+          .hass=${this.hass}
+          .device=${device}
+        ></ha-device-info-insteon>
+        <div class="card-actions" slot="actions">
+          <ha-device-actions-insteon
+            .hass=${this.hass}
+            .device=${device}
+          ></ha-device-actions-insteon>
+        </div>
+      `);
+    }
     return templates;
   }
 
