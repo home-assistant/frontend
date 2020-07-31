@@ -128,7 +128,6 @@ export class HaDeviceTrigger extends LitElement {
   }
 
   private _extraFieldsChanged(ev: CustomEvent) {
-    console.log("extra", ev.detail.value);
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: {
