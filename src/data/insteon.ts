@@ -12,6 +12,10 @@ export interface Properties {
   [key: string]: boolean | number;
 }
 
+export const AddressRegex = RegExp(
+  /(?<!.)[A-Fa-f0-9]{2}\.?[A-Fa-f0-9]{2}\.?[A-Fa-f0-9]{2}$/
+);
+
 export interface ALDBRecord {
   mem_addr: number;
   in_use: boolean;
@@ -51,7 +55,7 @@ export const fetchInsteonALDB = (
 ): Promise<ALDBInfo> =>
   hass.callWS({
     type: "insteon/aldb/get",
-    device_id: id,
+    device_address: id,
   });
 
 export const fetchInsteonProperties = (
@@ -60,7 +64,7 @@ export const fetchInsteonProperties = (
 ): Promise<PropertiesInfo> =>
   hass.callWS({
     type: "insteon/properties/get",
-    device_id: id,
+    device_address: id,
   });
 
 export const changeALDBRecord = (
@@ -70,7 +74,7 @@ export const changeALDBRecord = (
 ): Promise<void> =>
   hass.callWS({
     type: "insteon/aldb/change",
-    device_id: id,
+    device_address: id,
     record: record,
   });
 
@@ -78,11 +82,11 @@ export const changeProperty = (
   hass: HomeAssistant,
   id: string,
   name: string,
-  value: number | boolean
+  value: any
 ): Promise<void> =>
   hass.callWS({
     type: "insteon/properties/change",
-    device_id: id,
+    device_address: id,
     name: name,
     value: value,
   });
@@ -94,14 +98,14 @@ export const createALDBRecord = (
 ): Promise<void> =>
   hass.callWS({
     type: "insteon/aldb/create",
-    device_id: id,
+    device_address: id,
     record: record,
   });
 
 export const loadALDB = (hass: HomeAssistant, id: string): Promise<void> =>
   hass.callWS({
     type: "insteon/aldb/load",
-    device_id: id,
+    device_address: id,
   });
 
 export const loadProperties = (
@@ -110,13 +114,13 @@ export const loadProperties = (
 ): Promise<void> =>
   hass.callWS({
     type: "insteon/properties/load",
-    device_id: id,
+    device_address: id,
   });
 
 export const writeALDB = (hass: HomeAssistant, id: string): Promise<void> =>
   hass.callWS({
     type: "insteon/aldb/write",
-    device_id: id,
+    device_address: id,
   });
 
 export const writeProperties = (
@@ -125,13 +129,13 @@ export const writeProperties = (
 ): Promise<void> =>
   hass.callWS({
     type: "insteon/properties/write",
-    device_id: id,
+    device_address: id,
   });
 
 export const resetALDB = (hass: HomeAssistant, id: string): Promise<void> =>
   hass.callWS({
     type: "insteon/aldb/reset",
-    device_id: id,
+    device_address: id,
   });
 
 export const resetProperties = (
@@ -140,7 +144,7 @@ export const resetProperties = (
 ): Promise<void> =>
   hass.callWS({
     type: "insteon/properties/reset",
-    device_id: id,
+    device_address: id,
   });
 
 export const addDefaultLinks = (
@@ -149,5 +153,65 @@ export const addDefaultLinks = (
 ): Promise<void> =>
   hass.callWS({
     type: "insteon/aldb/add_default_links",
-    device_id: id,
+    device_address: id,
   });
+
+export const aldbRecordLoaded = (
+  hass: HomeAssistant,
+  id: string
+): Promise<void> =>
+  hass.callWS({
+    type: "insteon/aldb/record_loaded",
+    device_address: id,
+  });
+
+  export const NEW_ALDB_SCHEMA: HaFormSchema[] = [
+  {
+    name: "mode",
+    options: ["Controller", "Responder"],
+    required: true,
+    type: "multi_select",
+  },
+  {
+    name: "group",
+    required: true,
+    type: "integer",
+    valueMin: 0,
+    valueMax: 255,
+  },
+  {
+    name: "target",
+    required: true,
+    type: "string",
+  },
+  {
+    name: "data1",
+    required: true,
+    type: "integer",
+    valueMin: 0,
+    valueMax: 255,
+  },
+  {
+    name: "data2",
+    required: true,
+    type: "integer",
+    valueMin: 0,
+    valueMax: 255,
+  },
+  {
+    name: "data3",
+    required: true,
+    type: "integer",
+    valueMin: 0,
+    valueMax: 255,
+  },
+];
+
+export const CHANGE_ALDB_SCHEMA: HaFormSchema[] = [
+  {
+    name: "in_use",
+    required: true,
+    type: "boolean",
+  },
+  ...NEW_ALDB_SCHEMA,
+];

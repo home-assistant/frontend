@@ -45,11 +45,20 @@ export class HaDeviceActionsInsteon extends LitElement {
           "ui.panel.config.insteon.device.aldb.actions.manage"
         )}
       </mwc-button>
+      <mwc-button @click=${this._onManagePropertiesClick}>
+        ${this.hass!.localize(
+          "ui.panel.config.insteon.device.properties.actions.manage"
+        )}
+      </mwc-button>
     `;
   }
 
   private async _onManageALDBClick(): Promise<void> {
     navigate(this, "/config/insteon/device/aldb/" + this.device.id);
+  }
+
+  private async _onManagePropertiesClick(): Promise<void> {
+    navigate(this, "/config/insteon/device/properties/" + this.device.id);
   }
 
   static get styles(): CSSResult[] {

@@ -1,6 +1,5 @@
 import "@material/mwc-button";
 import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-circular-progress";
 import {
   css,
   CSSResult,
@@ -16,7 +15,7 @@ import "../../../../../components/ha-service-description";
 import "@polymer/paper-input/paper-textarea";
 import {
   InsteonDevice,
-  Properties,
+  Property,
   fetchInsteonDevice,
   fetchInsteonProperties,
   changeProperty,
@@ -26,10 +25,12 @@ import {
 } from "../../../../../data/insteon";
 import "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
+import { RowClickedEvent } from "../../../../../components/data-table/ha-data-table";
 import { HomeAssistant, Route } from "../../../../../types";
 import { insteonDeviceTabs } from "./insteon-config-device-router";
-import "./insteon-aldb-data-table";
+import "./insteon-properties-data-table";
 import { HASSDomEvent } from "../../../../../common/dom/fire_event";
+import { showInsteonPropertyDialog } from "./show-dialog-insteon-property";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import type { HaFormSchema } from "../../../../../components/ha-form/ha-form";
 
@@ -47,27 +48,26 @@ class InsteonConfigDevicePropertiesPage extends LitElement {
 
   @internalProperty() private _device?: InsteonDevice;
 
-  @internalProperty() private _properties?: Properties;
+  @internalProperty() private _properties: Property[] = [];
 
-  @internalProperty() private _schema?: HaFormSchema;
+  @internalProperty() private _schema?: { [key: string]: HaFormSchema };
+
+  @internalProperty() private _showWait = false;
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     if (this.deviceId) {
-      fetchInsteonDevice(this.hass, this.deviceId!).then((device) => {
+      fetchInsteonDevice(this.hass, this.deviceId).then((device) => {
         this._device = device;
+        this._getProperties()
       });
-      fetchInsteonProperties(this.hass, this.deviceId!).then(
-        (propertiesInfo) => {
-          this._properties = propertiesInfo.properties;
-          this._schema = propertiesInfo.schema;
-        }
-      );
     }
   }
 
   protected _dirty() {
-    return false;
+    return this._properties?.reduce((modified, prop) => {
+      return modified || prop.modified;
+    }, false);
   }
 
   protected render(): TemplateResult {
@@ -105,17 +105,10 @@ class InsteonConfigDevicePropertiesPage extends LitElement {
                 `}
           </div>
           <div slot="header" class="header fullwidth">
-            <div>
-              ALDB Status:
-              ${this.hass.localize(
-                "ui.panel.config.insteon.device.aldb.status." +
-                  this._device?.aldb_status
-              )}
-            </div>
             <div class="header-right">
               <mwc-button @click=${this._onLoadPropertiesClick}>
                 ${this.hass!.localize(
-                  "ui.panel.config.insteon.device.properties.actions.load"
+                  "ui.panel.config.insteon.device.common.actions.load"
                 )}
               </mwc-button>
               <mwc-button
@@ -123,7 +116,7 @@ class InsteonConfigDevicePropertiesPage extends LitElement {
                 @click=${this._onWritePropertiesClick}
               >
                 ${this.hass!.localize(
-                  "ui.panel.config.insteon.device.properties.actions.write"
+                  "ui.panel.config.insteon.device.common.actions.write"
                 )}
               </mwc-button>
               <mwc-button
@@ -131,12 +124,19 @@ class InsteonConfigDevicePropertiesPage extends LitElement {
                 @click=${this._onResetPropertiesClick}
               >
                 ${this.hass!.localize(
-                  "ui.panel.config.insteon.device.properties.actions.reset"
+                  "ui.panel.config.insteon.device.common.actions.reset"
                 )}
               </mwc-button>
             </div>
           </div>
-          Properties will go here
+          <insteon-properties-data-table
+            .hass=${this.hass}
+            .records=${this._properties}
+            .schema=${this._schema}
+            noDataText="No properties available for this device"
+            @row-click=${this._handleRowClicked}
+            .showWait=${this._showWait}
+          ></insteon-properties-data-table>
         </div>
       </hass-tabs-subpage>
     `;
@@ -162,33 +162,55 @@ class InsteonConfigDevicePropertiesPage extends LitElement {
   }
 
   private _load() {
-    loadProperties(this.hass, this.deviceId!);
+    loadProperties(this.hass, this._device!.address);
   }
 
   private async _onWritePropertiesClick() {
     showConfirmationDialog(this, {
       text: this.hass.localize(
-        "ui.panel.config.insteon.device.aldb.actions.warn_write"
+        "ui.panel.config.insteon.device.common.actions.warn_write"
       ),
       confirmText: this.hass!.localize("ui.common.yes"),
       dismissText: this.hass!.localize("ui.common.no"),
-      confirm: () => this._write(),
+      confirm: async () => await this._write(),
     });
   }
 
-  private _write() {
-    writeProperties(this.hass, this.deviceId!);
+  private async _write() {
+    this._showWait = true;
+    await writeProperties(this.hass, this._device!.address);
+    this._getProperties()
+    this._showWait = false;
   }
 
-  private async _onResetPropertiesClick() {
-    resetProperties(this.hass, this.deviceId!);
-    fetchInsteonProperties(this.hass, this.deviceId!).then((propertiesInfo) => {
+  private async _getProperties() {
+    fetchInsteonProperties(this.hass, this._device!.address).then((propertiesInfo) => {
       this._properties = propertiesInfo.properties;
     });
   }
 
-  private async _handlePropertyChange(name: string, value: number | boolean) {
-    changeProperty(this.hass, this.deviceId!, name, value);
+  private async _onResetPropertiesClick() {
+    resetProperties(this.hass, this._device!.address);
+    this._getProperties();
+  }
+
+  private async _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
+    const id = ev.detail.id;
+    const record = this._properties!.find((rec) => rec.name === id);
+    showInsteonPropertyDialog(this, {
+      schema: this._schema![record!.name],
+      record: record!,
+      title: this.hass.localize(
+        "ui.panel.config.insteon.device.properties.change"
+      ),
+      callback: async (name, value) =>
+        await this._handlePropertyChange(name, value),
+    });
+  }
+
+  private async _handlePropertyChange(name: string, value: any) {
+    changeProperty(this.hass, this._device!.address, name, value);
+    this._getProperties();
   }
 
   private _handleBackTapped(): void {
@@ -207,18 +229,18 @@ class InsteonConfigDevicePropertiesPage extends LitElement {
   }
 
   private _goBack(): void {
-    resetProperties(this.hass, this.deviceId!);
+    resetProperties(this.hass, this._device!.address);
     history.back();
   }
 
   static get styles(): CSSResult {
     return css`
-      insteon-aldb-data-table {
+      insteon-properties-data-table {
         width: 100%;
         height: 100%;
         --data-table-border-width: 0;
       }
-      :host(:not([narrow])) insteon-aldb-data-table {
+      :host(:not([narrow])) insteon-properties-data-table {
         height: 78vh;
         display: block;
       }
@@ -259,8 +281,6 @@ class InsteonConfigDevicePropertiesPage extends LitElement {
       .fullwidth {
         padding: 8px;
         box-sizing: border-box;
-      }
-      .fullwidth {
         width: 100%;
         flex-grow: 1;
       }

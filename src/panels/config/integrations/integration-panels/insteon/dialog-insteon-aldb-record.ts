@@ -15,7 +15,7 @@ import { createCloseHeading } from "../../../../../components/ha-dialog";
 import { haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import "./insteon-aldb-data-table";
-import { ALDBRecord } from "../../../../../data/insteon";
+import { ALDBRecord, AddressRegex } from "../../../../../data/insteon";
 import "../../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../../components/ha-form/ha-form";
 import { InsteonALDBRecordDialogParams } from "./show-dialog-insteon-aldb-record";
@@ -145,27 +145,10 @@ class DialogInsteonALDBRecord extends LitElement {
   private _checkData(): boolean {
     let success = true;
     this._errors = {};
-    const insteonAddressCheck = new RegExp(
-      /[A-Fa-f0-9]{2}\.?[A-Fa-f0-9]{2}\.?[A-Fa-f0-9]{2}$/
-    );
-    if (!insteonAddressCheck.test(this._formData!.target)) {
-      this._errors["target"] = "Invalid address";
-      success = false;
-    }
-    if (this._formData?.group < 0 || this._formData?.group > 255) {
-      this._errors["group"] = "Invalid group value (0 - 255)";
-      success = false;
-    }
-    if (this._formData?.data1 < 0 || this._formData?.data1 > 255) {
-      this._errors["data1"] = "Invalid data1 value (0 - 255)";
-      success = false;
-    }
-    if (this._formData?.data2 < 0 || this._formData?.data2 > 255) {
-      this._errors["data2"] = "Invalid data2 value (0 - 255)";
-      success = false;
-    }
-    if (this._formData?.data3 < 0 || this._formData?.data3 > 255) {
-      this._errors["data3"] = "Invalid data3 value (0 - 255)";
+    if (!AddressRegex.test(this._formData!.target)) {
+      this._errors!.target = this.hass.localize(
+        "ui.panel.config.insteon.device.common.error.address"
+      );
       success = false;
     }
     return success;

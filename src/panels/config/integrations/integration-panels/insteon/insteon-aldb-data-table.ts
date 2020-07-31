@@ -7,6 +7,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
+import "../../../../../components/ha-circular-progress";
 import "../../../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
@@ -19,7 +20,6 @@ import { computeRTLDirection } from "../../../../../common/util/compute_rtl";
 
 export interface RecordRowData extends ALDBRecord {
   record?: ALDBRecord;
-  record_id?: number;
 }
 
 @customElement("insteon-aldb-data-table")
@@ -30,22 +30,22 @@ export class InsteonALDBDataTable extends LitElement {
 
   @property() public records: ALDBRecord[] = [];
 
-  @property() public noDataText: string;
+  @property() public isLoading = false;
+
+  @property() public showWait = false;
 
   @query("ha-data-table") private _dataTable!: HaDataTable;
 
   private _records = memoizeOne((records: ALDBRecord[]) => {
-    let outputRecords: RecordRowData[] = records;
+    const outputRecords: RecordRowData[] = records;
 
-    outputRecords = outputRecords.map((record) => {
+    return outputRecords.map((record) => {
       return {
-        ...record,
-        record_id: record.mem_addr,
+        ...record
       };
     });
-
-    return outputRecords;
   });
+
 
   private _columns = memoizeOne(
     (narrow: boolean): DataTableColumnContainer =>
@@ -171,21 +171,45 @@ export class InsteonALDBDataTable extends LitElement {
           }
   );
 
+  private _noDataText(loading): string {
+    if (loading) {
+      return ""
+    }
+    return this.hass!.localize("ui.panel.config.insteon.device.aldb.no_data");
+  }
+
   public clearSelection() {
     this._dataTable.clearSelection();
   }
 
   protected render(): TemplateResult {
+    if (this.showWait) {
+      return html`
+      <ha-circular-progress active alt="Loading"></ha-circular-progress>
+      `
+    }
     return html`
       <ha-data-table
         .columns=${this._columns(this.narrow)}
         .data=${this._records(this.records)}
-        .id=${"record_id"}
+        .id=${"mem_addr"}
         .dir=${computeRTLDirection(this.hass)}
         .searchLabel=${this.hass.localize("ui.components.data-table.search")}
-        noDataText="${this.noDataText}"
-      ></ha-data-table>
-    `;
+        .noDataText="${this._noDataText(this.isLoading)}"
+      >
+        <ha-circular-progress active alt="Loading"></ha-circular-progress>
+      </ha-data-table>
+      <div>
+          ${
+            this.isLoading
+            ? html`
+              <div align='center'>
+                ${this.hass!.localize("ui.panel.config.insteon.device.aldb.loading")}
+              </div>`
+            : ""
+          }
+        </div>
+    `
   }
 }
 

@@ -14,6 +14,8 @@ class InsteonConfigRouter extends HassRouterPage {
 
   @property() public narrow!: boolean;
 
+  @property() private deviceId?: string;
+
   private _configEntry = new URLSearchParams(window.location.search).get(
     "config_entry"
   );
@@ -39,20 +41,9 @@ class InsteonConfigRouter extends HassRouterPage {
     el.narrow = this.narrow;
     el.configEntryId = this._configEntry;
     if (this._currentPage === "device") {
-      el.groupId = this.routeTail.path.substr(1);
+      this.deviceId = this.routeTail.path.substr(1);
     }
-
-    const searchParams = new URLSearchParams(window.location.search);
-    if (this._configEntry && !searchParams.has("config_entry")) {
-      searchParams.append("config_entry", this._configEntry);
-      navigate(
-        this,
-        `${this.routeTail.prefix}${
-          this.routeTail.path
-        }?${searchParams.toString()}`,
-        true
-      );
-    }
+    el.deviceId = this.deviceId;
   }
 }
 

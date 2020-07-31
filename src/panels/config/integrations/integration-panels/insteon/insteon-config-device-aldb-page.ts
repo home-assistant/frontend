@@ -23,6 +23,7 @@ import {
   fetchInsteonALDB,
   changeALDBRecord,
   createALDBRecord,
+  aldbRecordAdded,
   writeALDB,
   loadALDB,
   resetALDB,
@@ -55,23 +56,31 @@ class InsteonConfigDeviceALDBPage extends LitElement {
 
   @internalProperty() private _records?: ALDBRecord[];
 
-  @internalProperty() private _schema?: HaFormSchema;
+  @internalProperty() private _allRecords?: ALDBRecord[];
 
   @internalProperty() private _showHideUnused = "show_unused";
 
   @internalProperty() private _showUnused = false;
+
+  @internalProperty() private _isLoading = false;
+
+  private _subscribed?: Promise<() => Promise<void>>;
+
+  private _refreshDevicesTimeoutHandle?: number;
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     if (this.deviceId) {
       fetchInsteonDevice(this.hass, this.deviceId!).then((device) => {
         this._device = device;
-      });
-      fetchInsteonALDB(this.hass, this.deviceId!).then((aldbInfo) => {
-        this._records = this._filterRecords(aldbInfo.records, this._showUnused);
-        this._schema = aldbInfo.schema;
+        this._getRecords();
       });
     }
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._unsubscribe();
   }
 
   protected _dirty() {
@@ -140,7 +149,7 @@ class InsteonConfigDeviceALDBPage extends LitElement {
               </mwc-button>
               <mwc-button @click=${this._onLoadALDBClick}>
                 ${this.hass!.localize(
-                  "ui.panel.config.insteon.device.aldb.actions.load"
+                  "ui.panel.config.insteon.device.common.actions.load"
                 )}
               </mwc-button>
               <mwc-button @click=${this._onAddDefaultLinksClicked}>
@@ -153,7 +162,7 @@ class InsteonConfigDeviceALDBPage extends LitElement {
                 @click=${this._onWriteALDBClick}
               >
                 ${this.hass!.localize(
-                  "ui.panel.config.insteon.device.aldb.actions.write"
+                  "ui.panel.config.insteon.device.common.actions.write"
                 )}
               </mwc-button>
               <mwc-button
@@ -161,7 +170,7 @@ class InsteonConfigDeviceALDBPage extends LitElement {
                 @click=${this._onResetALDBClick}
               >
                 ${this.hass!.localize(
-                  "ui.panel.config.insteon.device.aldb.actions.reset"
+                  "ui.panel.config.insteon.device.common.actions.reset"
                 )}
               </mwc-button>
             </div>
@@ -171,6 +180,7 @@ class InsteonConfigDeviceALDBPage extends LitElement {
             .narrow=${this.narrow}
             .records=${this._records}
             @row-click=${this._handleRowClicked}
+            .isLoading=${this._isLoading}
           ></insteon-aldb-data-table>
         </div>
         <mwc-fab
@@ -184,6 +194,17 @@ class InsteonConfigDeviceALDBPage extends LitElement {
         </mwc-fab>
       </hass-tabs-subpage>
     `;
+  }
+
+  private _getRecords(): void {
+    if (!this._device){
+      this._records = [];
+      return
+    }
+    fetchInsteonALDB(this.hass, this._device?.address).then((records) => {
+      this._allRecords = records;
+      this._records = this._filterRecords(this._allRecords, this._showUnused);
+    });
   }
 
   private _createRecord(): void {
@@ -218,7 +239,7 @@ class InsteonConfigDeviceALDBPage extends LitElement {
   private async _onLoadALDBClick() {
     showConfirmationDialog(this, {
       text: this.hass.localize(
-        "ui.panel.config.insteon.device.aldb.actions.warn_load"
+        "ui.panel.config.insteon.device.common.warn.load"
       ),
       confirmText: this.hass!.localize("ui.common.yes"),
       dismissText: this.hass!.localize("ui.common.no"),
@@ -227,8 +248,9 @@ class InsteonConfigDeviceALDBPage extends LitElement {
   }
 
   private _load() {
-    loadALDB(this.hass, this.deviceId!);
-    this._device!.aldb_status = "loading";
+    this._subscribe();
+    loadALDB(this.hass, this._device!.address);
+    this._isLoading = true;
     this._records = [];
   }
 
@@ -239,16 +261,13 @@ class InsteonConfigDeviceALDBPage extends LitElement {
     } else {
       this._showHideUnused = "show_unused";
     }
-    this._records = [];
-    fetchInsteonALDB(this.hass, this.deviceId!).then((aldbInfo) => {
-      this._records = this._filterRecords(aldbInfo.records, this._showUnused);
-    });
+    this._records = this._filterRecords(this._allRecords!, this._showUnused);
   }
 
   private async _onWriteALDBClick() {
     showConfirmationDialog(this, {
       text: this.hass.localize(
-        "ui.panel.config.insteon.device.aldb.actions.warn_write"
+        "ui.panel.config.insteon.device.common.warn.write"
       ),
       confirmText: this.hass!.localize("ui.common.yes"),
       dismissText: this.hass!.localize("ui.common.no"),
@@ -257,16 +276,15 @@ class InsteonConfigDeviceALDBPage extends LitElement {
   }
 
   private _write() {
-    writeALDB(this.hass, this.deviceId!);
-    this._device!.aldb_status = "loading";
+    this._subscribe();
+    writeALDB(this.hass, this._device!.address);
+    this._isLoading = true;
     this._records = [];
   }
 
   private async _onResetALDBClick() {
-    resetALDB(this.hass, this.deviceId!);
-    fetchInsteonALDB(this.hass, this.deviceId!).then((aldbInfo) => {
-      this._records = this._filterRecords(aldbInfo.records, this._showUnused);
-    });
+    resetALDB(this.hass, this._device!.address);
+    this._getRecords();
   }
 
   private async _onAddDefaultLinksClicked() {
@@ -277,25 +295,22 @@ class InsteonConfigDeviceALDBPage extends LitElement {
   }
 
   private async _addDefaultLinks() {
-    addDefaultLinks(this.hass, this.deviceId!);
-    // this._records = [];
+    this._subscribe()
+    addDefaultLinks(this.hass, this._device!.address);
+    this._records = [];
   }
 
   private async _handleRecordChange(record: ALDBRecord) {
-    changeALDBRecord(this.hass, this.deviceId!, record);
+    changeALDBRecord(this.hass, this._device!.address, record);
     if (!record.in_use) {
       this._showUnused = true;
     }
-    fetchInsteonALDB(this.hass, this.deviceId!).then((aldbInfo) => {
-      this._records = this._filterRecords(aldbInfo.records, this._showUnused);
-    });
+    this._getRecords();
   }
 
   private async _handleRecordCreate(record: ALDBRecord) {
-    createALDBRecord(this.hass, this.deviceId!, record);
-    fetchInsteonALDB(this.hass, this.deviceId!).then((aldbInfo) => {
-      this._records = this._filterRecords(aldbInfo.records, this._showUnused);
-    });
+    createALDBRecord(this.hass, this._device!.address, record);
+    this._getRecords();
   }
 
   private async _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
@@ -309,6 +324,9 @@ class InsteonConfigDeviceALDBPage extends LitElement {
   }
 
   private _handleBackTapped(): void {
+    showConfirmationDialog(this, {
+      text: history.state
+    })
     if (this._dirty()) {
       showConfirmationDialog(this, {
         text: this.hass!.localize(
@@ -324,8 +342,50 @@ class InsteonConfigDeviceALDBPage extends LitElement {
   }
 
   private _goBack(): void {
-    resetALDB(this.hass, this.deviceId!);
+    resetALDB(this.hass, this._device!.address);
     history.back();
+  }
+
+  private _handleMessage(message: any): void {
+    if (message.type === "record_loaded") {
+      this._getRecords();
+    }
+    if (message.type === "status_changed") {
+      fetchInsteonDevice(this.hass, this.deviceId!).then((device) => {
+        this._device = device;
+      });
+      this._isLoading = message.is_loading;
+      if (!message.is_loading) {
+        this._unsubscribe()
+      };
+    }
+  }
+
+  private _unsubscribe(): void {
+    if (this._refreshDevicesTimeoutHandle) {
+      clearTimeout(this._refreshDevicesTimeoutHandle);
+    }
+    if (this._subscribed) {
+      this._subscribed.then((unsub) => unsub());
+      this._subscribed = undefined;
+    }
+  }
+
+  private _subscribe(): void {
+    if (!this.hass) {
+      return;
+    }
+    this._subscribed = this.hass.connection.subscribeMessage(
+      (message) => this._handleMessage(message),
+      {
+        type: "insteon/aldb/notify_loading_status",
+        device_address: this._device?.address
+      }
+    );
+    this._refreshDevicesTimeoutHandle = window.setTimeout(
+      () => this._unsubscribe(),
+      1200000
+    );
   }
 
   static get styles(): CSSResult {

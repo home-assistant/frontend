@@ -2370,18 +2370,13 @@
                 "partial": "Partially loaded",
                 "failed": "Failed to load"
               },
-              "loading_records": "The All-Link Database is loading. This may take up to 20 minutes.",
-              "no_data": "The All-Link Database is not available. Please load the ALDB from the device.",
+              "loading": "The All-Link Database is loading. This may take up to 20 minutes.",
+              "no_data": "Please load the All-Link Database from the device.",
+              "new": "Create ALDB Record",
+              "change": "Edit ALDB Record",
               "actions": {
                 "manage": "Manage All-Link Database",
                 "create": "New record",
-                "load": "Load from device",
-                "write": "Write to device",
-                "warning_header": "Warning",
-                "warn_write": "This will write the records to the device. Are you sure you want to continue?",
-                "warn_load": "Loading the All-Link Database may take a while. Are you sure you want to continue?",
-                "warn_exit": "You have changes that have not been written to the device. Are you sure you want to continue?",
-                "reset": "Discard changes",
                 "add_default_links": "Add default links",
                 "show_unused": "Show unused",
                 "hide_unused": "Hide unused"
@@ -2402,7 +2397,68 @@
             "properties": {
               "caption": "Properties",
               "actions": {
-                "manage": "Manage Properties",
+                "manage": "Manage Properties"
+              },
+              "change": "Change Property",
+              "warn": {
+                "write": "This will write the properties to the device.",
+                "load": "Loading the properties from the device may take a while."
+              },
+              "properties": {
+                "program_lock_on": "Turn on local program lock",
+                "button_lock_on": "Turn on button lock",
+                "led_on": "Turn the LED On",
+                "led_off": "Turn the LED off",
+                "key_beep_on": "Turn on key beep",
+                "stay_awake_on": "Turn on stay awake",
+                "listen_only_on": "Listen only",
+                "heart_beat_on": "Heartbeat on",
+                "heart_beat_off": "Heartbeat off",
+                "send_on_only": "Only send ON messages",
+                "grouped_on": "Buttons grouped together",
+                "two_groups_on": "Device uses two groups",
+                "resume_dim_on": "Resume Dim on",
+                "rf_disable_on": "Disable the Remote Frequency communications",
+                "powerline_disable_on": "Disable powerline communications",
+                "cleanup_report_on": "Send clean up reports",
+                "cleanup_report_off": "Do not send cleanup reports",
+                "detach_load_on": "Detach load from main switch",
+                "smart_hops_on": "Turn on smart hops",
+                "led_blink_on_error_on": "Blink on error",
+                "led_blink_on_error_off": "Do not blink on error",
+                "led_blink_on_tx_on": "Blink on network traffic",
+                "repeat_open_on": "Send multiple messages on open",
+                "repeat_closed_on": "Send multiple messages on close",
+                "link_to_ff_group": "Link to group 0xFF by default",
+                "load_sense_on": "Enable load sensing",
+                "load_sense_2_on": "Enable load sense 2",
+                "ignore_jumper_on": "Ignore hardware jumper",
+                "night_mode_only": "Night mode only",
+                "multi_send_on": "Send multiple ",
+                "software_support_on": "Enable software support",
+                "relay_on_sense_on": "",
+                "momentary_mode_on": "Momentary mode",
+                "momentary_on_off_trigger": "Momentary on/off trigger",
+                "sense_sends_off": "Sensor sends off message when closed",
+                "momentary_follow_sense": "momentary_follow_sense",
+                "insteon_off": "insteon_off",
+                "checksum_off": "checksum_off",
+                "standard_holdoff": "standard_holdoff",
+
+                "dual_line_on": "dual_line_on",
+                "latching_on": "latching_on",
+                "three_way_on": "three_way_on",
+                "reversed_on": "reversed_on",
+                "forward_on": "forward_on",
+                "momentary_line_on": "momentary_line_on",
+                "not_3_way": "not_3_way",
+
+                "celsius": "Celsius mode",
+                "time_24_hour_format": "24 hour time format"
+              }
+            },
+            "common": {
+              "actions": {
                 "load": "Load from device",
                 "write": "Write to device",
                 "warning_header": "Warning",
@@ -2410,6 +2466,16 @@
                 "warn_load": "Loading the properties from the device may take a while. Are you sure you want to continue?",
                 "warn_exit": "You have changes that have not been written to the device. Are you sure you want to continue?",
                 "reset": "Discard changes"
+              },
+              "warn": {
+                "exit": "You have changes that have not been written to the device.",
+                "write": "This will write the changes to the device.",
+                "load": "Loading the data from the device may take a while."
+              },
+              "error": {
+                "base": "Please check your entries.",
+                "address": "Invalid device address",
+                "byte_range": "Value must be between 0 and 255"
               }
             }
           }

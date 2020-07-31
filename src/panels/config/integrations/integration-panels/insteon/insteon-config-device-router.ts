@@ -10,12 +10,12 @@ import { mdiNetwork, mdiFolderMultipleOutline } from "@mdi/js";
 export const insteonDeviceTabs: PageNavigation[] = [
   {
     translationKey: "ui.panel.config.insteon.device.aldb.caption",
-    path: `/config/insteon/device/aldb`,
+    path: `/config/insteon/device/aldb/`,
     iconPath: mdiNetwork,
   },
   {
     translationKey: "ui.panel.config.insteon.device.properties.caption",
-    path: `/config/insteon/device/properties`,
+    path: `/config/insteon/device/properties/`,
     iconPath: mdiFolderMultipleOutline,
   },
 ];
@@ -28,7 +28,7 @@ class InsteonConfigDeviceRouter extends HassRouterPage {
 
   @property() public narrow!: boolean;
 
-  @internalProperty() private deviceId?: string;
+  @internalProperty() private deviceId?: string | undefined = undefined;
 
   protected routerOptions: RouterOptions = {
     defaultPage: "aldb",
@@ -56,10 +56,12 @@ class InsteonConfigDeviceRouter extends HassRouterPage {
     el.hass = this.hass;
     el.isWide = this.isWide;
     el.narrow = this.narrow;
-    if (this.routeTail.path) {
+    if (this.routeTail.path.substr(1)) {
       this.deviceId = this.routeTail.path.substr(1);
     }
-    el.deviceId = this.deviceId;
+    insteonDeviceTabs[0].path = '/config/insteon/device/aldb/' + this.deviceId
+    insteonDeviceTabs[1].path = '/config/insteon/device/properties/' + this.deviceId
+    el.deviceId = this.deviceId
   }
 }
 
