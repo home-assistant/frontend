@@ -22,7 +22,7 @@ import { HomeAssistant } from "../../../../../types";
 export class HaDeviceAction extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public action!: DeviceAction;
+  @property({ type: Object }) public action!: DeviceAction;
 
   @internalProperty() private _deviceId?: string;
 

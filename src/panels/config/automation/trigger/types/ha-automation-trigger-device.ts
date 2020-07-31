@@ -22,7 +22,7 @@ import memoizeOne from "memoize-one";
 export class HaDeviceTrigger extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public trigger!: DeviceTrigger;
+  @property({ type: Object }) public trigger!: DeviceTrigger;
 
   @internalProperty() private _deviceId?: string;
 
@@ -144,5 +144,11 @@ export class HaDeviceTrigger extends LitElement {
       localize(
         `ui.panel.config.automation.editor.triggers.type.device.extra_fields.${schema.name}`
       ) || schema.name;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-automation-trigger-device": HaDeviceTrigger;
   }
 }

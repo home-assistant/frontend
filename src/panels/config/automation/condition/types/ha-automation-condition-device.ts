@@ -22,7 +22,7 @@ import memoizeOne from "memoize-one";
 export class HaDeviceCondition extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public condition!: DeviceCondition;
+  @property({ type: Object }) public condition!: DeviceCondition;
 
   @internalProperty() private _deviceId?: string;
 
@@ -146,5 +146,11 @@ export class HaDeviceCondition extends LitElement {
       localize(
         `ui.panel.config.automation.editor.conditions.type.device.extra_fields.${schema.name}`
       ) || schema.name;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-automation-condition-device": HaDeviceCondition;
   }
 }
