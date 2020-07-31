@@ -2352,7 +2352,7 @@
                         "show_code_editor": "Mostrar editor de código",
                         "show_visual_editor": "Mostrar editor visual",
                         "toggle_editor": "Alternar editor",
-                        "typed_header": "{type} Configuración de tarjeta",
+                        "typed_header": "Configuración de tarjeta {type}",
                         "unsaved_changes": "Tienes cambios sin guardar"
                     },
                     "edit_lovelace": {

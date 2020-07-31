@@ -486,6 +486,7 @@
         },
         "common": {
             "and": "і",
+            "back": "Назад",
             "cancel": "Скасувати",
             "close": "Закрити",
             "delete": "Видалити",
@@ -879,6 +880,7 @@
                         "load_error_not_editable": "Можна редагувати лише секцію automations у файлі automations.yaml",
                         "load_error_unknown": "Помилка під час завантаження автоматизації ({err_no}).",
                         "max": {
+                            "parallel": "Максимальна кількість паралельних запусків",
                             "queued": "Довжина черги"
                         },
                         "modes": {
@@ -1584,6 +1586,9 @@
                         "introduction": "Використовуйте скрипти для виконання послідовності дій.",
                         "link_available_actions": "Дізнайтеся більше про доступні дії.",
                         "load_error_not_editable": "Тільки скрипти всередині scripts.yaml доступні для редагування",
+                        "max": {
+                            "queued": "Довжина черги"
+                        },
                         "modes": {
                             "label": "Режим",
                             "parallel": "Паралельно",
@@ -2217,6 +2222,8 @@
                 "abort_intro": "Логін скасовано",
                 "authorizing_client": "Ви збираєтеся надати {clientId} доступ до Home Assistant.",
                 "form": {
+                    "error": "Помилка: {error}",
+                    "next": "Вперед",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2302,6 +2309,7 @@
                             }
                         }
                     },
+                    "start_over": "Почати заново",
                     "unknown_error": "Щось пішло не так",
                     "working": "Будь ласка, зачекайте"
                 },
