@@ -798,7 +798,7 @@
                         "confirmation_text": "All devices in this area will become unassigned.",
                         "confirmation_title": "Are you sure you want to delete this area?"
                     },
-                    "description": "Overview of all areas in your home.",
+                    "description": "Manage areas in your home",
                     "editor": {
                         "area_id": "Area ID",
                         "create": "Create",
@@ -820,7 +820,7 @@
                 },
                 "automation": {
                     "caption": "Automations",
-                    "description": "Create and edit automations",
+                    "description": "Manage automations",
                     "editor": {
                         "actions": {
                             "add": "Add action",
@@ -1341,7 +1341,7 @@
                 },
                 "entities": {
                     "caption": "Entities",
-                    "description": "Overview of all known entities.",
+                    "description": "Manage known entities",
                     "picker": {
                         "disable_selected": {
                             "button": "Disable selected",
@@ -1393,7 +1393,7 @@
                 "header": "Configure Home Assistant",
                 "helpers": {
                     "caption": "Helpers",
-                    "description": "Elements that can help build automations.",
+                    "description": "Manage elements that help build automations",
                     "dialog": {
                         "add_helper": "Add helper",
                         "add_platform": "Add {platform}",
@@ -1421,7 +1421,7 @@
                     "built_using": "Built using",
                     "caption": "Info",
                     "custom_uis": "Custom UIs:",
-                    "description": "Info about your Home Assistant installation",
+                    "description": "View info about your Home Assistant installation",
                     "developed_by": "Developed by a bunch of awesome people.",
                     "documentation": "Documentation",
                     "frontend": "frontend-ui",
@@ -1486,7 +1486,7 @@
                     },
                     "configure": "Configure",
                     "configured": "Configured",
-                    "description": "Manage and set up integrations",
+                    "description": "Manage integrations",
                     "details": "Integration details",
                     "discovered": "Discovered",
                     "home_assistant_website": "Home Assistant website",
@@ -1514,7 +1514,7 @@
                     "rename_input_label": "Entry name",
                     "search": "Search integrations"
                 },
-                "introduction": "Here it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
+                "introduction": "In this view it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
                 "logs": {
                     "caption": "Logs",
                     "clear": "Clear",
@@ -1570,7 +1570,7 @@
                             "open": "Open"
                         }
                     },
-                    "description": "Configure your Lovelace Dashboards",
+                    "description": "Manage your Lovelace Dashboards",
                     "resources": {
                         "cant_edit_yaml": "You are using Lovelace in YAML mode, therefore you cannot manage your resources through the UI. Manage them in configuration.yaml.",
                         "caption": "Resources",
@@ -1625,7 +1625,7 @@
                     "confirm_delete": "Are you sure you want to delete this person?",
                     "confirm_delete2": "All devices belonging to this person will become unassigned.",
                     "create_person": "Create Person",
-                    "description": "Manage the persons that Home Assistant tracks.",
+                    "description": "Manage the persons that Home Assistant tracks",
                     "detail": {
                         "create": "Create",
                         "delete": "Delete",
@@ -1648,7 +1648,7 @@
                 "scene": {
                     "activated": "Activated scene {name}.",
                     "caption": "Scenes",
-                    "description": "Create and edit scenes",
+                    "description": "Manage scenes",
                     "editor": {
                         "default_name": "New Scene",
                         "devices": {
@@ -1692,7 +1692,7 @@
                 },
                 "script": {
                     "caption": "Scripts",
-                    "description": "Create and edit scripts",
+                    "description": "Manage scripts",
                     "editor": {
                         "alias": "Name",
                         "default_name": "New Script",
@@ -1879,7 +1879,7 @@
                         "create_group": "Zigbee Home Automation - Create Group",
                         "create_group_details": "Enter the required details to create a new zigbee group",
                         "creating_group": "Creating Group",
-                        "description": "Create and modify Zigbee groups",
+                        "description": "Manage Zigbee groups",
                         "group_details": "Here are all the details for the selected Zigbee group.",
                         "group_id": "Group ID",
                         "group_info": "Group Information",
@@ -1922,7 +1922,7 @@
                     "configured_in_yaml": "Zones configured via configuration.yaml cannot be edited via the UI.",
                     "confirm_delete": "Are you sure you want to delete this zone?",
                     "create_zone": "Create Zone",
-                    "description": "Manage the zones you want to track persons in.",
+                    "description": "Manage the zones you want to track persons in",
                     "detail": {
                         "create": "Create",
                         "delete": "Delete",
