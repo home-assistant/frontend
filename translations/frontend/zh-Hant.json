@@ -1748,7 +1748,7 @@
                             "input_boolean": "重新載入輸入 boolean",
                             "input_datetime": "重新載入輸入日期時間",
                             "input_number": "重新載入輸入數字",
-                            "input_select": "重先載入輸入選擇",
+                            "input_select": "重新載入輸入選擇",
                             "input_text": "重新載入輸入文字",
                             "introduction": "Home Assistant 中部分設定無須重啟即可重新載入生效。點選重新載入按鈕，即可解除目前 YAML 設定，並重新載入最新設定。",
                             "person": "重新載入人員",

@@ -1512,7 +1512,7 @@
                     "note_about_website_reference": "Flere er tilgjengelige på",
                     "rename_dialog": "Redigere navnet på denne config-oppføringen",
                     "rename_input_label": "Navn på oppføring",
-                    "search": "Søk integrasjoner"
+                    "search": "Søk i integrasjoner"
                 },
                 "introduction": "Her er det mulig å konfigurere dine komponenter og Home Assistant. Ikke alt er mulig å konfigurere fra brukergrensesnittet enda, men vi jobber med det.",
                 "logs": {
