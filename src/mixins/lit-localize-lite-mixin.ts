@@ -23,7 +23,7 @@ export const litLocalizeLiteMixin = <T extends Constructor<LitElement>>(
 
     @property() public translationFragment?: string;
 
-    @property() public isRTL = false;
+    @property({ type: Boolean, reflect: true }) public rtl = false;
 
     public connectedCallback(): void {
       super.connectedCallback();
@@ -80,7 +80,7 @@ export const litLocalizeLiteMixin = <T extends Constructor<LitElement>>(
       this.resources = {
         [language]: data,
       };
-      this.isRTL = await isRTL(this.language!);
+      this.rtl = await isRTL(this.language!);
     }
   }
   return LitLocalizeLiteClass;
