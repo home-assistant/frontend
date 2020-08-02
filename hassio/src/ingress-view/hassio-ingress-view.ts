@@ -36,14 +36,24 @@ class HassioIngressView extends LitElement {
     if (!this._addon) {
       return html` <hass-loading-screen></hass-loading-screen> `;
     }
+    const inConfigPanel = location.pathname.startsWith("/hassio/ingress");
+
+    if (
+      !inConfigPanel &&
+      !this.narrow &&
+      this.hass.dockedSidebar !== "always_hidden"
+    ) {
+      return html` <iframe src=${this._addon.ingress_url!}></iframe> `;
+    }
+
     return html`
       <hass-subpage
-        .rootnav=${!location.pathname.startsWith("/hassio/ingress")}
+        .rootnav=${!inConfigPanel}
         .hass=${this.hass}
         .header=${this._addon.name}
         .narrow=${this.narrow}
         class=${classMap({
-          config: location.pathname.startsWith("/hassio/ingress"),
+          config: inConfigPanel,
         })}
       >
         <iframe src=${this._addon.ingress_url!}></iframe>
@@ -110,8 +120,8 @@ class HassioIngressView extends LitElement {
         text: "Unable to create an Ingress session",
         title: addon.name,
       });
-      history.back();
-      return;
+      // history.back();
+      // return;
     }
 
     this._addon = addon;

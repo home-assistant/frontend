@@ -90,6 +90,7 @@ class HassSubpage extends LitElement {
       }
 
       ha-icon-button-arrow-prev,
+      ha-menu-button,
       ::slotted([slot="toolbar-icon"]) {
         pointer-events: auto;
       }
