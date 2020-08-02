@@ -13,6 +13,7 @@ import { ifDefined } from "lit-html/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { createValidEntityId } from "../../../common/entity/valid_entity_id";
 import { compare } from "../../../common/string/compare";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-icon-next";
@@ -571,7 +572,6 @@ export class HaConfigDevicePage extends LitElement {
 
           return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
             name: newName || name,
-            disabled_by: entity.disabled_by,
             new_entity_id: newEntityId || entity.entity_id,
           });
         });
