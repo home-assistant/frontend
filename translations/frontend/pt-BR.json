@@ -2068,7 +2068,7 @@
                         "attributes": "Atributos",
                         "current_entities": "Entidades atuais",
                         "description1": "Definir a representação de um dispositivo no Home Assistant.",
-                        "description2": "Isso não se comunicará com o dispositivo atual.",
+                        "description2": "Isso não se comunicará com o dispositivo real.",
                         "entity": "Entidade",
                         "filter_attributes": "Filtro de atributos",
                         "filter_entities": "Filtro de entidades",
@@ -2342,7 +2342,7 @@
                         "show_code_editor": "Mostrar Editor de Código",
                         "show_visual_editor": "Mostrar Editor Visual",
                         "toggle_editor": "Alternar Editor",
-                        "typed_header": "Configuração de cartão de {type}",
+                        "typed_header": "Configuração de cartão {type}",
                         "unsaved_changes": "Você tem alterações não salvas"
                     },
                     "edit_lovelace": {
