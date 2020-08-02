@@ -109,7 +109,8 @@ export class HuiDialogSelectView extends LitElement {
   }
 
   private async _getDashboards() {
-    this._dashboards = await fetchDashboards(this.hass);
+    this._dashboards =
+      this._params!.dashboards || (await fetchDashboards(this.hass));
   }
 
   private async _dashboardChanged(ev: CustomEvent) {

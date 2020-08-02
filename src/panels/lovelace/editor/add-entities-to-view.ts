@@ -3,6 +3,7 @@ import {
   LovelaceConfig,
   saveConfig,
   fetchDashboards,
+  LovelacePanelConfig,
 } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { showSuggestCardDialog } from "./card-editor/show-suggest-card-dialog";
@@ -20,10 +21,10 @@ export const addEntitiesToLovelaceView = async (
     (dashboard) => dashboard.mode === "storage"
   );
 
-  if (
-    (hass!.panels.lovelace?.config as any)?.mode !== "storage" &&
-    !storageDashs.length
-  ) {
+  const mainLovelaceMode = (hass!.panels.lovelace
+    ?.config as LovelacePanelConfig)?.mode;
+
+  if (mainLovelaceMode !== "storage" && !storageDashs.length) {
     // no storage dashboards, just show the YAML config
     showSuggestCardDialog(element, {
       entities,
@@ -34,7 +35,7 @@ export const addEntitiesToLovelaceView = async (
 
   let lovelaceConfig;
   let urlPath: string | null = null;
-  if ((hass!.panels.lovelace?.config as any)?.mode === "storage") {
+  if (mainLovelaceMode === "storage") {
     try {
       lovelaceConfig = await fetchConfig(hass.connection, null, false);
     } catch (e) {
@@ -55,7 +56,7 @@ export const addEntitiesToLovelaceView = async (
         urlPath = storageDash.url_path;
         break;
       } catch (e) {
-        // dashboard is in storage mode
+        // dashboard is in generated mode
       }
     }
   }
@@ -107,6 +108,7 @@ export const addEntitiesToLovelaceView = async (
     lovelaceConfig,
     urlPath,
     allowDashboardChange: true,
+    dashboards,
     viewSelectedCallback: (newUrlPath, selectedDashConfig, viewIndex) => {
       showSuggestCardDialog(element, {
         lovelaceConfig: selectedDashConfig,
