@@ -182,6 +182,7 @@ export const provideHass = (
       default_theme: "default",
       default_dark_theme: null,
       themes: {},
+      darkMode: false,
     },
     panels: demoPanels,
     services: demoServices,

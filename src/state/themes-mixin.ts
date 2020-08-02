@@ -68,18 +68,23 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         options
       );
 
-      const schemeMeta = document.querySelector("meta[name=color-scheme]");
-      if (schemeMeta) {
-        schemeMeta.setAttribute(
-          "content",
-          themeName === "default"
-            ? options?.dark
-              ? "dark"
-              : "light"
-            : dark && this.hass!.themes.default_dark_theme
-            ? "dark"
-            : "dark light"
-        );
+      const darkMode =
+        themeName === "default"
+          ? !!options?.dark
+          : !!(dark && this.hass!.themes.default_dark_theme);
+
+      if (darkMode !== this.hass!.themes.darkMode) {
+        this._updateHass({
+          themes: { ...this.hass!.themes, darkMode },
+        });
+
+        const schemeMeta = document.querySelector("meta[name=color-scheme]");
+        if (schemeMeta) {
+          schemeMeta.setAttribute(
+            "content",
+            darkMode ? "dark" : themeName === "default" ? "light" : "dark light"
+          );
+        }
       }
 
       const themeMeta = document.querySelector("meta[name=theme-color]");
