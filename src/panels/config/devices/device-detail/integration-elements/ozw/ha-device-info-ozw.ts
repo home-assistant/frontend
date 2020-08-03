@@ -24,19 +24,23 @@ export class HaDeviceInfoOzw extends LitElement {
 
   protected updated(changedProperties: PropertyValues) {
     if (changedProperties.has("device")) {
-      const ozwIdentifier = this.device.identifiers.find(
-        (identifier) => identifier[0] === "ozw"
-      );
-      if (!ozwIdentifier) {
-        return;
-      }
-      const identifiers = ozwIdentifier[1].split(".");
-      fetchOZWNodeStatus(this.hass, identifiers[0], identifiers[1]).then(
-        (device) => {
-          this._ozwDevice = device;
-        }
-      );
+      this._fetchNodeDetails(this.device);
     }
+  }
+
+  protected async _fetchNodeDetails(device) {
+    const ozwIdentifier = device.identifiers.find(
+      (identifier) => identifier[0] === "ozw"
+    );
+    if (!ozwIdentifier) {
+      return;
+    }
+    const identifiers = ozwIdentifier[1].split(".");
+    await fetchOZWNodeStatus(this.hass, identifiers[0], identifiers[1]).then(
+      (dev) => {
+        this._ozwDevice = dev;
+      }
+    );
   }
 
   protected render(): TemplateResult {
