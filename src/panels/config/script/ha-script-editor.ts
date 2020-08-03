@@ -319,7 +319,7 @@ export class HaScriptEditor extends LitElement {
     if (this.scriptEntityId || this._entityId) {
       return;
     }
-    const aliasSlugify = slugify((ev.target as any).value, "_");
+    const aliasSlugify = slugify((ev.target as any).value);
     let id = aliasSlugify;
     let i = 2;
     while (this.hass.states[`script.${id}`]) {
