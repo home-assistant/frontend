@@ -1,4 +1,3 @@
-import { HassEntity } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
 
 export interface OZWDevice {
