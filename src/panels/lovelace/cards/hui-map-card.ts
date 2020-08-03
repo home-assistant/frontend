@@ -311,14 +311,12 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   private _replaceTileLayer() {
-    console.log("replace");
     const map = this._leafletMap;
     const config = this._config;
     const Leaflet = this.Leaflet;
     if (!map || !config || !Leaflet || !this._tileLayer) {
       return;
     }
-    console.log(this._config!.dark_mode ?? this.hass.themes.darkMode);
     this._tileLayer = replaceTileLayer(
       Leaflet,
       map,
