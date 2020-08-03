@@ -13,7 +13,7 @@ export const batteryIcon = (
     return "hass:battery-unknown";
   }
 
-  var icon = "hass:battery";
+  let icon = "hass:battery";
   const batteryRound = Math.round(battery / 10) * 10;
   if (battery_charging && battery > 10) {
     icon += `-charging-${batteryRound}`;

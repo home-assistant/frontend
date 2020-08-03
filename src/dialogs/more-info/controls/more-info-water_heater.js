@@ -193,7 +193,7 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
       4: "has-away_mode",
     };
 
-    var classes = [featureClassNames(stateObj, _featureClassNames)];
+    const classes = [featureClassNames(stateObj, _featureClassNames)];
 
     classes.push("more-info-water_heater");
 
