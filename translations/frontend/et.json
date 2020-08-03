@@ -1152,6 +1152,7 @@
                 "info": {
                     "built_using": "Ehitatud kasutades",
                     "custom_uis": "Kohandatud kasutajaliidesed:",
+                    "description": "Kuva Home Assistant'i info",
                     "developed_by": "Tehtud paljude lahedate inimeste poolt.",
                     "frontend": "frontend-ui",
                     "frontend_version": "Frontend versioon: {version} - {type}",
@@ -1215,6 +1216,7 @@
                 "introduction": "Siin saab seadistada oma komponente ja Home Assistant'i. Mitte kõike ei saa veel kasutajaliidese kaudu seadistada, kuid me töötame selle nimel.",
                 "logs": {
                     "clear": "Puhasta",
+                    "description": "Home Assistanti logid",
                     "details": "Logi üksikasjad ({level})",
                     "load_full_log": "Lae kogu Home Assistant'i logi",
                     "loading_log": "Laadin vigade logi...",
@@ -1309,6 +1311,7 @@
                         "header": "Skriptiredaktor",
                         "learn_more": "Lisateave skriptide kohta",
                         "no_scripts": "Me ei leidnud ühtegi redigeeritavat skripti",
+                        "show_info": "Kuva stseeni teave",
                         "trigger_script": "Käivita skript"
                     }
                 },
