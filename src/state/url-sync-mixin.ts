@@ -36,7 +36,6 @@ export const urlSyncMixin = <T extends Constructor<HassBaseEl>>(
           ev: HASSDomEvent<DialogClosedParams>
         ) => {
           // If not closed by navigating back, and not a new dialog is open, remove the open state from history
-          console.log(history.state);
           if (
             history.state?.open &&
             history.state?.dialog === ev.detail.dialog
