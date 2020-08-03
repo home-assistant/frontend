@@ -188,10 +188,10 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
   // origin is wheel center
   // returns {x: X, y: Y} object
   convertToCanvasCoordinates(clientX, clientY) {
-    var svgPoint = this.interactionLayer.createSVGPoint();
+    const svgPoint = this.interactionLayer.createSVGPoint();
     svgPoint.x = clientX;
     svgPoint.y = clientY;
-    var cc = svgPoint.matrixTransform(
+    const cc = svgPoint.matrixTransform(
       this.interactionLayer.getScreenCTM().inverse()
     );
     return { x: cc.x, y: cc.y };
@@ -225,7 +225,7 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
   // Touch events
 
   onTouchStart(ev) {
-    var touch = ev.changedTouches[0];
+    const touch = ev.changedTouches[0];
     const cc = this.convertToCanvasCoordinates(touch.clientX, touch.clientY);
     // return if we're not on the wheel
     if (!this.isInWheel(cc.x, cc.y)) {
@@ -275,8 +275,8 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
 
   // Process user input to color
   processUserSelect(ev) {
-    var canvasXY = this.convertToCanvasCoordinates(ev.clientX, ev.clientY);
-    var hs = this.getColor(canvasXY.x, canvasXY.y);
+    const canvasXY = this.convertToCanvasCoordinates(ev.clientX, ev.clientY);
+    const hs = this.getColor(canvasXY.x, canvasXY.y);
     this.onColorSelect(hs);
   }
 
@@ -319,11 +319,11 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
 
   // set marker position to the given color
   setMarkerOnColor(hs) {
-    var dist = hs.s * this.radius;
-    var theta = ((hs.h - 180) / 180) * Math.PI;
-    var markerdX = -dist * Math.cos(theta);
-    var markerdY = -dist * Math.sin(theta);
-    var translateString = `translate(${markerdX},${markerdY})`;
+    const dist = hs.s * this.radius;
+    const theta = ((hs.h - 180) / 180) * Math.PI;
+    const markerdX = -dist * Math.cos(theta);
+    const markerdY = -dist * Math.sin(theta);
+    const translateString = `translate(${markerdX},${markerdY})`;
     this.marker.setAttribute("transform", translateString);
     this.tooltip.setAttribute("transform", translateString);
   }
@@ -358,8 +358,8 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
 
   // get angle (degrees)
   getAngle(dX, dY) {
-    var theta = Math.atan2(-dY, -dX); // radians from the left edge, clockwise = positive
-    var angle = (theta / Math.PI) * 180 + 180; // degrees, clockwise from right
+    const theta = Math.atan2(-dY, -dX); // radians from the left edge, clockwise = positive
+    const angle = (theta / Math.PI) * 180 + 180; // degrees, clockwise from right
     return angle;
   }
 
@@ -378,9 +378,9 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
    */
 
   getColor(x, y) {
-    var hue = this.getAngle(x, y); // degrees, clockwise from right
-    var relativeDistance = this.getDistance(x, y); // edge of radius = 1
-    var sat = Math.min(relativeDistance, 1); // Distance from center
+    const hue = this.getAngle(x, y); // degrees, clockwise from right
+    const relativeDistance = this.getDistance(x, y); // edge of radius = 1
+    const sat = Math.min(relativeDistance, 1); // Distance from center
     return { h: hue, s: sat };
   }
 
@@ -402,9 +402,9 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
       if (this.saturationSegments === 1) {
         hs.s = 1;
       } else {
-        var segmentSize = 1 / this.saturationSegments;
-        var saturationStep = 1 / (this.saturationSegments - 1);
-        var calculatedSat = Math.floor(hs.s / segmentSize) * saturationStep;
+        const segmentSize = 1 / this.saturationSegments;
+        const saturationStep = 1 / (this.saturationSegments - 1);
+        const calculatedSat = Math.floor(hs.s / segmentSize) * saturationStep;
         hs.s = Math.min(calculatedSat, 1);
       }
     }
@@ -477,9 +477,9 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
       hueSegments = hueSegments || 360; // reset 0 segments to 360
       const angleStep = 360 / hueSegments;
       const halfAngleStep = angleStep / 2; // center segments on color
-      for (var angle = 0; angle <= 360; angle += angleStep) {
-        var startAngle = (angle - halfAngleStep) * (Math.PI / 180);
-        var endAngle = (angle + halfAngleStep + 1) * (Math.PI / 180);
+      for (let angle = 0; angle <= 360; angle += angleStep) {
+        const startAngle = (angle - halfAngleStep) * (Math.PI / 180);
+        const endAngle = (angle + halfAngleStep + 1) * (Math.PI / 180);
         context.beginPath();
         context.moveTo(cX, cY);
         context.arc(
@@ -492,7 +492,7 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
         );
         context.closePath();
         // gradient
-        var gradient = context.createRadialGradient(
+        const gradient = context.createRadialGradient(
           cX,
           cY,
           0,
@@ -507,8 +507,8 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
         if (saturationSegments > 0) {
           const ratioStep = 1 / saturationSegments;
           let ratio = 0;
-          for (var stop = 1; stop < saturationSegments; stop += 1) {
-            var prevLighness = lightness;
+          for (let stop = 1; stop < saturationSegments; stop += 1) {
+            const prevLighness = lightness;
             ratio = stop * ratioStep;
             lightness = 100 - 50 * ratio;
             gradient.addColorStop(
