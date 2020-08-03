@@ -211,6 +211,7 @@ class HAFullCalendar extends LitElement {
       :host {
           display: flex;
           flex-direction: column;
+          --fc-theme-standard-border-color: var(--divider-color);
         }
 
         .header {
@@ -232,6 +233,10 @@ class HAFullCalendar extends LitElement {
           display: flex;
           align-items: center;
           flex-grow: 0;
+        }
+
+        a {
+          color: var(--primary-text-color);
         }
 
         .controls {
@@ -257,6 +262,10 @@ class HAFullCalendar extends LitElement {
         #calendar {
           flex-grow: 1;
           background-color: var(--card-background-color);
+        }
+
+        .fc-theme-standard .fc-scrollgrid {
+          border: 1px solid var(--divider-color);
         }
 
         .fc-scrollgrid-section-header td {
@@ -293,14 +302,15 @@ class HAFullCalendar extends LitElement {
 
         td.fc-day-today .fc-daygrid-day-number {
           height: 24px;
-          color: #fff;
-          background-color: #1a73e8;
+          color: var(--text-primary-color);
+          background-color: var(--primary-color);
           border-radius: 50%;
           display: inline-block;
           text-align: center;
           white-space: nowrap;
           width: max-content;
           min-width: 24px;
+          line-height: 140%;
         }
 
         .fc-daygrid-day-events {

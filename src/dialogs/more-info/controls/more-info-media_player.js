@@ -329,8 +329,8 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
   handleSourceChanged(ev) {
     if (!this.playerObj) return;
 
-    var oldVal = this.playerObj.source;
-    var newVal = ev.detail.value;
+    const oldVal = this.playerObj.source;
+    const newVal = ev.detail.value;
 
     if (!newVal || oldVal === newVal) return;
 
@@ -340,8 +340,8 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
   handleSoundModeChanged(ev) {
     if (!this.playerObj) return;
 
-    var oldVal = this.playerObj.soundMode;
-    var newVal = ev.detail.value;
+    const oldVal = this.playerObj.soundMode;
+    const newVal = ev.detail.value;
 
     if (!newVal || oldVal === newVal) return;
 

@@ -11,17 +11,17 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import { HomeAssistant } from "../../../../types";
 import { HumidifierCardConfig } from "../../cards/types";
-import { struct } from "../../common/structs/struct";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { string, object, optional, assert } from "superstruct";
 
-const cardConfigStruct = struct({
-  type: "string",
-  entity: "string",
-  name: "string?",
-  theme: "string?",
+const cardConfigStruct = object({
+  type: string(),
+  entity: string(),
+  name: optional(string()),
+  theme: optional(string()),
 });
 
 const includeDomains = ["humidifier"];
@@ -34,7 +34,7 @@ export class HuiHumidifierCardEditor extends LitElement
   @internalProperty() private _config?: HumidifierCardConfig;
 
   public setConfig(config: HumidifierCardConfig): void {
-    config = cardConfigStruct(config);
+    assert(config, cardConfigStruct);
     this._config = config;
   }
 
@@ -102,6 +102,7 @@ export class HuiHumidifierCardEditor extends LitElement
     }
     if (target.configValue) {
       if (target.value === "") {
+        this._config = { ...this._config };
         delete this._config[target.configValue!];
       } else {
         this._config = { ...this._config, [target.configValue!]: target.value };

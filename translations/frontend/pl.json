@@ -430,6 +430,8 @@
                 "activate": "Aktywuj"
             },
             "script": {
+                "cancel": "Anuluj",
+                "cancel_multiple": "Anuluj {number}",
                 "execute": "Uruchom"
             },
             "service": {
@@ -524,6 +526,10 @@
                 "area": "Obszar",
                 "clear": "Wyczyść",
                 "show_areas": "Pokaż obszary"
+            },
+            "data-table": {
+                "no-data": "Brak danych",
+                "search": "Szukaj"
             },
             "date-range-picker": {
                 "end_date": "Data końcowa",
@@ -938,6 +944,19 @@
                         "introduction": "Użyj automatyzacji, aby ożywić swój dom",
                         "load_error_not_editable": "Tylko automatyzacje zdefiniowane w pliku automations.yaml są edytowalne.",
                         "load_error_unknown": "Wystąpił błąd podczas ładowania automatyzacji ({err_no}).",
+                        "max": {
+                            "parallel": "Maksymalna liczba równoległych uruchomień",
+                            "queued": "Długość kolejki"
+                        },
+                        "modes": {
+                            "description": "Tryb kontroluje, co się dzieje podczas uruchamiania automatyzacji, gdy jest ona nadal wykonywana z jednego lub kilku poprzednich uruchomień. Zapoznaj się z {documentation_link} aby uzyskać więcej informacji.",
+                            "documentation": "dokumentacją automatyzacji",
+                            "label": "Tryb",
+                            "parallel": "Równolegle",
+                            "queued": "Kolejkowanie",
+                            "restart": "Restart",
+                            "single": "Pojedynczy (domyślnie)"
+                        },
                         "move_down": "Przesuń w dół",
                         "move_up": "Przesuń w górę",
                         "save": "Zapisz",
@@ -1356,6 +1375,7 @@
                             "confirm_text": "Powinieneś uprzednio usunąć integrację z automatyzacji i konfiguracji Lovelace, jeśli encje w niej występują.",
                             "confirm_title": "Czy chcesz usunąć encje: {number}?"
                         },
+                        "search": "Szukaj encji",
                         "selected": "wybrano {number}",
                         "status": {
                             "disabled": "Wyłączone",
@@ -1386,7 +1406,8 @@
                             "entity_id": "Identyfikator encji",
                             "name": "Nazwa",
                             "type": "Typ"
-                        }
+                        },
+                        "no_helpers": "Wygląda na to, że jeszcze nie masz pomocników!"
                     },
                     "types": {
                         "input_boolean": "Przełącznik",
@@ -1490,7 +1511,8 @@
                     "note_about_integrations": "Jeszcze nie wszystkie integracje można skonfigurować za pomocą interfejsu użytkownika.",
                     "note_about_website_reference": "Więcej jest dostępnych na stronie integracji ",
                     "rename_dialog": "Edytuj nazwę tego wpisu konfiguracji",
-                    "rename_input_label": "Nazwa wpisu"
+                    "rename_input_label": "Nazwa wpisu",
+                    "search": "Szukaj integracji"
                 },
                 "introduction": "Tutaj możesz skonfigurować Home Assistanta i jego komponenty. Nie wszystkie opcje można konfigurować z interfejsu użytkownika, ale pracujemy nad tym.",
                 "logs": {
@@ -1643,6 +1665,7 @@
                             "introduction": "W tym miejscu można konfigurować encje, które nie należą do żadnego urządzenia.",
                             "without_device": "Encje bez urządzenia"
                         },
+                        "icon": "Ikona",
                         "introduction": "Użyj scen, aby ożywić swój dom.",
                         "load_error_not_editable": "Tylko sceny zdefiniowane w pliku scenes.yaml są edytowalne.",
                         "load_error_unknown": "Błąd ładowania sceny ({err_no}).",
@@ -1676,9 +1699,26 @@
                         "delete_confirm": "Czy na pewno chcesz usunąć ten skrypt?",
                         "delete_script": "Usuń skrypt",
                         "header": "Skrypt: {name}",
+                        "icon": "Ikona",
+                        "id": "Identyfikator encji",
+                        "id_already_exists": "Ten identyfikator już istnieje",
+                        "id_already_exists_save_error": "Nie możesz zapisać tego skryptu, ponieważ identyfikator nie jest unikalny, wprowadź inny identyfikator lub pozostaw pole puste, aby wygenerować go automatycznie.",
                         "introduction": "Użyj skryptów, aby wykonać sekwencję akcji.",
                         "link_available_actions": "Dowiedz się więcej o dostępnych akcjach.",
                         "load_error_not_editable": "Tylko skrypty zdefiniowane w pliku scripts.yaml są edytowalne.",
+                        "max": {
+                            "parallel": "Maksymalna liczba równoległych uruchomień",
+                            "queued": "Długość kolejki"
+                        },
+                        "modes": {
+                            "description": "Tryb kontroluje, co się dzieje podczas uruchamiania skryptu, gdy jest on nadal wykonywany z jednego lub kilku poprzednich uruchomień. Zapoznaj się z {documentation_link} aby uzyskać więcej informacji.",
+                            "documentation": "dokumentacją skryptów",
+                            "label": "Tryb",
+                            "parallel": "Równolegle",
+                            "queued": "Kolejkowanie",
+                            "restart": "Restart",
+                            "single": "Pojedynczy (domyślnie)"
+                        },
                         "sequence": "Sekwencja",
                         "sequence_sentence": "Sekwencja akcji tego skryptu."
                     },
@@ -2194,6 +2234,7 @@
                             "name": "Nazwa",
                             "no_theme": "Bez motywu",
                             "refresh_interval": "Częstotliwość odświeżania",
+                            "search": "Szukaj",
                             "secondary_info_attribute": "Dodatkowy atrybut informacyjny",
                             "show_icon": "Wyświetlanie ikony",
                             "show_name": "Wyświetlanie nazwy",
@@ -2299,6 +2340,7 @@
                     },
                     "edit_card": {
                         "add": "Dodaj kartę",
+                        "confirm_cancel": "Czy na pewno chcesz anulować?",
                         "delete": "Usuń kartę",
                         "duplicate": "Duplikuj kartę",
                         "edit": "Edytuj",
@@ -2309,12 +2351,15 @@
                         "pick_card_view_title": "Którą kartę chcesz dodać do widoku {name}?",
                         "show_code_editor": "Edytor kodu",
                         "show_visual_editor": "Edytor wizualny",
-                        "toggle_editor": "Przełącz edytor"
+                        "toggle_editor": "Przełącz edytor",
+                        "typed_header": "Konfiguracja karty {type}",
+                        "unsaved_changes": "Masz niezapisane zmiany"
                     },
                     "edit_lovelace": {
                         "edit_title": "Edytuj tytuł",
                         "explanation": "Tytuł jest wyświetlany ponad wszystkimi widokami interfejsu użytkownika Lovelace",
-                        "header": "Tytuł interfejsu użytkownika Lovelace"
+                        "header": "Tytuł interfejsu użytkownika Lovelace",
+                        "title": "Tytuł"
                     },
                     "edit_view": {
                         "add": "Dodaj widok",
@@ -2401,6 +2446,8 @@
                     "entity": "Encja",
                     "entity_id": "Identyfikator encji",
                     "last_changed": "Ostatnia zmiana",
+                    "no_data": "Brak nieużywanych encji",
+                    "search": "Wyszukaj encje",
                     "select_to_add": "Wybierz encje, które chcesz dodać do karty, a następnie kliknij przycisk dodawania karty.",
                     "title": "Nieużywane encje"
                 },
@@ -2503,6 +2550,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "Twój komputer nie ma zezwolenia.",
                                 "not_whitelisted": "Twój komputer nie znajduje się na białej liście."
                             },
                             "step": {

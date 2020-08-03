@@ -12,20 +12,20 @@ import "../../../../components/ha-switch";
 import "../../../../components/ha-formfield";
 import { HomeAssistant } from "../../../../types";
 import { WeatherForecastCardConfig } from "../../cards/types";
-import { struct } from "../../common/structs/struct";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import { object, string, optional, boolean, assert } from "superstruct";
 
-const cardConfigStruct = struct({
-  type: "string",
-  entity: "string?",
-  name: "string?",
-  theme: "string?",
-  show_forecast: "boolean?",
-  secondary_info_attribute: "string?",
+const cardConfigStruct = object({
+  type: string(),
+  entity: optional(string()),
+  name: optional(string()),
+  theme: optional(string()),
+  show_forecast: optional(boolean()),
+  secondary_info_attribute: optional(string()),
 });
 
 const includeDomains = ["weather"];
@@ -38,7 +38,7 @@ export class HuiWeatherForecastCardEditor extends LitElement
   @internalProperty() private _config?: WeatherForecastCardConfig;
 
   public setConfig(config: WeatherForecastCardConfig): void {
-    config = cardConfigStruct(config);
+    assert(config, cardConfigStruct);
     this._config = config;
   }
 
@@ -139,6 +139,7 @@ export class HuiWeatherForecastCardEditor extends LitElement
     }
     if (target.configValue) {
       if (target.value === "") {
+        this._config = { ...this._config };
         delete this._config[target.configValue!];
       } else {
         this._config = {

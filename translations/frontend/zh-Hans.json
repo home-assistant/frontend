@@ -430,6 +430,8 @@
                 "activate": "激活"
             },
             "script": {
+                "cancel": "取消",
+                "cancel_multiple": "取消 {number} 个",
                 "execute": "执行"
             },
             "service": {
@@ -526,6 +528,7 @@
                 "show_areas": "显示区域"
             },
             "data-table": {
+                "no-data": "没有数据",
                 "search": "搜索"
             },
             "date-range-picker": {
@@ -795,7 +798,7 @@
                         "confirmation_text": "此区域中的所有设备都将取消分配。",
                         "confirmation_title": "您确定要删除此区域吗？"
                     },
-                    "description": "您家中所有区域的概览。",
+                    "description": "管理家中的区域",
                     "editor": {
                         "area_id": "区域 ID",
                         "create": "创建",
@@ -817,7 +820,7 @@
                 },
                 "automation": {
                     "caption": "自动化",
-                    "description": "创建和编辑自动化",
+                    "description": "管理自动化",
                     "editor": {
                         "actions": {
                             "add": "添加动作",
@@ -941,6 +944,19 @@
                         "introduction": "使用自动化让你的家聪明起来",
                         "load_error_not_editable": "只能编辑 automations.yaml 中的自动化。",
                         "load_error_unknown": "加载自动化错误 ({err_no})。",
+                        "max": {
+                            "parallel": "最大并行数量",
+                            "queued": "队列长度"
+                        },
+                        "modes": {
+                            "description": "“模式”控制当该自动化上次被触发后的动作仍在执行时，再次被触发时要采取的操作。请参阅{documentation_link}以进一步了解。",
+                            "documentation": "自动化文档",
+                            "label": "模式",
+                            "parallel": "并行",
+                            "queued": "队列",
+                            "restart": "重启",
+                            "single": "单点 (默认)"
+                        },
                         "move_down": "下移",
                         "move_up": "上移",
                         "save": "保存",
@@ -1325,7 +1341,7 @@
                 },
                 "entities": {
                     "caption": "实体注册表",
-                    "description": "所有已知实体的概览。",
+                    "description": "管理已知实体",
                     "picker": {
                         "disable_selected": {
                             "button": "禁用所选实体",
@@ -1377,7 +1393,7 @@
                 "header": "配置 Home Assistant",
                 "helpers": {
                     "caption": "辅助元素",
-                    "description": "可以帮助构建自动化的元素。",
+                    "description": "管理辅助构建自动化的元素",
                     "dialog": {
                         "add_helper": "添加辅助元素",
                         "add_platform": "添加 {platform}",
@@ -1405,7 +1421,7 @@
                     "built_using": "建于",
                     "caption": "信息",
                     "custom_uis": "自定义用户界面：",
-                    "description": "关于您的 Home Assistant 安装的信息",
+                    "description": "查看关于此 Home Assistant 安装的信息",
                     "developed_by": "由一帮很 Awesome~~~ 的人开发。",
                     "documentation": "文档",
                     "frontend": "前端用户界面",
@@ -1470,7 +1486,7 @@
                     },
                     "configure": "配置",
                     "configured": "已配置",
-                    "description": "管理并设置集成",
+                    "description": "管理集成",
                     "details": "集成详细信息",
                     "discovered": "已发现",
                     "home_assistant_website": "Home Assistant 网站",
@@ -1554,7 +1570,7 @@
                             "open": "打开"
                         }
                     },
-                    "description": "配置 Lovelace 仪表盘",
+                    "description": "管理 Lovelace 仪表盘",
                     "resources": {
                         "cant_edit_yaml": "您正在 YAML 模式下使用 Lovelace，因此无法通过 UI 管理资源。请在 configuration.yaml 中管理它们。",
                         "caption": "资源",
@@ -1609,7 +1625,7 @@
                     "confirm_delete": "您确定要删除此人员吗？",
                     "confirm_delete2": "属于此人的所有设备都将被取消分配。",
                     "create_person": "创建人员",
-                    "description": "管理 Home Assistant 跟踪的人员。",
+                    "description": "管理 Home Assistant 跟踪的人员",
                     "detail": {
                         "create": "创建",
                         "delete": "删除",
@@ -1632,7 +1648,7 @@
                 "scene": {
                     "activated": "已激活场景 {name}。",
                     "caption": "场景",
-                    "description": "创建和编辑场景",
+                    "description": "管理场景",
                     "editor": {
                         "default_name": "新场景",
                         "devices": {
@@ -1649,6 +1665,7 @@
                             "introduction": "可在此处设置不属于设备的实体。",
                             "without_device": "无设备关联的实体"
                         },
+                        "icon": "图标",
                         "introduction": "使用场景使您的家充满生机。",
                         "load_error_not_editable": "只能编辑 scenes.yaml 中的场景。",
                         "load_error_unknown": "加载场景错误 ({err_no})。",
@@ -1675,16 +1692,33 @@
                 },
                 "script": {
                     "caption": "脚本",
-                    "description": "创建和编辑脚本",
+                    "description": "管理脚本",
                     "editor": {
                         "alias": "名称",
                         "default_name": "新建脚本",
                         "delete_confirm": "您确定要删除此脚本吗？",
                         "delete_script": "删除脚本",
                         "header": "脚本：{name}",
+                        "icon": "图标",
+                        "id": "实体 ID",
+                        "id_already_exists": "此 ID 已存在",
+                        "id_already_exists_save_error": "无法保存此脚本，因为 ID 不唯一。请选择其他 ID 或将其留空，以自动生成一个 ID。",
                         "introduction": "使用脚本执行一系列操作。",
                         "link_available_actions": "详细了解可用操作。",
                         "load_error_not_editable": "只能编辑 scripts.yaml 中的脚本。",
+                        "max": {
+                            "parallel": "最大并行数量",
+                            "queued": "队列长度"
+                        },
+                        "modes": {
+                            "description": "“模式”控制当该脚本仍在执行时，再次被调用时要采取的操作。请参阅{documentation_link}以进一步了解。",
+                            "documentation": "脚本文档",
+                            "label": "模式",
+                            "parallel": "并行",
+                            "queued": "队列",
+                            "restart": "重启",
+                            "single": "单点 (默认)"
+                        },
                         "sequence": "顺序",
                         "sequence_sentence": "该脚本的操作顺序。"
                     },
@@ -1845,7 +1879,7 @@
                         "create_group": "Zigbee 家庭自动化 - 新增群组",
                         "create_group_details": "输入所需的详细信息以创建新的zigbee组",
                         "creating_group": "创建群组中",
-                        "description": "创建和修改Zigbee组",
+                        "description": "管理 Zigbee 组",
                         "group_details": "以下是所选Zigbee组的所有详细信息。",
                         "group_id": "组号",
                         "group_info": "群组信息",
@@ -1888,7 +1922,7 @@
                     "configured_in_yaml": "通过 configuration.yaml 配置的地点不能通过 UI 编辑。",
                     "confirm_delete": "您确定要删除此地点吗？",
                     "create_zone": "创建地点",
-                    "description": "管理要跟踪人员的区域。",
+                    "description": "管理要跟踪人员的区域",
                     "detail": {
                         "create": "创建",
                         "delete": "删除",
@@ -2306,6 +2340,7 @@
                     },
                     "edit_card": {
                         "add": "添加卡片",
+                        "confirm_cancel": "确实要取消吗？",
                         "delete": "删除",
                         "duplicate": "复制卡片",
                         "edit": "编辑",
@@ -2316,7 +2351,9 @@
                         "pick_card_view_title": "您想将哪张卡片添加到 {name} 视图？",
                         "show_code_editor": "显示代码编辑器",
                         "show_visual_editor": "显示可视化编辑器",
-                        "toggle_editor": "切换编辑器"
+                        "toggle_editor": "切换编辑器",
+                        "typed_header": "{type}卡片配置",
+                        "unsaved_changes": "有更改尚未保存"
                     },
                     "edit_lovelace": {
                         "edit_title": "编辑标题",
@@ -2409,6 +2446,8 @@
                     "entity": "实体",
                     "entity_id": "实体 ID",
                     "last_changed": "最后更改",
+                    "no_data": "没有未使用的实体",
+                    "search": "搜索实体",
                     "select_to_add": "选择要添加到卡片中的实体，然后单击添加卡片按钮。",
                     "title": "未使用的实体"
                 },
@@ -2511,6 +2550,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "您的电脑不允许访问。",
                                 "not_whitelisted": "您的电脑不在白名单内。"
                             },
                             "step": {

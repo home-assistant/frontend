@@ -254,7 +254,7 @@ export class MoreInfoDialog extends LitElement {
 
         ha-header-bar {
           --mdc-theme-on-primary: var(--primary-text-color);
-          --mdc-theme-primary: var(--card-background-color);
+          --mdc-theme-primary: var(--mdc-theme-surface);
           flex-shrink: 0;
           border-bottom: 1px solid
             var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
@@ -302,12 +302,14 @@ export class MoreInfoDialog extends LitElement {
           }
         }
 
-        state-history-charts {
-          margin-top: 16px 0;
-        }
-
         ha-dialog[data-domain="camera"] {
           --dialog-content-padding: 0;
+        }
+
+        state-card-content,
+        state-history-charts {
+          display: block;
+          margin-bottom: 16px;
         }
       `,
     ];

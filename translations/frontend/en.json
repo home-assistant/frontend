@@ -528,6 +528,7 @@
                 "show_areas": "Show areas"
             },
             "data-table": {
+                "no-data": "No data",
                 "search": "Search"
             },
             "date-range-picker": {
@@ -797,7 +798,7 @@
                         "confirmation_text": "All devices in this area will become unassigned.",
                         "confirmation_title": "Are you sure you want to delete this area?"
                     },
-                    "description": "Overview of all areas in your home.",
+                    "description": "Manage areas in your home",
                     "editor": {
                         "area_id": "Area ID",
                         "create": "Create",
@@ -819,7 +820,7 @@
                 },
                 "automation": {
                     "caption": "Automations",
-                    "description": "Create and edit automations",
+                    "description": "Manage automations",
                     "editor": {
                         "actions": {
                             "add": "Add action",
@@ -832,6 +833,15 @@
                             "name": "Action",
                             "type_select": "Action type",
                             "type": {
+                                "choose": {
+                                    "add_option": "Add option",
+                                    "conditions": "Conditions",
+                                    "default": "Default actions",
+                                    "label": "Choose",
+                                    "option": "Option {number}",
+                                    "remove_option": "Remove option",
+                                    "sequence": "Actions"
+                                },
                                 "condition": {
                                     "label": "Condition"
                                 },
@@ -850,6 +860,24 @@
                                     "event": "Event:",
                                     "label": "Fire event",
                                     "service_data": "Service data"
+                                },
+                                "repeat": {
+                                    "label": "Repeat",
+                                    "sequence": "Actions",
+                                    "type_select": "Repeat type",
+                                    "type": {
+                                        "count": {
+                                            "label": "Count"
+                                        },
+                                        "until": {
+                                            "conditions": "Until conditions",
+                                            "label": "Until"
+                                        },
+                                        "while": {
+                                            "conditions": "While conditions",
+                                            "label": "While"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "Activate scene"
@@ -1340,7 +1368,7 @@
                 },
                 "entities": {
                     "caption": "Entities",
-                    "description": "Overview of all known entities.",
+                    "description": "Manage known entities",
                     "picker": {
                         "disable_selected": {
                             "button": "Disable selected",
@@ -1392,7 +1420,7 @@
                 "header": "Configure Home Assistant",
                 "helpers": {
                     "caption": "Helpers",
-                    "description": "Elements that can help build automations.",
+                    "description": "Manage elements that help build automations",
                     "dialog": {
                         "add_helper": "Add helper",
                         "add_platform": "Add {platform}",
@@ -1420,7 +1448,7 @@
                     "built_using": "Built using",
                     "caption": "Info",
                     "custom_uis": "Custom UIs:",
-                    "description": "Info about your Home Assistant installation",
+                    "description": "View info about your Home Assistant installation",
                     "developed_by": "Developed by a bunch of awesome people.",
                     "documentation": "Documentation",
                     "frontend": "frontend-ui",
@@ -1485,7 +1513,7 @@
                     },
                     "configure": "Configure",
                     "configured": "Configured",
-                    "description": "Manage and set up integrations",
+                    "description": "Manage integrations",
                     "details": "Integration details",
                     "discovered": "Discovered",
                     "home_assistant_website": "Home Assistant website",
@@ -1513,7 +1541,7 @@
                     "rename_input_label": "Entry name",
                     "search": "Search integrations"
                 },
-                "introduction": "Here it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
+                "introduction": "In this view it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
                 "logs": {
                     "caption": "Logs",
                     "clear": "Clear",
@@ -1569,7 +1597,7 @@
                             "open": "Open"
                         }
                     },
-                    "description": "Configure your Lovelace Dashboards",
+                    "description": "Manage your Lovelace Dashboards",
                     "resources": {
                         "cant_edit_yaml": "You are using Lovelace in YAML mode, therefore you cannot manage your resources through the UI. Manage them in configuration.yaml.",
                         "caption": "Resources",
@@ -1624,7 +1652,7 @@
                     "confirm_delete": "Are you sure you want to delete this person?",
                     "confirm_delete2": "All devices belonging to this person will become unassigned.",
                     "create_person": "Create Person",
-                    "description": "Manage the persons that Home Assistant tracks.",
+                    "description": "Manage the persons that Home Assistant tracks",
                     "detail": {
                         "create": "Create",
                         "delete": "Delete",
@@ -1647,7 +1675,7 @@
                 "scene": {
                     "activated": "Activated scene {name}.",
                     "caption": "Scenes",
-                    "description": "Create and edit scenes",
+                    "description": "Manage scenes",
                     "editor": {
                         "default_name": "New Scene",
                         "devices": {
@@ -1691,7 +1719,7 @@
                 },
                 "script": {
                     "caption": "Scripts",
-                    "description": "Create and edit scripts",
+                    "description": "Manage scripts",
                     "editor": {
                         "alias": "Name",
                         "default_name": "New Script",
@@ -1815,7 +1843,7 @@
                         "discovered_text": "Devices will show up here once discovered.",
                         "discovery_text": "Discovered devices will show up here. Follow the instructions for your device(s) and place the device(s) in pairing mode.",
                         "header": "Zigbee Home Automation - Add Devices",
-                        "no_devices_found": "No devices where found, make sure they are in paring mode and keep them awake while discovering is running.",
+                        "no_devices_found": "No devices were found, make sure they are in paring mode and keep them awake while discovering is running.",
                         "pairing_mode": "Make sure your devices are in pairing mode. Check the instructions of your device on how to do this.",
                         "search_again": "Search Again",
                         "spinner": "Searching for ZHA Zigbee devices..."
@@ -1878,7 +1906,7 @@
                         "create_group": "Zigbee Home Automation - Create Group",
                         "create_group_details": "Enter the required details to create a new zigbee group",
                         "creating_group": "Creating Group",
-                        "description": "Create and modify Zigbee groups",
+                        "description": "Manage Zigbee groups",
                         "group_details": "Here are all the details for the selected Zigbee group.",
                         "group_id": "Group ID",
                         "group_info": "Group Information",
@@ -1921,7 +1949,7 @@
                     "configured_in_yaml": "Zones configured via configuration.yaml cannot be edited via the UI.",
                     "confirm_delete": "Are you sure you want to delete this zone?",
                     "create_zone": "Create Zone",
-                    "description": "Manage the zones you want to track persons in.",
+                    "description": "Manage the zones you want to track persons in",
                     "detail": {
                         "create": "Create",
                         "delete": "Delete",
@@ -2339,6 +2367,7 @@
                     },
                     "edit_card": {
                         "add": "Add Card",
+                        "confirm_cancel": "Are you sure you want to cancel?",
                         "delete": "Delete Card",
                         "duplicate": "Duplicate Card",
                         "edit": "Edit",
@@ -2349,7 +2378,9 @@
                         "pick_card_view_title": "Which card would you like to add to your {name} view?",
                         "show_code_editor": "Show Code Editor",
                         "show_visual_editor": "Show Visual Editor",
-                        "toggle_editor": "Toggle Editor"
+                        "toggle_editor": "Toggle Editor",
+                        "typed_header": "{type} Card Configuration",
+                        "unsaved_changes": "You have unsaved changes"
                     },
                     "edit_lovelace": {
                         "edit_title": "Edit title",
@@ -2442,6 +2473,8 @@
                     "entity": "Entity",
                     "entity_id": "Entity ID",
                     "last_changed": "Last Changed",
+                    "no_data": "No unused entities found",
+                    "search": "Search entities",
                     "select_to_add": "Select the entities you want to add to a card and then click the add card button.",
                     "title": "Unused entities"
                 },
@@ -2725,10 +2758,18 @@
                     "header": "Automatically close connection"
                 },
                 "themes": {
+                    "accent_color": "Accent color",
+                    "dark_mode": {
+                        "auto": "Auto",
+                        "dark": "Dark",
+                        "light": "Light"
+                    },
                     "dropdown_label": "Theme",
                     "error_no_theme": "No themes available.",
                     "header": "Theme",
-                    "link_promo": "Learn about themes"
+                    "link_promo": "Learn about themes",
+                    "primary_color": "Primary color",
+                    "reset": "Reset"
                 },
                 "vibrate": {
                     "description": "Enable or disable vibration on this device when controlling devices.",

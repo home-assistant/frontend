@@ -15,6 +15,7 @@ import {
   LitElement,
   property,
   internalProperty,
+  PropertyValues,
 } from "lit-element";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -29,6 +30,11 @@ import "./types/ha-automation-action-event";
 import "./types/ha-automation-action-scene";
 import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-wait_template";
+import "./types/ha-automation-action-repeat";
+import "./types/ha-automation-action-choose";
+import { handleStructError } from "../../../lovelace/common/structs/handle-errors";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import { haStyle } from "../../../../resources/styles";
 
 const OPTIONS = [
   "condition",
@@ -38,6 +44,8 @@ const OPTIONS = [
   "scene",
   "service",
   "wait_template",
+  "repeat",
+  "choose",
 ];
 
 const getType = (action: Action) => {
@@ -87,12 +95,26 @@ export default class HaAutomationActionRow extends LitElement {
 
   @property() public totalActions!: number;
 
+  @internalProperty() private _warnings?: string[];
+
+  @internalProperty() private _uiModeAvailable = true;
+
   @internalProperty() private _yamlMode = false;
+
+  protected updated(changedProperties: PropertyValues) {
+    if (!changedProperties.has("action")) {
+      return;
+    }
+    this._uiModeAvailable = Boolean(getType(this.action));
+    if (!this._uiModeAvailable && !this._yamlMode) {
+      this._yamlMode = true;
+    }
+  }
 
   protected render() {
     const type = getType(this.action);
     const selected = type ? OPTIONS.indexOf(type) : -1;
-    const yamlMode = this._yamlMode || selected === -1;
+    const yamlMode = this._yamlMode;
 
     return html`
       <ha-card>
@@ -128,17 +150,14 @@ export default class HaAutomationActionRow extends LitElement {
                   </mwc-icon-button>
                 `
               : ""}
-            <ha-button-menu corner="BOTTOM_START">
+            <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
               <mwc-icon-button
                 slot="trigger"
                 .title=${this.hass.localize("ui.common.menu")}
                 .label=${this.hass.localize("ui.common.overflow_menu")}
                 ><ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
               </mwc-icon-button>
-              <mwc-list-item
-                @tap=${this._switchYamlMode}
-                .disabled=${selected === -1}
-              >
+              <mwc-list-item .disabled=${!this._uiModeAvailable}>
                 ${yamlMode
                   ? this.hass.localize(
                       "ui.panel.config.automation.editor.edit_ui"
@@ -152,30 +171,39 @@ export default class HaAutomationActionRow extends LitElement {
                   "ui.panel.config.automation.editor.actions.duplicate"
                 )}
               </mwc-list-item>
-              <mwc-list-item @tap=${this._onDelete}>
+              <mwc-list-item>
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.actions.delete"
                 )}
               </mwc-list-item>
             </ha-button-menu>
           </div>
+          ${this._warnings
+            ? html`<div class="warning">
+                UI editor is not supported for this config:
+                <br />
+                <ul>
+                  ${this._warnings.map((warning) => html`<li>${warning}</li>`)}
+                </ul>
+                You can still edit your config in yaml.
+              </div>`
+            : ""}
           ${yamlMode
             ? html`
-                <div style="margin-right: 24px;">
-                  ${selected === -1
-                    ? html`
-                        ${this.hass.localize(
-                          "ui.panel.config.automation.editor.actions.unsupported_action",
-                          "action",
-                          type
-                        )}
-                      `
-                    : ""}
-                  <ha-yaml-editor
-                    .defaultValue=${this.action}
-                    @value-changed=${this._onYamlChange}
-                  ></ha-yaml-editor>
-                </div>
+                ${selected === -1
+                  ? html`
+                      ${this.hass.localize(
+                        "ui.panel.config.automation.editor.actions.unsupported_action",
+                        "action",
+                        type
+                      )}
+                    `
+                  : ""}
+                <h2>Edit in YAML</h2>
+                <ha-yaml-editor
+                  .defaultValue=${this.action}
+                  @value-changed=${this._onYamlChange}
+                ></ha-yaml-editor>
               `
             : html`
                 <paper-dropdown-menu-light
@@ -200,7 +228,7 @@ export default class HaAutomationActionRow extends LitElement {
                     )}
                   </paper-listbox>
                 </paper-dropdown-menu-light>
-                <div>
+                <div @ui-mode-not-available=${this._handleUiModeNotAvailable}>
                   ${dynamicElement(`ha-automation-action-${type}`, {
                     hass: this.hass,
                     action: this.action,
@@ -212,12 +240,32 @@ export default class HaAutomationActionRow extends LitElement {
     `;
   }
 
+  private _handleUiModeNotAvailable(ev: CustomEvent) {
+    this._warnings = handleStructError(ev.detail);
+    if (!this._yamlMode) {
+      this._yamlMode = true;
+    }
+  }
+
   private _moveUp() {
     fireEvent(this, "move-action", { direction: "up" });
   }
 
   private _moveDown() {
     fireEvent(this, "move-action", { direction: "down" });
+  }
+
+  private _handleAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        this._switchYamlMode();
+        break;
+      case 1:
+        break;
+      case 2:
+        this._onDelete();
+        break;
+    }
   }
 
   private _onDelete() {
@@ -239,6 +287,11 @@ export default class HaAutomationActionRow extends LitElement {
 
     if (!type) {
       return;
+    }
+
+    this._uiModeAvailable = OPTIONS.includes(type);
+    if (!this._uiModeAvailable && !this._yamlMode) {
+      this._yamlMode = false;
     }
 
     if (type !== getType(this.action)) {
@@ -264,26 +317,30 @@ export default class HaAutomationActionRow extends LitElement {
     this._yamlMode = !this._yamlMode;
   }
 
-  static get styles(): CSSResult {
-    return css`
-      .card-menu {
-        position: absolute;
-        top: 0;
-        right: 0;
-        z-index: 3;
-        --mdc-theme-text-primary-on-background: var(--primary-text-color);
-      }
-      .rtl .card-menu {
-        right: auto;
-        left: 0;
-      }
-      ha-button-menu {
-        margin: 8px;
-      }
-      mwc-list-item[disabled] {
-        --mdc-theme-text-primary-on-background: var(--disabled-text-color);
-      }
-    `;
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
+        .card-menu {
+          float: right;
+          z-index: 3;
+          --mdc-theme-text-primary-on-background: var(--primary-text-color);
+        }
+        .rtl .card-menu {
+          float: left;
+        }
+        mwc-list-item[disabled] {
+          --mdc-theme-text-primary-on-background: var(--disabled-text-color);
+        }
+        .warning {
+          color: var(--warning-color);
+          margin-bottom: 8px;
+        }
+        .warning ul {
+          margin: 4px 0;
+        }
+      `,
+    ];
   }
 }
 

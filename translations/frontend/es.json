@@ -528,6 +528,7 @@
                 "show_areas": "Mostrar áreas"
             },
             "data-table": {
+                "no-data": "Sin datos",
                 "search": "Buscar"
             },
             "date-range-picker": {
@@ -951,10 +952,10 @@
                             "description": "El modo controla lo que sucede cuando se activa la automatización mientras las acciones aún se ejecutan desde una activación anterior. Consulta la {documentation_link} para obtener más información.",
                             "documentation": "documentación de automatización",
                             "label": "Modo",
-                            "parallel": "Paralelo (predeterminado)",
+                            "parallel": "Paralelo",
                             "queued": "En cola",
                             "restart": "Reiniciar",
-                            "single": "Único"
+                            "single": "Único (predeterminado)"
                         },
                         "move_down": "Mover hacia abajo",
                         "move_up": "Mover hacia arriba",
@@ -2339,6 +2340,7 @@
                     },
                     "edit_card": {
                         "add": "Añadir tarjeta",
+                        "confirm_cancel": "¿Estás seguro de que quieres cancelar?",
                         "delete": "Eliminar tarjeta",
                         "duplicate": "Duplicar tarjeta",
                         "edit": "Editar",
@@ -2349,7 +2351,9 @@
                         "pick_card_view_title": "¿Qué tarjeta te gustaría añadir a tu vista {name} ?",
                         "show_code_editor": "Mostrar editor de código",
                         "show_visual_editor": "Mostrar editor visual",
-                        "toggle_editor": "Alternar editor"
+                        "toggle_editor": "Alternar editor",
+                        "typed_header": "Configuración de tarjeta {type}",
+                        "unsaved_changes": "Tienes cambios sin guardar"
                     },
                     "edit_lovelace": {
                         "edit_title": "Editar título",
@@ -2442,6 +2446,8 @@
                     "entity": "Entidad",
                     "entity_id": "ID de entidad",
                     "last_changed": "Última modificación",
+                    "no_data": "No se han encontrado entidades sin utilizar",
+                    "search": "Buscar entidades",
                     "select_to_add": "Selecciona las entidades que quieres añadir a una tarjeta y, a continuación, haz clic en el botón Añadir tarjeta.",
                     "title": "Entidades no utilizadas"
                 },

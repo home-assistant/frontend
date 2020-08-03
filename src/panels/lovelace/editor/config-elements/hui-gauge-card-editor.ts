@@ -14,23 +14,23 @@ import "../../../../components/ha-switch";
 import "../../../../components/ha-formfield";
 import { HomeAssistant } from "../../../../types";
 import { GaugeCardConfig, SeverityConfig } from "../../cards/types";
-import { struct } from "../../common/structs/struct";
 import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import { assert, object, string, optional, number } from "superstruct";
 
-const cardConfigStruct = struct({
-  type: "string",
-  name: "string?",
-  entity: "string?",
-  unit: "string?",
-  min: "number?",
-  max: "number?",
-  severity: "object?",
-  theme: "string?",
+const cardConfigStruct = object({
+  type: string(),
+  name: optional(string()),
+  entity: optional(string()),
+  unit: optional(string()),
+  min: optional(number()),
+  max: optional(number()),
+  severity: optional(object()),
+  theme: optional(string()),
 });
 
 const includeDomains = ["sensor"];
@@ -43,7 +43,7 @@ export class HuiGaugeCardEditor extends LitElement
   @internalProperty() private _config?: GaugeCardConfig;
 
   public setConfig(config: GaugeCardConfig): void {
-    config = cardConfigStruct(config);
+    assert(config, cardConfigStruct);
     this._config = config;
   }
 
@@ -260,6 +260,7 @@ export class HuiGaugeCardEditor extends LitElement
         target.value === "" ||
         (target.type === "number" && isNaN(Number(target.value)))
       ) {
+        this._config = { ...this._config };
         delete this._config[target.configValue!];
       } else {
         let value: any = target.value;

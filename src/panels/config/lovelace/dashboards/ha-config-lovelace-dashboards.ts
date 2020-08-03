@@ -1,8 +1,6 @@
 import "@material/mwc-fab";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
-  css,
-  CSSResult,
   customElement,
   html,
   LitElement,
@@ -37,7 +35,6 @@ import { lovelaceTabs } from "../ha-config-lovelace";
 import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
 import "../../../../components/ha-svg-icon";
 import { mdiPlus } from "@mdi/js";
-import { computeRTL } from "../../../../common/util/compute_rtl";
 
 @customElement("ha-config-lovelace-dashboards")
 export class HaConfigLovelaceDashboards extends LitElement {
@@ -225,18 +222,16 @@ export class HaConfigLovelaceDashboards extends LitElement {
         id="url_path"
         hasFab
       >
+        <mwc-fab
+          slot="fab"
+          title="${this.hass.localize(
+            "ui.panel.config.lovelace.dashboards.picker.add_dashboard"
+          )}"
+          @click=${this._addDashboard}
+        >
+          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+        </mwc-fab>
       </hass-tabs-subpage-data-table>
-      <mwc-fab
-        ?is-wide=${this.isWide}
-        ?narrow=${this.narrow}
-        ?rtl=${computeRTL(this.hass)}
-        title="${this.hass.localize(
-          "ui.panel.config.lovelace.dashboards.picker.add_dashboard"
-        )}"
-        @click=${this._addDashboard}
-      >
-        <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
-      </mwc-fab>
     `;
   }
 
@@ -310,27 +305,5 @@ export class HaConfigLovelaceDashboards extends LitElement {
         }
       },
     });
-  }
-
-  static get styles(): CSSResult {
-    return css`
-      mwc-fab {
-        position: fixed;
-        bottom: 16px;
-        right: 16px;
-        z-index: 1;
-      }
-      mwc-fab[is-wide] {
-        bottom: 24px;
-        right: 24px;
-      }
-      mwc-fab[narrow] {
-        bottom: 84px;
-      }
-      mwc-fab[rtl] {
-        left: 16px;
-        right: auto;
-      }
-    `;
   }
 }

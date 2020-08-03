@@ -98,6 +98,8 @@ export class HaDataTable extends LitElement {
 
   @property({ type: String }) public noDataText?: string;
 
+  @property({ type: String }) public searchLabel?: string;
+
   @property({ type: String }) public filter = "";
 
   @internalProperty() private _filterable = false;
@@ -202,6 +204,7 @@ export class HaDataTable extends LitElement {
                 <div class="table-header">
                   <search-input
                     @value-changed=${this._handleSearchChange}
+                    .label=${this.searchLabel}
                   ></search-input>
                 </div>
               `
@@ -538,7 +541,7 @@ export class HaDataTable extends LitElement {
         border-radius: 4px;
         border-width: 1px;
         border-style: solid;
-        border-color: rgba(var(--rgb-primary-text-color), 0.12);
+        border-color: var(--divider-color);
         display: inline-flex;
         flex-direction: column;
         box-sizing: border-box;
@@ -556,7 +559,7 @@ export class HaDataTable extends LitElement {
       }
 
       .mdc-data-table__row ~ .mdc-data-table__row {
-        border-top: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
+        border-top: 1px solid var(--divider-color);
       }
 
       .mdc-data-table__row:not(.mdc-data-table__row--selected):hover {
@@ -575,7 +578,7 @@ export class HaDataTable extends LitElement {
         height: 56px;
         display: flex;
         width: 100%;
-        border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
+        border-bottom: 1px solid var(--divider-color);
         overflow-x: auto;
       }
 
@@ -828,7 +831,7 @@ export class HaDataTable extends LitElement {
         right: 12px;
       }
       .table-header {
-        border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
+        border-bottom: 1px solid var(--divider-color);
         padding: 0 16px;
       }
       search-input {

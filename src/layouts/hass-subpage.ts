@@ -60,6 +60,11 @@ class HassSubpage extends LitElement {
         background-color: var(--primary-background-color);
       }
 
+      :host([narrow]) {
+        width: 100%;
+        position: fixed;
+      }
+
       .toolbar {
         display: flex;
         align-items: center;

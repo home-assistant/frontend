@@ -165,7 +165,6 @@ class DialogConfigEntrySystemOptions extends LitElement {
       haStyleDialog,
       css`
         ha-paper-dialog {
-          min-width: 400px;
           max-width: 500px;
         }
         .init-spinner {

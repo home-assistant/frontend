@@ -9,5 +9,9 @@ export function computeRTL(hass: HomeAssistant) {
 }
 
 export function computeRTLDirection(hass: HomeAssistant) {
-  return computeRTL(hass) ? "rtl" : "ltr";
+  return emitRTLDirection(computeRTL(hass));
+}
+
+export function emitRTLDirection(rtl: boolean) {
+  return rtl ? "rtl" : "ltr";
 }

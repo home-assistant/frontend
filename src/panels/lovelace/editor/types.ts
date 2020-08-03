@@ -4,8 +4,10 @@ import {
   LovelaceViewConfig,
   ShowViewConfig,
 } from "../../../data/lovelace";
-import { struct } from "../common/structs/struct";
 import { EntityConfig } from "../entity-rows/types";
+import { optional, string, object, union } from "superstruct";
+import { EntityId } from "../common/structs/is-entity-id";
+import { Icon } from "../common/structs/is-icon";
 
 export interface YamlChangedEvent extends Event {
   detail: {
@@ -66,19 +68,19 @@ export interface CardPickTarget extends EventTarget {
   config: LovelaceCardConfig;
 }
 
-export const actionConfigStruct = struct({
-  action: "string",
-  navigation_path: "string?",
-  url_path: "string?",
-  service: "string?",
-  service_data: "object?",
+export const actionConfigStruct = object({
+  action: string(),
+  navigation_path: optional(string()),
+  url_path: optional(string()),
+  service: optional(string()),
+  service_data: optional(object()),
 });
 
-export const entitiesConfigStruct = struct.union([
-  {
-    entity: "entity-id",
-    name: "string?",
-    icon: "icon?",
-  },
-  "entity-id",
+export const entitiesConfigStruct = union([
+  object({
+    entity: EntityId,
+    name: optional(string()),
+    icon: optional(Icon),
+  }),
+  EntityId,
 ]);

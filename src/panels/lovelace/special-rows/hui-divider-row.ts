@@ -22,7 +22,7 @@ class HuiDividerRow extends LitElement implements LovelaceRow {
     this._config = {
       style: {
         height: "1px",
-        "background-color": "var(--secondary-text-color)",
+        "background-color": "var(--divider-color)",
       },
       ...config,
     };

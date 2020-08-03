@@ -253,7 +253,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
       return;
     }
 
-    const slugifyTitle = slugify(this._title);
+    const slugifyTitle = slugify(this._title, "-");
     this._urlPath = slugifyTitle.includes("-")
       ? slugifyTitle
       : `lovelace-${slugifyTitle}`;
