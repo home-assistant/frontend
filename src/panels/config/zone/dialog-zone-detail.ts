@@ -99,9 +99,9 @@ class DialogZoneDetail extends LitElement {
     return html`
       <ha-dialog
         open
-        @closed="${this.closeDialog}"
-        scrimClickAction=""
-        escapeKeyAction=""
+        @closed=${this.closeDialog}
+        scrimClickAction
+        escapeKeyAction
         .heading=${createCloseHeading(
           this.hass,
           this._params.entry
