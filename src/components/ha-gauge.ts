@@ -9,6 +9,7 @@ import {
 } from "lit-element";
 import { styleMap } from "lit-html/directives/style-map";
 import { afterNextRender } from "../common/util/render-status";
+import { ifDefined } from "lit-html/directives/if-defined";
 
 const getAngle = (value: number, min: number, max: number) => {
   const percentage = getValueInPercentage(normalize(value, min, max), min, max);
@@ -26,6 +27,9 @@ const getValueInPercentage = (value: number, min: number, max: number) => {
   const newVal = value - min;
   return (100 * newVal) / newMax;
 };
+
+// Workaround for https://github.com/home-assistant/frontend/issues/6467
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 @customElement("ha-gauge")
 export class Gauge extends LitElement {
@@ -69,9 +73,28 @@ export class Gauge extends LitElement {
         ></path>
         <path
           class="value"
-          style=${styleMap({ transform: `rotate(${this._angle}deg)` })}
           d="M 90 50.001 A 40 40 0 0 1 10 50"
-        ></path>
+          style=${ifDefined(
+            !isSafari
+              ? styleMap({ transform: `rotate(${this._angle}deg)` })
+              : undefined
+          )}
+          transform=${ifDefined(
+            isSafari ? `rotate(${this._angle} 50 50)` : undefined
+          )}
+        >
+        ${
+          isSafari
+            ? svg`<animateTransform
+                attributeName="transform"
+                type="rotate"
+                from="0 50 50"
+                to="${this._angle} 50 50"
+                dur="1s"
+              />`
+            : ""
+        }
+        </path>
       </svg>
       <svg class="text">
         <text class="value-text">
@@ -106,8 +129,8 @@ export class Gauge extends LitElement {
         fill: none;
         stroke-width: 15;
         stroke: var(--gauge-color);
-        transition: all 1000ms ease 0s;
         transform-origin: 50% 100%;
+        transition: all 1s ease 0s;
       }
       .gauge {
         display: block;
