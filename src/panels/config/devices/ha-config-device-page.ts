@@ -501,6 +501,15 @@ export class HaConfigDevicePage extends LitElement {
         </div>
       `);
     }
+    if (integrations.includes("ozw")) {
+      import("./device-detail/integration-elements/ozw/ha-device-info-ozw");
+      templates.push(html`
+        <ha-device-info-ozw
+          .hass=${this.hass}
+          .device=${device}
+        ></ha-device-info-ozw>
+      `);
+    }
     if (integrations.includes("zha")) {
       import("./device-detail/integration-elements/zha/ha-device-actions-zha");
       import("./device-detail/integration-elements/zha/ha-device-info-zha");

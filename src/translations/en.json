@@ -539,7 +539,10 @@
       "sidebar_toggle": "Sidebar Toggle"
     },
     "panel": {
-      "calendar": { "my_calendars": "My Calendars", "today": "Today" },
+      "calendar": {
+        "my_calendars": "My Calendars",
+        "today": "Today"
+      },
       "config": {
         "header": "Configure Home Assistant",
         "introduction": "In this view it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
@@ -1568,7 +1571,11 @@
           "description": "Manage users",
           "users_privileges_note": "The users group is a work in progress. The user will be unable to administer the instance via the UI. We're still auditing all management API endpoints to ensure that they correctly limit access to administrators.",
           "picker": {
-            "headers": { "name": "Name", "group": "Group", "system": "System" }
+            "headers": {
+              "name": "Name",
+              "group": "Group",
+              "system": "System"
+            }
           },
           "editor": {
             "caption": "View user",
@@ -1610,6 +1617,18 @@
           "start_listening": "Start listening",
           "stop_listening": "Stop listening",
           "message_received": "Message {id} received on {topic} at {time}:"
+        },
+        "ozw": {
+          "common": {
+            "zwave": "Z-Wave",
+            "node_id": "Node ID",
+            "ozw_instance": "OpenZWave Instance"
+          },
+          "device_info": {
+            "zwave_info": "Z-Wave Info",
+            "stage": "Stage",
+            "node_failed": "Node Failed"
+          }
         },
         "zha": {
           "button": "Configure",
