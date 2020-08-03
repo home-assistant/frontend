@@ -24,13 +24,13 @@ export class HaDeviceInfoOzw extends LitElement {
 
   protected updated(changedProperties: PropertyValues) {
     if (changedProperties.has("device")) {
-      const ozwConnection = this.device.identifiers.find(
-        (conn) => conn[0] === "ozw"
+      const ozwIdentifier = this.device.identifiers.find(
+        (identifier) => identifier[0] === "ozw"
       );
-      if (!ozwConnection) {
+      if (!ozwIdentifier) {
         return;
       }
-      const identifiers = ozwConnection[1].split(".");
+      const identifiers = ozwIdentifier[1].split(".");
       fetchOZWNodeStatus(this.hass, identifiers[0], identifiers[1]).then(
         (device) => {
           this._ozwDevice = device;
