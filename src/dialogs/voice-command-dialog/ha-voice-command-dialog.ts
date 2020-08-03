@@ -426,7 +426,7 @@ export class HaVoiceCommandDialog extends LitElement {
           text-align: right;
           border-bottom-right-radius: 0px;
           background-color: var(--light-primary-color);
-          color: var(--primary-text-color);
+          color: var(--text-light-primary-color, var(--primary-text-color));
         }
 
         .message.hass {

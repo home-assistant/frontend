@@ -1,5 +1,18 @@
 import { css } from "lit-element";
 
+export const darkStyles = {
+  "primary-background-color": "#111111",
+  "card-background-color": "#1c1c1c",
+  "secondary-background-color": "#1e1e1e",
+  "primary-text-color": "#e1e1e1",
+  "secondary-text-color": "#9b9b9b",
+  "app-header-text-color": "#e1e1e1",
+  "app-header-background-color": "#1c1c1c",
+  "switch-unchecked-button-color": "#999999",
+  "switch-unchecked-track-color": "#9b9b9b",
+  "divider-color": "rgba(225, 225, 225, .12)",
+};
+
 export const derivedStyles = {
   "error-state-color": "var(--error-color)",
   "state-icon-unavailable-color": "var(--disabled-text-color)",
@@ -33,6 +46,7 @@ export const derivedStyles = {
   "paper-slider-secondary-color": "var(--slider-secondary-color)",
   "paper-slider-container-color": "var(--slider-bar-color)",
   "data-table-background-color": "var(--card-background-color)",
+  "markdown-code-background-color": "var(--primary-background-color)",
   "mdc-theme-primary": "var(--primary-color)",
   "mdc-theme-secondary": "var(--accent-color)",
   "mdc-theme-background": "var(--primary-background-color)",
@@ -48,6 +62,8 @@ export const derivedStyles = {
   "material-secondary-background-color": "var(--secondary-background-color)",
   "mdc-checkbox-unchecked-color": "rgba(var(--rgb-primary-text-color), 0.54)",
   "mdc-checkbox-disabled-color": "var(--disabled-text-color)",
+  "mdc-radio-unchecked-color": "rgba(var(--rgb-primary-text-color), 0.54)",
+  "mdc-radio-disabled-color": "var(--disabled-text-color)",
   "mdc-tab-text-label-color-default": "var(--primary-text-color)",
 };
 

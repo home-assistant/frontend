@@ -22,6 +22,7 @@ documentContainer.innerHTML = `<custom-style>
       --primary-text-color: #212121;
       --secondary-text-color: #727272;
       --text-primary-color: #ffffff;
+      --text-light-primary-color: #212121;
       --disabled-text-color: #bdbdbd;
 
       /* main interface colors */
@@ -82,9 +83,6 @@ documentContainer.innerHTML = `<custom-style>
 
       /* set our slider style */
       --ha-paper-slider-pin-font-size: 15px;
-
-      /* markdown styles */
-      --markdown-code-background-color: #f6f8fa;
 
       /* rgb */
       --rgb-primary-color: 3, 169, 244;

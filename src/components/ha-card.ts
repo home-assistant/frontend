@@ -66,7 +66,7 @@ export class HaCard extends LitElement {
       }
 
       :host ::slotted(.card-actions) {
-        border-top: 1px solid #e8e8e8;
+        border-top: 1px solid var(--divider-color, #e8e8e8);
         padding: 5px 16px;
       }
     `;

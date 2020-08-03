@@ -6,6 +6,7 @@ import {
   Map,
   Marker,
   MarkerOptions,
+  TileLayer,
 } from "leaflet";
 import {
   css,
@@ -21,8 +22,10 @@ import { fireEvent } from "../../common/dom/fire_event";
 import {
   LeafletModuleType,
   setupLeafletMap,
+  replaceTileLayer,
 } from "../../common/dom/setup-leaflet-map";
 import { defaultRadiusColor } from "../../data/zone";
+import { HomeAssistant } from "../../types";
 
 declare global {
   // for fire event
@@ -47,6 +50,8 @@ export interface MarkerLocation {
 
 @customElement("ha-locations-editor")
 export class HaLocationsEditor extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
   @property() public locations?: MarkerLocation[];
 
   public fitZoom = 16;
@@ -56,6 +61,8 @@ export class HaLocationsEditor extends LitElement {
 
   // eslint-disable-next-line
   private _leafletMap?: Map;
+
+  private _tileLayer?: TileLayer;
 
   private _locationMarkers?: { [key: string]: Marker | Circle };
 
@@ -116,6 +123,22 @@ export class HaLocationsEditor extends LitElement {
     if (changedProps.has("locations")) {
       this._updateMarkers();
     }
+
+    if (changedProps.has("hass")) {
+      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+      if (!oldHass || oldHass.themes.darkMode === this.hass.themes.darkMode) {
+        return;
+      }
+      if (!this._leafletMap || !this._tileLayer) {
+        return;
+      }
+      this._tileLayer = replaceTileLayer(
+        this.Leaflet,
+        this._leafletMap,
+        this._tileLayer,
+        this.hass.themes.darkMode
+      );
+    }
   }
 
   private get _mapEl(): HTMLDivElement {
@@ -123,9 +146,9 @@ export class HaLocationsEditor extends LitElement {
   }
 
   private async _initMap(): Promise<void> {
-    [this._leafletMap, this.Leaflet] = await setupLeafletMap(
+    [this._leafletMap, this.Leaflet, this._tileLayer] = await setupLeafletMap(
       this._mapEl,
-      false,
+      this.hass.themes.darkMode,
       true
     );
     this._updateMarkers();
@@ -289,9 +312,6 @@ export class HaLocationsEditor extends LitElement {
       }
       #map {
         height: 100%;
-      }
-      .light {
-        color: #000000;
       }
       .leaflet-marker-draggable {
         cursor: move !important;

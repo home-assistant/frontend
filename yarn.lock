@@ -2532,10 +2532,10 @@
   dependencies:
     "@types/chrome" "*"
 
-"@types/codemirror@^0.0.78":
-  version "0.0.78"
-  resolved "https://registry.yarnpkg.com/@types/codemirror/-/codemirror-0.0.78.tgz#75a8eabda268c8e734855fb24e8c86192e2e18ad"
-  integrity sha512-QpMQUpEL+ZNcpEhjvYM/H6jqDx9nNcJqymA2kbkNthFS2I7ekL7ofEZ7+MoQAFTBuJers91K0FGCMpL7MwC9TQ==
+"@types/codemirror@^0.0.97":
+  version "0.0.97"
+  resolved "https://registry.yarnpkg.com/@types/codemirror/-/codemirror-0.0.97.tgz#6f2d8266b7f1b34aacfe8c77221fafe324c3d081"
+  integrity sha512-n5d7o9nWhC49DjfhsxANP7naWSeTzrjXASkUDQh7626sM4zK9XP2EVcHp1IcCf/IPV6c7ORzDUDF3Bkt231VKg==
   dependencies:
     "@types/tern" "*"
 
@@ -2640,6 +2640,11 @@
   version "4.14.149"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.149.tgz#1342d63d948c6062838fbf961012f74d4e638440"
   integrity sha512-ijGqzZt/b7BfzcK9vTrS6MFljQRPn5BFWOx8oE0GYxribu6uV+aA9zZuXI1zc/etK9E8nrgdoF2+LgUw7+9tJQ==
+
+"@types/marked@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@types/marked/-/marked-1.1.0.tgz#53509b5f127e0c05c19176fcf1d743a41e00ff19"
+  integrity sha512-j8XXj6/l9kFvCwMyVqozznqpd/nk80krrW+QiIJN60Uu9gX5Pvn4/qPJ2YngQrR3QREPwmrE1f9/EWKVTFzoEw==
 
 "@types/memoize-one@4.1.0":
   version "4.1.0"
@@ -8258,10 +8263,10 @@ map-visit@^1.0.0:
   dependencies:
     object-visit "^1.0.0"
 
-marked@^0.6.1:
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/marked/-/marked-0.6.2.tgz#c574be8b545a8b48641456ca1dbe0e37b6dccc1a"
-  integrity sha512-LqxwVH3P/rqKX4EKGz7+c2G9r98WeM/SW34ybhgNGhUQNKtf1GmmSkJ6cDGJ/t6tiyae49qRkpyTw2B9HOrgUA==
+marked@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-1.1.1.tgz#e5d61b69842210d5df57b05856e0c91572703e6a"
+  integrity sha512-mJzT8D2yPxoPh7h0UXkB+dBj4FykPJ2OIfxAWeIHrvoHDkFxukV/29QxoFQoPM6RLEwhIFdJpmKBlqVM3s2ZIw==
 
 matchdep@^2.0.0:
   version "2.0.0"

@@ -40,15 +40,13 @@ export class HuiCardOptions extends LitElement {
     return html`
       <slot></slot>
       <ha-card>
-        <div class="options">
-          <div class="primary-actions">
-            <mwc-button @click=${this._editCard}
-              >${this.hass!.localize(
-                "ui.panel.lovelace.editor.edit_card.edit"
-              )}</mwc-button
-            >
-          </div>
-          <div class="secondary-actions">
+        <div class="card-actions">
+          <mwc-button @click=${this._editCard}
+            >${this.hass!.localize(
+              "ui.panel.lovelace.editor.edit_card.edit"
+            )}</mwc-button
+          >
+          <div>
             <mwc-icon-button
               title="Move card down"
               class="move-arrow"
@@ -112,21 +110,10 @@ export class HuiCardOptions extends LitElement {
         border-top-left-radius: 0;
       }
 
-      div.options {
-        border-top: 1px solid #e8e8e8;
-        padding: 5px 8px;
+      .card-actions {
         display: flex;
-        margin-top: -1px;
-      }
-
-      div.options .primary-actions {
-        flex: 1;
-        margin: auto;
-      }
-
-      div.options .secondary-actions {
-        flex: 4;
-        text-align: right;
+        justify-content: space-between;
+        align-items: center;
       }
 
       mwc-icon-button {

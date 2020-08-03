@@ -140,6 +140,7 @@ class DialogZoneDetail extends LitElement {
             ></paper-input>
             <ha-location-editor
               class="flex"
+              .hass=${this.hass}
               .location=${this._locationValue}
               .radius=${this._radius}
               .radiusColor=${this._passive
