@@ -1,5 +1,5 @@
 // https://gist.github.com/hagemann/382adfc57adbd5af078dc93feef01fe1
-export const slugify = (value: string, delimiter = "-") => {
+export const slugify = (value: string, delimiter = "_") => {
   const a =
     "àáäâãåăæąçćčđďèéěėëêęğǵḧìíïîįłḿǹńňñòóöôœøṕŕřßşśšșťțùúüûǘůűūųẃẍÿýźžż·/_,:;";
   const b = `aaaaaaaaacccddeeeeeeegghiiiiilmnnnnooooooprrsssssttuuuuuuuuuwxyyzzz${delimiter}${delimiter}${delimiter}${delimiter}${delimiter}${delimiter}`;
