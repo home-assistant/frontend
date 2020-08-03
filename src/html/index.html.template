@@ -35,6 +35,7 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="referrer" content="same-origin" />
     <meta name="theme-color" content="#THEMEC" />
+    <meta name="color-scheme" content="dark light" />
     <style>
       #ha-init-skeleton::before {
         display: block;
@@ -43,7 +44,7 @@
         background-color: #THEMEC;
       }
       html {
-        background-color: var(--primary-background-color, #fafafa);
+        background-color: var(--primary-background-color);
       }
     </style>
   </head>

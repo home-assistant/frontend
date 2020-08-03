@@ -2199,7 +2199,15 @@
           "header": "Theme",
           "error_no_theme": "No themes available.",
           "link_promo": "Learn about themes",
-          "dropdown_label": "Theme"
+          "dropdown_label": "Theme",
+          "dark_mode": {
+            "auto": "Auto",
+            "light": "Light",
+            "dark": "Dark"
+          },
+          "primary_color": "Primary color",
+          "accent_color": "Accent color",
+          "reset": "Reset"
         },
         "dashboard": {
           "header": "Dashboard",

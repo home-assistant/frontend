@@ -135,7 +135,7 @@ class DateRangePickerElement extends WrappedElement {
           }
           .daterangepicker td.in-range {
             background-color: var(--light-primary-color);
-            color: var(--primary-text-color);
+            color: var(--text-light-primary-color, var(--primary-text-color));
           }
           .daterangepicker td.active,
           .daterangepicker td.active:hover {
