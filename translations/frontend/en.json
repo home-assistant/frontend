@@ -833,6 +833,15 @@
                             "name": "Action",
                             "type_select": "Action type",
                             "type": {
+                                "choose": {
+                                    "add_option": "Add option",
+                                    "conditions": "Conditions",
+                                    "default": "Default actions",
+                                    "label": "Choose",
+                                    "option": "Option {number}",
+                                    "remove_option": "Remove option",
+                                    "sequence": "Actions"
+                                },
                                 "condition": {
                                     "label": "Condition"
                                 },
@@ -851,6 +860,24 @@
                                     "event": "Event:",
                                     "label": "Fire event",
                                     "service_data": "Service data"
+                                },
+                                "repeat": {
+                                    "label": "Repeat",
+                                    "sequence": "Actions",
+                                    "type_select": "Repeat type",
+                                    "type": {
+                                        "count": {
+                                            "label": "Count"
+                                        },
+                                        "until": {
+                                            "conditions": "Until conditions",
+                                            "label": "Until"
+                                        },
+                                        "while": {
+                                            "conditions": "While conditions",
+                                            "label": "While"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "Activate scene"
@@ -2731,10 +2758,18 @@
                     "header": "Automatically close connection"
                 },
                 "themes": {
+                    "accent_color": "Accent color",
+                    "dark_mode": {
+                        "auto": "Auto",
+                        "dark": "Dark",
+                        "light": "Light"
+                    },
                     "dropdown_label": "Theme",
                     "error_no_theme": "No themes available.",
                     "header": "Theme",
-                    "link_promo": "Learn about themes"
+                    "link_promo": "Learn about themes",
+                    "primary_color": "Primary color",
+                    "reset": "Reset"
                 },
                 "vibrate": {
                     "description": "Enable or disable vibration on this device when controlling devices.",

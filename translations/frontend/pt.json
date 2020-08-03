@@ -798,7 +798,7 @@
                         "confirmation_text": "Todos os dispositivos nesta área ficarão por atribuir.",
                         "confirmation_title": "Tem certeza de que deseja apagar esta área?"
                     },
-                    "description": "Visão geral de todas as áreas da sua casa.",
+                    "description": "Gerir todas as áreas da sua casa.",
                     "editor": {
                         "area_id": "ID da área",
                         "create": "Criar",
@@ -1341,7 +1341,7 @@
                 },
                 "entities": {
                     "caption": "Entidades",
-                    "description": "Visão geral de todas as entidades conhecidas.",
+                    "description": "Gerir entidades conhecidas",
                     "picker": {
                         "disable_selected": {
                             "button": "Desativar seleção",
@@ -1393,7 +1393,7 @@
                 "header": "Configurar o Home Assistant",
                 "helpers": {
                     "caption": "Auxiliares",
-                    "description": "Elementos que podem ajudar a construir automações.",
+                    "description": "Gerir elementos que ajudam a criar automações",
                     "dialog": {
                         "add_helper": "Adicionar auxiliar",
                         "add_platform": "Adicionar {platform}",
@@ -1421,7 +1421,7 @@
                     "built_using": "Construído com",
                     "caption": "Informação",
                     "custom_uis": "IUs personalizados:",
-                    "description": "Saiba mais sobre o Home Assistant Cloud",
+                    "description": "Ver informações sobre a instalação do Home Assistant",
                     "developed_by": "Desenvolvido por um punhado de pessoas incríveis.",
                     "documentation": "Documentação",
                     "frontend": "",
@@ -1486,7 +1486,7 @@
                     },
                     "configure": "Configurar",
                     "configured": "Configurado",
-                    "description": "Gerir e configurar integrações",
+                    "description": "Gerir integrações",
                     "details": "Detalhes da integração",
                     "discovered": "Detetados",
                     "home_assistant_website": "Site do Home Assistant ",
@@ -1648,7 +1648,7 @@
                 "scene": {
                     "activated": "Ativar cena {name}.",
                     "caption": "Cenários",
-                    "description": "Criar e editar cenários",
+                    "description": "Gerir cenários",
                     "editor": {
                         "default_name": "Nova Cena",
                         "devices": {
@@ -1879,7 +1879,7 @@
                         "create_group": "Zigbee Home Automation - Criar grupo",
                         "create_group_details": "Digite os detalhes necessários para criar um novo grupo zigbee",
                         "creating_group": "Criação de grupo",
-                        "description": "Criar e modificar grupos Zigbee",
+                        "description": "Gerir grupos Zigbee",
                         "group_details": "Aqui estão todos os detalhes do grupo Zigbee selecionado.",
                         "group_id": "ID do grupo",
                         "group_info": "Informações sobre o grupo",
@@ -1922,7 +1922,7 @@
                     "configured_in_yaml": "As zonas configuradas via configuration.yaml não podem ser editadas pelo IU.",
                     "confirm_delete": "Tem certeza de que deseja apagar esta zona?",
                     "create_zone": "Criar zona",
-                    "description": "Gerencie as zonas nas quais deseja rastrear pessoas.",
+                    "description": "Gerir as zonas nas quais deseja localizar pessoas.",
                     "detail": {
                         "create": "Criar",
                         "delete": "Eliminar",
