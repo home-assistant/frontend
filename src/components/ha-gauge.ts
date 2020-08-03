@@ -28,6 +28,7 @@ const getValueInPercentage = (value: number, min: number, max: number) => {
   return (100 * newVal) / newMax;
 };
 
+// Workaround for https://github.com/home-assistant/frontend/issues/6467
 const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 @customElement("ha-gauge")
