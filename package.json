@@ -106,6 +106,7 @@
     "memoize-one": "^5.0.2",
     "node-vibrant": "^3.1.5",
     "proxy-polyfill": "^0.3.1",
+    "punycode": "^2.1.1",
     "regenerator-runtime": "^0.13.2",
     "resize-observer-polyfill": "^1.5.1",
     "roboto-fontface": "^0.10.0",
