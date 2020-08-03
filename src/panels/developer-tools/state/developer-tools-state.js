@@ -13,6 +13,7 @@ import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import "../../../styles/polymer-ha-style";
 import { mdiInformationOutline } from "@mdi/js";
+import { computeRTL } from "../../../common/util/compute_rtl";
 
 const ERROR_SENTINEL = {};
 /*
@@ -29,7 +30,6 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           -moz-user-select: initial;
           display: block;
           padding: 16px;
-          direction: ltr;
         }
 
         .inputs {
@@ -44,8 +44,13 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           text-align: left;
         }
 
+        :host([rtl]) .entities th {
+          text-align: right;
+        }
+
         .entities tr {
           vertical-align: top;
+          direction: ltr;
         }
 
         .entities tr:nth-child(odd) {
@@ -232,11 +237,15 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         computed:
           "computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter)",
       },
+      rtl: {
+        reflectToAttribute: true,
+        computed: "_computeRTL(hass)",
+      },
     };
   }
 
   entitySelected(ev) {
-    var state = ev.model.entity;
+    const state = ev.model.entity;
     this._entityId = state.entity_id;
     this._state = state.state;
     this._stateAttributes = safeDump(state.attributes);
@@ -249,7 +258,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
       this._stateAttributes = "";
       return;
     }
-    var state = this.hass.states[this._entityId];
+    const state = this.hass.states[this._entityId];
     if (!state) {
       return;
     }
@@ -296,12 +305,12 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         }
 
         if (_attributeFilter !== "") {
-          var attributeFilter = _attributeFilter.toLowerCase();
-          var colonIndex = attributeFilter.indexOf(":");
-          var multiMode = colonIndex !== -1;
+          const attributeFilter = _attributeFilter.toLowerCase();
+          const colonIndex = attributeFilter.indexOf(":");
+          const multiMode = colonIndex !== -1;
 
-          var keyFilter = attributeFilter;
-          var valueFilter = attributeFilter;
+          let keyFilter = attributeFilter;
+          let valueFilter = attributeFilter;
 
           if (multiMode) {
             // we need to filter keys and values separately
@@ -309,10 +318,10 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
             valueFilter = attributeFilter.substring(colonIndex + 1).trim();
           }
 
-          var attributeKeys = Object.keys(value.attributes);
+          const attributeKeys = Object.keys(value.attributes);
 
-          for (var i = 0; i < attributeKeys.length; i++) {
-            var key = attributeKeys[i];
+          for (let i = 0; i < attributeKeys.length; i++) {
+            const key = attributeKeys[i];
 
             if (key.includes(keyFilter) && !multiMode) {
               return true; // in single mode we're already satisfied with this match
@@ -321,7 +330,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               continue;
             }
 
-            var attributeValue = value.attributes[key];
+            const attributeValue = value.attributes[key];
 
             if (
               attributeValue !== null &&
@@ -357,11 +366,11 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   attributeString(entity) {
-    var output = "";
-    var i;
-    var keys;
-    var key;
-    var value;
+    let output = "";
+    let i;
+    let keys;
+    let key;
+    let value;
 
     for (i = 0, keys = Object.keys(entity.attributes); i < keys.length; i++) {
       key = keys[i];
@@ -395,6 +404,10 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   _yamlChanged(ev) {
     this._stateAttributes = ev.detail.value;
+  }
+
+  _computeRTL(hass) {
+    return computeRTL(hass);
   }
 }
 

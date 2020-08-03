@@ -327,6 +327,7 @@ class LovelacePanel extends LitElement {
     this.lovelace = {
       config,
       mode,
+      urlPath: this.urlPath,
       editMode: this.lovelace ? this.lovelace.editMode : false,
       language: this.hass!.language,
       enableFullEditMode: () => {

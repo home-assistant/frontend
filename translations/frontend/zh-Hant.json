@@ -528,6 +528,7 @@
                 "show_areas": "顯示分區"
             },
             "data-table": {
+                "no-data": "沒有資料",
                 "search": "搜尋"
             },
             "date-range-picker": {
@@ -797,7 +798,7 @@
                         "confirmation_text": "所有該分區所屬設備都將變成未指派狀態。",
                         "confirmation_title": "確定要刪除此分區？"
                     },
-                    "description": "家中所有分區概觀",
+                    "description": "管理家中所有分區",
                     "editor": {
                         "area_id": "分區 ID",
                         "create": "建立",
@@ -819,7 +820,7 @@
                 },
                 "automation": {
                     "caption": "自動化",
-                    "description": "新增和編輯自動化內容",
+                    "description": "管理自動化",
                     "editor": {
                         "actions": {
                             "add": "新增一個動作",
@@ -951,10 +952,10 @@
                             "description": "該模式控制當執行自動化時、超過一個以上的自動化仍在執行時的狀況。請參閱 {documentation_link} 以獲得更詳細資訊。",
                             "documentation": "自動化文件",
                             "label": "模式",
-                            "parallel": "並行（預設）",
+                            "parallel": "並行",
                             "queued": "已佇列",
                             "restart": "重啟",
-                            "single": "單一"
+                            "single": "單一（預設）"
                         },
                         "move_down": "向下移動",
                         "move_up": "向上移動",
@@ -1340,7 +1341,7 @@
                 },
                 "entities": {
                     "caption": "物件",
-                    "description": "所有已知物件概觀",
+                    "description": "管理已知物件",
                     "picker": {
                         "disable_selected": {
                             "button": "關閉已選擇",
@@ -1392,7 +1393,7 @@
                 "header": "設定 Home Assistant",
                 "helpers": {
                     "caption": "助手",
-                    "description": "可協助建立自動化的元素",
+                    "description": "管理可協助建立自動化的元素",
                     "dialog": {
                         "add_helper": "新增助手",
                         "add_platform": "新增 {platform}",
@@ -1420,7 +1421,7 @@
                     "built_using": "建置使用",
                     "caption": "更多資訊",
                     "custom_uis": "自定介面：",
-                    "description": "關於 Home Assistant 安裝資訊",
+                    "description": "檢視 Home Assistant 安裝資訊",
                     "developed_by": "由一群充滿熱情的人們所開發。",
                     "documentation": "相關文件",
                     "frontend": "frontend-ui",
@@ -1485,7 +1486,7 @@
                     },
                     "configure": "設定",
                     "configured": "已設定整合",
-                    "description": "管理與設定整合",
+                    "description": "管理整合",
                     "details": "整合詳細資訊",
                     "discovered": "已掃描",
                     "home_assistant_website": "Home Assistant 網站",
@@ -1513,7 +1514,7 @@
                     "rename_input_label": "物件名稱",
                     "search": "搜尋整合"
                 },
-                "introduction": "此處為 Home Assistant 和元件相關配置區，目前尚未支援透過 UI 進行所有設定，我們正在努力改進中。",
+                "introduction": "此面板為 Home Assistant 和元件相關配置區，目前尚未支援透過 UI 進行所有設定，我們正在努力改進中。",
                 "logs": {
                     "caption": "記錄",
                     "clear": "清除",
@@ -1569,7 +1570,7 @@
                             "open": "開啟"
                         }
                     },
-                    "description": "設定 Lovelace 主面板",
+                    "description": "管理 Lovelace 主面板",
                     "resources": {
                         "cant_edit_yaml": "正使用 YAML 模式、因此無法藉由 UI 變更 Lovelace 設定。請於「configuration.yaml」進行管理。",
                         "caption": "資源",
@@ -1647,7 +1648,7 @@
                 "scene": {
                     "activated": "已啟用場景 {name}。",
                     "caption": "場景",
-                    "description": "新增和編輯場景",
+                    "description": "管理場景",
                     "editor": {
                         "default_name": "新場景",
                         "devices": {
@@ -1691,7 +1692,7 @@
                 },
                 "script": {
                     "caption": "腳本",
-                    "description": "創建和編輯腳本",
+                    "description": "管理腳本",
                     "editor": {
                         "alias": "名稱",
                         "default_name": "新腳本",
@@ -1747,7 +1748,7 @@
                             "input_boolean": "重新載入輸入 boolean",
                             "input_datetime": "重新載入輸入日期時間",
                             "input_number": "重新載入輸入數字",
-                            "input_select": "重先載入輸入選擇",
+                            "input_select": "重新載入輸入選擇",
                             "input_text": "重新載入輸入文字",
                             "introduction": "Home Assistant 中部分設定無須重啟即可重新載入生效。點選重新載入按鈕，即可解除目前 YAML 設定，並重新載入最新設定。",
                             "person": "重新載入人員",
@@ -1815,7 +1816,7 @@
                         "discovered_text": "於探索到設備後將顯示於此處。",
                         "discovery_text": "所發現的設備將會顯示於此。跟隨設備的指示並將其設定為配對模式。",
                         "header": "Zigbee 家庭自動化 - 新增設備",
-                        "no_devices_found": "找不到設備，請確定設備處於配對模式、並於探索時保成喚醒狀態。",
+                        "no_devices_found": "找不到設備，請確定設備處於配對模式、並於探索時保持喚醒狀態。",
                         "pairing_mode": "請確定設備處於配對模式中，參閱設備的手冊以了解如何進行操作。",
                         "search_again": "再次搜尋",
                         "spinner": "正在搜尋 ZHA Zigbee 設備..."
@@ -1878,7 +1879,7 @@
                         "create_group": "Zigbee 家庭自動化 - 新增群組",
                         "create_group_details": "輸入所需詳細資訊以新增 Zigbee 群組。",
                         "creating_group": "新增群組",
-                        "description": "新增與修改 Zigbee 群組",
+                        "description": "管理 Zigbee 群組",
                         "group_details": "此處顯示所選 Zigbee 群組詳細資訊。",
                         "group_id": "群組 ID",
                         "group_info": "群組資訊",
@@ -1921,7 +1922,7 @@
                     "configured_in_yaml": "透過 configuration.yaml 設定的區域將無法透過 UI 進行編輯。",
                     "confirm_delete": "確定要刪除此區域？",
                     "create_zone": "新增區域",
-                    "description": "管理所要追蹤的人員區域。",
+                    "description": "管理所要追蹤的人員區域",
                     "detail": {
                         "create": "新增",
                         "delete": "刪除",
@@ -2339,6 +2340,7 @@
                     },
                     "edit_card": {
                         "add": "新增面板",
+                        "confirm_cancel": "確定要取消？",
                         "delete": "刪除面板",
                         "duplicate": "複製面板",
                         "edit": "編輯",
@@ -2349,7 +2351,9 @@
                         "pick_card_view_title": "要加入 {name} 視圖的面板？",
                         "show_code_editor": "顯示編碼編輯器",
                         "show_visual_editor": "顯示視覺編輯器",
-                        "toggle_editor": "切換編輯器"
+                        "toggle_editor": "切換編輯器",
+                        "typed_header": "{type} 面板設定",
+                        "unsaved_changes": "有未儲存變更"
                     },
                     "edit_lovelace": {
                         "edit_title": "編輯標題",
@@ -2442,6 +2446,8 @@
                     "entity": "物件",
                     "entity_id": "物件 ID",
                     "last_changed": "上次變更",
+                    "no_data": "找不到未使用物件",
+                    "search": "搜尋物件",
                     "select_to_add": "選擇所要新增至面板的物件、並點選新增至面板按鈕。",
                     "title": "未使用物件"
                 },

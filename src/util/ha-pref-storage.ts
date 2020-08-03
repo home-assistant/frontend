@@ -27,6 +27,10 @@ export function getState() {
   STORED_STATE.forEach((key) => {
     if (key in STORAGE) {
       let value = JSON.parse(STORAGE[key]);
+      // selectedTheme went from string to object on 20200718
+      if (key === "selectedTheme" && typeof value === "string") {
+        value = { theme: value };
+      }
       // dockedSidebar went from boolean to enum on 20190720
       if (key === "dockedSidebar" && typeof value === "boolean") {
         value = value ? "docked" : "auto";

@@ -93,6 +93,8 @@ export class ZHAClustersDataTable extends LitElement {
         selectable
         auto-height
         .dir=${computeRTLDirection(this.hass)}
+        .searchLabel=${this.hass.localize("ui.components.data-table.search")}
+        .noDataText=${this.hass.localize("ui.components.data-table.no-data")}
       ></ha-data-table>
     `;
   }

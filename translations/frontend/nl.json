@@ -430,6 +430,8 @@
                 "activate": "Activeren"
             },
             "script": {
+                "cancel": "Annuleer",
+                "cancel_multiple": "Annuleer {number}",
                 "execute": "Uitvoeren"
             },
             "service": {
@@ -524,6 +526,10 @@
                 "area": "Gebied",
                 "clear": "Wis",
                 "show_areas": "Toon gebieden"
+            },
+            "data-table": {
+                "no-data": "Geen gegevens",
+                "search": "Zoek"
             },
             "date-range-picker": {
                 "end_date": "Einddatum",
@@ -938,6 +944,19 @@
                         "introduction": "Gebruik automatiseringen om je huis tot leven te brengen.",
                         "load_error_not_editable": "Alleen automatiseringen in automations.yaml kunnen worden bewerkt.",
                         "load_error_unknown": "Fout bij laden van automatisering ({err_no}).",
+                        "max": {
+                            "parallel": "Maximale aantal parallelle runs",
+                            "queued": "Lengte van de wachtrij"
+                        },
+                        "modes": {
+                            "description": "De modus bepaalt wat er gebeurt wanneer de automatisering wordt geactiveerd terwijl de acties nog steeds worden uitgevoerd door een vorige trigger. Controleer de {documentation_link} voor meer informatie.",
+                            "documentation": "Automatisering documentatie",
+                            "label": "Modus",
+                            "parallel": "Parallel",
+                            "queued": "In de wachtrij geplaatst",
+                            "restart": "Herstarten",
+                            "single": "Enkelvoudig (standaard)"
+                        },
                         "move_down": "Verplaats omlaag",
                         "move_up": "Verplaats omhoog",
                         "save": "Opslaan",
@@ -1356,6 +1375,7 @@
                             "confirm_text": "Je moet ze zelf nog verwijderen uit je Lovelace-configuratie en automatiseringen als ze deze entiteiten bevatten.",
                             "confirm_title": "Wilt je {number} entiteiten verwijderen?"
                         },
+                        "search": "Zoek entiteiten",
                         "selected": "{number} geselecteerd",
                         "status": {
                             "disabled": "Uitgeschakeld",
@@ -1386,7 +1406,8 @@
                             "entity_id": "Entiteits-ID",
                             "name": "Naam",
                             "type": "Type"
-                        }
+                        },
+                        "no_helpers": "Er zijn geen helpers gevonden!"
                     },
                     "types": {
                         "input_boolean": "Schakelaar",
@@ -1490,7 +1511,8 @@
                     "note_about_integrations": "Nog niet alle integraties kunnen via de UI worden geconfigureerd.",
                     "note_about_website_reference": "Meer zijn beschikbaar op de ",
                     "rename_dialog": "Bewerk de naam van dit configuratie item",
-                    "rename_input_label": "Invoernaam"
+                    "rename_input_label": "Invoernaam",
+                    "search": "Zoek integraties"
                 },
                 "introduction": "Hier kun je je componenten en Home Assistant configureren. Het is nog niet mogelijk om alles te configureren vanuit de interface, maar we werken er aan.",
                 "logs": {
@@ -1588,7 +1610,7 @@
                     "description_listen": "Luisteren naar onderwerp",
                     "description_publish": "Publiceer een pakket",
                     "listening_to": "Luisteren naar",
-                    "message_received": "Bericht {id} ontvangen op {topic} om {time} :",
+                    "message_received": "Bericht {id} ontvangen op {topic} om {time}:",
                     "payload": "Payload (sjabloon toegestaan)",
                     "publish": "Publiceer",
                     "start_listening": "Begin te luisteren",
@@ -1643,6 +1665,7 @@
                             "introduction": "Entiteiten die niet bij apparaten horen kunnen hier ingesteld worden.",
                             "without_device": "Entiteiten zonder apparaat"
                         },
+                        "icon": "Pictogram",
                         "introduction": "Gebruik scènes om je huis tot leven te brengen.",
                         "load_error_not_editable": "Alleen scènes die zijn gedefinieerd in scenes.yaml kunnen worden bewerkt.",
                         "load_error_unknown": "Fout bij het laden van de scène ({err_no}).",
@@ -1676,9 +1699,26 @@
                         "delete_confirm": "Weet je zeker dat je dit script wilt verwijderen?",
                         "delete_script": "Verwijder script",
                         "header": "Script: {name}",
+                        "icon": "Pictogram",
+                        "id": "Entiteits-ID",
+                        "id_already_exists": "Deze ID bestaat al",
+                        "id_already_exists_save_error": "U kunt dit script niet opslaan omdat de ID niet uniek is, kies een andere ID of laat deze leeg om er automatisch een te genereren.",
                         "introduction": "Gebruik scripts om een reeks acties uit te voeren.",
                         "link_available_actions": "Meer informatie over beschikbare acties.",
                         "load_error_not_editable": "Alleen scripts in scripts.yaml kunnen worden bewerkt.",
+                        "max": {
+                            "parallel": "Maximum aantal parallelle runs",
+                            "queued": "Lengte van de wachtrij"
+                        },
+                        "modes": {
+                            "description": "De modus bepaalt wat er gebeurt wanneer het script wordt aangeroepen terwijl het nog steeds wordt uitgevoerd vanuit een of meer eerdere aanroepen. Controleer de {documentation_link} voor meer informatie.",
+                            "documentation": "Scriptdocumentatie",
+                            "label": "Modus",
+                            "parallel": "Parallel",
+                            "queued": "In de wachtrij geplaatst",
+                            "restart": "Herstarten",
+                            "single": "Enkelvoudig (standaard)"
+                        },
                         "sequence": "Reeks",
                         "sequence_sentence": "De reeks van acties in dit script."
                     },
@@ -1776,7 +1816,7 @@
                         "discovered_text": "Apparaten zullen hier verschijnen zodra ze zijn ontdekt.",
                         "discovery_text": "Gevonden apparaten worden hier weergegeven. Volg de instructies voor je apparaat of apparaten en plaats het apparaat of de apparaten in de koppelingsmodus.",
                         "header": "Zigbee Home Automation - Apparaten toevoegen",
-                        "no_devices_found": "Geen apparaten gevonden, zorg ervoor dat ze in de koppelingsmodus staan en dat gedurende het ontdekken ze actief zijn.",
+                        "no_devices_found": "Geen apparaten gevonden, zorg ervoor dat ze in de koppelingsmodus staan en dat de apparaten activiteit blijven maken gedurende het koppelen.",
                         "pairing_mode": "Zorg ervoor dat de apparaten in de koppelingsmodus staan. Kijk in de instructies van het apparaat hoe dit moet.",
                         "search_again": "Opnieuw zoeken",
                         "spinner": "Zoeken naar ZHA Zigbee-apparaten ..."
@@ -1947,15 +1987,21 @@
                         "group": "Groep",
                         "header": "Z-Wave Knooppunt-beheer",
                         "introduction": "Voer Z-Wave commando's uit die een enkel knooppunt beïnvloeden. Kies een knooppunt om een lijst met beschikbare commando's te zien.",
+                        "node_protection": "Node beveiliging",
+                        "node_to_control": "Node om te besturen",
                         "nodes": "Knooppunten",
                         "nodes_hint": "Selecteer knooppunt om de opties per knooppunt te bekijken",
+                        "nodes_in_group": "Andere nodes in deze groep:",
+                        "pooling_intensity": "Polling intensiteit",
                         "protection": "Bescherming",
+                        "remove_broadcast": "Broadcast verwijderen",
                         "remove_from_group": "Verwijderen uit groep",
                         "set_protection": "Bescherming instellen"
                     },
                     "ozw_log": {
                         "header": "OZW-logboek",
                         "introduction": "Bekijk het logboek. 0 is het minimum (laadt het gehele logboek) en 1000 is het maximum. Laad toont een statisch logboek en staart wordt automatisch bijgewerkt met het laatst opgegeven aantal regels van het logboek.",
+                        "last_log_lines": "Aantal laatste logboekregels",
                         "load": "Laden",
                         "tail": "Staart"
                     },
@@ -2186,6 +2232,7 @@
                             "name": "Naam",
                             "no_theme": "Geen thema",
                             "refresh_interval": "Vernieuwingsinterval",
+                            "search": "Zoek",
                             "secondary_info_attribute": "Secundair Info attribuut",
                             "show_icon": "Pictogram Weergeven?",
                             "show_name": "Naam weergeven?",
@@ -2272,7 +2319,7 @@
                             "name": "Boodschappenlijst"
                         },
                         "thermostat": {
-                            "description": "De Thermostat-kaart geeft controle over uw klimaateenheid. Hiermee kunt u de temperatuur en modus van de entiteit wijzigen.",
+                            "description": "De Thermostaat-kaart geeft controle over uw klimaateenheid. Hiermee kunt u de temperatuur en modus van de entiteit wijzigen.",
                             "name": "Thermostaat"
                         },
                         "vertical-stack": {
@@ -2291,6 +2338,7 @@
                     },
                     "edit_card": {
                         "add": "Kaart toevoegen",
+                        "confirm_cancel": "Weet u zeker dat u wilt afbreken?",
                         "delete": "Verwijder kaart",
                         "duplicate": "Dupliceer kaart",
                         "edit": "Bewerken",
@@ -2301,12 +2349,15 @@
                         "pick_card_view_title": "Welke kaart wil je toevoegen aan je {name} weergave?",
                         "show_code_editor": "Code-editor weergeven",
                         "show_visual_editor": "Visual Editor weergeven",
-                        "toggle_editor": "Toggle Editor"
+                        "toggle_editor": "Toggle Editor",
+                        "typed_header": "{type} Kaartconfiguratie",
+                        "unsaved_changes": "U heeft niet-opgelsagen wijzigingen"
                     },
                     "edit_lovelace": {
                         "edit_title": "Wijzig titel",
                         "explanation": "Deze titel wordt getoond in al je Lovelace weergaven.",
-                        "header": "Titel van je Lovelace UI"
+                        "header": "Titel van je Lovelace UI",
+                        "title": "Titel"
                     },
                     "edit_view": {
                         "add": "Weergave toevoegen",
@@ -2393,6 +2444,8 @@
                     "entity": "Entiteit",
                     "entity_id": "Entiteits-ID",
                     "last_changed": "Laatst gewijzigd",
+                    "no_data": "Geen ongebruikte entiteiten gevonden",
+                    "search": "Zoek entiteiten",
                     "select_to_add": "Selecteer de entiteiten die je aan een kaart wilt toevoegen en klik vervolgens op de knop Kaart toevoegen.",
                     "title": "Ongebruikte entiteiten"
                 },
@@ -2495,6 +2548,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "Uw computer is niet toegestaan.",
                                 "not_whitelisted": "Je computer staat niet op de whitelist."
                             },
                             "step": {

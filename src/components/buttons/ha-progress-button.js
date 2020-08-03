@@ -78,7 +78,7 @@ class HaProgressButton extends PolymerElement {
   }
 
   tempClass(className) {
-    var classList = this.$.container.classList;
+    const classList = this.$.container.classList;
     classList.add(className);
     setTimeout(() => {
       classList.remove(className);

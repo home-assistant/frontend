@@ -12,7 +12,6 @@ import {
   TemplateResult,
 } from "lit-element";
 import "../../../../components/dialog/ha-paper-dialog";
-import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
@@ -27,7 +26,7 @@ import { SuggestCardDialogParams } from "./show-suggest-card-dialog";
 
 @customElement("hui-dialog-suggest-card")
 export class HuiDialogSuggestCard extends LitElement {
-  @property() protected hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @internalProperty() private _params?: SuggestCardDialogParams;
 
@@ -35,16 +34,10 @@ export class HuiDialogSuggestCard extends LitElement {
 
   @internalProperty() private _saving = false;
 
-  @internalProperty() private _yamlMode = false;
-
-  @query("ha-paper-dialog") private _dialog?: HaPaperDialog;
-
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
-  public async showDialog(params: SuggestCardDialogParams): Promise<void> {
+  public showDialog(params: SuggestCardDialogParams): void {
     this._params = params;
-    this._yamlMode =
-      (this.hass.panels.lovelace?.config as any)?.mode === "yaml";
     this._cardConfig =
       params.cardConfig ||
       computeCards(
@@ -58,15 +51,15 @@ export class HuiDialogSuggestCard extends LitElement {
     if (!Object.isFrozen(this._cardConfig)) {
       this._cardConfig = deepFreeze(this._cardConfig);
     }
-    if (this._dialog) {
-      this._dialog.open();
-    }
     if (this._yamlEditor) {
       this._yamlEditor.setValue(this._cardConfig);
     }
   }
 
   protected render(): TemplateResult {
+    if (!this._params) {
+      return html``;
+    }
     return html`
       <ha-paper-dialog with-backdrop opened>
         <h2>
@@ -87,7 +80,7 @@ export class HuiDialogSuggestCard extends LitElement {
                 </div>
               `
             : ""}
-          ${this._yamlMode && this._cardConfig
+          ${this._params.yaml && this._cardConfig
             ? html`
                 <div class="editor">
                   <ha-yaml-editor
@@ -99,11 +92,11 @@ export class HuiDialogSuggestCard extends LitElement {
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
           <mwc-button @click="${this._close}">
-            ${this._yamlMode
+            ${this._params.yaml
               ? this.hass!.localize("ui.common.close")
               : this.hass!.localize("ui.common.cancel")}
           </mwc-button>
-          ${!this._yamlMode
+          ${!this._params.yaml
             ? html`
                 <mwc-button @click="${this._pickCard}"
                   >${this.hass!.localize(
@@ -174,10 +167,8 @@ export class HuiDialogSuggestCard extends LitElement {
   }
 
   private _close(): void {
-    this._dialog!.close();
     this._params = undefined;
     this._cardConfig = undefined;
-    this._yamlMode = false;
   }
 
   private _pickCard(): void {

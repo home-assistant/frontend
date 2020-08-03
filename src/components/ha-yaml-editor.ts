@@ -50,6 +50,8 @@ export class HaYamlEditor extends LitElement {
     try {
       this._yaml = value && !isEmpty(value) ? safeDump(value) : "";
     } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
       alert(`There was an error converting to YAML: ${err}`);
     }
     afterNextRender(() => {

@@ -31,13 +31,14 @@ import type { LovelaceConfig } from "../../../../data/lovelace";
 import type { HomeAssistant } from "../../../../types";
 import { computeUnusedEntities } from "../../common/compute-unused-entities";
 import type { Lovelace } from "../../types";
-import { addEntitiesToLovelaceView } from "../add-entities-to-view";
 import "../../../../components/ha-svg-icon";
 import { mdiPlus } from "@mdi/js";
+import { showSuggestCardDialog } from "../card-editor/show-suggest-card-dialog";
+import { showSelectViewDialog } from "../select-view/show-select-view-dialog";
 
 @customElement("hui-unused-entities")
 export class HuiUnusedEntities extends LitElement {
-  @property({ attribute: false }) public lovelace?: Lovelace;
+  @property({ attribute: false }) public lovelace!: Lovelace;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -48,7 +49,7 @@ export class HuiUnusedEntities extends LitElement {
   @internalProperty() private _selectedEntities: string[] = [];
 
   private get _config(): LovelaceConfig {
-    return this.lovelace!.config;
+    return this.lovelace.config;
   }
 
   private _columns = memoizeOne((narrow: boolean) => {
@@ -137,62 +138,67 @@ export class HuiUnusedEntities extends LitElement {
     }
 
     return html`
-      ${!this.narrow
-        ? html`
-            <ha-card
-              header="${this.hass.localize(
-                "ui.panel.lovelace.unused_entities.title"
-              )}"
-            >
-              <div class="card-content">
-                ${this.hass.localize(
-                  "ui.panel.lovelace.unused_entities.available_entities"
-                )}
-                ${this.lovelace.mode === "storage"
-                  ? html`
-                      <br />${this.hass.localize(
-                        "ui.panel.lovelace.unused_entities.select_to_add"
-                      )}
-                    `
-                  : ""}
-              </div>
-            </ha-card>
-          `
-        : ""}
-      <ha-data-table
-        .columns=${this._columns(this.narrow!)}
-        .data=${this._unusedEntities.map((entity) => {
-          const stateObj = this.hass!.states[entity];
-          return {
-            icon: "",
-            entity_id: entity,
-            stateObj,
-            name: computeStateName(stateObj),
-            domain: computeDomain(entity),
-            last_changed: stateObj!.last_changed,
-          };
-        })}
-        .id=${"entity_id"}
-        selectable
-        @selection-changed=${this._handleSelectionChanged}
-        .dir=${computeRTLDirection(this.hass)}
-      ></ha-data-table>
-
-      ${this._selectedEntities.length
-        ? html`
-            <mwc-fab
-              class="${classMap({
-                rtl: computeRTL(this.hass),
-              })}"
-              .label=${this.hass.localize(
-                "ui.panel.lovelace.editor.edit_card.add"
-              )}
-              @click=${this._addToLovelaceView}
-            >
-              <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
-            </mwc-fab>
-          `
-        : ""}
+      <div class="container">
+        ${!this.narrow
+          ? html`
+              <ha-card
+                header="${this.hass.localize(
+                  "ui.panel.lovelace.unused_entities.title"
+                )}"
+              >
+                <div class="card-content">
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.unused_entities.available_entities"
+                  )}
+                  ${this.lovelace.mode === "storage"
+                    ? html`
+                        <br />${this.hass.localize(
+                          "ui.panel.lovelace.unused_entities.select_to_add"
+                        )}
+                      `
+                    : ""}
+                </div>
+              </ha-card>
+            `
+          : ""}
+        <ha-data-table
+          .columns=${this._columns(this.narrow!)}
+          .data=${this._unusedEntities.map((entity) => {
+            const stateObj = this.hass!.states[entity];
+            return {
+              icon: "",
+              entity_id: entity,
+              stateObj,
+              name: computeStateName(stateObj),
+              domain: computeDomain(entity),
+              last_changed: stateObj!.last_changed,
+            };
+          })}
+          .id=${"entity_id"}
+          selectable
+          @selection-changed=${this._handleSelectionChanged}
+          .dir=${computeRTLDirection(this.hass)}
+          .searchLabel=${this.hass.localize(
+            "ui.panel.lovelace.unused_entities.search"
+          )}
+          .noDataText=${this.hass.localize(
+            "ui.panel.lovelace.unused_entities.no_data"
+          )}
+        ></ha-data-table>
+      </div>
+      <div
+        class="fab ${classMap({
+          rtl: computeRTL(this.hass),
+          selected: this._selectedEntities.length,
+        })}"
+      >
+        <mwc-fab
+          .label=${this.hass.localize("ui.panel.lovelace.editor.edit_card.add")}
+          @click=${this._addToLovelaceView}
+        >
+          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+        </mwc-fab>
+      </div>
     `;
   }
 
@@ -221,21 +227,38 @@ export class HuiUnusedEntities extends LitElement {
   }
 
   private _addToLovelaceView(): void {
-    addEntitiesToLovelaceView(
-      this,
-      this.hass,
-      this._selectedEntities,
-      this.lovelace!.config,
-      this.lovelace!.saveConfig
-    );
+    if (this.lovelace.config.views.length === 1) {
+      showSuggestCardDialog(this, {
+        lovelaceConfig: this.lovelace.config!,
+        saveConfig: this.lovelace.saveConfig,
+        path: [0],
+        entities: this._selectedEntities,
+      });
+      return;
+    }
+    showSelectViewDialog(this, {
+      lovelaceConfig: this.lovelace.config,
+      allowDashboardChange: false,
+      viewSelectedCallback: (_urlPath, _selectedDashConfig, viewIndex) => {
+        showSuggestCardDialog(this, {
+          lovelaceConfig: this.lovelace.config!,
+          saveConfig: this.lovelace.saveConfig,
+          path: [viewIndex],
+          entities: this._selectedEntities,
+        });
+      },
+    });
   }
 
   static get styles(): CSSResult {
     return css`
       :host {
         background: var(--lovelace-background);
+      }
+      .container {
         display: flex;
         flex-direction: column;
+        height: 100%;
       }
       ha-card {
         --ha-card-box-shadow: none;
@@ -246,15 +269,30 @@ export class HuiUnusedEntities extends LitElement {
         flex-grow: 1;
         margin-top: -20px;
       }
-      mwc-fab {
+      .fab {
+        overflow: hidden;
         position: absolute;
-        right: 16px;
-        bottom: 16px;
+        right: 0;
+        bottom: 0;
+        padding: 16px;
+        padding-right: calc(16px + env(safe-area-inset-right));
+        padding-bottom: calc(16px + env(safe-area-inset-bottom));
         z-index: 1;
       }
-      mwc-fab.rtl {
-        left: 16px;
-        right: auto;
+      .fab.rtl {
+        right: initial;
+        left: 0;
+        bottom: 0;
+        padding-right: 16px;
+        padding-left: calc(16px + env(safe-area-inset-left));
+      }
+      mwc-fab {
+        position: relative;
+        bottom: calc(-80px - env(safe-area-inset-bottom));
+        transition: bottom 0.3s;
+      }
+      .fab.selected mwc-fab {
+        bottom: 0;
       }
     `;
   }

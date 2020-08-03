@@ -21,7 +21,6 @@ import { HASSDomEvent } from "../../../common/dom/fire_event";
 import "../../../common/search/search-input";
 import { caseInsensitiveCompare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
-import { computeRTL } from "../../../common/util/compute_rtl";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/entity/ha-state-icon";
 import "../../../components/ha-button-menu";
@@ -276,7 +275,11 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
               </div>
             `
           : ""}
-        <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
+        <ha-button-menu
+          corner="BOTTOM_START"
+          slot="toolbar-icon"
+          @action=${this._toggleShowIgnored}
+        >
           <mwc-icon-button
             .title=${this.hass.localize("ui.common.menu")}
             .label=${this.hass.localize("ui.common.overflow_menu")}
@@ -284,7 +287,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           >
             <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
           </mwc-icon-button>
-          <mwc-list-item @click=${this._toggleShowIgnored}>
+          <mwc-list-item>
             ${this.hass.localize(
               this._showIgnored
                 ? "ui.panel.config.integrations.ignore.hide_ignored"
@@ -455,12 +458,10 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
             : ""}
         </div>
         <mwc-fab
+          slot="fab"
           aria-label=${this.hass.localize("ui.panel.config.integrations.new")}
           title=${this.hass.localize("ui.panel.config.integrations.new")}
           @click=${this._createFlow}
-          ?is-wide=${this.isWide}
-          ?narrow=${this.narrow}
-          ?rtl=${computeRTL(this.hass!)}
         >
           <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
         </mwc-fab>
@@ -709,28 +710,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         }
         h2 {
           margin-top: 0;
-        }
-        mwc-fab {
-          position: fixed;
-          bottom: 16px;
-          right: 16px;
-          z-index: 1;
-        }
-        mwc-fab[is-wide] {
-          bottom: 24px;
-          right: 24px;
-        }
-        mwc-fab[narrow] {
-          bottom: 84px;
-        }
-        mwc-fab[rtl] {
-          right: auto;
-          left: 16px;
-        }
-        mwc-fab[is-wide][rtl] {
-          bottom: 24px;
-          left: 24px;
-          right: auto;
         }
       `,
     ];

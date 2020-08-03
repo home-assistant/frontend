@@ -6,6 +6,7 @@ import {
   LeafletMouseEvent,
   Map,
   Marker,
+  TileLayer,
 } from "leaflet";
 import {
   css,
@@ -21,15 +22,19 @@ import { fireEvent } from "../../common/dom/fire_event";
 import {
   LeafletModuleType,
   setupLeafletMap,
+  replaceTileLayer,
 } from "../../common/dom/setup-leaflet-map";
 import { nextRender } from "../../common/util/render-status";
 import { defaultRadiusColor } from "../../data/zone";
+import { HomeAssistant } from "../../types";
 
 @customElement("ha-location-editor")
 class LocationEditor extends LitElement {
-  @property() public location?: [number, number];
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public radius?: number;
+  @property({ type: Array }) public location?: [number, number];
+
+  @property({ type: Number }) public radius?: number;
 
   @property() public radiusColor?: string;
 
@@ -45,6 +50,8 @@ class LocationEditor extends LitElement {
   private Leaflet?: LeafletModuleType;
 
   private _leafletMap?: Map;
+
+  private _tileLayer?: TileLayer;
 
   private _locationMarker?: Marker | Circle;
 
@@ -97,6 +104,22 @@ class LocationEditor extends LitElement {
     if (changedProps.has("icon")) {
       this._updateIcon();
     }
+
+    if (changedProps.has("hass")) {
+      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+      if (!oldHass || oldHass.themes.darkMode === this.hass.themes.darkMode) {
+        return;
+      }
+      if (!this._leafletMap || !this._tileLayer) {
+        return;
+      }
+      this._tileLayer = replaceTileLayer(
+        this.Leaflet,
+        this._leafletMap,
+        this._tileLayer,
+        this.hass.themes.darkMode
+      );
+    }
   }
 
   private get _mapEl(): HTMLDivElement {
@@ -104,9 +127,9 @@ class LocationEditor extends LitElement {
   }
 
   private async _initMap(): Promise<void> {
-    [this._leafletMap, this.Leaflet] = await setupLeafletMap(
+    [this._leafletMap, this.Leaflet, this._tileLayer] = await setupLeafletMap(
       this._mapEl,
-      false,
+      this.hass.themes.darkMode,
       Boolean(this.radius)
     );
     this._leafletMap.addEventListener(
@@ -254,9 +277,6 @@ class LocationEditor extends LitElement {
       }
       #map {
         height: 100%;
-      }
-      .light {
-        color: #000000;
       }
       .leaflet-edit-move {
         border-radius: 50%;

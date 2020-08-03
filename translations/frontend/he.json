@@ -430,6 +430,8 @@
                 "activate": "הפעל"
             },
             "script": {
+                "cancel": "בטל",
+                "cancel_multiple": "בטל {number}",
                 "execute": "הפעל"
             },
             "service": {
@@ -526,6 +528,7 @@
                 "show_areas": "הצג אזורים"
             },
             "data-table": {
+                "no-data": "אין נתונים",
                 "search": "חיפוש"
             },
             "date-range-picker": {
@@ -941,6 +944,19 @@
                         "introduction": "השתמש/י באוטומציות להפיח חיים בביתך.",
                         "load_error_not_editable": "רק אוטומציה ב automations.yaml ניתנים לעריכה.",
                         "load_error_unknown": "שגיאה בטעינת האוטומציה ( {err_no} ).",
+                        "max": {
+                            "parallel": "המספר המרבי של ריצות מקבילות",
+                            "queued": "אורך התור"
+                        },
+                        "modes": {
+                            "description": "המצב שולט במתרחש כאשר האוטומציה מופעלת בזמן שהפעולות עדיין פועלות מהטריגר הקודם. עיין ב {documentation_link} למידע נוסף.",
+                            "documentation": "תיעוד אוטומציה",
+                            "label": "מצב",
+                            "parallel": "במקביל",
+                            "queued": "בתור",
+                            "restart": "אתחול",
+                            "single": "יחיד (ברירת מחדל)"
+                        },
                         "move_down": "הזז למטה",
                         "move_up": "הזז למעלה",
                         "save": "שמור",
@@ -1582,7 +1598,7 @@
                         "refresh_body": "אתה צריך לרענן את הדף כדי להשלים את ההסרה, האם אתה רוצה לרענן עכשיו?",
                         "refresh_header": "האם אתה רוצה לרענן?",
                         "types": {
-                            "css": "סגנון עיצוב",
+                            "css": "Stylesheet",
                             "html": "HTML (הוצא משימוש)",
                             "js": "קובץ JavaScript (הוצא משימוש)",
                             "module": "JavaScript Module"
@@ -1649,6 +1665,7 @@
                             "introduction": "ניתן להגדיר כאן ישויות שאינן שייכות להתקנים.",
                             "without_device": "ישויות ללא מכשיר"
                         },
+                        "icon": "סמל",
                         "introduction": "השתמש בסצינות כדי להחיות את הבית שלך.",
                         "load_error_not_editable": "רק סצינות ב scenes.yaml ניתנות לעריכה.",
                         "load_error_unknown": "שגיאה בטעינת סצנה ({err_no}).",
@@ -1682,9 +1699,26 @@
                         "delete_confirm": "האם אתה בטוח שברצונך למחוק את הסקריפט הזה?",
                         "delete_script": "מחק סקריפט",
                         "header": "סקריפט: {name}",
+                        "icon": "סמל",
+                        "id": "מזהה ישות",
+                        "id_already_exists": "מזהה זה כבר קיים",
+                        "id_already_exists_save_error": "אינך יכול לשמור סקריפט זה מכיוון שהמזהה אינו ייחודי, בחר מזהה אחר או השאר אותו ריק כדי ליצור אוטומטית.",
                         "introduction": "השתמש בסקריפטים כדי לבצע רצף של פעולות.",
                         "link_available_actions": "למד עוד אודות פעולות זמינות.",
                         "load_error_not_editable": "רק סקריפטים בתוך קובץ scripts.yaml ניתנים לעריכה.",
+                        "max": {
+                            "parallel": "המספר המרבי של ריצות מקבילות",
+                            "queued": "אורך התור"
+                        },
+                        "modes": {
+                            "description": "המצב שולט במה שקורה כאשר מופעל סקריפט בזמן שהוא עדיין פועל מהפעלה קודמת אחת או יותר. עיין ב {documentation_link} למידע נוסף.",
+                            "documentation": "תיעוד סקריפט",
+                            "label": "מצב",
+                            "parallel": "מַקְבִּיל",
+                            "queued": "בתור",
+                            "restart": "אתחול",
+                            "single": "יחיד (ברירת מחדל)"
+                        },
                         "sequence": "סדר פעולות",
                         "sequence_sentence": "רצף הפעולות של סקריפט זה."
                     },
@@ -2057,12 +2091,12 @@
                         "title": "מצבים"
                     },
                     "templates": {
-                        "description": "התבניות מוצגות באמצעות מנוע התבניות Jinja2 עם כמה תוספים ספציפיים של Home Assistant.",
-                        "editor": "עורך התבניות",
-                        "jinja_documentation": "תיעוד תבנית Jinja2",
-                        "template_extensions": "הרחבות תבנית של Home Assistant",
+                        "description": "Templates are rendered using the Jinja2 template engine with some Home Assistant specific extensions.",
+                        "editor": "Template editor",
+                        "jinja_documentation": "Jinja2 template documentation",
+                        "template_extensions": "Home Assistant template extensions",
                         "title": "תבניות",
-                        "unknown_error_template": "שגיאה לא ידועה בעיבוד התבנית"
+                        "unknown_error_template": "Unknown error rendering template"
                     }
                 }
             },
@@ -2306,6 +2340,7 @@
                     },
                     "edit_card": {
                         "add": "הוסף כרטיסייה",
+                        "confirm_cancel": "האם אתה בטוח שברצונך לבטל?",
                         "delete": "מחק",
                         "duplicate": "שכפול כרטיס",
                         "edit": "ערוך",
@@ -2316,7 +2351,9 @@
                         "pick_card_view_title": "איזה כרטיס ברצונך להוסיף לתצוגת {name}?",
                         "show_code_editor": "הצג עורך קוד",
                         "show_visual_editor": "הצג עורך ויזואלי",
-                        "toggle_editor": "החלף מצב עורך"
+                        "toggle_editor": "החלף מצב עורך",
+                        "typed_header": "תצורת כרטיס {type}",
+                        "unsaved_changes": "יש לך שינויים שלא נשמרו"
                     },
                     "edit_lovelace": {
                         "edit_title": "ערוך כותרת",
@@ -2409,6 +2446,8 @@
                     "entity": "ישות",
                     "entity_id": "מזהה ישות",
                     "last_changed": "שונה לאחרונה",
+                    "no_data": "לא נמצאו ישויות שאינן בשימוש",
+                    "search": "חיפוש ישויות",
                     "select_to_add": "בחר את הישויות שברצונך להוסיף לכרטיס ולחץ על כפתור הוסף כרטיס.",
                     "title": "ישויות שאינן בשימוש"
                 },
@@ -2458,7 +2497,7 @@
                                     "data": {
                                         "code": "קוד אימות דו-שלבי"
                                     },
-                                    "description": "פתח את ** {mfa_module_name} ** במכשיר שלך כדי להציג את קוד האימות הדו שלבי ולאמת את הזהות שלך:"
+                                    "description": "פתח את **{mfa_module_name}** במכשיר שלך כדי להציג את קוד האימות הדו שלבי ולאמת את הזהות שלך:"
                                 }
                             }
                         },
@@ -2481,7 +2520,7 @@
                                     "data": {
                                         "code": "קוד אימות דו"
                                     },
-                                    "description": "פתח את ** {mfa_module_name} ** במכשיר שלך כדי להציג את קוד האימות הדו שלבי ולאמת את הזהות שלך:"
+                                    "description": "פתח את **{mfa_module_name}** במכשיר שלך כדי להציג את קוד האימות הדו שלבי ולאמת את הזהות שלך:"
                                 }
                             }
                         },
@@ -2505,12 +2544,13 @@
                                     "data": {
                                         "code": "קוד אימות דו"
                                     },
-                                    "description": "פתח את ** {mfa_module_name} ** במכשיר שלך כדי להציג את קוד האימות הדו שלבי ולאמת את הזהות שלך:"
+                                    "description": "פתח את **{mfa_module_name}** במכשיר שלך כדי להציג את קוד האימות הדו שלבי ולאמת את הזהות שלך:"
                                 }
                             }
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "המחשב שלך אינו מורשה.",
                                 "not_whitelisted": "המחשב שלך אינו רשום ברשימת ההיתרים."
                             },
                             "step": {
@@ -2528,7 +2568,7 @@
                     "working": "אנא המתן"
                 },
                 "initializing": "מאתחל",
-                "logging_in_with": "מתחבר  ** {authProviderName} **.",
+                "logging_in_with": "מתחבר עם **{authProviderName}**.",
                 "pick_auth_provider": "או התחבר עם"
             },
             "page-demo": {
@@ -2589,7 +2629,7 @@
                     "intro": "התקנים ושירותים מיוצגים ב- Home Assistant כאינטגרציות. באפשרותך להגדיר אותם כעת, או לעשות זאת מאוחר יותר ממסך התצורה.",
                     "more_integrations": "עוד"
                 },
-                "intro": "האם אתה מוכן לעורר את הבית שלך, להחזיר את הפרטיות שלך ולהצטרף לקהילה של tinkerers ברחבי העולם?",
+                "intro": "האם אתה רוצה לקחת שליטה על הבית שלך ולהצטרף לקהילה הגדולה שלנו?",
                 "user": {
                     "create_account": "צור חשבון",
                     "data": {

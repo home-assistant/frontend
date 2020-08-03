@@ -22,6 +22,7 @@ documentContainer.innerHTML = `<custom-style>
       --primary-text-color: #212121;
       --secondary-text-color: #727272;
       --text-primary-color: #ffffff;
+      --text-light-primary-color: #212121;
       --disabled-text-color: #bdbdbd;
 
       /* main interface colors */
@@ -34,7 +35,7 @@ documentContainer.innerHTML = `<custom-style>
       --scrollbar-thumb-color: rgb(194, 194, 194);
 
       --error-color: #db4437;
-      --warning-color: #f4b400;
+      --warning-color: #FF9800;
       --success-color: #0f9d58;
       --info-color: #4285f4;
 
@@ -82,9 +83,6 @@ documentContainer.innerHTML = `<custom-style>
 
       /* set our slider style */
       --ha-paper-slider-pin-font-size: 15px;
-
-      /* markdown styles */
-      --markdown-code-background-color: #f6f8fa;
 
       /* rgb */
       --rgb-primary-color: 3, 169, 244;

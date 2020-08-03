@@ -290,8 +290,8 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   effectChanged(ev) {
-    var oldVal = this.stateObj.attributes.effect;
-    var newVal = ev.detail.value;
+    const oldVal = this.stateObj.attributes.effect;
+    const newVal = ev.detail.value;
 
     if (!newVal || oldVal === newVal) return;
 
@@ -302,7 +302,7 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   brightnessSliderChanged(ev) {
-    var bri = parseInt(ev.target.value, 10);
+    const bri = parseInt(ev.target.value, 10);
 
     if (isNaN(bri)) return;
 
@@ -313,7 +313,7 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   ctSliderChanged(ev) {
-    var ct = parseInt(ev.target.value, 10);
+    const ct = parseInt(ev.target.value, 10);
 
     if (isNaN(ct)) return;
 
@@ -324,7 +324,7 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   wvSliderChanged(ev) {
-    var wv = parseInt(ev.target.value, 10);
+    const wv = parseInt(ev.target.value, 10);
 
     if (isNaN(wv)) return;
 

@@ -208,7 +208,7 @@
             "off": "Neaktivní"
         },
         "configurator": {
-            "configure": "Nakonfigurovat",
+            "configure": "Konfigurovat",
             "configured": "Nakonfigurováno"
         },
         "cover": {
@@ -528,6 +528,7 @@
                 "show_areas": "Zobrazit oblasti"
             },
             "data-table": {
+                "no-data": "Žádná data",
                 "search": "Hledat"
             },
             "date-range-picker": {
@@ -951,10 +952,10 @@
                             "description": "Režim určuje, co se stane, když je automatizace spuštěna a zároveň stále ještě běží akce na základě předchozího spuštění. Další informace naleznete na {documentation_link}.",
                             "documentation": "Dokumentace automatizací",
                             "label": "Režim",
-                            "parallel": "Paralelní (výchozí)",
+                            "parallel": "Paralelně",
                             "queued": "Fronta",
                             "restart": "Restart",
-                            "single": "Jediný"
+                            "single": "Jediný (výchozí)"
                         },
                         "move_down": "Posunout dolů",
                         "move_up": "Posunout nahoru",
@@ -1409,10 +1410,10 @@
                         "no_helpers": "Vypadá to, že ještě nemáte žádné pomocníky!"
                     },
                     "types": {
-                        "input_boolean": "Přepnout",
+                        "input_boolean": "Přepínač",
                         "input_datetime": "Datum a/nebo čas",
                         "input_number": "Číslo",
-                        "input_select": "Rozbalovací nabídka",
+                        "input_select": "Výběr",
                         "input_text": "Text"
                     }
                 },
@@ -1713,7 +1714,7 @@
                             "description": "Režim určuje, co se stane, když je skript spuštěn a zároveň stále ještě běží na základě předchozího spuštění. Další informace naleznete na {documentation_link}.",
                             "documentation": "Dokumentace skriptů",
                             "label": "Režim",
-                            "parallel": "Paralelní (výchozí)",
+                            "parallel": "Paralelně",
                             "queued": "Fronta",
                             "restart": "Restart",
                             "single": "Jediný (výchozí)"
@@ -1730,7 +1731,7 @@
                         },
                         "introduction": "Editor skriptů umožňuje vytvářet a upravovat skripty. Postupujte podle níže uvedeného odkazu a přečtěte si pokyny, abyste se ujistili, že jste Home Assistant nakonfigurovali správně.",
                         "learn_more": "Další informace o skriptech",
-                        "no_scripts": "Nemohli jsme najít žádné editovatelné skripty",
+                        "no_scripts": "Nemohli jsme najít žádné upravitelné skripty",
                         "show_info": "Zobrazit informace o skriptu",
                         "trigger_script": "Spustit skript"
                     }
@@ -1744,11 +1745,11 @@
                             "core": "Znovu načíst umístění a přizpůsobení",
                             "group": "Znovu načíst skupiny",
                             "heading": "Konfigurace se načítá",
-                            "input_boolean": "Znovu načíst logické hodnoty",
-                            "input_datetime": "Znovu načíst časy",
-                            "input_number": "Znovu načíst vstupní čísla",
-                            "input_select": "Znovu načíst výběr",
-                            "input_text": "Znovu načíst text",
+                            "input_boolean": "Znovu načíst pomocníky - čísla",
+                            "input_datetime": "Znovu načíst pomocníky - data/časy",
+                            "input_number": "Znovu načíst pomocníky - přepínače",
+                            "input_select": "Znovu načíst pomocníky - výběry",
+                            "input_text": "Znovu načíst pomocníky - texty",
                             "introduction": "Některé části Home Assistant lze načíst bez nutnosti restartování. Volba načtení zahodí jejich aktuální konfiguraci a načte novou.",
                             "person": "Znovu načíst osoby",
                             "scene": "Znovu načíst scény",
@@ -1824,7 +1825,7 @@
                         "caption": "Přidat zařízení",
                         "description": "Přidat zařízení do sítě Zigbee"
                     },
-                    "button": "Nakonfigurovat",
+                    "button": "Konfigurovat",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributy vybraného klastru",
@@ -1938,14 +1939,14 @@
                         "update": "Aktualizovat"
                     },
                     "edit_home_zone": "Poloměr domovské zóny zatím nelze upravit z frontendu. Z frontendu se dá změnit jen poloha domovské zóny.",
-                    "edit_home_zone_narrow": "Poloměr domovské zóny zatím nelze upravit z frontendu. Umístění lze změnit z obecné konfigurace.",
+                    "edit_home_zone_narrow": "Poloměr domovské zóny zatím nelze upravit z rozhraní. Umístění lze změnit z obecné konfigurace.",
                     "go_to_core_config": "Přejít na obecnou konfiguraci?",
-                    "home_zone_core_config": "Umístění vaší domovské zóny lze upravit na stránce obecné konfigurace. Poloměr domovské zóny zatím nelze upravit z frontendu. Chcete přejít na obecnou konfiguraci?",
+                    "home_zone_core_config": "Umístění vaší domovské zóny lze upravit na stránce obecné konfigurace. Poloměr domovské zóny zatím nelze upravit z rozhraní. Chcete přejít na obecnou konfiguraci?",
                     "introduction": "Zóny umožňují určit určité oblasti na zemi. Když je osoba v zóně, stav převezme název ze zóny. Zóny lze také použít jako aktivační událost nebo podmínku v nastavení automatizace.",
                     "no_zones_created_yet": "Vypadá to, že nejsou vytvořené žádné zóny."
                 },
                 "zwave": {
-                    "button": "Nakonfigurovat",
+                    "button": "Konfigurovat",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "Index",
@@ -2339,6 +2340,7 @@
                     },
                     "edit_card": {
                         "add": "Přidat kartu",
+                        "confirm_cancel": "Opravdu chcete zahodit změny?",
                         "delete": "Odstranit",
                         "duplicate": "Duplikovat Kartu",
                         "edit": "Upravit",
@@ -2349,7 +2351,9 @@
                         "pick_card_view_title": "Kterou kartu byste chtěli přidat do svého {name} pohledu?",
                         "show_code_editor": "Zobrazit editor kódu",
                         "show_visual_editor": "Zobrazit vizuální editor",
-                        "toggle_editor": "Přepnout Editor"
+                        "toggle_editor": "Přepnout Editor",
+                        "typed_header": "{type} Konfigurace karty",
+                        "unsaved_changes": "Změny nejsou uloženy"
                     },
                     "edit_lovelace": {
                         "edit_title": "Upravit titulek",
@@ -2404,7 +2408,7 @@
                         "empty_config": "Začít s prázdným dashboardem",
                         "header": "Převzít kontrolu nad vaší Lovelace UI",
                         "para": "Ve výchozím nastavení bude Home Assistant spravovat vaše uživatelské rozhraní – aktualizovat jej při přidání nové entity nebo Lovelace komponenty. Pokud převezmete kontrolu, nebudeme již provádět změny automaticky za vás.",
-                        "para_sure": "Opravdu chcete převzít kontrolu nad uživalským rohraním ?",
+                        "para_sure": "Opravdu chcete převzít kontrolu nad uživalským rozhraním ?",
                         "save": "Převzít kontrolu",
                         "yaml_config": "Abyste mohli snadněji začít, zde aktuální konfigurace tohoto dashboardu:",
                         "yaml_control": "Chcete-li převzít kontrolu v režimu YAML, vytvořte soubor YAML s názvem, který jste uvedli ve své konfiguraci pro tento dashboard nebo výchozí 'ui-lovelace.yaml'.",
@@ -2442,6 +2446,8 @@
                     "entity": "Entita",
                     "entity_id": "ID entity",
                     "last_changed": "Naposledy změněno",
+                    "no_data": "Nebyly nalezeny žádné nepoužívané entity",
+                    "search": "Hledat entitu",
                     "select_to_add": "Vyberte entity, které chcete přidat do karty, a poté klikněte na tlačítko přidat kartu.",
                     "title": "Nepoužité entity"
                 },

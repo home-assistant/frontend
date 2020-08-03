@@ -48,6 +48,19 @@
                 "none": "Ingen",
                 "sleep": "Sover"
             }
+        },
+        "humidifier": {
+            "mode": {
+                "auto": "Auto",
+                "away": "Ude",
+                "baby": "Baby",
+                "boost": "Boost",
+                "comfort": "Komfort",
+                "eco": "Øko",
+                "home": "Hjemme",
+                "normal": "Normal",
+                "sleep": "Søvn"
+            }
         }
     },
     "state_badge": {
@@ -388,6 +401,12 @@
                 "reverse": "Baglæns",
                 "speed": "Hastighed"
             },
+            "humidifier": {
+                "humidity": "Målfugtighed",
+                "mode": "Tilstand",
+                "on_entity": "{name} tændt",
+                "target_humidity_entity": "{name} målfugtighed"
+            },
             "light": {
                 "brightness": "Lysstyrke",
                 "color_temperature": "Farvetemperatur",
@@ -411,6 +430,8 @@
                 "activate": "Aktiver"
             },
             "script": {
+                "cancel": "Annuller",
+                "cancel_multiple": "Annuller {number}",
                 "execute": "Udløs"
             },
             "service": {
@@ -505,6 +526,10 @@
                 "area": "Område",
                 "clear": "Ryd",
                 "show_areas": "Vis områder"
+            },
+            "data-table": {
+                "no-data": "Ingen data",
+                "search": "Søg"
             },
             "date-range-picker": {
                 "end_date": "Slutdato",
@@ -627,7 +652,7 @@
                     "pattern": "Regex-mønster til validering på klientsiden",
                     "text": "Tekst"
                 },
-                "platform_not_loaded": "{platform}-integrationen er ikke indlæst. Tilføj den til din konfiguration. Enten ved at tilføje 'default_config:' eller ''{platform}:''.",
+                "platform_not_loaded": "{platform}-integrationen er ikke indlæst. Tilføj den til din konfiguration, enten ved at tilføje 'default_config:' eller ''{platform}:''.",
                 "required_error_msg": "Dette felt er påkrævet",
                 "yaml_not_editable": "Indstillingerne for denne entitet kan ikke redigeres fra brugerfladen. Det er kun entiteter, der er konfigureret fra brugerfladen, der kan konfigureres herfra."
             },
@@ -699,11 +724,11 @@
             },
             "zha_device_info": {
                 "buttons": {
-                    "add": "Tilføj enheder",
+                    "add": "Tilføj enheder via denne enhed",
                     "clusters": "Administrer klynger",
                     "reconfigure": "Genkonfigurer enhed",
                     "remove": "Fjern enhed",
-                    "zigbee_information": "Zigbee-oplysninger"
+                    "zigbee_information": "Zigbee-enhedssignatur"
                 },
                 "confirmations": {
                     "remove": "Er du sikker på, at du vil fjerne enheden?"
@@ -723,7 +748,7 @@
                 "unknown": "Ukendt",
                 "zha_device_card": {
                     "area_picker_label": "Område",
-                    "device_name_placeholder": "Brugertildelt navn",
+                    "device_name_placeholder": "Skift enhedsnavn",
                     "update_name_button": "Opdater navn"
                 }
             }
@@ -773,7 +798,7 @@
                         "confirmation_text": "Alle enheder i dette område vil blive utildelte.",
                         "confirmation_title": "Er du sikker på, at du vil slette dette område?"
                     },
-                    "description": "Oversigt over alle områder i dit hjem.",
+                    "description": "Administrer områder i dit hjem",
                     "editor": {
                         "area_id": "Område-id",
                         "create": "Opret",
@@ -795,7 +820,7 @@
                 },
                 "automation": {
                     "caption": "Automatiseringer",
-                    "description": "Opret og rediger automatiseringer",
+                    "description": "Administrer automatiseringer",
                     "editor": {
                         "actions": {
                             "add": "Tilføj handling",
@@ -919,6 +944,19 @@
                         "introduction": "Brug automatiseringer til at vække dit hjem til live.",
                         "load_error_not_editable": "Kun automatiseringer i 'automations.yaml' kan redigeres.",
                         "load_error_unknown": "Fejl ved indlæsning af automatisering ({err_no}).",
+                        "max": {
+                            "parallel": "Maksimalt antal parallelle kørsler",
+                            "queued": "Kølængde"
+                        },
+                        "modes": {
+                            "description": "Tilstanden styrer, hvad der sker, når automatiseringen udløses, mens handlingerne stadig kører fra en tidligere udløser. Læs {documentation_link} for at få flere oplysninger.",
+                            "documentation": "automatiseringsdokumentationen",
+                            "label": "Tilstand",
+                            "parallel": "Parallelt",
+                            "queued": "I kø",
+                            "restart": "Genstart",
+                            "single": "Enkelt (standard)"
+                        },
                         "move_down": "Flyt ned",
                         "move_up": "Flyt op",
                         "save": "Gem",
@@ -1303,7 +1341,7 @@
                 },
                 "entities": {
                     "caption": "Entiteter",
-                    "description": "Oversigt over alle kendte entiteter.",
+                    "description": "Administrer kendte entiteter",
                     "picker": {
                         "disable_selected": {
                             "button": "Deaktiver valgte",
@@ -1337,6 +1375,7 @@
                             "confirm_text": "Du bør fjerne dem fra din Lovelace-konfiguration og automatiseringer, hvis de indeholder disse entiteter.",
                             "confirm_title": "Vil du fjerne {number} entiteter?"
                         },
+                        "search": "Søg i entiteter",
                         "selected": "{number} valgt",
                         "status": {
                             "disabled": "Deaktiveret",
@@ -1354,7 +1393,7 @@
                 "header": "Konfigurer Home Assistant",
                 "helpers": {
                     "caption": "Hjælpere",
-                    "description": "Elementer, der kan hjælpe med at bygge automatiseringer.",
+                    "description": "Administrer elementer, der hjælper med at opbygge automatiseringer",
                     "dialog": {
                         "add_helper": "Tilføj hjælper",
                         "add_platform": "Tilføj {platform}",
@@ -1367,7 +1406,8 @@
                             "entity_id": "Entitets-id",
                             "name": "Navn",
                             "type": "Type"
-                        }
+                        },
+                        "no_helpers": "Det ser ud til, at du ikke har nogen hjælpere endnu!"
                     },
                     "types": {
                         "input_boolean": "Til/fra",
@@ -1381,7 +1421,7 @@
                     "built_using": "Bygget ved hjælp af",
                     "caption": "Oplysninger",
                     "custom_uis": "Tilpassede brugergrænseflader:",
-                    "description": "Oplysninger om din Home Assistant-installation",
+                    "description": "Se oplysninger om din Home Assistant-installation",
                     "developed_by": "Udviklet af en masse fantastiske mennesker.",
                     "documentation": "Dokumentation",
                     "frontend": "brugerflade",
@@ -1412,6 +1452,7 @@
                         "delete_confirm": "Er du sikker på, at du vil fjerne denne integration?",
                         "device_unavailable": "entitet utilgængelig",
                         "devices": "{count} {count, plural,\n  one {enhed}\n  other {enheder}\n}",
+                        "documentation": "Dokumentation",
                         "entities": "{count} {count, plural,\n  one {entitet}\n  other {entiteter}\n}",
                         "entity_unavailable": "entitet utilgængelig",
                         "firmware": "Firmware: {version}",
@@ -1445,7 +1486,7 @@
                     },
                     "configure": "Konfigurer",
                     "configured": "Konfigureret",
-                    "description": "Administrer og opsæt integrationer",
+                    "description": "Administrer integrationer",
                     "details": "Integrationsdetaljer",
                     "discovered": "Fundet",
                     "home_assistant_website": "Home Assistants hjemmeside",
@@ -1470,7 +1511,8 @@
                     "note_about_integrations": "Ikke alle integrationer kan konfigureres via brugerfladen endnu.",
                     "note_about_website_reference": "Flere er tilgængelige på ",
                     "rename_dialog": "Rediger navnet på denne konfigurationspost",
-                    "rename_input_label": "Navn på post"
+                    "rename_input_label": "Navn på post",
+                    "search": "Søg i integrationer"
                 },
                 "introduction": "Her er det muligt at konfigurere dine komponenter og Home Assistant. Ikke alt er muligt at konfigurere fra brugerfladen endnu, men vi arbejder på det.",
                 "logs": {
@@ -1528,7 +1570,7 @@
                             "open": "Åbn"
                         }
                     },
-                    "description": "Konfigurer dine Lovelace-betjeningspaneler",
+                    "description": "Administrer dine Lovelace-betjeningspaneler",
                     "resources": {
                         "cant_edit_yaml": "Du bruger Lovelace i YAML-tilstand, og derfor kan du ikke administrere dine ressourcer gennem brugerfladen. Administrer dem i configuration.yaml.",
                         "caption": "Ressourcer",
@@ -1606,7 +1648,7 @@
                 "scene": {
                     "activated": "Aktiverede scenen {name}.",
                     "caption": "Scener",
-                    "description": "Opret og rediger scener",
+                    "description": "Administrer scener",
                     "editor": {
                         "default_name": "Ny scene",
                         "devices": {
@@ -1623,6 +1665,7 @@
                             "introduction": "Entiteter, der ikke hører til en enhed, kan indstilles her.",
                             "without_device": "Entiteter uden enhed"
                         },
+                        "icon": "Ikon",
                         "introduction": "Brug scener til at vække dit hjem til live",
                         "load_error_not_editable": "Kun scener i 'scenes.yaml' er redigerbare.",
                         "load_error_unknown": "Fejl under indlæsning af scene ({err_no}).",
@@ -1649,16 +1692,33 @@
                 },
                 "script": {
                     "caption": "Scripts",
-                    "description": "Opret og rediger scripts",
+                    "description": "Administrer scripts",
                     "editor": {
                         "alias": "Navn",
                         "default_name": "Nyt script",
                         "delete_confirm": "Er du sikker på, at du vil slette dette script?",
                         "delete_script": "Slet script",
                         "header": "Script: {name}",
+                        "icon": "Ikon",
+                        "id": "Entitets-id",
+                        "id_already_exists": "Dette id findes allerede",
+                        "id_already_exists_save_error": "Du kan ikke gemme dette script, fordi id'et ikke er unikt. Vælg et andet id eller lad det være tomt for automatisk at generere et.",
                         "introduction": "Brug scripts til at udløse en sekvens af handlinger.",
                         "link_available_actions": "Lær mere om tilgængelige handlinger.",
                         "load_error_not_editable": "Kun scripts i 'scripts.yaml' kan redigeres.",
+                        "max": {
+                            "parallel": "Maksimalt antal parallelle kørsler",
+                            "queued": "Kølængde"
+                        },
+                        "modes": {
+                            "description": "Tilstanden styrer, hvad der sker, når scriptet aktiveres, mens det stadig kører fra en eller flere tidligere aktiveringer. Læs {documentation_link} for at få flere oplysninger.",
+                            "documentation": "script-dokumentationen",
+                            "label": "Tilstand",
+                            "parallel": "Parallelt",
+                            "queued": "I kø",
+                            "restart": "Genstart",
+                            "single": "Enkelt (standard)"
+                        },
                         "sequence": "Sekvens",
                         "sequence_sentence": "Sekvensen af handlinger i dette script."
                     },
@@ -1819,7 +1879,7 @@
                         "create_group": "Zigbee Home Automation - Opret gruppe",
                         "create_group_details": "Indtast de nødvendige oplysninger for at oprette en ny ZigBee-gruppe",
                         "creating_group": "Opretter gruppe",
-                        "description": "Opret og rediger Zigbee-grupper",
+                        "description": "Administrer Zigbee-grupper",
                         "group_details": "Her er alle detaljer for den valgte Zigbee-gruppe.",
                         "group_id": "Gruppe-id",
                         "group_info": "Gruppeoplysninger",
@@ -1919,26 +1979,53 @@
                         "set_wakeup": "Indstil vækningsinterval",
                         "true": "Sandt"
                     },
+                    "node_management": {
+                        "add_to_group": "Føj til gruppe",
+                        "entities": "Entities fra dette knudepunkt",
+                        "entity_info": "Entitetsoplysninger",
+                        "exclude_entity": "Ekskluder denne entitet fra Home Assistant",
+                        "group": "Gruppe",
+                        "header": "Administration af Z-Wave-knudepunkter",
+                        "introduction": "Udfør Z-Wave-kommandoer, der påvirker det enkelte knudepunkt. Vælg et knudepunkt for at se en liste over tilgængelige kommandoer.",
+                        "max_associations": "Maks tilknytninger:",
+                        "node_group_associations": "Knudepunktsgruppe-tilknytninger",
+                        "node_protection": "Knudepunktsbeskyttelse",
+                        "node_to_control": "Knudepunkt, der skal styres",
+                        "nodes": "Knudepunkter",
+                        "nodes_hint": "Vælg knudepunkt for at få vist knudepunkts-specifikke muligheder",
+                        "nodes_in_group": "Andre knudepunkter i denne gruppe:",
+                        "pooling_intensity": "Forespørgselsintensitet",
+                        "protection": "Beskyttelse",
+                        "remove_broadcast": "Fjern udsendelse",
+                        "remove_from_group": "Fjern knudepunkt fra gruppe",
+                        "set_protection": "Angiv beskyttelse"
+                    },
                     "ozw_log": {
                         "header": "OZW-log",
-                        "introduction": "Se loggen. 0 er minimum (indlæser hele loggen) og 1000 er maksimum. Indlæsning viser en statisk log, og enden opdateres automatisk med det sidst specificerede antal linjer i loggen."
+                        "introduction": "Se loggen. 0 er minimum (indlæser hele loggen) og 1000 er maksimum. Indlæsning viser en statisk log, og enden opdateres automatisk med det sidst specificerede antal linjer i loggen.",
+                        "last_log_lines": "Antal sidste loglinjer",
+                        "load": "Hent",
+                        "tail": "Hale"
                     },
                     "services": {
                         "add_node": "Tilføj knudepunkt",
                         "add_node_secure": "Tilføj sikkert knudepunkt",
                         "cancel_command": "Annuller kommando",
                         "heal_network": "Helbred netværk",
-                        "heal_node": "Helbred node",
-                        "node_info": "Node information",
-                        "print_node": "Udskriv node",
+                        "heal_node": "Helbred knudepunkt",
+                        "node_info": "Oplysninger om knudepunkt",
+                        "print_node": "Print knudepunkt",
                         "refresh_entity": "Opdater entitet",
+                        "refresh_node": "Opdater knudepunkt",
+                        "remove_failed_node": "Fjern knudepunkt med problemer",
                         "remove_node": "Fjern knudepunkt",
+                        "replace_failed_node": "Erstat knudepunkt med problemer",
                         "save_config": "Gem konfiguration",
                         "soft_reset": "Blød nulstilling",
                         "start_network": "Start netværk",
                         "stop_network": "Stop netværk",
                         "test_network": "Test netværk",
-                        "test_node": "Test node"
+                        "test_node": "Test knudepunt"
                     },
                     "values": {
                         "header": "Knudepunktsværdier"
@@ -2147,6 +2234,7 @@
                             "name": "Navn",
                             "no_theme": "Intet tema",
                             "refresh_interval": "Opdateringsinterval",
+                            "search": "Søg",
                             "secondary_info_attribute": "Sekundær info-egenskab",
                             "show_icon": "Vis ikon?",
                             "show_name": "Vis navn?",
@@ -2170,6 +2258,10 @@
                         "horizontal-stack": {
                             "description": "Vandret stak-kortet giver dig mulighed for at stable flere kort sammen, så de altid sidder ved siden af hinanden i en kolonne.",
                             "name": "Vandret stak"
+                        },
+                        "humidifier": {
+                            "description": "Luftfugterkortet giver kontrol over din luftfugterentitet. Kortet giver dig mulighed for at ændre entitetens fugtighed og tilstand.",
+                            "name": "Luftfugter"
                         },
                         "iframe": {
                             "description": "Websidekortet giver dig mulighed for at integrere din foretrukne webside direkte i Home Assistant.",
@@ -2248,6 +2340,7 @@
                     },
                     "edit_card": {
                         "add": "Tilføj kort",
+                        "confirm_cancel": "Er du sikker på, at du vil annullere?",
                         "delete": "Slet kort",
                         "duplicate": "Dubliker kort",
                         "edit": "Rediger",
@@ -2258,12 +2351,15 @@
                         "pick_card_view_title": "Hvilket kort vil du tilføje til din {name}-visning?",
                         "show_code_editor": "Vis kode-editor",
                         "show_visual_editor": "Vis visuel editor",
-                        "toggle_editor": "Editor til/fra"
+                        "toggle_editor": "Editor til/fra",
+                        "typed_header": "{type}-kortkonfiguration",
+                        "unsaved_changes": "Du har ikke-gemte ændringer"
                     },
                     "edit_lovelace": {
                         "edit_title": "Rediger titel",
                         "explanation": "Denne titel vises over alle dine visninger i Lovelace-brugerfladen.",
-                        "header": "Titel på din Lovelace-brugerflade"
+                        "header": "Titel på din Lovelace-brugerflade",
+                        "title": "Titel"
                     },
                     "edit_view": {
                         "add": "Tilføj visning",
@@ -2350,6 +2446,8 @@
                     "entity": "Entitet",
                     "entity_id": "Entitets-id",
                     "last_changed": "Sidst ændret",
+                    "no_data": "Der blev ikke fundet ubrugte entiteter",
+                    "search": "Søg i entiteter",
                     "select_to_add": "Vælg de objekter, du vil føje til et kort, og klik derefter på knappen Tilføj kort.",
                     "title": "Ubrugte entiteter"
                 },
@@ -2452,6 +2550,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "Din computer er ikke tilladt.",
                                 "not_whitelisted": "Din computer er ikke whitelistet."
                             },
                             "step": {
@@ -2626,6 +2725,10 @@
                     "last_used": "Sidst anvendt den {date} fra {location}",
                     "not_used": "Har aldrig været brugt",
                     "token_title": "Opdateringstoken for {clientId}"
+                },
+                "suspend": {
+                    "description": "Skal vi lukke forbindelsen til serveren efter det har været skjult i 5 minutter?",
+                    "header": "Luk forbindelsen automatisk"
                 },
                 "themes": {
                     "dropdown_label": "Tema",

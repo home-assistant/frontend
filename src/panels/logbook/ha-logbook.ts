@@ -14,7 +14,7 @@ import { formatTimeWithSeconds } from "../../common/datetime/format_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { stateIcon } from "../../common/entity/state_icon";
-import { computeRTL } from "../../common/util/compute_rtl";
+import { computeRTL, emitRTLDirection } from "../../common/util/compute_rtl";
 import "../../components/ha-icon";
 import { LogbookEntry } from "../../data/logbook";
 import { HomeAssistant } from "../../types";
@@ -28,7 +28,6 @@ class HaLogbook extends LitElement {
   @property() public entries: LogbookEntry[] = [];
 
   @property({ attribute: "rtl", type: Boolean, reflect: true })
-  // @ts-ignore
   private _rtl = false;
 
   // @ts-ignore
@@ -38,17 +37,22 @@ class HaLogbook extends LitElement {
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const languageChanged =
       oldHass === undefined || oldHass.language !== this.hass.language;
+
     return changedProps.has("entries") || languageChanged;
   }
 
   protected updated(_changedProps: PropertyValues) {
-    this._rtl = computeRTL(this.hass);
+    const oldHass = _changedProps.get("hass") as HomeAssistant | undefined;
+
+    if (oldHass === undefined || oldHass.language !== this.hass.language) {
+      this._rtl = computeRTL(this.hass);
+    }
   }
 
   protected render(): TemplateResult {
     if (!this.entries?.length) {
       return html`
-        <div class="container">
+        <div class="container" .dir=${emitRTLDirection(this._rtl)}>
           ${this.hass.localize("ui.panel.logbook.entries_not_found")}
         </div>
       `;
@@ -106,9 +110,8 @@ class HaLogbook extends LitElement {
                     @click=${this._entityClicked}
                     .entityId=${item.entity_id}
                     class="name"
+                    >${item.name}</a
                   >
-                    ${item.name}
-                  </a>
                 `}
             <span
               >${item.message}${item_username
