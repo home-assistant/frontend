@@ -250,7 +250,7 @@ class HUIRoot extends LitElement {
                           </mwc-list-item>
                         `
                       : ""}
-                    ${this.hass!.user!.is_admin && !this.hass!.config.safe_mode
+                    ${this.hass!.user?.is_admin && !this.hass!.config.safe_mode
                       ? html`
                           <mwc-list-item
                             aria-label=${this.hass!.localize(
