@@ -4,32 +4,46 @@ import {
   LitElement,
   internalProperty,
   TemplateResult,
+  CSSResult,
+  css,
 } from "lit-element";
-import { toggleAttribute } from "../../../../common/dom/toggle_attribute";
 import "../../../../components/dialog/ha-paper-dialog";
-import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
-import type { PolymerChangedEvent } from "../../../../polymer-types";
 import "../../components/hui-views-list";
 import type { SelectViewDialogParams } from "./show-select-view-dialog";
+import { HomeAssistant } from "../../../../types";
+import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-paper-dropdown-menu";
+import "@polymer/paper-item/paper-item";
+import {
+  LovelaceDashboard,
+  fetchDashboards,
+  LovelaceConfig,
+  fetchConfig,
+} from "../../../../data/lovelace";
 
 @customElement("hui-dialog-select-view")
 export class HuiDialogSelectView extends LitElement {
+  public hass!: HomeAssistant;
+
   @internalProperty() private _params?: SelectViewDialogParams;
 
-  public async showDialog(params: SelectViewDialogParams): Promise<void> {
+  @internalProperty() private _dashboards: LovelaceDashboard[] = [];
+
+  @internalProperty() private _urlPath?: string | null;
+
+  @internalProperty() private _config?: LovelaceConfig;
+
+  public showDialog(params: SelectViewDialogParams): void {
+    this._config = params.lovelaceConfig;
+    this._urlPath = params.urlPath;
     this._params = params;
-    await this.updateComplete;
+    if (this._params.allowDashboardChange) {
+      this._getDashboards();
+    }
   }
 
-  protected updated(changedProps) {
-    super.updated(changedProps);
-    toggleAttribute(
-      this,
-      "hide-icons",
-      this._params?.lovelaceConfig
-        ? !this._params.lovelaceConfig.views.some((view) => view.icon)
-        : true
-    );
+  public closeDialog(): void {
+    this._params = undefined;
   }
 
   protected render(): TemplateResult {
@@ -37,35 +51,96 @@ export class HuiDialogSelectView extends LitElement {
       return html``;
     }
     return html`
-      <ha-paper-dialog
-        with-backdrop
-        opened
-        @opened-changed="${this._openedChanged}"
+      <ha-dialog
+        open
+        @closed=${this.closeDialog}
+        hideActions
+        .heading=${createCloseHeading(
+          this.hass,
+          this._params.header ||
+            this.hass.localize("ui.panel.lovelace.editor.select_view.header")
+        )}
       >
-        <h2>Choose a view</h2>
-        <hui-views-list
-          .lovelaceConfig=${this._params!.lovelaceConfig}
-          @view-selected=${this._selectView}
-        >
-        </hui-views-list>
-      </ha-paper-dialog>
+        ${this._params.allowDashboardChange
+          ? html`<ha-paper-dropdown-menu
+              .label=${this.hass.localize(
+                "ui.panel.lovelace.editor.select_view.dashboard_label"
+              )}
+              dynamic-align
+              .disabled=${!this._dashboards.length}
+            >
+              <paper-listbox
+                slot="dropdown-content"
+                .selected=${this._urlPath || this.hass.defaultPanel}
+                @iron-select=${this._dashboardChanged}
+                attr-for-selected="url-path"
+              >
+                <paper-item
+                  .urlPath=${"lovelace"}
+                  .disabled=${(this.hass.panels.lovelace?.config as any)
+                    ?.mode === "yaml"}
+                >
+                  Default
+                </paper-item>
+                ${this._dashboards.map((dashboard) => {
+                  if (!this.hass.user!.is_admin && dashboard.require_admin) {
+                    return "";
+                  }
+                  return html`
+                    <paper-item
+                      .disabled=${dashboard.mode !== "storage"}
+                      .urlPath=${dashboard.url_path}
+                      >${dashboard.title}</paper-item
+                    >
+                  `;
+                })}
+              </paper-listbox>
+            </ha-paper-dropdown-menu>`
+          : ""}
+        ${this._config
+          ? html` <hui-views-list
+              .lovelaceConfig=${this._config}
+              @view-selected=${this._selectView}
+            >
+            </hui-views-list>`
+          : html`<div>No config found.</div>`}
+      </ha-dialog>
     `;
   }
 
-  private get _dialog(): HaPaperDialog {
-    return this.shadowRoot!.querySelector("ha-paper-dialog")!;
+  private async _getDashboards() {
+    this._dashboards =
+      this._params!.dashboards || (await fetchDashboards(this.hass));
+  }
+
+  private async _dashboardChanged(ev: CustomEvent) {
+    let urlPath: string | null = ev.detail.item.urlPath;
+    if (urlPath === this._urlPath) {
+      return;
+    }
+    if (urlPath === "lovelace") {
+      urlPath = null;
+    }
+    this._urlPath = urlPath;
+    try {
+      this._config = await fetchConfig(this.hass.connection, urlPath, false);
+    } catch (e) {
+      this._config = undefined;
+    }
   }
 
   private _selectView(e: CustomEvent): void {
     const view: number = e.detail.view;
-    this._params!.viewSelectedCallback(view);
-    this._dialog.close();
+    this._params!.viewSelectedCallback(this._urlPath!, this._config!, view);
+    this.closeDialog();
   }
 
-  private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
-    if (!(ev.detail as any).value) {
-      this._params = undefined;
-    }
+  static get styles(): CSSResult {
+    return css`
+      ha-paper-dropdown-menu {
+        width: 100%;
+      }
+    `;
   }
 }
 

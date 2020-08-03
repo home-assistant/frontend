@@ -31,13 +31,14 @@ import type { LovelaceConfig } from "../../../../data/lovelace";
 import type { HomeAssistant } from "../../../../types";
 import { computeUnusedEntities } from "../../common/compute-unused-entities";
 import type { Lovelace } from "../../types";
-import { addEntitiesToLovelaceView } from "../add-entities-to-view";
 import "../../../../components/ha-svg-icon";
 import { mdiPlus } from "@mdi/js";
+import { showSuggestCardDialog } from "../card-editor/show-suggest-card-dialog";
+import { showSelectViewDialog } from "../select-view/show-select-view-dialog";
 
 @customElement("hui-unused-entities")
 export class HuiUnusedEntities extends LitElement {
-  @property({ attribute: false }) public lovelace?: Lovelace;
+  @property({ attribute: false }) public lovelace!: Lovelace;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -48,7 +49,7 @@ export class HuiUnusedEntities extends LitElement {
   @internalProperty() private _selectedEntities: string[] = [];
 
   private get _config(): LovelaceConfig {
-    return this.lovelace!.config;
+    return this.lovelace.config;
   }
 
   private _columns = memoizeOne((narrow: boolean) => {
@@ -226,13 +227,27 @@ export class HuiUnusedEntities extends LitElement {
   }
 
   private _addToLovelaceView(): void {
-    addEntitiesToLovelaceView(
-      this,
-      this.hass,
-      this._selectedEntities,
-      this.lovelace!.config,
-      this.lovelace!.saveConfig
-    );
+    if (this.lovelace.config.views.length === 1) {
+      showSuggestCardDialog(this, {
+        lovelaceConfig: this.lovelace.config!,
+        saveConfig: this.lovelace.saveConfig,
+        path: [0],
+        entities: this._selectedEntities,
+      });
+      return;
+    }
+    showSelectViewDialog(this, {
+      lovelaceConfig: this.lovelace.config,
+      allowDashboardChange: false,
+      viewSelectedCallback: (_urlPath, _selectedDashConfig, viewIndex) => {
+        showSuggestCardDialog(this, {
+          lovelaceConfig: this.lovelace.config!,
+          saveConfig: this.lovelace.saveConfig,
+          path: [viewIndex],
+          entities: this._selectedEntities,
+        });
+      },
+    });
   }
 
   static get styles(): CSSResult {
