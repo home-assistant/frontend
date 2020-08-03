@@ -14,13 +14,16 @@ import {
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-import { showMoveCardViewDialog } from "../editor/card-editor/show-move-card-view-dialog";
-import { swapCard } from "../editor/config-util";
+import { swapCard, moveCard, addCard, deleteCard } from "../editor/config-util";
 import { confDeleteCard } from "../editor/delete-card";
 import { Lovelace, LovelaceCard } from "../types";
 import { computeCardSize } from "../common/compute-card-size";
 import { mdiDotsVertical, mdiArrowDown, mdiArrowUp } from "@mdi/js";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import { showSelectViewDialog } from "../editor/select-view/show-select-view-dialog";
+import { saveConfig } from "../../../data/lovelace";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import { showSaveSuccessToast } from "../../../util/toast-saved-success";
 
 @customElement("hui-card-options")
 export class HuiCardOptions extends LitElement {
@@ -185,9 +188,39 @@ export class HuiCardOptions extends LitElement {
   }
 
   private _moveCard(): void {
-    showMoveCardViewDialog(this, {
-      path: this.path!,
-      lovelace: this.lovelace!,
+    showSelectViewDialog(this, {
+      lovelaceConfig: this.lovelace!.config,
+      urlPath: this.lovelace!.urlPath,
+      allowDashboardChange: true,
+      header: this.hass!.localize("ui.panel.lovelace.editor.move_card.header"),
+      viewSelectedCallback: async (urlPath, selectedDashConfig, viewIndex) => {
+        if (urlPath === this.lovelace!.urlPath) {
+          this.lovelace!.saveConfig(
+            moveCard(this.lovelace!.config, this.path!, [viewIndex])
+          );
+          showSaveSuccessToast(this, this.hass!);
+          return;
+        }
+        try {
+          await saveConfig(
+            this.hass!,
+            urlPath,
+            addCard(
+              selectedDashConfig,
+              [viewIndex],
+              this.lovelace!.config.views[this.path![0]].cards![this.path![1]]
+            )
+          );
+          this.lovelace!.saveConfig(
+            deleteCard(this.lovelace!.config, this.path!)
+          );
+          showSaveSuccessToast(this, this.hass!);
+        } catch (err) {
+          showAlertDialog(this, {
+            text: `Moving failed: ${err.message}`,
+          });
+        }
+      },
     });
   }
 
