@@ -36,10 +36,10 @@ export class HaDeviceInfoOzw extends LitElement {
       return;
     }
     const identifiers = ozwIdentifier[1].split(".");
-    await fetchOZWNodeStatus(this.hass, identifiers[0], identifiers[1]).then(
-      (dev) => {
-        this._ozwDevice = dev;
-      }
+    this._ozwDevice = await fetchOZWNodeStatus(
+      this.hass,
+      identifiers[0],
+      identifiers[1]
     );
   }
 
