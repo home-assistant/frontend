@@ -208,7 +208,7 @@
             "off": "Neaktivní"
         },
         "configurator": {
-            "configure": "Nakonfigurovat",
+            "configure": "Konfigurovat",
             "configured": "Nakonfigurováno"
         },
         "cover": {
@@ -1825,7 +1825,7 @@
                         "caption": "Přidat zařízení",
                         "description": "Přidat zařízení do sítě Zigbee"
                     },
-                    "button": "Nakonfigurovat",
+                    "button": "Konfigurovat",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributy vybraného klastru",
@@ -1946,7 +1946,7 @@
                     "no_zones_created_yet": "Vypadá to, že nejsou vytvořené žádné zóny."
                 },
                 "zwave": {
-                    "button": "Nakonfigurovat",
+                    "button": "Konfigurovat",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "Index",

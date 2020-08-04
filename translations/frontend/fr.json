@@ -2340,7 +2340,7 @@
                     },
                     "edit_card": {
                         "add": "Ajouter une action",
-                        "confirm_cancel": "Êtes-vous sûrs de vouloir annuler ?",
+                        "confirm_cancel": "Êtes-vous sûr de vouloir annuler ?",
                         "delete": "Supprimer",
                         "duplicate": "Dupliquer la carte",
                         "edit": "Modifier",

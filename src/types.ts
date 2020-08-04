@@ -87,11 +87,21 @@ export interface Theme {
   "primary-color": string;
   "text-primary-color": string;
   "accent-color": string;
+  [key: string]: string;
 }
 
 export interface Themes {
   default_theme: string;
+  default_dark_theme: string | null;
   themes: { [key: string]: Theme };
+  darkMode: boolean;
+}
+
+export interface ThemeSettings {
+  theme: string;
+  dark?: boolean;
+  primaryColor?: string;
+  accentColor?: string;
 }
 
 export interface PanelInfo<T = {} | null> {
@@ -193,7 +203,7 @@ export interface HomeAssistant {
   services: HassServices;
   config: HassConfig;
   themes: Themes;
-  selectedTheme?: string | null;
+  selectedTheme?: ThemeSettings | null;
   panels: Panels;
   panelUrl: string;
 

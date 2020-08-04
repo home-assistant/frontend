@@ -945,12 +945,15 @@
                         "load_error_not_editable": "Nëmmen Automatiounen am automations.yaml kënnen editéiert ginn.",
                         "load_error_unknown": "Feeler beim luede vun der Automatioun ({err_no}).",
                         "max": {
-                            "parallel": "Max. Unzuel vun parallelen Duerchleef."
+                            "parallel": "Max. Unzuel vun parallelen Duerchleef.",
+                            "queued": "Längt vun der Schlaang"
                         },
                         "modes": {
+                            "description": "Dëse Modus kontrolléiert wat passéiert wann den Automatisme ausgeléist gëtt während d'Aktiounen vun engem virechten Ausléiser nach laafen.Kuck {documentation_link} fir méi Informatiounen.",
                             "documentation": "Dokumentatioun vum Automatisme",
                             "label": "Modus",
                             "parallel": "Parrallel",
+                            "queued": "an der Schlaang",
                             "restart": "Neistart",
                             "single": "Eenzel (Standard)"
                         },
@@ -1704,12 +1707,15 @@
                         "link_available_actions": "Méi iwwert verfügbar Aktioune liesen.",
                         "load_error_not_editable": "Nëmme Skripten am scripts.yaml kënnen editéiert ginn.",
                         "max": {
-                            "parallel": "Max. Unzuel vun parallelen Duerchleef."
+                            "parallel": "Max. Unzuel vun parallelen Duerchleef.",
+                            "queued": "Längt vun der Schlaang"
                         },
                         "modes": {
+                            "description": "Dëse Modus kontrolléiert wat passéieert wann de Skript opgeruff gëtt während e schon duerch virecht Opriff nach ëmmer leeft. Kuck {documentation_link} fir méi Informatiounen.",
                             "documentation": "Dokumentatioun vum Skript",
                             "label": "Modus",
                             "parallel": "Parrallel",
+                            "queued": "an der Schlaang",
                             "restart": "Neistart",
                             "single": "Eenzel (Standard)"
                         },
@@ -1739,6 +1745,9 @@
                             "core": "Standuert and Personnalisatioun néi lueden",
                             "group": "Gruppe nei lueden",
                             "heading": "YAML Konfiguratioun frësch lueden",
+                            "input_number": "Agab Zuelen frësch lueden",
+                            "input_select": "Agab Auswiel frësch lueden",
+                            "input_text": "Agab Text frësch lueden",
                             "introduction": "E puer Deeler vum Home Assistant kënne frësch geluede ginn ouni datt een Neistart néideg ass. Klick op nei luede fir di aktuell Konfiguratioun z'entlueden an di nei Konfiguratioun ze lueden.",
                             "person": "Persoune frësch lueden",
                             "scene": "Szeene néi lueden",

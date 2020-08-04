@@ -1,25 +1,19 @@
-import { derivedStyles } from "../../resources/styles";
+import { derivedStyles, darkStyles } from "../../resources/styles";
 import { HomeAssistant, Theme } from "../../types";
+import {
+  hex2rgb,
+  rgb2hex,
+  rgb2lab,
+  lab2rgb,
+  lab2hex,
+} from "../color/convert-color";
+import { rgbContrast } from "../color/rgb";
+import { labDarken, labBrighten } from "../color/lab";
 
 interface ProcessedTheme {
   keys: { [key: string]: "" };
   styles: { [key: string]: string };
 }
-
-const hexToRgb = (hex: string): string | null => {
-  const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-  const checkHex = hex.replace(shorthandRegex, (_m, r, g, b) => {
-    return r + r + g + g + b + b;
-  });
-
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(checkHex);
-  return result
-    ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(
-        result[3],
-        16
-      )}`
-    : null;
-};
 
 let PROCESSED_THEMES: { [key: string]: ProcessedTheme } = {};
 
@@ -33,16 +27,55 @@ let PROCESSED_THEMES: { [key: string]: ProcessedTheme } = {};
 export const applyThemesOnElement = (
   element,
   themes: HomeAssistant["themes"],
-  selectedTheme?: string
+  selectedTheme?: string,
+  themeOptions?: Partial<HomeAssistant["selectedTheme"]>
 ) => {
-  const newTheme = selectedTheme
-    ? PROCESSED_THEMES[selectedTheme] || processTheme(selectedTheme, themes)
-    : undefined;
+  let cacheKey = selectedTheme;
+  let themeRules: Partial<Theme> = {};
 
-  if (!element._themes && !newTheme) {
+  if (selectedTheme === "default" && themeOptions) {
+    if (themeOptions.dark) {
+      cacheKey = `${cacheKey}__dark`;
+      themeRules = darkStyles;
+    }
+    if (themeOptions.primaryColor) {
+      cacheKey = `${cacheKey}__primary_${themeOptions.primaryColor}`;
+      const rgbPrimaryColor = hex2rgb(themeOptions.primaryColor);
+      const labPrimaryColor = rgb2lab(rgbPrimaryColor);
+      themeRules["primary-color"] = themeOptions.primaryColor;
+      const rgbLigthPrimaryColor = lab2rgb(labBrighten(labPrimaryColor));
+      themeRules["light-primary-color"] = rgb2hex(rgbLigthPrimaryColor);
+      themeRules["dark-primary-color"] = lab2hex(labDarken(labPrimaryColor));
+      themeRules["text-primary-color"] =
+        rgbContrast(rgbPrimaryColor, [33, 33, 33]) < 6 ? "#fff" : "#212121";
+      themeRules["text-light-primary-color"] =
+        rgbContrast(rgbLigthPrimaryColor, [33, 33, 33]) < 6
+          ? "#fff"
+          : "#212121";
+      themeRules["state-icon-color"] = themeRules["dark-primary-color"];
+    }
+    if (themeOptions.accentColor) {
+      cacheKey = `${cacheKey}__accent_${themeOptions.accentColor}`;
+      themeRules["accent-color"] = themeOptions.accentColor;
+      const rgbAccentColor = hex2rgb(themeOptions.accentColor);
+      themeRules["text-accent-color"] =
+        rgbContrast(rgbAccentColor, [33, 33, 33]) < 6 ? "#fff" : "#212121";
+    }
+  }
+
+  if (selectedTheme && themes.themes[selectedTheme]) {
+    themeRules = themes.themes[selectedTheme];
+  }
+
+  if (!element._themes && !Object.keys(themeRules).length) {
     // No styles to reset, and no styles to set
     return;
   }
+
+  const newTheme =
+    themeRules && cacheKey
+      ? PROCESSED_THEMES[cacheKey] || processTheme(cacheKey, themeRules)
+      : undefined;
 
   // Add previous set keys to reset them, and new theme
   const styles = { ...element._themes, ...newTheme?.styles };
@@ -58,42 +91,45 @@ export const applyThemesOnElement = (
 };
 
 const processTheme = (
-  themeName: string,
-  themes: HomeAssistant["themes"]
+  cacheKey: string,
+  theme: Partial<Theme>
 ): ProcessedTheme | undefined => {
-  if (!themes.themes[themeName]) {
+  if (!theme || !Object.keys(theme).length) {
     return undefined;
   }
-  const theme: Theme = {
+  const combinedTheme: Partial<Theme> = {
     ...derivedStyles,
-    ...themes.themes[themeName],
+    ...theme,
   };
   const styles = {};
   const keys = {};
-  for (const key of Object.keys(theme)) {
+  for (const key of Object.keys(combinedTheme)) {
     const prefixedKey = `--${key}`;
-    const value = theme[key];
+    const value = combinedTheme[key]!;
     styles[prefixedKey] = value;
     keys[prefixedKey] = "";
 
-    // Try to create a rgb value for this key if it is a hex color
+    // Try to create a rgb value for this key if it is not a var
     if (!value.startsWith("#")) {
-      // Not a hex color
+      // Can't convert non hex value
       continue;
     }
+
     const rgbKey = `rgb-${key}`;
-    if (theme[rgbKey] !== undefined) {
+    if (combinedTheme[rgbKey] !== undefined) {
       // Theme has it's own rgb value
       continue;
     }
-    const rgbValue = hexToRgb(value);
-    if (rgbValue !== null) {
+    try {
+      const rgbValue = hex2rgb(value).join(",");
       const prefixedRgbKey = `--${rgbKey}`;
       styles[prefixedRgbKey] = rgbValue;
       keys[prefixedRgbKey] = "";
+    } catch (e) {
+      continue;
     }
   }
-  PROCESSED_THEMES[themeName] = { styles, keys };
+  PROCESSED_THEMES[cacheKey] = { styles, keys };
   return { styles, keys };
 };
 

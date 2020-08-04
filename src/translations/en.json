@@ -539,10 +539,13 @@
       "sidebar_toggle": "Sidebar Toggle"
     },
     "panel": {
-      "calendar": { "my_calendars": "My Calendars", "today": "Today" },
+      "calendar": {
+        "my_calendars": "My Calendars",
+        "today": "Today"
+      },
       "config": {
         "header": "Configure Home Assistant",
-        "introduction": "Here it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
+        "introduction": "In this view it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
         "filtering": {
           "filtering_by": "Filtering by",
           "clear": "Clear"
@@ -563,7 +566,7 @@
         },
         "areas": {
           "caption": "Areas",
-          "description": "Overview of all areas in your home.",
+          "description": "Manage areas in your home",
           "data_table": {
             "area": "Area",
             "devices": "Devices"
@@ -593,7 +596,7 @@
         },
         "helpers": {
           "caption": "Helpers",
-          "description": "Elements that can help build automations.",
+          "description": "Manage elements that help build automations",
           "types": {
             "input_text": "Text",
             "input_number": "Number",
@@ -646,7 +649,7 @@
         },
         "info": {
           "caption": "Info",
-          "description": "Info about your Home Assistant installation",
+          "description": "View info about your Home Assistant installation",
           "home_assistant_logo": "Home Assistant logo",
           "path_configuration": "Path to configuration.yaml: {path}",
           "developed_by": "Developed by a bunch of awesome people.",
@@ -677,7 +680,7 @@
         },
         "lovelace": {
           "caption": "Lovelace Dashboards",
-          "description": "Configure your Lovelace Dashboards",
+          "description": "Manage your Lovelace Dashboards",
           "dashboards": {
             "default_dashboard": "This is the default dashboard",
             "caption": "Dashboards",
@@ -812,7 +815,7 @@
         },
         "automation": {
           "caption": "Automations",
-          "description": "Create and edit automations",
+          "description": "Manage automations",
           "picker": {
             "header": "Automation Editor",
             "introduction": "The automation editor allows you to create and edit automations. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
@@ -1058,6 +1061,31 @@
                 },
                 "scene": {
                   "label": "Activate scene"
+                },
+                "repeat": {
+                  "label": "Repeat",
+                  "type_select": "Repeat type",
+                  "type": {
+                    "count": { "label": "Count" },
+                    "while": {
+                      "label": "While",
+                      "conditions": "While conditions"
+                    },
+                    "until": {
+                      "label": "Until",
+                      "conditions": "Until conditions"
+                    }
+                  },
+                  "sequence": "Actions"
+                },
+                "choose": {
+                  "label": "Choose",
+                  "default": "Default actions",
+                  "option": "Option {number}",
+                  "add_option": "Add option",
+                  "remove_option": "Remove option",
+                  "conditions": "Conditions",
+                  "sequence": "Actions"
                 }
               }
             }
@@ -1065,7 +1093,7 @@
         },
         "script": {
           "caption": "Scripts",
-          "description": "Create and edit scripts",
+          "description": "Manage scripts",
           "picker": {
             "header": "Script Editor",
             "introduction": "The script editor allows you to create and edit scripts. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
@@ -1111,7 +1139,7 @@
         },
         "scene": {
           "caption": "Scenes",
-          "description": "Create and edit scenes",
+          "description": "Manage scenes",
           "activated": "Activated scene {name}.",
           "picker": {
             "header": "Scene Editor",
@@ -1371,7 +1399,7 @@
         },
         "entities": {
           "caption": "Entities",
-          "description": "Overview of all known entities.",
+          "description": "Manage known entities",
           "picker": {
             "header": "Entities",
             "introduction": "Home Assistant keeps a registry of every entity it has ever seen that can be uniquely identified. Each of these entities will have an entity ID assigned which will be reserved for just this entity.",
@@ -1418,7 +1446,7 @@
         },
         "person": {
           "caption": "Persons",
-          "description": "Manage the persons that Home Assistant tracks.",
+          "description": "Manage the persons that Home Assistant tracks",
           "introduction": "Here you can define each person of interest in Home Assistant.",
           "note_about_persons_configured_in_yaml": "Note: persons configured via configuration.yaml cannot be edited via the UI.",
           "no_persons_created_yet": "Looks like you have not created any persons yet.",
@@ -1444,7 +1472,7 @@
         },
         "zone": {
           "caption": "Zones",
-          "description": "Manage the zones you want to track persons in.",
+          "description": "Manage the zones you want to track persons in",
           "introduction": "Zones allow you to specify certain regions on earth. When a person is within a zone, the state will take the name from the zone. Zones can also be used as a trigger or condition inside automation setups.",
           "no_zones_created_yet": "Looks like you have not created any zones yet.",
           "create_zone": "Create Zone",
@@ -1473,7 +1501,7 @@
         },
         "integrations": {
           "caption": "Integrations",
-          "description": "Manage and set up integrations",
+          "description": "Manage integrations",
           "integration": "integration",
           "discovered": "Discovered",
           "configured": "Configured",
@@ -1543,7 +1571,11 @@
           "description": "Manage users",
           "users_privileges_note": "The users group is a work in progress. The user will be unable to administer the instance via the UI. We're still auditing all management API endpoints to ensure that they correctly limit access to administrators.",
           "picker": {
-            "headers": { "name": "Name", "group": "Group", "system": "System" }
+            "headers": {
+              "name": "Name",
+              "group": "Group",
+              "system": "System"
+            }
           },
           "editor": {
             "caption": "View user",
@@ -1585,6 +1617,18 @@
           "start_listening": "Start listening",
           "stop_listening": "Stop listening",
           "message_received": "Message {id} received on {topic} at {time}:"
+        },
+        "ozw": {
+          "common": {
+            "zwave": "Z-Wave",
+            "node_id": "Node ID",
+            "ozw_instance": "OpenZWave Instance"
+          },
+          "device_info": {
+            "zwave_info": "Z-Wave Info",
+            "stage": "Stage",
+            "node_failed": "Node Failed"
+          }
         },
         "zha": {
           "button": "Configure",
@@ -1650,7 +1694,7 @@
           },
           "groups": {
             "caption": "Groups",
-            "description": "Create and modify Zigbee groups",
+            "description": "Manage Zigbee groups",
             "zha_zigbee_groups": "ZHA Zigbee Groups",
             "manage_groups": "Manage Zigbee Groups",
             "groups": "Groups",
@@ -1916,6 +1960,13 @@
             "move": "Move to View",
             "options": "More options"
           },
+          "move_card": {
+            "header": "Choose a view to move the card to"
+          },
+          "select_view": {
+            "header": "Choose a view",
+            "dashboard_label": "Dashboard"
+          },
           "suggest_card": {
             "header": "We created a suggestion for you",
             "create_own": "Pick different card",
@@ -2174,7 +2225,15 @@
           "header": "Theme",
           "error_no_theme": "No themes available.",
           "link_promo": "Learn about themes",
-          "dropdown_label": "Theme"
+          "dropdown_label": "Theme",
+          "dark_mode": {
+            "auto": "Auto",
+            "light": "Light",
+            "dark": "Dark"
+          },
+          "primary_color": "Primary color",
+          "accent_color": "Accent color",
+          "reset": "Reset"
         },
         "dashboard": {
           "header": "Dashboard",

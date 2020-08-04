@@ -1,4 +1,4 @@
-import "@polymer/app-layout/app-header-layout/app-header-layout";
+import "../../layouts/ha-app-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { computeRTL } from "../../common/util/compute_rtl";
@@ -56,7 +56,7 @@ class HaPanelHistory extends LitElement {
 
   protected render() {
     return html`
-      <app-header-layout>
+      <ha-app-layout>
         <app-header slot="header" fixed>
           <app-toolbar>
             <ha-menu-button
@@ -93,7 +93,7 @@ class HaPanelHistory extends LitElement {
                 </state-history-charts>
               `}
         </div>
-      </app-header-layout>
+      </ha-app-layout>
     `;
   }
 

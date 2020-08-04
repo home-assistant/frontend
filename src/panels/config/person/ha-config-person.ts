@@ -32,7 +32,6 @@ import {
 } from "./show-dialog-person-detail";
 import "../../../components/ha-svg-icon";
 import { mdiPlus } from "@mdi/js";
-import { computeRTL } from "../../../common/util/compute_rtl";
 
 class HaConfigPerson extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -123,17 +122,14 @@ class HaConfigPerson extends LitElement {
               `
             : ""}
         </ha-config-section>
+        <mwc-fab
+          slot="fab"
+          title="${hass.localize("ui.panel.config.person.add_person")}"
+          @click=${this._createPerson}
+        >
+          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+        </mwc-fab>
       </hass-tabs-subpage>
-
-      <mwc-fab
-        ?is-wide=${this.isWide}
-        ?narrow=${this.narrow}
-        ?rtl=${computeRTL(this.hass!)}
-        title="${hass.localize("ui.panel.config.person.add_person")}"
-        @click=${this._createPerson}
-      >
-        <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
-      </mwc-fab>
     `;
   }
 
@@ -242,28 +238,6 @@ class HaConfigPerson extends LitElement {
       }
       ha-card.storage paper-item {
         cursor: pointer;
-      }
-      mwc-fab {
-        position: fixed;
-        bottom: 16px;
-        right: 16px;
-        z-index: 1;
-      }
-      mwc-fab[narrow] {
-        bottom: 84px;
-      }
-      mwc-fab[is-wide] {
-        bottom: 24px;
-        right: 24px;
-      }
-      mwc-fab[rtl] {
-        right: auto;
-        left: 16px;
-      }
-      mwc-fab[is-wide][rtl] {
-        bottom: 24px;
-        left: 24px;
-        right: auto;
       }
     `;
   }

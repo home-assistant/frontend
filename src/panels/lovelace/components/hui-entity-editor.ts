@@ -125,9 +125,6 @@ export class HuiEntityEditor extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      .entities {
-        padding-left: 20px;
-      }
       .entity {
         display: flex;
         align-items: flex-end;

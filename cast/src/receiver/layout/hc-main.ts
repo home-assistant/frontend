@@ -87,6 +87,7 @@ export class HcMain extends HassElement {
         .hass=${this.hass}
         .lovelaceConfig=${this._lovelaceConfig}
         .viewPath=${this._lovelacePath}
+        .urlPath=${this._urlPath}
         @config-refresh=${this._generateLovelaceConfig}
       ></hc-lovelace>
     `;

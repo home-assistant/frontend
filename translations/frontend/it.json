@@ -798,7 +798,7 @@
                         "confirmation_text": "Tutti i dispositivi in quest'area non saranno assegnati.",
                         "confirmation_title": "Sei sicuro di voler cancellare quest'area?"
                     },
-                    "description": "Panoramica di tutte le aree della tua casa.",
+                    "description": "Gestisci le aree della tua casa",
                     "editor": {
                         "area_id": "Area ID",
                         "create": "Crea",
@@ -820,7 +820,7 @@
                 },
                 "automation": {
                     "caption": "Automazioni",
-                    "description": "Crea e modifica automazioni",
+                    "description": "Gestisci le automazioni",
                     "editor": {
                         "actions": {
                             "add": "Aggiungi azione",
@@ -1341,7 +1341,7 @@
                 },
                 "entities": {
                     "caption": "Entità",
-                    "description": "Panoramica di tutte le entità conosciute.",
+                    "description": "Gestisci le entità conosciute",
                     "picker": {
                         "disable_selected": {
                             "button": "Disabilita selezionato",
@@ -1393,7 +1393,7 @@
                 "header": "Configura Home Assistant",
                 "helpers": {
                     "caption": "Aiutanti",
-                    "description": "Elementi che possono aiutare a costruire le automazioni.",
+                    "description": "Gestisci elementi che possono aiutare a costruire le automazioni.",
                     "dialog": {
                         "add_helper": "Aggiungi aiutante",
                         "add_platform": "Aggiungi {platform}",
@@ -1421,7 +1421,7 @@
                     "built_using": "Costruito usando",
                     "caption": "Informazioni",
                     "custom_uis": "Interfacce Utente personalizzate:",
-                    "description": "Informazioni sulla tua installazione di Home Assistant",
+                    "description": "Visualizza le informazioni sull'installazione di Home Assistant",
                     "developed_by": "Sviluppato da un gruppo di persone fantastiche.",
                     "documentation": "Documentazione",
                     "frontend": "frontend-ui",
@@ -1486,7 +1486,7 @@
                     },
                     "configure": "Configura",
                     "configured": "Configurato",
-                    "description": "Gestire e configurare le integrazioni",
+                    "description": "Gestisci le integrazioni",
                     "details": "Dettagli dell'integrazione",
                     "discovered": "Scoperto",
                     "home_assistant_website": "Sito Web di Home Assistant",
@@ -1514,7 +1514,7 @@
                     "rename_input_label": "Nome della voce",
                     "search": "Cerca integrazioni"
                 },
-                "introduction": "Qui è possibile configurare i componenti e Home Assistant. Non è ancora possibile configurare tutto dall'Interfaccia Utente, ma ci stiamo lavorando.",
+                "introduction": "In questa vista è possibile configurare i componenti e l'Home Assistant. Non tutto è ancora configurabile dall'interfaccia utente, ma ci stiamo lavorando.",
                 "logs": {
                     "caption": "Logs",
                     "clear": "Pulisci",
@@ -1570,7 +1570,7 @@
                             "open": "Aprire"
                         }
                     },
-                    "description": "Configura le tue plance di Lovelace",
+                    "description": "Gestisci le tue plance di Lovelace",
                     "resources": {
                         "cant_edit_yaml": "Si utilizza Lovelace in modalità YAML, pertanto non è possibile gestire le risorse tramite l'Interfaccia Utente. Gestirli in configuration.yaml.",
                         "caption": "Risorse",
@@ -1625,7 +1625,7 @@
                     "confirm_delete": "Sei sicuro di voler cancellare questa persona?",
                     "confirm_delete2": "Tutti i dispositivi appartenenti a questa persona non saranno assegnati.",
                     "create_person": "Crea persona",
-                    "description": "Gestisci le persone di cui tiene traccia Home Assistant",
+                    "description": "Gestisci le persone tracciate da Home Assistant",
                     "detail": {
                         "create": "Crea",
                         "delete": "Elimina",
@@ -1648,7 +1648,7 @@
                 "scene": {
                     "activated": "Scena attivata {name}.",
                     "caption": "Scene",
-                    "description": "Crea e modifica scene",
+                    "description": "Gestisci le scene",
                     "editor": {
                         "default_name": "Nuova scena",
                         "devices": {
@@ -1692,7 +1692,7 @@
                 },
                 "script": {
                     "caption": "Script",
-                    "description": "Crea e modifica script",
+                    "description": "Gestisci gli script",
                     "editor": {
                         "alias": "Nome",
                         "default_name": "Nuovo script",
@@ -1879,7 +1879,7 @@
                         "create_group": "Zigbee Home Automation - Crea gruppo",
                         "create_group_details": "Immettere i dettagli richiesti per creare un nuovo gruppo Zigbee",
                         "creating_group": "Creazione di un gruppo",
-                        "description": "Crea e modifica gruppi Zigbee",
+                        "description": "Gestisci gruppi Zigbee",
                         "group_details": "Qui ci sono tutti i dettagli per il gruppo Zigbee selezionato.",
                         "group_id": "ID gruppo",
                         "group_info": "Informazioni sul gruppo",
@@ -1922,7 +1922,7 @@
                     "configured_in_yaml": "Le zone configurate tramite configuration.yaml non possono essere modificate tramite l'interfaccia utente.",
                     "confirm_delete": "Sei sicuro di voler cancellare questa zona?",
                     "create_zone": "Crea zona",
-                    "description": "Gestisci le zone in cui vuoi rintracciare le persone.",
+                    "description": "Gestisci le zone in cui vuoi rintracciare le persone",
                     "detail": {
                         "create": "Crea",
                         "delete": "Elimina",

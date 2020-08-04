@@ -357,7 +357,7 @@ export class HUIView extends LitElement {
       :host {
         display: block;
         box-sizing: border-box;
-        padding: 4px 4px 0;
+        padding: 4px 4px env(safe-area-inset-bottom);
         transform: translateZ(0);
         position: relative;
         color: var(--primary-text-color);
@@ -390,15 +390,15 @@ export class HUIView extends LitElement {
       mwc-fab {
         position: sticky;
         float: right;
-        bottom: 16px;
-        right: 16px;
+        right: calc(16px + env(safe-area-inset-right));
+        bottom: calc(16px + env(safe-area-inset-bottom));
         z-index: 5;
       }
 
       mwc-fab.rtl {
         float: left;
         right: auto;
-        left: 16px;
+        left: calc(16px + env(safe-area-inset-left));
       }
 
       @media (max-width: 500px) {

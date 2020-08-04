@@ -48,6 +48,19 @@
                 "none": "Ninguno",
                 "sleep": "Dormir"
             }
+        },
+        "humidifier": {
+            "mode": {
+                "auto": "Automático",
+                "away": "Fuera de Casa",
+                "baby": "Bebé",
+                "boost": "Aumentar",
+                "comfort": "Comodidad",
+                "eco": "Eco",
+                "home": "En Casa",
+                "normal": "Normal",
+                "sleep": "Dormir"
+            }
         }
     },
     "state_badge": {
@@ -388,6 +401,12 @@
                 "reverse": "Invertir",
                 "speed": "Velocidad"
             },
+            "humidifier": {
+                "humidity": "Objetivo de la humedad",
+                "mode": "Modo",
+                "on_entity": "{name} encendido",
+                "target_humidity_entity": "{name} objetivo de la humedad"
+            },
             "light": {
                 "brightness": "Brillo",
                 "color_temperature": "Temperatura del color",
@@ -411,6 +430,8 @@
                 "activate": "Activar"
             },
             "script": {
+                "cancel": "Cancelar",
+                "cancel_multiple": "Cancelar {number}",
                 "execute": "Ejecutar"
             },
             "service": {
@@ -483,6 +504,7 @@
             "menu": "Menú",
             "next": "Siguiente",
             "no": "No",
+            "overflow_menu": "Menú de desbordamiento",
             "previous": "Anterior",
             "refresh": "Actualizar",
             "save": "Guardar",
@@ -504,6 +526,15 @@
                 "area": "Área",
                 "clear": "Limpiar",
                 "show_areas": "Mostrar áreas"
+            },
+            "data-table": {
+                "no-data": "Sin datos",
+                "search": "Buscar"
+            },
+            "date-range-picker": {
+                "end_date": "Fecha final",
+                "select": "Seleccionar",
+                "start_date": "Fecha de inicio"
             },
             "device-picker": {
                 "clear": "Limpiar",
@@ -694,6 +725,7 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Agregar dispositivos",
+                    "clusters": "Administrar clústeres",
                     "reconfigure": "Reconfigurar dispositivo",
                     "remove": "Eliminar dispositivo",
                     "zigbee_information": "Información de Zigbee"
@@ -912,6 +944,19 @@
                         "introduction": "Use automatizaciones para darle vida a su hogar.",
                         "load_error_not_editable": "Solo las automatizaciones en automations.yaml son editables.",
                         "load_error_unknown": "Error al cargar la automatización ({err_no}).",
+                        "max": {
+                            "parallel": "Número máximo de ejecuciones paralelas",
+                            "queued": "Longitud de la cola"
+                        },
+                        "modes": {
+                            "description": "El modo controla lo que sucede cuando se activa la automatización mientras las acciones aún se ejecutan desde un activador anterior. Consulte la {documentation_link} para obtener más información.",
+                            "documentation": "documentación de automatización",
+                            "label": "Modo",
+                            "parallel": "Paralela",
+                            "queued": "Puesto en cola",
+                            "restart": "Reiniciar",
+                            "single": "Individual (predeterminado)"
+                        },
                         "move_down": "Mover hacia abajo",
                         "move_up": "Mover hacia arriba",
                         "save": "Guardar",
@@ -1330,6 +1375,7 @@
                             "confirm_text": "Debe eliminarlos de su configuración de Lovelace y de sus automatizaciones si contienen estas entidades.",
                             "confirm_title": "¿Desea eliminar {number} entidades?"
                         },
+                        "search": "Buscar entidades",
                         "selected": "{number} seleccionadas",
                         "status": {
                             "disabled": "Deshabilitado",
@@ -1360,7 +1406,8 @@
                             "entity_id": "Identificación de la entidad",
                             "name": "Nombre",
                             "type": "Tipo"
-                        }
+                        },
+                        "no_helpers": "¡Parece que todavía no tiene auxiliares!"
                     },
                     "types": {
                         "input_boolean": "Alternar",
@@ -1390,6 +1437,11 @@
                     "system_health_error": "El componente de mantenimiento del sistema no está cargado. Agregue 'system_health:' a configuration.yaml",
                     "title": "Información"
                 },
+                "integration_panel_move": {
+                    "link_integration_page": "página de integraciones",
+                    "missing_zha": "¿Falta el panel de configuración de ZHA? Se movió a la entrada ZHA en {integrations_page} .",
+                    "missing_zwave": "¿Falta el panel de configuración de Z-Wave? Se movió a la entrada Z-Wave en {integrations_page} ."
+                },
                 "integrations": {
                     "add_integration": "Agregar integración",
                     "caption": "Integraciones",
@@ -1400,6 +1452,7 @@
                         "delete_confirm": "¿Estás seguro de que quieres eliminar esta integración?",
                         "device_unavailable": "dispositivo no disponible",
                         "devices": "{count} {count, plural,\n  one {dispositivo}\n  other {dispositivos}\n}",
+                        "documentation": "Documentación",
                         "entities": "{count} {count, plural,\n  one {entidad}\n  other {entidades}\n}",
                         "entity_unavailable": "entidad no disponible",
                         "firmware": "Firmware: {version}",
@@ -1458,7 +1511,8 @@
                     "note_about_integrations": "No todas las integraciones se pueden configurar a través de la interfaz de usuario.",
                     "note_about_website_reference": "Hay más disponibles en ",
                     "rename_dialog": "Editar el nombre de esta entrada de configuración",
-                    "rename_input_label": "Ingresar Nombre"
+                    "rename_input_label": "Ingresar Nombre",
+                    "search": "Buscar integraciones"
                 },
                 "introduction": "Aquí es posible configurar sus componentes y Home Assistant. Todavía no es posible configurar todo desde la interfaz de usuario, pero estamos trabajando en ello.",
                 "logs": {
@@ -1552,6 +1606,7 @@
                     }
                 },
                 "mqtt": {
+                    "button": "Configurar",
                     "description_listen": "Escuchar un tema",
                     "description_publish": "Publicar un paquete",
                     "listening_to": "Escuchando a",
@@ -1610,6 +1665,7 @@
                             "introduction": "Las entidades que no pertenecen a un dispositivo se pueden configurar aquí.",
                             "without_device": "Entidades sin dispositivo"
                         },
+                        "icon": "Ícono",
                         "introduction": "Usa escenas para darle vida a tu hogar.",
                         "load_error_not_editable": "Solo las escenas en scenes.yaml son editables.",
                         "load_error_unknown": "Error al cargar la escena ( {err_no} ).",
@@ -1643,9 +1699,26 @@
                         "delete_confirm": "¿Está seguro de que desea eliminar este script?",
                         "delete_script": "Eliminar script",
                         "header": "Script: {name}",
+                        "icon": "Ícono",
+                        "id": "ID de la entidad",
+                        "id_already_exists": "Este ID ya existe",
+                        "id_already_exists_save_error": "No puede guardar este script porque el ID no es único, elija otro ID o déjelo en blanco para generar uno automáticamente.",
                         "introduction": "Use scripts para ejecutar una secuencia de acciones.",
                         "link_available_actions": "Obtenga más información sobre las acciones disponibles.",
                         "load_error_not_editable": "Solo los scripts dentro de scripts.yaml son editables.",
+                        "max": {
+                            "parallel": "Número máximo de ejecuciones paralelas",
+                            "queued": "Longitud de la cola"
+                        },
+                        "modes": {
+                            "description": "El modo controla lo que sucede cuando se invoca un script mientras aún se ejecuta desde una o más invocaciones anteriores. Consulte la {documentation_link} para obtener más información.",
+                            "documentation": "documentación de script",
+                            "label": "Modo",
+                            "parallel": "Paralela",
+                            "queued": "Puesto en cola",
+                            "restart": "Reiniciar",
+                            "single": "Individual (predeterminado)"
+                        },
                         "sequence": "Secuencia",
                         "sequence_sentence": "La secuencia de acciones de este script."
                     },
@@ -1740,8 +1813,11 @@
                 },
                 "zha": {
                     "add_device_page": {
+                        "discovered_text": "Los dispositivos aparecerán aquí una vez descubiertos.",
                         "discovery_text": "Los dispositivos descubiertos se mostrarán aquí. Siga las instrucciones para su(s) dispositivo(s) y coloque el(los) dispositivo(s) en modo de emparejamiento.",
                         "header": "Automatización del hogar Zigbee - Agregar dispositivos",
+                        "no_devices_found": "No se encontraron dispositivos, asegúrese de que estén en modo de emparejamiento y manténgalos encendidos mientras el descubrimiento se está ejecutando.",
+                        "pairing_mode": "Asegúrese de que sus dispositivos estén en modo de emparejamiento. Consulte las instrucciones de su dispositivo sobre cómo hacer esto.",
                         "search_again": "Buscar de nuevo",
                         "spinner": "Buscando dispositivos ZHA Zigbee ..."
                     },
@@ -1749,6 +1825,7 @@
                         "caption": "Agregar dispositivos",
                         "description": "Agregar dispositivos a la red Zigbee"
                     },
+                    "button": "Configurar",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributos del clúster seleccionado",
@@ -1827,6 +1904,9 @@
                         "header": "Administración de redes",
                         "introduction": "Comandos que afectan a toda la red"
                     },
+                    "network": {
+                        "caption": "Red"
+                    },
                     "node_management": {
                         "header": "Administración de dispositivos",
                         "help_node_dropdown": "Seleccione un dispositivo para ver las opciones por dispositivo.",
@@ -1866,6 +1946,7 @@
                     "no_zones_created_yet": "Parece que todavía no ha creado ninguna zona."
                 },
                 "zwave": {
+                    "button": "Configurar",
                     "caption": "",
                     "common": {
                         "index": "Índice",
@@ -1931,6 +2012,7 @@
                         "add_node_secure": "Agregar nodo seguro",
                         "cancel_command": "Cancelar comando",
                         "heal_network": "Red de sanación",
+                        "heal_node": "Nodo de curación",
                         "node_info": "Información de nodo",
                         "print_node": "Nodo de impresión",
                         "refresh_entity": "Actualizar entidad",
@@ -2020,11 +2102,23 @@
             },
             "history": {
                 "period": "Período",
+                "ranges": {
+                    "last_week": "La semana pasada",
+                    "this_week": "Esta semana",
+                    "today": "Hoy",
+                    "yesterday": "Ayer"
+                },
                 "showing_entries": "Mostrando registros del"
             },
             "logbook": {
                 "entries_not_found": "No se encontraron entradas en el libro de registro.",
                 "period": "Período",
+                "ranges": {
+                    "last_week": "La semana pasada",
+                    "this_week": "Esta semana",
+                    "today": "Hoy",
+                    "yesterday": "Ayer"
+                },
                 "showing_entries": "Mostrando registros del"
             },
             "lovelace": {
@@ -2140,6 +2234,7 @@
                             "name": "Nombre",
                             "no_theme": "Sin tema",
                             "refresh_interval": "Intervalo de actualización",
+                            "search": "Buscar",
                             "secondary_info_attribute": "Atributo de información secundaria",
                             "show_icon": "¿Mostrar icono?",
                             "show_name": "¿Mostrar nombre?",
@@ -2163,6 +2258,10 @@
                         "horizontal-stack": {
                             "description": "La tarjeta de apilamiento horizontal le permite apilar varias tarjetas, de modo que siempre se sientan una al lado de la otra en el espacio de una columna.",
                             "name": "Pila horizontal"
+                        },
+                        "humidifier": {
+                            "description": "La tarjeta del humidificador le da el control de su entidad humidificadora. Permitiéndole cambiar la humedad y el modo de la entidad.",
+                            "name": "Humidificador"
                         },
                         "iframe": {
                             "description": "La tarjeta de página web le permite incrustar su página web favorita directamente en Home Assistant.",
@@ -2241,6 +2340,7 @@
                     },
                     "edit_card": {
                         "add": "Agregar tarjeta",
+                        "confirm_cancel": "¿Está seguro de que desea cancelar?",
                         "delete": "Eliminar tarjeta",
                         "duplicate": "Tarjeta duplicada",
                         "edit": "Editar",
@@ -2251,12 +2351,15 @@
                         "pick_card_view_title": "¿Qué tarjeta le gustaría agregar a su vista de {name} ?",
                         "show_code_editor": "Mostrar editor de código",
                         "show_visual_editor": "Mostrar el editor visual",
-                        "toggle_editor": "Cambiar editor"
+                        "toggle_editor": "Cambiar editor",
+                        "typed_header": "{tipo} Configuración de la tarjeta",
+                        "unsaved_changes": "Tiene cambios no guardados"
                     },
                     "edit_lovelace": {
                         "edit_title": "Editar título",
                         "explanation": "Este título se muestra sobre todas sus vistas en la interfaz de usuario de Lovelace.",
-                        "header": "Título de tu interfaz de usuario de Lovelace"
+                        "header": "Título de tu interfaz de usuario de Lovelace",
+                        "title": "Título"
                     },
                     "edit_view": {
                         "add": "Agregar vista",
@@ -2343,6 +2446,8 @@
                     "entity": "Entidad",
                     "entity_id": "Identificación de la entidad",
                     "last_changed": "Última modificación",
+                    "no_data": "No se encontraron entidades no utilizadas",
+                    "search": "Buscar entidades",
                     "select_to_add": "Seleccione las entidades que desea agregar a una tarjeta y luego haga clic en el botón Agregar tarjeta.",
                     "title": "Entidades no utilizadas"
                 },
@@ -2445,6 +2550,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "El equipo no está permitido.",
                                 "not_whitelisted": "Tu computadora no está incluida en la lista blanca."
                             },
                             "step": {
@@ -2619,6 +2725,10 @@
                     "last_used": "Utilizado por última vez en {date} desde {location}.",
                     "not_used": "Nunca se ha utilizado",
                     "token_title": "Actualizar token para {clientId}"
+                },
+                "suspend": {
+                    "description": "¿Deberíamos cerrar la conexión al servidor después de estar oculto durante 5 minutos?",
+                    "header": "Conexión cerrada automáticamente"
                 },
                 "themes": {
                     "dropdown_label": "Tema",

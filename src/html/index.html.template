@@ -5,14 +5,16 @@
     <link rel="preload" href="<%= latestAppJS %>" as="script" crossorigin="use-credentials" />
     <%= renderTemplate('_header') %>
     <title>Home Assistant</title>
+    <link rel="mask-icon" href="/static/icons/mask-icon.svg" color="#03a9f4" />
     <link
       rel="apple-touch-icon"
       sizes="180x180"
       href="/static/icons/favicon-apple-180x180.png"
     />
-    <link rel="mask-icon" href="/static/icons/mask-icon.svg" color="#03a9f4" />
     <meta name="apple-itunes-app" content="app-id=1099568401" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Home Assistant">
     <meta
       name="msapplication-square70x70logo"
       content="/static/icons/tile-win-70x70.png"
@@ -33,6 +35,7 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="referrer" content="same-origin" />
     <meta name="theme-color" content="#THEMEC" />
+    <meta name="color-scheme" content="dark light" />
     <style>
       #ha-init-skeleton::before {
         display: block;
@@ -41,7 +44,7 @@
         background-color: #THEMEC;
       }
       html {
-        background-color: var(--primary-background-color, #fafafa);
+        background-color: var(--primary-background-color);
       }
     </style>
   </head>
