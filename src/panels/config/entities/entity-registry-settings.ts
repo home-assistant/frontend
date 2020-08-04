@@ -73,7 +73,7 @@ export class EntityRegistrySettings extends LitElement {
     return html`
       ${!stateObj
         ? html`
-            <div>
+            <div class="container">
               ${this.hass!.localize(
                 "ui.dialogs.entity_registry.editor.unavailable"
               )}
@@ -81,7 +81,7 @@ export class EntityRegistrySettings extends LitElement {
           `
         : ""}
       ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
-      <div class="form">
+      <div class="form container">
         <paper-input
           .value=${this._name}
           @value-changed=${this._nameChanged}
@@ -227,8 +227,10 @@ export class EntityRegistrySettings extends LitElement {
         :host {
           display: block;
         }
-        .form {
+        .container {
           padding: 20px 24px;
+        }
+        .form {
           margin-bottom: 53px;
         }
         .buttons {
