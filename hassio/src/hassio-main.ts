@@ -94,7 +94,8 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
     applyThemesOnElement(
       this.parentElement,
       this.hass.themes,
-      this.hass.selectedTheme || this.hass.themes.default_theme
+      this.hass.selectedTheme?.theme || this.hass.themes.default_theme,
+      this.hass.selectedTheme
     );
 
     this.style.setProperty(

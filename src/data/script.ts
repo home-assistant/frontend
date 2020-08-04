@@ -58,6 +58,31 @@ export interface WaitAction {
   timeout?: number;
 }
 
+export interface RepeatAction {
+  repeat: CountRepeat | WhileRepeat | UntilRepeat;
+}
+
+interface BaseRepeat {
+  sequence: Action[];
+}
+
+export interface CountRepeat extends BaseRepeat {
+  count: number;
+}
+
+export interface WhileRepeat extends BaseRepeat {
+  while: Condition[];
+}
+
+export interface UntilRepeat extends BaseRepeat {
+  until: Condition[];
+}
+
+export interface ChooseAction {
+  choose: [{ conditions: Condition[]; sequence: Action[] }];
+  default?: Action[];
+}
+
 export type Action =
   | EventAction
   | DeviceAction
@@ -65,7 +90,9 @@ export type Action =
   | Condition
   | DelayAction
   | SceneAction
-  | WaitAction;
+  | WaitAction
+  | RepeatAction
+  | ChooseAction;
 
 export const triggerScript = (
   hass: HomeAssistant,

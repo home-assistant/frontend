@@ -90,6 +90,7 @@ class OnboardingCoreConfig extends LitElement {
       <div class="row">
         <ha-location-editor
           class="flex"
+          .hass=${this.hass}
           .location=${this._locationValue}
           .fitZoom=${14}
           @change=${this._locationChanged}

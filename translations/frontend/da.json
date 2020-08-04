@@ -652,7 +652,7 @@
                     "pattern": "Regex-mønster til validering på klientsiden",
                     "text": "Tekst"
                 },
-                "platform_not_loaded": "{platform}-integrationen er ikke indlæst. Tilføj den til din konfiguration. Enten ved at tilføje 'default_config:' eller ''{platform}:''.",
+                "platform_not_loaded": "{platform}-integrationen er ikke indlæst. Tilføj den til din konfiguration, enten ved at tilføje 'default_config:' eller ''{platform}:''.",
                 "required_error_msg": "Dette felt er påkrævet",
                 "yaml_not_editable": "Indstillingerne for denne entitet kan ikke redigeres fra brugerfladen. Det er kun entiteter, der er konfigureret fra brugerfladen, der kan konfigureres herfra."
             },
@@ -748,7 +748,7 @@
                 "unknown": "Ukendt",
                 "zha_device_card": {
                     "area_picker_label": "Område",
-                    "device_name_placeholder": "Brugertildelt navn",
+                    "device_name_placeholder": "Skift enhedsnavn",
                     "update_name_button": "Opdater navn"
                 }
             }
@@ -798,7 +798,7 @@
                         "confirmation_text": "Alle enheder i dette område vil blive utildelte.",
                         "confirmation_title": "Er du sikker på, at du vil slette dette område?"
                     },
-                    "description": "Oversigt over alle områder i dit hjem.",
+                    "description": "Administrer områder i dit hjem",
                     "editor": {
                         "area_id": "Område-id",
                         "create": "Opret",
@@ -820,7 +820,7 @@
                 },
                 "automation": {
                     "caption": "Automatiseringer",
-                    "description": "Opret og rediger automatiseringer",
+                    "description": "Administrer automatiseringer",
                     "editor": {
                         "actions": {
                             "add": "Tilføj handling",
@@ -1341,7 +1341,7 @@
                 },
                 "entities": {
                     "caption": "Entiteter",
-                    "description": "Oversigt over alle kendte entiteter.",
+                    "description": "Administrer kendte entiteter",
                     "picker": {
                         "disable_selected": {
                             "button": "Deaktiver valgte",
@@ -1393,7 +1393,7 @@
                 "header": "Konfigurer Home Assistant",
                 "helpers": {
                     "caption": "Hjælpere",
-                    "description": "Elementer, der kan hjælpe med at bygge automatiseringer.",
+                    "description": "Administrer elementer, der hjælper med at opbygge automatiseringer",
                     "dialog": {
                         "add_helper": "Tilføj hjælper",
                         "add_platform": "Tilføj {platform}",
@@ -1421,7 +1421,7 @@
                     "built_using": "Bygget ved hjælp af",
                     "caption": "Oplysninger",
                     "custom_uis": "Tilpassede brugergrænseflader:",
-                    "description": "Oplysninger om din Home Assistant-installation",
+                    "description": "Se oplysninger om din Home Assistant-installation",
                     "developed_by": "Udviklet af en masse fantastiske mennesker.",
                     "documentation": "Dokumentation",
                     "frontend": "brugerflade",
@@ -1486,7 +1486,7 @@
                     },
                     "configure": "Konfigurer",
                     "configured": "Konfigureret",
-                    "description": "Administrer og opsæt integrationer",
+                    "description": "Administrer integrationer",
                     "details": "Integrationsdetaljer",
                     "discovered": "Fundet",
                     "home_assistant_website": "Home Assistants hjemmeside",
@@ -1570,7 +1570,7 @@
                             "open": "Åbn"
                         }
                     },
-                    "description": "Konfigurer dine Lovelace-betjeningspaneler",
+                    "description": "Administrer dine Lovelace-betjeningspaneler",
                     "resources": {
                         "cant_edit_yaml": "Du bruger Lovelace i YAML-tilstand, og derfor kan du ikke administrere dine ressourcer gennem brugerfladen. Administrer dem i configuration.yaml.",
                         "caption": "Ressourcer",
@@ -1648,7 +1648,7 @@
                 "scene": {
                     "activated": "Aktiverede scenen {name}.",
                     "caption": "Scener",
-                    "description": "Opret og rediger scener",
+                    "description": "Administrer scener",
                     "editor": {
                         "default_name": "Ny scene",
                         "devices": {
@@ -1692,7 +1692,7 @@
                 },
                 "script": {
                     "caption": "Scripts",
-                    "description": "Opret og rediger scripts",
+                    "description": "Administrer scripts",
                     "editor": {
                         "alias": "Navn",
                         "default_name": "Nyt script",
@@ -1879,7 +1879,7 @@
                         "create_group": "Zigbee Home Automation - Opret gruppe",
                         "create_group_details": "Indtast de nødvendige oplysninger for at oprette en ny ZigBee-gruppe",
                         "creating_group": "Opretter gruppe",
-                        "description": "Opret og rediger Zigbee-grupper",
+                        "description": "Administrer Zigbee-grupper",
                         "group_details": "Her er alle detaljer for den valgte Zigbee-gruppe.",
                         "group_id": "Gruppe-id",
                         "group_info": "Gruppeoplysninger",

@@ -99,9 +99,9 @@ class DialogZoneDetail extends LitElement {
     return html`
       <ha-dialog
         open
-        @closed="${this.closeDialog}"
-        scrimClickAction=""
-        escapeKeyAction=""
+        @closed=${this.closeDialog}
+        scrimClickAction
+        escapeKeyAction
         .heading=${createCloseHeading(
           this.hass,
           this._params.entry
@@ -140,6 +140,7 @@ class DialogZoneDetail extends LitElement {
             ></paper-input>
             <ha-location-editor
               class="flex"
+              .hass=${this.hass}
               .location=${this._locationValue}
               .radius=${this._radius}
               .radiusColor=${this._passive

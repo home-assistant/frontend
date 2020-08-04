@@ -48,8 +48,7 @@ class HuiSectionRow extends LitElement implements LovelaceRow {
       }
       .divider {
         height: 1px;
-        background-color: var(--secondary-text-color);
-        opacity: 0.25;
+        background-color: var(--divider-color);
         margin-left: -16px;
         margin-right: -16px;
         margin-top: 8px;

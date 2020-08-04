@@ -240,6 +240,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
           ? html`
               <div class="flex">
                 <ha-locations-editor
+                  .hass=${this.hass}
                   .locations=${this._getZones(
                     this._storageItems,
                     this._stateItems
