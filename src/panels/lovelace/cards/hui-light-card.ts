@@ -67,7 +67,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
   private _brightnessTimout?: number;
 
   public getCardSize(): number {
-    return 4;
+    return 10;
   }
 
   public setConfig(config: LightCardConfig): void {
@@ -263,9 +263,9 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
-      :host {
+      /* :host {
         display: block;
-      }
+      } */
 
       ha-card {
         height: 100%;

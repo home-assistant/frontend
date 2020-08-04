@@ -92,8 +92,8 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     }
     // +1 for the header
     let size =
-      (this._config.title || this._showHeaderToggle ? 1 : 0) +
-      (this._config.entities.length || 1);
+      (this._config.title || this._showHeaderToggle ? 4 : 0) +
+      (this._config.entities.length * 2 || 1);
     if (this._headerElement) {
       const headerSize = computeCardSize(this._headerElement);
       size += headerSize instanceof Promise ? await headerSize : headerSize;
@@ -229,6 +229,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
         flex-direction: column;
         justify-content: space-between;
         overflow: hidden;
+        overflow-y: auto;
       }
       .card-header {
         display: flex;
@@ -280,7 +281,6 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
         border-bottom-left-radius: var(--ha-card-border-radius, 2px);
         border-bottom-right-radius: var(--ha-card-border-radius, 2px);
         margin-top: -16px;
-        overflow: hidden;
       }
     `;
   }

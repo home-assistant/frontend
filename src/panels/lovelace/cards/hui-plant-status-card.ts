@@ -63,7 +63,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
   @internalProperty() private _config?: PlantStatusCardConfig;
 
   public getCardSize(): number {
-    return 3;
+    return 5;
   }
 
   public setConfig(config: PlantStatusCardConfig): void {
@@ -163,6 +163,10 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
+      ha-card {
+        height: 100%;
+      }
+
       .banner {
         display: flex;
         align-items: flex-end;

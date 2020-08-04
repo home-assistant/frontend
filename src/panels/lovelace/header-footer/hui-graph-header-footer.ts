@@ -42,7 +42,7 @@ export class HuiGraphHeaderFooter extends LitElement
   private _fetching = false;
 
   public getCardSize(): number {
-    return 2;
+    return 3;
   }
 
   public setConfig(config: GraphHeaderFooterConfig): void {

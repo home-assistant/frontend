@@ -30,6 +30,8 @@ export class HuiCardOptions extends LitElement {
 
   @property() public path?: [number, number];
 
+  @property() public key?: string;
+
   @queryAssignedNodes() private _assignedNodes?: NodeListOf<LovelaceCard>;
 
   public getCardSize() {
@@ -39,10 +41,10 @@ export class HuiCardOptions extends LitElement {
   protected render(): TemplateResult {
     return html`
       <slot></slot>
-      <ha-card>
+      <div class="card-options">
         <div class="options">
           <div class="primary-actions">
-            <mwc-button @click=${this._editCard}
+            <mwc-button dense @click=${this._editCard}
               >${this.hass!.localize(
                 "ui.panel.lovelace.editor.edit_card.edit"
               )}</mwc-button
@@ -97,7 +99,7 @@ export class HuiCardOptions extends LitElement {
             </ha-button-menu>
           </div>
         </div>
-      </ha-card>
+      </div>
     `;
   }
 
@@ -107,9 +109,20 @@ export class HuiCardOptions extends LitElement {
         outline: 2px solid var(--primary-color);
       }
 
-      ha-card {
+      .card-options {
+        border-radius: var(--ha-card-border-radius, 4px);
         border-top-right-radius: 0;
         border-top-left-radius: 0;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(
+          --ha-card-background,
+          var(--card-background-color, white)
+        );
+
+        --mdc-icon-button-size: 24px;
       }
 
       div.options {
@@ -126,7 +139,13 @@ export class HuiCardOptions extends LitElement {
 
       div.options .secondary-actions {
         flex: 4;
-        text-align: right;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+      }
+
+      div.options .secondary-actions > * {
+        padding-left: 8px;
       }
 
       mwc-icon-button {

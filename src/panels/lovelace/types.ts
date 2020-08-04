@@ -31,6 +31,7 @@ export interface LovelaceBadge extends HTMLElement {
 }
 
 export interface LovelaceCard extends HTMLElement {
+  key?: string;
   hass?: HomeAssistant;
   isPanel?: boolean;
   editMode?: boolean;

@@ -212,7 +212,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   private _resizeObserver?: ResizeObserver;
 
   public getCardSize(): number {
-    return 3;
+    return 8;
   }
 
   public setConfig(config: MediaControlCardConfig): void {
@@ -725,6 +725,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     return css`
       ha-card {
         overflow: hidden;
+        height: 100%;
       }
 
       .background {

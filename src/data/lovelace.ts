@@ -92,6 +92,7 @@ export interface LovelaceCardConfig {
   index?: number;
   view_index?: number;
   type: string;
+  key?: string;
   [key: string]: any;
 }
 

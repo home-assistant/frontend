@@ -82,7 +82,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
   }
 
   public async getCardSize(): Promise<number> {
-    let size = 2;
+    let size = 4;
     if (this._footerElement) {
       const footerSize = computeCardSize(this._footerElement);
       size += footerSize instanceof Promise ? await footerSize : footerSize;

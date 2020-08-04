@@ -24,7 +24,7 @@ export class HuiButtonsHeaderFooter extends LitElement
   private _configEntities?: EntityConfig[];
 
   public getCardSize(): number {
-    return 1;
+    return 3;
   }
 
   public setConfig(config: ButtonsHeaderFooterConfig): void {

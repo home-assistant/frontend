@@ -36,6 +36,7 @@ interface LovelacePanelConfig {
 
 let editorLoaded = false;
 let resourcesLoaded = false;
+const mediaQueryColumns = [2, 6, 9, 12];
 
 class LovelacePanel extends LitElement {
   @property() public panel?: PanelInfo<LovelacePanelConfig>;
@@ -208,9 +209,9 @@ class LovelacePanel extends LitElement {
     );
     // Do -1 column if the menu is docked and open
     this._columns = Math.max(
-      1,
-      matchColumns -
-        Number(!this.narrow && this.hass!.dockedSidebar === "docked")
+      2,
+      mediaQueryColumns[matchColumns - 1] -
+        Number(!this.narrow && this.hass!.dockedSidebar === "docked") * 2
     );
   }
 

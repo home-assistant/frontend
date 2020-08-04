@@ -40,7 +40,7 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
 
   public getCardSize(): number {
     if (!this._config) {
-      return 3;
+      return 5;
     }
     const aspectRatio = this._config.aspect_ratio
       ? Number(this._config.aspect_ratio.replace("%", ""))

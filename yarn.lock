@@ -7865,6 +7865,14 @@ lit-analyzer@1.2.0, lit-analyzer@^1.2.0:
     vscode-html-languageservice "3.1.0"
     web-component-analyzer "~1.1.1"
 
+lit-draggable@0.0.14, lit-draggable@^0.0.14:
+  version "0.0.14"
+  resolved "https://registry.yarnpkg.com/lit-draggable/-/lit-draggable-0.0.14.tgz#3bf0bd90959618e08e17a538f4a6b7bb23bd5d40"
+  integrity sha512-nZKEcqv4yISvlOawrU6OHCMefOoyT1WHSlsQpVK5U1En5Ffr8CV19NpdjSKmpeABBxPR//29YJ7+rBH77YYNlg==
+  dependencies:
+    lit-element "^2.3.1"
+    lit-html "^1.2.1"
+
 lit-element@2.3.1, lit-element@^2.0.0, lit-element@^2.2.1, lit-element@^2.3.0, lit-element@^2.3.1:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/lit-element/-/lit-element-2.3.1.tgz#73343b978fa1e73d60526c6bb6ad60f53a16c343"
@@ -7872,10 +7880,29 @@ lit-element@2.3.1, lit-element@^2.0.0, lit-element@^2.2.1, lit-element@^2.3.0, l
   dependencies:
     lit-html "^1.1.1"
 
+lit-grid-layout@^1.0.13:
+  version "1.0.13"
+  resolved "https://registry.yarnpkg.com/lit-grid-layout/-/lit-grid-layout-1.0.13.tgz#8acb29fa7dd153c2e4875cbf19399603a96b50a5"
+  integrity sha512-8gmO/of2BuqcuMJv/Fv0cUNlFwwihEXlRBg+Rn7E5IdMJCCy1yhAMShDIJJP7zI2214H1vE5gfP+qdWKR6vE0g==
+  dependencies:
+    lit-draggable "^0.0.14"
+    lit-element "^2.3.1"
+    lit-html "^1.2.1"
+    lit-resizable "^0.0.16"
+
 lit-html@1.2.1, lit-html@^1.0.0, lit-html@^1.1.1, lit-html@^1.1.2, lit-html@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-1.2.1.tgz#1fb933dc1e2ddc095f60b8086277d4fcd9d62cc8"
   integrity sha512-GSJHHXMGLZDzTRq59IUfL9FCdAlGfqNp/dEa7k7aBaaWD+JKaCjsAk9KYm2V12ItonVaYx2dprN66Zdm1AuBTQ==
+
+lit-resizable@^0.0.16:
+  version "0.0.16"
+  resolved "https://registry.yarnpkg.com/lit-resizable/-/lit-resizable-0.0.16.tgz#97025851a3367a957e2dde514f4c16d6d58d13a4"
+  integrity sha512-DOGWMw0RoytMwSBlXlU8hosZsSkABRL5hR/A2aA02yiOuHCgzjdiiUS0Wua3wTo61+CACbq/+q7XJTqWRxWWcA==
+  dependencies:
+    lit-draggable "0.0.14"
+    lit-element "^2.3.1"
+    lit-html "^1.2.1"
 
 lit-virtualizer@^0.4.2:
   version "0.4.2"

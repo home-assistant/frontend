@@ -52,7 +52,7 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
   @internalProperty() private _checkedItems?: ShoppingListItem[];
 
   public getCardSize(): number {
-    return (this._config ? (this._config.title ? 1 : 0) : 0) + 3;
+    return (this._config ? (this._config.title ? 2 : 0) : 0) + 6;
   }
 
   public setConfig(config: ShoppingListCardConfig): void {
@@ -254,6 +254,8 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
     return css`
       ha-card {
         padding: 16px;
+        height: 100%;
+        box-sizing: border-box;
       }
 
       .has-header {

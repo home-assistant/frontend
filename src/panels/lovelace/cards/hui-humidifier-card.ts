@@ -61,7 +61,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
   @internalProperty() private _setHum?: number;
 
   public getCardSize(): number {
-    return 5;
+    return 12;
   }
 
   public setConfig(config: HumidifierCardConfig): void {
@@ -276,10 +276,6 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
-      :host {
-        display: block;
-      }
-
       ha-card {
         height: 100%;
         position: relative;
