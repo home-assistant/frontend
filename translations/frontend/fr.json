@@ -833,6 +833,15 @@
                             "name": "Action",
                             "type_select": "Type d'action",
                             "type": {
+                                "choose": {
+                                    "add_option": "Ajouter une option",
+                                    "conditions": "Conditions",
+                                    "default": "Actions par défaut",
+                                    "label": "Choisir",
+                                    "option": "Option {number}",
+                                    "remove_option": "Supprimer l'option",
+                                    "sequence": "Actions"
+                                },
                                 "condition": {
                                     "label": "Condition"
                                 },
@@ -851,6 +860,24 @@
                                     "event": "Évènement :",
                                     "label": "Déclencher l'évènement",
                                     "service_data": "Données du service"
+                                },
+                                "repeat": {
+                                    "label": "Répéter",
+                                    "sequence": "Actions",
+                                    "type_select": "Type de répétition",
+                                    "type": {
+                                        "count": {
+                                            "label": "Nombre"
+                                        },
+                                        "until": {
+                                            "conditions": "Jusqu'à ce que les conditions",
+                                            "label": "Jusqu'à ce que"
+                                        },
+                                        "while": {
+                                            "conditions": "Tant que les conditions",
+                                            "label": "Tant que"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "Activer la scène"
@@ -1393,7 +1420,7 @@
                 "header": "Configurer Home Assistant",
                 "helpers": {
                     "caption": "Entrées",
-                    "description": "Éléments pouvant aider à construire des automatisations.",
+                    "description": "Gérez les éléments qui peuvent aident à créer des automatisations",
                     "dialog": {
                         "add_helper": "Ajouter une entrée",
                         "add_platform": "Ajouter {platform}",
@@ -1514,7 +1541,7 @@
                     "rename_input_label": "Nom de l'entrée",
                     "search": "Chercher les intégrations"
                 },
-                "introduction": "Ici, il est possible de configurer vos composants et Home Assistant. Tout n'est pas encore possible de configurer à partir de l'interface utilisateur, mais nous y travaillons.",
+                "introduction": "Ici, il est possible de configurer vos composants et Home Assistant. Tout n'est pas encore configurable à partir de l'interface utilisateur, mais nous y travaillons.",
                 "logs": {
                     "caption": "Journaux",
                     "clear": "Nettoyer",
@@ -2731,10 +2758,18 @@
                     "header": "Fermer automatiquement la connexion"
                 },
                 "themes": {
+                    "accent_color": "Couleur d'accentuation",
+                    "dark_mode": {
+                        "auto": "Auto",
+                        "dark": "Sombre",
+                        "light": "Clair"
+                    },
                     "dropdown_label": "Thème",
                     "error_no_theme": "Aucun thème disponible.",
                     "header": "Thème",
-                    "link_promo": "En savoir plus sur les thèmes"
+                    "link_promo": "En savoir plus sur les thèmes",
+                    "primary_color": "Couleur primaire",
+                    "reset": "Réinitialiser"
                 },
                 "vibrate": {
                     "description": "Activer ou désactiver les vibrations sur cet appareil lors du contrôle des périphériques.",

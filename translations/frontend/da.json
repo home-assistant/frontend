@@ -833,6 +833,15 @@
                             "name": "Handling",
                             "type_select": "Begivenhedstype",
                             "type": {
+                                "choose": {
+                                    "add_option": "Tilføj mulighed",
+                                    "conditions": "Betingelser",
+                                    "default": "Standardhandlinger",
+                                    "label": "Vælg",
+                                    "option": "Mulighed {number}",
+                                    "remove_option": "Fjern mulighed",
+                                    "sequence": "Handlinger"
+                                },
                                 "condition": {
                                     "label": "Betingelse"
                                 },
@@ -851,6 +860,24 @@
                                     "event": "Hændelse:",
                                     "label": "Afsend hændelse",
                                     "service_data": "Tjenestesdata"
+                                },
+                                "repeat": {
+                                    "label": "Gentag",
+                                    "sequence": "Handlinger",
+                                    "type_select": "Gentagelsestype",
+                                    "type": {
+                                        "count": {
+                                            "label": "Tæl"
+                                        },
+                                        "until": {
+                                            "conditions": "Indtil betingelserne",
+                                            "label": "Indtil"
+                                        },
+                                        "while": {
+                                            "conditions": "Mens betingelserne",
+                                            "label": "Mens"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "Aktivér scene"
@@ -2731,10 +2758,18 @@
                     "header": "Luk forbindelsen automatisk"
                 },
                 "themes": {
+                    "accent_color": "Accentfarve",
+                    "dark_mode": {
+                        "auto": "Auto",
+                        "dark": "Mørk",
+                        "light": "Lys"
+                    },
                     "dropdown_label": "Tema",
                     "error_no_theme": "Ingen temaer til rådighed.",
                     "header": "Tema",
-                    "link_promo": "Lær om temaer"
+                    "link_promo": "Lær om temaer",
+                    "primary_color": "Primær farve",
+                    "reset": "Nulstil"
                 },
                 "vibrate": {
                     "description": "Aktivér eller deaktiver vibrationer på denne enhed, når du styrer enheder.",
