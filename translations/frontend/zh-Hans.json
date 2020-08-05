@@ -833,6 +833,15 @@
                             "name": "执行",
                             "type_select": "动作类型",
                             "type": {
+                                "choose": {
+                                    "add_option": "添加选项",
+                                    "conditions": "条件",
+                                    "default": "默认动作",
+                                    "label": "选择",
+                                    "option": "选项 {number}",
+                                    "remove_option": "删除选项",
+                                    "sequence": "动作"
+                                },
                                 "condition": {
                                     "label": "环境条件"
                                 },
@@ -851,6 +860,24 @@
                                     "event": "事件：",
                                     "label": "触发事件",
                                     "service_data": "服务数据"
+                                },
+                                "repeat": {
+                                    "label": "重复",
+                                    "sequence": "动作",
+                                    "type_select": "重复类型",
+                                    "type": {
+                                        "count": {
+                                            "label": "按次数"
+                                        },
+                                        "until": {
+                                            "conditions": "Until 条件",
+                                            "label": "满足条件后退出循环"
+                                        },
+                                        "while": {
+                                            "conditions": "While 条件",
+                                            "label": "满足条件就循环"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "激活场景"
@@ -2731,10 +2758,18 @@
                     "header": "自动关闭连接"
                 },
                 "themes": {
+                    "accent_color": "强调色",
+                    "dark_mode": {
+                        "auto": "自动",
+                        "dark": "深色",
+                        "light": "浅色"
+                    },
                     "dropdown_label": "主题",
                     "error_no_theme": "没有可用的主题。",
                     "header": "主题",
-                    "link_promo": "了解主题"
+                    "link_promo": "了解主题",
+                    "primary_color": "主色调",
+                    "reset": "重置"
                 },
                 "vibrate": {
                     "description": "控制设备时，在此设备上启用或禁用振动。",

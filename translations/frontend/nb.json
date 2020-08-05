@@ -798,7 +798,7 @@
                         "confirmation_text": "Alle enheter som tilhører dette området vil ikke bli tildelt.",
                         "confirmation_title": "Er du sikker på at du vil slette dette området?"
                     },
-                    "description": "Oversikt over alle områder i ditt hjem",
+                    "description": "Administrere områder i hjemmet ditt",
                     "editor": {
                         "area_id": "Område ID",
                         "create": "Opprett",
@@ -820,7 +820,7 @@
                 },
                 "automation": {
                     "caption": "Automasjoner",
-                    "description": "Opprett og rediger automasjoner",
+                    "description": "Administrer automatiseringer",
                     "editor": {
                         "actions": {
                             "add": "Legg til handling",
@@ -833,6 +833,15 @@
                             "name": "Handling",
                             "type_select": "Handling",
                             "type": {
+                                "choose": {
+                                    "add_option": "Legg til alternativ",
+                                    "conditions": "Betingelser",
+                                    "default": "Standard handlinger",
+                                    "label": "Velge",
+                                    "option": "Alternativ {number}",
+                                    "remove_option": "Fjern alternativ",
+                                    "sequence": "Handlinger"
+                                },
                                 "condition": {
                                     "label": "Betingelse"
                                 },
@@ -851,6 +860,24 @@
                                     "event": "Hendelse",
                                     "label": "Utfør hendelse",
                                     "service_data": "Tjenestedata"
+                                },
+                                "repeat": {
+                                    "label": "Gjenta",
+                                    "sequence": "Handlinger",
+                                    "type_select": "Gjenta type",
+                                    "type": {
+                                        "count": {
+                                            "label": "Telle"
+                                        },
+                                        "until": {
+                                            "conditions": "Inntil forholdene",
+                                            "label": "Før"
+                                        },
+                                        "while": {
+                                            "conditions": "Mens forholdene",
+                                            "label": "Mens"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "Aktiver scene"
@@ -1341,7 +1368,7 @@
                 },
                 "entities": {
                     "caption": "Entiteter",
-                    "description": "Oversikt over alle kjente entiteter",
+                    "description": "Administrer kjente enheter",
                     "picker": {
                         "disable_selected": {
                             "button": "Deaktiver valgte",
@@ -1393,7 +1420,7 @@
                 "header": "Konfigurer Home Assistant",
                 "helpers": {
                     "caption": "Hjelpere",
-                    "description": "Elementer som kan bidra til å bygge automasjoner.",
+                    "description": "Administrere elementer som bidrar til å bygge automatiseringer",
                     "dialog": {
                         "add_helper": "Legg hjelper",
                         "add_platform": "Legg til {platform}",
@@ -1421,7 +1448,7 @@
                     "built_using": "Bygget med",
                     "caption": "Informasjon",
                     "custom_uis": "Tilpassede brukergrensesnitt:",
-                    "description": "Informasjon om din Home Assistant-installasjon",
+                    "description": "Vise informasjon om installasjonen av Home Assistant",
                     "developed_by": "Utviklet av en gjeng med fantastiske mennesker.",
                     "documentation": "Dokumentasjon",
                     "frontend": "frontend",
@@ -1486,7 +1513,7 @@
                     },
                     "configure": "Konfigurer",
                     "configured": "Konfigurert",
-                    "description": "Administrer og sett opp integrasjoner",
+                    "description": "Administrer integrasjoner",
                     "details": "Integrasjonsdetaljer",
                     "discovered": "Oppdaget",
                     "home_assistant_website": "Nettsted for Home Assistant",
@@ -1514,7 +1541,7 @@
                     "rename_input_label": "Navn på oppføring",
                     "search": "Søk i integrasjoner"
                 },
-                "introduction": "Her er det mulig å konfigurere dine komponenter og Home Assistant. Ikke alt er mulig å konfigurere fra brukergrensesnittet enda, men vi jobber med det.",
+                "introduction": "I denne visningen er det mulig å konfigurere komponentene og Home Assistant. Ikke alt er mulig å konfigurere fra brukergrensesnittet ennå, men vi jobber med det.",
                 "logs": {
                     "caption": "Logger",
                     "clear": "Tøm",
@@ -1570,7 +1597,7 @@
                             "open": "Åpne"
                         }
                     },
-                    "description": "Konfigurer dine Lovelace instrumentbord",
+                    "description": "Administrer Lovelace Dashboards",
                     "resources": {
                         "cant_edit_yaml": "Du bruker Lovelace i YAML-modus, derfor kan du ikke administrere ressursene dine via brukergrensesnittet. Behandle dem i configuration.yaml.",
                         "caption": "Ressurser",
@@ -1625,7 +1652,7 @@
                     "confirm_delete": "Er du sikker på at du vil slette denne personen?",
                     "confirm_delete2": "Alle enheter som tilhører denne personen vil ikke bli tildelt.",
                     "create_person": "Opprett person",
-                    "description": "Administrer personer som Home Assistant sporer",
+                    "description": "Administrere personene som Home Assistant sporer",
                     "detail": {
                         "create": "Opprett",
                         "delete": "Slett",
@@ -1648,7 +1675,7 @@
                 "scene": {
                     "activated": "Aktivert scene {name}.",
                     "caption": "Scener",
-                    "description": "Opprette og redigere scener",
+                    "description": "Administrer scener",
                     "editor": {
                         "default_name": "Ny scene",
                         "devices": {
@@ -1692,7 +1719,7 @@
                 },
                 "script": {
                     "caption": "Skript",
-                    "description": "Opprett og rediger skript",
+                    "description": "Administrer skript",
                     "editor": {
                         "alias": "Navn",
                         "default_name": "Nytt skript",
@@ -1879,7 +1906,7 @@
                         "create_group": "ZigBee Hjemme Automasjon - Opprett gruppe",
                         "create_group_details": "Angi de nødvendige detaljene for å opprette en ny Zigbee-gruppe",
                         "creating_group": "Oppretter gruppe",
-                        "description": "Lage og endre Zigbee grupper",
+                        "description": "Administrer Zigbee-grupper",
                         "group_details": "Her er alle detaljene for den valgte Zigbee-gruppen.",
                         "group_id": "Gruppe-ID",
                         "group_info": "Gruppeinformasjon",
@@ -1922,7 +1949,7 @@
                     "configured_in_yaml": "Soner som er konfigurert via configuration.yaml kan ikke redigeres via brukergrensesnittet.",
                     "confirm_delete": "Er du sikker på at du vil slette denne sonen?",
                     "create_zone": "Opprett sone",
-                    "description": "Administrer sonene du vil spore personer i.",
+                    "description": "Administrer sonene du vil spore personer i",
                     "detail": {
                         "create": "Opprett",
                         "delete": "Slett",
@@ -2731,10 +2758,18 @@
                     "header": "Lukk tilkoblingen automatisk"
                 },
                 "themes": {
+                    "accent_color": "Aksentfarge",
+                    "dark_mode": {
+                        "auto": "Auto",
+                        "dark": "Mørk",
+                        "light": "Lys"
+                    },
                     "dropdown_label": "Tema",
                     "error_no_theme": "Ingen temaer er tilgjengelig.",
                     "header": "Tema",
-                    "link_promo": "Lær om temaer"
+                    "link_promo": "Lær om temaer",
+                    "primary_color": "Primærfarge",
+                    "reset": "Nullstille"
                 },
                 "vibrate": {
                     "description": "Aktiver eller deaktiver vibrasjoner på denne enheten når du kontrollerer enheter.",
