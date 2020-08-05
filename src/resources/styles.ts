@@ -11,6 +11,7 @@ export const darkStyles = {
   "switch-unchecked-button-color": "#999999",
   "switch-unchecked-track-color": "#9b9b9b",
   "divider-color": "rgba(225, 225, 225, .12)",
+  "mdc-button-disabled-ink-color": "rgba(225, 225, 225, .30)",
 };
 
 export const derivedStyles = {
