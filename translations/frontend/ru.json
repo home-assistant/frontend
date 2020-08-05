@@ -833,6 +833,14 @@
                             "name": "Действие",
                             "type_select": "Тип действия",
                             "type": {
+                                "choose": {
+                                    "add_option": "Добавить опцию",
+                                    "conditions": "Условия",
+                                    "default": "Действия по умолчанию",
+                                    "option": "Опция {number}",
+                                    "remove_option": "Удалить опцию",
+                                    "sequence": "Действия"
+                                },
                                 "condition": {
                                     "label": "Условие"
                                 },
@@ -2731,10 +2739,18 @@
                     "header": "Закрывать соединение автоматически"
                 },
                 "themes": {
+                    "accent_color": "Цвет акцента",
+                    "dark_mode": {
+                        "auto": "Авто",
+                        "dark": "Тёмная",
+                        "light": "Светлая"
+                    },
                     "dropdown_label": "Тема",
                     "error_no_theme": "Нет доступных тем.",
                     "header": "Тема",
-                    "link_promo": "Узнать о темах"
+                    "link_promo": "Узнать о темах",
+                    "primary_color": "Основной цвет",
+                    "reset": "Сбросить"
                 },
                 "vibrate": {
                     "description": "Получать тактильный отклик при управлении устройствами",

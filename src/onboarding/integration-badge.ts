@@ -62,9 +62,6 @@ class IntegrationBadge extends LitElement {
         justify-content: center;
       }
 
-      :host([clickable]) .icon {
-      }
-
       .badge {
         position: absolute;
         color: white;
@@ -72,9 +69,8 @@ class IntegrationBadge extends LitElement {
         right: -10px;
         background-color: var(--label-badge-green);
         border-radius: 50%;
-        width: 18px;
         display: block;
-        height: 18px;
+        --mdc-icon-size: 18px;
         border: 2px solid white;
       }
 

@@ -1646,6 +1646,18 @@
                     "title": "MQTT",
                     "topic": "topic"
                 },
+                "ozw": {
+                    "common": {
+                        "node_id": "Node ID",
+                        "ozw_instance": "OpenZWave Instance",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "Node Failed",
+                        "stage": "Stage",
+                        "zwave_info": "Z-Wave Info"
+                    }
+                },
                 "person": {
                     "add_person": "Add Person",
                     "caption": "Persons",
@@ -2414,6 +2426,9 @@
                         "para_migrate": "Home Assistant can add ID's to all your cards and views automatically for you by pressing the 'Migrate configuration' button.",
                         "para_no_id": "This element doesn't have an ID. Please add an ID to this element in 'ui-lovelace.yaml'."
                     },
+                    "move_card": {
+                        "header": "Choose a view to move the card to"
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "We will automatically generate your Lovelace UI views with your areas and devices if you remove your Lovelace UI configuration.",
                         "confirm_remove_config_title": "Are you sure you want to remove your Lovelace UI configuration? We will automatically generate your Lovelace UI views with your areas and devices.",
@@ -2440,6 +2455,10 @@
                         "yaml_config": "To help you start here is the current config of this dashboard:",
                         "yaml_control": "To take control in YAML mode, create a YAML file with the name you specified in your config for this dashboard, or the default 'ui-lovelace.yaml'.",
                         "yaml_mode": "You are using YAML mode for this dashboard, which means you cannot change your Lovelace config from the UI. If you want to manage this dashboard from the UI, remove 'mode: yaml' from your Lovelace configuration in 'configuration.yaml.'."
+                    },
+                    "select_view": {
+                        "dashboard_label": "Dashboard",
+                        "header": "Choose a view"
                     },
                     "suggest_card": {
                         "add": "Add to Lovelace UI",

@@ -833,6 +833,15 @@
                             "name": "Akcja",
                             "type_select": "Typ akcji",
                             "type": {
+                                "choose": {
+                                    "add_option": "Dodaj opcję",
+                                    "conditions": "Warunki",
+                                    "default": "Akcje domyślne",
+                                    "label": "Wybór",
+                                    "option": "Opcja {number}",
+                                    "remove_option": "Usuń opcję",
+                                    "sequence": "Akcje"
+                                },
                                 "condition": {
                                     "label": "Warunek"
                                 },
@@ -851,6 +860,24 @@
                                     "event": "Zdarzenie:",
                                     "label": "Wywołanie zdarzenia",
                                     "service_data": "Dane usługi"
+                                },
+                                "repeat": {
+                                    "label": "Powtórzenie",
+                                    "sequence": "Akcje",
+                                    "type_select": "Typ powtórzenia",
+                                    "type": {
+                                        "count": {
+                                            "label": "Licznik"
+                                        },
+                                        "until": {
+                                            "conditions": "Warunki dopóki",
+                                            "label": "Dopóki"
+                                        },
+                                        "while": {
+                                            "conditions": "Warunki podczas",
+                                            "label": "Podczas"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "Aktywuj scenę"
@@ -2731,10 +2758,18 @@
                     "header": "Automatyczne zamykanie połączenia"
                 },
                 "themes": {
+                    "accent_color": "Kolor akcentu",
+                    "dark_mode": {
+                        "auto": "Automatyczny",
+                        "dark": "Ciemny",
+                        "light": "Jasny"
+                    },
                     "dropdown_label": "Motyw",
                     "error_no_theme": "Brak dostępnych motywów.",
                     "header": "Motyw",
-                    "link_promo": "Dowiedz się więcej o motywach"
+                    "link_promo": "Dowiedz się więcej o motywach",
+                    "primary_color": "Kolor podstawowy",
+                    "reset": "Zresetuj"
                 },
                 "vibrate": {
                     "description": "Włącz lub wyłącz wibracje na tym urządzeniu podczas sterowania urządzeniami.",

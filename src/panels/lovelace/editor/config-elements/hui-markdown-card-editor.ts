@@ -74,6 +74,7 @@ export class HuiMarkdownCardEditor extends LitElement
           )})"
           .value="${this._content}"
           .configValue="${"content"}"
+          @keydown=${this._ignoreKeydown}
           @value-changed="${this._valueChanged}"
           autocapitalize="none"
           autocomplete="off"
@@ -87,6 +88,10 @@ export class HuiMarkdownCardEditor extends LitElement
         ></hui-theme-select-editor>
       </div>
     `;
+  }
+
+  private _ignoreKeydown(ev: KeyboardEvent) {
+    ev.stopPropagation();
   }
 
   private _valueChanged(ev: EntitiesEditorEvent): void {

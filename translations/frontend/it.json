@@ -40,13 +40,13 @@
             },
             "preset_mode": {
                 "activity": "Attività",
-                "away": "Fuori casa",
+                "away": "Stand by",
                 "boost": "Boost",
                 "comfort": "Comfort",
-                "eco": "Eco",
-                "home": "Casa",
-                "none": "Nessuna",
-                "sleep": "Dormire"
+                "eco": "Protezione antigelo",
+                "home": "In casa",
+                "none": "Nessuno",
+                "sleep": "Notte"
             }
         },
         "humidifier": {
@@ -833,6 +833,12 @@
                             "name": "Azione",
                             "type_select": "Tipo di azione",
                             "type": {
+                                "choose": {
+                                    "conditions": "Condizioni",
+                                    "default": "Azione predefinita",
+                                    "label": "Scegli",
+                                    "sequence": "Azioni"
+                                },
                                 "condition": {
                                     "label": "Condizione"
                                 },
@@ -2731,10 +2737,18 @@
                     "header": "Chiudi automaticamente la connessione"
                 },
                 "themes": {
+                    "accent_color": "Colore accento",
+                    "dark_mode": {
+                        "auto": "Auto",
+                        "dark": "Scuro",
+                        "light": "Chiaro"
+                    },
                     "dropdown_label": "Tema",
                     "error_no_theme": "Nessun tema disponibile.",
                     "header": "Tema",
-                    "link_promo": "Per saperne di più sui temi"
+                    "link_promo": "Per saperne di più sui temi",
+                    "primary_color": "Colore principale",
+                    "reset": "Reset"
                 },
                 "vibrate": {
                     "description": "Abilitare o disabilitare la vibrazione su questo dispositivo durante il controllo dei dispositivi.",
