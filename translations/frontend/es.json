@@ -798,7 +798,7 @@
                         "confirmation_text": "Todos los dispositivos en esta área quedarán sin asignar.",
                         "confirmation_title": "¿Estás seguro de que deseas eliminar esta área?"
                     },
-                    "description": "Visión general de todas las áreas de tu casa.",
+                    "description": "Administra áreas en tu hogar",
                     "editor": {
                         "area_id": "ID de área",
                         "create": "Crear",
@@ -820,7 +820,7 @@
                 },
                 "automation": {
                     "caption": "Automatizaciones",
-                    "description": "Crea y edita automatizaciones",
+                    "description": "Administra las automatizaciones",
                     "editor": {
                         "actions": {
                             "add": "Añadir acción",
@@ -833,6 +833,15 @@
                             "name": "Acción",
                             "type_select": "Tipo de acción",
                             "type": {
+                                "choose": {
+                                    "add_option": "Añadir opción",
+                                    "conditions": "Condiciones",
+                                    "default": "Acciones predeterminadas",
+                                    "label": "Elegir",
+                                    "option": "Opción {number}",
+                                    "remove_option": "Eliminar opción",
+                                    "sequence": "Acciones"
+                                },
                                 "condition": {
                                     "label": "Condición"
                                 },
@@ -851,6 +860,24 @@
                                     "event": "Evento:",
                                     "label": "Disparar evento",
                                     "service_data": "Datos de servicio"
+                                },
+                                "repeat": {
+                                    "label": "Repetir",
+                                    "sequence": "Acciones",
+                                    "type_select": "Tipo de repetición",
+                                    "type": {
+                                        "count": {
+                                            "label": "Cuenta"
+                                        },
+                                        "until": {
+                                            "conditions": "Condiciones de repetición",
+                                            "label": "Hasta"
+                                        },
+                                        "while": {
+                                            "conditions": "Condiciones de repetición",
+                                            "label": "Mientras"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "Activar escena"
@@ -1341,7 +1368,7 @@
                 },
                 "entities": {
                     "caption": "Entidades",
-                    "description": "Resumen de todas las entidades conocidas.",
+                    "description": "Administra las entidades conocidas.",
                     "picker": {
                         "disable_selected": {
                             "button": "Desactivar seleccionadas",
@@ -1393,7 +1420,7 @@
                 "header": "Configurar Home Assistant",
                 "helpers": {
                     "caption": "Ayudantes",
-                    "description": "Elementos que pueden ayudar a construir automatizaciones.",
+                    "description": "Administra los elementos que pueden ayudar a construir automatizaciones.",
                     "dialog": {
                         "add_helper": "Añadir ayudante",
                         "add_platform": "Añadir {platform}",
@@ -1421,7 +1448,7 @@
                     "built_using": "Construido usando",
                     "caption": "Información",
                     "custom_uis": "IU personalizadas:",
-                    "description": "Información sobre tu instalación de Home Assistant",
+                    "description": "Ver información sobre tu instalación de Home Assistant",
                     "developed_by": "Desarrollado por un montón de gente impresionante.",
                     "documentation": "Documentación",
                     "frontend": "interfaz de usuario",
@@ -1486,7 +1513,7 @@
                     },
                     "configure": "Configurar",
                     "configured": "Configurado",
-                    "description": "Administra y configura integraciones",
+                    "description": "Administra las integraciones",
                     "details": "Detalles de la integración",
                     "discovered": "Descubierto",
                     "home_assistant_website": "Sitio web de Home Assistant",
@@ -1514,7 +1541,7 @@
                     "rename_input_label": "Nombre de la entrada",
                     "search": "Buscar integraciones"
                 },
-                "introduction": "Aquí puedes configurar tus componentes y Home Assistant. Aún no es posible configurar todo desde la interfaz de usuario, pero estamos trabajando en ello.",
+                "introduction": "En esta vista puedes configurar tus componentes y Home Assistant. Aún no es posible configurar todo desde la IU, pero estamos trabajando en ello.",
                 "logs": {
                     "caption": "Registros",
                     "clear": "Limpiar",
@@ -1570,7 +1597,7 @@
                             "open": "Abrir"
                         }
                     },
-                    "description": "Configura tus Paneles de Control Lovelace",
+                    "description": "Administra tus Paneles de Control Lovelace",
                     "resources": {
                         "cant_edit_yaml": "Estás utilizando Lovelace en modo YAML, por tanto no puedes administrar tus recursos a través de la IU. Adminístralos en configuration.yaml.",
                         "caption": "Recursos",
@@ -1625,7 +1652,7 @@
                     "confirm_delete": "¿Estás seguro de que deseas eliminar a esta persona?",
                     "confirm_delete2": "Todos los dispositivos que pertenecen a esta persona quedarán sin asignar.",
                     "create_person": "Crear persona",
-                    "description": "Gestiona las personas a las que rastrea Home Assistant.",
+                    "description": "Administra las personas a las que rastrea Home Assistant.",
                     "detail": {
                         "create": "Crear",
                         "delete": "Eliminar",
@@ -1648,7 +1675,7 @@
                 "scene": {
                     "activated": "Activada escena {name}.",
                     "caption": "Escenas",
-                    "description": "Crea y edita escenas",
+                    "description": "Administra las escenas",
                     "editor": {
                         "default_name": "Nueva Escena",
                         "devices": {
@@ -1692,7 +1719,7 @@
                 },
                 "script": {
                     "caption": "Scripts",
-                    "description": "Crea y edita scripts",
+                    "description": "Administra los scripts",
                     "editor": {
                         "alias": "Nombre",
                         "default_name": "Nuevo script",
@@ -1879,7 +1906,7 @@
                         "create_group": "Domótica Zigbee - Crear grupo",
                         "create_group_details": "Introduce los detalles necesarios para crear un nuevo grupo de zigbee",
                         "creating_group": "Creación de grupo",
-                        "description": "Crea y modifica grupos Zigbee.",
+                        "description": "Administra los grupos Zigbee.",
                         "group_details": "Aquí están todos los detalles del grupo Zigbee seleccionado.",
                         "group_id": "ID de grupo",
                         "group_info": "Información del grupo",
@@ -1922,7 +1949,7 @@
                     "configured_in_yaml": "Las zonas configuradas a través de configuration.yaml no se pueden editar a través de la interfaz de usuario.",
                     "confirm_delete": "¿Estás seguro de que deseas eliminar esta zona?",
                     "create_zone": "Crear zona",
-                    "description": "Gestiona las zonas en las que deseas realizar un seguimiento de las personas.",
+                    "description": "Administra las zonas en las que deseas realizar un seguimiento de las personas.",
                     "detail": {
                         "create": "Crear",
                         "delete": "Eliminar",
@@ -2731,10 +2758,18 @@
                     "header": "Cerrar automáticamente la conexión"
                 },
                 "themes": {
+                    "accent_color": "Color de acento",
+                    "dark_mode": {
+                        "auto": "Automático",
+                        "dark": "Oscuro",
+                        "light": "Claro"
+                    },
                     "dropdown_label": "Tema",
                     "error_no_theme": "No hay temas disponibles",
                     "header": "Tema",
-                    "link_promo": "Aprende sobre los temas"
+                    "link_promo": "Aprende sobre los temas",
+                    "primary_color": "Color primario",
+                    "reset": "Reiniciar"
                 },
                 "vibrate": {
                     "description": "Activar o deshabilitar la vibración en este dispositivo al controlar dispositivos.",

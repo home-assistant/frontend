@@ -430,6 +430,8 @@
                 "activate": "Aktivera"
             },
             "script": {
+                "cancel": "Avbryt",
+                "cancel_multiple": "Avbryt {number}",
                 "execute": "Kör"
             },
             "service": {
@@ -524,6 +526,10 @@
                 "area": "Område",
                 "clear": "Rensa",
                 "show_areas": "Visa områden"
+            },
+            "data-table": {
+                "no-data": "Ingen data",
+                "search": "Sök"
             },
             "date-range-picker": {
                 "end_date": "Slutdatum",
@@ -646,7 +652,7 @@
                     "pattern": "Regex-mönster för validering på klientsidan",
                     "text": "Text"
                 },
-                "platform_not_loaded": "{platform} integrationen har ej lästs in. Lägg till integrationen genom att lägga till 'default_config:' eller ''{platform}:''.",
+                "platform_not_loaded": "Integrationen {platform} har ej laddats in. Lägg till integrationen genom att lägga till 'default_config:' eller ''{platform}:''.",
                 "required_error_msg": "Det här fältet krävs",
                 "yaml_not_editable": "Inställningar för denna entitet kan inte ändras från användargränssnittet. Enbart entiteter uppsatta från användargränssnittet är konfigurerbara från användargränssnittet."
             },
@@ -792,7 +798,7 @@
                         "confirmation_text": "Alla enheter i denna zon kommer att bli utan tilldelning.",
                         "confirmation_title": "Är du säker på att du vill ta bort den här zonen?"
                     },
-                    "description": "Oversikt över alla områden i ditt hem",
+                    "description": "Översikt över alla områden i ditt hem",
                     "editor": {
                         "area_id": "Områdes-ID",
                         "create": "Skapa",
@@ -814,7 +820,7 @@
                 },
                 "automation": {
                     "caption": "Automatiseringar",
-                    "description": "Skapa och redigera automatiseringar",
+                    "description": "Hantera automationer",
                     "editor": {
                         "actions": {
                             "add": "Lägg till åtgärd",
@@ -827,6 +833,15 @@
                             "name": "Åtgärd",
                             "type_select": "Åtgärdstyp",
                             "type": {
+                                "choose": {
+                                    "add_option": "Lägg till alternativ",
+                                    "conditions": "Villkor",
+                                    "default": "Standardåtgärder",
+                                    "label": "Välj",
+                                    "option": "Alternativ {number}",
+                                    "remove_option": "Ta bort alternativ",
+                                    "sequence": "Åtgärder"
+                                },
                                 "condition": {
                                     "label": "Villkor"
                                 },
@@ -845,6 +860,24 @@
                                     "event": "Händelse",
                                     "label": "Utlös händelse",
                                     "service_data": "Tjänstedata"
+                                },
+                                "repeat": {
+                                    "label": "Upprepa",
+                                    "sequence": "Åtgärder",
+                                    "type_select": "Typ av upprepning",
+                                    "type": {
+                                        "count": {
+                                            "label": "Antal"
+                                        },
+                                        "until": {
+                                            "conditions": "Fram-tills-villkor",
+                                            "label": "Fram tills"
+                                        },
+                                        "while": {
+                                            "conditions": "Så-länge-villkor",
+                                            "label": "Så länge"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "Aktivera scenario"
@@ -938,6 +971,19 @@
                         "introduction": "Använd automatiseringar för väcka liv i ditt hem",
                         "load_error_not_editable": "Endast automatiseringar i automations.yaml kan redigeras.",
                         "load_error_unknown": "Fel vid inläsning av automatisering ({err_no}).",
+                        "max": {
+                            "parallel": "Max antal parallella körningar",
+                            "queued": "Kölängd"
+                        },
+                        "modes": {
+                            "description": "Läget styr vad som händer när automatiseringen triggas att starta medan den fortfarande kör. Mer information finns i {documentation_link}.",
+                            "documentation": "Dokumentation av automatisering",
+                            "label": "Läge",
+                            "parallel": "Parallell",
+                            "queued": "På kö",
+                            "restart": "Starta om",
+                            "single": "Enkel (standard)"
+                        },
                         "move_down": "Flytta nedåt",
                         "move_up": "Flytta uppåt",
                         "save": "Spara",
@@ -1111,7 +1157,7 @@
                             "link_learn_more": "Läs mer om hur du skapar webhook-drivna automatiseringar.",
                             "loading": "Laddar...",
                             "manage": "Hantera",
-                            "no_hooks_yet": "Ser ut som du inte har några webhooks ännu. Kom igång genom att konfigurera en ",
+                            "no_hooks_yet": "Det verkar som du inte har några webhooks ännu. Kom igång genom att konfigurera en ",
                             "no_hooks_yet_link_automation": "webhook automation",
                             "no_hooks_yet_link_integration": "webhook-baserad integration",
                             "no_hooks_yet2": " eller genom att skapa en ",
@@ -1356,6 +1402,7 @@
                             "confirm_text": "Du bör ta bort dem från din Lovelace-konfiguration och automatisering om de innehåller dessa entiteter.",
                             "confirm_title": "Vill du ta bort {number} entiteter?"
                         },
+                        "search": "Sök entiteter",
                         "selected": "{number} valda",
                         "status": {
                             "disabled": "Inaktiverad",
@@ -1373,7 +1420,7 @@
                 "header": "Konfigurera Home Assistant",
                 "helpers": {
                     "caption": "Hjälpare",
-                    "description": "Element som kan hjälpa till att bygga automatiseringar.",
+                    "description": "Hantera element som kan hjälpa till att bygga automatiseringar",
                     "dialog": {
                         "add_helper": "Lägg till hjälpare",
                         "add_platform": "Lägg till {platform}",
@@ -1386,7 +1433,8 @@
                             "entity_id": "Entitets-ID",
                             "name": "Namn",
                             "type": "Typ"
-                        }
+                        },
+                        "no_helpers": "Det verkar som att du inte har några hjälpare än!"
                     },
                     "types": {
                         "input_boolean": "Växla",
@@ -1400,7 +1448,7 @@
                     "built_using": "Byggt med",
                     "caption": "Info",
                     "custom_uis": "Anpassade användargränssnitt:",
-                    "description": "Info om din Home Assistant installation",
+                    "description": "Info om din Home Assistant-installation",
                     "developed_by": "Utvecklad av ett gäng grymma människor.",
                     "documentation": "Dokumentation",
                     "frontend": "frontend-UI",
@@ -1418,8 +1466,8 @@
                 },
                 "integration_panel_move": {
                     "link_integration_page": "integrationssidan",
-                    "missing_zha": "Saknar du konfigurationspanelen för ZHA? Den är flyttad till {integrations_page} ",
-                    "missing_zwave": "Saknar du konfigurationspanelen för Z-Wave? Den är flyttad till {integrations_page} "
+                    "missing_zha": "Saknar du konfigurationspanelen för ZHA? Den är flyttad till {integrations_page}.",
+                    "missing_zwave": "Saknar du konfigurationspanelen för Z-Wave? Den är flyttad till {integrations_page}."
                 },
                 "integrations": {
                     "add_integration": "Lägg till integration",
@@ -1465,14 +1513,14 @@
                     },
                     "configure": "Konfigurera",
                     "configured": "Konfigurerad",
-                    "description": "Hantera och konfigurera integrationer",
+                    "description": "Hantera integrationer",
                     "details": "Integrationsdetaljer",
                     "discovered": "Upptäckt",
                     "home_assistant_website": "Home Assistants hemsida",
                     "ignore": {
                         "confirm_delete_ignore": "Detta kommer att få integrationen att visas i dina upptäckta integrationer igen när den upptäcks. Detta kan kräva omstart eller ta lite tid.",
                         "confirm_delete_ignore_title": "Sluta ignorera {name}?",
-                        "confirm_ignore": "Är du säker på att du inte vill konfigurera denna integration? Du kan ångra detta genom att klicka på 'Visa ignorerade integrationer' i överflödesmenyn längst upp till höger.",
+                        "confirm_ignore": "Är du säker på att du inte vill konfigurera denna integration? Du kan ångra detta genom att klicka på 'Visa ignorerade integrationer' i menyn längst upp till höger.",
                         "confirm_ignore_title": "Ignorera upptäckten av {name}?",
                         "hide_ignored": "Dölj ignorerade integrationer",
                         "ignore": "Ignorera",
@@ -1490,7 +1538,8 @@
                     "note_about_integrations": "Inte alla integrationer kan konfigureras via användargränssnittet ännu.",
                     "note_about_website_reference": "Fler finns på ",
                     "rename_dialog": "Redigera namnet på den här konfigurationsposten",
-                    "rename_input_label": "Ange namn"
+                    "rename_input_label": "Ange namn",
+                    "search": "Sök integrationer"
                 },
                 "introduction": "Här går det att konfigurera dina komponenter och Home Assistant. Det är inte möjligt att ställa in allt från användargränssnittet ännu, men vi jobbar på det.",
                 "logs": {
@@ -1561,7 +1610,7 @@
                             "type": "Resurstyp",
                             "update": "Uppdatera",
                             "url": "URL",
-                            "url_error_msg": "URL är ett obligatoriskt fält ",
+                            "url_error_msg": "URL är ett obligatoriskt fält",
                             "warning_header": "Var försiktig!",
                             "warning_text": "Att lägga till resurser kan vara farligt, var säker på att du känner till källan till resursen och litar på den. Dåliga resurser kan skada ditt system allvarligt."
                         },
@@ -1603,7 +1652,7 @@
                     "confirm_delete": "Är du säker på att du vill ta bort den här personen?",
                     "confirm_delete2": "Alla enheter som tillhör denna person kommer att bli bortkopplade.",
                     "create_person": "Skapa person",
-                    "description": "Hantera de personer som Home Assistant spårar.",
+                    "description": "Hantera personer som Home Assistant spårar",
                     "detail": {
                         "create": "Skapa",
                         "delete": "Ta bort",
@@ -1626,7 +1675,7 @@
                 "scene": {
                     "activated": "Aktiverat scenario {name} .",
                     "caption": "Scenarier",
-                    "description": "Skapa och redigera scenarier",
+                    "description": "Hantera scenarier",
                     "editor": {
                         "default_name": "Nytt scenario",
                         "devices": {
@@ -1643,6 +1692,7 @@
                             "introduction": "Entiteter som inte tillhör en enhet kan ställas in här.",
                             "without_device": "Entiteter utan enhet"
                         },
+                        "icon": "Ikon",
                         "introduction": "Använd scenarier för väcka liv i ditt hem.",
                         "load_error_not_editable": "Endast scenarier i scenes.yaml kan redigeras.",
                         "load_error_unknown": "Fel vid inläsning av scenario ({err_no}).",
@@ -1669,16 +1719,33 @@
                 },
                 "script": {
                     "caption": "Skript",
-                    "description": "Skapa och redigera skript",
+                    "description": "Hantera skript",
                     "editor": {
                         "alias": "Namn",
                         "default_name": "Nytt skript",
                         "delete_confirm": "Är du säker på att du vill ta bort det här skriptet?",
                         "delete_script": "Ta bort skript",
                         "header": "Skript: {namn}",
+                        "icon": "Ikon",
+                        "id": "Entitets-ID",
+                        "id_already_exists": "Detta ID finns redan",
+                        "id_already_exists_save_error": "Det går inte att spara detta skript eftersom nuvarande ID inte är unikt. Välj ett annat ID eller lämna tomt för att generera ett automatiskt.",
                         "introduction": "Använd skript för att utföra en sekvens.",
                         "link_available_actions": "Lär dig mer om tillgängliga händelser",
                         "load_error_not_editable": "Endast skript i scripts.yaml kan redigeras.",
+                        "max": {
+                            "parallel": "Max antal parallella körningar",
+                            "queued": "Kölängd"
+                        },
+                        "modes": {
+                            "description": "Läget styr vad som händer när skriptet anropas medan det fortfarande kör. Mer information finns i {documentation_link}.",
+                            "documentation": "Skriptdokumentation",
+                            "label": "Läge",
+                            "parallel": "Parallell",
+                            "queued": "På kö",
+                            "restart": "Starta om",
+                            "single": "Enkel (standard)"
+                        },
                         "sequence": "Sekvens",
                         "sequence_sentence": "Handlingssekvensen för detta skript."
                     },
@@ -1839,7 +1906,7 @@
                         "create_group": "ZigBee Hemautomation - Skapa grupp",
                         "create_group_details": "Ange de uppgifter som krävs för att skapa en ny ZigBee-grupp",
                         "creating_group": "Skapar grupp",
-                        "description": "Skapa och modifiera Zigbee grupper",
+                        "description": "Hantera Zigbee-grupper",
                         "group_details": "Här är alla detaljer för den valda Zigbee-gruppen.",
                         "group_id": "Grupp-ID",
                         "group_info": "Gruppinformation",
@@ -1882,7 +1949,7 @@
                     "configured_in_yaml": "Zoner konfigurerade via configuration.yaml kan inte redigeras via användargränssnittet.",
                     "confirm_delete": "Är du säker på att du vill ta bort den här zonen?",
                     "create_zone": "Skapa Zon",
-                    "description": "Hantera zonerna du vill följa personer i.",
+                    "description": "Hantera zonerna du vill följa personer i",
                     "detail": {
                         "create": "Skapa",
                         "delete": "Radera",
@@ -1931,7 +1998,7 @@
                     },
                     "node_config": {
                         "config_parameter": "Konfigurationsparameter",
-                        "config_value": "Konfigurera värde",
+                        "config_value": "Konfigurationsvärde",
                         "false": "Falskt",
                         "header": "Alternativ för nodkonfiguration",
                         "seconds": "sekunder",
@@ -1972,7 +2039,7 @@
                         "add_node_secure": "Lägg till nod med säkerhet",
                         "cancel_command": "Avbryt kommandot",
                         "heal_network": "Reparera nätverk",
-                        "heal_node": "Läke nod",
+                        "heal_node": "Reparera nod",
                         "node_info": "Nodinformation",
                         "print_node": "Skriv ut nod",
                         "refresh_entity": "Uppdatera entitet",
@@ -1995,7 +2062,7 @@
             "custom": {
                 "external_panel": {
                     "complete_access": "Den kommer att ha tillgång till alla data i home assistant.",
-                    "hide_message": "Kontrollera dokument om panel_custom-komponenten för att dölja det här meddelandet",
+                    "hide_message": "Läs dokumentationen om 'panel_custom'-komponenten för att dölja det här meddelandet",
                     "question_trust": "Litar du på den externa panelen {name} till {link}?"
                 }
             },
@@ -2194,6 +2261,7 @@
                             "name": "Namn",
                             "no_theme": "Inget tema",
                             "refresh_interval": "Uppdateringsintervall",
+                            "search": "Sök",
                             "secondary_info_attribute": "Sekundär informationsattribut",
                             "show_icon": "Visa ikon?",
                             "show_name": "Visa namn?",
@@ -2223,7 +2291,7 @@
                             "name": "Luftfuktare"
                         },
                         "iframe": {
-                            "description": "Webbsidakortet låter dig bädda in din favoritwebbplats direkt i Home Assistant.",
+                            "description": "Webbsidekortet låter dig bädda in din favoritwebbplats direkt i Home Assistant.",
                             "name": "Webbsida"
                         },
                         "light": {
@@ -2245,7 +2313,7 @@
                             "name": "Markdown"
                         },
                         "media-control": {
-                            "description": "Mediakontrolkortet används för att visa mediaspelarenheter på ett gränssnitt med lättanvända kontroller.",
+                            "description": "Mediakontrollkortet används för att visa mediaspelarenheter på ett gränssnitt med lättanvända kontroller.",
                             "name": "Mediaspelare"
                         },
                         "picture-elements": {
@@ -2299,6 +2367,7 @@
                     },
                     "edit_card": {
                         "add": "Lägg till kort",
+                        "confirm_cancel": "Är du säker på att du vill avbryta?",
                         "delete": "Ta bort kort",
                         "duplicate": "Duplicera kort",
                         "edit": "Redigera",
@@ -2309,12 +2378,15 @@
                         "pick_card_view_title": "Vilket kort vill du lägga till i {name} -vyn?",
                         "show_code_editor": "Visa kodredigerare",
                         "show_visual_editor": "Visa visuell redigerare",
-                        "toggle_editor": "Visa / Dölj redigerare"
+                        "toggle_editor": "Visa / Dölj redigerare",
+                        "typed_header": "{type} Kortkonfiguration",
+                        "unsaved_changes": "Du har osparade ändringar"
                     },
                     "edit_lovelace": {
                         "edit_title": "Redigera titel",
                         "explanation": "Den här titeln visas ovanför alla dina vyer i Lovelace UI.",
-                        "header": "Titel på ditt Lovelace-gränssnitt"
+                        "header": "Titel på ditt Lovelace-gränssnitt",
+                        "title": "Titel"
                     },
                     "edit_view": {
                         "add": "Lägg till vy",
@@ -2346,7 +2418,7 @@
                         "confirm_remove_config_text": "Vi kommer automatiskt att generera dina Lovelace UI-vyer med dina områden och enheter om du tar bort din Lovelace UI-konfiguration.",
                         "confirm_remove_config_title": "Är du säker på att du vill ta bort din Lovelace UI konfiguration? Vi kommer automatiskt att generera dina Lovelace UI-vyer med dina områden och enheter.",
                         "confirm_unsaved_changes": "Du har osparade ändringar. Är du säker på att du vill avsluta?",
-                        "confirm_unsaved_comments": "Din konfiguration innehåller kommentarer, dessa sparas inte. Vill du fortsätta?",
+                        "confirm_unsaved_comments": "Din konfiguration innehåller en eller flera kommentarer, dessa kommer inte att sparas. Vill du fortsätta ändå?",
                         "error_invalid_config": "Din konfiguration är inte giltig: {error}",
                         "error_parse_yaml": "Det går inte att analysera YAML: {error}",
                         "error_remove": "Det går inte att ta bort konfigurationen: {error}",
@@ -2401,6 +2473,8 @@
                     "entity": "Enhet",
                     "entity_id": "Enhets-ID",
                     "last_changed": "Senast ändrad",
+                    "no_data": "Inga oanvända entiteter hittades",
+                    "search": "Sök entiteter",
                     "select_to_add": "Välj de enheter du vill lägga till på ett kort och klicka sedan på knappen Lägg till kort.",
                     "title": "Oanvända enheter"
                 },
@@ -2503,6 +2577,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "Din dator har inte tillåtelse.",
                                 "not_whitelisted": "Din dator är inte vitlistad"
                             },
                             "step": {
@@ -2683,10 +2758,18 @@
                     "header": "Stäng anslutningen automatiskt"
                 },
                 "themes": {
+                    "accent_color": "Komplementfärg",
+                    "dark_mode": {
+                        "auto": "Automatiskt",
+                        "dark": "Mörkt",
+                        "light": "Ljust"
+                    },
                     "dropdown_label": "Tema",
                     "error_no_theme": "Inga teman finns tillgängliga.",
                     "header": "Tema",
-                    "link_promo": "Läs mer om teman"
+                    "link_promo": "Läs mer om teman",
+                    "primary_color": "Primär färg",
+                    "reset": "Återställ"
                 },
                 "vibrate": {
                     "description": "Aktivera eller inaktivera vibration på den här enheten när du styr enheter.",
