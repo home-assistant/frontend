@@ -17,6 +17,8 @@ import {
   setSupervisorOption,
   SupervisorOptions,
 } from "../../../src/data/hassio/supervisor";
+import "../../../src/components/ha-switch";
+import "../../../src/components/ha-formfield";
 import { showConfirmationDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
@@ -55,6 +57,17 @@ class HassioSupervisorInfo extends LitElement {
                 : ""}
             </tbody>
           </table>
+          <div class="options">
+            <ha-formfield
+              title="Allow the supervisor to send diagnostics and crash logs"
+              label="Send diagnostics"
+            >
+              <ha-switch
+                .checked=${this.supervisorInfo?.diagnostics}
+                @click=${this._enableDiagnostics}
+              ></ha-switch>
+            </ha-formfield>
+          </div>
           ${this._errors
             ? html` <div class="errors">Error: ${this._errors}</div> `
             : ""}
@@ -111,11 +124,16 @@ class HassioSupervisorInfo extends LitElement {
           box-sizing: border-box;
           height: calc(100% - 47px);
         }
-        .info {
+        .info,
+        .options {
           width: 100%;
         }
         .info td:nth-child(2) {
           text-align: right;
+        }
+        .options {
+          padding: 8px 4px 4px;
+          --mdc-typography-body2-font-size: 1rem;
         }
         .errors {
           color: var(--error-color);
@@ -179,6 +197,45 @@ class HassioSupervisorInfo extends LitElement {
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
       this._errors = `Error joining beta channel, ${err.body?.message || err}`;
+    }
+  }
+  private async _enableDiagnostics() {
+    if (!this.supervisorInfo?.diagnostics) {
+      const confirmed = await showConfirmationDialog(this, {
+        title: "Help Improve Home Assistant",
+        text: html`Would you want to automatically share crash reports and
+          diagnostic information when the supervisor encounters unexpected
+          errors? <br /><br />
+          This will allow us to fix the problems, the information is only
+          accessible to the Home Assistant Core team and will not be shared with
+          others.
+          <br /><br />
+          The data does not include any private/sensetive information and you
+          can disable this in settings at any time you want.`,
+        confirmText: "enable",
+        dismissText: "cancel",
+      });
+
+      if (!confirmed) {
+        return;
+      }
+    }
+
+    try {
+      const data: SupervisorOptions = {
+        diagnostics: !this.supervisorInfo?.diagnostics,
+      };
+      await setSupervisorOption(this.hass, data);
+      const eventdata = {
+        success: true,
+        response: undefined,
+        path: "option",
+      };
+      fireEvent(this, "hass-api-called", eventdata);
+    } catch (err) {
+      this._errors = `Error changing supervisor setting, ${
+        err.body?.message || err
+      }`;
     }
   }
 }
