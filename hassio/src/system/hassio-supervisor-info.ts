@@ -199,6 +199,7 @@ class HassioSupervisorInfo extends LitElement {
       this._errors = `Error joining beta channel, ${err.body?.message || err}`;
     }
   }
+
   private async _enableDiagnostics() {
     if (!this.supervisorInfo?.diagnostics) {
       const confirmed = await showConfirmationDialog(this, {
