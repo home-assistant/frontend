@@ -63,7 +63,7 @@ class HassioSupervisorInfo extends LitElement {
               label="Send diagnostics"
             >
               <ha-switch
-                .checked=${this.supervisorInfo?.diagnostics}
+                .checked=${this.supervisorInfo.diagnostics}
                 @click=${this._enableDiagnostics}
               ></ha-switch>
             </ha-formfield>
