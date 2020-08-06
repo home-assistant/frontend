@@ -1890,7 +1890,7 @@
           "confirm_delete_existing_cards_text": "Are you sure you want to delete your ''{name}'' view? The view contains {number} cards that will be deleted. This action cannot be undone."
         },
         "menu": {
-          "configure_ui": "Configure UI",
+          "configure_ui": "Edit Dashboard",
           "help": "Help",
           "refresh": "Refresh",
           "reload_resources": "Reload resources",
