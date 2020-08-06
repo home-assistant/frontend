@@ -70,8 +70,8 @@ class HaMarkdown extends LitElement {
         line-height: 1.45;
       }
       ha-markdown-element h2 {
-        font-size: 1.5em !important;
-        font-weight: bold !important;
+        font-size: 1.5em;
+        font-weight: bold;
       }
     `;
   }
