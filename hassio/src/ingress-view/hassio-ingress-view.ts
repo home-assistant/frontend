@@ -149,6 +149,7 @@ class HassioIngressView extends LitElement {
       }
 
       .header {
+        display: flex;
         align-items: center;
         font-size: 16px;
         height: 40px;
