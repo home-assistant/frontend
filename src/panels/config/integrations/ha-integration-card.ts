@@ -453,7 +453,7 @@ export class HaIntegrationCard extends LitElement {
           cursor: pointer;
           min-height: 35px;
         }
-        ha-svg-icon {
+        mwc-list-item ha-svg-icon {
           color: var(--secondary-text-color);
         }
         .back-btn {
