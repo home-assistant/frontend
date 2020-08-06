@@ -16,6 +16,11 @@ function hasHtml(data) {
   return /<[a-z][\s\S]*>/i.test(data);
 }
 
+function hasUnquotedHTags(data) {
+  // Guard against unquoted HTML tags https://github.com/formatjs/formatjs/issues/1878
+  return /[^'](<.*>)[^']/i.test(data);
+}
+
 function recursiveCheckHasHtml(file, data, errors, recKey) {
   Object.keys(data).forEach(function (key) {
     if (typeof data[key] === "object") {
@@ -23,6 +28,10 @@ function recursiveCheckHasHtml(file, data, errors, recKey) {
       recursiveCheckHasHtml(file, data[key], errors, nextRecKey);
     } else if (hasHtml(data[key])) {
       errors.push(`HTML found in ${file.path} at key ${recKey}.${key}`);
+    } else if (hasUnquotedHTags(data[key])) {
+      errors.push(
+        `Unquoted tags found in ${file.path} at key ${recKey}.${key}`
+      );
     }
   });
 }

@@ -64,7 +64,7 @@ export const computeLocalize = (
 
     if (!translatedMessage) {
       translatedMessage = new IntlMessageFormat(
-        translatedValue.replace(/[^'](<.*>)[^']/g, "'$1'"),
+        translatedValue,
         language,
         formats
       );
