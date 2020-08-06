@@ -268,6 +268,7 @@ class HUIRoot extends LitElement {
                     <a
                       href="https://www.home-assistant.io/lovelace/"
                       rel="noreferrer"
+                      class="menu-link"
                       target="_blank"
                     >
                       <mwc-list-item
