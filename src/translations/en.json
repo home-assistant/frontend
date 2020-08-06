@@ -1649,6 +1649,18 @@
             "dynamic": "Obtaining frequently changing values from the node",
             "configuration": "Obtaining configuration values from the node",
             "complete": "Interview process is complete"
+          },
+          "refresh_node": {
+            "title": "Refresh Node Information",
+            "complete": "Node Refresh Complete",
+            "description": "This will tell OpenZWave to re-interview a node and update the node's command classes, capabilities, and values.",
+            "battery_note": "If the node is battery powered, be sure to wake it before proceeding",
+            "wakeup_header": "Wakeup Instructions for",
+            "wakeup_instructions_source": "Wakeup instructions are sourced from the OpenZWave community device database.",
+            "start_refresh_button": "Start Refresh",
+            "refreshing_description": "Refreshing node information...",
+            "node_status": "Node Status",
+            "step": "Step"
           }
         },
         "zha": {

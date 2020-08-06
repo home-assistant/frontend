@@ -112,13 +112,20 @@ class DialogOZWRefreshNode extends LitElement {
         open
         hideActions
         @closing="${this._close}"
-        .heading=${createCloseHeading(this.hass, "Refresh Node Information")}
+        .heading=${createCloseHeading(
+          this.hass,
+          this.hass.localize("ui.panel.config.ozw.refresh_node.title")
+        )}
       >
         ${this._complete
           ? html`
-              <p>Node Refresh complete</p>
+              <p>
+                ${this.hass.localize(
+                  "ui.panel.config.ozw.refresh_node.complete"
+                )}
+              </p>
               <mwc-button @click=${this._close}>
-                Close
+                ${this.hass.localize("ui.common.close")}
               </mwc-button>
             `
           : html`
@@ -127,16 +134,28 @@ class DialogOZWRefreshNode extends LitElement {
                     <div class="flex-container">
                       <ha-circular-progress active></ha-circular-progress>
                       <div>
-                        <p><b>Refreshing node information...</b></p>
                         <p>
-                          Node Status: ${this._node!.node_query_stage} (Step
+                          <b>
+                            ${this.hass.localize(
+                              "ui.panel.config.ozw.refresh_node.refreshing_description"
+                            )}
+                          </b>
+                        </p>
+                        <p>
+                          ${this.hass.localize(
+                            "ui.panel.config.ozw.refresh_node.node_status"
+                          )}:
+                          ${this._node!.node_query_stage}
+                          (${this.hass.localize(
+                            "ui.panel.config.ozw.refresh_node.step"
+                          )}
                           ${this._progress.indexOf(
                             this._node!.node_query_stage
                           ) + 1}/17)
                         </p>
                         <p>
-                          <em
-                            >${this.hass.localize(
+                          <em>
+                            ${this.hass.localize(
                               "ui.panel.config.ozw.node_query_stages." +
                                 this._node!.node_query_stage.toLowerCase()
                             )}</em
@@ -146,22 +165,30 @@ class DialogOZWRefreshNode extends LitElement {
                     </div>
                   `
                 : html`
-                    This will tell OpenZWave to re-interview a node and update
-                    the node's command classes, capabilities, and values.
+                    ${this.hass.localize(
+                      "ui.panel.config.ozw.refresh_node.description"
+                    )}
                     <p>
-                      If the node is battery powered, be sure to wake it before
-                      proceeding.
+                      ${this.hass.localize(
+                        "ui.panel.config.ozw.refresh_node.battery_note"
+                      )}
                     </p>
                   `}
               ${this._nodeMetaData?.WakeupHelp !== ""
                 ? html`
-                    <b>Wakeup Instructions for ${this._nodeMetaData?.Name}</b>
+                    <b>
+                      ${this.hass.localize(
+                        "ui.panel.config.ozw.refresh_node.wakeup_header"
+                      )}
+                      ${this._nodeMetaData?.Name}
+                    </b>
                     <blockquote>
                       ${this._nodeMetaData?.WakeupHelp}
                       <br />
                       <em>
-                        Wakeup instructions are sourced from the OpenZWave
-                        community device database.
+                        ${this.hass.localize(
+                          "ui.panel.config.ozw.refresh_node.wakeup_instructions_source"
+                        )}
                       </em>
                     </blockquote>
                   `
@@ -169,7 +196,9 @@ class DialogOZWRefreshNode extends LitElement {
               ${!this._active
                 ? html`
                     <mwc-button @click=${this._startRefresh}>
-                      Start Refresh
+                      ${this.hass.localize(
+                        "ui.panel.config.ozw.refresh_node.start_refresh_button"
+                      )}
                     </mwc-button>
                   `
                 : html``}
