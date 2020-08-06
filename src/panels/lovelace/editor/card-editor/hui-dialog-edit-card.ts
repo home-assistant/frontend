@@ -80,6 +80,9 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
     if (this._cardConfig && !Object.isFrozen(this._cardConfig)) {
       this._cardConfig = deepFreeze(this._cardConfig);
     }
+    if (params.cardConfig) {
+      this._dirty = true;
+    }
   }
 
   public closeDialog(): boolean {
