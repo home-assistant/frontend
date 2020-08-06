@@ -8,6 +8,7 @@ export interface DeviceRegistryEntry {
   id: string;
   config_entries: string[];
   connections: Array<[string, string]>;
+  identifiers: Array<[string, string]>;
   manufacturer: string;
   model?: string;
   name?: string;

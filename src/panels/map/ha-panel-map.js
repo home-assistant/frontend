@@ -2,7 +2,10 @@ import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import { setupLeafletMap } from "../../common/dom/setup-leaflet-map";
+import {
+  setupLeafletMap,
+  replaceTileLayer,
+} from "../../common/dom/setup-leaflet-map";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { navigate } from "../../common/navigate";
@@ -12,6 +15,7 @@ import { defaultRadiusColor } from "../../data/zone";
 import LocalizeMixin from "../../mixins/localize-mixin";
 import "./ha-entity-marker";
 import "../../styles/polymer-ha-style";
+import "../../layouts/ha-app-layout";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -21,28 +25,35 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
     return html`
       <style include="ha-style">
         #map {
-          height: calc(100% - 64px);
+          height: calc(100vh - 64px);
           width: 100%;
           z-index: 0;
+          background: inherit;
         }
 
-        .light {
-          color: #000000;
+        .icon {
+          color: var(--primary-text-color);
         }
       </style>
 
-      <app-toolbar>
-        <ha-menu-button hass="[[hass]]" narrow="[[narrow]]"></ha-menu-button>
-        <div main-title>[[localize('panel.map')]]</div>
-        <template is="dom-if" if="[[computeShowEditZone(hass)]]">
-          <ha-icon-button
-            icon="hass:pencil"
-            on-click="openZonesEditor"
-          ></ha-icon-button>
-        </template>
-      </app-toolbar>
-
-      <div id="map"></div>
+      <ha-app-layout>
+        <app-header fixed slot="header">
+          <app-toolbar>
+            <ha-menu-button
+              hass="[[hass]]"
+              narrow="[[narrow]]"
+            ></ha-menu-button>
+            <div main-title>[[localize('panel.map')]]</div>
+            <template is="dom-if" if="[[computeShowEditZone(hass)]]">
+              <ha-icon-button
+                icon="hass:pencil"
+                on-click="openZonesEditor"
+              ></ha-icon-button>
+            </template>
+          </app-toolbar>
+        </app-header>
+        <div id="map"></div>
+      </ha-app-layout>
     `;
   }
 
@@ -62,7 +73,11 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
   }
 
   async loadMap() {
-    [this._map, this.Leaflet] = await setupLeafletMap(this.$.map);
+    this._darkMode = this.hass.themes.darkMode;
+    [this._map, this.Leaflet, this._tileLayer] = await setupLeafletMap(
+      this.$.map,
+      this._darkMode
+    );
     this.drawEntities(this.hass);
     this._map.invalidateSize();
     this.fitMap();
@@ -83,7 +98,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
   }
 
   fitMap() {
-    var bounds;
+    let bounds;
 
     if (this._mapItems.length === 0) {
       this._map.setView(
@@ -103,25 +118,35 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
 
   drawEntities(hass) {
     /* eslint-disable vars-on-top */
-    var map = this._map;
+    const map = this._map;
     if (!map) return;
+
+    if (this._darkMode !== this.hass.themes.darkMode) {
+      this._darkMode = this.hass.themes.darkMode;
+      this._tileLayer = replaceTileLayer(
+        this.Leaflet,
+        map,
+        this._tileLayer,
+        this.hass.themes.darkMode
+      );
+    }
 
     if (this._mapItems) {
       this._mapItems.forEach(function (marker) {
         marker.remove();
       });
     }
-    var mapItems = (this._mapItems = []);
+    const mapItems = (this._mapItems = []);
 
     if (this._mapZones) {
       this._mapZones.forEach(function (marker) {
         marker.remove();
       });
     }
-    var mapZones = (this._mapZones = []);
+    const mapZones = (this._mapZones = []);
 
     Object.keys(hass.states).forEach((entityId) => {
-      var entity = hass.states[entityId];
+      const entity = hass.states[entityId];
 
       if (
         entity.state === "home" ||
@@ -131,15 +156,15 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
         return;
       }
 
-      var title = computeStateName(entity);
-      var icon;
+      const title = computeStateName(entity);
+      let icon;
 
       if (computeStateDomain(entity) === "zone") {
         // DRAW ZONE
         if (entity.attributes.passive) return;
 
         // create icon
-        var iconHTML = "";
+        let iconHTML = "";
         if (entity.attributes.icon) {
           const el = document.createElement("ha-icon");
           el.setAttribute("icon", entity.attributes.icon);
@@ -153,7 +178,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
         icon = this.Leaflet.divIcon({
           html: iconHTML,
           iconSize: [24, 24],
-          className: "light",
+          className: "icon",
         });
 
         // create marker with the icon
@@ -185,8 +210,8 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
 
       // DRAW ENTITY
       // create icon
-      var entityPicture = entity.attributes.entity_picture || "";
-      var entityName = title
+      const entityPicture = entity.attributes.entity_picture || "";
+      const entityName = title
         .split(" ")
         .map(function (part) {
           return part.substr(0, 1);

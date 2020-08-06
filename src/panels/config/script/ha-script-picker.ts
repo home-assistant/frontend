@@ -1,8 +1,7 @@
 import "../../../components/ha-icon-button";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
-  css,
-  CSSResultArray,
+  CSSResult,
   customElement,
   html,
   LitElement,
@@ -146,19 +145,19 @@ class HaScriptPicker extends LitElement {
           icon="hass:help-circle"
           @click=${this._showHelp}
         ></ha-icon-button>
+        <a href="/config/script/edit/new" slot="fab">
+          <mwc-fab
+            ?is-wide=${this.isWide}
+            ?narrow=${this.narrow}
+            title="${this.hass.localize(
+              "ui.panel.config.script.picker.add_script"
+            )}"
+            ?rtl=${computeRTL(this.hass)}
+          >
+            <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+          </mwc-fab>
+        </a>
       </hass-tabs-subpage-data-table>
-      <a href="/config/script/edit/new">
-        <mwc-fab
-          ?is-wide=${this.isWide}
-          ?narrow=${this.narrow}
-          title="${this.hass.localize(
-            "ui.panel.config.script.picker.add_script"
-          )}"
-          ?rtl=${computeRTL(this.hass)}
-        >
-          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
-        </mwc-fab>
-      </a>
     `;
   }
 
@@ -199,36 +198,8 @@ class HaScriptPicker extends LitElement {
     });
   }
 
-  static get styles(): CSSResultArray {
-    return [
-      haStyle,
-      css`
-        mwc-fab {
-          position: fixed;
-          bottom: 16px;
-          right: 16px;
-          z-index: 1;
-        }
-
-        mwc-fab[is-wide] {
-          bottom: 24px;
-          right: 24px;
-        }
-        mwc-fab[narrow] {
-          bottom: 84px;
-        }
-        mwc-fab[rtl] {
-          right: auto;
-          left: 16px;
-        }
-
-        mwc-fab[rtl][is-wide] {
-          bottom: 24px;
-          right: auto;
-          left: 24px;
-        }
-      `,
-    ];
+  static get styles(): CSSResult {
+    return haStyle;
   }
 }
 

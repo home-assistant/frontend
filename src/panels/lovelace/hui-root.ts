@@ -68,7 +68,7 @@ class HUIRoot extends LitElement {
 
   @property() public columns?: number;
 
-  @property() public narrow?: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property() public route?: { path: string; prefix: string };
 
@@ -138,6 +138,7 @@ class HUIRoot extends LitElement {
                   <a
                     href="https://www.home-assistant.io/lovelace/"
                     rel="noreferrer"
+                    class="menu-link"
                     target="_blank"
                   >
                     <mwc-icon-button
@@ -250,7 +251,7 @@ class HUIRoot extends LitElement {
                           </mwc-list-item>
                         `
                       : ""}
-                    ${this.hass!.user!.is_admin && !this.hass!.config.safe_mode
+                    ${this.hass!.user?.is_admin && !this.hass!.config.safe_mode
                       ? html`
                           <mwc-list-item
                             aria-label=${this.hass!.localize(
@@ -267,6 +268,7 @@ class HUIRoot extends LitElement {
                     <a
                       href="https://www.home-assistant.io/lovelace/"
                       rel="noreferrer"
+                      class="menu-link"
                       target="_blank"
                     >
                       <mwc-list-item
@@ -694,7 +696,8 @@ class HUIRoot extends LitElement {
           min-height: 100%;
         }
         paper-tabs {
-          margin-left: 12px;
+          margin-left: max(env(safe-area-inset-left), 12px);
+          margin-right: env(safe-area-inset-right);
           --paper-tabs-selection-bar-color: var(--text-primary-color, #fff);
           text-transform: uppercase;
         }
@@ -760,6 +763,9 @@ class HUIRoot extends LitElement {
         }
         .hide-tab {
           display: none;
+        }
+        .menu-link {
+          text-decoration: none;
         }
       `,
     ];

@@ -798,7 +798,7 @@
                         "confirmation_text": "Alle Geräte in diesem Bereich werden nicht mehr zugewiesen sein.",
                         "confirmation_title": "Möchtest du diesen Bereich wirklich löschen?"
                     },
-                    "description": "Überblick über alle Bereiche in Deinem Haus.",
+                    "description": "Die Bereiche deines Zuhause verwalten",
                     "editor": {
                         "area_id": "Bereich-ID",
                         "create": "Erstellen",
@@ -820,7 +820,7 @@
                 },
                 "automation": {
                     "caption": "Automatisierung",
-                    "description": "Automatisierungen erstellen und bearbeiten",
+                    "description": "Automatisierungen verwalten",
                     "editor": {
                         "actions": {
                             "add": "Aktion hinzufügen",
@@ -1648,7 +1648,7 @@
                 "scene": {
                     "activated": "Aktivierte Szene {name}.",
                     "caption": "Szenen",
-                    "description": "Erstelle und bearbeite Szenen.",
+                    "description": "Szenen verwalten",
                     "editor": {
                         "default_name": "Neue Szene",
                         "devices": {
@@ -1692,7 +1692,7 @@
                 },
                 "script": {
                     "caption": "Skript",
-                    "description": "Skripte erstellen und bearbeiten",
+                    "description": "Skripte verwalten",
                     "editor": {
                         "alias": "Name",
                         "default_name": "Neues Skript",
@@ -1879,7 +1879,7 @@
                         "create_group": "Zigbee Home Automation - Gruppe erstellen",
                         "create_group_details": "Gib die erforderlichen Details ein, um eine neue Zigbee-Gruppe zu erstellen",
                         "creating_group": "Erstelle Gruppe",
-                        "description": "Erstellen und Ändern von Zigbee-Gruppen",
+                        "description": "Verwalten von Zigbee-Gruppen",
                         "group_details": "Hier sind alle Details der ausgewählten Zigbee Gruppe.",
                         "group_id": "Gruppen-ID",
                         "group_info": "Gruppen Information",

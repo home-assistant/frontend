@@ -13,7 +13,6 @@ import { ifDefined } from "lit-html/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { createValidEntityId } from "../../../common/entity/valid_entity_id";
 import { compare } from "../../../common/string/compare";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-icon-next";
@@ -44,6 +43,7 @@ import { configSections } from "../ha-panel-config";
 import "./device-detail/ha-device-entities-card";
 import "./device-detail/ha-device-info-card";
 import { showDeviceAutomationDialog } from "./device-detail/show-dialog-device-automation";
+import { slugify } from "../../../common/string/slugify";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
@@ -501,6 +501,15 @@ export class HaConfigDevicePage extends LitElement {
         </div>
       `);
     }
+    if (integrations.includes("ozw")) {
+      import("./device-detail/integration-elements/ozw/ha-device-info-ozw");
+      templates.push(html`
+        <ha-device-info-ozw
+          .hass=${this.hass}
+          .device=${device}
+        ></ha-device-info-ozw>
+      `);
+    }
     if (integrations.includes("zha")) {
       import("./device-detail/integration-elements/zha/ha-device-actions-zha");
       import("./device-detail/integration-elements/zha/ha-device-info-zha");
@@ -556,11 +565,11 @@ export class HaConfigDevicePage extends LitElement {
           }
 
           if (renameEntityid) {
-            const oldSearch = createValidEntityId(oldDeviceName);
+            const oldSearch = slugify(oldDeviceName);
             if (entity.entity_id.includes(oldSearch)) {
               newEntityId = entity.entity_id.replace(
                 oldSearch,
-                createValidEntityId(newDeviceName)
+                slugify(newDeviceName)
               );
             }
           }
@@ -571,7 +580,6 @@ export class HaConfigDevicePage extends LitElement {
 
           return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
             name: newName || name,
-            disabled_by: entity.disabled_by,
             new_entity_id: newEntityId || entity.entity_id,
           });
         });

@@ -175,7 +175,10 @@ export class HuiViewEditor extends LitElement {
       return;
     }
 
-    const config = { ...this._config, path: slugify(ev.currentTarget.value) };
+    const config = {
+      ...this._config,
+      path: slugify(ev.currentTarget.value, "-"),
+    };
     fireEvent(this, "view-config-changed", { config });
   }
 

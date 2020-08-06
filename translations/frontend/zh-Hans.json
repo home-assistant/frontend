@@ -798,7 +798,7 @@
                         "confirmation_text": "此区域中的所有设备都将取消分配。",
                         "confirmation_title": "您确定要删除此区域吗？"
                     },
-                    "description": "您家中所有区域的概览。",
+                    "description": "管理家中的区域",
                     "editor": {
                         "area_id": "区域 ID",
                         "create": "创建",
@@ -820,7 +820,7 @@
                 },
                 "automation": {
                     "caption": "自动化",
-                    "description": "创建和编辑自动化",
+                    "description": "管理自动化",
                     "editor": {
                         "actions": {
                             "add": "添加动作",
@@ -833,6 +833,15 @@
                             "name": "执行",
                             "type_select": "动作类型",
                             "type": {
+                                "choose": {
+                                    "add_option": "添加选项",
+                                    "conditions": "条件",
+                                    "default": "默认动作",
+                                    "label": "选择",
+                                    "option": "选项 {number}",
+                                    "remove_option": "删除选项",
+                                    "sequence": "动作"
+                                },
                                 "condition": {
                                     "label": "环境条件"
                                 },
@@ -851,6 +860,24 @@
                                     "event": "事件：",
                                     "label": "触发事件",
                                     "service_data": "服务数据"
+                                },
+                                "repeat": {
+                                    "label": "重复",
+                                    "sequence": "动作",
+                                    "type_select": "重复类型",
+                                    "type": {
+                                        "count": {
+                                            "label": "按次数"
+                                        },
+                                        "until": {
+                                            "conditions": "Until 条件",
+                                            "label": "满足条件后退出循环"
+                                        },
+                                        "while": {
+                                            "conditions": "While 条件",
+                                            "label": "满足条件就循环"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "激活场景"
@@ -1341,7 +1368,7 @@
                 },
                 "entities": {
                     "caption": "实体注册表",
-                    "description": "所有已知实体的概览。",
+                    "description": "管理已知实体",
                     "picker": {
                         "disable_selected": {
                             "button": "禁用所选实体",
@@ -1393,7 +1420,7 @@
                 "header": "配置 Home Assistant",
                 "helpers": {
                     "caption": "辅助元素",
-                    "description": "可以帮助构建自动化的元素。",
+                    "description": "管理辅助构建自动化的元素",
                     "dialog": {
                         "add_helper": "添加辅助元素",
                         "add_platform": "添加 {platform}",
@@ -1421,7 +1448,7 @@
                     "built_using": "建于",
                     "caption": "信息",
                     "custom_uis": "自定义用户界面：",
-                    "description": "关于您的 Home Assistant 安装的信息",
+                    "description": "查看关于此 Home Assistant 安装的信息",
                     "developed_by": "由一帮很 Awesome~~~ 的人开发。",
                     "documentation": "文档",
                     "frontend": "前端用户界面",
@@ -1486,7 +1513,7 @@
                     },
                     "configure": "配置",
                     "configured": "已配置",
-                    "description": "管理并设置集成",
+                    "description": "管理集成",
                     "details": "集成详细信息",
                     "discovered": "已发现",
                     "home_assistant_website": "Home Assistant 网站",
@@ -1570,7 +1597,7 @@
                             "open": "打开"
                         }
                     },
-                    "description": "配置 Lovelace 仪表盘",
+                    "description": "管理 Lovelace 仪表盘",
                     "resources": {
                         "cant_edit_yaml": "您正在 YAML 模式下使用 Lovelace，因此无法通过 UI 管理资源。请在 configuration.yaml 中管理它们。",
                         "caption": "资源",
@@ -1625,7 +1652,7 @@
                     "confirm_delete": "您确定要删除此人员吗？",
                     "confirm_delete2": "属于此人的所有设备都将被取消分配。",
                     "create_person": "创建人员",
-                    "description": "管理 Home Assistant 跟踪的人员。",
+                    "description": "管理 Home Assistant 跟踪的人员",
                     "detail": {
                         "create": "创建",
                         "delete": "删除",
@@ -1648,7 +1675,7 @@
                 "scene": {
                     "activated": "已激活场景 {name}。",
                     "caption": "场景",
-                    "description": "创建和编辑场景",
+                    "description": "管理场景",
                     "editor": {
                         "default_name": "新场景",
                         "devices": {
@@ -1692,7 +1719,7 @@
                 },
                 "script": {
                     "caption": "脚本",
-                    "description": "创建和编辑脚本",
+                    "description": "管理脚本",
                     "editor": {
                         "alias": "名称",
                         "default_name": "新建脚本",
@@ -1879,7 +1906,7 @@
                         "create_group": "Zigbee 家庭自动化 - 新增群组",
                         "create_group_details": "输入所需的详细信息以创建新的zigbee组",
                         "creating_group": "创建群组中",
-                        "description": "创建和修改Zigbee组",
+                        "description": "管理 Zigbee 组",
                         "group_details": "以下是所选Zigbee组的所有详细信息。",
                         "group_id": "组号",
                         "group_info": "群组信息",
@@ -1922,7 +1949,7 @@
                     "configured_in_yaml": "通过 configuration.yaml 配置的地点不能通过 UI 编辑。",
                     "confirm_delete": "您确定要删除此地点吗？",
                     "create_zone": "创建地点",
-                    "description": "管理要跟踪人员的区域。",
+                    "description": "管理要跟踪人员的区域",
                     "detail": {
                         "create": "创建",
                         "delete": "删除",
@@ -2731,10 +2758,18 @@
                     "header": "自动关闭连接"
                 },
                 "themes": {
+                    "accent_color": "强调色",
+                    "dark_mode": {
+                        "auto": "自动",
+                        "dark": "深色",
+                        "light": "浅色"
+                    },
                     "dropdown_label": "主题",
                     "error_no_theme": "没有可用的主题。",
                     "header": "主题",
-                    "link_promo": "了解主题"
+                    "link_promo": "了解主题",
+                    "primary_color": "主色调",
+                    "reset": "重置"
                 },
                 "vibrate": {
                     "description": "控制设备时，在此设备上启用或禁用振动。",

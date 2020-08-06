@@ -106,9 +106,9 @@ export class HaIntegrationCard extends LitElement {
             @error=${this._onImageError}
             @load=${this._onImageLoad}
           />
-          <h1>
+          <h2>
             ${domainToName(this.hass.localize, this.domain)}
-          </h1>
+          </h2>
         </div>
         <paper-listbox>
           ${this.items.map(
@@ -156,12 +156,12 @@ export class HaIntegrationCard extends LitElement {
               @load=${this._onImageLoad}
             />
           </div>
-          <h1>
-            ${item.localized_domain_name}
-          </h1>
           <h2>
-            ${item.localized_domain_name === item.title ? "" : item.title}
+            ${item.localized_domain_name}
           </h2>
+          <h3>
+            ${item.localized_domain_name === item.title ? "" : item.title}
+          </h3>
           ${devices.length || entities.length
             ? html`
                 <div>
@@ -452,6 +452,9 @@ export class HaIntegrationCard extends LitElement {
         paper-item {
           cursor: pointer;
           min-height: 35px;
+        }
+        mwc-list-item ha-svg-icon {
+          color: var(--secondary-text-color);
         }
         .back-btn {
           position: absolute;

@@ -833,6 +833,15 @@
                             "name": "Acció",
                             "type_select": "Tipus d'acció",
                             "type": {
+                                "choose": {
+                                    "add_option": "Afegeix opció",
+                                    "conditions": "Condicions",
+                                    "default": "Accions per defecte",
+                                    "label": "Triar",
+                                    "option": "Opció {number}",
+                                    "remove_option": "Eliminar opció",
+                                    "sequence": "Accions"
+                                },
                                 "condition": {
                                     "label": "Condició"
                                 },
@@ -851,6 +860,24 @@
                                     "event": "Esdeveniment:",
                                     "label": "Disparar esdeveniment",
                                     "service_data": "Dades de servei"
+                                },
+                                "repeat": {
+                                    "label": "Repetir",
+                                    "sequence": "Accions",
+                                    "type_select": "Tipus de repetició",
+                                    "type": {
+                                        "count": {
+                                            "label": "Comptar"
+                                        },
+                                        "until": {
+                                            "conditions": "Fins a les condicions",
+                                            "label": "Fins que"
+                                        },
+                                        "while": {
+                                            "conditions": "Mentre que les condicions",
+                                            "label": "Mentre"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "Activa escena"
@@ -1618,6 +1645,18 @@
                     "subscribe_to": "Tòpic al qual subscriure's",
                     "title": "MQTT",
                     "topic": "tòpic"
+                },
+                "ozw": {
+                    "common": {
+                        "node_id": "Node ID",
+                        "ozw_instance": "Instància OpenZWave",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "Ha fallat el node",
+                        "stage": "Etapa",
+                        "zwave_info": "Informació Z-Wave"
+                    }
                 },
                 "person": {
                     "add_person": "Afegeix persona",
@@ -2387,6 +2426,9 @@
                         "para_migrate": "Home Assistant pot afegir ID's a totes les targetes i visualitzacions automàticament fent clic al botó 'Migrar la configuració'.",
                         "para_no_id": "Aquest element no té ID. Afegeix un ID per aquest element a 'ui-lovelace.yaml'."
                     },
+                    "move_card": {
+                        "header": "Trieu una vista per desplaçar la tarjeta a"
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "Si elimines la configuració de la interfície d'usuari Lovelace es generaran automàticament les visualitzacions de Lovelace amb les teves àrees i dispositius.",
                         "confirm_remove_config_title": "Estàs segur que vols eliminar la configuració de la interfície d'usuari Lovelace? Es generaran automàticament les visualitzacions de Lovelace amb les teves àrees i dispositius.",
@@ -2413,6 +2455,10 @@
                         "yaml_config": "Per ajudar a familiaritzar-te, aquí tens la configuració actual del teu panell Lovelace:",
                         "yaml_control": "Per configurar el panell en mode YAML, crea un fitxer YAML amb el nom que hagis establert a la configuració del panell, o bé el nom per defecte 'ui-lovelace.yaml'.",
                         "yaml_mode": "Estàs utilitzant el mode YAML per aquest panell, per tant no pots editar-lo des de la interfície d'usuari. Si vols poder editar-lo des de la UI, elimina 'mode: yaml' del fitxer 'configuration.yaml' en l'apartat de configuració de Lovelace."
+                    },
+                    "select_view": {
+                        "dashboard_label": "Panell",
+                        "header": "Trieu una vista"
                     },
                     "suggest_card": {
                         "add": "Afegeix a la UI Lovelace",
@@ -2731,10 +2777,18 @@
                     "header": "Tanca la connexió automàticament"
                 },
                 "themes": {
+                    "accent_color": "Color accent",
+                    "dark_mode": {
+                        "auto": "Auto",
+                        "dark": "Fosc",
+                        "light": "Clar"
+                    },
                     "dropdown_label": "Tema",
                     "error_no_theme": "No hi ha temes disponibles.",
                     "header": "Tema",
-                    "link_promo": "Crea temes personalitzats"
+                    "link_promo": "Crea temes personalitzats",
+                    "primary_color": "Color primari",
+                    "reset": "Restablir"
                 },
                 "vibrate": {
                     "description": "Activa o desactiva la vibració en d'aquest dispositiu.",

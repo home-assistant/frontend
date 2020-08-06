@@ -26,9 +26,9 @@ import { computeRTLDirection } from "../common/util/compute_rtl";
 export class HaTabsSubpageDataTable extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   /**
    * Object with the columns.
@@ -110,6 +110,7 @@ export class HaTabsSubpageDataTable extends LitElement {
       <hass-tabs-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
+        .isWide=${this.isWide}
         .backPath=${this.backPath}
         .backCallback=${this.backCallback}
         .route=${this.route}
@@ -168,38 +169,37 @@ export class HaTabsSubpageDataTable extends LitElement {
             ? html`
                 <div slot="header">
                   <slot name="header">
-                    <slot name="header">
-                      <div class="table-header">
-                        <search-input
-                          .filter=${this.filter}
-                          no-label-float
-                          no-underline
-                          @value-changed=${this._handleSearchChange}
-                          .label=${this.hass.localize(
-                            "ui.components.data-table.search"
-                          )}
-                        >
-                        </search-input>
-                        ${this.activeFilters
-                          ? html`<div class="active-filters">
-                              ${this.hass.localize(
-                                "ui.panel.config.filtering.filtering_by"
-                              )}
-                              ${this.activeFilters.join(", ")}
-                              <mwc-button @click=${this._clearFilter}
-                                >${this.hass.localize(
-                                  "ui.panel.config.filtering.clear"
-                                )}</mwc-button
-                              >
-                            </div>`
-                          : ""}
-                      </div></slot
-                    ></slot
-                  >
+                    <div class="table-header">
+                      <search-input
+                        .filter=${this.filter}
+                        no-label-float
+                        no-underline
+                        @value-changed=${this._handleSearchChange}
+                        .label=${this.hass.localize(
+                          "ui.components.data-table.search"
+                        )}
+                      >
+                      </search-input>
+                      ${this.activeFilters
+                        ? html`<div class="active-filters">
+                            ${this.hass.localize(
+                              "ui.panel.config.filtering.filtering_by"
+                            )}
+                            ${this.activeFilters.join(", ")}
+                            <mwc-button @click=${this._clearFilter}
+                              >${this.hass.localize(
+                                "ui.panel.config.filtering.clear"
+                              )}</mwc-button
+                            >
+                          </div>`
+                        : ""}
+                    </div>
+                  </slot>
                 </div>
               `
             : html` <div slot="header"></div> `}
         </ha-data-table>
+        <div slot="fab"><slot name="fab"></slot></div>
       </hass-tabs-subpage>
     `;
   }

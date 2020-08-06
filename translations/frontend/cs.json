@@ -208,7 +208,7 @@
             "off": "Neaktivní"
         },
         "configurator": {
-            "configure": "Nakonfigurovat",
+            "configure": "Konfigurovat",
             "configured": "Nakonfigurováno"
         },
         "cover": {
@@ -833,6 +833,15 @@
                             "name": "Akce",
                             "type_select": "Typ akce",
                             "type": {
+                                "choose": {
+                                    "add_option": "Přidat volbu",
+                                    "conditions": "Podmínky",
+                                    "default": "Výchozí akce",
+                                    "label": "Vybrat",
+                                    "option": "Volba {number}",
+                                    "remove_option": "Odebrat volbu",
+                                    "sequence": "Akce"
+                                },
                                 "condition": {
                                     "label": "Stav"
                                 },
@@ -851,6 +860,16 @@
                                     "event": "Událost:",
                                     "label": "Spustit událost",
                                     "service_data": "Data služby"
+                                },
+                                "repeat": {
+                                    "label": "Opakovat",
+                                    "sequence": "Akce",
+                                    "type_select": "Typ opakování",
+                                    "type": {
+                                        "count": {
+                                            "label": "Počet"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "Aktivovat scénu"
@@ -1825,7 +1844,7 @@
                         "caption": "Přidat zařízení",
                         "description": "Přidat zařízení do sítě Zigbee"
                     },
-                    "button": "Nakonfigurovat",
+                    "button": "Konfigurovat",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributy vybraného klastru",
@@ -1946,7 +1965,7 @@
                     "no_zones_created_yet": "Vypadá to, že nejsou vytvořené žádné zóny."
                 },
                 "zwave": {
-                    "button": "Nakonfigurovat",
+                    "button": "Konfigurovat",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "Index",
@@ -2731,10 +2750,18 @@
                     "header": "Automaticky ukončovat spojení"
                 },
                 "themes": {
+                    "accent_color": "Doplňková barva",
+                    "dark_mode": {
+                        "auto": "Automaticky",
+                        "dark": "Tmavý",
+                        "light": "Světlý"
+                    },
                     "dropdown_label": "Motiv",
                     "error_no_theme": "Žádné motivy nejsou k dispozici.",
                     "header": "Motiv",
-                    "link_promo": "Další info o motivech"
+                    "link_promo": "Další info o motivech",
+                    "primary_color": "Základní barva",
+                    "reset": "Obnovit"
                 },
                 "vibrate": {
                     "description": "Povolit nebo zakázat vibrace na tomto zařízení při ovládání ostatních zařízení.",

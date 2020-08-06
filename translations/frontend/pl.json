@@ -833,6 +833,15 @@
                             "name": "Akcja",
                             "type_select": "Typ akcji",
                             "type": {
+                                "choose": {
+                                    "add_option": "Dodaj opcję",
+                                    "conditions": "Warunki",
+                                    "default": "Akcje domyślne",
+                                    "label": "Wybór",
+                                    "option": "Opcja {number}",
+                                    "remove_option": "Usuń opcję",
+                                    "sequence": "Akcje"
+                                },
                                 "condition": {
                                     "label": "Warunek"
                                 },
@@ -851,6 +860,24 @@
                                     "event": "Zdarzenie:",
                                     "label": "Wywołanie zdarzenia",
                                     "service_data": "Dane usługi"
+                                },
+                                "repeat": {
+                                    "label": "Powtórzenie",
+                                    "sequence": "Akcje",
+                                    "type_select": "Typ powtórzenia",
+                                    "type": {
+                                        "count": {
+                                            "label": "Licznik"
+                                        },
+                                        "until": {
+                                            "conditions": "Warunki dopóki",
+                                            "label": "Dopóki"
+                                        },
+                                        "while": {
+                                            "conditions": "Warunki podczas",
+                                            "label": "Podczas"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "Aktywuj scenę"
@@ -1618,6 +1645,18 @@
                     "subscribe_to": "Temat do zasubskrybowania",
                     "title": "MQTT",
                     "topic": "temat"
+                },
+                "ozw": {
+                    "common": {
+                        "node_id": "Identyfikator węzła",
+                        "ozw_instance": "Instancja OpenZWave",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "Węzeł uszkodzony",
+                        "stage": "Etap",
+                        "zwave_info": "Informacje Z-Wave"
+                    }
                 },
                 "person": {
                     "add_person": "Dodaj osobę",
@@ -2387,6 +2426,9 @@
                         "para_migrate": "Home Assistant może automatycznie dodać ID do wszystkich twoich kart i widoków, po kliknięciu przycisku \"Migracja konfiguracji\".",
                         "para_no_id": "Ten element nie ma ID. Dodaj ID do tego elementu w \"ui-lovelace.yaml\"."
                     },
+                    "move_card": {
+                        "header": "Wybierz widok, do którego chcesz przenieść kartę"
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "Jeśli usuniesz konfigurację interfejsu użytkownika Lovelace, widoki automatycznie będą generowane z obszarów i urządzeń.",
                         "confirm_remove_config_title": "Na pewno chcesz usunąć konfigurację interfejsu użytkownika Lovelace? Widoki będą automatycznie generowane z obszarów i urządzeń.",
@@ -2413,6 +2455,10 @@
                         "yaml_config": "Aby rozpocząć, zapoznaj się z aktualną konfiguracją tego dashboardu:",
                         "yaml_control": "Aby zarządzać w trybie YAML, utwórz plik o nazwie podanej w konfiguracji dla tego dashboardu lub domyślny 'ui-lovelace.yaml'.",
                         "yaml_mode": "Używasz trybu YAML, co oznacza, że nie możesz zmienić konfiguracji Lovelace z poziomu interfejsu użytkownika. Jeśli chcesz zarządzać Lovelace z poziomu interfejsu użytkownika, usuń 'mode: yaml' z konfiguracji Lovelace w pliku 'configuration.yaml'."
+                    },
+                    "select_view": {
+                        "dashboard_label": "Dashboard",
+                        "header": "Wybierz widok"
                     },
                     "suggest_card": {
                         "add": "Dodaj do interfejsu użytkownika Lovelace",
@@ -2731,10 +2777,18 @@
                     "header": "Automatyczne zamykanie połączenia"
                 },
                 "themes": {
+                    "accent_color": "Kolor akcentu",
+                    "dark_mode": {
+                        "auto": "Automatyczny",
+                        "dark": "Ciemny",
+                        "light": "Jasny"
+                    },
                     "dropdown_label": "Motyw",
                     "error_no_theme": "Brak dostępnych motywów.",
                     "header": "Motyw",
-                    "link_promo": "Dowiedz się więcej o motywach"
+                    "link_promo": "Dowiedz się więcej o motywach",
+                    "primary_color": "Kolor podstawowy",
+                    "reset": "Zresetuj"
                 },
                 "vibrate": {
                     "description": "Włącz lub wyłącz wibracje na tym urządzeniu podczas sterowania urządzeniami.",

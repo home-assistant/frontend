@@ -13,6 +13,7 @@ import { HassioPanelInfo } from "../../src/data/hassio/supervisor";
 import { applyThemesOnElement } from "../../src/common/dom/apply_themes_on_element";
 import { fireEvent } from "../../src/common/dom/fire_event";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
+import { atLeastVersion } from "../../src/common/config/version";
 
 @customElement("hassio-main")
 export class HassioMain extends urlSyncMixin(ProvideHassLitMixin(LitElement)) {
@@ -30,7 +31,11 @@ export class HassioMain extends urlSyncMixin(ProvideHassLitMixin(LitElement)) {
     applyThemesOnElement(
       this.parentElement,
       this.hass.themes,
-      this.hass.selectedTheme || this.hass.themes.default_theme
+      (atLeastVersion(this.hass.config.version, 0, 114)
+        ? this.hass.selectedTheme?.theme
+        : ((this.hass.selectedTheme as unknown) as string)) ||
+        this.hass.themes.default_theme,
+      this.hass.selectedTheme
     );
 
     // Paulus - March 17, 2019
