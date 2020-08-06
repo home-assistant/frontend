@@ -11,7 +11,6 @@ export const darkStyles = {
   "switch-unchecked-button-color": "#999999",
   "switch-unchecked-track-color": "#9b9b9b",
   "divider-color": "rgba(225, 225, 225, .12)",
-  "disabled-text-color": "rgba(225, 225, 225, .30)",
 };
 
 export const derivedStyles = {
@@ -66,6 +65,7 @@ export const derivedStyles = {
   "mdc-radio-unchecked-color": "rgba(var(--rgb-primary-text-color), 0.54)",
   "mdc-radio-disabled-color": "var(--disabled-text-color)",
   "mdc-tab-text-label-color-default": "var(--primary-text-color)",
+  "mdc-button-disabled-ink-color": "disabled-text-color",
 };
 
 export const haStyle = css`
