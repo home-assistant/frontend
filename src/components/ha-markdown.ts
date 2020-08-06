@@ -57,6 +57,10 @@ class HaMarkdown extends LitElement {
         background-color: var(--markdown-code-background-color, none);
         border-radius: 3px;
       }
+      ha-markdown-element svg {
+        background-color: var(--markdown-svg-background-color, none);
+        color: var(--markdown-svg-color, none);
+      }
       ha-markdown-element code {
         font-size: 85%;
         padding: 0.2em 0.4em;
