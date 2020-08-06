@@ -1,4 +1,3 @@
-import { PolymerElement } from "@polymer/polymer";
 import {
   customElement,
   property,
@@ -86,27 +85,17 @@ class HassioRouter extends HassRouterPage {
     // the tabs page does its own routing so needs full route.
     const route = el.nodeName === "HASSIO-PANEL" ? this.route : this.routeTail;
 
-    if ("setProperties" in el) {
-      // As long as we have Polymer pages
-      (el as PolymerElement).setProperties({
-        hass: this.hass,
-        narrow: this.narrow,
-        supervisorInfo: this._supervisorInfo,
-        hassioInfo: this._hassioInfo,
-        hostInfo: this._hostInfo,
-        hassInfo: this._hassInfo,
-        hassOsInfo: this._hassOsInfo,
-        route,
-      });
-    } else {
-      el.hass = this.hass;
-      el.narrow = this.narrow;
-      el.supervisorInfo = this._supervisorInfo;
-      el.hassioInfo = this._hassioInfo;
-      el.hostInfo = this._hostInfo;
-      el.hassInfo = this._hassInfo;
-      el.hassOsInfo = this._hassOsInfo;
-      el.route = route;
+    el.hass = this.hass;
+    el.narrow = this.narrow;
+    el.supervisorInfo = this._supervisorInfo;
+    el.hassioInfo = this._hassioInfo;
+    el.hostInfo = this._hostInfo;
+    el.hassInfo = this._hassInfo;
+    el.hassOsInfo = this._hassOsInfo;
+    el.route = route;
+
+    if (el.localName === "hassio-ingress-view") {
+      el.ingressPanel = this.panel.config && this.panel.config.ingress;
     }
   }
 
