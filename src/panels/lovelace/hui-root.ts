@@ -138,6 +138,7 @@ class HUIRoot extends LitElement {
                   <a
                     href="https://www.home-assistant.io/lovelace/"
                     rel="noreferrer"
+                    class="menu-link"
                     target="_blank"
                   >
                     <mwc-icon-button
@@ -761,6 +762,9 @@ class HUIRoot extends LitElement {
         }
         .hide-tab {
           display: none;
+        }
+        .menu-link {
+          text-decoration: none;
         }
       `,
     ];
