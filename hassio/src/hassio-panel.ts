@@ -4,6 +4,8 @@ import {
   LitElement,
   property,
   TemplateResult,
+  css,
+  CSSResult,
 } from "lit-element";
 import { HassioHassOSInfo, HassioHostInfo } from "../../src/data/hassio/host";
 import {
@@ -33,6 +35,9 @@ class HassioPanel extends LitElement {
   @property({ attribute: false }) public hassOsInfo!: HassioHassOSInfo;
 
   protected render(): TemplateResult {
+    if (!this.supervisorInfo) {
+      return html``;
+    }
     return html`
       <hassio-panel-router
         .route=${this.route}
@@ -44,6 +49,16 @@ class HassioPanel extends LitElement {
         .hassInfo=${this.hassInfo}
         .hassOsInfo=${this.hassOsInfo}
       ></hassio-panel-router>
+    `;
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      :host {
+        --app-header-background-color: var(--sidebar-background-color);
+        --app-header-text-color: var(--sidebar-text-color);
+        --app-header-border-bottom: 1px solid var(--divider-color);
+      }
     `;
   }
 }
