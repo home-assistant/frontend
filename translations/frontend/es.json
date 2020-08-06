@@ -1646,6 +1646,18 @@
                     "title": "MQTT",
                     "topic": "tema"
                 },
+                "ozw": {
+                    "common": {
+                        "node_id": "ID del Nodo",
+                        "ozw_instance": "Instancia OpenZWave",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "Error en el Nodo",
+                        "stage": "Etapa",
+                        "zwave_info": "Información Z-Wave"
+                    }
+                },
                 "person": {
                     "add_person": "Añadir persona",
                     "caption": "Personas",
@@ -2414,6 +2426,9 @@
                         "para_migrate": "Home Assistant puede añadir IDs a todas tus tarjetas y vistas automáticamente pulsando el botón 'Migrar configuración'.",
                         "para_no_id": "Este elemento no tiene un ID. Por favor añade uno a este elemento en 'ui-lovelace.yaml'."
                     },
+                    "move_card": {
+                        "header": "Elige una vista hacia la que mover la tarjeta"
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "Generaremos automáticamente tus vistas de la IU Lovelace con tus áreas y dispositivos si eliminas tu configuración de Lovelace.",
                         "confirm_remove_config_title": "¿Estás seguro de que deseas eliminar tu configuración de la IU Lovelace? Generaremos automáticamente tus vistas de la IU Lovelace con tus áreas y dispositivos.",
@@ -2440,6 +2455,10 @@
                         "yaml_config": "Para ayudarte a empezar aquí está la configuración actual de este panel:",
                         "yaml_control": "Para tomar el control en modo YAML, crea un archivo YAML con el nombre que especificaste en la configuración para este panel de control, o el valor predeterminado 'ui-lovelace.yaml'.",
                         "yaml_mode": "Estás utilizando el modo YAML para este panel de control, lo que significa que no puedes cambiar la configuración de Lovelace desde la IU. Si quieres gestionar este panel de control desde la IU, elimina 'mode: yaml' de la configuración de Lovelace en 'configuration.yaml.'"
+                    },
+                    "select_view": {
+                        "dashboard_label": "Panel de control",
+                        "header": "Elige una vista"
                     },
                     "suggest_card": {
                         "add": "Añadir a la IU Lovelace",

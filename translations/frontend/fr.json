@@ -2441,6 +2441,9 @@
                         "yaml_control": "Pour prendre le contrôle en mode YAML, créez un fichier YAML avec le nom que vous avez spécifié dans votre configuration pour ce tableau de bord, ou le 'ui-lovelace.yaml' par défaut.",
                         "yaml_mode": "Vous utilisez le mode YAML pour ce tableau de bord, ce qui signifie que vous ne pouvez pas modifier votre configuration Lovelace depuis l'interface utilisateur. Si vous souhaitez gérer votre tableau de bord via l'interface utilisateur, supprimez «mode: yaml» de votre configuration Lovelace dans «configuration.yaml»."
                     },
+                    "select_view": {
+                        "dashboard_label": "Tableau de bord"
+                    },
                     "suggest_card": {
                         "add": "Ajouter à Lovelace UI",
                         "create_own": "Choisissez une autre carte",
