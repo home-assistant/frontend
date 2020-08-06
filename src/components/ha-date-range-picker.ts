@@ -189,21 +189,12 @@ export class HaDateRangePicker extends LitElement {
       }
 
       @media only screen and (max-width: 500px) {
-        .date-range-inputs {
-          display: block;
-        }
-
-        paper-input:last-child {
-          margin-left: 0;
+        paper-input {
+          min-width: inherit;
         }
 
         ha-svg-icon {
           display: none;
-        }
-
-        paper-input {
-          max-width: 100%;
-          width: 100%;
         }
       }
     `;
