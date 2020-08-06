@@ -144,7 +144,7 @@ class HassioIngressView extends LitElement {
         border: 0;
       }
 
-      .header > iframe {
+      .header + iframe {
         height: calc(100% - 40px);
       }
 
