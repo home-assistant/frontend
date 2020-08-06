@@ -174,7 +174,6 @@ export class HaDateRangePicker extends LitElement {
         display: inline-block;
         max-width: 250px;
         min-width: 200px;
-        --paper-input-container-shared-input-style_-_font-size: 14px;
       }
 
       paper-input:last-child {
