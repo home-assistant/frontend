@@ -8,6 +8,7 @@ import {
 import { applyThemesOnElement } from "../../src/common/dom/apply_themes_on_element";
 import { fireEvent } from "../../src/common/dom/fire_event";
 import { navigate } from "../../src/common/navigate";
+import { atLeastVersion } from "../../src/common/config/version";
 import { fetchHassioAddonInfo } from "../../src/data/hassio/addon";
 import {
   fetchHassioHassOsInfo,
@@ -94,7 +95,10 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
     applyThemesOnElement(
       this.parentElement,
       this.hass.themes,
-      this.hass.selectedTheme?.theme || this.hass.themes.default_theme,
+      (atLeastVersion(this.hass.config.version, 0, 114)
+        ? this.hass.selectedTheme?.theme
+        : ((this.hass.selectedTheme as unknown) as string)) ||
+        this.hass.themes.default_theme,
       this.hass.selectedTheme
     );
 
