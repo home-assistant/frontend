@@ -10,7 +10,7 @@ import { computeRTLDirection } from "../common/util/compute_rtl";
 const MwcDialog = customElements.get("mwc-dialog") as Constructor<Dialog>;
 
 export const createCloseHeading = (hass: HomeAssistant, title: string) => html`
-  ${title}
+  <div class="header_title">${title}</div>
   <mwc-icon-button
     aria-label=${hass.localize("ui.dialogs.generic.close")}
     dialogAction="close"
@@ -63,15 +63,22 @@ export class HaDialog extends MwcDialog {
           min-height: var(--mdc-dialog-min-height, auto);
         }
         .header_button {
+          color: var(--text-primary-color);
           position: absolute;
           right: 16px;
           top: 10px;
           text-decoration: none;
-          color: inherit;
+        }
+        .header_title {
+          margin-right: 40px;
+          color: var(--text-primary-color);
         }
         [dir="rtl"].header_button {
           right: auto;
           left: 16px;
+        }
+        [dir="rtl"].header_title {
+          margin-left: 40px;
         }
       `,
     ];
