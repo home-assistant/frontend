@@ -65,6 +65,7 @@ export const derivedStyles = {
   "mdc-radio-unchecked-color": "rgba(var(--rgb-primary-text-color), 0.54)",
   "mdc-radio-disabled-color": "var(--disabled-text-color)",
   "mdc-tab-text-label-color-default": "var(--primary-text-color)",
+  "mdc-button-disabled-ink-color": "var(--disabled-text-color)",
 };
 
 export const haStyle = css`

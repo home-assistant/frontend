@@ -35,6 +35,7 @@ import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { ThermostatCardConfig } from "./types";
 import type { HaCard } from "../../../components/ha-card";
+import { mdiDotsVertical } from "@mdi/js";
 
 const modeIcons: { [mode in HvacMode]: string } = {
   auto: "hass:calendar-sync",
@@ -216,12 +217,14 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
           [mode]: true,
         })}
       >
-        <ha-icon-button
-          icon="hass:dots-vertical"
+        <mwc-icon-button
           class="more-info"
+          label="Open more info"
           @click=${this._handleMoreInfo}
           tabindex="0"
-        ></ha-icon-button>
+        >
+          <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
+        </mwc-icon-button>
 
         <div class="content">
           <div id="controls">
@@ -465,7 +468,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         right: 0;
         border-radius: 100%;
         color: var(--secondary-text-color);
-        z-index: 25;
+        z-index: 1;
       }
 
       .content {

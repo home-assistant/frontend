@@ -30,9 +30,9 @@ class HaMfaModuleSetupFlow extends LocalizeMixin(EventsMixin(PolymerElement)) {
         h2 {
           white-space: normal;
         }
-        ha-markdown img:first-child:last-child,
-        ha-markdown svg:first-child:last-child {
-          background-color: white;
+        ha-markdown {
+          --markdown-svg-background-color: white;
+          --markdown-svg-color: black;
           display: block;
           margin: 0 auto;
         }

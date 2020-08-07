@@ -1646,6 +1646,18 @@
                     "title": "MQTT",
                     "topic": "emne"
                 },
+                "ozw": {
+                    "common": {
+                        "node_id": "knudepunkts-id",
+                        "ozw_instance": "OpenZWave-instans",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "Problematisk knudepunkt",
+                        "stage": "Fase",
+                        "zwave_info": "Z-Wave-info"
+                    }
+                },
                 "person": {
                     "add_person": "Tilføj person",
                     "caption": "Personer",
@@ -2414,6 +2426,9 @@
                         "para_migrate": "Home Assistant kan tilføje id'er til alle dine kort og visninger automatisk for dig ved at trykke på knappen 'Migrer opsætning'.",
                         "para_no_id": "Dette element har ikke et id. Tilføj venligst et id til dette element i 'ui-lovelace.yaml'."
                     },
+                    "move_card": {
+                        "header": "Vælg en visning, som kortet skal flyttes til"
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "Vi genererer automatisk dine Lovelace-brugerfladevisninger med dine områder og enheder, hvis du fjerner din Lovelace-brugerfladekonfiguration.",
                         "confirm_remove_config_title": "Er du sikker på, at du vil fjerne din Lovelace-brugerfladekonfiguration? Vi vil automatisk generere dine Lovelace-brugerfladevisninger med dine områder og enheder.",
@@ -2440,6 +2455,10 @@
                         "yaml_config": "For at hjælpe dig med at starte, er her den aktuelle konfiguration af dette betjeningspanel:",
                         "yaml_control": "For at tage kontrol i YAML-tilstand skal du oprette en YAML-fil med det navn, du har angivet i din konfiguration for dette betjeningspanel, eller standard-'ui-lovelace.yaml'-filen.",
                         "yaml_mode": "Du bruger YAML-tilstand for dette betjeningspanel. Det betyder, at du ikke kan ændre din Lovelace-konfiguration fra brugerfladen. Hvis du vil ændre dette betjeningspanel fra brugerfladen, skal du fjerne 'mode: yaml' fra din Lovelace-konfiguration i 'configuration.yaml.'"
+                    },
+                    "select_view": {
+                        "dashboard_label": "Betjeningspanel",
+                        "header": "Vælg en visning"
                     },
                     "suggest_card": {
                         "add": "Tilføj til Lovelace-brugerflade",
