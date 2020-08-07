@@ -5,6 +5,12 @@ import {
 } from "home-assistant-js-websocket";
 import { HASSDomEvent } from "../common/dom/fire_event";
 import { HomeAssistant } from "../types";
+import {
+  LovelaceCard,
+  LovelaceBadge,
+  Lovelace,
+} from "../panels/lovelace/types";
+import { HuiErrorCard } from "../panels/lovelace/cards/hui-error-card";
 
 export interface LovelacePanelConfig {
   mode: "yaml" | "storage";
@@ -78,6 +84,16 @@ export interface LovelaceViewConfig {
   panel?: boolean;
   background?: string;
   visible?: boolean | ShowViewConfig[];
+}
+
+export interface LovelaceLayoutElement extends HTMLElement {
+  hass?: HomeAssistant;
+  lovelace?: Lovelace;
+  index?: number;
+  columns: number;
+  cards?: Array<LovelaceCard | HuiErrorCard>;
+  badges?: LovelaceBadge[];
+  editMode?: boolean;
 }
 
 export interface ShowViewConfig {

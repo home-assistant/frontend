@@ -1,26 +1,34 @@
-// @ts-nocheck
+import { LovelaceLayoutElement } from "../../../data/lovelace";
+
+// @ts-noceck
 const CUSTOM_PREFIX = "custom:";
 
 const layouts: { [key: string]: () => Promise<any> } = {
-  default: () => Promise.resolve(DefaultLovelaceViewLayout),
-  grid: () => import("./grid").GridLovelaceViewLayout,
+  default: () => import("./default-layout"),
+  // grid: () => import("./grid").GridLovelaceViewLayout,
 };
 
-export const getLovelaceViewLayout = (
+export const getLovelaceViewLayoutElement = (
   name: string
-): Promise<LovelaceViewLayout> => {
+): LovelaceLayoutElement => {
+  let tag = "ll-layout-";
+
   if (name in layouts) {
-    return layouts[name]();
+    layouts[name]();
+    tag += name;
   }
 
-  if (!name.startsWith(CUSTOM_PREFIX)) {
+  if (name.startsWith(CUSTOM_PREFIX)) {
     // This will just generate a view with a single error card
-    return errorLayout(`Unknown layout specified: ${name}`);
+    // return errorLayout(`Unknown layout specified: ${name}`);
+    tag += name.substr(CUSTOM_PREFIX.length);
   }
 
-  const tag = `ll-layout-${name.substr(CUSTOM_PREFIX.length)}`;
+  const element = document.createElement(tag) as LovelaceLayoutElement;
 
-  return customElements.whenDefined(tag).then(() => customElements.get(tag));
+  customElements.whenDefined(tag).then(() => customElements.get(tag));
+
+  return element;
 };
 
 /*
@@ -37,7 +45,8 @@ HA will provide the layout:
     * Badges
     * Edit Mode
     * Columns (though maybe this should be done in the layout?)
-    * View Config
+    * Lovelace
+    * Index
 
 <ll-layout-grid 
     .config=${this.lovelace.config.views[this.index!]} 

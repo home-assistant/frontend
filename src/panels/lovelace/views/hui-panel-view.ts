@@ -36,10 +36,10 @@ export class HUIPanelView extends UpdatingElement {
     const oldHass = changedProperties.get("hass") as this["hass"] | undefined;
     const configChanged = changedProperties.has("config");
 
-    if (lovelace.editMode && !editCodeLoaded) {
-      editCodeLoaded = true;
-      import(/* webpackChunkName: "hui-view-editable" */ "./hui-view-editable");
-    }
+    // if (lovelace.editMode && !editCodeLoaded) {
+    //   editCodeLoaded = true;
+    //   import(/* webpackChunkName: "hui-view-editable" */ "./hui-view-editable");
+    // }
 
     let editModeChanged = false;
 
