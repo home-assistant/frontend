@@ -10,20 +10,20 @@ import {
 } from "lit-element";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/entity/ha-state-label-badge";
-import {
+import type {
   LovelaceBadgeConfig,
   LovelaceCardConfig,
   LovelaceViewConfig,
-  LovelaceLayoutElement,
+  LovelaceViewElement,
 } from "../../../data/lovelace";
-import { HomeAssistant } from "../../../types";
-import { HuiErrorCard } from "../cards/hui-error-card";
+import type { HomeAssistant } from "../../../types";
+import type { HuiErrorCard } from "../cards/hui-error-card";
 import { processConfigEntities } from "../common/process-config-entities";
 import { createBadgeElement } from "../create-element/create-badge-element";
 import { createCardElement } from "../create-element/create-card-element";
-import { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
+import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
 import "../../../components/ha-svg-icon";
-import { getLovelaceViewLayoutElement } from "../layouts/get-layout";
+import { getLovelaceViewElement } from "./get-view";
 
 export class HUIView extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -38,12 +38,7 @@ export class HUIView extends LitElement {
 
   @internalProperty() private _badges: LovelaceBadge[] = [];
 
-  private _layoutElement?: LovelaceLayoutElement;
-
-  public constructor() {
-    super();
-    this.addEventListener("iron-resize", (ev: Event) => ev.stopPropagation());
-  }
+  private _layoutElement?: LovelaceViewElement;
 
   // Public to make demo happy
   public createCardElement(cardConfig: LovelaceCardConfig) {
@@ -89,7 +84,7 @@ export class HUIView extends LitElement {
 
     const hass = this.hass!;
     const lovelace = this.lovelace!;
-
+    const viewConfig = lovelace.config.views[this.index!];
     const hassChanged = changedProperties.has("hass");
 
     let editModeChanged = false;
@@ -104,37 +99,42 @@ export class HUIView extends LitElement {
       configChanged = !oldLovelace || lovelace.config !== oldLovelace.config;
     }
 
+    if (configChanged && !this._layoutElement) {
+      this._layoutElement = getLovelaceViewElement(
+        viewConfig.panel ? "panel" : viewConfig.type || "default"
+      );
+    }
+
     if (configChanged) {
-      this._createBadges(lovelace.config.views[this.index!]);
+      this._createBadges(viewConfig);
+      this._createCards(viewConfig);
+
+      this._layoutElement!.lovelace = lovelace;
+      this._layoutElement!.index = this.index;
     } else if (hassChanged) {
       this._badges.forEach((badge) => {
         badge.hass = hass;
       });
-    }
 
-    if (configChanged) {
-      this._createCards(lovelace.config.views[this.index!]);
-    }
-
-    if (hassChanged && !configChanged) {
       this._cards.forEach((element) => {
         element.hass = hass;
       });
+
+      this._layoutElement!.hass = this.hass;
     }
 
-    if (configChanged && !this._layoutElement) {
-      this._layoutElement = getLovelaceViewLayoutElement(
-        lovelace.config.views[this.index!].layout! || "default"
-      );
+    if (editModeChanged) {
+      this._layoutElement!.editMode = lovelace.editMode;
     }
 
-    this._layoutElement!.hass = this.hass;
-    this._layoutElement!.lovelace = lovelace;
-    this._layoutElement!.index = this.index;
-    this._layoutElement!.cards = this._cards;
-    this._layoutElement!.badges = this._badges;
-    this._layoutElement!.columns = this.columns!;
-    this._layoutElement!.editMode = lovelace.editMode;
+    if (configChanged || hassChanged || editModeChanged) {
+      this._layoutElement!.cards = this._cards;
+      this._layoutElement!.badges = this._badges;
+    }
+
+    if (changedProperties.has("columns")) {
+      this._layoutElement!.columns = this.columns!;
+    }
 
     const oldHass = changedProperties.get("hass") as this["hass"] | undefined;
 

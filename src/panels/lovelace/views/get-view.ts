@@ -1,17 +1,16 @@
-import { LovelaceLayoutElement } from "../../../data/lovelace";
+import { LovelaceViewElement } from "../../../data/lovelace";
 
 // @ts-noceck
 const CUSTOM_PREFIX = "custom:";
 
 const layouts: { [key: string]: () => Promise<any> } = {
-  default: () => import("./default-layout"),
+  default: () => import("./default-view"),
+  panel: () => import("./panel-view"),
   // grid: () => import("./grid").GridLovelaceViewLayout,
 };
 
-export const getLovelaceViewLayoutElement = (
-  name: string
-): LovelaceLayoutElement => {
-  let tag = "ll-layout-";
+export const getLovelaceViewElement = (name: string): LovelaceViewElement => {
+  let tag = "ll-view-";
 
   if (name in layouts) {
     layouts[name]();
@@ -24,7 +23,7 @@ export const getLovelaceViewLayoutElement = (
     tag += name.substr(CUSTOM_PREFIX.length);
   }
 
-  const element = document.createElement(tag) as LovelaceLayoutElement;
+  const element = document.createElement(tag) as LovelaceViewElement;
 
   customElements.whenDefined(tag).then(() => customElements.get(tag));
 

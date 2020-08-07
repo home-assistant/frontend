@@ -17,7 +17,7 @@ import { computeCardSize } from "../common/compute-card-size";
 import { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
 import "../../../components/ha-svg-icon";
 import { nextRender } from "../../../common/util/render-status";
-import type { LovelaceLayoutElement } from "../../../data/lovelace";
+import type { LovelaceViewElement } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 
@@ -41,7 +41,7 @@ const getColumnIndex = (columnSizes: number[], size: number) => {
   return minIndex;
 };
 
-export class DefaultLayout extends LitElement implements LovelaceLayoutElement {
+export class DefaultView extends LitElement implements LovelaceViewElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public lovelace?: Lovelace;
@@ -56,11 +56,13 @@ export class DefaultLayout extends LitElement implements LovelaceLayoutElement {
 
   @property({ attribute: false }) public badges: LovelaceBadge[] = [];
 
+  @property({ type: Boolean }) public editMode = false;
+
   private _createColumnsIteration = 0;
 
   public constructor() {
     super();
-    this.addEventListener("iron-resize", (ev) => ev.stopPropagation());
+    this.addEventListener("iron-resize", (ev: Event) => ev.stopPropagation());
   }
 
   protected render(): TemplateResult {
@@ -93,26 +95,18 @@ export class DefaultLayout extends LitElement implements LovelaceLayoutElement {
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
-    const lovelace = this.lovelace!;
-
-    if (lovelace.editMode && !editCodeLoaded) {
+    if (this.editMode && !editCodeLoaded) {
       editCodeLoaded = true;
       import(
-        /* webpackChunkName: "default-layout-editable" */ "./default-layout-editable"
+        /* webpackChunkName: "default-layout-editable" */ "./default-view-editable"
       );
     }
 
-    let editModeChanged = false;
-
-    if (changedProperties.has("lovelace")) {
-      const oldLovelace = changedProperties.get("lovelace") as Lovelace;
-      editModeChanged =
-        oldLovelace && lovelace.editMode !== oldLovelace.editMode;
+    if (changedProperties.has("hass") && changedProperties.size === 1) {
+      return;
     }
 
-    if (editModeChanged || changedProperties.has("columns")) {
-      this._createColumns();
-    }
+    this._createColumns();
   }
 
   private _addCard(): void {
@@ -272,8 +266,8 @@ export class DefaultLayout extends LitElement implements LovelaceLayoutElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ll-layout-default": DefaultLayout;
+    "ll-view-default": DefaultView;
   }
 }
 
-customElements.define("ll-layout-default", DefaultLayout);
+customElements.define("ll-view-default", DefaultView);

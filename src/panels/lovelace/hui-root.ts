@@ -55,8 +55,6 @@ import { swapView } from "./editor/config-util";
 import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovelace-dialog";
 import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import type { Lovelace } from "./types";
-import "./views/hui-panel-view";
-import type { HUIPanelView } from "./views/hui-panel-view";
 import { HUIView } from "./views/hui-view";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
@@ -386,7 +384,7 @@ class HUIRoot extends LitElement {
     super.updated(changedProperties);
 
     const view = this._viewRoot;
-    const huiView = view.lastChild as HUIView | HUIPanelView;
+    const huiView = view.lastChild as HUIView;
 
     if (
       changedProperties.has("columns") &&
@@ -654,15 +652,9 @@ class HUIRoot extends LitElement {
     if (!force && this._viewCache![viewIndex]) {
       view = this._viewCache![viewIndex];
     } else {
-      if (viewConfig.panel && viewConfig.cards && viewConfig.cards.length > 0) {
-        view = document.createElement("hui-panel-view");
-        view.config = viewConfig;
-        view.index = viewIndex;
-      } else {
-        view = document.createElement("hui-view");
-        view.columns = this.columns;
-        view.index = viewIndex;
-      }
+      view = document.createElement("hui-view");
+      view.columns = this.columns;
+      view.index = viewIndex;
       this._viewCache![viewIndex] = view;
     }
 
