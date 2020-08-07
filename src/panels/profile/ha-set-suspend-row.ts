@@ -9,7 +9,7 @@ import { fireEvent, HASSDomEvent } from "../../common/dom/fire_event";
 import "../../components/ha-switch";
 import type { HaSwitch } from "../../components/ha-switch";
 import type { HomeAssistant } from "../../types";
-import "./ha-settings-row";
+import "../../components/ha-settings-row";
 
 declare global {
   // for fire event

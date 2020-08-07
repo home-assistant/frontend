@@ -31,6 +31,7 @@ export interface CreateSessionResponse {
 
 export interface SupervisorOptions {
   channel?: "beta" | "dev" | "stable";
+  diagnostics?: boolean;
   addons_repositories?: string[];
 }
 
