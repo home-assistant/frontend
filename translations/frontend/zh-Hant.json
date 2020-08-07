@@ -833,6 +833,15 @@
                             "name": "動作",
                             "type_select": "觸發後動作類別",
                             "type": {
+                                "choose": {
+                                    "add_option": "新增選項",
+                                    "conditions": "觸發條件",
+                                    "default": "預設觸發動作",
+                                    "label": "選擇",
+                                    "option": "選項 {number}",
+                                    "remove_option": "移除選項",
+                                    "sequence": "觸發後動作"
+                                },
                                 "condition": {
                                     "label": "判斷式"
                                 },
@@ -851,6 +860,24 @@
                                     "event": "事件：",
                                     "label": "執行事件",
                                     "service_data": "資料"
+                                },
+                                "repeat": {
+                                    "label": "重複",
+                                    "sequence": "觸發後動作",
+                                    "type_select": "重複類型",
+                                    "type": {
+                                        "count": {
+                                            "label": "計次"
+                                        },
+                                        "until": {
+                                            "conditions": "直到條件發生",
+                                            "label": "直到"
+                                        },
+                                        "while": {
+                                            "conditions": "當條件發生",
+                                            "label": "當"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "啟用場景"
@@ -1618,6 +1645,18 @@
                     "subscribe_to": "訂閱主題",
                     "title": "MQTT",
                     "topic": "主題"
+                },
+                "ozw": {
+                    "common": {
+                        "node_id": "節點 ID",
+                        "ozw_instance": "OpenZWave 設備",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "節點失敗",
+                        "stage": "階段",
+                        "zwave_info": "Z-Wave 資訊"
+                    }
                 },
                 "person": {
                     "add_person": "新增人員",
@@ -2387,6 +2426,9 @@
                         "para_migrate": "Home Assistant 能於您點選「遷移設定」按鈕後，自動新增 ID 與視圖至所有面板。",
                         "para_no_id": "該元件未含 ID，請於「ui-lovelace.yaml」中為該元件新增 ID。"
                     },
+                    "move_card": {
+                        "header": "移動至哪個面板"
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "假如移除 Lovelace UI 設定的話，將自動以區域與設備產生 Lovelace UI 視圖。",
                         "confirm_remove_config_title": "確定要移除 Lovelace UI 設定？將依據區域與設備自動產生 Lovelace UI 視圖。",
@@ -2413,6 +2455,10 @@
                         "yaml_config": "目前此主面板設定：",
                         "yaml_control": "欲使用 YAML 進行控制、新增一個與此主面板相同名稱的 YAML 檔案、或者預設為「ui-lovelace.yaml」。",
                         "yaml_mode": "正使用 YAML 模式、表示您無法藉由 UI 變更 Lovelace 設定。假如您想由 UI 中進行變更、請於「configuration.yaml」檔案中移除 'mode: yaml' 參數。"
+                    },
+                    "select_view": {
+                        "dashboard_label": "主面板",
+                        "header": "選擇面板"
                     },
                     "suggest_card": {
                         "add": "新增至 Lovelace UI",
@@ -2731,10 +2777,18 @@
                     "header": "自動關閉連線"
                 },
                 "themes": {
+                    "accent_color": "加重顏色",
+                    "dark_mode": {
+                        "auto": "自動",
+                        "dark": "深色",
+                        "light": "淡色"
+                    },
                     "dropdown_label": "主題",
                     "error_no_theme": "無主題可使用。",
                     "header": "主題",
-                    "link_promo": "關於此主題"
+                    "link_promo": "關於此主題",
+                    "primary_color": "主色彩",
+                    "reset": "重置"
                 },
                 "vibrate": {
                     "description": "當控制裝置時、開啟或關閉此裝置震動。",

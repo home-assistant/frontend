@@ -1646,6 +1646,18 @@
                     "title": "MQTT",
                     "topic": "主题(Topic)"
                 },
+                "ozw": {
+                    "common": {
+                        "node_id": "节点 ID",
+                        "ozw_instance": "OpenZWave 实例",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "节点故障",
+                        "stage": "阶段",
+                        "zwave_info": "Z-Wave 信息"
+                    }
+                },
                 "person": {
                     "add_person": "添加人员",
                     "caption": "人员",
@@ -2414,6 +2426,9 @@
                         "para_migrate": "通过点击“迁移配置”按钮，Home Assistant 可以自动为您的所有卡片和视图添加 ID。",
                         "para_no_id": "此元素没有 ID。请在 'ui-lovelace.yaml' 中为此元素添加 ID。"
                     },
+                    "move_card": {
+                        "header": "选择要将卡片移动到哪个视图"
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "如果您删除了 Lovelace 配置，我们将通过您的区域和设备自动生成 Lovelace 视图。",
                         "confirm_remove_config_title": "您确定要删除 Lovelace 配置吗？我们将通过您的区域和设备自动生成 Lovelace 视图。",
@@ -2440,6 +2455,10 @@
                         "yaml_config": "为方便您开始，以下是此仪表盘的当前配置：",
                         "yaml_control": "要以 YAML 模式下自行编辑，请创建 YAML 文件并命名为在配置中为此仪表盘指定的名称，或使用默认的 'ui-lovelace.yaml'。",
                         "yaml_mode": "此仪表盘正在使用 YAML 模式，因此无法从 UI 更改 Lovelace 配置。若要从 UI 管理此仪表盘，请从 'configuration.yaml' 中的 Lovelace 配置中删除 'mode: yaml'。"
+                    },
+                    "select_view": {
+                        "dashboard_label": "仪表盘",
+                        "header": "选择视图"
                     },
                     "suggest_card": {
                         "add": "添加至 Lovelace UI",
