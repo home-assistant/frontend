@@ -47,11 +47,11 @@
         background-color: var(--primary-background-color);
       }
       @media (prefers-color-scheme: dark) {
-        #ha-init-skeleton::before {
-          background-color: #1c1c1c;
-        }
         html {
           background-color: #111111;
+        }
+        #ha-init-skeleton::before {
+          background-color: #1c1c1c;
         }
       }
     </style>
