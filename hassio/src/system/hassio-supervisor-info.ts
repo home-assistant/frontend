@@ -22,7 +22,7 @@ import {
   showConfirmationDialog,
   showAlertDialog,
 } from "../../../src/dialogs/generic/show-dialog-box";
-import "../../../src/panels/profile/ha-settings-row";
+import "../../../src/components/ha-settings-row";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import { hassioStyle } from "../resources/hassio-style";
@@ -67,9 +67,12 @@ class HassioSupervisorInfo extends LitElement {
               </span>
               <span slot="description">
                 Share crash reports and diagnostic information.
-                <span @click=${this._diagnosticsInformationDialog} class="more"
-                  >Learn more</span
+                <button
+                  class="link"
+                  @click=${this._diagnosticsInformationDialog}
                 >
+                  Learn more
+                </button>
               </span>
               <ha-switch
                 .checked=${this.supervisorInfo.diagnostics}
@@ -147,9 +150,8 @@ class HassioSupervisorInfo extends LitElement {
         ha-settings-row {
           padding: 0;
         }
-        .more {
+        button.link {
           color: var(--primary-color);
-          cursor: pointer;
         }
       `,
     ];
