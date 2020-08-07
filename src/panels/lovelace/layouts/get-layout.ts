@@ -49,7 +49,7 @@ HA will provide the layout:
 
 Or more like
 
-this._layout = getLovelaceViewLayout(viewConfig.layout);
+this._layout = document.createElement(getLovelaceViewLayout(viewConfig.layout));
 this._layout.config = viewConfig;
 this._layout.cards = this._cards;
 this._layout.badges = this._badges;
