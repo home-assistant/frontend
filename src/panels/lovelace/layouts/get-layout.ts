@@ -47,7 +47,16 @@ HA will provide the layout:
     .columns=${this._columns}
 ></ll-layout-grid>
 
-In my mind, this is a lit element (I guess it doesn't have to be) 
+Or more like
+
+this._layout = getLovelaceViewLayout(viewConfig.layout);
+this._layout.config = viewConfig;
+this._layout.cards = this._cards;
+this._layout.badges = this._badges;
+this._layout.columns = this._columns;
+this._layout.editMode = editMode;
+
+In my mind, this is a lit element (I guess it doesn't have to be lit) 
 that has updated() and checks what changes. Similar to how our current view does it
 
 */
