@@ -14,7 +14,7 @@ export class HaSettingsRow extends LitElement {
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
 
   @property({ type: Boolean, attribute: "three-line" })
-  public threeLine: boolean = false;
+  public threeLine = false;
 
   protected render(): SVGTemplateResult {
     return html`
