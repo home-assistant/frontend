@@ -69,6 +69,7 @@ export interface LovelaceDashboardCreateParams
 export interface LovelaceViewConfig {
   index?: number;
   title?: string;
+  layout?: string;
   badges?: Array<string | LovelaceBadgeConfig>;
   cards?: LovelaceCardConfig[];
   path?: string;
@@ -91,6 +92,7 @@ export interface LovelaceBadgeConfig {
 export interface LovelaceCardConfig {
   index?: number;
   view_index?: number;
+  layout?: any;
   type: string;
   [key: string]: any;
 }
