@@ -17,7 +17,12 @@ import {
   setSupervisorOption,
   SupervisorOptions,
 } from "../../../src/data/hassio/supervisor";
-import { showConfirmationDialog } from "../../../src/dialogs/generic/show-dialog-box";
+import "../../../src/components/ha-switch";
+import {
+  showConfirmationDialog,
+  showAlertDialog,
+} from "../../../src/dialogs/generic/show-dialog-box";
+import "../../../src/components/ha-settings-row";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import { hassioStyle } from "../resources/hassio-style";
@@ -55,6 +60,26 @@ class HassioSupervisorInfo extends LitElement {
                 : ""}
             </tbody>
           </table>
+          <div class="options">
+            <ha-settings-row>
+              <span slot="heading">
+                Share Diagnostics
+              </span>
+              <span slot="description">
+                Share crash reports and diagnostic information.
+                <button
+                  class="link"
+                  @click=${this._diagnosticsInformationDialog}
+                >
+                  Learn more
+                </button>
+              </span>
+              <ha-switch
+                .checked=${this.supervisorInfo.diagnostics}
+                @change=${this._toggleDiagnostics}
+              ></ha-switch>
+            </ha-settings-row>
+          </div>
           ${this._errors
             ? html` <div class="errors">Error: ${this._errors}</div> `
             : ""}
@@ -111,7 +136,8 @@ class HassioSupervisorInfo extends LitElement {
           box-sizing: border-box;
           height: calc(100% - 47px);
         }
-        .info {
+        .info,
+        .options {
           width: 100%;
         }
         .info td:nth-child(2) {
@@ -120,6 +146,12 @@ class HassioSupervisorInfo extends LitElement {
         .errors {
           color: var(--error-color);
           margin-top: 16px;
+        }
+        ha-settings-row {
+          padding: 0;
+        }
+        button.link {
+          color: var(--primary-color);
         }
       `,
     ];
@@ -179,6 +211,40 @@ class HassioSupervisorInfo extends LitElement {
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
       this._errors = `Error joining beta channel, ${err.body?.message || err}`;
+    }
+  }
+
+  private async _diagnosticsInformationDialog() {
+    await showAlertDialog(this, {
+      title: "Help Improve Home Assistant",
+      text: html`Would you want to automatically share crash reports and
+        diagnostic information when the supervisor encounters unexpected errors?
+        <br /><br />
+        This will allow us to fix the problems, the information is only
+        accessible to the Home Assistant Core team and will not be shared with
+        others.
+        <br /><br />
+        The data does not include any private/sensetive information and you can
+        disable this in settings at any time you want.`,
+    });
+  }
+
+  private async _toggleDiagnostics() {
+    try {
+      const data: SupervisorOptions = {
+        diagnostics: !this.supervisorInfo?.diagnostics,
+      };
+      await setSupervisorOption(this.hass, data);
+      const eventdata = {
+        success: true,
+        response: undefined,
+        path: "option",
+      };
+      fireEvent(this, "hass-api-called", eventdata);
+    } catch (err) {
+      this._errors = `Error changing supervisor setting, ${
+        err.body?.message || err
+      }`;
     }
   }
 }

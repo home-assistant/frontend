@@ -13,7 +13,7 @@ import {
 import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
 import "../../styles/polymer-ha-style";
-import "./ha-settings-row";
+import "../../components/ha-settings-row";
 
 /*
  * @appliesMixin EventsMixin
