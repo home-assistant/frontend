@@ -608,7 +608,18 @@ class HUIRoot extends LitElement {
       return;
     }
 
-    viewIndex = viewIndex === undefined ? 0 : viewIndex;
+    const isVisible = (view) =>
+      Boolean(
+        this._editMode ||
+          view.visible === undefined ||
+          (Array.isArray(view.visible) &&
+            view.visible.some((e) => e.user === this.hass!.user!.id)) ||
+          view.visible === true
+      );
+    viewIndex =
+      viewIndex === undefined || viewIndex === 0
+        ? this.config.views.findIndex(isVisible)
+        : viewIndex;
 
     this._curView = viewIndex;
 
