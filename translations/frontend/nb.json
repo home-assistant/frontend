@@ -1646,6 +1646,18 @@
                     "title": "MQTT",
                     "topic": "emne"
                 },
+                "ozw": {
+                    "common": {
+                        "node_id": "Node-ID",
+                        "ozw_instance": "OpenZWave Instance",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "Noden mislyktes",
+                        "stage": "Scene",
+                        "zwave_info": "Z-Wave Info"
+                    }
+                },
                 "person": {
                     "add_person": "Legg til person",
                     "caption": "Personer",
@@ -2414,6 +2426,9 @@
                         "para_migrate": "Home Assistant kan legge til ID-er på alle kortene og visningene automatisk for deg ved å trykke på 'Migrer konfigurasjon' knappen.",
                         "para_no_id": "Dette elementet har ingen ID. Vennligst legg til en ID på dette elementet i 'ui-lovelace.yaml'."
                     },
+                    "move_card": {
+                        "header": "Velg en visning du vil flytte kortet til"
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "Vi vil automatisk opprette Lovelace-visningene dine med områdene og enhetene dine hvis du fjerner Lovelace-konfigurasjonen.",
                         "confirm_remove_config_title": "Er du sikker på at du vil fjerne Lovelace-konfigurasjonen? Vi vil automatisk opprette Lovelace-visningene dine med områdene og enhetene dine.",
@@ -2440,6 +2455,10 @@
                         "yaml_config": "For å hjelpe deg med å starte, her er den gjeldende konfigurasjonen av dette instrumentbordet:",
                         "yaml_control": "Hvis du vil ta kontroll i YAML-modus, oppretter du en YAML-fil med navnet du angav i konfigurasjonen for dette instrumentbordet, eller standard 'ui-lovelace.yaml'.",
                         "yaml_mode": "Du bruker YAML-modus for dette instrumentbordet, noe som betyr at du ikke kan endre Lovelace-konfigurasjonen fra brukergrensesnittet. Hvis du vil administrere dette instrumentbordet fra brukergrensesnittet, må du fjerne 'modus: yaml' fra Lovelace-konfigurasjonen i 'configuration.yaml'."
+                    },
+                    "select_view": {
+                        "dashboard_label": "Dashboard",
+                        "header": "Velg en visning"
                     },
                     "suggest_card": {
                         "add": "Legg til i Lovelace brukergrensesnitt",

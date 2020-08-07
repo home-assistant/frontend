@@ -6,12 +6,15 @@ import {
   DialogClosedParams,
 } from "../dialogs/make-dialog-manager";
 import { Constructor } from "../types";
-import { HassBaseEl } from "./hass-base-mixin";
 import { HASSDomEvent } from "../common/dom/fire_event";
+import { UpdatingElement } from "lit-element";
+import { ProvideHassElement } from "../mixins/provide-hass-lit-mixin";
 
 const DEBUG = false;
 
-export const urlSyncMixin = <T extends Constructor<HassBaseEl>>(
+export const urlSyncMixin = <
+  T extends Constructor<UpdatingElement & ProvideHassElement>
+>(
   superClass: T
 ) =>
   // Disable this functionality in the demo.
@@ -35,11 +38,17 @@ export const urlSyncMixin = <T extends Constructor<HassBaseEl>>(
         private _dialogClosedListener = (
           ev: HASSDomEvent<DialogClosedParams>
         ) => {
+          if (DEBUG) {
+            console.log("dialog closed", ev.detail.dialog);
+          }
           // If not closed by navigating back, and not a new dialog is open, remove the open state from history
           if (
             history.state?.open &&
             history.state?.dialog === ev.detail.dialog
           ) {
+            if (DEBUG) {
+              console.log("remove state", ev.detail.dialog);
+            }
             this._ignoreNextPopState = true;
             history.back();
           }
@@ -65,6 +74,9 @@ export const urlSyncMixin = <T extends Constructor<HassBaseEl>>(
           if (!state.open) {
             const closed = await closeDialog(state.dialog);
             if (!closed) {
+              if (DEBUG) {
+                console.log("dialog could not be closed");
+              }
               // dialog could not be closed, push state again
               history.pushState(
                 {
@@ -78,6 +90,9 @@ export const urlSyncMixin = <T extends Constructor<HassBaseEl>>(
               return;
             }
             if (state.oldState) {
+              if (DEBUG) {
+                console.log("handle old state");
+              }
               this._handleDialogStateChange(state.oldState);
             }
             return;

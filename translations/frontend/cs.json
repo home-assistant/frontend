@@ -1638,6 +1638,11 @@
                     "title": "MQTT",
                     "topic": "téma"
                 },
+                "ozw": {
+                    "common": {
+                        "zwave": "Z-Wave"
+                    }
+                },
                 "person": {
                     "add_person": "Přidat osobu",
                     "caption": "Osoby",
@@ -2406,6 +2411,9 @@
                         "para_migrate": "Home Assistant může automaticky přidávat ID ke všem kartám a pohledům stisknutím tlačítka \"Migrovat konfiguraci\".",
                         "para_no_id": "Tento prvek nemá ID. Přidejte k tomuto prvku ID v 'ui-lovelace.yaml'."
                     },
+                    "move_card": {
+                        "header": "Vyberte pohled, do kterého chcete kartu přesunout"
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "Pokud odeberete nastavení Lovelace, automaticky vygenerujeme vaše zobrazení Lovelace s vašimi oblastmi a zařízeními.",
                         "confirm_remove_config_title": "Opravdu chcete odstranit nastavení Lovelace? Automaticky vygenerujeme vaše zobrazení Lovelace s vašimi oblastmi a zařízeními.",
@@ -2432,6 +2440,10 @@
                         "yaml_config": "Abyste mohli snadněji začít, zde aktuální konfigurace tohoto dashboardu:",
                         "yaml_control": "Chcete-li převzít kontrolu v režimu YAML, vytvořte soubor YAML s názvem, který jste uvedli ve své konfiguraci pro tento dashboard nebo výchozí 'ui-lovelace.yaml'.",
                         "yaml_mode": "Používáte režim YAML, což znamená, že nemůžete změnit konfiguraci Lovelace z uživatelského rozhraní. Pokud chcete měnit Lovelace z uživatelského rozhraní, odstraňte 'mode: yaml' z vaší konfigurace Lovelace v 'configuration.yaml.'"
+                    },
+                    "select_view": {
+                        "dashboard_label": "Dashboard",
+                        "header": "Vyberte pohled"
                     },
                     "suggest_card": {
                         "add": "Přidat do Lovelance",

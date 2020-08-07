@@ -1646,6 +1646,18 @@
                     "title": "MQTT",
                     "topic": "ämne"
                 },
+                "ozw": {
+                    "common": {
+                        "node_id": "Nod-ID",
+                        "ozw_instance": "OpenZWave-instans",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "Noden misslyckades",
+                        "stage": "Steg",
+                        "zwave_info": "Z-Wave info"
+                    }
+                },
                 "person": {
                     "add_person": "Lägg till person",
                     "caption": "Personer",
@@ -2414,6 +2426,9 @@
                         "para_migrate": "Home Assistant kan automatiskt lägga till ID:n till alla dina kort och vyer genom att du klickar på \"Migrera konfiguration\".",
                         "para_no_id": "Det här elementet har inget ID. Lägg till ett ID till det här elementet i \"ui-lovelace.yaml\"."
                     },
+                    "move_card": {
+                        "header": "Välj en vy att flytta kortet till"
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "Vi kommer automatiskt att generera dina Lovelace UI-vyer med dina områden och enheter om du tar bort din Lovelace UI-konfiguration.",
                         "confirm_remove_config_title": "Är du säker på att du vill ta bort din Lovelace UI konfiguration? Vi kommer automatiskt att generera dina Lovelace UI-vyer med dina områden och enheter.",
@@ -2440,6 +2455,10 @@
                         "yaml_config": "För att hjälpa dig igång, så är här nuvarande inställning för denna instrumentpanel:",
                         "yaml_control": "Om du vill ta kontroll i YAML-läge skapar du en YAML-fil med det namn du angav i konfigurationen för den här instrumentpanelen eller standard \"ui-lovelace.yaml\".",
                         "yaml_mode": "Du använder YAML-läge, vilket betyder att du inte kan ändra dina Lovelace-inställning från användargränssnittet. Om du vill hantera Lovelace från användargränssnittet, ta bort 'mode: yaml' från din Lovelace-inställning i 'configuration.yaml'"
+                    },
+                    "select_view": {
+                        "dashboard_label": "Instrumentpanel",
+                        "header": "Välj en vy"
                     },
                     "suggest_card": {
                         "add": "Lägg till i Lovelace-gränsnitt",

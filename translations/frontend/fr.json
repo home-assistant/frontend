@@ -1646,6 +1646,18 @@
                     "title": "MQTT",
                     "topic": "sujet"
                 },
+                "ozw": {
+                    "common": {
+                        "node_id": "ID du nœud",
+                        "ozw_instance": "Instance Z-Wave",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "Nœud Défaillant",
+                        "stage": "Étape",
+                        "zwave_info": "Informations Z-Wave"
+                    }
+                },
                 "person": {
                     "add_person": "Ajouter une personne",
                     "caption": "Personnes",
@@ -2414,6 +2426,9 @@
                         "para_migrate": "Home Assistant peut ajouter automatiquement des identifiants à toutes vos cartes et vues en appuyant sur le bouton «Migrer la configuration».",
                         "para_no_id": "Cet élément n'a pas d'identifiant. Veuillez ajouter un identifiant à cet élément dans 'ui-lovelace.yaml'."
                     },
+                    "move_card": {
+                        "header": "Choisissez une vue vers laquelle déplacer la carte"
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "Nous générerons automatiquement vos vues Lovelace UI avec vos zones et appareils si vous supprimez votre configuration Lovelace UI.",
                         "confirm_remove_config_title": "Êtes-vous sûr de vouloir supprimer votre configuration Lovelace UI? Nous générerons automatiquement vos vues Lovelace UI avec vos zones et vos appareils.",
@@ -2440,6 +2455,10 @@
                         "yaml_config": "Pour vous aider à démarrer, voici la configuration actuelle de ce tableau de bord:",
                         "yaml_control": "Pour prendre le contrôle en mode YAML, créez un fichier YAML avec le nom que vous avez spécifié dans votre configuration pour ce tableau de bord, ou le 'ui-lovelace.yaml' par défaut.",
                         "yaml_mode": "Vous utilisez le mode YAML pour ce tableau de bord, ce qui signifie que vous ne pouvez pas modifier votre configuration Lovelace depuis l'interface utilisateur. Si vous souhaitez gérer votre tableau de bord via l'interface utilisateur, supprimez «mode: yaml» de votre configuration Lovelace dans «configuration.yaml»."
+                    },
+                    "select_view": {
+                        "dashboard_label": "Tableau de bord",
+                        "header": "Choisissez une vue"
                     },
                     "suggest_card": {
                         "add": "Ajouter à Lovelace UI",
