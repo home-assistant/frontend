@@ -2,8 +2,6 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import {
   LovelaceBadgeConfig,
   LovelaceCardConfig,
-  LovelaceViewConfig,
-  LovelaceLayoutElement,
 } from "../../../data/lovelace";
 import { CUSTOM_TYPE_PREFIX } from "../../../data/lovelace_custom_cards";
 import type { HuiErrorCard } from "../cards/hui-error-card";
@@ -44,11 +42,6 @@ interface CreateElementConfigTypes {
   "header-footer": {
     config: LovelaceHeaderFooterConfig;
     element: LovelaceHeaderFooter;
-    constructor: unknown;
-  };
-  layout: {
-    config: LovelaceViewConfig;
-    element: LovelaceLayoutElement;
     constructor: unknown;
   };
 }
