@@ -252,7 +252,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                               )}
                               <div class="daynight">
                                 ${item.daytime === undefined || item.daytime
-                                  ? ""
+                                  ? "Day"
                                   : "Night"}<br />
                               </div>
                             `
