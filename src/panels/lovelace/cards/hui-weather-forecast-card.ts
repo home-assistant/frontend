@@ -175,7 +175,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       if (hourly) {
         const dateFirst = new Date(forecast[0].datetime);
         const datelast = new Date(forecast[forecast.length - 1].datetime);
-        const dayDiff = datelast.getTime() - date0.getTime();
+        const dayDiff = datelast.getTime() - dateFirst.getTime();
 
         daynight = dayDiff > DAY_IN_MILLISECONDS;
       }
