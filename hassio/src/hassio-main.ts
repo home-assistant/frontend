@@ -28,14 +28,32 @@ export class HassioMain extends urlSyncMixin(ProvideHassLitMixin(LitElement)) {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
 
+    let themeName: string;
+    let options: Partial<HomeAssistant["selectedTheme"]> | undefined;
+
+    if (atLeastVersion(this.hass.config.version, 0, 114)) {
+      themeName =
+        this.hass!.selectedTheme?.theme ||
+        (this.hass.themes.darkMode && this.hass!.themes.default_dark_theme
+          ? this.hass!.themes.default_dark_theme!
+          : this.hass!.themes.default_theme);
+
+      options = this.hass!.selectedTheme;
+      if (themeName === "default" && options?.dark === undefined) {
+        options = {
+          ...this.hass!.selectedTheme,
+          dark: this.hass.themes.darkMode,
+        };
+      }
+    } else {
+      themeName = (this.hass.selectedTheme as unknown) as string;
+    }
+
     applyThemesOnElement(
       this.parentElement,
       this.hass.themes,
-      (atLeastVersion(this.hass.config.version, 0, 114)
-        ? this.hass.selectedTheme?.theme
-        : ((this.hass.selectedTheme as unknown) as string)) ||
-        this.hass.themes.default_theme,
-      this.hass.selectedTheme
+      themeName,
+      options
     );
 
     // Paulus - March 17, 2019
