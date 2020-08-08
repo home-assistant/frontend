@@ -177,7 +177,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         const datelast = new Date(forecast[forecast.length - 1].datetime);
         const dayDiff = datelast.getTime() - dateFirst.getTime();
 
-        daynight = dayDiff > DAY_IN_MILLISECONDS;
+        dayNight = dayDiff > DAY_IN_MILLISECONDS;
       }
     }
 
@@ -244,7 +244,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                   (item) => html`
                     <div>
                       <div>
-                        ${daynight
+                        ${dayNight
                           ? html`
                               ${new Date(item.datetime).toLocaleDateString(
                                 this.hass!.language,

@@ -239,7 +239,7 @@ export const getWeatherStateSVG = (
       : ""
   }
   ${
-    state === "partlycloudy" && nighttime
+    state === "partlycloudy" && nightTime
       ? svg`
           <path
             class="moon"
