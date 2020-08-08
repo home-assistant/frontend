@@ -91,7 +91,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
     const card: LovelaceCard = this.cards[0];
     card.isPanel = true;
 
-    if (!this.lovelace!.editMode) {
+    if (!this.editMode) {
       root.appendChild(card);
       return;
     }
