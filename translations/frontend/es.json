@@ -201,7 +201,7 @@
         },
         "climate": {
             "cool": "Frío",
-            "dry": "Seco",
+            "dry": "Deshumidificador",
             "fan_only": "Sólo ventilador",
             "heat": "Calor",
             "heat_cool": "Calor/Frío",

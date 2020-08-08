@@ -2475,7 +2475,7 @@
                 },
                 "menu": {
                     "close": "Close",
-                    "configure_ui": "Configure UI",
+                    "configure_ui": "Edit Dashboard",
                     "exit_edit_mode": "Exit UI edit mode",
                     "help": "Help",
                     "refresh": "Refresh",

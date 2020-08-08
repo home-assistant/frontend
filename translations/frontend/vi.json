@@ -918,7 +918,7 @@
                                 },
                                 "mqtt": {
                                     "label": "MQTT",
-                                    "payload": "Phụ tải (tùy chọn)",
+                                    "payload": "Nội dung (tùy chọn)",
                                     "topic": "Chủ đề"
                                 },
                                 "numeric_state": {
