@@ -211,7 +211,7 @@ export const weatherSVGStyles = css`
 
 export const getWeatherStateSVG = (
   state: string,
-  nighttime?: boolean
+  nightTime?: boolean
 ): SVGTemplateResult => {
   return svg`
   <svg
@@ -353,7 +353,7 @@ export const getWeatherStateSVG = (
 export const getWeatherStateIcon = (
   state: string,
   element: HTMLElement,
-  nighttime?: boolean
+  nightTime?: boolean
 ): TemplateResult | undefined => {
   const userDefinedIcon = getComputedStyle(element).getPropertyValue(
     `--weather-icon-${state}`
@@ -370,7 +370,7 @@ export const getWeatherStateIcon = (
   }
 
   if (weatherSVGs.has(state)) {
-    return html`${getWeatherStateSVG(state, nighttime)}`;
+    return html`${getWeatherStateSVG(state, nightTime)}`;
   }
 
   if (state in weatherIcons) {
