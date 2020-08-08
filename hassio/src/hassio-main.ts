@@ -38,13 +38,12 @@ export class HassioMain extends urlSyncMixin(ProvideHassLitMixin(LitElement)) {
           ? this.hass!.themes.default_dark_theme!
           : this.hass!.themes.default_theme);
 
+      options = this.hass!.selectedTheme;
       if (themeName === "default" && options?.dark === undefined) {
         options = {
           ...this.hass!.selectedTheme,
           dark: this.hass.themes.darkMode,
         };
-      } else {
-        options = this.hass!.selectedTheme;
       }
     } else {
       themeName = (this.hass.selectedTheme as unknown) as string;
