@@ -412,6 +412,8 @@ class HUIRoot extends LitElement {
         newSelectView = 0;
       } else if (viewPath === "hass-unused-entities") {
         newSelectView = "hass-unused-entities";
+      } else if (viewPath === "default_view") {
+        newSelectView = undefined;
       } else if (viewPath) {
         const selectedView = viewPath;
         const selectedViewInt = Number(selectedView);
@@ -612,12 +614,12 @@ class HUIRoot extends LitElement {
       Boolean(
         this._editMode ||
           view.visible === undefined ||
+          view.visible === true ||
           (Array.isArray(view.visible) &&
-            view.visible.some((e) => e.user === this.hass!.user!.id)) ||
-          view.visible === true
+            view.visible.some((e) => e.user === this.hass!.user!.id))
       );
     viewIndex =
-      viewIndex === undefined || viewIndex === 0
+      viewIndex === undefined
         ? this.config.views.findIndex(isVisible)
         : viewIndex;
 
