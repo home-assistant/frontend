@@ -91,7 +91,10 @@ export const handleAction = (
         return;
       }
       const [domain, service] = actionConfig.service.split(".", 2);
-      hass.callService(domain, service, actionConfig.service_data);
+      hass.callService(domain, service, {
+        entity_id: config.entity,
+        ...actionConfig.service_data,
+      });
       forwardHaptic("light");
       break;
     }
