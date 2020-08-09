@@ -75,6 +75,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         <onboarding-create-user
           .localize=${this.localize}
           .language=${this.language}
+          dir=${this.rtl ? "rtl" : "ltr"}
         ></onboarding-create-user>
       `;
     }
@@ -83,6 +84,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         <onboarding-core-config
           .hass=${this.hass}
           .onboardingLocalize=${this.localize}
+          dir=${this.rtl ? "rtl" : "ltr"}
         ></onboarding-core-config>
       `;
     }
@@ -91,6 +93,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         <onboarding-integrations
           .hass=${this.hass}
           .onboardingLocalize=${this.localize}
+          dir=${this.rtl ? "rtl" : "ltr"}
         ></onboarding-integrations>
       `;
     }
