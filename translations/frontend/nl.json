@@ -833,6 +833,13 @@
                             "name": "Actie",
                             "type_select": "Type actie",
                             "type": {
+                                "choose": {
+                                    "add_option": "Optie toevoegen",
+                                    "conditions": "Voorwaarden",
+                                    "label": "Kies",
+                                    "remove_option": "Verwijder optie",
+                                    "sequence": "Acties"
+                                },
                                 "condition": {
                                     "label": "Voorwaarde"
                                 },
@@ -2412,6 +2419,9 @@
                         "yaml_control": "Om de controle over te nemen in de YAML-modus, maak je een YAML-bestand met de naam die je hebt opgegeven in je configuratie voor dit dashboard, of de standaard 'ui-lovelace.yaml'.",
                         "yaml_mode": "Je gebruikt de YAML-modus, wat betekent dat je jouw Lovelace-configuratie niet vanuit de gebruikersinterface kunt wijzigen. Als je Lovelace vanuit de gebruikersinterface wilt wijzigen, verwijder dan 'mode: yaml' uit de Lovelace-configuratie in 'configuration.yaml'."
                     },
+                    "select_view": {
+                        "dashboard_label": "Dashboard"
+                    },
                     "suggest_card": {
                         "add": "Voeg toe aan de Lovelace gebruikersinterface",
                         "create_own": "Kies een andere kaart",
@@ -2729,10 +2739,15 @@
                     "header": "Verbinding automatisch verbreken"
                 },
                 "themes": {
+                    "dark_mode": {
+                        "dark": "Donker",
+                        "light": "Licht"
+                    },
                     "dropdown_label": "Thema",
                     "error_no_theme": "Geen thema's beschikbaar.",
                     "header": "Thema",
-                    "link_promo": "Meer informatie over thema's"
+                    "link_promo": "Meer informatie over thema's",
+                    "primary_color": "Primaire kleur"
                 },
                 "vibrate": {
                     "description": "Schakel trillingen op dit apparaat in of uit wanneer u apparaten bestuurt.",

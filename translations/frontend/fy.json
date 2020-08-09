@@ -1,1 +1,117 @@
-{}
+{
+    "panel": {
+        "config": "Konfiguraasje",
+        "history": "Skiednis",
+        "shopping_list": "Boadskiplist"
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "Út"
+            }
+        }
+    },
+    "state_badge": {
+        "person": {
+            "home": "Thús"
+        }
+    },
+    "state": {
+        "binary_sensor": {
+            "default": {
+                "on": "Oan"
+            },
+            "garage_door": {
+                "off": "Ticht",
+                "on": "Iepen"
+            },
+            "opening": {
+                "off": "Ticht"
+            },
+            "presence": {
+                "on": "Thús"
+            }
+        },
+        "calendar": {
+            "on": "Oan"
+        },
+        "cover": {
+            "open": "Iepen"
+        },
+        "default": {
+            "off": "Út",
+            "unavailable": "Net beskikber",
+            "unknown": "Ûnbekend"
+        },
+        "device_tracker": {
+            "not_home": "Fuort"
+        },
+        "fan": {
+            "on": "Oan"
+        },
+        "group": {
+            "home": "Thús",
+            "open": "Iepen",
+            "stopped": "Stoppe"
+        },
+        "light": {
+            "off": "Út"
+        },
+        "script": {
+            "off": "Út"
+        },
+        "sensor": {
+            "off": "Út",
+            "on": "Oan"
+        },
+        "switch": {
+            "on": "Oan"
+        },
+        "weather": {
+            "sunny": "Sinnich"
+        }
+    },
+    "ui": {
+        "dialogs": {
+            "zha_device_info": {
+                "zha_device_card": {
+                    "device_name_placeholder": "Feroarje apparaatnamme"
+                }
+            }
+        },
+        "panel": {
+            "config": {
+                "automation": {
+                    "editor": {
+                        "actions": {
+                            "type": {
+                                "choose": {
+                                    "add_option": "Opsje tafoegje"
+                                },
+                                "repeat": {
+                                    "sequence": "Aksjes"
+                                }
+                            }
+                        }
+                    }
+                },
+                "helpers": {
+                    "types": {
+                        "input_boolean": "Skeakelje",
+                        "input_number": "Nûmer"
+                    }
+                },
+                "info": {
+                    "description": "Ynformaasje oer dyn Home Assistant ynstallaasje"
+                },
+                "lovelace": {
+                    "resources": {
+                        "detail": {
+                            "warning_header": "Wês foarsichtich!"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
