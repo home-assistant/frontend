@@ -37,6 +37,24 @@ export class HaFormString extends LitElement implements HaFormElement {
     }
   }
 
+  protected firstUpdated(): void {
+    if (this.schema.name.includes("password")) {
+      const stepInput = document.createElement("input");
+      stepInput.setAttribute("type", "password");
+      stepInput.setAttribute("name", "password");
+      stepInput.setAttribute("autocomplete", "on");
+      stepInput.onkeyup = (ev) => this._externalValueChanged(ev, this);
+      document.documentElement.appendChild(stepInput);
+    } else if (this.schema.name.includes("username")) {
+      const stepInput = document.createElement("input");
+      stepInput.setAttribute("type", "text");
+      stepInput.setAttribute("name", "username");
+      stepInput.setAttribute("autocomplete", "on");
+      stepInput.onkeyup = (ev) => this._externalValueChanged(ev, this);
+      document.documentElement.appendChild(stepInput);
+    }
+  }
+
   protected render(): TemplateResult {
     return this.schema.name.includes("password")
       ? html`
@@ -81,9 +99,19 @@ export class HaFormString extends LitElement implements HaFormElement {
     if (this.data === value) {
       return;
     }
+
     fireEvent(this, "value-changed", {
       value,
     });
+  }
+
+  private _externalValueChanged(ev: Event, el): void {
+    const value = (ev.target as PaperInputElement).value;
+    if (this.data === value) {
+      return;
+    }
+
+    el.shadowRoot!.querySelector("paper-input").value = value;
   }
 
   private get _stringType(): string {
