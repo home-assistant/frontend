@@ -2475,7 +2475,7 @@
                 },
                 "menu": {
                     "close": "Cerrar",
-                    "configure_ui": "Configurar la interfaz de usuario",
+                    "configure_ui": "Editar panel de control",
                     "exit_edit_mode": "Salir del modo de edición de la interfaz de usuario",
                     "help": "Ayuda",
                     "refresh": "Actualizar",
