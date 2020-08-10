@@ -411,6 +411,12 @@ export class HuiDialogEditView extends LitElement {
           margin: 12px 16px;
           flex-wrap: wrap;
         }
+
+        @media all and (min-width: 600px) {
+          ha-dialog {
+            --mdc-dialog-min-width: 600px;
+          }
+        }
       `,
     ];
   }
