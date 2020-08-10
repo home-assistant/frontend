@@ -80,6 +80,8 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
   @internalProperty() private _setTemp?: number | number[];
 
+  @internalProperty() private _lastSetMode?: number;
+
   @query("ha-card") private _card?: HaCard;
 
   public getCardSize(): number {
@@ -120,7 +122,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
     const slider =
       stateObj.state === UNAVAILABLE
-        ? html` <round-slider disabled="true"></round-slider> `
+        ? html`<round-slider disabled="true"></round-slider>`
         : html`
             <round-slider
               .value=${targetTemp}
@@ -238,6 +240,28 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
             </div>
           </div>
           <div id="info">
+            <div class="step-icons">
+              <ha-icon-button
+                class="minus step-icon ${classMap({
+                  disabled: Array.isArray(this._setTemp) && !this._lastSetMode,
+                })}"
+                icon="hass:minus"
+                @action=${this._handleStepAction}
+                .actionHandler=${actionHandler()}
+                tempDiff="-1"
+                tabindex="0"
+              ></ha-icon-button
+              ><ha-icon-button
+                class="plus step-icon ${classMap({
+                  disabled: Array.isArray(this._setTemp) && !this._lastSetMode,
+                })}"
+                icon="hass:plus"
+                @action=${this._handleStepAction}
+                .actionHandler=${actionHandler()}
+                tabindex="0"
+                tempDiff="1"
+              ></ha-icon-button>
+            </div>
             <div id="modes">
               ${(stateObj.attributes.hvac_modes || [])
                 .concat()
@@ -357,12 +381,14 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     const stateObj = this.hass!.states[this._config!.entity] as ClimateEntity;
 
     if (e.detail.low) {
+      this._lastSetMode = 0;
       this.hass!.callService("climate", "set_temperature", {
         entity_id: this._config!.entity,
         target_temp_low: e.detail.low,
         target_temp_high: stateObj.attributes.target_temp_high,
       });
     } else if (e.detail.high) {
+      this._lastSetMode = 1;
       this.hass!.callService("climate", "set_temperature", {
         entity_id: this._config!.entity,
         target_temp_low: stateObj.attributes.target_temp_low,
@@ -382,9 +408,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     }
     return html`
       <ha-icon-button
-        class="${classMap({ "selected-icon": currentMode === mode })}"
-        .mode="${mode}"
-        .icon="${modeIcons[mode]}"
+        class=${classMap({ "selected-icon": currentMode === mode })}
+        .mode=${mode}
+        .icon=${modeIcons[mode]}
         @action=${this._handleAction}
         .actionHandler=${actionHandler()}
         tabindex="0"
@@ -403,6 +429,35 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       entity_id: this._config!.entity,
       hvac_mode: (e.currentTarget as any).mode,
     });
+  }
+
+  private _handleStepAction(e: MouseEvent): void {
+    const stateObj = this.hass!.states[this._config!.entity] as ClimateEntity;
+
+    if (!Array.isArray(this._setTemp!)) {
+      this.hass!.callService("climate", "set_temperature", {
+        entity_id: this._config!.entity,
+        temperature:
+          (this._setTemp! as number) +
+          (e.currentTarget as any).tempDiff * this._stepSize,
+      });
+    } else if (this._lastSetMode === 0) {
+      this.hass!.callService("climate", "set_temperature", {
+        entity_id: this._config!.entity,
+        target_temp_low:
+          this._setTemp![this._lastSetMode] +
+          (e.currentTarget as any).tempDiff * this._stepSize,
+        target_temp_high: stateObj.attributes.target_temp_high,
+      });
+    } else if (this._lastSetMode === 1) {
+      this.hass!.callService("climate", "set_temperature", {
+        entity_id: this._config!.entity,
+        target_temp_low: stateObj.attributes.target_temp_low,
+        target_temp_high:
+          this._setTemp![this._lastSetMode] +
+          (e.currentTarget as any).tempDiff * this._stepSize,
+      });
+    }
   }
 
   static get styles(): CSSResult {
@@ -533,11 +588,13 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       }
 
       #info {
-        display: flex-vertical;
+        display: flex;
+        flex-direction: column;
         justify-content: center;
+        align-items: center;
         text-align: center;
         padding: 16px;
-        margin-top: -60px;
+        margin-top: -55px;
         font-size: var(--name-font-size);
       }
 
@@ -553,6 +610,36 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
       text {
         fill: var(--primary-text-color);
+      }
+
+      .step-icons {
+        display: flex;
+        justify-content: space-around;
+        max-width: 250px;
+        min-width: 100px;
+        width: 100%;
+      }
+
+      .step-icon {
+        --mdc-icon-button-size: 32px;
+        --mdc-icon-size: 18px;
+        border-radius: 50%;
+        border: 1px solid;
+      }
+
+      .step-icon.disabled {
+        border-color: var(--disabled-text-color);
+        color: var(--disabled-text-color);
+      }
+
+      .minus {
+        border-color: var(--cool-color);
+        color: var(--cool-color);
+      }
+
+      .plus {
+        border-color: var(--heat-color);
+        color: var(--heat-color);
       }
     `;
   }
