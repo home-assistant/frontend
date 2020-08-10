@@ -1,6 +1,5 @@
 import "@material/mwc-button";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "../../../components/ha-circular-progress";
+import "@material/mwc-icon-button/mwc-icon-button";
 import {
   css,
   CSSResult,
@@ -9,25 +8,28 @@ import {
   LitElement,
   property,
   internalProperty,
-  query,
   TemplateResult,
 } from "lit-element";
+import { mdiHelpCircle } from "@mdi/js";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/dialog/ha-paper-dialog";
-import type { HaPaperDialog } from "../../../components/dialog/ha-paper-dialog";
-import "../../../components/ha-switch";
-import "../../../components/ha-formfield";
-import "../../../components/ha-yaml-editor";
-import type { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { SaveDialogParams } from "./show-save-config-dialog";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
+import type { HassDialog } from "../../../dialogs/make-dialog-manager";
+import "../../../components/ha-switch";
+import "../../../components/ha-formfield";
+import "../../../components/ha-yaml-editor";
+import "../../../components/ha-svg-icon";
+import "../../../components/ha-dialog";
+import "../../../components/ha-circular-progress";
 
 const EMPTY_CONFIG = { views: [] };
 
+const coreDocumentationURLBase = "https://www.home-assistant.io/lovelace/";
+
 @customElement("hui-dialog-save-config")
-export class HuiSaveConfig extends LitElement {
+export class HuiSaveConfig extends LitElement implements HassDialog {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @internalProperty() private _params?: SaveDialogParams;
@@ -36,18 +38,20 @@ export class HuiSaveConfig extends LitElement {
 
   @internalProperty() private _saving: boolean;
 
-  @query("ha-paper-dialog") private _dialog?: HaPaperDialog;
-
   public constructor() {
     super();
     this._saving = false;
   }
 
-  public async showDialog(params: SaveDialogParams): Promise<void> {
+  public showDialog(params: SaveDialogParams): void {
     this._params = params;
     this._emptyConfig = false;
-    await this.updateComplete;
-    this._dialog!.open();
+  }
+
+  public closeDialog(): boolean {
+    this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+    return true;
   }
 
   protected render(): TemplateResult {
@@ -55,15 +59,27 @@ export class HuiSaveConfig extends LitElement {
       return html``;
     }
     return html`
-      <ha-paper-dialog
-        with-backdrop
-        opened
-        @opened-changed=${this._openedChanged}
+      <ha-dialog
+        open
+        scrimClickAction
+        escapeKeyAction
+        @closed=${this._close}
+        .heading=${html`${this.hass!.localize(
+            "ui.panel.lovelace.editor.save_config.header"
+          )}<a
+            class="header_button"
+            href=${coreDocumentationURLBase}
+            title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
+            target="_blank"
+            rel="noreferrer"
+            dir=${computeRTLDirection(this.hass!)}
+          >
+            <mwc-icon-button>
+              <ha-svg-icon path=${mdiHelpCircle}></ha-svg-icon>
+            </mwc-icon-button>
+          </a>`}
       >
-        <h2>
-          ${this.hass!.localize("ui.panel.lovelace.editor.save_config.header")}
-        </h2>
-        <paper-dialog-scrollable>
+        <div>
           <p>
             ${this.hass!.localize("ui.panel.lovelace.editor.save_config.para")}
           </p>
@@ -105,55 +121,46 @@ export class HuiSaveConfig extends LitElement {
                 </p>
                 <ha-yaml-editor
                   .defaultValue=${this._params!.lovelace.config}
-                  @editor-refreshed=${this._editorRefreshed}
                 ></ha-yaml-editor>
               `}
-        </paper-dialog-scrollable>
-        <div class="paper-dialog-buttons">
-          ${this._params.mode === "storage"
-            ? html`
-                <mwc-button @click="${this._closeDialog}"
-                  >${this.hass!.localize(
-                    "ui.panel.lovelace.editor.save_config.cancel"
-                  )}
-                </mwc-button>
-                <mwc-button
-                  ?disabled="${this._saving}"
-                  @click="${this._saveConfig}"
-                >
-                  <ha-circular-progress
-                    ?active="${this._saving}"
-                    alt="Saving"
-                  ></ha-circular-progress>
-                  ${this.hass!.localize(
-                    "ui.panel.lovelace.editor.save_config.save"
-                  )}
-                </mwc-button>
-              `
-            : html`
-                <mwc-button @click=${this._closeDialog}
-                  >${this.hass!.localize(
-                    "ui.panel.lovelace.editor.save_config.close"
-                  )}
-                </mwc-button>
-              `}
         </div>
-      </ha-paper-dialog>
+        ${this._params.mode === "storage"
+          ? html`
+              <mwc-button slot="primaryAction" @click=${this.closeDialog}
+                >${this.hass!.localize(
+                  "ui.panel.lovelace.editor.save_config.cancel"
+                )}
+              </mwc-button>
+              <mwc-button
+                slot="primaryAction"
+                ?disabled=${this._saving}
+                @click=${this._saveConfig}
+              >
+                <ha-circular-progress
+                  ?active=${this._saving}
+                  alt="Saving"
+                ></ha-circular-progress>
+                ${this.hass!.localize(
+                  "ui.panel.lovelace.editor.save_config.save"
+                )}
+              </mwc-button>
+            `
+          : html`
+              <mwc-button slot="primaryAction" @click=${this.closeDialog}
+                >${this.hass!.localize(
+                  "ui.panel.lovelace.editor.save_config.close"
+                )}
+              </mwc-button>
+            `}
+      </ha-dialog>
     `;
   }
 
-  private _closeDialog(): void {
-    this._dialog!.close();
-  }
-
-  private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
-    if (!ev.detail.value) {
-      this._params = undefined;
+  private _close(ev?: Event) {
+    if (ev) {
+      ev.stopPropagation();
     }
-  }
-
-  private _editorRefreshed() {
-    fireEvent(this._dialog! as HTMLElement, "iron-resize");
+    this.closeDialog();
   }
 
   private _emptyConfigChanged(ev) {
@@ -172,7 +179,7 @@ export class HuiSaveConfig extends LitElement {
       );
       lovelace.setEditMode(true);
       this._saving = false;
-      this._closeDialog();
+      this.closeDialog();
     } catch (err) {
       alert(`Saving failed: ${err.message}`);
       this._saving = false;
