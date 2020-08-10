@@ -96,7 +96,7 @@
             "armed": "Etkin",
             "armed_away": "Etkin dışarıda",
             "armed_custom_bypass": "Özel alarm atlatması",
-            "armed_home": "Etkin evde",
+            "armed_home": "Evdeyim modu kuruldu",
             "armed_night": "Etkin gece",
             "arming": "Etkinleşiyor",
             "disarmed": "Etkisiz",
@@ -581,6 +581,7 @@
         },
         "dialogs": {
             "config_entry_system_options": {
+                "enable_new_entities_description": "Devre dışı bırakılırsa, {integration} için yeni keşfedilen varlıklar otomatik olarak Home Assistant'a eklenmez.",
                 "enable_new_entities_label": "Yeni eklenen varlıkları etkinleştir.",
                 "title": "{integration} için Sistem Seçenekleri",
                 "update": "Güncelle"
@@ -692,11 +693,14 @@
                 }
             },
             "mqtt_device_debug_info": {
+                "deserialize": "MQTT mesajlarını JSON olarak ayrıştırma yap",
                 "entities": "Varlıklar",
                 "no_entities": "Varlık yok",
                 "no_triggers": "Tetikleyici yok",
+                "payload_display": "Yük ekranı",
                 "recent_messages": "{n} , en son alınan mesaj (lar)",
                 "show_as_yaml": "YAML olarak göster",
+                "title": "{device} hata ayıklama bilgisi",
                 "triggers": "Tetikleyiciler"
             },
             "options_flow": {
@@ -726,6 +730,7 @@
                 "confirmations": {
                     "remove": "Cihazı kaldırmak istediğinize emin misiniz?"
                 },
+                "device_signature": "Zigbee cihaz imzası",
                 "last_seen": "Son görülen",
                 "manuf": "{manufacturer} tarafından",
                 "no_area": "Alan Yok",
@@ -733,7 +738,8 @@
                 "quirk": "Orijinal",
                 "services": {
                     "remove": "Bir cihazı Zigbee ağından kaldır.",
-                    "updateDeviceName": "Aygıt kayıt defterinde bu aygıt için özel bir ad ayarlayın."
+                    "updateDeviceName": "Aygıt kayıt defterinde bu aygıt için özel bir ad ayarlayın.",
+                    "zigbee_information": "Cihazın Zigbee bilgilerini görüntüleyin."
                 },
                 "unknown": "Bilinmeyen",
                 "zha_device_card": {
@@ -775,7 +781,7 @@
             },
             "config": {
                 "advanced_mode": {
-                    "hint_enable": "Eksik yapılandırma seçenekleri? Gelişmiş modunu etkinleştir",
+                    "hint_enable": "Yapılandırma seçenekleri eksik mi? Gelişmiş modu etkinleştirin",
                     "link_profile_page": "profil sayfanız"
                 },
                 "areas": {
@@ -821,6 +827,15 @@
                             "name": "Aksiyon",
                             "type_select": "Aksiyon türü",
                             "type": {
+                                "choose": {
+                                    "add_option": "Seçenek ekle",
+                                    "conditions": "Koşullar",
+                                    "default": "Varsayılan eylemler",
+                                    "label": "Seç",
+                                    "option": "Seçenek {number}",
+                                    "remove_option": "Seçeneği kaldır",
+                                    "sequence": "Aksiyonlar"
+                                },
                                 "condition": {
                                     "label": "Durum"
                                 },
@@ -839,6 +854,15 @@
                                     "event": "Olay:",
                                     "label": "Olayı Çalıştır",
                                     "service_data": "Hizmet verisi"
+                                },
+                                "repeat": {
+                                    "sequence": "Aksiyonlar",
+                                    "type": {
+                                        "until": {
+                                            "conditions": "Koşullara kadar",
+                                            "label": "Kadar"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "Sahneyi etkinleştir"
@@ -1220,7 +1244,7 @@
                                 "save_button": "Kaydet",
                                 "time_zone": "Saat dilimi",
                                 "unit_system": "Birim Sistemi",
-                                "unit_system_imperial": "ımperial",
+                                "unit_system_imperial": "Imperial",
                                 "unit_system_metric": "Metrik"
                             },
                             "header": "Yapılandırma ve sunucu kontrolü",
@@ -1465,7 +1489,7 @@
                     "note_about_website_reference": "Daha fazlası için",
                     "rename_dialog": "Bu yapılandırma girişinin adını düzenleyin",
                     "rename_input_label": "Varlık adı",
-                    "search": "Entegrasyonları ara"
+                    "search": "Entegrasyon ara"
                 },
                 "introduction": "Buradan bileşenlerinizi ve Home Assistant'ınızı yapılandırabilirsiniz. Herşeyi kullanıcı arayüzü ile ayarlamak henüz mümkün değil fakat üzerinde çalışıyoruz",
                 "logs": {
@@ -1568,6 +1592,18 @@
                     "subscribe_to": "Abone olunacak konu",
                     "title": "MQTT",
                     "topic": "konu"
+                },
+                "ozw": {
+                    "common": {
+                        "node_id": "Düğüm Kimliği",
+                        "ozw_instance": "OpenZWave Örneği",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "Düğüm Başarısız",
+                        "stage": "Sahne",
+                        "zwave_info": "Z-Wave Bilgisi"
+                    }
                 },
                 "person": {
                     "add_person": "Kişi ekle",
@@ -1752,6 +1788,7 @@
                 "zha": {
                     "add_device_page": {
                         "discovered_text": "Cihazlar keşfedildikten sonra burada görünecektir.",
+                        "discovery_text": "Keşfedilen cihazlar burada görünecektir. Cihaz (lar) ınız için talimatları izleyin ve cihazları eşleştirme moduna getirin.",
                         "header": "Zigbee Ev Otomasyonu - Cihaz Ekle",
                         "no_devices_found": "Hiçbir cihaz bulunamadı, eşleştirme modunda olduklarından emin olun ve keşfetme sırasında cihazı açık tutun.",
                         "pairing_mode": "Cihazlarınızın eşleme modunda olduğundan emin olun. Bunun nasıl yapılacağı konusunda cihazınızın talimatlarını kontrol edin.",
@@ -1916,6 +1953,7 @@
                         "set_protection": "Korumayı Ayarla"
                     },
                     "ozw_log": {
+                        "introduction": "Günlüğü görüntüleyin. 0 minimum (yükler tüm günlük) ve 1000 maksimum. Yük statik bir günlük gösterir ve kuyruk günlüğün son belirtilen satır sayısı ile otomatik güncelleştirme gösterir.",
                         "last_log_lines": "Son günlük satırı sayısı",
                         "load": "Yük",
                         "tail": "Kuyruk"
@@ -2278,6 +2316,9 @@
                         "para_migrate": "'Ayarları aktar' düğmesine bastığınız zaman Home Assistant tüm kartlarınıza ve görünümlerinize otomatik olarak kimlik atayabilir.",
                         "para_no_id": "Bu öğenin bir kimliği yok. Lütfen 'ui-lovelace.yaml' dosyasında bu elemente bir kimlik ekleyin."
                     },
+                    "move_card": {
+                        "header": "Kartı taşımak için bir görünüm seçin"
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "Lovelace kullanıcı arayüzü yapılandırmanızı kaldırırsanız, Lovelace kullanıcı arayüzü, görünümleriniz alanlarınız ve cihazlarınız otomatik olarak oluşturulacatır.",
                         "confirm_remove_config_title": "Lovelace UI yapılandırmanızı kaldırmak istediğinizden emin misiniz? Lovelace kullanıcı arayüzü görünümlerinizi alanlarınız ve cihazlarınızla otomatik olarak oluşturacağız.",
@@ -2302,6 +2343,10 @@
                         "para_sure": "Kullanıcı arayüzünüzü kontrol altına almak istediğinize emin misiniz?",
                         "save": "Kontrol altına al",
                         "yaml_mode": "Bu gösterge tablosu için YAML modunu kullanıyorsunuz. Bunun anlamı,  Lovelace yapılandırmanızı kullanıcı arayüzünden değiştiremezsiniz. Bu gösterge tablosunu kullanıcı arayüzünden yönetmek istiyorsanız, 'configuration: yaml' içindeki Lovelace yapılandırmanızdan 'mode: yaml' öğesini kaldırın."
+                    },
+                    "select_view": {
+                        "dashboard_label": "Gösterge Paneli",
+                        "header": "Bir görünüm seçin"
                     },
                     "suggest_card": {
                         "add": "Lovelace kullanıcı arayüzüne ekle",
@@ -2500,13 +2545,16 @@
             },
             "page-onboarding": {
                 "core-config": {
-                    "button_detect": "Tespit",
+                    "button_detect": "Algıla",
                     "finish": "Sonraki",
                     "intro": "Merhaba {name} , Home Assistant'a hoş geldin. Evini nasıl adlandırmak istersin?",
-                    "location_name_default": "Evde"
+                    "intro_location": "Nerede yaşadığınızı bilmek isteriz. Bu bilgiler,  güneşe dayalı bilgilerin görüntülenmesine ve otomasyonların kurulmasına yardımcı olacaktır. Bu veriler asla ağınızın dışında paylaşılmaz.",
+                    "intro_location_detect": "Harici bir hizmete tek seferlik talepte bulunarak bu bilgileri doldurmanıza yardımcı olabiliriz.",
+                    "location_name_default": "Evim"
                 },
                 "integration": {
                     "finish": "Bitir",
+                    "intro": "Cihazlar ve hizmetler, Home Asistant'ta entegrasyonlar olarak temsil edilir. Bunları şimdi kurabilir veya daha sonra yapılandırma ekranından yapabilirsiniz.",
                     "more_integrations": "Daha fazla"
                 },
                 "user": {
@@ -2564,6 +2612,7 @@
                     "create_failed": "Erişim anahtarı oluşturulamadı.",
                     "created_at": "{date} tarihinde oluşturuldu",
                     "delete_failed": "Erişim anahtarı silinemedi.",
+                    "description": "Komut dosyalarınızın Home Assistant örneğinizle etkileşime girmesine izin vermek için uzun ömürlü erişim jetonları oluşturun. Her bir jeton, oluşturulduktan sonra 10 yıl süreyle geçerli olacaktır. Aşağıdaki uzun ömürlü erişim jetonları şu anda aktif.",
                     "empty_state": "Henüz uzun ömürlü erişim anahtarınız yok.",
                     "header": "Uzun ömürlü erişim anahtarları",
                     "last_used": "En son {date} tarihinde {location} konumundan kullanıldı",
@@ -2583,7 +2632,7 @@
                     "confirm_disable": "{name} adlı öğeyi devre dışı bırakmak istediğinizden emin misiniz?",
                     "disable": "Devre dışı bırak",
                     "enable": "Etkinleştir",
-                    "header": "Çoklu-faktör Kimlik Doğrulama Modülleri"
+                    "header": "Çok Faktörlü Kimlik Doğrulama Modülleri"
                 },
                 "push_notifications": {
                     "description": "Bu cihaza bildirimler gönder",
@@ -2605,14 +2654,22 @@
                     "token_title": "{clientId} için yenileme anahtarı"
                 },
                 "suspend": {
-                    "description": "5 dakika boyunca gizlendikten sonra sunucu bağlantısı kapatılsın mı?",
+                    "description": "5 dakika boyunca aktif olmayınca sunucu ile bağlantı kapatılsın mı?",
                     "header": "Bağlantıyı otomatik olarak kapat"
                 },
                 "themes": {
+                    "accent_color": "Vurgu rengi",
+                    "dark_mode": {
+                        "auto": "Otomatik",
+                        "dark": "Karanlık",
+                        "light": "Işık"
+                    },
                     "dropdown_label": "Tema",
                     "error_no_theme": "Kullanılabilir tema yok.",
                     "header": "Tema",
-                    "link_promo": "Temalar hakkında bilgi edinin"
+                    "link_promo": "Temalar hakkında bilgi edinin",
+                    "primary_color": "Birincil renk",
+                    "reset": "Sıfırla"
                 },
                 "vibrate": {
                     "description": "Cihazları kontrol ederken bu cihazdaki titreşimi etkinleştirin veya devre dışı bırakın.",
