@@ -65,7 +65,7 @@ class HassioSupervisorInfo extends LitElement {
               <span slot="heading">
                 Share Diagnostics
               </span>
-              <span slot="description">
+              <div slot="description" class="diagnostics-description">
                 Share crash reports and diagnostic information.
                 <button
                   class="link"
@@ -73,7 +73,7 @@ class HassioSupervisorInfo extends LitElement {
                 >
                   Learn more
                 </button>
-              </span>
+              </div>
               <ha-switch
                 .checked=${this.supervisorInfo.diagnostics}
                 @change=${this._toggleDiagnostics}
@@ -153,6 +153,11 @@ class HassioSupervisorInfo extends LitElement {
         button.link {
           color: var(--primary-color);
         }
+        .diagnostics-description {
+          white-space: normal;
+          padding: 0;
+          color: var(--secondary-text-color);
+        }
       `,
     ];
   }
@@ -224,7 +229,7 @@ class HassioSupervisorInfo extends LitElement {
         accessible to the Home Assistant Core team and will not be shared with
         others.
         <br /><br />
-        The data does not include any private/sensetive information and you can
+        The data does not include any private/sensitive information and you can
         disable this in settings at any time you want.`,
     });
   }
