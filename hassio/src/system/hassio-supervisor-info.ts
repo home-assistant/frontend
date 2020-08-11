@@ -65,7 +65,7 @@ class HassioSupervisorInfo extends LitElement {
               <span slot="heading">
                 Share Diagnostics
               </span>
-              <span slot="description">
+              <div slot="description" class="description">
                 Share crash reports and diagnostic information.
                 <button
                   class="link"
@@ -73,7 +73,7 @@ class HassioSupervisorInfo extends LitElement {
                 >
                   Learn more
                 </button>
-              </span>
+              </div>
               <ha-switch
                 .checked=${this.supervisorInfo.diagnostics}
                 @change=${this._toggleDiagnostics}
@@ -152,6 +152,11 @@ class HassioSupervisorInfo extends LitElement {
         }
         button.link {
           color: var(--primary-color);
+        }
+        .description {
+          white-space: normal;
+          padding: 0;
+          color: var(--secondary-text-color);
         }
       `,
     ];
