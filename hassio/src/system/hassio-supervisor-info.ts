@@ -229,7 +229,7 @@ class HassioSupervisorInfo extends LitElement {
         accessible to the Home Assistant Core team and will not be shared with
         others.
         <br /><br />
-        The data does not include any private/sensetive information and you can
+        The data does not include any private/sensitive information and you can
         disable this in settings at any time you want.`,
     });
   }
