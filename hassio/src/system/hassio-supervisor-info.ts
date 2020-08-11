@@ -65,7 +65,7 @@ class HassioSupervisorInfo extends LitElement {
               <span slot="heading">
                 Share Diagnostics
               </span>
-              <div slot="description" class="description">
+              <div slot="description" class="diagnostics-description">
                 Share crash reports and diagnostic information.
                 <button
                   class="link"
@@ -153,7 +153,7 @@ class HassioSupervisorInfo extends LitElement {
         button.link {
           color: var(--primary-color);
         }
-        .description {
+        .diagnostics-description {
           white-space: normal;
           padding: 0;
           color: var(--secondary-text-color);
