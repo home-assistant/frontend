@@ -61,7 +61,6 @@ class MoreInfoLight extends LitElement {
       <div
         class="content ${classMap({
           "is-on": this.stateObj.state === "on",
-          "is-unavailable": this.stateObj.state === "unavailable",
         })}"
       >
         ${this.stateObj.state === "on"
