@@ -172,10 +172,11 @@ class MoreInfoLight extends LitElement {
   }
 
   private _effectChanged(ev: CustomEvent) {
-    const oldVal = this.stateObj!.attributes.effect;
     const newVal = ev.detail.value;
 
-    if (!newVal || oldVal === newVal) return;
+    if (!newVal || this.stateObj!.attributes.effect === newVal) {
+      return;
+    }
 
     this.hass.callService("light", "turn_on", {
       entity_id: this.stateObj!.entity_id,
@@ -186,7 +187,9 @@ class MoreInfoLight extends LitElement {
   private _brightnessSliderChanged(ev: CustomEvent) {
     const bri = parseInt((ev.target as any).value, 10);
 
-    if (isNaN(bri)) return;
+    if (isNaN(bri)) {
+      return;
+    }
 
     this.hass.callService("light", "turn_on", {
       entity_id: this.stateObj!.entity_id,
@@ -197,7 +200,9 @@ class MoreInfoLight extends LitElement {
   private _ctSliderChanged(ev: CustomEvent) {
     const ct = parseInt((ev.target as any).value, 10);
 
-    if (isNaN(ct)) return;
+    if (isNaN(ct)) {
+      return;
+    }
 
     this.hass.callService("light", "turn_on", {
       entity_id: this.stateObj!.entity_id,
@@ -208,7 +213,9 @@ class MoreInfoLight extends LitElement {
   private _wvSliderChanged(ev: CustomEvent) {
     const wv = parseInt((ev.target as any).value, 10);
 
-    if (isNaN(wv)) return;
+    if (isNaN(wv)) {
+      return;
+    }
 
     this.hass.callService("light", "turn_on", {
       entity_id: this.stateObj!.entity_id,
