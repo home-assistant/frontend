@@ -61,24 +61,26 @@ class HassioSupervisorInfo extends LitElement {
             </tbody>
           </table>
           <div class="options">
-            <ha-settings-row>
-              <span slot="heading">
-                Share Diagnostics
-              </span>
-              <div slot="description" class="diagnostics-description">
-                Share crash reports and diagnostic information.
-                <button
-                  class="link"
-                  @click=${this._diagnosticsInformationDialog}
-                >
-                  Learn more
-                </button>
-              </div>
-              <ha-switch
-                .checked=${this.supervisorInfo.diagnostics}
-                @change=${this._toggleDiagnostics}
-              ></ha-switch>
-            </ha-settings-row>
+            ${this.supervisorInfo?.healthy
+              ? html` <ha-settings-row>
+                  <span slot="heading">
+                    Share Diagnostics
+                  </span>
+                  <div slot="description" class="diagnostics-description">
+                    Share crash reports and diagnostic information.
+                    <button
+                      class="link"
+                      @click=${this._diagnosticsInformationDialog}
+                    >
+                      Learn more
+                    </button>
+                  </div>
+                  <ha-switch
+                    .checked=${this.supervisorInfo.diagnostics}
+                    @change=${this._toggleDiagnostics}
+                  ></ha-switch>
+                </ha-settings-row>`
+              : ""}
           </div>
           ${this._errors
             ? html` <div class="errors">Error: ${this._errors}</div> `
