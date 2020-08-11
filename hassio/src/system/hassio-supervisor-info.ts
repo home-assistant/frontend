@@ -12,6 +12,7 @@ import {
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-call-api-button";
 import "../../../src/components/ha-card";
+import { HassioHostInfo as HassioHostInfoType } from "../../../src/data/hassio/host";
 import {
   HassioSupervisorInfo as HassioSupervisorInfoType,
   setSupervisorOption,
@@ -32,6 +33,8 @@ class HassioSupervisorInfo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public supervisorInfo!: HassioSupervisorInfoType;
+
+  @property() public hostInfo!: HassioHostInfoType;
 
   @internalProperty() private _errors?: string;
 
@@ -80,10 +83,22 @@ class HassioSupervisorInfo extends LitElement {
                     @change=${this._toggleDiagnostics}
                   ></ha-switch>
                 </ha-settings-row>`
-              : ""}
+              : html`<div class="error">
+                  You are running an unsupported installation.
+                  <a
+                    href="https://github.com/home-assistant/architecture/blob/master/adr/${this.hostInfo.features.includes(
+                      "hassos"
+                    )
+                      ? "0015-home-assistant-os.md"
+                      : "0014-home-assistant-supervised.md"}"
+                    target="_blank"
+                    rel="noreferrer"
+                    >Learn More</a
+                  >
+                </div>`}
           </div>
           ${this._errors
-            ? html` <div class="errors">Error: ${this._errors}</div> `
+            ? html` <div class="error">Error: ${this._errors}</div> `
             : ""}
         </div>
         <div class="card-actions">
@@ -144,10 +159,6 @@ class HassioSupervisorInfo extends LitElement {
         }
         .info td:nth-child(2) {
           text-align: right;
-        }
-        .errors {
-          color: var(--error-color);
-          margin-top: 16px;
         }
         ha-settings-row {
           padding: 0;
