@@ -112,6 +112,7 @@
     "roboto-fontface": "^0.10.0",
     "superstruct": "^0.10.12",
     "unfetch": "^4.1.0",
+    "url-toolkit": "^2.2.0",
     "vue": "^2.6.11",
     "vue2-daterange-picker": "^0.5.1",
     "web-animations-js": "^2.3.2",

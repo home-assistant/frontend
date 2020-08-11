@@ -1,3 +1,5 @@
+import * as URLToolkit from 'url-toolkit';
+
 import {
   css,
   CSSResult,
@@ -21,6 +23,16 @@ import { CameraEntity, HomeAssistant } from "../types";
 
 type HLSModule = typeof import("hls.js");
 
+declare global {
+  interface Window {
+    androidExoPlayer?: {
+      playHLS(url: string);
+      stopHLS();
+      resize(left:number,top:number,width:number,height:number);
+    };
+  }
+}
+
 @customElement("ha-camera-stream")
 class HaCameraStream extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -36,6 +48,10 @@ class HaCameraStream extends LitElement {
   @internalProperty() private _forceMJPEG: string | undefined = undefined;
 
   private _hlsPolyfillInstance?: Hls;
+
+  private _useExoPlayer(): boolean {return typeof(window.androidExoPlayer) !== 'undefined';}
+  
+  private _resizeExoPlayerListener;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -127,20 +143,23 @@ class HaCameraStream extends LitElement {
 
   private async _startHls(): Promise<void> {
     // eslint-disable-next-line
-    const Hls = ((await import(
-      /* webpackChunkName: "hls.js" */ "hls.js"
-    )) as any).default as HLSModule;
-    let hlsSupported = Hls.isSupported();
+    var hls;
     const videoEl = this._videoEl;
+    if (!this._useExoPlayer()) {
+      hls = ((await import(
+        /* webpackChunkName: "hls.js" */ "hls.js"
+      )) as any).default as HLSModule;
+      let hlsSupported = hls.isSupported();
 
-    if (!hlsSupported) {
-      hlsSupported =
-        videoEl.canPlayType("application/vnd.apple.mpegurl") !== "";
-    }
+      if (!hlsSupported) {
+        hlsSupported =
+          videoEl.canPlayType("application/vnd.apple.mpegurl") !== "";
+      }
 
-    if (!hlsSupported) {
-      this._forceMJPEG = this.stateObj!.entity_id;
-      return;
+      if (!hlsSupported) {
+        this._forceMJPEG = this.stateObj!.entity_id;
+        return;
+      }
     }
 
     try {
@@ -149,8 +168,10 @@ class HaCameraStream extends LitElement {
         this.stateObj!.entity_id
       );
 
-      if (Hls.isSupported()) {
-        this._renderHLSPolyfill(videoEl, Hls, url);
+      if (this._useExoPlayer()){
+        this._renderHLSExoPlayer(url);
+      } else if (hls.isSupported()) {
+        this._renderHLSPolyfill(videoEl, hls, url);
       } else {
         this._renderHLSNative(videoEl, url);
       }
@@ -161,6 +182,19 @@ class HaCameraStream extends LitElement {
       console.error(err);
       this._forceMJPEG = this.stateObj!.entity_id;
     }
+  }
+
+  private async _renderHLSExoPlayer(url: string) {
+    this._resizeExoPlayerListener=() => this._resizeExoPlayer();
+    window.addEventListener('resize', this._resizeExoPlayerListener);
+    this._resizeExoPlayer();
+    this._videoEl.style.visibility = "hidden";
+    window.androidExoPlayer!.playHLS(URLToolkit.buildAbsoluteURL(window.location.href, url, {alwaysNormalize: true}));
+  }
+
+  private _resizeExoPlayer(){
+    const rect = this._videoEl.getBoundingClientRect();
+    window.androidExoPlayer!.resize(rect.left,rect.top,rect.right,rect.bottom)
   }
 
   private async _renderHLSNative(videoEl: HTMLVideoElement, url: string) {
@@ -198,6 +232,11 @@ class HaCameraStream extends LitElement {
     if (this._hlsPolyfillInstance) {
       this._hlsPolyfillInstance.destroy();
       this._hlsPolyfillInstance = undefined;
+    }
+    if (this._useExoPlayer()) {
+      window.removeEventListener('resize',this._resizeExoPlayerListener)
+      window.androidExoPlayer?.stopHLS()
+      this._videoEl.style.visibility = "hidden";
     }
   }
 
