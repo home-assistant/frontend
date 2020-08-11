@@ -9,6 +9,8 @@ import {
   internalProperty,
   TemplateResult,
 } from "lit-element";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+
 import "../../../src/components/buttons/ha-call-api-button";
 import { fetchHassioHardwareInfo } from "../../../src/data/hassio/hardware";
 import {
@@ -20,16 +22,21 @@ import {
   shutdownHost,
   updateOS,
 } from "../../../src/data/hassio/host";
+import { mdiDotsVertical } from "@mdi/js";
 import { HassioInfo } from "../../../src/data/hassio/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../src/dialogs/generic/show-dialog-box";
+import "../../../src/components/ha-settings-row";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
 import { hassioStyle } from "../resources/hassio-style";
+import "../../../src/components/ha-button-menu";
+import "@material/mwc-list/mwc-list-item";
+import "../../../src/components/ha-card";
 
 @customElement("hassio-host-info")
 class HassioHostInfo extends LitElement {
@@ -45,48 +52,60 @@ class HassioHostInfo extends LitElement {
 
   public render(): TemplateResult | void {
     return html`
-      <ha-card>
+      <ha-card header="Host System">
         <div class="card-content">
-          <h2>Host system</h2>
-          <table class="info">
-            <tbody>
-              <tr>
-                <td>Hostname</td>
-                <td>${this.hostInfo.hostname}</td>
-              </tr>
-              <tr>
-                <td>System</td>
-                <td>${this.hostInfo.operating_system}</td>
-              </tr>
-              ${!this.hostInfo.features.includes("hassos")
-                ? html`<tr>
-                    <td>Docker version</td>
-                    <td>${this.hassioInfo.docker}</td>
-                  </tr>`
-                : ""}
-              ${this.hostInfo.deployment
-                ? html`
-                    <tr>
-                      <td>Deployment</td>
-                      <td>${this.hostInfo.deployment}</td>
-                    </tr>
-                  `
-                : ""}
-            </tbody>
-          </table>
-          <mwc-button raised @click=${this._showHardware} class="info">
-            Hardware
-          </mwc-button>
           ${this.hostInfo.features.includes("hostname")
-            ? html`
+            ? html` <ha-settings-row>
+                <span slot="heading">
+                  Hostname
+                </span>
+                <span slot="description">
+                  ${this.hostInfo.hostname}
+                </span>
                 <mwc-button
-                  raised
+                  title="Change the hostname"
                   @click=${this._changeHostnameClicked}
-                  class="info"
                 >
-                  Change hostname
+                  Change
                 </mwc-button>
-              `
+              </ha-settings-row>`
+            : ""}
+          <ha-settings-row>
+            <span slot="heading">
+              System
+            </span>
+            <span slot="description">
+              ${this.hostInfo.operating_system}
+            </span>
+            ${this.hostInfo.version === this.hostInfo.version_latest
+              ? html`
+                  <mwc-button
+                    title="Update the host OS"
+                    @click=${this._updateOS}
+                    >Update</mwc-button
+                  >
+                `
+              : ""}
+          </ha-settings-row>
+          ${this.hostInfo.features.includes("hassos")
+            ? html` <ha-settings-row>
+                <span slot="heading">
+                  Docker version
+                </span>
+                <span slot="description">
+                  ${this.hassioInfo.docker}
+                </span>
+              </ha-settings-row>`
+            : ""}
+          ${this.hostInfo.deployment
+            ? html` <ha-settings-row>
+                <span slot="heading">
+                  Deployment
+                </span>
+                <span slot="description">
+                  ${this.hostInfo.deployment}
+                </span>
+              </ha-settings-row>`
             : ""}
           ${this._errors
             ? html` <div class="errors">Error: ${this._errors}</div> `
@@ -107,20 +126,29 @@ class HassioHostInfo extends LitElement {
                 >
               `
             : ""}
-          ${this.hostInfo.features.includes("hassos")
-            ? html`
-                <ha-call-api-button
+
+          <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
+            <mwc-icon-button
+              .title=${this.hass.localize("ui.common.menu")}
+              .label=${this.hass.localize("ui.common.overflow_menu")}
+              slot="trigger"
+            >
+              <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
+            </mwc-icon-button>
+            <mwc-list-item
+              title="Show a list of hardware
+            "
+              >Hardware
+            </mwc-list-item>
+            ${this.hostInfo.features.includes("hassos")
+              ? html` <mwc-list-item
                   class="warning"
-                  .hass=${this.hass}
-                  path="hassio/os/config/sync"
                   title="Load HassOS configs or updates from USB"
-                  >Import from USB</ha-call-api-button
                 >
-              `
-            : ""}
-          ${this.hostInfo.version !== this.hostInfo.version_latest
-            ? html` <mwc-button @click=${this._updateOS}>Update</mwc-button> `
-            : ""}
+                  Import from USB
+                </mwc-list-item>`
+              : ""}
+          </ha-button-menu>
         </div>
       </ha-card>
     `;
@@ -133,18 +161,16 @@ class HassioHostInfo extends LitElement {
       css`
         ha-card {
           height: 100%;
-          width: 100%;
+          justify-content: space-between;
+          flex-direction: column;
+          display: flex;
         }
-        .card-content {
-          color: var(--primary-text-color);
-          box-sizing: border-box;
-          height: calc(100% - 47px);
-        }
-        .info {
-          width: 100%;
-        }
-        .info td:nth-child(2) {
-          text-align: right;
+        .card-actions {
+          height: 48px;
+          border-top: none;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
         }
         .errors {
           color: var(--error-color);
@@ -153,11 +179,36 @@ class HassioHostInfo extends LitElement {
         mwc-button.info {
           max-width: calc(50% - 12px);
         }
-        table.info {
-          margin-bottom: 10px;
-        }
         .warning {
           --mdc-theme-primary: var(--error-color);
+        }
+        ha-settings-row {
+          padding: 8px 0;
+          width: 100%;
+          height: 32px;
+        }
+        ha-settings-row:first-child {
+          padding: 0px 0 8px;
+        }
+        ha-settings-row:last-child {
+          padding: 8px 0 0;
+        }
+        ha-button-menu {
+          color: var(--secondary-text-color);
+          --mdc-menu-min-width: 200px;
+        }
+        @media (min-width: 563px) {
+          paper-listbox {
+            max-height: 150px;
+            overflow: auto;
+          }
+        }
+        paper-item {
+          cursor: pointer;
+          min-height: 35px;
+        }
+        mwc-list-item ha-svg-icon {
+          color: var(--secondary-text-color);
         }
       `,
     ];
@@ -165,6 +216,17 @@ class HassioHostInfo extends LitElement {
 
   protected firstUpdated(): void {
     this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
+  }
+
+  private async _handleAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        await this._showHardware();
+        break;
+      case 1:
+        await this._importFromUSB();
+        break;
+    }
   }
 
   private _apiCalled(ev): void {
@@ -304,6 +366,19 @@ class HassioHostInfo extends LitElement {
           text: err.body.message,
         });
       }
+    }
+  }
+
+  private async _importFromUSB(): Promise<void> {
+    this._errors = undefined;
+    try {
+      await changeHostOptions(this.hass, { hostname });
+      this.hostInfo = await fetchHassioHostInfo(this.hass);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Failed to import from USB",
+        text: err.body?.message || err,
+      });
     }
   }
 }

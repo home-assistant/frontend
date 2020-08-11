@@ -142,7 +142,6 @@ class HassioSupervisorLog extends LitElement {
 
   private async _loadData(): Promise<void> {
     this._error = undefined;
-    this._content = undefined;
 
     try {
       this._content = await fetchHassioLogs(

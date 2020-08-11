@@ -37,49 +37,62 @@ class HassioSupervisorInfo extends LitElement {
 
   public render(): TemplateResult | void {
     return html`
-      <ha-card>
+      <ha-card header="Supervisor">
         <div class="card-content">
-          <h2>Supervisor</h2>
-          <table class="info">
-            <tbody>
-              <tr>
-                <td>Version</td>
-                <td>${this.supervisorInfo.version}</td>
-              </tr>
-              <tr>
-                <td>Latest version</td>
-                <td>${this.supervisorInfo.version_latest}</td>
-              </tr>
-              ${this.supervisorInfo.channel !== "stable"
-                ? html`
-                    <tr>
-                      <td>Channel</td>
-                      <td>${this.supervisorInfo.channel}</td>
-                    </tr>
-                  `
-                : ""}
-            </tbody>
-          </table>
-          <div class="options">
-            <ha-settings-row>
-              <span slot="heading">
-                Share Diagnostics
-              </span>
-              <div slot="description" class="diagnostics-description">
-                Share crash reports and diagnostic information.
-                <button
-                  class="link"
-                  @click=${this._diagnosticsInformationDialog}
-                >
-                  Learn more
-                </button>
-              </div>
-              <ha-switch
-                .checked=${this.supervisorInfo.diagnostics}
-                @change=${this._toggleDiagnostics}
-              ></ha-switch>
-            </ha-settings-row>
-          </div>
+          <ha-settings-row>
+            <span slot="heading">
+              Version
+            </span>
+            <span slot="description">
+              ${this.supervisorInfo.version}
+            </span>
+          </ha-settings-row>
+          <ha-settings-row>
+            <span slot="heading">
+              Latest Version
+            </span>
+            <span slot="description">
+              ${this.supervisorInfo.version_latest}
+            </span>
+            ${this.supervisorInfo.version === this.supervisorInfo.version_latest
+              ? html`
+                  <mwc-button
+                    title="Update the supervisor"
+                    @click=${() => console.log("")}
+                    >Update</mwc-button
+                  >
+                `
+              : ""}
+          </ha-settings-row>
+          ${this.supervisorInfo.channel !== "stable"
+            ? html`
+                <ha-settings-row>
+                  <span slot="heading">
+                    Channel
+                  </span>
+                  <span slot="description">
+                    ${this.supervisorInfo.channel}
+                  </span>
+                </ha-settings-row>
+              `
+            : ""}
+
+          <ha-settings-row>
+            <span slot="heading">
+              Share Diagnostics
+            </span>
+            <div slot="description" class="diagnostics-description">
+              Share crash reports and diagnostic information.
+              <button class="link" @click=${this._diagnosticsInformationDialog}>
+                Learn more
+              </button>
+            </div>
+            <ha-switch
+              .checked=${this.supervisorInfo.diagnostics}
+              @change=${this._toggleDiagnostics}
+            ></ha-switch>
+          </ha-settings-row>
+
           ${this._errors
             ? html` <div class="errors">Error: ${this._errors}</div> `
             : ""}
@@ -129,26 +142,31 @@ class HassioSupervisorInfo extends LitElement {
       css`
         ha-card {
           height: 100%;
-          width: 100%;
+          justify-content: space-between;
+          flex-direction: column;
+          display: flex;
         }
-        .card-content {
-          color: var(--primary-text-color);
-          box-sizing: border-box;
-          height: calc(100% - 47px);
-        }
-        .info,
-        .options {
-          width: 100%;
-        }
-        .info td:nth-child(2) {
-          text-align: right;
+        .card-actions {
+          height: 48px;
+          border-top: none;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
         }
         .errors {
           color: var(--error-color);
           margin-top: 16px;
         }
         ha-settings-row {
-          padding: 0;
+          padding: 8px 0;
+          width: 100%;
+          height: 32px;
+        }
+        ha-settings-row:first-child {
+          padding: 0px 0 8px;
+        }
+        ha-settings-row:last-child {
+          padding: 8px 0 0;
         }
         button.link {
           color: var(--primary-color);
