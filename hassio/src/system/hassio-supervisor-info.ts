@@ -61,7 +61,7 @@ class HassioSupervisorInfo extends LitElement {
             </tbody>
           </table>
           <div class="options">
-            ${this.supervisorInfo?.healthy
+            ${this.supervisorInfo?.supported
               ? html` <ha-settings-row>
                   <span slot="heading">
                     Share Diagnostics
