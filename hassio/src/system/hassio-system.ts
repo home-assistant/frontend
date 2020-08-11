@@ -91,6 +91,9 @@ class HassioSystem extends LitElement {
         hassio-supervisor-log {
           width: 100%;
         }
+        .card-group {
+          --card-group-min-width: 480px;
+        }
       `,
     ];
   }
