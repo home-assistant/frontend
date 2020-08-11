@@ -2475,7 +2475,7 @@
                 },
                 "menu": {
                     "close": "關閉",
-                    "configure_ui": "介面設定",
+                    "configure_ui": "編輯主面板",
                     "exit_edit_mode": "退出 UI 編輯模式",
                     "help": "說明",
                     "refresh": "更新",
