@@ -67,49 +67,40 @@ class MoreInfoLight extends LitElement {
           ? html`
               ${supportsFeature(this.stateObj!, SUPPORT_BRIGHTNESS)
                 ? html`
-                    <div>
-                      <ha-labeled-slider
-                        caption=${this.hass.localize(
-                          "ui.card.light.brightness"
-                        )}
-                        icon="hass:brightness-5"
-                        min="1"
-                        max="255"
-                        value=${this._brightnessSliderValue}
-                        @change=${this._brightnessSliderChanged}
-                      ></ha-labeled-slider>
-                    </div>
+                    <ha-labeled-slider
+                      caption=${this.hass.localize("ui.card.light.brightness")}
+                      icon="hass:brightness-5"
+                      min="1"
+                      max="255"
+                      value=${this._brightnessSliderValue}
+                      @change=${this._brightnessSliderChanged}
+                    ></ha-labeled-slider>
                   `
                 : ""}
               ${supportsFeature(this.stateObj, SUPPORT_COLOR_TEMP)
                 ? html`
-                    <div class="color_temp">
-                      <ha-labeled-slider
-                        caption=${this.hass.localize(
-                          "ui.card.light.color_temperature"
-                        )}
-                        icon="hass:thermometer"
-                        .min=${this.stateObj.attributes.min_mireds}
-                        .max=${this.stateObj.attributes.max_mireds}
-                        .value=${this._ctSliderValue}
-                        @change=${this._ctSliderChanged}
-                      ></ha-labeled-slider>
-                    </div>
+                    <ha-labeled-slider
+                      class="color_temp"
+                      caption=${this.hass.localize(
+                        "ui.card.light.color_temperature"
+                      )}
+                      icon="hass:thermometer"
+                      .min=${this.stateObj.attributes.min_mireds}
+                      .max=${this.stateObj.attributes.max_mireds}
+                      .value=${this._ctSliderValue}
+                      @change=${this._ctSliderChanged}
+                    ></ha-labeled-slider>
                   `
                 : ""}
               ${supportsFeature(this.stateObj, SUPPORT_WHITE_VALUE)
                 ? html`
-                    <div>
-                      <ha-labeled-slider
-                        caption=${this.hass.localize(
-                          "ui.card.light.white_value"
-                        )}
-                        icon="hass:file-word-box"
-                        max="255"
-                        .value=${this._wvSliderValue}
-                        @change=${this._wvSliderChanged}
-                      ></ha-labeled-slider>
-                    </div>
+                    <ha-labeled-slider
+                      caption=${this.hass.localize("ui.card.light.white_value")}
+                      icon="hass:file-word-box"
+                      max="255"
+                      .value=${this._wvSliderValue}
+                      @change=${this._wvSliderChanged}
+                    ></ha-labeled-slider>
                   `
                 : ""}
               ${supportsFeature(this.stateObj, SUPPORT_COLOR)
@@ -135,25 +126,23 @@ class MoreInfoLight extends LitElement {
               ${supportsFeature(this.stateObj, SUPPORT_EFFECT) &&
               this.stateObj!.attributes.effect_list?.length
                 ? html`
-                    <div>
-                      <ha-paper-dropdown-menu
-                        label=${this.hass.localize("ui.card.light.effect")}
-                      >
-                        <paper-listbox
-                          slot="dropdown-content"
-                          .selected=${this.stateObj.attributes.effect || ""}
-                          @iron-select=${this._effectChanged}
-                          attr-for-selected="item-name"
-                          >${(this.stateObj.attributes.effect_list || []).map(
-                            (effect: string) => html`
-                              <paper-item itemName=${effect}
-                                >${effect}</paper-item
-                              >
-                            `
-                          )}
-                        </paper-listbox>
-                      </ha-paper-dropdown-menu>
-                    </div>
+                    <ha-paper-dropdown-menu
+                      label=${this.hass.localize("ui.card.light.effect")}
+                    >
+                      <paper-listbox
+                        slot="dropdown-content"
+                        .selected=${this.stateObj.attributes.effect || ""}
+                        @iron-select=${this._effectChanged}
+                        attr-for-selected="item-name"
+                        >${(this.stateObj.attributes.effect_list || []).map(
+                          (effect: string) => html`
+                            <paper-item itemName=${effect}
+                              >${effect}</paper-item
+                            >
+                          `
+                        )}
+                      </paper-listbox>
+                    </ha-paper-dropdown-menu>
                   `
                 : ""}
             `
@@ -299,10 +288,6 @@ class MoreInfoLight extends LitElement {
 
       paper-item {
         cursor: pointer;
-      }
-
-      ha-paper-dropdown-menu {
-        width: 100%;
       }
     `;
   }
