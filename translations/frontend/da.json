@@ -2475,7 +2475,7 @@
                 },
                 "menu": {
                     "close": "Luk",
-                    "configure_ui": "Konfigurer brugerflade",
+                    "configure_ui": "Rediger betjeningspanel",
                     "exit_edit_mode": "Afslut brugerflade-redigeringstilstand",
                     "help": "Hjælp",
                     "refresh": "Opdater",

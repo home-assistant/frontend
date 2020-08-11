@@ -2475,7 +2475,7 @@
                 },
                 "menu": {
                     "close": "Lukk",
-                    "configure_ui": "Konfigurer brukergrensesnitt",
+                    "configure_ui": "Rediger brukergrensesnitt",
                     "exit_edit_mode": "Avslutt redigeringsmodus for brukergrensesnitt",
                     "help": "Hjelp",
                     "refresh": "Oppdater",

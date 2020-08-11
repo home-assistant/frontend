@@ -785,7 +785,7 @@
                     "link_profile_page": "profil sayfanız"
                 },
                 "areas": {
-                    "caption": "Alanları",
+                    "caption": "Alanlar",
                     "data_table": {
                         "area": "Alan",
                         "devices": "Cihazlar"
@@ -1192,7 +1192,9 @@
                         "email": "E-posta",
                         "email_error_msg": "Geçersiz e-posta",
                         "forgot_password": "Parolanızı mı unuttunuz?",
-                        "introduction2": "Bu hizmet ortağımız tarafından yürütülüyor",
+                        "introduction": "Home Assistant Cloud, evden uzaktayken örneğinize güvenli bir uzaktan bağlantı sağlar. Ayrıca diğer bulut hizmetlerine bağlanmanıza olanak tanır: Amazon Alexa ve Google Assistant.",
+                        "introduction2": "Bu hizmet ortağımız ",
+                        "introduction2a": "tarafından verilmektedir, Home Assistant ve Hass.io kurucuları tarafından kurulan bir şirket.",
                         "introduction3": "Home Assistant Cloud, bir aylık ücretsiz deneme sürümüne sahip bir abonelik hizmetidir. Ödeme bilgisi gerekmez.",
                         "learn_more_link": "Home Assistant Cloud hakkında daha fazla bilgi edin",
                         "password": "Parola",
@@ -1214,8 +1216,8 @@
                         "headline": "Ücretsiz denemenizi başlatın",
                         "information": "Home Assistant Cloud ile bir aylık ücretsiz denemenizi başlatmak için bir hesap oluşturun. Ödeme bilgisi gerekmez.",
                         "information2": "Deneme, aşağıdakiler de dahil olmak üzere Home Assistant Cloud'un tüm avantajlarına erişmenizi sağlayacaktır:",
-                        "information3": "Bu hizmet ortağımız tarafından yürütülüyor",
-                        "information3a": ", Home Assistant ve Hass.io'nun kurucuları tarafından kurulmuş bir şirkettir.",
+                        "information3": "Bu hizmet ortağımız ",
+                        "information3a": "tarafından verilmektedir, Home Assistant ve Hass.io kurucuları tarafından kurulan bir şirket.",
                         "information4": "Bir hesap kaydederek aşağıdaki şartlar ve koşulları kabul etmiş olursunuz.",
                         "link_privacy_policy": "Gizlilik Politikası",
                         "link_terms_conditions": "Şartlar ve koşullar",
@@ -1624,9 +1626,10 @@
                         "name": "Ad",
                         "name_error_msg": "Isim gereklidir",
                         "new_person": "Yeni kişi",
-                        "update": "Güncelleme"
+                        "no_device_tracker_available_intro": "Bir kişinin varlığını gösteren aygıtlarınız olduğunda, bunları buradaki bir kişiye atayabilirsiniz. Entegrasyonlar sayfasından bir varlık algılama entegrasyonu ekleyerek ilk cihazınızı ekleyebilirsiniz.",
+                        "update": "Güncelle"
                     },
-                    "introduction": "Burada Home Assistant ilgi her kişi tanımlayabilirsiniz.",
+                    "introduction": "Burada Home Assistant ile ilgili her kişiyi tanımlayabilirsiniz.",
                     "no_persons_created_yet": "Henüz herhangi bir kişi oluşturmadığın gibi görünüyor.",
                     "note_about_persons_configured_in_yaml": "Not: configuration.yaml aracılığıyla yapılandırılan kişiler UI aracılığıyla düzenlenemez."
                 },
@@ -1996,7 +1999,7 @@
                         "available_events": "Mevcut Etkinlikler",
                         "count_listeners": " ({count} dinleyiciler)",
                         "data": "Olay Verileri (YAML, isteğe bağlı)",
-                        "description": "Etkinlik otobüsünde bir etkinlik başlat.",
+                        "description": "Olay veri yolunda bir olay tetikleyin.",
                         "documentation": "Olaylar Dökümantasyonu.",
                         "fire_event": "Olayı Çalıştır",
                         "listen_to_events": "Olayları dinleyin",
@@ -2014,6 +2017,7 @@
                         "column_example": "Örnek",
                         "column_parameter": "Parametre",
                         "data": "Servis Verileri (YAML, isteğe bağlı)",
+                        "description": "Servisler geliştirici araçı, Home Assistant'taki mevcut tüm hizmetleri aramanızı sağlar.",
                         "fill_example_data": "Örnek Verileri Doldur",
                         "no_description": "Açıklama mevcut değil",
                         "no_parameters": "Bu servis parametre almaz.",
@@ -2137,6 +2141,7 @@
                         "entities": {
                             "description": "Varlıklar kartı en yaygın kart türüdür. Öğeleri listeler halinde gruplandırır.",
                             "name": "Varlıklar",
+                            "show_header_toggle": "Başlık Değiştirme Gösterilsin mi?",
                             "toggle": "Varlıklarageçiş."
                         },
                         "entity-filter": {
