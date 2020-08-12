@@ -433,29 +433,24 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
   private _handleStepAction(e: MouseEvent): void {
     const stateObj = this.hass!.states[this._config!.entity] as ClimateEntity;
+    const tempChange = (e.currentTarget as any).tempDiff * this._stepSize;
 
     if (!Array.isArray(this._setTemp!)) {
       this.hass!.callService("climate", "set_temperature", {
         entity_id: this._config!.entity,
-        temperature:
-          (this._setTemp! as number) +
-          (e.currentTarget as any).tempDiff * this._stepSize,
+        temperature: (this._setTemp! as number) + tempChange,
       });
     } else if (this._lastSetMode === 0) {
       this.hass!.callService("climate", "set_temperature", {
         entity_id: this._config!.entity,
-        target_temp_low:
-          this._setTemp![this._lastSetMode] +
-          (e.currentTarget as any).tempDiff * this._stepSize,
+        target_temp_low: this._setTemp![this._lastSetMode] + tempChange,
         target_temp_high: stateObj.attributes.target_temp_high,
       });
     } else if (this._lastSetMode === 1) {
       this.hass!.callService("climate", "set_temperature", {
         entity_id: this._config!.entity,
         target_temp_low: stateObj.attributes.target_temp_low,
-        target_temp_high:
-          this._setTemp![this._lastSetMode] +
-          (e.currentTarget as any).tempDiff * this._stepSize,
+        target_temp_high: this._setTemp![this._lastSetMode] + tempChange,
       });
     }
   }
