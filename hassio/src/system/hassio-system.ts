@@ -56,6 +56,7 @@ class HassioSystem extends LitElement {
           <div class="card-group">
             <hassio-supervisor-info
               .hass=${this.hass}
+              .hostInfo=${this.hostInfo}
               .supervisorInfo=${this.supervisorInfo}
             ></hassio-supervisor-info>
             <hassio-host-info
