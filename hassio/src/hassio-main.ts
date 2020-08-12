@@ -111,8 +111,6 @@ export class HassioMain extends urlSyncMixin(ProvideHassLitMixin(LitElement)) {
         this.hass.themes.default_theme;
     }
 
-    console.log(themeName);
-
     applyThemesOnElement(
       this.parentElement,
       this.hass.themes,
