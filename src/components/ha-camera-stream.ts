@@ -1,3 +1,5 @@
+import * as URLToolkit from 'url-toolkit';
+
 import {
   css,
   CSSResult,
@@ -12,6 +14,7 @@ import {
 import { fireEvent } from "../common/dom/fire_event";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { supportsFeature } from "../common/entity/supports-feature";
+import { getExternalConfig} from "../external_app/external_config";
 import {
   CAMERA_SUPPORT_STREAM,
   computeMJPEGStreamUrl,
@@ -36,6 +39,19 @@ class HaCameraStream extends LitElement {
   @internalProperty() private _forceMJPEG: string | undefined = undefined;
 
   private _hlsPolyfillInstance?: Hls;
+
+  private _useExoPlayer = false; 
+
+  private async _getUseExoPlayer(): Promise<boolean> {
+    if (this.hass!.auth.external) {
+      const externalConfig = await getExternalConfig(this.hass!.auth.external);
+      if (externalConfig && externalConfig.hasExoPlayer)
+        return true
+    }
+    return false
+  }
+  
+  private _resizeExoPlayerListener;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -127,20 +143,24 @@ class HaCameraStream extends LitElement {
 
   private async _startHls(): Promise<void> {
     // eslint-disable-next-line
-    const Hls = ((await import(
-      /* webpackChunkName: "hls.js" */ "hls.js"
-    )) as any).default as HLSModule;
-    let hlsSupported = Hls.isSupported();
+    var hls;
     const videoEl = this._videoEl;
+    this._useExoPlayer = await this._getUseExoPlayer()
+    if (!this._useExoPlayer) {
+      hls = ((await import(
+        /* webpackChunkName: "hls.js" */ "hls.js"
+      )) as any).default as HLSModule;
+      let hlsSupported = hls.isSupported();
 
-    if (!hlsSupported) {
-      hlsSupported =
-        videoEl.canPlayType("application/vnd.apple.mpegurl") !== "";
-    }
+      if (!hlsSupported) {
+        hlsSupported =
+          videoEl.canPlayType("application/vnd.apple.mpegurl") !== "";
+      }
 
-    if (!hlsSupported) {
-      this._forceMJPEG = this.stateObj!.entity_id;
-      return;
+      if (!hlsSupported) {
+        this._forceMJPEG = this.stateObj!.entity_id;
+        return;
+      }
     }
 
     try {
@@ -149,8 +169,10 @@ class HaCameraStream extends LitElement {
         this.stateObj!.entity_id
       );
 
-      if (Hls.isSupported()) {
-        this._renderHLSPolyfill(videoEl, Hls, url);
+      if (this._useExoPlayer){
+        this._renderHLSExoPlayer(url);
+      } else if (hls.isSupported()) {
+        this._renderHLSPolyfill(videoEl, hls, url);
       } else {
         this._renderHLSNative(videoEl, url);
       }
@@ -161,6 +183,24 @@ class HaCameraStream extends LitElement {
       console.error(err);
       this._forceMJPEG = this.stateObj!.entity_id;
     }
+  }
+
+  private async _renderHLSExoPlayer(url: string) {
+    this._resizeExoPlayerListener=() => this._resizeExoPlayer();
+    window.addEventListener('resize', this._resizeExoPlayerListener);
+    this._resizeExoPlayer();
+    this._videoEl.style.visibility = "hidden";
+    this.hass!.auth.external!.fireMessage({
+      type: "play_hls",
+      payload: URLToolkit.buildAbsoluteURL(window.location.href, url, {alwaysNormalize: true})});
+  }
+
+  private _resizeExoPlayer(){
+    const rect = this._videoEl.getBoundingClientRect();
+    this.hass!.auth.external!.fireMessage({
+      type: "resize_hls",
+      payload: {"left": rect.left, "top": rect.top, "right": rect.right, "bottom": rect.bottom}
+    })
   }
 
   private async _renderHLSNative(videoEl: HTMLVideoElement, url: string) {
@@ -194,10 +234,15 @@ class HaCameraStream extends LitElement {
     fireEvent(this, "iron-resize");
   }
 
-  private _destroyPolyfill(): void {
+  private async _destroyPolyfill(): Promise<void> {
     if (this._hlsPolyfillInstance) {
       this._hlsPolyfillInstance.destroy();
       this._hlsPolyfillInstance = undefined;
+    }
+    if (this._useExoPlayer) {
+      window.removeEventListener('resize',this._resizeExoPlayerListener)
+      this.hass!.auth.external!.fireMessage({type: "stop_hls"});
+      this._videoEl.style.visibility = "hidden";
     }
   }
 
