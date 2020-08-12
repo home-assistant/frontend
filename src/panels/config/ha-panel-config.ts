@@ -195,6 +195,13 @@ class HaPanelConfig extends HassRouterPage {
             /* webpackChunkName: "panel-config-automation" */ "./automation/ha-config-automation"
           ),
       },
+      tag: {
+        tag: "ha-config-tag",
+        load: () =>
+          import(
+            /* webpackChunkName: "panel-config-tag" */ "./tag/ha-config-tag"
+          ),
+      },
       cloud: {
         tag: "ha-config-cloud",
         load: () =>
