@@ -834,9 +834,12 @@
                             "type_select": "Tipo di azione",
                             "type": {
                                 "choose": {
+                                    "add_option": "Aggiungi opzione",
                                     "conditions": "Condizioni",
                                     "default": "Azione predefinita",
                                     "label": "Scegli",
+                                    "option": "Opzione {number}",
+                                    "remove_option": "Rimuovi opzione",
                                     "sequence": "Azioni"
                                 },
                                 "condition": {
@@ -857,6 +860,24 @@
                                     "event": "Evento:",
                                     "label": "Attiva Evento",
                                     "service_data": "Dati del servizio"
+                                },
+                                "repeat": {
+                                    "label": "Ripetere",
+                                    "sequence": "Azioni",
+                                    "type_select": "Tipo \"ripetizione\"",
+                                    "type": {
+                                        "count": {
+                                            "label": "Conteggio"
+                                        },
+                                        "until": {
+                                            "conditions": "Condizioni \"fino a\"",
+                                            "label": "Fino a"
+                                        },
+                                        "while": {
+                                            "conditions": "Condizioni \"mentre\"",
+                                            "label": "Mentre"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "Attivare la scena"
@@ -1624,6 +1645,18 @@
                     "subscribe_to": "Argomento a cui iscriversi",
                     "title": "MQTT",
                     "topic": "argomento"
+                },
+                "ozw": {
+                    "common": {
+                        "node_id": "ID del nodo",
+                        "ozw_instance": "Istanza OpenZWave",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "Nodo non riuscito",
+                        "stage": "Fase",
+                        "zwave_info": "Informazioni Z-Wave"
+                    }
                 },
                 "person": {
                     "add_person": "Aggiungi persona",
@@ -2393,6 +2426,9 @@
                         "para_migrate": "Home Assistant può aggiungere automaticamente gli ID a tutte le tue schede e viste in maniera automatica premendo il pulsante \"Esporta Configurazione\".",
                         "para_no_id": "Questo elemento non ha un ID. Aggiungi un ID a questo elemento in 'ui-lovelace.yaml'."
                     },
+                    "move_card": {
+                        "header": "Scegli una visualizzazione in cui spostare la scheda"
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "Genereremo automaticamente le tue viste dell'Interfaccia utente di Lovelace con le tue aree e dispositivi se rimuovi la tua configurazione dell'interfaccia utente di Lovelace.",
                         "confirm_remove_config_title": "Sei sicuro di voler rimuovere la tua configurazione dell'interfaccia utente di Lovelace? Genereremo automaticamente le tue viste Lovelace con le tue aree e dispositivi.",
@@ -2420,6 +2456,10 @@
                         "yaml_control": "Per assumere il controllo in modalità YAML, creare un file YAML con il nome specificato nella tua configurazione per questa plancia, o il predefinito 'ui-lovelace.yaml'.",
                         "yaml_mode": "Questa plancia sta utilizzando la modalità YAML, il che significa che non è possibile modificare la configurazione di Lovelace dall'Interfaccia Utente. Se volete gestire questa plancia dall'Interfaccia Utente, rimuovere 'mode: yaml' dalla configurazione di Lovelace in 'configuration.yaml'."
                     },
+                    "select_view": {
+                        "dashboard_label": "Plancia",
+                        "header": "Scegliere una visualizzazione"
+                    },
                     "suggest_card": {
                         "add": "Aggiungi all'interfaccia utente di Lovelace",
                         "create_own": "Scegliere una scheda diversa",
@@ -2435,7 +2475,7 @@
                 },
                 "menu": {
                     "close": "Chiudi",
-                    "configure_ui": "Configurare l'Interfaccia Utente",
+                    "configure_ui": "Modifica la Plancia",
                     "exit_edit_mode": "Esci dalla modalità di modifica dell'Interfaccia Utente",
                     "help": "Aiuto",
                     "refresh": "Aggiorna",
