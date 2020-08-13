@@ -354,7 +354,7 @@
             "climate": {
                 "aux_heat": "Aux-varme",
                 "away_mode": "Bortemodus",
-                "currently": "Akkuratt no",
+                "currently": "Akkurat no",
                 "fan_mode": "Viftemodus",
                 "on_off": "På / av",
                 "operation": "Operasjon",
@@ -953,7 +953,7 @@
                     "description": "Oversikt over alle kjende oppføringar.",
                     "picker": {
                         "header": "Oppføringsregisteret",
-                        "introduction": "Home Assistant har eit register over alle oppføringane den nokon gang har sett som kan unikt identifiserast. Kvar av desse oppføringane har ein eigen oppføringsidentifikasjon som er reservert for akkuratt denne oppføringa.",
+                        "introduction": "Home Assistant har eit register over alle oppføringane den nokon gang har sett som kan unikt identifiserast. Kvar av desse oppføringane har ein eigen oppføringsidentifikasjon som er reservert for akkurat denne oppføringa.",
                         "introduction2": "Bruk oppføringsregisteret til å skrive over namn, endre oppføringsidentifikasjonane eller fjerne oppføringar frå Home Assistant. Merk deg at å fjerne oppføringa i oppføringregisteret ikkje fjernar sjølve oppføringa. For å gjere dette, gå vidare inn på linken under og fjern oppføringa i integrasjonssida."
                     }
                 },
