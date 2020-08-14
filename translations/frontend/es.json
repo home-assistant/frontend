@@ -2088,7 +2088,7 @@
                         "description": "Disparar un evento en el bus de eventos.",
                         "documentation": "Documentación de eventos.",
                         "event_fired": "Evento {name} disparado",
-                        "fire_event": "Disparar evento",
+                        "fire_event": "Lanzar evento",
                         "listen_to_events": "Escuchar eventos",
                         "listening_to": "Escuchando",
                         "notification_event_fired": "¡Evento {tipe} disparado con éxito!",

@@ -985,7 +985,7 @@
                         "no_device": "Oppføringar utan einingar",
                         "no_devices": "Denne integrasjonen har ingen oppføringar",
                         "options": "Val",
-                        "rename": "Gi nytt namn",
+                        "rename": "Endre namn",
                         "restart_confirm": "Restart Home Assistant for å fjerne denne integrasjonen",
                         "system_options": "Systemval",
                         "unnamed_entry": "Oppføring utan namn"
