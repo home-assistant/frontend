@@ -47,25 +47,6 @@ class MoreInfoMediaPlayer extends LitElement {
 
   @query("#ttsInput") private _ttsInput?: HTMLInputElement;
 
-  static get properties() {
-    return {
-      ttsLoaded: {
-        type: Boolean,
-        computed: "computeTTSLoaded(hass)",
-      },
-
-      ttsMessage: {
-        type: String,
-        value: "",
-      },
-
-      rtl: {
-        type: String,
-        computed: "_computeRTLDirection(hass)",
-      },
-    };
-  }
-
   protected render(): TemplateResult {
     if (!this.stateObj) {
       return html``;
