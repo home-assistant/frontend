@@ -2475,7 +2475,7 @@
                 },
                 "menu": {
                     "close": "关闭",
-                    "configure_ui": "配置 UI",
+                    "configure_ui": "编辑仪表盘",
                     "exit_edit_mode": "退出 UI 编辑模式",
                     "help": "帮助",
                     "refresh": "刷新",

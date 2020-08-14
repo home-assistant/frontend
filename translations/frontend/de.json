@@ -1619,6 +1619,11 @@
                     "title": "MQTT",
                     "topic": "Topic"
                 },
+                "ozw": {
+                    "device_info": {
+                        "zwave_info": "Z-wave Infos"
+                    }
+                },
                 "person": {
                     "add_person": "Person hinzufügen",
                     "caption": "Personen",
