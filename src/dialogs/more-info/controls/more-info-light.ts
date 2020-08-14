@@ -134,7 +134,7 @@ class MoreInfoLight extends LitElement {
                         .selected=${this.stateObj.attributes.effect || ""}
                         @iron-select=${this._effectChanged}
                         attr-for-selected="item-name"
-                        >${(this.stateObj.attributes.effect_list || []).map(
+                        >${this.stateObj.attributes.effect_list.map(
                           (effect: string) => html`
                             <paper-item itemName=${effect}
                               >${effect}</paper-item
