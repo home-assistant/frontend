@@ -127,9 +127,11 @@ class LocationEditor extends LitElement {
   }
 
   private async _initMap(): Promise<void> {
+    const mql = matchMedia("(prefers-color-scheme: dark)");
+
     [this._leafletMap, this.Leaflet, this._tileLayer] = await setupLeafletMap(
       this._mapEl,
-      this.hass.themes?.darkMode,
+      this.hass.themes?.darkMode || mql.matches,
       Boolean(this.radius)
     );
     this._leafletMap.addEventListener(
