@@ -359,7 +359,7 @@
             },
             "automation": {
                 "last_triggered": "הפעלה אחרונה",
-                "trigger": "מפעיל"
+                "trigger": "הרץ"
             },
             "camera": {
                 "not_available": "התמונה אינה זמינה"
@@ -833,6 +833,15 @@
                             "name": "פעולה",
                             "type_select": "סוג פעולה",
                             "type": {
+                                "choose": {
+                                    "add_option": "הוסף אפשרות",
+                                    "conditions": "תנאים",
+                                    "default": "פעולות ברירת מחדל",
+                                    "label": "בחר",
+                                    "option": "אפשרות {number}",
+                                    "remove_option": "הסר אפשרות",
+                                    "sequence": "פעולות"
+                                },
                                 "condition": {
                                     "label": "תנאי"
                                 },
@@ -851,6 +860,24 @@
                                     "event": "ארוע",
                                     "label": "ירה אירוע",
                                     "service_data": "נתוני שירות"
+                                },
+                                "repeat": {
+                                    "label": "חזור",
+                                    "sequence": "פעולות",
+                                    "type_select": "סוג חזרה",
+                                    "type": {
+                                        "count": {
+                                            "label": "ספירה"
+                                        },
+                                        "until": {
+                                            "conditions": ")תנאי עד ש (Until",
+                                            "label": "עד ש"
+                                        },
+                                        "while": {
+                                            "conditions": ")תנאי כל עוד (While",
+                                            "label": "כל עוד"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "הפעל סצנה"
@@ -1618,6 +1645,18 @@
                     "subscribe_to": "נושא להירשם אליו",
                     "title": "MQTT",
                     "topic": "נושא"
+                },
+                "ozw": {
+                    "common": {
+                        "node_id": "מזהה רכיב",
+                        "ozw_instance": "מופע OpenZWave",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "הרכיב נכשל",
+                        "stage": "שלב",
+                        "zwave_info": "מידע Z-Wave"
+                    }
                 },
                 "person": {
                     "add_person": "הוסף אדם",
@@ -2387,6 +2426,9 @@
                         "para_migrate": "Home Assistant יכול להוסיף מזהה יחודי לכל הכרטיסיות והתצוגות שלך בצורה אוטומטית בכך שתלחץ על לחצן ״הגר הגדרה״.",
                         "para_no_id": "האלמנט הנוכחי לא מכיל מזהה יחודיי. בבקשה הוסף מזהה יחודי לאלמט זה בקובץ 'ui-lovelace.yaml'."
                     },
+                    "move_card": {
+                        "header": "בחר תצוגה שאליה להעביר את הכרטיס"
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "אנו ניצור אוטומטית את תצוגות ממשק המשתמש של Lovelace עם האזורים והמכשירים שלך אם תסיר את קונפיגורציית ממשק המשתמש שלך ב- Lovelace.",
                         "confirm_remove_config_title": "האם אתה בטוח שברצונך להסיר את תצורת ממשק המשתמש של Lovelace? אנו נייצר אוטומטית את תצוגות ממשק המשתמש שלך ב- Lovelace עם האזורים והמכשירים שלך.",
@@ -2413,6 +2455,10 @@
                         "yaml_config": "כדי לעזור לך להתחיל הנה התצורה הנוכחית של לוח מחוונים זה:",
                         "yaml_control": "כדי לקבל שליטה במצב YAML, צור קובץ YAML עם השם שציינת ב-config עבור לוח מחוונים זה, או ברירת המחדל  'ui-lovelace.yaml'.",
                         "yaml_mode": "אתה משתמש במצב YAML עבור לוח מחוונים זה ולכן אין באפשרותך לשנות את קונפיגורצית Lovelace מממשק המשתמש. אם ברצונך לנהל לוח מחוונים זה מממשק המשתמש, הסר 'mode: yaml' מתצורת Loverlace ב 'configuration.yaml.'."
+                    },
+                    "select_view": {
+                        "dashboard_label": "לוח בקרה",
+                        "header": "בחר תצוגה"
                     },
                     "suggest_card": {
                         "add": "הוסף לממשק המשתמש של Lovelace",
@@ -2731,10 +2777,18 @@
                     "header": "סגור חיבור באופן אוטומטי"
                 },
                 "themes": {
+                    "accent_color": "צבע הדגשה",
+                    "dark_mode": {
+                        "auto": "אוטומטי",
+                        "dark": "כהה",
+                        "light": "בהיר"
+                    },
                     "dropdown_label": "ערכת נושא",
                     "error_no_theme": "אין ערכות נושא זמינות.",
                     "header": "ערכת נושא",
-                    "link_promo": "למד אודות ערכות נושא"
+                    "link_promo": "למד אודות ערכות נושא",
+                    "primary_color": "בצע ראשי",
+                    "reset": "איפוס"
                 },
                 "vibrate": {
                     "description": "הפעל או בטל את הרטט במכשיר זה בעת שליטה בהתקנים.",
