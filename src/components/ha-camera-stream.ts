@@ -143,7 +143,7 @@ class HaCameraStream extends LitElement {
 
   private async _startHls(): Promise<void> {
     // eslint-disable-next-line
-    var hls;
+    let hls;
     const videoEl = this._videoEl;
     this._useExoPlayer = await this._getUseExoPlayer()
     if (!this._useExoPlayer) {
@@ -188,7 +188,9 @@ class HaCameraStream extends LitElement {
   private async _renderHLSExoPlayer(url: string) {
     this._resizeExoPlayerListener=() => this._resizeExoPlayer();
     window.addEventListener('resize', this._resizeExoPlayerListener);
-    this._resizeExoPlayer();
+    // https://github.com/typescript-eslint/typescript-eslint/issues/1642
+    // eslint-disable-next-line
+    setTimeout(this._resizeExoPlayerListener,200);
     this._videoEl.style.visibility = "hidden";
     this.hass!.auth.external!.fireMessage({
       type: "play_hls",
