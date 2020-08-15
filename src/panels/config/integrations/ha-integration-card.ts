@@ -65,6 +65,10 @@ const integrationsWithPanel = {
     buttonLocalizeKey: "ui.panel.config.zwave.button",
     path: "/config/zwave",
   },
+  dynalite: {
+    buttonLocalizeKey: "ui.panel.config.dynalite.button",
+    path: "/config/dynalite",
+  },
 };
 
 @customElement("ha-integration-card")

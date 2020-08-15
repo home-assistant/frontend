@@ -1721,6 +1721,18 @@
           "stop_listening": "Stop listening",
           "message_received": "Message {id} received on {topic} at {time}:"
         },
+        "dynalite": {
+          "button": "Configure",
+          "description_system": "System Settings",
+          "description_settings": "Dynalite Settings",
+          "name": "Name",
+          "publish": "Save",
+          "host": "Gateway IP",
+          "port": "Port",
+          "active": "Active Mode (advanced)",
+          "auto_discover": "Auto-discover new devices (only recommended during initial setup)",
+          "fade": "Default fade (seconds)"
+        },
         "ozw": {
           "button": "Configure",
           "common": {

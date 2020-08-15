@@ -357,6 +357,13 @@ class HaPanelConfig extends HassRouterPage {
         load: () =>
           import(
             /* webpackChunkName: "panel-config-ozw" */ "./integrations/integration-panels/ozw/ozw-config-router"
+		  ),
+	  },
+      dynalite: {
+        tag: "dynalite-config-panel",
+        load: () =>
+          import(
+            /* webpackChunkName: "panel-config-dynalite" */ "./integrations/integration-panels/dynalite/dynalite-config-panel"
           ),
       },
     },
