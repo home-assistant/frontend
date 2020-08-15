@@ -103,28 +103,40 @@ class HaPanelDevDynalite extends LitElement {
                 class="flex"
                 .label=${this.hass.localize("ui.panel.config.dynalite.port")}
                 name="port"
-                type="string"
+                type="number"
                 .value=${this._port}
                 @value-changed=${this._handleChange}
               >
             </div>
             <div class="card-content">
-              <paper-input
-                class="flex"
-                .label=${this.hass.localize("ui.panel.config.dynalite.active")}
-                name="active"
-                type="string"
-                .value=${this._active}
-                @value-changed=${this._handleChange}
-              >
+			  <ha-settings-row>
+				<span slot="heading"
+				  >${this.hass.localize("ui.panel.config.dynalite.active")}</span
+				>
+				<ha-paper-dropdown-menu
+				  label=${this.hass.localize("ui.panel.config.dynalite.active")}
+				  dynamic-align=""
+				>
+				  <paper-listbox
+					slot="dropdown-content"
+					.selected=${this._active}
+					name="active"
+					@iron-select=${this._handleChange}
+				  >
+					  <paper-item>Enabled</paper-item>
+					  <paper-item>Init Only</paper-item>
+					  <paper-item>Disabled</paper-item>
+				  </paper-listbox>
+				</ha-paper-dropdown-menu>
+			  </ha-settings-row>
             </div>
             <div class="card-content">
-			  <ha-settings-row .narrow=${this.narrow}>
+			  <ha-settings-row>
 				<span slot="heading">
 				  ${this.hass.localize("ui.panel.config.dynalite.auto_discover")}
 				</span>
 				<ha-switch
-						name="auto_discover"
+				  name="auto_discover"
 				  .checked=${this._auto_discover}
 				  @change=${this._handleChange}
 				></ha-switch>
@@ -135,7 +147,7 @@ class HaPanelDevDynalite extends LitElement {
                 class="flex"
                 .label=${this.hass.localize("ui.panel.config.dynalite.fade")}
                 name="fade"
-                type="string"
+                type="number"
                 .value=${this._fade}
                 @value-changed=${this._handleChange}
               >
@@ -151,20 +163,6 @@ class HaPanelDevDynalite extends LitElement {
         </div>
       </hass-subpage>
     `;
-  }
-
-  private _handleTopic(ev: CustomEvent) {
-    this.topic = ev.detail.value;
-    if (localStorage && this.inited) {
-      localStorage["panel-dev-dynalite-topic"] = this.topic;
-    }
-  }
-
-  private _handlePayload(ev: CustomEvent) {
-    this.payload = ev.detail.value;
-    if (localStorage && this.inited) {
-      localStorage["panel-dev-dynalite-payload"] = this.payload;
-    }
   }
 
   private _handleChange(ev: PolymerChangedEvent<string>) {
@@ -204,6 +202,11 @@ class HaPanelDevDynalite extends LitElement {
           -webkit-user-select: initial;
           -moz-user-select: initial;
         }
+        paper-input {
+          min-width: 75px;
+          flex-grow: 1;
+          margin: 0 4px;
+        }
 
         .content {
           padding: 24px 0 32px;
@@ -213,10 +216,6 @@ class HaPanelDevDynalite extends LitElement {
         }
         ha-card:first-child {
           margin-bottom: 16px;
-        }
-        mqtt-subscribe-card {
-          display: block;
-          margin: 16px auto;
         }
       `,
     ];
