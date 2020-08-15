@@ -46,9 +46,6 @@
       html {
         background-color: var(--primary-background-color);
       }
-      vaadin-combo-box-overlay {
-        --material-secondary-text-color: var(--primary-text-color);
-      }
       @media (prefers-color-scheme: dark) {
         html {
           background-color: var(--primary-background-color, #111111);
