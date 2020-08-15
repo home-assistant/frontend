@@ -23,6 +23,13 @@
       .header img {
         margin-right: 16px;
       }
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: #111111;
+          color: #ffffff;
+          --primary-text-color: #ffffff;
+        }
+      }
     </style>
   </head>
   <body>
