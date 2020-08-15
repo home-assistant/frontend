@@ -1726,12 +1726,18 @@
           "description_system": "System Settings",
           "description_settings": "Dynalite Settings",
           "name": "Name",
-          "publish": "Save",
+          "name_long": "Name of this Dynalite system",
           "host": "Gateway IP",
+          "host_long": "IP address of the Dynalite gateway",
           "port": "Port",
-          "active": "Active Mode (advanced)",
-          "auto_discover": "Auto-discover new devices (only recommended during initial setup)",
-          "fade": "Default fade (seconds)"
+          "port_long": "Port of the Dynalite gateway",
+          "active": "Active Mode",
+          "active_long": "Whether Dynalite should actively check status",
+          "auto_discover": "Auto-discover",
+          "auto_discover_long": "Auto-discover new devices from Dynalite network",
+          "fade": "Default Fade",
+          "fade_long": "Default fade in seconds",
+          "publish": "Save"
         },
         "ozw": {
           "button": "Configure",
