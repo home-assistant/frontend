@@ -1339,7 +1339,7 @@
           }
         },
         "devices": {
-          "add_prompt": "You can add one by clicking the + button above.",
+          "add_prompt": " have been added using this device yet. You can add one by clicking the + button above.",
           "caption": "Devices",
           "description": "Manage connected devices",
           "device_info": "Device info",
@@ -1351,7 +1351,6 @@
           "automation": {
             "automations": "Automations",
             "no_automations": "No automations",
-            "no_automations_device": "No automations have been added to this device yet.",
             "create": "Create automation with device",
             "triggers": {
               "caption": "Do something when..."
@@ -1367,13 +1366,11 @@
           "script": {
             "scripts": "Scripts",
             "no_scripts": "No scripts",
-            "no_scripts_device": "No scripts have been added to this device yet.",
             "create": "Create script with device"
           },
           "scene": {
             "scenes": "Scenes",
             "no_scenes": "No scenes",
-            "no_scenes_device": "No scenes have been added to this device yet.",
             "create": "Create scene with device"
           },
           "cant_edit": "You can only edit items that are created in the UI.",
