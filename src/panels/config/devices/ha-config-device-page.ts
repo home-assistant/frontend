@@ -88,6 +88,19 @@ export class HaConfigDevicePage extends LitElement {
         .map((entry) => entry.domain)
   );
 
+  private _entriesByDomain = memoizeOne(
+    (
+      device: DeviceRegistryEntry,
+      entries: ConfigEntry[]
+    ): Map<string, ConfigEntry> => {
+      return new Map(
+        entries
+          .filter((entry) => device.config_entries.includes(entry.entry_id))
+          .map((entry) => [entry.domain, entry])
+      );
+    }
+  );
+
   private _entities = memoizeOne(
     (
       deviceId: string,
@@ -149,6 +162,7 @@ export class HaConfigDevicePage extends LitElement {
       `;
     }
 
+    const entriesByDomain = this._entriesByDomain(device, this.entries);
     const integrations = this._integrations(device, this.entries);
     const entities = this._entities(this.deviceId, this.entities);
     const batteryEntity = this._batteryEntity(entities);
@@ -238,7 +252,11 @@ export class HaConfigDevicePage extends LitElement {
                 .devices=${this.devices}
                 .device=${device}
               >
-              ${this._renderIntegrationInfo(device, integrations)}
+              ${this._renderIntegrationInfo(
+                device,
+                integrations,
+                entriesByDomain
+              )}
               </ha-device-info-card>
 
             ${
@@ -485,7 +503,8 @@ export class HaConfigDevicePage extends LitElement {
 
   private _renderIntegrationInfo(
     device,
-    integrations: string[]
+    integrations: string[],
+    configEntries: Map<string, ConfigEntry>
   ): TemplateResult[] {
     const templates: TemplateResult[] = [];
     if (integrations.includes("mqtt")) {
@@ -522,6 +541,7 @@ export class HaConfigDevicePage extends LitElement {
           <ha-device-actions-zha
             .hass=${this.hass}
             .device=${device}
+            .configEntry=${configEntries.get("zha")}
           ></ha-device-actions-zha>
         </div>
       `);

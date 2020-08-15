@@ -21,12 +21,15 @@ import { navigate } from "../../../../../../common/navigate";
 import { showZHADeviceZigbeeInfoDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-device-zigbee-info";
 import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
 import { showZHAClusterDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-cluster";
+import { ConfigEntry } from "../../../../../../data/config_entries";
 
 @customElement("ha-device-actions-zha")
 export class HaDeviceActionsZha extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public device!: DeviceRegistryEntry;
+
+  @property() public configEntry!: ConfigEntry;
 
   @internalProperty() private _zhaDevice?: ZHADevice;
 
@@ -119,9 +122,18 @@ export class HaDeviceActionsZha extends LitElement {
       return;
     }
 
-    this.hass.callService("zha", "remove", {
-      ieee_address: this._zhaDevice!.ieee,
-    });
+    this.hass
+      .callService("zha", "remove", {
+        ieee_address: this._zhaDevice!.ieee,
+      })
+      .then(() => {
+        navigate(
+          this,
+          "/config/devices/dashboard?historyBack=1&config_entry=" +
+            this.configEntry.entry_id,
+          true
+        );
+      });
   }
 
   static get styles(): CSSResult[] {
