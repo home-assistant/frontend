@@ -30,7 +30,7 @@ class HaPanelDevDynalite extends LitElement {
 
   @property() public narrow!: boolean;
 
-  private entryData;
+  private _entryData;
 
   private _activeOptions = ["on", "init", "off"];
 
