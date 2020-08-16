@@ -197,7 +197,7 @@ class HaPanelDevDynalite extends LitElement {
       off: 2,
     };
     this._activeIndex = activeMap[this._entryData.active];
-    this._active = this._activeOptions[this._activeIndex].config;
+    this._active = this._activeOptions[this._activeIndex];
     this._auto_discover = this._entryData.autodiscover;
     this._poll_timer = this._entryData.polltimer;
   }
