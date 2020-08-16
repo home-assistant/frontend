@@ -47,6 +47,8 @@ class HaPanelDevDynalite extends LitElement {
 
   private _activeOptions = ["on", "init", "off"];
 
+  private _activeIndex = 0;
+
   protected render(): TemplateResult {
     return html`
       <ha-app-layout>
