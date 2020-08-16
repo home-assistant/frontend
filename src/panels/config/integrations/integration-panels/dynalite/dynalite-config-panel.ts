@@ -22,7 +22,6 @@ import "../../../../../components/ha-paper-dropdown-menu";
 import "../../../../../components/ha-switch";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
-import { getConfigEntries } from "../../../../../data/config_entries";
 
 @customElement("dynalite-config-panel")
 class HaPanelDevDynalite extends LitElement {
@@ -185,12 +184,12 @@ class HaPanelDevDynalite extends LitElement {
       type: "dynalite/get_entry",
       entry_id: configEntryId,
     });
-    this.entryData = response.data;
-    this._name = this.entryData.name;
-    this._host = this.entryData.host;
-    this._port = this.entryData.port;
-    if (this.entryData.default) {
-      this._fade = this.entryData.default.fade;
+    this._entryData = response.data;
+    this._name = this._entryData.name;
+    this._host = this._entryData.host;
+    this._port = this._entryData.port;
+    if (this._entryData.default) {
+      this._fade = this._entryData.default.fade;
     }
     const activeMap = {
       on: 0,
@@ -199,10 +198,10 @@ class HaPanelDevDynalite extends LitElement {
       false: 2,
       off: 2,
     };
-    this._activeIndex = activeMap[this.entryData.active];
+    this._activeIndex = activeMap[this._entryData.active];
     this._active = this._activeOptions[this._activeIndex].config;
-    this._auto_discover = this.entryData.autodiscover;
-    this._poll_timer = this.entryData.polltimer;
+    this._auto_discover = this._entryData.autodiscover;
+    this._poll_timer = this._entryData.polltimer;
   }
 
   private _getConfigEntry() {
@@ -230,19 +229,19 @@ class HaPanelDevDynalite extends LitElement {
     if (!this.hass) {
       return;
     }
-    this.entryData.name = this._name;
-    this.entryData.host = this._host;
-    this.entryData.port = this._port;
-    this.entryData.default.fade = this._fade;
-    this.entryData.active = this._active;
-    this.entryData.autodiscover = this._auto_discover;
-    this.entryData.polltimer = this._poll_timer;
+    this._entryData.name = this._name;
+    this._entryData.host = this._host;
+    this._entryData.port = this._port;
+    this._entryData.default.fade = this._fade;
+    this._entryData.active = this._active;
+    this._entryData.autodiscover = this._auto_discover;
+    this._entryData.polltimer = this._poll_timer;
     const configEntryId = this._getConfigEntry();
     if (!configEntryId) return;
     await this.hass.connection.sendMessagePromise({
       type: "dynalite/update_entry",
       entry_id: configEntryId,
-      entry_data: JSON.stringify(this.entryData),
+      entry_data: JSON.stringify(this._entryData),
     });
   }
 
