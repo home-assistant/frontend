@@ -29,10 +29,6 @@ class HaPanelDevDynalite extends LitElement {
 
   @property() public narrow!: boolean;
 
-  private _entryData;
-
-  private _activeOptions = ["on", "init", "off"];
-
   @internalProperty() private _name = "";
 
   @internalProperty() private _host = "";
@@ -46,6 +42,10 @@ class HaPanelDevDynalite extends LitElement {
   @internalProperty() private _auto_discover = "";
 
   @internalProperty() private _poll_timer = "";
+
+  private _entryData;
+
+  private _activeOptions = ["on", "init", "off"];
 
   protected render(): TemplateResult {
     return html`
@@ -173,10 +173,6 @@ class HaPanelDevDynalite extends LitElement {
     `;
   }
 
-  private localStr(item) {
-    return this.hass.localize("ui.panel.config.dynalite." + item);
-  }
-
   protected async firstUpdated() {
     const configEntryId = this._getConfigEntry();
     if (!configEntryId) return;
@@ -202,6 +198,10 @@ class HaPanelDevDynalite extends LitElement {
     this._active = this._activeOptions[this._activeIndex].config;
     this._auto_discover = this._entryData.autodiscover;
     this._poll_timer = this._entryData.polltimer;
+  }
+
+  private localStr(item) {
+    return this.hass.localize("ui.panel.config.dynalite." + item);
   }
 
   private _getConfigEntry() {
