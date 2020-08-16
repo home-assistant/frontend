@@ -182,7 +182,7 @@ class HaPanelDevDynalite extends LitElement {
       type: "dynalite/get_entry",
       entry_id: configEntryId,
     });
-    this._entryData = response.data;
+    this._entryData = (response as any).data;
     this._name = this._entryData.name;
     this._host = this._entryData.host;
     this._port = this._entryData.port;
