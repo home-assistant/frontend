@@ -32,7 +32,7 @@ class HaPanelDevDynalite extends LitElement {
 
   private entryData;
 
-  @internalProperty() _activeOptions: string[] = ["Enabled", "Off", "Disabled"];
+  private _activeOptions = ["on", "init", "off"];
 
   @internalProperty() private _name = "";
 
@@ -40,44 +40,15 @@ class HaPanelDevDynalite extends LitElement {
 
   @internalProperty() private _port = "";
 
+  @internalProperty() private _fade = "";
+
   @internalProperty() private _active = "";
 
   @internalProperty() private _auto_discover = "";
 
   @internalProperty() private _poll_timer = "";
 
-  @internalProperty() private _fade = "";
-
-  protected async firstUpdated() {
-    const searchParams = new URLSearchParams(window.location.search);
-    if (!searchParams.has("config_entry")) {
-      return;
-    }
-    const configEntryId = searchParams.get("config_entry") as string;
-    const response = await this.hass.connection.sendMessagePromise({
-      type: "dynalite/get_entry",
-      entry_id: configEntryId,
-    });
-    this.entryData = response.data;
-    console.error("Message success!", JSON.stringify(this.entryData));
-    this._name = this.entryData.name;
-    this._host = this.entryData.host;
-    this._port = this.entryData.port;
-    this._active = this.entryData.active;
-    this._auto_discover = this.entryData.autodiscover;
-    if (this.entryData.default) {
-      this._fade = this.entryData.default.fade;
-    }
-    console.log("XXX %s %s", this.entryData, this._name);
-    console.log("XXX %s %s", this.entryData.xxx, this._host);
-  }
-
-  private localStr(item) {
-    return this.hass.localize("ui.panel.config.dynalite." + item);
-  }
-
   protected render(): TemplateResult {
-    console.error("xxx %s", this._name);
     return html`
       <ha-app-layout>
         <app-header slot="header" fixed>
@@ -136,18 +107,34 @@ class HaPanelDevDynalite extends LitElement {
             </div>
             <div class="card-content">
 			  <ha-settings-row .narrow=${this.narrow}>
+				<span slot="heading">${this.localStr("fade")}</span>
+				<span slot="description">${this.localStr("fade_long")}</span>
+                <paper-input
+                  class="flex"
+                  .label=${this.localStr("fade")}
+                  name="fade"
+                  type="number"
+                  .value=${this._fade}
+                  @value-changed=${this._handleChange}
+                >
+			  </ha-settings-row>
+            </div>
+            <div class="card-content">
+			  <ha-settings-row .narrow=${this.narrow}>
 				<span slot="heading">${this.localStr("active")}</span>
 				<span slot="description">${this.localStr("active_long")}</span>
 				<ha-paper-dropdown-menu label=${this.localStr("active")} dynamic-align>
 				  <paper-listbox
 					slot="dropdown-content"
-					.selected=${this._active}
-					name="active"
-                    @iron-select=${this._handleThemeSelection}
+					selected=${this._activeIndex}
+                    @iron-select=${this._handleActiveSelection}
 				  >
-					<paper-item .abcdcba="1">Enabled</paper-item>
-					<paper-item .abcdcba="2">Init Only</paper-item>
-					<paper-item .abcdcba="3">Disabled</paper-item>
+					${this._activeOptions.map(
+            (option) =>
+              html`<paper-item .active_config=${option}
+                >${this.localStr("active_" + option)}</paper-item
+              >`
+          )}
 				  </paper-listbox>
 				</ha-paper-dropdown-menu>
 			  </ha-settings-row>
@@ -157,22 +144,21 @@ class HaPanelDevDynalite extends LitElement {
 				<span slot="heading">${this.localStr("auto_discover")}</span>
 				<span slot="description">${this.localStr("auto_discover_long")}</span>
 				<ha-switch
-				  name="auto_discover"
 				  .checked=${this._auto_discover}
-				  @change=${this._handleChange}
+				  @change=${this._handleAutoDiscoverChange}
 				></ha-switch>
 			  </ha-settings-row>
             </div>
             <div class="card-content">
 			  <ha-settings-row .narrow=${this.narrow}>
-				<span slot="heading">${this.localStr("fade")}</span>
-				<span slot="description">${this.localStr("fade_long")}</span>
+				<span slot="heading">${this.localStr("poll_timer")}</span>
+				<span slot="description">${this.localStr("poll_timer_long")}</span>
                 <paper-input
                   class="flex"
-                  .label=${this.localStr("fade")}
-                  name="fade"
+                  .label=${this.localStr("poll_timer")}
+                  name="poll_timer"
                   type="number"
-                  .value=${this._fade}
+                  .value=${this._poll_timer}
                   @value-changed=${this._handleChange}
                 >
 			  </ha-settings-row>
@@ -188,44 +174,75 @@ class HaPanelDevDynalite extends LitElement {
     `;
   }
 
+  private localStr(item) {
+    return this.hass.localize("ui.panel.config.dynalite." + item);
+  }
+
+  protected async firstUpdated() {
+    const configEntryId = this._getConfigEntry();
+    if (!configEntryId) return;
+    const response = await this.hass.connection.sendMessagePromise({
+      type: "dynalite/get_entry",
+      entry_id: configEntryId,
+    });
+    this.entryData = response.data;
+    this._name = this.entryData.name;
+    this._host = this.entryData.host;
+    this._port = this.entryData.port;
+    if (this.entryData.default) {
+      this._fade = this.entryData.default.fade;
+    }
+    const activeMap = {
+      on: 0,
+      true: 0,
+      init: 1,
+      false: 2,
+      off: 2,
+    };
+    this._activeIndex = activeMap[this.entryData.active];
+    this._active = this._activeOptions[this._activeIndex].config;
+    this._auto_discover = this.entryData.autodiscover;
+    this._poll_timer = this.entryData.polltimer;
+  }
+
+  private _getConfigEntry() {
+    const searchParams = new URLSearchParams(window.location.search);
+    if (!searchParams.has("config_entry")) {
+      return false;
+    }
+    return searchParams.get("config_entry") as string;
+  }
+
   private _handleChange(ev: PolymerChangedEvent<string>) {
     const target = ev.currentTarget as PaperInputElement;
     this[`_${target.name}`] = target.value;
-    console.log("XXX setting %s to %s", target.name, target.value);
   }
 
-  languageSelectionChanged(newVal) {
-    // Only fire event if language was changed. This prevents select updates when
-    // responding to hass changes.
-    console.log("XXX ZZZ %s", JSON.stringify(newVal));
-    if (newVal !== this.hass.language) {
-      this.fire("hass-language-select", { language: newVal });
-    }
+  private _handleActiveSelection(ev: CustomEvent) {
+    this._active = ev.detail.item.active_config;
   }
 
-  private _handleThemeSelection(ev: CustomEvent) {
-    console.log("XXX YYY event = %s", ev.detail.item);
-    return;
-    const theme = ev.detail.item.theme;
-    if (theme === "Backend-selected") {
-      if (this.hass.selectedTheme?.theme) {
-        fireEvent(this, "settheme", { theme: "" });
-      }
-      return;
-    }
-    fireEvent(this, "settheme", { theme });
+  private _handleAutoDiscoverChange(ev: CustomEvent) {
+    this._auto_discover = ev.target.checked;
   }
 
-  private _publish(): void {
-    console.log("XXX publish - name=%s", this._name);
-    console.log("XXX publish - active=%s", this._active);
+  private async _publish(): void {
     if (!this.hass) {
       return;
     }
-    return;
-    this.hass.callService("dynalite", "publish", {
-      topic: this.topic,
-      payload_template: this.payload,
+    this.entryData.name = this._name;
+    this.entryData.host = this._host;
+    this.entryData.port = this._port;
+    this.entryData.default.fade = this._fade;
+    this.entryData.active = this._active;
+    this.entryData.autodiscover = this._auto_discover;
+    this.entryData.polltimer = this._poll_timer;
+    const configEntryId = this._getConfigEntry();
+    if (!configEntryId) return;
+    await this.hass.connection.sendMessagePromise({
+      type: "dynalite/update_entry",
+      entry_id: configEntryId,
+      entry_data: JSON.stringify(this.entryData),
     });
   }
 
