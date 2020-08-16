@@ -214,7 +214,7 @@ class HaPanelDevDynalite extends LitElement {
     return searchParams.get("config_entry") as string;
   }
 
-  private _handleChange(ev: PolymerChangedEvent<string>) {
+  private _handleChange(ev: CustomEvent) {
     const target = ev.currentTarget as HTMLInputElement;
     this[`_${target.name}`] = target.value;
   }
