@@ -126,7 +126,7 @@ class HaPanelDevDynalite extends LitElement {
 				<ha-paper-dropdown-menu label=${this.localStr("active")} dynamic-align>
 				  <paper-listbox
 					slot="dropdown-content"
-					selected=${this._activeIndex}
+					.selected=${this._activeIndex}
                     @iron-select=${this._handleActiveSelection}
 				  >
 					${this._activeOptions.map(
