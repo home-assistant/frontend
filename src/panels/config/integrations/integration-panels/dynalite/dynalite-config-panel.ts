@@ -224,7 +224,7 @@ class HaPanelDevDynalite extends LitElement {
   }
 
   private _handleAutoDiscoverChange(ev: CustomEvent) {
-    this._auto_discover = ev.target.checked;
+    this._auto_discover = (ev.currentTarget as any).checked;
   }
 
   private async _publish(): void {
