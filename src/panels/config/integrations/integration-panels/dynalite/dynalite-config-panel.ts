@@ -227,7 +227,7 @@ class HaPanelDevDynalite extends LitElement {
     this._auto_discover = (ev.currentTarget as any).checked;
   }
 
-  private async _publish(): void {
+  private async _publish(): Promise<void> {
     if (!this.hass) {
       return;
     }
