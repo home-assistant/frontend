@@ -62,7 +62,7 @@ class HaPanelDevDynalite extends LitElement {
         </app-header>
 
         <div class="content">
-          <ha-card header="${this.localStr("description_system")}">
+          <ha-card .header=${this.localStr("description_system")}>
             <div class="card-content">
 			  <ha-settings-row .narrow=${this.narrow}>
 				<span slot="heading">${this.localStr("name")}</span>
