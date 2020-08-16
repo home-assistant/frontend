@@ -215,7 +215,7 @@ class HaPanelDevDynalite extends LitElement {
   }
 
   private _handleChange(ev: PolymerChangedEvent<string>) {
-    const target = ev.currentTarget as PaperInputElement;
+    const target = ev.currentTarget as HTMLInputElement;
     this[`_${target.name}`] = target.value;
   }
 
