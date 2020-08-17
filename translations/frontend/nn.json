@@ -397,6 +397,8 @@
                 "activate": "Aktiver"
             },
             "script": {
+                "cancel": "Avbryt",
+                "cancel_multiple": "Avbryt {number}",
                 "execute": "Utfør"
             },
             "service": {
@@ -463,7 +465,9 @@
             "back": "Tilbake",
             "cancel": "Avbryt",
             "delete": "Slett",
+            "error_required": "Påkrevd",
             "loading": "Lastar",
+            "menu": "Meny",
             "next": "Neste",
             "previous": "Førre",
             "refresh": "Oppdater ",
@@ -484,6 +488,9 @@
                 "area": "Område",
                 "clear": "Klar ",
                 "show_areas": "Vis områda"
+            },
+            "data-table": {
+                "no-data": "Ingen data"
             },
             "device-picker": {
                 "device": "Enhet",
@@ -600,11 +607,12 @@
                 "services": {
                     "reconfigure": "Konfigurer ZHA-eininga (heal device) på nytt. Bruk dette om du har problem med eininga. Dersom eininga går på batteri, ver sikker på at den er vaken og tek i mot kommandar når du brukar denne tenesta.",
                     "remove": "Fjern eining frå Zigbee-nettverket",
-                    "updateDeviceName": "Gje oppføringa eit eige namn i oppføringsregisteret. "
+                    "updateDeviceName": "Gje eininga eit tilpassa namn i einingsregisteret. "
                 },
+                "unknown": "Ukjent",
                 "zha_device_card": {
                     "area_picker_label": "Område",
-                    "device_name_placeholder": "Gitt brukarnamn",
+                    "device_name_placeholder": "Endre navn på eining",
                     "update_name_button": "Oppdater namn"
                 }
             }
@@ -692,6 +700,9 @@
                                     "label": "Køyr hending",
                                     "service_data": "Tenestedata"
                                 },
+                                "repeat": {
+                                    "label": "Gjenta"
+                                },
                                 "service": {
                                     "label": "Hent teneste",
                                     "service_data": "Tenestedata"
@@ -718,6 +729,10 @@
                             "type": {
                                 "device": {
                                     "condition": "Føresetnad ",
+                                    "extra_fields": {
+                                        "above": "Over",
+                                        "below": "Under"
+                                    },
                                     "label": "Eining"
                                 },
                                 "not": {
@@ -764,6 +779,11 @@
                         "introduction": "Bruk automasjonar til å gi liv til heimen din",
                         "load_error_not_editable": "Berre automasjonar i automations.yaml kan redigerast.",
                         "load_error_unknown": "Feil ved lasting av automasjon ({err_no}).",
+                        "modes": {
+                            "restart": "Omstart"
+                        },
+                        "move_down": "Flytt ned",
+                        "move_up": "Flytt opp",
                         "save": "Lagre",
                         "triggers": {
                             "add": "Legg til utløysar",
@@ -777,6 +797,10 @@
                             "type_select": "Utløysartype",
                             "type": {
                                 "device": {
+                                    "extra_fields": {
+                                        "above": "Over",
+                                        "below": "Under"
+                                    },
                                     "label": "Oppføring",
                                     "trigger": "Utløysar "
                                 },
@@ -873,7 +897,19 @@
                     "caption": "Home Assistant Cloud",
                     "description_features": "Kontroller når du ikkje er heime og integrer med Alexa og Google Assistant",
                     "description_login": "Logga inn som {email}",
-                    "description_not_login": "Ikkje logga inn"
+                    "description_not_login": "Ikkje logga inn",
+                    "forgot_password": {
+                        "email": "E-post",
+                        "subtitle": "Gløymt passordet ditt",
+                        "title": "Gløymt passord"
+                    },
+                    "login": {
+                        "email": "E-post",
+                        "forgot_password": "gløymt passordet?",
+                        "password": "Passord",
+                        "password_error_msg": "Passord er minst 8 teikn",
+                        "sign_in": "Logg inn"
+                    }
                 },
                 "core": {
                     "caption": "Generelt",
@@ -963,6 +999,7 @@
                 },
                 "header": "Konfigurer Home Assistant",
                 "info": {
+                    "caption": "Info",
                     "documentation": "Dokumentasjon ",
                     "integrations": "Integrasjonar",
                     "issues": "Problem ",
@@ -1015,6 +1052,7 @@
                 },
                 "introduction": "Her er det mogleg å konfigurere dine komponenter og Home Assistant. Ikkje alt er mogleg å konfigurere frå brukarsnittet endå, men vi jobbar med saka.",
                 "logs": {
+                    "caption": "Loggar",
                     "title": "Loggar"
                 },
                 "mqtt": {
@@ -1031,6 +1069,9 @@
                     }
                 },
                 "scene": {
+                    "editor": {
+                        "icon": "Ikon"
+                    },
                     "picker": {
                         "headers": {
                             "name": "Namn"
@@ -1040,6 +1081,14 @@
                 "script": {
                     "caption": "Skript",
                     "description": "Lag og rediger skript",
+                    "editor": {
+                        "icon": "Ikon",
+                        "id_already_exists": "Denne ID-en finnast allereie",
+                        "modes": {
+                            "label": "Modus",
+                            "restart": "Omstart"
+                        }
+                    },
                     "picker": {
                         "headers": {
                             "name": "Namn"
@@ -1307,6 +1356,10 @@
                             "state_equal": "Tilstanden er lik",
                             "state_not_equal": "Tilstanden er ikkje lik"
                         },
+                        "config": {
+                            "optional": "Valfri",
+                            "required": "Påkrevd"
+                        },
                         "entities": {
                             "description": "Oppføringskortet er den vanlegaste korttypen. Den kan gruppere ting inn i lister."
                         },
@@ -1317,13 +1370,20 @@
                             "name": "Oppføring "
                         },
                         "gauge": {
-                            "description": "Målarkortet er eit enkelt kort som let deg visuelt sjå sensordata."
+                            "description": "Målarkortet er eit enkelt kort som let deg visuelt sjå sensordata.",
+                            "severity": {
+                                "green": "Grøn",
+                                "red": "Rød"
+                            }
                         },
                         "generic": {
                             "attribute": "Attributt",
                             "double_tap_action": "Dobbeltrykk-handling",
+                            "icon": "Ikon",
                             "manual": "Manuelt",
                             "manual_description": "Vil du legge til eit tilpassa kort eller vil du berre skrive yaml manuelt?",
+                            "maximum": "Maksimum",
+                            "minimum": "Minimum",
                             "name": "Namn",
                             "secondary_info_attribute": "Sekundærinfo-attributt",
                             "state": "Tilstand"
@@ -1361,12 +1421,14 @@
                     },
                     "edit_card": {
                         "add": "Legg til kort",
+                        "confirm_cancel": "Er du sikker på at du vil avbryte?",
                         "delete": "Slett",
                         "edit": "Redigere",
                         "header": "Kortkonfigurasjon",
                         "move": "Rørsle",
                         "pick_card": "Vel kortet du vil legge til.",
-                        "toggle_editor": "Bytt redigeringsverktøy"
+                        "toggle_editor": "Bytt redigeringsverktøy",
+                        "unsaved_changes": "Du har endringar som ikkje er lagra"
                     },
                     "edit_lovelace": {
                         "explanation": "Denne tittelen vert vist over alle visningane dine i Lovelace",
@@ -1687,6 +1749,9 @@
                     "error_no_theme": "Ingen tema tilgjengeleg",
                     "header": "Tema",
                     "link_promo": "Lær om temaer"
+                },
+                "vibrate": {
+                    "header": "Vibrer"
                 }
             },
             "shopping-list": {
