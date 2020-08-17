@@ -359,14 +359,8 @@ class MoreInfoMediaPlayer extends LitElement {
 
     const services = this.hass.services.tts;
     const serviceKeys = Object.keys(services).sort();
-    let service: string | undefined;
 
-    for (let i = 0; i < serviceKeys.length; i++) {
-      if (serviceKeys[i].indexOf("_say") !== -1) {
-        service = serviceKeys[i];
-        break;
-      }
-    }
+    const service = serviceKeys.find((key) => key.indexOf("_say") !== -1);
 
     if (!service) {
       return;
