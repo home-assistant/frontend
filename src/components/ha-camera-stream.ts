@@ -42,14 +42,6 @@ class HaCameraStream extends LitElement {
 
   private _useExoPlayer = false; 
 
-  private async _getUseExoPlayer(): Promise<boolean> {
-    if (!this.hass!.auth.external) {
-      return false;
-    }
-    const externalConfig = await getExternalConfig(this.hass!.auth.external);
-    return externalConfig && externalConfig.hasExoPlayer;
-  }
-  
   private _resizeExoPlayerListener;
 
   public connectedCallback() {
@@ -140,6 +132,14 @@ class HaCameraStream extends LitElement {
     return this.shadowRoot!.querySelector("video")!;
   }
 
+  private async _getUseExoPlayer(): Promise<boolean> {
+    if (!this.hass!.auth.external) {
+      return false;
+    }
+    const externalConfig = await getExternalConfig(this.hass!.auth.external);
+    return externalConfig && externalConfig.hasExoPlayer;
+  }
+
   private async _startHls(): Promise<void> {
     // eslint-disable-next-line
     let hls;
@@ -185,7 +185,7 @@ class HaCameraStream extends LitElement {
   }
 
   private async _renderHLSExoPlayer(url: string) {
-    this._resizeExoPlayerListener=() => this._resizeExoPlayer();
+    this._resizeExoPlayerListener = () => this._resizeExoPlayer();
     window.addEventListener('resize', this._resizeExoPlayerListener);
     // https://github.com/typescript-eslint/typescript-eslint/issues/1642
     // eslint-disable-next-line
@@ -235,7 +235,7 @@ class HaCameraStream extends LitElement {
     fireEvent(this, "iron-resize");
   }
 
-  private async _destroyPolyfill(): Promise<void> {
+  private _destroyPolyfill() {
     if (this._hlsPolyfillInstance) {
       this._hlsPolyfillInstance.destroy();
       this._hlsPolyfillInstance = undefined;
