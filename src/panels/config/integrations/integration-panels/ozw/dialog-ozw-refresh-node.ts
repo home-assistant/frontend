@@ -65,7 +65,7 @@ class DialogOZWRefreshNode extends LitElement {
     "Complete",
   ];
 
-  private _addDevicesTimeoutHandle: any = undefined;
+  private _refreshDevicesTimeoutHandle?: number;
 
   private _subscribed?: Promise<() => Promise<void>>;
 
@@ -82,9 +82,9 @@ class DialogOZWRefreshNode extends LitElement {
   }
 
   private async _fetchData(device) {
-    const identifiers: OZWNodeIdentifiers | false = getIdentifiersFromDevice(
-      device
-    );
+    const identifiers:
+      | OZWNodeIdentifiers
+      | undefined = getIdentifiersFromDevice(device);
     if (!identifiers) return;
     this.ozw_instance = identifiers.ozw_instance;
     this.node_id = identifiers.node_id;
@@ -223,8 +223,8 @@ class DialogOZWRefreshNode extends LitElement {
 
   private _unsubscribe(): void {
     this._active = false;
-    if (this._addDevicesTimeoutHandle) {
-      clearTimeout(this._addDevicesTimeoutHandle);
+    if (this._refreshDevicesTimeoutHandle) {
+      clearTimeout(this._refreshDevicesTimeoutHandle);
     }
     if (this._subscribed) {
       this._subscribed.then((unsub) => unsub());
@@ -237,14 +237,16 @@ class DialogOZWRefreshNode extends LitElement {
       return;
     }
     this._active = true;
-    const data: any = { type: "ozw/refresh_node_info" };
-    data.node_id = this.node_id;
-    data.ozw_instance = this.ozw_instance;
+    const data: any = {
+      type: "ozw/refresh_node_info",
+      node_id: this.node_id,
+      ozw_instance: this.ozw_instance,
+    };
     this._subscribed = this.hass.connection.subscribeMessage(
       (message) => this._handleMessage(message),
       data
     );
-    this._addDevicesTimeoutHandle = setTimeout(
+    this._refreshDevicesTimeoutHandle = window.setTimeout(
       () => this._unsubscribe(),
       120000
     );

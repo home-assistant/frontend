@@ -36,10 +36,12 @@ export class HaDeviceInfoOzw extends LitElement {
 
   protected updated(changedProperties: PropertyValues) {
     if (changedProperties.has("device")) {
-      const identifiers: OZWNodeIdentifiers | false = getIdentifiersFromDevice(
-        this.device
-      );
-      if (!identifiers) return;
+      const identifiers:
+        | OZWNodeIdentifiers
+        | undefined = getIdentifiersFromDevice(this.device);
+      if (!identifiers) {
+        return;
+      }
       this.ozw_instance = identifiers.ozw_instance;
       this.node_id = identifiers.node_id;
 

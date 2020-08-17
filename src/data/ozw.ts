@@ -41,14 +41,16 @@ export interface OZWDeviceMetaData {
 
 export const getIdentifiersFromDevice = function (
   device: DeviceRegistryEntry
-): OZWNodeIdentifiers | false {
-  if (typeof device === "undefined") return false;
+): OZWNodeIdentifiers | undefined {
+  if (!device) {
+    return undefined;
+  }
 
   const ozwIdentifier = device.identifiers.find(
     (identifier) => identifier[0] === "ozw"
   );
   if (!ozwIdentifier) {
-    return false;
+    return undefined;
   }
 
   const identifiers = ozwIdentifier[1].split(".");
