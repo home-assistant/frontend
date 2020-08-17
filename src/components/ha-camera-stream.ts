@@ -43,12 +43,14 @@ class HaCameraStream extends LitElement {
   private _useExoPlayer = false; 
 
   private async _getUseExoPlayer(): Promise<boolean> {
-    if (this.hass!.auth.external) {
-      const externalConfig = await getExternalConfig(this.hass!.auth.external);
-      if (externalConfig && externalConfig.hasExoPlayer)
-        return true
+    if (!this.hass!.auth.external) {
+      return false;
     }
-    return false
+    const externalConfig = await getExternalConfig(this.hass!.auth.external);
+    if (externalConfig && externalConfig.hasExoPlayer) {
+      return true
+    }
+    return false;
   }
   
   private _resizeExoPlayerListener;
