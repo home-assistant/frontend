@@ -465,6 +465,7 @@
             },
             "relative_time": {
                 "duration": {
+                    "hour": "{count} {count, plural,\none {ساعة}\nother {ساعات}\n}",
                     "minute": "{count} {count, plural,\n  one {دقيقة}\n  other {دقائق}\n}"
                 },
                 "future": "قبل {time}",
@@ -546,6 +547,7 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "أضف أجهزة عبر هذا الجهاز",
+                    "clusters": "إدارة العناقيد",
                     "zigbee_information": "معلومات Zigbee"
                 },
                 "device_signature": "توقيع جهاز Zigbee",
@@ -1153,6 +1155,9 @@
                         "discovered_text": "ستظهر الأجهزة هنا عند إكتشافها."
                     },
                     "button": "كوِن",
+                    "clusters": {
+                        "header": "عناقيد"
+                    },
                     "groups": {
                         "zha_zigbee_groups": "مجموعات ZHA Zigbee"
                     },
