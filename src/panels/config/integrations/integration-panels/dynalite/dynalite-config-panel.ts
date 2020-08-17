@@ -67,9 +67,9 @@ class HaPanelDevDynalite extends LitElement {
         <div class="content">
           <ha-card .header=${this.localStr("description_system")}>
             <div class="card-content">
-			  <ha-settings-row .narrow=${this.narrow}>
-				<span slot="heading">${this.localStr("name")}</span>
-				<span slot="description">${this.localStr("name_long")}</span>
+              <ha-settings-row .narrow=${this.narrow}>
+                <span slot="heading">${this.localStr("name")}</span>
+                <span slot="description">${this.localStr("name_long")}</span>
                 <paper-input
                   class="flex"
                   .label=${this.localStr("name")}
@@ -77,13 +77,13 @@ class HaPanelDevDynalite extends LitElement {
                   type="string"
                   .value=${this._name}
                   @value-changed=${this._handleChange}
-                >
-			  </ha-settings-row>
+                ></paper-input>
+              </ha-settings-row>
             </div>
             <div class="card-content">
-			  <ha-settings-row .narrow=${this.narrow}>
-				<span slot="heading">${this.localStr("host")}</span>
-				<span slot="description">${this.localStr("host_long")}</span>
+              <ha-settings-row .narrow=${this.narrow}>
+                <span slot="heading">${this.localStr("host")}</span>
+                <span slot="description">${this.localStr("host_long")}</span>
                 <paper-input
                   class="flex"
                   .label=${this.localStr("host")}
@@ -91,13 +91,13 @@ class HaPanelDevDynalite extends LitElement {
                   type="string"
                   .value=${this._host}
                   @value-changed=${this._handleChange}
-                >
-			  </ha-settings-row>
+                ></paper-input>
+              </ha-settings-row>
             </div>
             <div class="card-content">
-			  <ha-settings-row .narrow=${this.narrow}>
-				<span slot="heading">${this.localStr("port")}</span>
-				<span slot="description">${this.localStr("port_long")}</span>
+              <ha-settings-row .narrow=${this.narrow}>
+                <span slot="heading">${this.localStr("port")}</span>
+                <span slot="description">${this.localStr("port_long")}</span>
                 <paper-input
                   class="flex"
                   .label=${this.localStr("port")}
@@ -105,13 +105,13 @@ class HaPanelDevDynalite extends LitElement {
                   type="number"
                   .value=${this._port}
                   @value-changed=${this._handleChange}
-                >
-			  </ha-settings-row>
+                ></paper-input>
+              </ha-settings-row>
             </div>
             <div class="card-content">
-			  <ha-settings-row .narrow=${this.narrow}>
-				<span slot="heading">${this.localStr("fade")}</span>
-				<span slot="description">${this.localStr("fade_long")}</span>
+              <ha-settings-row .narrow=${this.narrow}>
+                <span slot="heading">${this.localStr("fade")}</span>
+                <span slot="description">${this.localStr("fade_long")}</span>
                 <paper-input
                   class="flex"
                   .label=${this.localStr("fade")}
@@ -119,43 +119,50 @@ class HaPanelDevDynalite extends LitElement {
                   type="number"
                   .value=${this._fade}
                   @value-changed=${this._handleChange}
+                ></paper-input>
+              </ha-settings-row>
+            </div>
+            <div class="card-content">
+              <ha-settings-row .narrow=${this.narrow}>
+                <span slot="heading">${this.localStr("active")}</span>
+                <span slot="description">${this.localStr("active_long")}</span>
+                <ha-paper-dropdown-menu
+                  label=${this.localStr("active")}
+                  dynamic-align
                 >
-			  </ha-settings-row>
-            </div>
-            <div class="card-content">
-			  <ha-settings-row .narrow=${this.narrow}>
-				<span slot="heading">${this.localStr("active")}</span>
-				<span slot="description">${this.localStr("active_long")}</span>
-				<ha-paper-dropdown-menu label=${this.localStr("active")} dynamic-align>
-				  <paper-listbox
-					slot="dropdown-content"
-					.selected=${this._activeIndex}
+                  <paper-listbox
+                    slot="dropdown-content"
+                    .selected=${this._activeIndex}
                     @iron-select=${this._handleActiveSelection}
-				  >
-					${this._activeOptions.map(
-            (option) =>
-              html`<paper-item .active_config=${option}
-                >${this.localStr("active_" + option)}</paper-item
-              >`
-          )}
-				  </paper-listbox>
-				</ha-paper-dropdown-menu>
-			  </ha-settings-row>
+                  >
+                    ${this._activeOptions.map(
+                      (option) =>
+                        html`<paper-item .active_config=${option}
+                          >${this.localStr("active_" + option)}</paper-item
+                        >`
+                    )}
+                  </paper-listbox>
+                </ha-paper-dropdown-menu>
+              </ha-settings-row>
             </div>
             <div class="card-content">
-			  <ha-settings-row .narrow=${this.narrow}>
-				<span slot="heading">${this.localStr("auto_discover")}</span>
-				<span slot="description">${this.localStr("auto_discover_long")}</span>
-				<ha-switch
-				  .checked=${this._auto_discover}
-				  @change=${this._handleAutoDiscoverChange}
-				></ha-switch>
-			  </ha-settings-row>
+              <ha-settings-row .narrow=${this.narrow}>
+                <span slot="heading">${this.localStr("auto_discover")}</span>
+                <span slot="description"
+                  >${this.localStr("auto_discover_long")}</span
+                >
+                <ha-switch
+                  .checked=${this._auto_discover}
+                  @change=${this._handleAutoDiscoverChange}
+                ></ha-switch>
+              </ha-settings-row>
             </div>
             <div class="card-content">
-			  <ha-settings-row .narrow=${this.narrow}>
-				<span slot="heading">${this.localStr("poll_timer")}</span>
-				<span slot="description">${this.localStr("poll_timer_long")}</span>
+              <ha-settings-row .narrow=${this.narrow}>
+                <span slot="heading">${this.localStr("poll_timer")}</span>
+                <span slot="description"
+                  >${this.localStr("poll_timer_long")}</span
+                >
                 <paper-input
                   class="flex"
                   .label=${this.localStr("poll_timer")}
@@ -163,13 +170,13 @@ class HaPanelDevDynalite extends LitElement {
                   type="number"
                   .value=${this._poll_timer}
                   @value-changed=${this._handleChange}
-                >
-			  </ha-settings-row>
+                ></paper-input>
+              </ha-settings-row>
             </div>
             <div class="card-actions">
               <mwc-button @click=${this._publish}>
-			    ${this.localStr("publish")}
-			  </mwc-button>
+                ${this.localStr("publish")}
+              </mwc-button>
             </div>
           </ha-card>
         </div>
