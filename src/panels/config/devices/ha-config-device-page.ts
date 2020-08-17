@@ -309,10 +309,11 @@ export class HaConfigDevicePage extends LitElement {
                         : html`
                             <paper-item class="no-link">
                               ${this.hass.localize(
-                                "ui.panel.config.devices.automation.no_automations"
-                              )}
-                              ${this.hass.localize(
-                                "ui.panel.config.devices.add_prompt"
+                                "ui.panel.config.devices.add_prompt",
+                                "name",
+                                this.hass.localize(
+                                  "ui.panel.config.devices.automation.automations"
+                                )
                               )}
                             </paper-item>
                           `}
@@ -380,10 +381,11 @@ export class HaConfigDevicePage extends LitElement {
                             : html`
                                 <paper-item class="no-link">
                                   ${this.hass.localize(
-                                    "ui.panel.config.devices.scene.no_scenes"
-                                  )}
-                                  ${this.hass.localize(
-                                    "ui.panel.config.devices.add_prompt"
+                                    "ui.panel.config.devices.add_prompt",
+                                    "name",
+                                    this.hass.localize(
+                                      "ui.panel.config.devices.scene.scenes"
+                                    )
                                   )}
                                 </paper-item>
                               `
@@ -434,10 +436,11 @@ export class HaConfigDevicePage extends LitElement {
                           : html`
                               <paper-item class="no-link">
                                 ${this.hass.localize(
-                                  "ui.panel.config.devices.script.no_scripts"
-                                )}
-                                ${this.hass.localize(
-                                  "ui.panel.config.devices.add_prompt"
+                                  "ui.panel.config.devices.add_prompt",
+                                  "name",
+                                  this.hass.localize(
+                                    "ui.panel.config.devices.script.scripts"
+                                  )
                                 )}
                               </paper-item>
                             `}
