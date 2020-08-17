@@ -21,6 +21,11 @@ export interface MediaPlayerThumbnail {
   content: string;
 }
 
+export interface ControlButton {
+  icon: string;
+  action: string;
+}
+
 export const getCurrentProgress = (stateObj: HassEntity): number => {
   let progress = stateObj.attributes.media_position;
 
