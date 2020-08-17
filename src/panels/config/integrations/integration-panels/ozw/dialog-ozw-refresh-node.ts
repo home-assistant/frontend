@@ -110,7 +110,6 @@ class DialogOZWRefreshNode extends LitElement {
     return html`
       <ha-dialog
         open
-        hideActions
         @closing="${this._close}"
         .heading=${createCloseHeading(
           this.hass,
@@ -124,7 +123,7 @@ class DialogOZWRefreshNode extends LitElement {
                   "ui.panel.config.ozw.refresh_node.complete"
                 )}
               </p>
-              <mwc-button @click=${this._close}>
+              <mwc-button slot="primaryAction" @click=${this._close}>
                 ${this.hass.localize("ui.common.close")}
               </mwc-button>
             `
@@ -195,7 +194,10 @@ class DialogOZWRefreshNode extends LitElement {
                 : ""}
               ${!this._active
                 ? html`
-                    <mwc-button @click=${this._startRefresh}>
+                    <mwc-button
+                      slot="primaryAction"
+                      @click=${this._startRefresh}
+                    >
                       ${this.hass.localize(
                         "ui.panel.config.ozw.refresh_node.start_refresh_button"
                       )}
