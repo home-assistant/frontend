@@ -22,6 +22,7 @@ import {
   fetchOZWNodeMetadata,
   OZWDeviceMetaData,
   OZWDevice,
+  nodeQueryStages,
 } from "../../../../../data/ozw";
 import { DeviceRegistryEntry } from "../../../../../data/device_registry";
 
@@ -44,26 +45,6 @@ class DialogOZWRefreshNode extends LitElement {
   @internalProperty() private _active = false;
 
   @internalProperty() private _complete = false;
-
-  @internalProperty() private _progress = [
-    "ProtocolInfo",
-    "Probe",
-    "WakeUp",
-    "ManufacturerSpecific1",
-    "NodeInfo",
-    "NodePlusInfo",
-    "ManufacturerSpecific2",
-    "Versions",
-    "Instances",
-    "Static",
-    "CacheLoad",
-    "Associations",
-    "Neighbors",
-    "Session",
-    "Dynamic",
-    "Configuration",
-    "Complete",
-  ];
 
   private _refreshDevicesTimeoutHandle?: number;
 
@@ -148,7 +129,7 @@ class DialogOZWRefreshNode extends LitElement {
                           (${this.hass.localize(
                             "ui.panel.config.ozw.refresh_node.step"
                           )}
-                          ${this._progress.indexOf(
+                          ${nodeQueryStages.indexOf(
                             this._node!.node_query_stage
                           ) + 1}/17)
                         </p>

@@ -39,6 +39,26 @@ export interface OZWDeviceMetaData {
   ProductPicBase64: string;
 }
 
+export const nodeQueryStages = [
+  "ProtocolInfo",
+  "Probe",
+  "WakeUp",
+  "ManufacturerSpecific1",
+  "NodeInfo",
+  "NodePlusInfo",
+  "ManufacturerSpecific2",
+  "Versions",
+  "Instances",
+  "Static",
+  "CacheLoad",
+  "Associations",
+  "Neighbors",
+  "Session",
+  "Dynamic",
+  "Configuration",
+  "Complete",
+];
+
 export const getIdentifiersFromDevice = function (
   device: DeviceRegistryEntry
 ): OZWNodeIdentifiers | undefined {
