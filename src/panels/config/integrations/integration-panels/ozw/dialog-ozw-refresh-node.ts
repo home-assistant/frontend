@@ -115,26 +115,30 @@ class DialogOZWRefreshNode extends LitElement {
                             )}
                           </b>
                         </p>
-                        <p>
-                          ${this.hass.localize(
-                            "ui.panel.config.ozw.refresh_node.node_status"
-                          )}:
-                          ${this._node!.node_query_stage}
-                          (${this.hass.localize(
-                            "ui.panel.config.ozw.refresh_node.step"
-                          )}
-                          ${nodeQueryStages.indexOf(
-                            this._node!.node_query_stage
-                          ) + 1}/17)
-                        </p>
-                        <p>
-                          <em>
-                            ${this.hass.localize(
-                              "ui.panel.config.ozw.node_query_stages." +
-                                this._node!.node_query_stage.toLowerCase()
-                            )}</em
-                          >
-                        </p>
+                        ${this._node
+                          ? html`
+                              <p>
+                                ${this.hass.localize(
+                                  "ui.panel.config.ozw.refresh_node.node_status"
+                                )}:
+                                ${this._node.node_query_stage}
+                                (${this.hass.localize(
+                                  "ui.panel.config.ozw.refresh_node.step"
+                                )}
+                                ${nodeQueryStages.indexOf(
+                                  this._node.node_query_stage
+                                ) + 1}/17)
+                              </p>
+                              <p>
+                                <em>
+                                  ${this.hass.localize(
+                                    "ui.panel.config.ozw.node_query_stages." +
+                                      this._node.node_query_stage.toLowerCase()
+                                  )}</em
+                                >
+                              </p>
+                            `
+                          : ``}
                       </div>
                     </div>
                   `
