@@ -1,8 +1,8 @@
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { DeviceRegistryEntry } from "../../../../../data/device_registry";
 
 export interface OZWRefreshNodeDialogParams {
-  device: DeviceRegistryEntry;
+  ozw_instance: number;
+  node_id: number;
 }
 
 export const loadRefreshNodeDialog = () =>

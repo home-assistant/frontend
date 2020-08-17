@@ -17,8 +17,6 @@ import { HomeAssistant } from "../../../../../types";
 import { OZWRefreshNodeDialogParams } from "./show-dialog-ozw-refresh-node";
 
 import {
-  OZWNodeIdentifiers,
-  getIdentifiersFromDevice,
   fetchOZWNodeMetadata,
   OZWDeviceMetaData,
   OZWDevice,
@@ -31,12 +29,10 @@ class DialogOZWRefreshNode extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property()
-  private node_id = 0;
+  private node_id: number | undefined;
 
   @property()
   private ozw_instance = 1;
-
-  @internalProperty() private _device?: DeviceRegistryEntry;
 
   @internalProperty() private _nodeMetaData?: OZWDeviceMetaData;
 
@@ -57,19 +53,15 @@ class DialogOZWRefreshNode extends LitElement {
 
   protected updated(changedProperties: PropertyValues): void {
     super.update(changedProperties);
-    if (changedProperties.has("_device")) {
-      this._fetchData(this._device);
+    if (changedProperties.has("node_id")) {
+      this._fetchData();
     }
   }
 
-  private async _fetchData(device) {
-    const identifiers:
-      | OZWNodeIdentifiers
-      | undefined = getIdentifiersFromDevice(device);
-    if (!identifiers) return;
-    this.ozw_instance = identifiers.ozw_instance;
-    this.node_id = identifiers.node_id;
-
+  private async _fetchData() {
+    if (!this.node_id) {
+      return;
+    }
     const metaDataResponse = await fetchOZWNodeMetadata(
       this.hass,
       this.ozw_instance,
@@ -80,11 +72,13 @@ class DialogOZWRefreshNode extends LitElement {
   }
 
   public async showDialog(params: OZWRefreshNodeDialogParams): Promise<void> {
-    this._device = params.device;
+    this.node_id = params.node_id;
+    this.ozw_instance = params.ozw_instance;
+    this._fetchData();
   }
 
   protected render(): TemplateResult {
-    if (!this._device) {
+    if (!this.node_id) {
       return html``;
     }
 
@@ -236,8 +230,8 @@ class DialogOZWRefreshNode extends LitElement {
   }
 
   private _close(): void {
-    this._device = undefined;
     this._complete = false;
+    this.node_id = undefined;
   }
 
   static get styles(): CSSResult[] {

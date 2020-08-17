@@ -90,7 +90,10 @@ export class HaDeviceInfoOzw extends LitElement {
   }
 
   private async _refreshNodeClicked() {
-    showOZWRefreshNodeDialog(this, { device: this.device });
+    showOZWRefreshNodeDialog(this, {
+      node_id: this.node_id,
+      ozw_instance: this.ozw_instance,
+    });
   }
 
   static get styles(): CSSResult[] {
