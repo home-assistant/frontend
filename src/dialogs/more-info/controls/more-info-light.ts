@@ -127,7 +127,7 @@ class MoreInfoLight extends LitElement {
               this.stateObj!.attributes.effect_list?.length
                 ? html`
                     <ha-paper-dropdown-menu
-                      label=${this.hass.localize("ui.card.light.effect")}
+                      .label=${this.hass.localize("ui.card.light.effect")}
                     >
                       <paper-listbox
                         slot="dropdown-content"
