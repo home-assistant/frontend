@@ -4,6 +4,8 @@ import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-item/paper-item";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input";
+import type { PolymerChangedEvent } from "../../../polymer-types";
 import {
   css,
   CSSResultArray,
