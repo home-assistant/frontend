@@ -119,9 +119,11 @@ export class HaDeviceActionsZha extends LitElement {
       return;
     }
 
-    this.hass.callService("zha", "remove", {
+    await this.hass.callService("zha", "remove", {
       ieee_address: this._zhaDevice!.ieee,
     });
+
+    history.back();
   }
 
   static get styles(): CSSResult[] {
