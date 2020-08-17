@@ -27,11 +27,9 @@ import {
 class DialogOZWRefreshNode extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property()
-  private node_id: number | undefined;
+  @internalProperty() private _node_id?: number;
 
-  @property()
-  private ozw_instance = 1;
+  @internalProperty() private _ozw_instance = 1;
 
   @internalProperty() private _nodeMetaData?: OZWDeviceMetaData;
 
@@ -58,26 +56,26 @@ class DialogOZWRefreshNode extends LitElement {
   }
 
   private async _fetchData() {
-    if (!this.node_id) {
+    if (!this._node_id) {
       return;
     }
     const metaDataResponse = await fetchOZWNodeMetadata(
       this.hass,
-      this.ozw_instance,
-      this.node_id
+      this._ozw_instance,
+      this._node_id
     );
 
     this._nodeMetaData = metaDataResponse.metadata;
   }
 
   public async showDialog(params: OZWRefreshNodeDialogParams): Promise<void> {
-    this.node_id = params.node_id;
-    this.ozw_instance = params.ozw_instance;
+    this._node_id = params.node_id;
+    this._ozw_instance = params.ozw_instance;
     this._fetchData();
   }
 
   protected render(): TemplateResult {
-    if (!this.node_id) {
+    if (!this._node_id) {
       return html``;
     }
 
@@ -157,10 +155,10 @@ class DialogOZWRefreshNode extends LitElement {
                       ${this.hass.localize(
                         "ui.panel.config.ozw.refresh_node.wakeup_header"
                       )}
-                      ${this._nodeMetaData?.Name}
+                      ${this._nodeMetaData!.Name}
                     </b>
                     <blockquote>
-                      ${this._nodeMetaData?.WakeupHelp}
+                      ${this._nodeMetaData!.WakeupHelp}
                       <br />
                       <em>
                         ${this.hass.localize(
@@ -221,8 +219,8 @@ class DialogOZWRefreshNode extends LitElement {
       (message) => this._handleMessage(message),
       {
         type: "ozw/refresh_node_info",
-        node_id: this.node_id,
-        ozw_instance: this.ozw_instance,
+        node_id: this._node_id,
+        ozw_instance: this._ozw_instance,
       }
     );
     this._refreshDevicesTimeoutHandle = window.setTimeout(
@@ -233,7 +231,7 @@ class DialogOZWRefreshNode extends LitElement {
 
   private _close(): void {
     this._complete = false;
-    this.node_id = undefined;
+    this._node_id = undefined;
     this._node = undefined;
   }
 
