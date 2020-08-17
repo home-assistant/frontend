@@ -254,6 +254,10 @@ export type LightEntity = HassEntityBase & {
     friendly_name: string;
     brightness: number;
     hs_color: number[];
+    color_temp: number;
+    white_value: number;
+    effect?: string;
+    effect_list: string[] | null;
   };
 };
 
