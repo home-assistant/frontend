@@ -218,14 +218,13 @@ class DialogOZWRefreshNode extends LitElement {
       return;
     }
     this._active = true;
-    const data: any = {
-      type: "ozw/refresh_node_info",
-      node_id: this.node_id,
-      ozw_instance: this.ozw_instance,
-    };
     this._subscribed = this.hass.connection.subscribeMessage(
       (message) => this._handleMessage(message),
-      data
+      {
+        type: "ozw/refresh_node_info",
+        node_id: this.node_id,
+        ozw_instance: this.ozw_instance,
+      }
     );
     this._refreshDevicesTimeoutHandle = window.setTimeout(
       () => this._unsubscribe(),
