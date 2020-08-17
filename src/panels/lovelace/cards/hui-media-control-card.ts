@@ -38,6 +38,7 @@ import {
   SUPPORT_STOP,
   SUPPORT_TURN_OFF,
   SUPPORT_TURN_ON,
+  ControlButton,
 } from "../../../data/media-player";
 import type { HomeAssistant, MediaEntity } from "../../../types";
 import { contrast } from "../common/color/contrast";
@@ -156,11 +157,6 @@ const customGenerator = (colors: Swatch[]) => {
 
   return [foregroundColor, backgroundColor.hex];
 };
-
-interface ControlButton {
-  icon: string;
-  action: string;
-}
 
 @customElement("hui-media-control-card")
 export class HuiMediaControlCard extends LitElement implements LovelaceCard {
