@@ -236,6 +236,7 @@ class DialogOZWRefreshNode extends LitElement {
   private _close(): void {
     this._complete = false;
     this.node_id = undefined;
+    this._node = undefined;
   }
 
   static get styles(): CSSResult[] {
