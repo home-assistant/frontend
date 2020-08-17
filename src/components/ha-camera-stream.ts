@@ -47,10 +47,8 @@ class HaCameraStream extends LitElement {
       return false;
     }
     const externalConfig = await getExternalConfig(this.hass!.auth.external);
-    if (externalConfig && externalConfig.hasExoPlayer) {
-      return true
-    }
-    return false;
+    return externalConfig && externalConfig.hasExoPlayer;
+
   }
   
   private _resizeExoPlayerListener;
