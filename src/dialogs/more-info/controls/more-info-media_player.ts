@@ -114,11 +114,10 @@ class MoreInfoMediaPlayer extends LitElement {
             </div>
           `
         : ""}
-      ${stateObj.state === "off" ||
-      !supportsFeature(stateObj, SUPPORT_SELECT_SOURCE) ||
-      !stateObj.attributes.source_list
-        ? ""
-        : html`
+      ${stateObj.state !== "off" &&
+      supportsFeature(stateObj, SUPPORT_SELECT_SOURCE) &&
+      stateObj.attributes.source_list?.length
+        ? html`
             <div class="source-input">
               <ha-icon class="source-input" icon="hass:login-variant"></ha-icon>
               <ha-paper-dropdown-menu
@@ -133,13 +132,14 @@ class MoreInfoMediaPlayer extends LitElement {
                   ${stateObj.attributes.source_list!.map(
                     (source) =>
                       html`
-                        <paper-item itemName=${source}>${source}</paper-item>
+                        <paper-item .itemName=${source}>${source}</paper-item>
                       `
                   )}
                 </paper-listbox>
               </ha-paper-dropdown-menu>
             </div>
-          `}
+          `
+        : ""}
       ${supportsFeature(stateObj, SUPPORT_SELECT_SOUND_MODE) &&
       stateObj.attributes.sound_mode_list?.length
         ? html`
@@ -352,6 +352,11 @@ class MoreInfoMediaPlayer extends LitElement {
   }
 
   private _sendTTS() {
+    const ttsInput = this._ttsInput;
+    if (!ttsInput) {
+      return;
+    }
+
     const services = this.hass.services.tts;
     const serviceKeys = Object.keys(services).sort();
     let service: string | undefined;
@@ -363,15 +368,15 @@ class MoreInfoMediaPlayer extends LitElement {
       }
     }
 
-    if (!service || !this._ttsInput) {
+    if (!service) {
       return;
     }
 
     this.hass.callService("tts", service, {
       entity_id: this.stateObj!.entity_id,
-      message: this._ttsInput.value,
+      message: ttsInput.value,
     });
-    this._ttsInput.value = "";
+    ttsInput.value = "";
   }
 }
 
