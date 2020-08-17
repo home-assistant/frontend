@@ -60,6 +60,7 @@ export const derivedStyles = {
   "material-body-text-color": "var(--primary-text-color)",
   "material-background-color": "var(--card-background-color)",
   "material-secondary-background-color": "var(--secondary-background-color)",
+  "material-secondary-text-color": "var(--secondary-text-color)",
   "mdc-checkbox-unchecked-color": "rgba(var(--rgb-primary-text-color), 0.54)",
   "mdc-checkbox-disabled-color": "var(--disabled-text-color)",
   "mdc-radio-unchecked-color": "rgba(var(--rgb-primary-text-color), 0.54)",
