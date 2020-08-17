@@ -12,7 +12,13 @@ import {
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
-import { OZWDevice, fetchOZWNodeStatus } from "../../../../../../data/ozw";
+import {
+  OZWDevice,
+  fetchOZWNodeStatus,
+  getIdentifiersFromDevice,
+  OZWNodeIdentifiers,
+} from "../../../../../../data/ozw";
+import { showOZWRefreshNodeDialog } from "../../../../integrations/integration-panels/ozw/show-dialog-ozw-refresh-node";
 
 @customElement("ha-device-info-ozw")
 export class HaDeviceInfoOzw extends LitElement {
@@ -20,26 +26,34 @@ export class HaDeviceInfoOzw extends LitElement {
 
   @property() public device!: DeviceRegistryEntry;
 
+  @property()
+  private node_id = 0;
+
+  @property()
+  private ozw_instance = 1;
+
   @internalProperty() private _ozwDevice?: OZWDevice;
 
   protected updated(changedProperties: PropertyValues) {
     if (changedProperties.has("device")) {
-      this._fetchNodeDetails(this.device);
+      const identifiers:
+        | OZWNodeIdentifiers
+        | undefined = getIdentifiersFromDevice(this.device);
+      if (!identifiers) {
+        return;
+      }
+      this.ozw_instance = identifiers.ozw_instance;
+      this.node_id = identifiers.node_id;
+
+      this._fetchNodeDetails();
     }
   }
 
-  protected async _fetchNodeDetails(device) {
-    const ozwIdentifier = device.identifiers.find(
-      (identifier) => identifier[0] === "ozw"
-    );
-    if (!ozwIdentifier) {
-      return;
-    }
-    const identifiers = ozwIdentifier[1].split(".");
+  protected async _fetchNodeDetails() {
     this._ozwDevice = await fetchOZWNodeStatus(
       this.hass,
-      identifiers[0],
-      identifiers[1]
+      this.ozw_instance,
+      this.node_id
     );
   }
 
@@ -69,7 +83,17 @@ export class HaDeviceInfoOzw extends LitElement {
           ? this.hass.localize("ui.common.yes")
           : this.hass.localize("ui.common.no")}
       </div>
+      <mwc-button @click=${this._refreshNodeClicked}>
+        Refresh Node
+      </mwc-button>
     `;
+  }
+
+  private async _refreshNodeClicked() {
+    showOZWRefreshNodeDialog(this, {
+      node_id: this.node_id,
+      ozw_instance: this.ozw_instance,
+    });
   }
 
   static get styles(): CSSResult[] {
