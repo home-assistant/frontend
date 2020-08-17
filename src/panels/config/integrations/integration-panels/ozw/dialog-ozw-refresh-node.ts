@@ -22,7 +22,6 @@ import {
   OZWDevice,
   nodeQueryStages,
 } from "../../../../../data/ozw";
-import { DeviceRegistryEntry } from "../../../../../data/device_registry";
 
 @customElement("dialog-ozw-refresh-node")
 class DialogOZWRefreshNode extends LitElement {
