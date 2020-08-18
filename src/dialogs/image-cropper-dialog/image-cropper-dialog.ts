@@ -68,12 +68,12 @@ export class HaImagecropperDialog extends LitElement {
       <div class="container">
         <img />
       </div>
-      <mwc-button slot="secondaryAction" @click=${this.closeDialog}
-        >Cancel</mwc-button
-      >
-      <mwc-button slot="primaryAction" @click=${this._cropImage}
-        >Crop</mwc-button
-      >
+      <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
+        Cancel
+      </mwc-button>
+      <mwc-button slot="primaryAction" @click=${this._cropImage}>
+        Crop
+      </mwc-button>
     </ha-dialog>`;
   }
 
@@ -99,16 +99,12 @@ export class HaImagecropperDialog extends LitElement {
       haStyleDialog,
       css`
         ${unsafeCSS(cropperCss)}
-
         .container {
-          margin: 20px auto;
           max-width: 640px;
         }
-
         img {
           max-width: 100%;
         }
-
         .cropper-view-box,
         .cropper-face {
           border-radius: 50%;
