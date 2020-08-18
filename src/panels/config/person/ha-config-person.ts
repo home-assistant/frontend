@@ -32,6 +32,7 @@ import {
 } from "./show-dialog-person-detail";
 import "../../../components/ha-svg-icon";
 import { mdiPlus } from "@mdi/js";
+import { styleMap } from "lit-html/directives/style-map";
 
 class HaConfigPerson extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -86,7 +87,13 @@ class HaConfigPerson extends LitElement {
               return html`
                 <paper-icon-item @click=${this._openEditEntry} .entry=${entry}>
                   ${entry.picture
-                    ? html`<img src=${entry.picture} slot="item-icon" />`
+                    ? html`<div
+                        style=${styleMap({
+                          backgroundImage: `url(${entry.picture})`,
+                        })}
+                        class="picture"
+                        slot="item-icon"
+                      ></div>`
                     : ""}
                   <paper-item-body>
                     ${entry.name}
@@ -116,7 +123,13 @@ class HaConfigPerson extends LitElement {
                     return html`
                       <paper-icon-item>
                         ${entry.picture
-                          ? html`<img src=${entry.picture} slot="item-icon" />`
+                          ? html`<div
+                              style=${styleMap({
+                                backgroundImage: `url(${entry.picture})`,
+                              })}
+                              class="picture"
+                              slot="item-icon"
+                            ></div>`
                           : ""}
                         <paper-item-body>
                           ${entry.name}
@@ -234,10 +247,12 @@ class HaConfigPerson extends LitElement {
         margin: 16px auto;
         overflow: hidden;
       }
-      img {
-        max-width: 40px;
-        max-height: 40px;
+      .picture {
+        width: 40px;
+        height: 40px;
+        background-size: cover;
         border-radius: 50%;
+        background-position: center;
       }
       .empty {
         text-align: center;

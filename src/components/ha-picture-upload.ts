@@ -7,7 +7,7 @@ import {
   customElement,
   internalProperty,
 } from "lit-element";
-import { createMedia, generateMediaThumbnailUrl } from "../data/media_manager";
+import { createImage, generateImageThumbnailUrl } from "../data/image";
 import { HomeAssistant } from "../types";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-circular-progress";
@@ -48,11 +48,11 @@ export class HaPictureUpload extends LitElement {
   private async _uploadFile(ev) {
     this._uploading = true;
     try {
-      const media = await createMedia(this.hass, ev.target.files[0]);
-      this.value = generateMediaThumbnailUrl(media.id, this.size);
+      const media = await createImage(this.hass, ev.target.files[0]);
+      this.value = generateImageThumbnailUrl(media.id, this.size);
       fireEvent(this, "change");
     } catch (err) {
-      this._error = `Error uploading: ${err}`;
+      this._error = err.toString();
     } finally {
       this._uploading = false;
     }
