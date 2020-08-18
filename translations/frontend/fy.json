@@ -9,11 +9,15 @@
     "state_attributes": {
         "climate": {
             "fan_mode": {
-                "off": "Út"
+                "off": "Út",
+                "on": "Oan"
             }
         }
     },
     "state_badge": {
+        "default": {
+            "unknown": "Ûnbek."
+        },
         "person": {
             "home": "Thús"
         }
@@ -21,6 +25,10 @@
     "state": {
         "alarm_control_panel": {
             "triggered": "Aktivearre"
+        },
+        "automation": {
+            "off": "Út",
+            "on": "Oan"
         },
         "binary_sensor": {
             "cold": {
@@ -30,6 +38,7 @@
                 "on": "Ferbûn"
             },
             "default": {
+                "off": "Út",
                 "on": "Oan"
             },
             "door": {
@@ -71,7 +80,9 @@
             "heat": "Ferwaarmje"
         },
         "cover": {
-            "open": "Iepen"
+            "closing": "Slút",
+            "open": "Iepen",
+            "opening": "Iepent"
         },
         "default": {
             "off": "Út",
@@ -87,6 +98,8 @@
         "group": {
             "home": "Thús",
             "locked": "Beskoattele",
+            "off": "Út",
+            "on": "Oan",
             "open": "Iepen",
             "stopped": "Stoppe"
         },
