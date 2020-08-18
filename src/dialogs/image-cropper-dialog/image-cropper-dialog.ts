@@ -52,6 +52,7 @@ export class HaImagecropperDialog extends LitElement {
       this._cropper = new Cropper(this._image, {
         aspectRatio: 1,
         viewMode: 1,
+        dragMode: "move",
         ready: () => {
           URL.revokeObjectURL(this._image!.src);
         },
