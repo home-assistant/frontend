@@ -98,14 +98,11 @@ class DialogPersonDetail extends LitElement {
               required
               auto-validate
             ></paper-input>
-            <div class="picture-row">
-              Picture:
-              <ha-picture-upload
-                .hass=${this.hass}
-                .value=${this._picture}
-                @change=${this._pictureChanged}
-              ></ha-picture-upload>
-            </div>
+            <ha-picture-upload
+              .hass=${this.hass}
+              .value=${this._picture}
+              @change=${this._pictureChanged}
+            ></ha-picture-upload>
 
             <ha-user-picker
               label="${this.hass!.localize(
@@ -260,9 +257,6 @@ class DialogPersonDetail extends LitElement {
       css`
         .form {
           padding-bottom: 24px;
-        }
-        .picture-row {
-          margin-top: 16px;
         }
         ha-picture-upload {
           display: block;
