@@ -121,6 +121,10 @@ export class HaPictureUpload extends LitElement {
   }
 
   private async _cropFile(file: File) {
+    if (!["image/png", "image/jpeg", "image/gif"].includes(file.type)) {
+      this._error = "Unsupported file format.";
+      return;
+    }
     showImageCropperDialog(this, {
       file,
       croppedCallback: (croppedFile) => {
