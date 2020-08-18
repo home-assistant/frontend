@@ -1,23 +1,23 @@
+import "@material/mwc-icon-button/mwc-icon-button";
+import { mdiClose, mdiImagePlus } from "@mdi/js";
+import "@polymer/iron-input/iron-input";
+import "@polymer/paper-input/paper-input-container";
 import {
-  LitElement,
-  TemplateResult,
-  html,
-  property,
   css,
   customElement,
+  html,
   internalProperty,
+  LitElement,
+  property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
+import { fireEvent } from "../common/dom/fire_event";
 import { createImage, generateImageThumbnailUrl } from "../data/image";
 import { HomeAssistant } from "../types";
-import { fireEvent } from "../common/dom/fire_event";
 import "./ha-circular-progress";
-import { mdiClose, mdiImagePlus } from "@mdi/js";
-import "@material/mwc-icon-button/mwc-icon-button";
 import "./ha-svg-icon";
-import "@polymer/paper-input/paper-input-container";
-import "@polymer/iron-input/iron-input";
-import { classMap } from "lit-html/directives/class-map";
 
 @customElement("ha-picture-upload")
 export class HaPictureUpload extends LitElement {
