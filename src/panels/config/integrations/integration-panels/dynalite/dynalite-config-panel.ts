@@ -25,7 +25,7 @@ import "../../../../../components/ha-switch";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 
-@customElement("ha-panel-config-dynalite")
+@customElement("dynalite-config-panel")
 class HaPanelConfigDynalite extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -284,6 +284,6 @@ class HaPanelConfigDynalite extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-panel-config-dynalite": HaPanelConfigDynalite;
+    "dynalite-config-panel": HaPanelConfigDynalite;
   }
 }
