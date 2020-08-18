@@ -18,12 +18,15 @@ import { createImage, generateImageThumbnailUrl } from "../data/image";
 import { HomeAssistant } from "../types";
 import "./ha-circular-progress";
 import "./ha-svg-icon";
+import { showImageCropperDialog } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 
 @customElement("ha-picture-upload")
 export class HaPictureUpload extends LitElement {
   public hass!: HomeAssistant;
 
   @property() public value: string | null = null;
+
+  @property() public label?: string;
 
   @property({ type: Number }) public size = 512;
 
@@ -63,7 +66,9 @@ export class HaPictureUpload extends LitElement {
                   dragged: this._drag,
                 })}
               >
-                <label for="input" slot="label">Picture</label>
+                <label for="input" slot="label"
+                  >${this.label || "Picture"}</label
+                >
                 <iron-input slot="input">
                   <input
                     id="input"
@@ -94,7 +99,7 @@ export class HaPictureUpload extends LitElement {
     ev.preventDefault();
     ev.stopPropagation();
     if (ev.dataTransfer?.files) {
-      this._uploadFile(ev.dataTransfer.files);
+      this._cropFile(ev.dataTransfer.files[0]);
     }
     this._drag = false;
   }
@@ -112,11 +117,19 @@ export class HaPictureUpload extends LitElement {
   }
 
   private async _handleFilePicked(ev) {
-    this._uploadFile(ev.target.files);
+    this._cropFile(ev.target.files[0]);
   }
 
-  private async _uploadFile(files: FileList) {
-    const file = files[0];
+  private async _cropFile(file: File) {
+    showImageCropperDialog(this, {
+      file,
+      croppedCallback: (croppedFile) => {
+        this._uploadFile(croppedFile);
+      },
+    });
+  }
+
+  private async _uploadFile(file: File) {
     if (!["image/png", "image/jpeg", "image/gif"].includes(file.type)) {
       this._error = "Unsupported file format.";
       return;
