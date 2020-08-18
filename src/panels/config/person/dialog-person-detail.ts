@@ -10,6 +10,8 @@ import {
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
+import "../../../components/ha-picture-upload";
+import type { HaPictureUpload } from "../../../components/ha-picture-upload";
 import "../../../components/entity/ha-entities-picker";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/user/ha-user-picker";
@@ -29,6 +31,8 @@ class DialogPersonDetail extends LitElement {
   @internalProperty() private _userId?: string;
 
   @internalProperty() private _deviceTrackers!: string[];
+
+  @internalProperty() private _picture!: string | null;
 
   @internalProperty() private _error?: string;
 
@@ -50,10 +54,12 @@ class DialogPersonDetail extends LitElement {
       this._name = this._params.entry.name || "";
       this._userId = this._params.entry.user_id || undefined;
       this._deviceTrackers = this._params.entry.device_trackers || [];
+      this._picture = this._params.entry.picture || null;
     } else {
       this._name = "";
       this._userId = undefined;
       this._deviceTrackers = [];
+      this._picture = null;
     }
     await this.updateComplete;
   }
@@ -92,6 +98,15 @@ class DialogPersonDetail extends LitElement {
               required
               auto-validate
             ></paper-input>
+            <div class="picture-row">
+              Picture:
+              <ha-picture-upload
+                .hass=${this.hass}
+                .value=${this._picture}
+                @change=${this._pictureChanged}
+              ></ha-picture-upload>
+            </div>
+
             <ha-user-picker
               label="${this.hass!.localize(
                 "ui.panel.config.person.detail.linked_user"
@@ -197,6 +212,11 @@ class DialogPersonDetail extends LitElement {
     this._deviceTrackers = ev.detail.value;
   }
 
+  private _pictureChanged(ev: PolymerChangedEvent<string | null>) {
+    this._error = undefined;
+    this._picture = (ev.target as HaPictureUpload).value;
+  }
+
   private async _updateEntry() {
     this._submitting = true;
     try {
@@ -204,6 +224,7 @@ class DialogPersonDetail extends LitElement {
         name: this._name.trim(),
         device_trackers: this._deviceTrackers,
         user_id: this._userId || null,
+        picture: this._picture,
       };
       if (this._params!.entry) {
         await this._params!.updateEntry(values);
@@ -239,6 +260,12 @@ class DialogPersonDetail extends LitElement {
       css`
         .form {
           padding-bottom: 24px;
+        }
+        .picture-row {
+          margin-top: 16px;
+        }
+        ha-picture-upload {
+          display: block;
         }
         ha-user-picker {
           margin-top: 16px;

@@ -5,33 +5,69 @@ import {
   property,
   css,
   customElement,
+  internalProperty,
 } from "lit-element";
 import { createMedia, generateMediaThumbnailUrl } from "../data/media_manager";
 import { HomeAssistant } from "../types";
+import { fireEvent } from "../common/dom/fire_event";
+import "./ha-circular-progress";
 
 @customElement("ha-picture-upload")
-class HaPictureUpload extends LitElement {
+export class HaPictureUpload extends LitElement {
   public hass!: HomeAssistant;
 
-  @property() public value?: string;
+  @property() public value: string | null = null;
+
+  @property() public size = 512;
+
+  @internalProperty() private _error = "";
+
+  @internalProperty() private _uploading = false;
 
   public render(): TemplateResult {
     return html`
-      <input type="text" .value=${this.value || ""} />
-      ${this.value ? html`<img .src=${this.value} />` : ""}
-      <input type="file" @change=${this._uploadFile}>Upload image</input>
+      ${this._uploading
+        ? html`<ha-circular-progress
+            alt="Uploading"
+            size="large"
+            active
+          ></ha-circular-progress>`
+        : html`
+            ${this._error ? html`<div class="error">${this._error}</div>` : ""}
+            ${this.value ? html`<img .src=${this.value} />` : ""}
+            <input type="file" @change=${this._uploadFile} />
+            ${this.value
+              ? html`<button @click=${this._clearPicture}>
+                  Clear Picture
+                </button>`
+              : ""}
+          `}
     `;
   }
 
   private async _uploadFile(ev) {
-    console.log(ev.target.files);
-    const media = await createMedia(this.hass, ev.target.files[0]);
-    console.log(media);
-    this.value = generateMediaThumbnailUrl(media.id, 256);
+    this._uploading = true;
+    try {
+      const media = await createMedia(this.hass, ev.target.files[0]);
+      this.value = generateMediaThumbnailUrl(media.id, this.size);
+      fireEvent(this, "change");
+    } catch (err) {
+      this._error = `Error uploading: ${err}`;
+    } finally {
+      this._uploading = false;
+    }
+  }
+
+  private _clearPicture() {
+    this.value = null;
+    fireEvent(this, "change");
   }
 
   static get styles() {
     return css`
+      .error {
+        color: var(--error-color);
+      }
       img {
         display: block;
         max-width: 125px;

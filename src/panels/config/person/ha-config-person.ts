@@ -1,4 +1,4 @@
-import "@polymer/paper-item/paper-item";
+import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 import {
   css,
@@ -84,11 +84,14 @@ class HaConfigPerson extends LitElement {
           <ha-card class="storage">
             ${this._storageItems.map((entry) => {
               return html`
-                <paper-item @click=${this._openEditEntry} .entry=${entry}>
+                <paper-icon-item @click=${this._openEditEntry} .entry=${entry}>
+                  ${entry.picture
+                    ? html`<img src=${entry.picture} slot="item-icon" />`
+                    : ""}
                   <paper-item-body>
                     ${entry.name}
                   </paper-item-body>
-                </paper-item>
+                </paper-icon-item>
               `;
             })}
             ${this._storageItems.length === 0
@@ -111,11 +114,14 @@ class HaConfigPerson extends LitElement {
                 <ha-card header="Configuration.yaml persons">
                   ${this._configItems.map((entry) => {
                     return html`
-                      <paper-item>
+                      <paper-icon-item>
+                        ${entry.picture
+                          ? html`<img src=${entry.picture} slot="item-icon" />`
+                          : ""}
                         <paper-item-body>
                           ${entry.name}
                         </paper-item-body>
-                      </paper-item>
+                      </paper-icon-item>
                     `;
                   })}
                 </ha-card>
@@ -228,15 +234,20 @@ class HaConfigPerson extends LitElement {
         margin: 16px auto;
         overflow: hidden;
       }
+      img {
+        max-width: 40px;
+        max-height: 40px;
+        border-radius: 50%;
+      }
       .empty {
         text-align: center;
         padding: 8px;
       }
-      paper-item {
+      paper-icon-item {
         padding-top: 4px;
         padding-bottom: 4px;
       }
-      ha-card.storage paper-item {
+      ha-card.storage paper-icon-item {
         cursor: pointer;
       }
     `;

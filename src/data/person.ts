@@ -5,12 +5,14 @@ export interface Person {
   name: string;
   user_id?: string;
   device_trackers?: string[];
+  picture?: string;
 }
 
 export interface PersonMutableParams {
   name: string;
   user_id: string | null;
   device_trackers: string[];
+  picture: string | null;
 }
 
 export const fetchPersons = (hass: HomeAssistant) =>
