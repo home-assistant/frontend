@@ -187,7 +187,7 @@ class HaPanelConfigDynalite extends LitElement {
   protected async firstUpdated() {
     const configEntryId = this._getConfigEntry();
     if (!configEntryId) return;
-    const response = await this.hass.connection.sendMessagePromise({
+    const response = await this.hass.callWS({
       type: "dynalite/get_entry",
       entry_id: configEntryId,
     });
@@ -249,7 +249,7 @@ class HaPanelConfigDynalite extends LitElement {
     this._entryData.polltimer = this._poll_timer;
     const configEntryId = this._getConfigEntry();
     if (!configEntryId) return;
-    await this.hass.connection.sendMessagePromise({
+    await this.hass.callWS({
       type: "dynalite/update_entry",
       entry_id: configEntryId,
       entry_data: JSON.stringify(this._entryData),
