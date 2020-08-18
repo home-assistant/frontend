@@ -252,7 +252,6 @@ class HaConfigPerson extends LitElement {
         height: 40px;
         background-size: cover;
         border-radius: 50%;
-        background-position: center;
       }
       .empty {
         text-align: center;

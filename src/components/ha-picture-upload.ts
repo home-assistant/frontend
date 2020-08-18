@@ -25,7 +25,7 @@ export class HaPictureUpload extends LitElement {
 
   @property() public value: string | null = null;
 
-  @property() public size = 512;
+  @property({ type: Number }) public size = 512;
 
   @internalProperty() private _error = "";
 
@@ -53,7 +53,7 @@ export class HaPictureUpload extends LitElement {
             ${this._error ? html`<div class="error">${this._error}</div>` : ""}
             <label for="input">
               <paper-input-container
-                .alwaysFloatLabel=${this.value}
+                .alwaysFloatLabel=${Boolean(this.value)}
                 @drop=${this._handleDrop}
                 @dragenter=${this._handleDragStart}
                 @dragover=${this._handleDragStart}
@@ -91,11 +91,11 @@ export class HaPictureUpload extends LitElement {
   }
 
   private _handleDrop(ev: DragEvent) {
+    ev.preventDefault();
+    ev.stopPropagation();
     if (ev.dataTransfer?.files) {
       this._uploadFile(ev.dataTransfer.files);
     }
-    ev.preventDefault();
-    ev.stopPropagation();
     this._drag = false;
   }
 
