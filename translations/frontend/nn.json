@@ -346,7 +346,7 @@
             },
             "automation": {
                 "last_triggered": "Sist utløyst",
-                "trigger": "Utløysar"
+                "trigger": "Utfør"
             },
             "camera": {
                 "not_available": "Bilete ikkje tilgjengeleg"
@@ -499,7 +499,8 @@
             },
             "entity": {
                 "entity-picker": {
-                    "entity": "Eining"
+                    "entity": "Eining",
+                    "show_entities": "Vis oppføringar"
                 }
             },
             "history_charts": {
@@ -583,6 +584,7 @@
                 }
             },
             "mqtt_device_debug_info": {
+                "entities": "Oppføringar",
                 "no_entities": "Ingen oppføringar",
                 "no_triggers": "Ingen utløysarar",
                 "payload_display": "Nyttelastvisning",
@@ -704,7 +706,7 @@
                                     "label": "Gjenta"
                                 },
                                 "service": {
-                                    "label": "Hent teneste",
+                                    "label": "Utfør tenestekall",
                                     "service_data": "Tenestedata"
                                 },
                                 "wait_template": {
@@ -802,7 +804,7 @@
                                         "below": "Under"
                                     },
                                     "label": "Oppføring",
-                                    "trigger": "Utløysar "
+                                    "trigger": "Utfør"
                                 },
                                 "event": {
                                     "event_data": "TIlstandsdata",
@@ -955,6 +957,7 @@
                     },
                     "cant_edit": "Du kan berre redigere element som er laga i brukargrensesnittet.",
                     "caption": "Einingar",
+                    "confirm_rename_entity_ids": "Vil du også endre ID-ane til oppføringane dine?",
                     "data_table": {
                         "area": "Område",
                         "battery": "Batteri",
@@ -965,7 +968,8 @@
                     "description": "Administrer tilkopla einingar",
                     "device_info": "Einingsinfo ",
                     "entities": {
-                        "disabled_entities": "+{count} {count, plural,\n  one {disabled entity}\n  other {disabled entities}\n}",
+                        "disabled_entities": "+{count} {count, plural,\n  one {deaktivert oppføring}\n  other {deaktiverte oppføringar}\n}",
+                        "entities": "Oppføringar",
                         "hide_disabled": "Skjul deaktiverte"
                     },
                     "name": "Namn",
@@ -989,8 +993,14 @@
                     "description": "Oversikt over alle kjende oppføringar.",
                     "picker": {
                         "header": "Oppføringsregisteret",
+                        "headers": {
+                            "entity_id": "Oppførings-ID",
+                            "integration": "Integrasjon",
+                            "name": "Namn"
+                        },
                         "introduction": "Home Assistant har eit register over alle oppføringane den nokon gang har sett som kan unikt identifiserast. Kvar av desse oppføringane har ein eigen oppføringsidentifikasjon som er reservert for akkurat denne oppføringa.",
-                        "introduction2": "Bruk oppføringsregisteret til å skrive over namn, endre oppføringsidentifikasjonane eller fjerne oppføringar frå Home Assistant. Merk deg at å fjerne oppføringa i oppføringregisteret ikkje fjernar sjølve oppføringa. For å gjere dette, gå vidare inn på linken under og fjern oppføringa i integrasjonssida."
+                        "introduction2": "Bruk oppføringsregisteret til å skrive over namn, endre oppføringsidentifikasjonane eller fjerne oppføringar frå Home Assistant. Merk deg at å fjerne oppføringa i oppføringregisteret ikkje fjernar sjølve oppføringa. For å gjere dette, gå vidare inn på linken under og fjern oppføringa i integrasjonssida.",
+                        "search": "Søk i oppføringar"
                     }
                 },
                 "filtering": {
@@ -1012,8 +1022,8 @@
                         "delete": "Slett",
                         "delete_confirm": "Er du sikker på at du vil slette denne integrasjonen?",
                         "device_unavailable": "Eininga utilgjengelig",
-                        "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
-                        "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
+                        "devices": "{count} {count, plural,\n  one {eining}\n  other {einingar}\n}",
+                        "entities": "{count} {count, plural,\n  one {oppføring}\n  other {oppføringar}\n}",
                         "entity_unavailable": "Oppføringa utilgjengelig",
                         "firmware": "Firmware: {version}",
                         "hub": "Tilkopla via",
@@ -1070,6 +1080,11 @@
                 },
                 "scene": {
                     "editor": {
+                        "entities": {
+                            "add": "Legg til ei oppføring",
+                            "delete": "Slett oppføring",
+                            "header": "Oppføringar"
+                        },
                         "icon": "Ikon"
                     },
                     "picker": {
@@ -1294,6 +1309,7 @@
                         "title": "Tenester"
                     },
                     "states": {
+                        "no_entities": "Ingen oppføringar",
                         "title": "Statusar"
                     },
                     "templates": {
@@ -1361,7 +1377,8 @@
                             "required": "Påkrevd"
                         },
                         "entities": {
-                            "description": "Oppføringskortet er den vanlegaste korttypen. Den kan gruppere ting inn i lister."
+                            "description": "Oppføringskortet er den vanlegaste korttypen. Den kan gruppere ting inn i lister.",
+                            "name": "Oppføringar"
                         },
                         "entity-filter": {
                             "description": "Oppføringsfilterkortet let deg definere ei liste med oppføringar som du vil vise berre når dei har ein spesiell tilstand."
@@ -1478,7 +1495,13 @@
                 },
                 "reload_lovelace": "Omlast Lovelace",
                 "unused_entities": {
-                    "domain": "Domene"
+                    "domain": "Domene",
+                    "entity": "Oppføring ",
+                    "entity_id": "Oppførings-ID",
+                    "last_changed": "Sist endra",
+                    "no_data": "Ingen ubrukte oppføringar funne",
+                    "search": "Søk i oppføringar",
+                    "title": "Ubrukte oppføringar"
                 },
                 "warning": {
                     "entity_non_numeric": "Oppføringa er ikkje numerisk: {entity}",

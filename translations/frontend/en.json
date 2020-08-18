@@ -1656,6 +1656,37 @@
                         "node_failed": "Node Failed",
                         "stage": "Stage",
                         "zwave_info": "Z-Wave Info"
+                    },
+                    "node_query_stages": {
+                        "associations": "Refreshing association groups and memberships",
+                        "cacheload": "Loading information from the OpenZWave cache file. Battery nodes will stay at this stage until the node wakes up.",
+                        "complete": "Interview process is complete",
+                        "configuration": "Obtaining configuration values from the node",
+                        "dynamic": "Obtaining frequently changing values from the node",
+                        "instances": "Obtaining details about what instances or channels a device supports",
+                        "manufacturerspecific1": "Obtaining manufacturer and product ID codes from the node",
+                        "manufacturerspecific2": "Obtaining additional manufacturer and product ID codes from the node",
+                        "neighbors": "Obtaining a list of the node's neighbors",
+                        "nodeinfo": "Obtaining supported command classes from the node",
+                        "nodeplusinfo": "Obtaining Z-Wave+ information from the node",
+                        "probe": "Checking if the node is awake/alive",
+                        "protocolinfo": "Obtaining basic Z-Wave capabilities of this node from the controller",
+                        "session": "Obtaining infrequently changing values from the node",
+                        "static": "Obtaining static values from the device",
+                        "versions": "Obtaining information about firmware and command class versions",
+                        "wakeup": "Setting up support for wakeup queues and messages"
+                    },
+                    "refresh_node": {
+                        "battery_note": "If the node is battery powered, be sure to wake it before proceeding",
+                        "complete": "Node Refresh Complete",
+                        "description": "This will tell OpenZWave to re-interview a node and update the node's command classes, capabilities, and values.",
+                        "node_status": "Node Status",
+                        "refreshing_description": "Refreshing node information...",
+                        "start_refresh_button": "Start Refresh",
+                        "step": "Step",
+                        "title": "Refresh Node Information",
+                        "wakeup_header": "Wakeup Instructions for",
+                        "wakeup_instructions_source": "Wakeup instructions are sourced from the OpenZWave community device database."
                     }
                 },
                 "person": {

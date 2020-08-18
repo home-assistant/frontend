@@ -162,7 +162,7 @@
                 "on": "פתוח"
             },
             "presence": {
-                "off": "לא נוכח",
+                "off": "לא נמצא",
                 "on": "בבית"
             },
             "problem": {
@@ -306,7 +306,7 @@
             "docked": "בעגינה",
             "error": "שגיאה",
             "idle": "ממתין",
-            "off": "מכובה",
+            "off": "כבוי",
             "on": "מופעל",
             "paused": "מושהה",
             "returning": "חזור לעגינה"
@@ -344,7 +344,7 @@
     "ui": {
         "auth_store": {
             "ask": "האם ברצונך לשמור את ההתחברות הזו?",
-            "confirm": "שמור התחברות",
+            "confirm": "כן",
             "decline": "לא תודה"
         },
         "card": {
@@ -748,7 +748,7 @@
                 "unknown": "לא ידוע",
                 "zha_device_card": {
                     "area_picker_label": "אזור",
-                    "device_name_placeholder": "שם פרטי",
+                    "device_name_placeholder": "שנה שם התקן",
                     "update_name_button": "עדכן שם"
                 }
             }

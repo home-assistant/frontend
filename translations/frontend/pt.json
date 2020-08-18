@@ -1648,6 +1648,7 @@
                 },
                 "ozw": {
                     "common": {
+                        "node_id": "ID de nó",
                         "ozw_instance": "Instância OpenZWave",
                         "zwave": "Z-Wave"
                     },
