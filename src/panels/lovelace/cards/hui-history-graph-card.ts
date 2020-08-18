@@ -156,7 +156,6 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     }
     this._date = new Date();
     this._fetching = true;
-    console.log("fetch");
     try {
       this._stateHistory = {
         ...(await getRecentWithCache(
