@@ -30,6 +30,7 @@ class HaLabeledSlider extends PolymerElement {
         ha-paper-slider {
           flex-grow: 1;
           background-image: var(--ha-slider-background);
+          border-radius: var(--ha-slider-border-radius);
         }
       </style>
 

@@ -1,5 +1,7 @@
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
+import "@material/mwc-tab-bar";
+import "@material/mwc-tab";
 import {
   css,
   CSSResult,
@@ -11,7 +13,6 @@ import {
   internalProperty,
   PropertyValues,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
 
 import {
   SUPPORT_BRIGHTNESS,
@@ -26,8 +27,10 @@ import type { HomeAssistant, LightEntity } from "../../../types";
 import "../../../components/ha-attributes";
 import "../../../components/ha-color-picker";
 import "../../../components/ha-labeled-slider";
+import "../../../components/ha-svg-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-paper-dropdown-menu";
+import "../../../components/ha-vertical-range-input";
 
 interface HueSatColor {
   h: number;
@@ -52,106 +55,144 @@ class MoreInfoLight extends LitElement {
 
   @internalProperty() private _colorPickerColor?: HueSatColor;
 
+  @internalProperty() private _tabIndex = 0;
+
   protected render(): TemplateResult {
     if (!this.hass || !this.stateObj) {
       return html``;
     }
 
+    const supportsBrightness = supportsFeature(
+      this.stateObj!,
+      SUPPORT_BRIGHTNESS
+    );
+    const supportsColorTemp = supportsFeature(
+      this.stateObj,
+      SUPPORT_COLOR_TEMP
+    );
+    const supportsWhiteValue = supportsFeature(
+      this.stateObj,
+      SUPPORT_WHITE_VALUE
+    );
+    const supportsColor = supportsFeature(this.stateObj, SUPPORT_COLOR);
+    const supportsEffect =
+      supportsFeature(this.stateObj, SUPPORT_EFFECT) &&
+      this.stateObj!.attributes.effect_list?.length;
+
+    if (!supportsBrightness && !this._tabIndex) {
+      this._tabIndex = 1;
+    }
+
     return html`
-      <div
-        class="content ${classMap({
-          "is-on": this.stateObj.state === "on",
-        })}"
+      <mwc-tab-bar
+        .activeIndex=${this._tabIndex}
+        @MDCTabBar:activated=${(ev: CustomEvent) => {
+          this._tabIndex = ev.detail.index;
+        }}
       >
-        ${this.stateObj.state === "on"
-          ? html`
-              ${supportsFeature(this.stateObj!, SUPPORT_BRIGHTNESS)
-                ? html`
-                    <ha-labeled-slider
-                      caption=${this.hass.localize("ui.card.light.brightness")}
-                      icon="hass:brightness-5"
-                      min="1"
-                      max="255"
-                      value=${this._brightnessSliderValue}
-                      @change=${this._brightnessSliderChanged}
-                    ></ha-labeled-slider>
-                  `
-                : ""}
-              ${supportsFeature(this.stateObj, SUPPORT_COLOR_TEMP)
-                ? html`
-                    <ha-labeled-slider
-                      class="color_temp"
-                      caption=${this.hass.localize(
-                        "ui.card.light.color_temperature"
-                      )}
-                      icon="hass:thermometer"
-                      .min=${this.stateObj.attributes.min_mireds}
-                      .max=${this.stateObj.attributes.max_mireds}
-                      .value=${this._ctSliderValue}
-                      @change=${this._ctSliderChanged}
-                    ></ha-labeled-slider>
-                  `
-                : ""}
-              ${supportsFeature(this.stateObj, SUPPORT_WHITE_VALUE)
-                ? html`
-                    <ha-labeled-slider
-                      caption=${this.hass.localize("ui.card.light.white_value")}
-                      icon="hass:file-word-box"
-                      max="255"
-                      .value=${this._wvSliderValue}
-                      @change=${this._wvSliderChanged}
-                    ></ha-labeled-slider>
-                  `
-                : ""}
-              ${supportsFeature(this.stateObj, SUPPORT_COLOR)
-                ? html`
-                    <div class="segmentationContainer">
-                      <ha-color-picker
-                        class="color"
-                        @colorselected=${this._colorPicked}
-                        .desiredHsColor=${this._colorPickerColor}
-                        throttle="500"
-                        .hueSegments=${this._hueSegments}
-                        .saturationSegments=${this._saturationSegments}
-                      >
-                      </ha-color-picker>
-                      <ha-icon-button
-                        icon="hass:palette"
-                        @click=${this._segmentClick}
-                        class="segmentationButton"
-                      ></ha-icon-button>
-                    </div>
-                  `
-                : ""}
-              ${supportsFeature(this.stateObj, SUPPORT_EFFECT) &&
-              this.stateObj!.attributes.effect_list?.length
-                ? html`
-                    <ha-paper-dropdown-menu
-                      .label=${this.hass.localize("ui.card.light.effect")}
-                    >
-                      <paper-listbox
-                        slot="dropdown-content"
-                        .selected=${this.stateObj.attributes.effect || ""}
-                        @iron-select=${this._effectChanged}
-                        attr-for-selected="item-name"
-                        >${this.stateObj.attributes.effect_list.map(
-                          (effect: string) => html`
-                            <paper-item itemName=${effect}
-                              >${effect}</paper-item
-                            >
-                          `
-                        )}
-                      </paper-listbox>
-                    </ha-paper-dropdown-menu>
-                  `
-                : ""}
-            `
+        ${supportsBrightness
+          ? html`<mwc-tab label="Brightness"></mwc-tab>`
           : ""}
-        <ha-attributes
-          .stateObj=${this.stateObj}
-          extraFilters="brightness,color_temp,white_value,effect_list,effect,hs_color,rgb_color,xy_color,min_mireds,max_mireds,entity_id"
-        ></ha-attributes>
-      </div>
+        ${supportsColor ||
+        supportsColorTemp ||
+        supportsEffect ||
+        supportsWhiteValue
+          ? html`<mwc-tab label="Color"></mwc-tab>`
+          : ""}
+      </mwc-tab-bar>
+      ${this._tabIndex === 0
+        ? html`
+            ${supportsBrightness
+              ? html`
+                  <div class="brightness">
+                    <div>
+                      ${Math.round((this._brightnessSliderValue / 255) * 100)}%
+                    </div>
+                    <ha-vertical-range-input
+                      max="255"
+                      .caption=${this.hass.localize("ui.card.light.brightness")}
+                      .value=${this._brightnessSliderValue}
+                      @value-changed=${this._brightnessChanged}
+                    >
+                    </ha-vertical-range-input>
+                  </div>
+                `
+              : ""}
+          `
+        : html`
+            ${supportsColorTemp
+              ? html`
+                  <ha-labeled-slider
+                    class="color_temp"
+                    icon="hass:thermometer"
+                    .caption=${this.hass.localize(
+                      "ui.card.light.color_temperature"
+                    )}
+                    .min=${this.stateObj.attributes.min_mireds}
+                    .max=${this.stateObj.attributes.max_mireds}
+                    .value=${this._ctSliderValue}
+                    @change=${this._colorTempChanged}
+                  ></ha-labeled-slider>
+                `
+              : ""}
+            ${supportsWhiteValue
+              ? html`
+                  <ha-labeled-slider
+                    icon="hass:file-word-box"
+                    max="255"
+                    .caption=${this.hass.localize("ui.card.light.white_value")}
+                    .value=${this._wvSliderValue}
+                    @change=${this._whiteValueChanged}
+                  ></ha-labeled-slider>
+                `
+              : ""}
+            ${supportsColor
+              ? html`
+                  <div class="color-picker">
+                    <ha-icon-button
+                      icon="hass:palette"
+                      @click=${this._segmentClick}
+                    ></ha-icon-button>
+                    <ha-color-picker
+                      throttle="500"
+                      .desiredHsColor=${this._colorPickerColor}
+                      .hueSegments=${this._hueSegments}
+                      .saturationSegments=${this._saturationSegments}
+                      @colorselected=${this._colorPicked}
+                    >
+                    </ha-color-picker>
+                  </div>
+                `
+              : ""}
+            ${supportsEffect
+              ? html`
+                  <ha-paper-dropdown-menu
+                    .label=${this.hass.localize("ui.card.light.effect")}
+                  >
+                    <paper-listbox
+                      slot="dropdown-content"
+                      attr-for-selected="item-name"
+                      .selected=${this.stateObj.attributes.effect!}
+                      @iron-select=${this._effectChanged}
+                      >${this.stateObj.attributes.effect_list!.map(
+                        (effect: string) => html`
+                          <paper-item .itemName=${effect}>${effect}</paper-item>
+                        `
+                      )}
+                    </paper-listbox>
+                  </ha-paper-dropdown-menu>
+                `
+              : ""}
+          `}
+      <div class="padding"></div>
+      ${this.hass.user?.is_admin
+        ? html`
+            <ha-attributes
+              .stateObj=${this.stateObj}
+              extraFilters="brightness,color_temp,white_value,effect_list,effect,hs_color,rgb_color,xy_color,min_mireds,max_mireds,entity_id"
+            ></ha-attributes>
+          `
+        : ""}
     `;
   }
 
@@ -159,7 +200,7 @@ class MoreInfoLight extends LitElement {
     const stateObj = this.stateObj! as LightEntity;
     if (changedProps.has("stateObj") && stateObj.state === "on") {
       this._brightnessSliderValue = stateObj.attributes.brightness;
-      this._ctSliderValue = stateObj.attributes.color_temp;
+      this._ctSliderValue = stateObj.attributes.color_temp || 326;
       this._wvSliderValue = stateObj.attributes.white_value;
 
       if (stateObj.attributes.hs_color) {
@@ -184,42 +225,24 @@ class MoreInfoLight extends LitElement {
     });
   }
 
-  private _brightnessSliderChanged(ev: CustomEvent) {
-    const bri = parseInt((ev.target as any).value, 10);
-
-    if (isNaN(bri)) {
-      return;
-    }
-
+  private _brightnessChanged(ev: CustomEvent) {
     this.hass.callService("light", "turn_on", {
       entity_id: this.stateObj!.entity_id,
-      brightness: bri,
+      brightness: parseInt(ev.detail.value, 10),
     });
   }
 
-  private _ctSliderChanged(ev: CustomEvent) {
-    const ct = parseInt((ev.target as any).value, 10);
-
-    if (isNaN(ct)) {
-      return;
-    }
-
+  private _colorTempChanged(ev: CustomEvent) {
     this.hass.callService("light", "turn_on", {
       entity_id: this.stateObj!.entity_id,
-      color_temp: ct,
+      color_temp: parseInt((ev.currentTarget as any).value, 10),
     });
   }
 
-  private _wvSliderChanged(ev: CustomEvent) {
-    const wv = parseInt((ev.target as any).value, 10);
-
-    if (isNaN(wv)) {
-      return;
-    }
-
+  private _whiteValueChanged(ev: CustomEvent) {
     this.hass.callService("light", "turn_on", {
       entity_id: this.stateObj!.entity_id,
-      white_value: wv,
+      white_value: parseInt((ev.target as any).value, 10),
     });
   }
 
@@ -246,21 +269,27 @@ class MoreInfoLight extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      .content {
+      ha-labeled-slider,
+      ha-paper-dropdown-menu,
+      .padding {
+        width: 100%;
+        overflow: hidden;
+        padding-top: 16px;
+      }
+
+      .brightness {
         display: flex;
         flex-direction: column;
         align-items: center;
+        margin-top: 16px;
       }
 
-      .content.is-on {
-        margin-top: -16px;
-      }
-
-      .content > * {
-        width: 100%;
-        max-height: 84px;
-        overflow: hidden;
-        padding-top: 16px;
+      .brightness div {
+        font-size: 20px;
+        line-height: 1.2;
+        padding: 4px 0;
+        font-weight: 500;
+        color: var(--secondary-text-color);
       }
 
       .color_temp {
@@ -272,11 +301,18 @@ class MoreInfoLight extends LitElement {
         );
         /* The color temp minimum value shouldn't be rendered differently. It's not "off". */
         --paper-slider-knob-start-border-color: var(--primary-color);
+        --ha-slider-border-radius: 8px;
       }
 
-      .segmentationContainer {
+      .color-picker {
         position: relative;
         max-height: 500px;
+      }
+
+      .color-picker ha-icon-button {
+        position: absolute;
+        top: 5%;
+        color: var(--secondary-text-color);
       }
 
       ha-color-picker {
@@ -285,12 +321,6 @@ class MoreInfoLight extends LitElement {
         --ha-color-picker-wheel-shadow: none;
         --ha-color-picker-marker-borderwidth: 2;
         --ha-color-picker-marker-bordercolor: white;
-      }
-
-      .segmentationButton {
-        position: absolute;
-        top: 5%;
-        color: var(--secondary-text-color);
       }
 
       paper-item {
