@@ -6,7 +6,6 @@ import {
   css,
   customElement,
   internalProperty,
-  query,
   PropertyValues,
 } from "lit-element";
 import { createImage, generateImageThumbnailUrl } from "../data/image";
@@ -16,7 +15,8 @@ import "./ha-circular-progress";
 import { mdiClose, mdiImagePlus } from "@mdi/js";
 import "@material/mwc-icon-button/mwc-icon-button";
 import "./ha-svg-icon";
-import "@polymer/paper-input/paper-input";
+import "@polymer/paper-input/paper-input-container";
+import "@polymer/iron-input/iron-input";
 import { classMap } from "lit-html/directives/class-map";
 
 @customElement("ha-picture-upload")
@@ -35,9 +35,9 @@ export class HaPictureUpload extends LitElement {
 
   protected updated(changedProperties: PropertyValues) {
     if (changedProperties.has("_drag")) {
-      this.shadowRoot!.querySelector("paper-input-container")._setFocused(
-        this._drag
-      );
+      (this.shadowRoot!.querySelector(
+        "paper-input-container"
+      ) as any)._setFocused(this._drag);
     }
   }
 
