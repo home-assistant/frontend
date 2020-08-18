@@ -47,6 +47,7 @@ export class HaPictureUpload extends LitElement {
 
   private async _uploadFile(ev) {
     this._uploading = true;
+    this._error = "";
     try {
       const media = await createImage(this.hass, ev.target.files[0]);
       this.value = generateImageThumbnailUrl(media.id, this.size);
