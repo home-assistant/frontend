@@ -67,7 +67,10 @@ export class HaPictureUpload extends LitElement {
                 })}
               >
                 <label for="input" slot="label"
-                  >${this.label || "Picture"}</label
+                  >${this.label ||
+                  this.hass.localize(
+                    "ui.components.picture-upload.label"
+                  )}</label
                 >
                 <iron-input slot="input">
                   <input
@@ -122,7 +125,9 @@ export class HaPictureUpload extends LitElement {
 
   private async _cropFile(file: File) {
     if (!["image/png", "image/jpeg", "image/gif"].includes(file.type)) {
-      this._error = "Unsupported file format.";
+      this._error = this.hass.localize(
+        "ui.components.picture-upload.unsupported_format"
+      );
       return;
     }
     showImageCropperDialog(this, {
@@ -135,7 +140,9 @@ export class HaPictureUpload extends LitElement {
 
   private async _uploadFile(file: File) {
     if (!["image/png", "image/jpeg", "image/gif"].includes(file.type)) {
-      this._error = "Unsupported file format.";
+      this._error = this.hass.localize(
+        "ui.components.picture-upload.unsupported_format"
+      );
       return;
     }
     this._uploading = true;
@@ -154,6 +161,7 @@ export class HaPictureUpload extends LitElement {
   private _clearPicture(ev: Event) {
     ev.preventDefault();
     this.value = null;
+    this._error = "";
     fireEvent(this, "change");
   }
 

@@ -53,6 +53,7 @@ export class HaImagecropperDialog extends LitElement {
         aspectRatio: 1,
         viewMode: 1,
         dragMode: "move",
+        minCropBoxWidth: 50,
         ready: () => {
           URL.revokeObjectURL(this._image!.src);
         },
@@ -73,10 +74,10 @@ export class HaImagecropperDialog extends LitElement {
         <img />
       </div>
       <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
-        Cancel
+        ${this.hass.localize("ui.common.cancel")}
       </mwc-button>
       <mwc-button slot="primaryAction" @click=${this._cropImage}>
-        Crop
+        ${this.hass.localize("ui.dialogs.image_cropper.crop")}
       </mwc-button>
     </ha-dialog>`;
   }
@@ -112,6 +113,11 @@ export class HaImagecropperDialog extends LitElement {
         .cropper-view-box,
         .cropper-face {
           border-radius: 50%;
+        }
+        .cropper-line,
+        .cropper-point,
+        .cropper-point.point-se::before {
+          background-color: var(--primary-color);
         }
       `,
     ];
