@@ -2,7 +2,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 
 export interface CropOptions {
   round: boolean;
-  type: "image/jpeg" | "image/png";
+  type?: "image/jpeg" | "image/png";
   quality?: number;
   aspectRatio: number;
 }

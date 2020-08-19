@@ -27,7 +27,7 @@ const includeDomains = ["device_tracker"];
 const cropOptions: CropOptions = {
   round: true,
   type: "image/jpeg",
-  quality: 0.85,
+  quality: 0.75,
   aspectRatio: 1,
 };
 

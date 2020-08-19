@@ -147,7 +147,6 @@ export class HaPictureUpload extends LitElement {
       file,
       options: this.cropOptions || {
         round: false,
-        type: "image/png",
         aspectRatio: NaN,
       },
       croppedCallback: (croppedFile) => {

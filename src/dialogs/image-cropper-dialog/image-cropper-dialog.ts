@@ -94,12 +94,12 @@ export class HaImagecropperDialog extends LitElement {
           return;
         }
         const file = new File([blob], this._params!.file.name, {
-          type: this._params!.options.type,
+          type: this._params!.options.type || this._params!.file.type,
         });
         this._params!.croppedCallback(file);
         this.closeDialog();
       },
-      this._params!.options.type,
+      this._params!.options.type || this._params!.file.type,
       this._params!.options.quality
     );
   }
