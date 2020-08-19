@@ -14,6 +14,7 @@ import {
   ConfigEntry,
   updateConfigEntry,
   deleteConfigEntry,
+  reloadConfigEntry,
 } from "../../../data/config_entries";
 import { EntityRegistryEntry } from "../../../data/entity_registry";
 import { DeviceRegistryEntry } from "../../../data/device_registry";
@@ -264,6 +265,13 @@ export class HaIntegrationCard extends LitElement {
                 "ui.panel.config.integrations.config_entry.delete"
               )}
             </mwc-list-item>
+            ${item.state === "loaded"
+              ? html`<mwc-list-item>
+                  ${this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.reload"
+                  )}
+                </mwc-list-item>`
+              : ""}
           </ha-button-menu>
         </div>
       </ha-card>
@@ -319,6 +327,9 @@ export class HaIntegrationCard extends LitElement {
       case 1:
         this._removeIntegration(configEntry);
         break;
+      case 2:
+        this._reloadIntegration(configEntry);
+        break;
     }
   }
 
@@ -350,6 +361,21 @@ export class HaIntegrationCard extends LitElement {
           ),
         });
       }
+    });
+  }
+
+  private async _reloadIntegration(configEntry: ConfigEntry) {
+    const entryId = configEntry.entry_id;
+
+    reloadConfigEntry(this.hass, entryId).then((result) => {
+      const locale_key = result.require_restart
+        ? "reload_restart_confirm"
+        : "reload_confirm";
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          `ui.panel.config.integrations.config_entry.${locale_key}`
+        ),
+      });
     });
   }
 

@@ -37,6 +37,11 @@ export const deleteConfigEntry = (hass: HomeAssistant, configEntryId: string) =>
     require_restart: boolean;
   }>("DELETE", `config/config_entries/entry/${configEntryId}`);
 
+export const reloadConfigEntry = (hass: HomeAssistant, configEntryId: string) =>
+  hass.callApi<{
+    require_restart: boolean;
+  }>("POST", `config/config_entries/entry/${configEntryId}/reload`);
+
 export const getConfigEntrySystemOptions = (
   hass: HomeAssistant,
   configEntryId: string
