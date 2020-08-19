@@ -299,6 +299,10 @@
           "failed_create_area": "Failed to create area."
         }
       },
+      "picture-upload": {
+        "label": "Picture",
+        "unsupported_format": "Unsupported format, please choose a JPEG, PNG or GIF image."
+      },
       "date-range-picker": {
         "start_date": "Start date",
         "end_date": "End date",
@@ -353,6 +357,9 @@
         "ok": "OK",
         "default_confirmation_title": "Are you sure?",
         "close": "close"
+      },
+      "image_cropper": {
+        "crop": "Crop"
       },
       "more_info_control": {
         "dismiss": "Dismiss dialog",
