@@ -20,8 +20,16 @@ import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { PersonDetailDialogParams } from "./show-dialog-person-detail";
+import { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 
 const includeDomains = ["device_tracker"];
+
+const cropOptions: CropOptions = {
+  round: true,
+  type: "image/jpeg",
+  quality: 0.85,
+  aspectRatio: 1,
+};
 
 class DialogPersonDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -101,6 +109,8 @@ class DialogPersonDetail extends LitElement {
             <ha-picture-upload
               .hass=${this.hass}
               .value=${this._picture}
+              crop
+              .cropOptions=${cropOptions}
               @change=${this._pictureChanged}
             ></ha-picture-upload>
 

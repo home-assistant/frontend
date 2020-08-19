@@ -1,7 +1,15 @@
 import { fireEvent } from "../../common/dom/fire_event";
 
+export interface CropOptions {
+  round: boolean;
+  type: "image/jpeg" | "image/png";
+  quality?: number;
+  aspectRatio: number;
+}
+
 export interface HaImageCropperDialogParams {
   file: File;
+  options: CropOptions;
   croppedCallback: (file: File) => void;
 }
 

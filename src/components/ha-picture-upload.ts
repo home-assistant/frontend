@@ -18,7 +18,10 @@ import { createImage, generateImageThumbnailUrl } from "../data/image";
 import { HomeAssistant } from "../types";
 import "./ha-circular-progress";
 import "./ha-svg-icon";
-import { showImageCropperDialog } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
+import {
+  showImageCropperDialog,
+  CropOptions,
+} from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 
 @customElement("ha-picture-upload")
 export class HaPictureUpload extends LitElement {
@@ -27,6 +30,10 @@ export class HaPictureUpload extends LitElement {
   @property() public value: string | null = null;
 
   @property() public label?: string;
+
+  @property({ type: Boolean }) public crop = false;
+
+  @property({ attribute: false }) public cropOptions?: CropOptions;
 
   @property({ type: Number }) public size = 512;
 
@@ -66,12 +73,10 @@ export class HaPictureUpload extends LitElement {
                   dragged: this._drag,
                 })}
               >
-                <label for="input" slot="label"
-                  >${this.label ||
-                  this.hass.localize(
-                    "ui.components.picture-upload.label"
-                  )}</label
-                >
+                <label for="input" slot="label">
+                  ${this.label ||
+                  this.hass.localize("ui.components.picture-upload.label")}
+                </label>
                 <iron-input slot="input">
                   <input
                     id="input"
@@ -102,7 +107,11 @@ export class HaPictureUpload extends LitElement {
     ev.preventDefault();
     ev.stopPropagation();
     if (ev.dataTransfer?.files) {
-      this._cropFile(ev.dataTransfer.files[0]);
+      if (this.crop) {
+        this._cropFile(ev.dataTransfer.files[0]);
+      } else {
+        this._uploadFile(ev.dataTransfer.files[0]);
+      }
     }
     this._drag = false;
   }
@@ -120,7 +129,11 @@ export class HaPictureUpload extends LitElement {
   }
 
   private async _handleFilePicked(ev) {
-    this._cropFile(ev.target.files[0]);
+    if (this.crop) {
+      this._cropFile(ev.target.files[0]);
+    } else {
+      this._uploadFile(ev.target.files[0]);
+    }
   }
 
   private async _cropFile(file: File) {
@@ -132,6 +145,11 @@ export class HaPictureUpload extends LitElement {
     }
     showImageCropperDialog(this, {
       file,
+      options: this.cropOptions || {
+        round: false,
+        type: "image/png",
+        aspectRatio: NaN,
+      },
       croppedCallback: (croppedFile) => {
         this._uploadFile(croppedFile);
       },
@@ -188,20 +206,11 @@ export class HaPictureUpload extends LitElement {
         border-radius: 4px;
       }
       img {
-        display: block;
         max-width: 125px;
         max-height: 125px;
-        margin-bottom: 4px;
       }
       input.file {
         display: none;
-      }
-      input.file-picked {
-        position: absolute;
-        height: 100%;
-        width: 100%;
-        z-index: 5;
-        opacity: 0;
       }
       mwc-icon-button {
         --mdc-icon-button-size: 24px;

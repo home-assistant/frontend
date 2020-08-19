@@ -19,6 +19,7 @@ import "../../components/ha-dialog";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { HaImageCropperDialogParams } from "./show-image-cropper-dialog";
+import { classMap } from "lit-html/directives/class-map";
 
 @customElement("image-cropper-dialog")
 export class HaImagecropperDialog extends LitElement {
@@ -50,7 +51,7 @@ export class HaImagecropperDialog extends LitElement {
     if (!this._cropper) {
       this._image.src = URL.createObjectURL(this._params.file);
       this._cropper = new Cropper(this._image, {
-        aspectRatio: 1,
+        aspectRatio: this._params.options.aspectRatio,
         viewMode: 1,
         dragMode: "move",
         minCropBoxWidth: 50,
@@ -70,7 +71,11 @@ export class HaImagecropperDialog extends LitElement {
       escapeKeyAction
       .open=${this._open}
     >
-      <div class="container">
+      <div
+        class="container ${classMap({
+          round: Boolean(this._params?.options.round),
+        })}"
+      >
         <img />
       </div>
       <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
@@ -89,13 +94,13 @@ export class HaImagecropperDialog extends LitElement {
           return;
         }
         const file = new File([blob], this._params!.file.name, {
-          type: "image/jpeg",
+          type: this._params!.options.type,
         });
         this._params!.croppedCallback(file);
         this.closeDialog();
       },
-      "image/jpeg",
-      0.95
+      this._params!.options.type,
+      this._params!.options.quality
     );
   }
 
@@ -110,8 +115,8 @@ export class HaImagecropperDialog extends LitElement {
         img {
           max-width: 100%;
         }
-        .cropper-view-box,
-        .cropper-face {
+        .container.round .cropper-view-box,
+        .container.round .cropper-face {
           border-radius: 50%;
         }
         .cropper-line,
