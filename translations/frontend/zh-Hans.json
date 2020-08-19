@@ -1656,6 +1656,37 @@
                         "node_failed": "节点故障",
                         "stage": "阶段",
                         "zwave_info": "Z-Wave 信息"
+                    },
+                    "node_query_stages": {
+                        "associations": "正在刷新关联组和成员",
+                        "cacheload": "正在从 OpenZWave 缓存文件加载信息。电池供电的节点将停留在此阶段，直到节点唤醒。",
+                        "complete": "协商完成",
+                        "configuration": "正在从节点获取配置值",
+                        "dynamic": "正在从节点获取频繁更改的值",
+                        "instances": "正在获取设备支持的实例或通道的详细信息",
+                        "manufacturerspecific1": "正在从节点获取制造商和产品 ID 代码",
+                        "manufacturerspecific2": "从节点获取附加制造商和产品 ID 代码",
+                        "neighbors": "正在获取邻居节点的列表",
+                        "nodeinfo": "正在从节点获取受支持的命令类",
+                        "nodeplusinfo": "正在从节点获取 Z-Wave+ 信息",
+                        "probe": "正在检查节点是否处于唤醒状态",
+                        "protocolinfo": "正在从控制器获取此节点的基本 Z-Wave 功能",
+                        "session": "正在从节点获取不经常更改的值",
+                        "static": "正在从设备获取静态值",
+                        "versions": "正在获取固件和命令类版本信息",
+                        "wakeup": "正在设置对唤醒队列和消息的支持"
+                    },
+                    "refresh_node": {
+                        "battery_note": "如果节点由电池供电，请确保在继续操作之前将其唤醒",
+                        "complete": "节点刷新完成",
+                        "description": "这将通知 OpenZWave 重新访问节点并更新节点的命令类、功能和值。",
+                        "node_status": "节点状态",
+                        "refreshing_description": "正在刷新节点信息...",
+                        "start_refresh_button": "开始刷新",
+                        "step": "步骤",
+                        "title": "刷新节点信息",
+                        "wakeup_header": "唤醒方法：",
+                        "wakeup_instructions_source": "唤醒方法来自 OpenZWave 社区设备数据库。"
                     }
                 },
                 "person": {

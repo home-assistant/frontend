@@ -870,11 +870,11 @@
                                             "label": "횟수"
                                         },
                                         "until": {
-                                            "conditions": "~일 때 까지 (조건)",
+                                            "conditions": "~일 때 까지 조건",
                                             "label": "~일 때 까지"
                                         },
                                         "while": {
-                                            "conditions": "~인 동안 (조건)",
+                                            "conditions": "~인 동안 조건",
                                             "label": "~인 동안"
                                         }
                                     }

@@ -15,6 +15,9 @@
         }
     },
     "state_badge": {
+        "alarm_control_panel": {
+            "armed_custom_bypass": "Ynskeakele"
+        },
         "default": {
             "unknown": "Ûnbek."
         },
@@ -24,6 +27,10 @@
     },
     "state": {
         "alarm_control_panel": {
+            "armed": "Ynskeakele",
+            "armed_away": "Ynskeakele ôfwêzich",
+            "armed_home": "Ynskeakele thús",
+            "armed_night": "Ynskeakele nacht",
             "triggered": "Aktivearre"
         },
         "automation": {
@@ -86,6 +93,7 @@
         },
         "default": {
             "off": "Út",
+            "on": "Oan",
             "unavailable": "Net beskikber",
             "unknown": "Ûnbekend"
         },
@@ -137,10 +145,32 @@
         }
     },
     "ui": {
+        "card": {
+            "script": {
+                "cancel": "Annulearje",
+                "cancel_multiple": "Annulearje {number}"
+            },
+            "timer": {
+                "actions": {
+                    "cancel": "Annulearje"
+                }
+            },
+            "weather": {
+                "attributes": {
+                    "precipitation": "Delslach"
+                },
+                "high": "Heech",
+                "low": "Leech"
+            }
+        },
         "common": {
+            "cancel": "Annulearje",
             "loading": "Oan it laden"
         },
         "dialogs": {
+            "generic": {
+                "cancel": "Annulearje"
+            },
             "zha_device_info": {
                 "zha_device_card": {
                     "device_name_placeholder": "Feroarje apparaatnamme"
@@ -173,6 +203,7 @@
                                     "start": "Opstarte"
                                 },
                                 "mqtt": {
+                                    "label": "MQTT",
                                     "payload": "Payload (opsjoneel)"
                                 },
                                 "state": {
@@ -180,6 +211,11 @@
                                     "to": "Nei"
                                 }
                             }
+                        }
+                    },
+                    "picker": {
+                        "headers": {
+                            "name": "Namme"
                         }
                     }
                 },
@@ -200,8 +236,30 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "title": "MQTT"
+                },
+                "scene": {
+                    "picker": {
+                        "headers": {
+                            "name": "Namme"
+                        }
+                    }
+                },
                 "script": {
-                    "description": "Meitsje en bewurkje scripts"
+                    "description": "Meitsje en bewurkje scripts",
+                    "picker": {
+                        "headers": {
+                            "name": "Namme"
+                        }
+                    }
+                },
+                "users": {
+                    "picker": {
+                        "headers": {
+                            "name": "Namme"
+                        }
+                    }
                 },
                 "zha": {
                     "groups": {
@@ -211,6 +269,9 @@
                 "zwave": {
                     "node_config": {
                         "config_value": "Konfiguraasje wearde"
+                    },
+                    "services": {
+                        "cancel_command": "Opdracht annulearje"
                     }
                 }
             },
@@ -228,10 +289,14 @@
                 "playback_title": "Berjocht ôfspylje"
             },
             "profile": {
+                "dashboard": {
+                    "dropdown_label": "Dashboard",
+                    "header": "Dashboard"
+                },
                 "themes": {
                     "dark_mode": {
                         "dark": "Tsjuster",
-                        "light": "ljocht"
+                        "light": "Ljocht"
                     },
                     "primary_color": "Primêre kleur"
                 }
