@@ -1656,6 +1656,37 @@
                         "node_failed": "Error en el Nodo",
                         "stage": "Etapa",
                         "zwave_info": "Información Z-Wave"
+                    },
+                    "node_query_stages": {
+                        "associations": "Refrescando grupos de asociaciones y miembros",
+                        "cacheload": "Cargando información del archivo de caché de OpenZWave. Los nodos con batería permanecerán en esta etapa hasta que el nodo se active.",
+                        "complete": "El proceso de entrevista está completo",
+                        "configuration": "Obteniendo valores de configuración del nodo",
+                        "dynamic": "Obteniendo valores que cambian con frecuencia del nodo",
+                        "instances": "Obteniendo detalles sobre qué instancias o canales admite un dispositivo",
+                        "manufacturerspecific1": "Obteniendo del nodo los códigos de identificación de producto y del fabricante",
+                        "manufacturerspecific2": "Obteniendo del nodo códigos de identificación de producto y del fabricante adicionales",
+                        "neighbors": "Obteniendo una lista de los vecinos del nodo",
+                        "nodeinfo": "Obteniendo clases de órdenes admitidas por el nodo",
+                        "nodeplusinfo": "Obteniendo información Z-Wave+ del nodo",
+                        "probe": "Comprobando si el nodo está despierto/vivo",
+                        "protocolinfo": "Obteniendo las capacidades básicas de Z-Wave de este nodo desde el controlador",
+                        "session": "Obteniendo valores que cambian con poca frecuencia del nodo",
+                        "static": "Obteniendo valores estáticos del dispositivo",
+                        "versions": "Obteniendo información sobre versiones de firmware y clases de órdenes",
+                        "wakeup": "Configurando soporte para colas de despertador y mensajes"
+                    },
+                    "refresh_node": {
+                        "battery_note": "Si el nodo funciona con batería, asegúrate de despertarlo antes de continuar",
+                        "complete": "Refresco del Nodo Finalizado",
+                        "description": "Esto le indicará a OpenZWave que vuelva a entrevistar un nodo y actualice las clases de órdenes, las capacidades y los valores del mismo.",
+                        "node_status": "Estado del Nodo",
+                        "refreshing_description": "Refrescando la información del nodo ...",
+                        "start_refresh_button": "Iniciar Refresco",
+                        "step": "Paso",
+                        "title": "Refrescar Información del Nodo",
+                        "wakeup_header": "Instrucciones para despertar a",
+                        "wakeup_instructions_source": "Las instrucciones para despertarlo se obtienen de la base de datos de dispositivos de la comunidad OpenZWave."
                     }
                 },
                 "person": {

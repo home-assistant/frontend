@@ -833,6 +833,15 @@
                             "name": "Aktioun",
                             "type_select": "Aktioun Typ",
                             "type": {
+                                "choose": {
+                                    "add_option": "Optioun dobäisetzen",
+                                    "conditions": "Konditiounen",
+                                    "default": "Standard Aktiounen",
+                                    "label": "Auswielen",
+                                    "option": "Optioun {number}",
+                                    "remove_option": "Optioun läschen",
+                                    "sequence": "Aktiounen"
+                                },
                                 "condition": {
                                     "label": "Konditioun"
                                 },
@@ -851,6 +860,24 @@
                                     "event": "Evenement:",
                                     "label": "Evenement starten",
                                     "service_data": "Service-Donnéeën"
+                                },
+                                "repeat": {
+                                    "label": "Widderhuelen",
+                                    "sequence": "Aktiounen",
+                                    "type_select": "Widderhuelen Typ",
+                                    "type": {
+                                        "count": {
+                                            "label": "Ziel"
+                                        },
+                                        "until": {
+                                            "conditions": "Bis Konditiounen",
+                                            "label": "Bis"
+                                        },
+                                        "while": {
+                                            "conditions": "Während Konditiounen",
+                                            "label": "Während"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "Zeen aktivéieren"
@@ -1619,6 +1646,30 @@
                     "title": "MQTT",
                     "topic": "Sujet"
                 },
+                "ozw": {
+                    "common": {
+                        "node_id": "Node ID",
+                        "zwave": "Z-Wave"
+                    },
+                    "node_query_stages": {
+                        "complete": "Interview Prozess ass komplett",
+                        "configuration": "Konfiguratiounswerter vum Node kréien",
+                        "instances": "Detailer kréien iwwert wéieng Instanzen oder Kanäl en Apparat ënnerstëtzt",
+                        "manufacturerspecific2": "Zousätzlech Hiersteller a Produkt ID Coden vum Node kréien",
+                        "neighbors": "Eng Lëscht vun den Nopere vum Node kréien",
+                        "static": "Statesch Wäerter vum Apparat kréien",
+                        "versions": "Informatioun kréien iwwert Firmware a Kommando Klass Versiounen"
+                    },
+                    "refresh_node": {
+                        "complete": "Aktualiséierung vun den Node Informatioune komplett",
+                        "node_status": "Status vum Node",
+                        "refreshing_description": "Node Informatiounen aktualiséieren...",
+                        "start_refresh_button": "Aktualiséierung starten",
+                        "step": "Schrëtt",
+                        "title": "Node Informatiounen aktualiséieren",
+                        "wakeup_header": "Instruktioune fir d'erwäche vun"
+                    }
+                },
                 "person": {
                     "add_person": "Persoun dobäisetzen",
                     "caption": "Persounen",
@@ -2385,6 +2436,9 @@
                         "para_migrate": "Home Assistant kann ID's zu all äre Kaarten automatesch dobäisetzen andeem dir de Knäppche 'Konfiguratioun migréieren' dréckt.",
                         "para_no_id": "Dëst Element huet keng ID. Definéiert w.e.g. eng ID fir dëst Element am 'ui-lovelace.yaml'."
                     },
+                    "move_card": {
+                        "header": "Vue auswielen wou d'Kaart geréckelt soll ginn."
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "Mir erstellen automatesch är Lovelace Usiichte mat äre Beräicher an Apparaten wann dir är Lovelace Konfiguratioun läscht.",
                         "confirm_remove_config_title": "Sécher fir är Lovelace Konfiguratioun ze läschen? Mir erstellen automatesch är Lovelace Usiichte mat äre Beräicher an Apparaten.",
@@ -2411,6 +2465,10 @@
                         "yaml_config": "Fir de Start ze vereinfachen, hei ass déi aktuell Konfiguratioun vun dësem Tableau de Bord:",
                         "yaml_control": "Fir d'Kontroll am YAML Modus z'iwwerhuelen, erstell ee YAML Fichier mam Numm deen an der Konfiguratioun vun dësem Tableau de Bord uginn ass, oder de Standard 'ui-lovelace.yaml'",
                         "yaml_mode": "Du benotz de YAML Modus fir dësen Tableau de Bord, dëst bedeit dass du d'Lovelace Konfiguratioun net kanns aus dem Benotzer Interface änneren. Wann's du Lovelace vum Benotzer Interface aus wëlls änneren, läsch de 'mode: yaml' aus denger Lovelace Konfiguratioun am 'configuration.yaml'"
+                    },
+                    "select_view": {
+                        "dashboard_label": "Tableau de Bord",
+                        "header": "Vue auswielen"
                     },
                     "suggest_card": {
                         "add": "Zu Lovelace bäisetzen",
@@ -2729,10 +2787,18 @@
                     "header": "Verbindung autmatesch zoumaachen"
                 },
                 "themes": {
+                    "accent_color": "Faarf vum Accent",
+                    "dark_mode": {
+                        "auto": "Auto",
+                        "dark": "Däischter",
+                        "light": "Hell"
+                    },
                     "dropdown_label": "Thema",
                     "error_no_theme": "Keen Thema disponibel",
                     "header": "Thema",
-                    "link_promo": "Méi iwwert Thema liesen"
+                    "link_promo": "Méi iwwert Thema liesen",
+                    "primary_color": "Primär Faarf",
+                    "reset": "Reset"
                 },
                 "vibrate": {
                     "description": "Vibratioun op dësem Apparat un oder ausschalte wann aner Apparater gesteiert ginn.",

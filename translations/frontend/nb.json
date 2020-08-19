@@ -1656,6 +1656,37 @@
                         "node_failed": "Noden mislyktes",
                         "stage": "Scene",
                         "zwave_info": "Z-Wave Info"
+                    },
+                    "node_query_stages": {
+                        "associations": "Oppdatere tilknytningsgrupper og medlemskap",
+                        "cacheload": "Laste inn informasjon fra Cachefilen for OpenZWave. Batterinoder vil bli på dette stadiet til noden våkner.",
+                        "complete": "Intervjuprosessen er fullført",
+                        "configuration": "Innhenting av konfigurasjonsverdier fra noden",
+                        "dynamic": "Få ofte endrede verdier fra noden",
+                        "instances": "Innhenting av detaljer om hvilke forekomster eller kanaler en enhet støtter",
+                        "manufacturerspecific1": "Hente produsent- og produkt-ID-koder fra noden",
+                        "manufacturerspecific2": "Hente flere produsent- og produkt-ID-koder fra noden",
+                        "neighbors": "Få en liste over nodens naboer",
+                        "nodeinfo": "Innhenting av støttede kommandoklasser fra noden",
+                        "nodeplusinfo": "Innhenting av Z-Wave + informasjon fra noden",
+                        "probe": "Kontrollere om noden er våken/levende",
+                        "protocolinfo": "Få grunnleggende Z-Wave-funksjoner i denne noden fra kontrolleren",
+                        "session": "\nFå sjelden endrede verdier fra noden",
+                        "static": "Innhenting av statiske verdier fra enheten",
+                        "versions": "Hente informasjon om fastvare- og kommandoklasseversjoner",
+                        "wakeup": "Sette opp støtte for vekkingskøer og meldinger"
+                    },
+                    "refresh_node": {
+                        "battery_note": "Hvis noden er batteridrevet, må du passe på å vekke den før du fortsetter",
+                        "complete": "Node oppdatering fullført",
+                        "description": "Dette vil fortelle OpenZWave å re-intervjue en node og oppdatere nodens kommandoklasser, evner og verdier.",
+                        "node_status": "Node-status",
+                        "refreshing_description": "Oppdaterer nodeinformasjon...",
+                        "start_refresh_button": "Start oppdatering",
+                        "step": "Steg",
+                        "title": "Oppdater nodeinformasjon",
+                        "wakeup_header": "Wakeup Instruksjoner for",
+                        "wakeup_instructions_source": "Wakeup-instruksjoner hentes fra OpenZWave-fellesskapets enhetsdatabase."
                     }
                 },
                 "person": {

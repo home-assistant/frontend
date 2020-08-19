@@ -1656,6 +1656,10 @@
                         "node_failed": "Ha fallat el node",
                         "stage": "Etapa",
                         "zwave_info": "Informació Z-Wave"
+                    },
+                    "refresh_node": {
+                        "node_status": "Estat del node",
+                        "step": "Pas"
                     }
                 },
                 "person": {
