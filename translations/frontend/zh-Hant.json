@@ -1656,6 +1656,37 @@
                         "node_failed": "節點失敗",
                         "stage": "階段",
                         "zwave_info": "Z-Wave 資訊"
+                    },
+                    "node_query_stages": {
+                        "associations": "更新相關群組與成員",
+                        "cacheload": "由 OpenZwave 暫存檔載入資訊。電池供電節點將會保持此階段直到節點喚醒。",
+                        "complete": "探訪過程完成",
+                        "configuration": "由節點獲得設定值",
+                        "dynamic": "由節點獲得頻率變更值",
+                        "instances": "獲得設備或頻道支援的詳細資料",
+                        "manufacturerspecific1": "由節點獲得製造廠商與產品 ID 代碼",
+                        "manufacturerspecific2": "由節點獲得附加製造商與產品 ID 代碼",
+                        "neighbors": "獲得節點週邊設備列表",
+                        "nodeinfo": "由節點獲得支援命令 Class",
+                        "nodeplusinfo": "由節點獲得 Z-Wave+ 資訊",
+                        "probe": "檢查節點是否為喚醒狀態",
+                        "protocolinfo": "由控制器獲得此節點基本 Z-Wave 相容性資訊",
+                        "session": "由節點獲得非頻率變更值",
+                        "static": "由設備獲得靜態值",
+                        "versions": "獲得韌體與命令 Class 版本資訊",
+                        "wakeup": "設定喚醒序列與訊息之支援"
+                    },
+                    "refresh_node": {
+                        "battery_note": "假如節點為電池供電、請確定先行喚醒以繼續",
+                        "complete": "節點更新完成",
+                        "description": "將會通知 OpenZWave 重新探訪節點並更新節點命令 Class、相容性與數值。",
+                        "node_status": "節點狀態",
+                        "refreshing_description": "正在更新節點資訊...",
+                        "start_refresh_button": "開始更新",
+                        "step": "階段",
+                        "title": "更新節點資訊",
+                        "wakeup_header": "喚醒說明",
+                        "wakeup_instructions_source": "喚醒說明為來自 OpenZWave 社群的設備資料庫。"
                     }
                 },
                 "person": {
@@ -2475,7 +2506,7 @@
                 },
                 "menu": {
                     "close": "關閉",
-                    "configure_ui": "介面設定",
+                    "configure_ui": "編輯主面板",
                     "exit_edit_mode": "退出 UI 編輯模式",
                     "help": "說明",
                     "refresh": "更新",

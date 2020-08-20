@@ -1,4 +1,4 @@
-import "@polymer/paper-item/paper-item";
+import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 import {
   css,
@@ -32,6 +32,7 @@ import {
 } from "./show-dialog-person-detail";
 import "../../../components/ha-svg-icon";
 import { mdiPlus } from "@mdi/js";
+import { styleMap } from "lit-html/directives/style-map";
 
 class HaConfigPerson extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -84,11 +85,20 @@ class HaConfigPerson extends LitElement {
           <ha-card class="storage">
             ${this._storageItems.map((entry) => {
               return html`
-                <paper-item @click=${this._openEditEntry} .entry=${entry}>
+                <paper-icon-item @click=${this._openEditEntry} .entry=${entry}>
+                  ${entry.picture
+                    ? html`<div
+                        style=${styleMap({
+                          backgroundImage: `url(${entry.picture})`,
+                        })}
+                        class="picture"
+                        slot="item-icon"
+                      ></div>`
+                    : ""}
                   <paper-item-body>
                     ${entry.name}
                   </paper-item-body>
-                </paper-item>
+                </paper-icon-item>
               `;
             })}
             ${this._storageItems.length === 0
@@ -111,11 +121,20 @@ class HaConfigPerson extends LitElement {
                 <ha-card header="Configuration.yaml persons">
                   ${this._configItems.map((entry) => {
                     return html`
-                      <paper-item>
+                      <paper-icon-item>
+                        ${entry.picture
+                          ? html`<div
+                              style=${styleMap({
+                                backgroundImage: `url(${entry.picture})`,
+                              })}
+                              class="picture"
+                              slot="item-icon"
+                            ></div>`
+                          : ""}
                         <paper-item-body>
                           ${entry.name}
                         </paper-item-body>
-                      </paper-item>
+                      </paper-icon-item>
                     `;
                   })}
                 </ha-card>
@@ -228,15 +247,21 @@ class HaConfigPerson extends LitElement {
         margin: 16px auto;
         overflow: hidden;
       }
+      .picture {
+        width: 40px;
+        height: 40px;
+        background-size: cover;
+        border-radius: 50%;
+      }
       .empty {
         text-align: center;
         padding: 8px;
       }
-      paper-item {
+      paper-icon-item {
         padding-top: 4px;
         padding-bottom: 4px;
       }
-      ha-card.storage paper-item {
+      ha-card.storage paper-icon-item {
         cursor: pointer;
       }
     `;

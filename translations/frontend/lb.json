@@ -833,6 +833,15 @@
                             "name": "Aktioun",
                             "type_select": "Aktioun Typ",
                             "type": {
+                                "choose": {
+                                    "add_option": "Optioun dobäisetzen",
+                                    "conditions": "Konditiounen",
+                                    "default": "Standard Aktiounen",
+                                    "label": "Auswielen",
+                                    "option": "Optioun {number}",
+                                    "remove_option": "Optioun läschen",
+                                    "sequence": "Aktiounen"
+                                },
                                 "condition": {
                                     "label": "Konditioun"
                                 },
@@ -851,6 +860,24 @@
                                     "event": "Evenement:",
                                     "label": "Evenement starten",
                                     "service_data": "Service-Donnéeën"
+                                },
+                                "repeat": {
+                                    "label": "Widderhuelen",
+                                    "sequence": "Aktiounen",
+                                    "type_select": "Widderhuelen Typ",
+                                    "type": {
+                                        "count": {
+                                            "label": "Ziel"
+                                        },
+                                        "until": {
+                                            "conditions": "Bis Konditiounen",
+                                            "label": "Bis"
+                                        },
+                                        "while": {
+                                            "conditions": "Während Konditiounen",
+                                            "label": "Während"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "Zeen aktivéieren"
@@ -1619,6 +1646,46 @@
                     "title": "MQTT",
                     "topic": "Sujet"
                 },
+                "ozw": {
+                    "common": {
+                        "node_id": "Node ID",
+                        "ozw_instance": "OpenZWave Instanz",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "Feeler am Node",
+                        "stage": "Stage",
+                        "zwave_info": "Z-Wave Info"
+                    },
+                    "node_query_stages": {
+                        "associations": "Associatiounsgruppen a Memberen aktualiséieren",
+                        "complete": "Interview Prozess ass komplett",
+                        "configuration": "Konfiguratiounswerter vum Node kréien",
+                        "instances": "Detailer kréien iwwert wéieng Instanzen oder Kanäl en Apparat ënnerstëtzt",
+                        "manufacturerspecific1": "Hiersteller a Produkt ID Code vum Node kréien",
+                        "manufacturerspecific2": "Zousätzlech Hiersteller a Produkt ID Coden vum Node kréien",
+                        "neighbors": "Eng Lëscht vun den Nopere vum Node kréien",
+                        "nodeinfo": "Kommando Klassen vum Node kréien",
+                        "nodeplusinfo": "Z-Wave+ Informatiounen vum Node kréien",
+                        "probe": "Checken op de Node un ass",
+                        "protocolinfo": "Basis Z-Wave Fäegkeeten fir dësem Node vum Kontroller kréien",
+                        "static": "Statesch Wäerter vum Apparat kréien",
+                        "versions": "Informatioun kréien iwwert Firmware a Kommando Klass Versiounen",
+                        "wakeup": "Ënnerstëtzung fir Erwäche Waardeschlaangen an Noriichten astellen"
+                    },
+                    "refresh_node": {
+                        "battery_note": "Falls den Node Batterie bedriwwen ass, stell sécher fir en z'erwächen iers de weiderfiers",
+                        "complete": "Aktualiséierung vun den Node Informatioune komplett",
+                        "description": "Dëst befeelt OpenZWave fir en Node ofzefroen a Kommando Klassen, Fäegkeeten a Wäerter vum Node aktualiséieren.",
+                        "node_status": "Status vum Node",
+                        "refreshing_description": "Node Informatiounen aktualiséieren...",
+                        "start_refresh_button": "Aktualiséierung starten",
+                        "step": "Schrëtt",
+                        "title": "Node Informatiounen aktualiséieren",
+                        "wakeup_header": "Instruktioune fir d'erwäche vun",
+                        "wakeup_instructions_source": "D'Instruktioune fir d'erwäche si vun der OpenZwave Communautéit Datebank."
+                    }
+                },
                 "person": {
                     "add_person": "Persoun dobäisetzen",
                     "caption": "Persounen",
@@ -2385,6 +2452,9 @@
                         "para_migrate": "Home Assistant kann ID's zu all äre Kaarten automatesch dobäisetzen andeem dir de Knäppche 'Konfiguratioun migréieren' dréckt.",
                         "para_no_id": "Dëst Element huet keng ID. Definéiert w.e.g. eng ID fir dëst Element am 'ui-lovelace.yaml'."
                     },
+                    "move_card": {
+                        "header": "Vue auswielen wou d'Kaart geréckelt soll ginn."
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "Mir erstellen automatesch är Lovelace Usiichte mat äre Beräicher an Apparaten wann dir är Lovelace Konfiguratioun läscht.",
                         "confirm_remove_config_title": "Sécher fir är Lovelace Konfiguratioun ze läschen? Mir erstellen automatesch är Lovelace Usiichte mat äre Beräicher an Apparaten.",
@@ -2411,6 +2481,10 @@
                         "yaml_config": "Fir de Start ze vereinfachen, hei ass déi aktuell Konfiguratioun vun dësem Tableau de Bord:",
                         "yaml_control": "Fir d'Kontroll am YAML Modus z'iwwerhuelen, erstell ee YAML Fichier mam Numm deen an der Konfiguratioun vun dësem Tableau de Bord uginn ass, oder de Standard 'ui-lovelace.yaml'",
                         "yaml_mode": "Du benotz de YAML Modus fir dësen Tableau de Bord, dëst bedeit dass du d'Lovelace Konfiguratioun net kanns aus dem Benotzer Interface änneren. Wann's du Lovelace vum Benotzer Interface aus wëlls änneren, läsch de 'mode: yaml' aus denger Lovelace Konfiguratioun am 'configuration.yaml'"
+                    },
+                    "select_view": {
+                        "dashboard_label": "Tableau de Bord",
+                        "header": "Vue auswielen"
                     },
                     "suggest_card": {
                         "add": "Zu Lovelace bäisetzen",
@@ -2729,10 +2803,18 @@
                     "header": "Verbindung autmatesch zoumaachen"
                 },
                 "themes": {
+                    "accent_color": "Faarf vum Accent",
+                    "dark_mode": {
+                        "auto": "Auto",
+                        "dark": "Däischter",
+                        "light": "Hell"
+                    },
                     "dropdown_label": "Thema",
                     "error_no_theme": "Keen Thema disponibel",
                     "header": "Thema",
-                    "link_promo": "Méi iwwert Thema liesen"
+                    "link_promo": "Méi iwwert Thema liesen",
+                    "primary_color": "Primär Faarf",
+                    "reset": "Reset"
                 },
                 "vibrate": {
                     "description": "Vibratioun op dësem Apparat un oder ausschalte wann aner Apparater gesteiert ginn.",

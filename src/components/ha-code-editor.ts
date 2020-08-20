@@ -101,11 +101,6 @@ export class HaCodeEditor extends UpdatingElement {
       .CodeMirror-scroll {
         max-height: var(--code-mirror-max-height, --code-mirror-height);
       }
-      .CodeMirror-gutters {
-        border-right: 1px solid var(--paper-input-container-color, var(--secondary-text-color));
-        background-color: var(--paper-dialog-background-color, var(--primary-background-color));
-        transition: 0.2s ease border-right;
-      }
       :host(.error-state) .CodeMirror-gutters {
         border-color: var(--error-state-color, red);
       }
@@ -113,7 +108,7 @@ export class HaCodeEditor extends UpdatingElement {
         border-right: 2px solid var(--paper-input-container-focus-color, var(--primary-color));
       }
       .CodeMirror-linenumber {
-        color: var(--paper-dialog-color, var(--primary-text-color));
+        color: var(--paper-dialog-color, var(--secondary-text-color));
       }
       .rtl .CodeMirror-vscrollbar {
         right: auto;
@@ -121,6 +116,100 @@ export class HaCodeEditor extends UpdatingElement {
       }
       .rtl-gutter {
         width: 20px;
+      }
+      .CodeMirror-gutters {
+        border-right: 1px solid var(--paper-input-container-color, var(--secondary-text-color));
+        background-color: var(--paper-dialog-background-color, var(--primary-background-color));
+        transition: 0.2s ease border-right;
+      }
+      .cm-s-default.CodeMirror {
+        background-color: var(--card-background-color);
+        color: var(--primary-text-color);
+      }
+      .cm-s-default .CodeMirror-cursor {
+        border-left: 1px solid var(--secondary-text-color);
+      }
+      
+      .cm-s-default div.CodeMirror-selected, .cm-s-default.CodeMirror-focused div.CodeMirror-selected {
+        background: rgba(var(--rgb-primary-color), 0.2);
+      }
+      
+      .cm-s-default .CodeMirror-line::selection,
+      .cm-s-default .CodeMirror-line>span::selection,
+      .cm-s-default .CodeMirror-line>span>span::selection {
+        background: rgba(var(--rgb-primary-color), 0.2);
+      }
+      
+      .cm-s-default .cm-keyword {
+        color: var(--codemirror-keyword, #6262FF);
+      }
+      
+      .cm-s-default .cm-operator {
+        color: var(--codemirror-operator, #cda869);
+      }
+      
+      .cm-s-default .cm-variable-2 {
+        color: var(--codemirror-variable-2, #690);
+      }
+      
+      .cm-s-default .cm-builtin {
+        color: var(--codemirror-builtin, #9B7536);
+      }
+      
+      .cm-s-default .cm-atom {
+        color: var(--codemirror-atom, #F90);
+      }
+      
+      .cm-s-default .cm-number {
+        color: var(--codemirror-number, #ca7841);
+      }
+      
+      .cm-s-default .cm-def {
+        color: var(--codemirror-def, #8DA6CE);
+      }
+      
+      .cm-s-default .cm-string {
+        color: var(--codemirror-string, #07a);
+      }
+      
+      .cm-s-default .cm-string-2 {
+        color: var(--codemirror-string-2, #bd6b18);
+      }
+      
+      .cm-s-default .cm-comment {
+        color: var(--codemirror-comment, #777);
+      }
+      
+      .cm-s-default .cm-variable {
+        color: var(--codemirror-variable, #07a);
+      }
+      
+      .cm-s-default .cm-tag {
+        color: var(--codemirror-tag, #997643);
+      }
+      
+      .cm-s-default .cm-meta {
+        color: var(--codemirror-meta, #000);
+      }
+      
+      .cm-s-default .cm-attribute {
+        color: var(--codemirror-attribute, #d6bb6d);
+      }
+      
+      .cm-s-default .cm-property {
+        color: var(--codemirror-property, #905);
+      }
+      
+      .cm-s-default .cm-qualifier {
+        color: var(--codemirror-qualifier, #690);
+      }
+      
+      .cm-s-default .cm-variable-3  {
+        color: var(--codemirror-variable-3, #07a);
+      }
+
+      .cm-s-default .cm-type {
+        color: var(--codemirror-type, #07a);
       }
     </style>`;
 

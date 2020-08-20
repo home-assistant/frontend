@@ -34,6 +34,7 @@ import "./types/ha-automation-trigger-time";
 import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
+import "./types/ha-automation-trigger-tag";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import { haStyle } from "../../../../resources/styles";
 
@@ -46,6 +47,7 @@ const OPTIONS = [
   "mqtt",
   "numeric_state",
   "sun",
+  "tag",
   "template",
   "time",
   "time_pattern",

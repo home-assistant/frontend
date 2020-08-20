@@ -90,6 +90,12 @@ export interface ZoneTrigger {
   event: "enter" | "leave";
 }
 
+export interface TagTrigger {
+  platform: "tag";
+  tag_id: string;
+  device_id?: string;
+}
+
 export interface TimeTrigger {
   platform: "time";
   at: string;
@@ -116,6 +122,7 @@ export type Trigger =
   | TimePatternTrigger
   | WebhookTrigger
   | ZoneTrigger
+  | TagTrigger
   | TimeTrigger
   | TemplateTrigger
   | EventTrigger

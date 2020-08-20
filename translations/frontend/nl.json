@@ -833,6 +833,15 @@
                             "name": "Actie",
                             "type_select": "Type actie",
                             "type": {
+                                "choose": {
+                                    "add_option": "Optie toevoegen",
+                                    "conditions": "Voorwaarden",
+                                    "default": "Standaardacties",
+                                    "label": "Kies",
+                                    "option": "Optie {number}",
+                                    "remove_option": "Verwijder optie",
+                                    "sequence": "Acties"
+                                },
                                 "condition": {
                                     "label": "Voorwaarde"
                                 },
@@ -851,6 +860,24 @@
                                     "event": "Gebeurtenis:",
                                     "label": "Gebeurtenis uitvoeren",
                                     "service_data": "Service data"
+                                },
+                                "repeat": {
+                                    "label": "Herhaling",
+                                    "sequence": "Acties",
+                                    "type_select": "Herhaal-type",
+                                    "type": {
+                                        "count": {
+                                            "label": "Telling"
+                                        },
+                                        "until": {
+                                            "conditions": "Totdat voldaan is aan",
+                                            "label": "Totdat"
+                                        },
+                                        "while": {
+                                            "conditions": "Zolang voldaan is aan voorwaarden",
+                                            "label": "Zolang"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "Activeer scène"
@@ -1619,6 +1646,18 @@
                     "title": "MQTT",
                     "topic": "onderwerp"
                 },
+                "ozw": {
+                    "common": {
+                        "node_id": "Knooppunt-ID",
+                        "ozw_instance": "Instantie van OpenZWave",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "Knoop gefaald",
+                        "stage": "Stadium",
+                        "zwave_info": "Z-Wave informatie"
+                    }
+                },
                 "person": {
                     "add_person": "Persoon toevoegen",
                     "caption": "Personen",
@@ -1987,6 +2026,8 @@
                         "group": "Groep",
                         "header": "Z-Wave Knooppunt-beheer",
                         "introduction": "Voer Z-Wave commando's uit die een enkel knooppunt beïnvloeden. Kies een knooppunt om een lijst met beschikbare commando's te zien.",
+                        "max_associations": "Maximale associaties:",
+                        "node_group_associations": "Knooppuntgroepassociaties",
                         "node_protection": "Node beveiliging",
                         "node_to_control": "Node om te besturen",
                         "nodes": "Knooppunten",
@@ -2385,6 +2426,9 @@
                         "para_migrate": "Home Assistant kan ID's voor al je kaarten en weergaven automatisch voor je toevoegen door op de knop 'Migrate config' te klikken.",
                         "para_no_id": "Dit element heeft geen ID. Voeg een ID toe aan dit element in 'ui-lovelace.yaml'."
                     },
+                    "move_card": {
+                        "header": "Kies een weergave om de kaart naartoe te verplaatsen"
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "We zullen je Lovelace gebruikersinterface automatisch genereren met je gebieden en apparaten als je de huidige Lovelace gebruikersinterface verwijdert.",
                         "confirm_remove_config_title": "Weet je zeker dat je de huidige Lovelace gebruikersinterface wilt verwijderen? We zullen automatisch een nieuwe Lovelace gebruikersinterface genereren op basis van je gebieden en apparaten.",
@@ -2411,6 +2455,10 @@
                         "yaml_config": "Om je te helpen te beginnen, hier is de huidige configuratie van dit dashboard:",
                         "yaml_control": "Om de controle over te nemen in de YAML-modus, maak je een YAML-bestand met de naam die je hebt opgegeven in je configuratie voor dit dashboard, of de standaard 'ui-lovelace.yaml'.",
                         "yaml_mode": "Je gebruikt de YAML-modus, wat betekent dat je jouw Lovelace-configuratie niet vanuit de gebruikersinterface kunt wijzigen. Als je Lovelace vanuit de gebruikersinterface wilt wijzigen, verwijder dan 'mode: yaml' uit de Lovelace-configuratie in 'configuration.yaml'."
+                    },
+                    "select_view": {
+                        "dashboard_label": "Dashboard",
+                        "header": "Kies een weergave"
                     },
                     "suggest_card": {
                         "add": "Voeg toe aan de Lovelace gebruikersinterface",
@@ -2729,10 +2777,18 @@
                     "header": "Verbinding automatisch verbreken"
                 },
                 "themes": {
+                    "accent_color": "Accentkleur",
+                    "dark_mode": {
+                        "auto": "Automatisch",
+                        "dark": "Donker",
+                        "light": "Licht"
+                    },
                     "dropdown_label": "Thema",
                     "error_no_theme": "Geen thema's beschikbaar.",
                     "header": "Thema",
-                    "link_promo": "Meer informatie over thema's"
+                    "link_promo": "Meer informatie over thema's",
+                    "primary_color": "Primaire kleur",
+                    "reset": "Herstel"
                 },
                 "vibrate": {
                     "description": "Schakel trillingen op dit apparaat in of uit wanneer u apparaten bestuurt.",
