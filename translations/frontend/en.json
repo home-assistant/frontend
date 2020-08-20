@@ -554,6 +554,10 @@
                 "loading_history": "Loading state history...",
                 "no_history_found": "No state history found."
             },
+            "picture-upload": {
+                "label": "Picture",
+                "unsupported_format": "Unsupported format, please choose a JPEG, PNG or GIF image."
+            },
             "related-items": {
                 "area": "Area",
                 "automation": "Part of the following automations",
@@ -655,6 +659,9 @@
                 "platform_not_loaded": "The {platform} integration is not loaded. Please add it to your configuration either by adding 'default_config:' or ''{platform}:''.",
                 "required_error_msg": "This field is required",
                 "yaml_not_editable": "The settings of this entity cannot be edited from the UI. Only entities set up from the UI are configurable from the UI."
+            },
+            "image_cropper": {
+                "crop": "Crop"
             },
             "more_info_control": {
                 "dismiss": "Dismiss dialog",
