@@ -798,7 +798,7 @@
                         "confirmation_text": "이 영역에 속한 모든 장치가 할당 해제됩니다.",
                         "confirmation_title": "이 영역을 삭제하시겠습니까?"
                     },
-                    "description": "영역을 만들고 편집합니다",
+                    "description": "집의 영역을 관리합니다",
                     "editor": {
                         "area_id": "영역 ID",
                         "create": "만들기",
@@ -820,7 +820,7 @@
                 },
                 "automation": {
                     "caption": "자동화",
-                    "description": "자동화를 만들고 편집합니다",
+                    "description": "자동화를 관리합니다",
                     "editor": {
                         "actions": {
                             "add": "동작 추가",
@@ -833,6 +833,15 @@
                             "name": "동작",
                             "type_select": "동작 유형",
                             "type": {
+                                "choose": {
+                                    "add_option": "옵션 추가",
+                                    "conditions": "조건",
+                                    "default": "기본 동작",
+                                    "label": "선택",
+                                    "option": "옵션 {number}",
+                                    "remove_option": "옵션 제거",
+                                    "sequence": "동작"
+                                },
                                 "condition": {
                                     "label": "조건"
                                 },
@@ -851,6 +860,24 @@
                                     "event": "이벤트:",
                                     "label": "이벤트 발생",
                                     "service_data": "서비스 데이터"
+                                },
+                                "repeat": {
+                                    "label": "반복",
+                                    "sequence": "동작",
+                                    "type_select": "반복 유형",
+                                    "type": {
+                                        "count": {
+                                            "label": "횟수"
+                                        },
+                                        "until": {
+                                            "conditions": "~일 때 까지 조건",
+                                            "label": "~일 때 까지"
+                                        },
+                                        "while": {
+                                            "conditions": "~인 동안 조건",
+                                            "label": "~인 동안"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "씬 활성화"
@@ -1341,7 +1368,7 @@
                 },
                 "entities": {
                     "caption": "구성요소",
-                    "description": "등록된 구성요소를 편집합니다",
+                    "description": "등록된 구성요소를 관리합니다",
                     "picker": {
                         "disable_selected": {
                             "button": "선택된 구성요소 비활성화",
@@ -1393,7 +1420,7 @@
                 "header": "Home Assistant 설정",
                 "helpers": {
                     "caption": "도우미",
-                    "description": "자동화 구축에 도움이 되는 요소입니다",
+                    "description": "자동화 구축에 도움이 되는 요소를 관리합니다",
                     "dialog": {
                         "add_helper": "도우미 추가",
                         "add_platform": "{platform} 추가",
@@ -1486,7 +1513,7 @@
                     },
                     "configure": "설정하기",
                     "configured": "설정된 통합 구성요소",
-                    "description": "통합 구성요소를 관리하고 설정합니다",
+                    "description": "통합 구성요소를 관리합니다",
                     "details": "통합 구성요소 상세정보",
                     "discovered": "발견된 구성요소",
                     "home_assistant_website": "Home Assistant 웹 사이트",
@@ -1514,7 +1541,7 @@
                     "rename_input_label": "구성 항목의 이름",
                     "search": "통합 구성요소 검색"
                 },
-                "introduction": "여기에서 구성요소와  Home Assistant 를 설정할 수 있습니다. 아직 여기서 모두 설정할 수는 없지만, 모든 내용을 설정할 수 있도록 작업 중입니다.",
+                "introduction": "이 뷰에서 구성요소와  Home Assistant 를 설정할 수 있습니다. 아직 여기서 모두 설정할 수는 없지만, 모든 내용을 설정할 수 있도록 작업 중입니다.",
                 "logs": {
                     "caption": "로그",
                     "clear": "지우기",
@@ -1570,7 +1597,7 @@
                             "open": "열기"
                         }
                     },
-                    "description": "Lovelace 대시보드를 구성합니다",
+                    "description": "Lovelace 대시보드를 관리합니다",
                     "resources": {
                         "cant_edit_yaml": "YAML 모드에서 Lovelace 를 사용하고 있으므로 UI 를 통해 리소스를 관리할 수 없습니다. configuration.yaml 에서 관리해주세요.",
                         "caption": "리소스",
@@ -1619,6 +1646,18 @@
                     "title": "MQTT",
                     "topic": "토픽"
                 },
+                "ozw": {
+                    "common": {
+                        "node_id": "노드 ID",
+                        "ozw_instance": "OpenZWave 인스턴스",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "노드 실패",
+                        "stage": "단계",
+                        "zwave_info": "Z-Wave 정보"
+                    }
+                },
                 "person": {
                     "add_person": "구성원 추가하기",
                     "caption": "구성원",
@@ -1648,7 +1687,7 @@
                 "scene": {
                     "activated": "{name} 씬이 활성화 됨.",
                     "caption": "씬",
-                    "description": "씬을 만들고 편집합니다",
+                    "description": "씬을 관리합니다",
                     "editor": {
                         "default_name": "새로운 씬",
                         "devices": {
@@ -1692,7 +1731,7 @@
                 },
                 "script": {
                     "caption": "스크립트",
-                    "description": "스크립트를 만들고 편집합니다",
+                    "description": "스크립트를 관리합니다",
                     "editor": {
                         "alias": "이름",
                         "default_name": "새로운 스크립트",
@@ -1879,7 +1918,7 @@
                         "create_group": "Zigbee Home Automation - 그룹 만들기",
                         "create_group_details": "새로운 Zigbee 그룹을 생성하기 위해 필요한 세부 사항을 입력해주세요",
                         "creating_group": "그룹 생성",
-                        "description": "Zigbee 그룹을 생성하거나 수정합니다",
+                        "description": "Zigbee 그룹을 관리합니다",
                         "group_details": "선택된 Zigbee 그룹의 모든 세부 정보는 다음과 같습니다.",
                         "group_id": "그룹 ID",
                         "group_info": "그룹 정보",
@@ -2387,6 +2426,9 @@
                         "para_migrate": "Home Assistant 는 '구성 마이그레이션' 버튼을 눌러 자동으로 모든 카드와 뷰에 ID를 추가할 수 있습니다.",
                         "para_no_id": "이 요소에는 ID가 없습니다. 'ui-lovelace.yaml' 에 요소의 ID를 추가해주세요."
                     },
+                    "move_card": {
+                        "header": "카드를 이동할 뷰를 선택해주세요"
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "Lovelace UI 구성을 제거하면, 영역 및 기기와 함께 Lovelace UI 뷰가 자동으로 생성됩니다.",
                         "confirm_remove_config_title": "Lovelace UI 구성을 제거하시겠습니까? 영역 및 기기와 함께 Lovelace UI 뷰를 자동으로 생성해드립니다.",
@@ -2414,6 +2456,10 @@
                         "yaml_control": "YAML 모드로 제어하려면 대시보드의 구성에서 지정한 이름의 YAML 파일을 만들거나 기본 제공된 'ui-lovelace.yaml' 을 사용해주세요.",
                         "yaml_mode": "이 대시보드는 YAML 모드를 사용 중이므로 UI 에서 Lovelace 구성을 변경할 수 없습니다. Lovelace 를 UI 에서 변경하려면 'configuration.yaml' 의 Lovelace 구성에서 'mode:yaml' 을 제거해주세요."
                     },
+                    "select_view": {
+                        "dashboard_label": "대시보드",
+                        "header": "뷰 선택"
+                    },
                     "suggest_card": {
                         "add": "Lovelace UI 에 추가",
                         "create_own": "다른 카드 선택",
@@ -2429,7 +2475,7 @@
                 },
                 "menu": {
                     "close": "닫기",
-                    "configure_ui": "UI 구성",
+                    "configure_ui": "대시보드 편집",
                     "exit_edit_mode": "UI 편집 모드 종료",
                     "help": "도움말",
                     "refresh": "새로고침",
@@ -2731,10 +2777,18 @@
                     "header": "자동 연결 종료"
                 },
                 "themes": {
+                    "accent_color": "강조 색상",
+                    "dark_mode": {
+                        "auto": "자동",
+                        "dark": "어둡게",
+                        "light": "밝게"
+                    },
                     "dropdown_label": "테마",
                     "error_no_theme": "사용할 수 있는 테마가 없습니다.",
                     "header": "테마",
-                    "link_promo": "테마에 대해 더 알아보기"
+                    "link_promo": "테마에 대해 더 알아보기",
+                    "primary_color": "주 색상",
+                    "reset": "초기화"
                 },
                 "vibrate": {
                     "description": "기기를 제어할 때 이 기기에서 진동을 활성화 또는 비활성화합니다.",

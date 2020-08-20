@@ -1656,6 +1656,28 @@
                         "node_failed": "Nœud Défaillant",
                         "stage": "Étape",
                         "zwave_info": "Informations Z-Wave"
+                    },
+                    "node_query_stages": {
+                        "associations": "Rafraîchissement les associations et les membres",
+                        "cacheload": "Chargement des informations à partir du fichier de cache OpenZWave. Les nœuds de batterie resteront à cette étape jusqu'à ce que le nœud se réveille.",
+                        "complete": "Le processus d'interrogation est terminé",
+                        "configuration": "Obtention la configuration à partir du nœud",
+                        "dynamic": "Obtention de valeurs fréquemment modifiées du nœud",
+                        "neighbors": "Obtenir une liste des nœuds voisins",
+                        "session": "Obtention de valeurs rarement modifiées du nœud",
+                        "static": "Obtention des valeurs statiques de l'appareil"
+                    },
+                    "refresh_node": {
+                        "battery_note": "Si le nœud est alimenté par batterie, assurez-vous de l'activer avant de continuer",
+                        "complete": "Actualisation du nœud terminée",
+                        "description": "Cela indiquera à OpenZWave de réinterroger le nœud et de le mettre à jour (commandes, possibilités et valeurs).",
+                        "node_status": "État du nœud",
+                        "refreshing_description": "Rafraîchissement des informations sur le nœud...",
+                        "start_refresh_button": "Démarrer l'actualisation",
+                        "step": "Étape",
+                        "title": "Actualiser les informations du nœud",
+                        "wakeup_header": "Instructions de réveil pour",
+                        "wakeup_instructions_source": "Les instructions de réveil proviennent de la base de données de la communauté OpenZWave."
                     }
                 },
                 "person": {

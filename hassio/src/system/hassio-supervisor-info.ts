@@ -12,12 +12,18 @@ import {
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-call-api-button";
 import "../../../src/components/ha-card";
+import { HassioHostInfo as HassioHostInfoType } from "../../../src/data/hassio/host";
 import {
   HassioSupervisorInfo as HassioSupervisorInfoType,
   setSupervisorOption,
   SupervisorOptions,
 } from "../../../src/data/hassio/supervisor";
-import { showConfirmationDialog } from "../../../src/dialogs/generic/show-dialog-box";
+import "../../../src/components/ha-switch";
+import {
+  showConfirmationDialog,
+  showAlertDialog,
+} from "../../../src/dialogs/generic/show-dialog-box";
+import "../../../src/components/ha-settings-row";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import { hassioStyle } from "../resources/hassio-style";
@@ -27,6 +33,8 @@ class HassioSupervisorInfo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public supervisorInfo!: HassioSupervisorInfoType;
+
+  @property() public hostInfo!: HassioHostInfoType;
 
   @internalProperty() private _errors?: string;
 
@@ -55,8 +63,42 @@ class HassioSupervisorInfo extends LitElement {
                 : ""}
             </tbody>
           </table>
+          <div class="options">
+            ${this.supervisorInfo?.supported
+              ? html` <ha-settings-row>
+                  <span slot="heading">
+                    Share Diagnostics
+                  </span>
+                  <div slot="description" class="diagnostics-description">
+                    Share crash reports and diagnostic information.
+                    <button
+                      class="link"
+                      @click=${this._diagnosticsInformationDialog}
+                    >
+                      Learn more
+                    </button>
+                  </div>
+                  <ha-switch
+                    .checked=${this.supervisorInfo.diagnostics}
+                    @change=${this._toggleDiagnostics}
+                  ></ha-switch>
+                </ha-settings-row>`
+              : html`<div class="error">
+                  You are running an unsupported installation.
+                  <a
+                    href="https://github.com/home-assistant/architecture/blob/master/adr/${this.hostInfo.features.includes(
+                      "hassos"
+                    )
+                      ? "0015-home-assistant-os.md"
+                      : "0014-home-assistant-supervised.md"}"
+                    target="_blank"
+                    rel="noreferrer"
+                    >Learn More</a
+                  >
+                </div>`}
+          </div>
           ${this._errors
-            ? html` <div class="errors">Error: ${this._errors}</div> `
+            ? html` <div class="error">Error: ${this._errors}</div> `
             : ""}
         </div>
         <div class="card-actions">
@@ -111,15 +153,23 @@ class HassioSupervisorInfo extends LitElement {
           box-sizing: border-box;
           height: calc(100% - 47px);
         }
-        .info {
+        .info,
+        .options {
           width: 100%;
         }
         .info td:nth-child(2) {
           text-align: right;
         }
-        .errors {
-          color: var(--error-color);
-          margin-top: 16px;
+        ha-settings-row {
+          padding: 0;
+        }
+        button.link {
+          color: var(--primary-color);
+        }
+        .diagnostics-description {
+          white-space: normal;
+          padding: 0;
+          color: var(--secondary-text-color);
         }
       `,
     ];
@@ -179,6 +229,40 @@ class HassioSupervisorInfo extends LitElement {
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
       this._errors = `Error joining beta channel, ${err.body?.message || err}`;
+    }
+  }
+
+  private async _diagnosticsInformationDialog() {
+    await showAlertDialog(this, {
+      title: "Help Improve Home Assistant",
+      text: html`Would you want to automatically share crash reports and
+        diagnostic information when the supervisor encounters unexpected errors?
+        <br /><br />
+        This will allow us to fix the problems, the information is only
+        accessible to the Home Assistant Core team and will not be shared with
+        others.
+        <br /><br />
+        The data does not include any private/sensitive information and you can
+        disable this in settings at any time you want.`,
+    });
+  }
+
+  private async _toggleDiagnostics() {
+    try {
+      const data: SupervisorOptions = {
+        diagnostics: !this.supervisorInfo?.diagnostics,
+      };
+      await setSupervisorOption(this.hass, data);
+      const eventdata = {
+        success: true,
+        response: undefined,
+        path: "option",
+      };
+      fireEvent(this, "hass-api-called", eventdata);
+    } catch (err) {
+      this._errors = `Error changing supervisor setting, ${
+        err.body?.message || err
+      }`;
     }
   }
 }

@@ -1,1 +1,306 @@
-{}
+{
+    "panel": {
+        "config": "Konfiguraasje",
+        "history": "Skiednis",
+        "mailbox": "Postfak",
+        "map": "Kaart",
+        "shopping_list": "Boadskiplist"
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "Út",
+                "on": "Oan"
+            }
+        }
+    },
+    "state_badge": {
+        "alarm_control_panel": {
+            "armed_custom_bypass": "Ynskeakele"
+        },
+        "default": {
+            "unknown": "Ûnbek."
+        },
+        "person": {
+            "home": "Thús"
+        }
+    },
+    "state": {
+        "alarm_control_panel": {
+            "armed": "Ynskeakele",
+            "armed_away": "Ynskeakele ôfwêzich",
+            "armed_home": "Ynskeakele thús",
+            "armed_night": "Ynskeakele nacht",
+            "triggered": "Aktivearre"
+        },
+        "automation": {
+            "off": "Út",
+            "on": "Oan"
+        },
+        "binary_sensor": {
+            "cold": {
+                "on": "Kâld"
+            },
+            "connectivity": {
+                "on": "Ferbûn"
+            },
+            "default": {
+                "off": "Út",
+                "on": "Oan"
+            },
+            "door": {
+                "off": "Ticht",
+                "on": "Iepen"
+            },
+            "garage_door": {
+                "off": "Ticht",
+                "on": "Iepen"
+            },
+            "gas": {
+                "off": "Net detektearre"
+            },
+            "motion": {
+                "on": "Detekteare"
+            },
+            "opening": {
+                "off": "Ticht"
+            },
+            "presence": {
+                "on": "Thús"
+            },
+            "vibration": {
+                "on": "Detekteare"
+            },
+            "window": {
+                "off": "Ticht"
+            }
+        },
+        "calendar": {
+            "on": "Oan"
+        },
+        "camera": {
+            "recording": "Opnimme"
+        },
+        "climate": {
+            "cool": "Kuolje",
+            "dry": "Droech",
+            "heat": "Ferwaarmje"
+        },
+        "cover": {
+            "closing": "Slút",
+            "open": "Iepen",
+            "opening": "Iepent"
+        },
+        "default": {
+            "off": "Út",
+            "on": "Oan",
+            "unavailable": "Net beskikber",
+            "unknown": "Ûnbekend"
+        },
+        "device_tracker": {
+            "not_home": "Fuort"
+        },
+        "fan": {
+            "on": "Oan"
+        },
+        "group": {
+            "home": "Thús",
+            "locked": "Beskoattele",
+            "off": "Út",
+            "on": "Oan",
+            "open": "Iepen",
+            "stopped": "Stoppe"
+        },
+        "light": {
+            "off": "Út"
+        },
+        "lock": {
+            "locked": "Beskoattele"
+        },
+        "media_player": {
+            "playing": "Ôfspylje"
+        },
+        "script": {
+            "off": "Út"
+        },
+        "sensor": {
+            "off": "Út",
+            "on": "Oan"
+        },
+        "switch": {
+            "on": "Oan"
+        },
+        "weather": {
+            "sunny": "Sinnich"
+        },
+        "zwave": {
+            "default": {
+                "dead": "Net berikber",
+                "initializing": "Inisjalisearje",
+                "sleeping": "Sliept"
+            },
+            "query_stage": {
+                "dead": "Net berikber ({query_stage})"
+            }
+        }
+    },
+    "ui": {
+        "card": {
+            "script": {
+                "cancel": "Annulearje",
+                "cancel_multiple": "Annulearje {number}"
+            },
+            "timer": {
+                "actions": {
+                    "cancel": "Annulearje"
+                }
+            },
+            "weather": {
+                "attributes": {
+                    "precipitation": "Delslach"
+                },
+                "high": "Heech",
+                "low": "Leech"
+            }
+        },
+        "common": {
+            "cancel": "Annulearje",
+            "loading": "Oan it laden"
+        },
+        "dialogs": {
+            "generic": {
+                "cancel": "Annulearje"
+            },
+            "zha_device_info": {
+                "zha_device_card": {
+                    "device_name_placeholder": "Feroarje apparaatnamme"
+                }
+            }
+        },
+        "duration": {
+            "day": "{count} {count, plural,\none {dei}\nother {dagen}\n}",
+            "second": "{count} {count, plural,\none {sekonde}\nother {sekonden}\n}",
+            "week": "{count} {count, plural,\none {wike}\nother {wiken}\n}"
+        },
+        "panel": {
+            "config": {
+                "automation": {
+                    "editor": {
+                        "actions": {
+                            "type": {
+                                "choose": {
+                                    "add_option": "Opsje tafoegje"
+                                }
+                            }
+                        },
+                        "triggers": {
+                            "add": "Trigger tafoegje",
+                            "header": "",
+                            "type": {
+                                "homeassistant": {
+                                    "label": "",
+                                    "shutdown": "Ofslúte",
+                                    "start": "Opstarte"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "payload": "Payload (opsjoneel)"
+                                },
+                                "state": {
+                                    "from": "Fan",
+                                    "to": "Nei"
+                                }
+                            }
+                        }
+                    },
+                    "picker": {
+                        "headers": {
+                            "name": "Namme"
+                        }
+                    }
+                },
+                "helpers": {
+                    "types": {
+                        "input_boolean": "Skeakelje",
+                        "input_number": "Nûmer"
+                    }
+                },
+                "info": {
+                    "description": "Ynformaasje oer dyn Home Assistant ynstallaasje"
+                },
+                "lovelace": {
+                    "description": "Konfigurearje dyn Lovelace-dashboards",
+                    "resources": {
+                        "detail": {
+                            "warning_header": "Wês foarsichtich!"
+                        }
+                    }
+                },
+                "mqtt": {
+                    "title": "MQTT"
+                },
+                "scene": {
+                    "picker": {
+                        "headers": {
+                            "name": "Namme"
+                        }
+                    }
+                },
+                "script": {
+                    "description": "Meitsje en bewurkje scripts",
+                    "picker": {
+                        "headers": {
+                            "name": "Namme"
+                        }
+                    }
+                },
+                "users": {
+                    "picker": {
+                        "headers": {
+                            "name": "Namme"
+                        }
+                    }
+                },
+                "zha": {
+                    "groups": {
+                        "description": "Meitsje en bewurkje Zigbee groepen"
+                    }
+                },
+                "zwave": {
+                    "node_config": {
+                        "config_value": "Konfiguraasje wearde"
+                    },
+                    "services": {
+                        "cancel_command": "Opdracht annulearje"
+                    }
+                }
+            },
+            "lovelace": {
+                "editor": {
+                    "select_view": {
+                        "dashboard_label": "Dashboard"
+                    }
+                },
+                "menu": {
+                    "configure_ui": "Konfigurearje UI"
+                }
+            },
+            "mailbox": {
+                "playback_title": "Berjocht ôfspylje"
+            },
+            "profile": {
+                "dashboard": {
+                    "dropdown_label": "Dashboard",
+                    "header": "Dashboard"
+                },
+                "themes": {
+                    "dark_mode": {
+                        "dark": "Tsjuster",
+                        "light": "Ljocht"
+                    },
+                    "primary_color": "Primêre kleur"
+                }
+            }
+        }
+    }
+}

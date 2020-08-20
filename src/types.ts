@@ -254,6 +254,10 @@ export type LightEntity = HassEntityBase & {
     friendly_name: string;
     brightness: number;
     hs_color: number[];
+    color_temp: number;
+    white_value: number;
+    effect?: string;
+    effect_list: string[] | null;
   };
 };
 
@@ -283,6 +287,12 @@ export type MediaEntity = HassEntityBase & {
     media_title: string;
     icon?: string;
     entity_picture_local?: string;
+    is_volume_muted?: boolean;
+    volume_level?: number;
+    source?: string;
+    source_list?: string[];
+    sound_mode?: string;
+    sound_mode_list?: string[];
   };
   state:
     | "playing"

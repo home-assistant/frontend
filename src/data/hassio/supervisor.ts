@@ -31,6 +31,7 @@ export interface CreateSessionResponse {
 
 export interface SupervisorOptions {
   channel?: "beta" | "dev" | "stable";
+  diagnostics?: boolean;
   addons_repositories?: string[];
 }
 
@@ -70,7 +71,7 @@ export const createHassioSession = async (hass: HomeAssistant) => {
     "POST",
     "hassio/ingress/session"
   );
-  document.cookie = `ingress_session=${response.data.session};path=/api/hassio_ingress/`;
+  document.cookie = `ingress_session=${response.data.session};path=/api/hassio_ingress/;SameSite=Strict`;
 };
 
 export const setSupervisorOption = async (

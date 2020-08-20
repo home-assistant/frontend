@@ -1345,7 +1345,7 @@
     "@babel/runtime" "^7.7.2"
     core-js "^3.4.1"
 
-"@material/animation@8.0.0-canary.096a7a066.0", "@material/animation@8.0.0-canary.a78ceb112.0", "@material/animation@=8.0.0-canary.096a7a066.0":
+"@material/animation@8.0.0-canary.096a7a066.0", "@material/animation@8.0.0-canary.a78ceb112.0":
   version "8.0.0-canary.096a7a066.0"
   resolved "https://registry.yarnpkg.com/@material/animation/-/animation-8.0.0-canary.096a7a066.0.tgz#9c1b3d31858889e04e722ca8f1ade7ae3c54f7e6"
   integrity sha512-hGL6sMGcyd9JoxcyhRkAhD6KKQwZVRkhaFcra9YMBYHUbWRxfUbfDTjUZ3ZxmLDDcsjL4Hqjblet6Xmtq3Br5g==
@@ -1463,7 +1463,7 @@
     "@material/feature-targeting" "8.0.0-canary.096a7a066.0"
     "@material/theme" "8.0.0-canary.096a7a066.0"
 
-"@material/feature-targeting@8.0.0-canary.096a7a066.0", "@material/feature-targeting@8.0.0-canary.a78ceb112.0", "@material/feature-targeting@=8.0.0-canary.096a7a066.0":
+"@material/feature-targeting@8.0.0-canary.096a7a066.0", "@material/feature-targeting@8.0.0-canary.a78ceb112.0":
   version "8.0.0-canary.096a7a066.0"
   resolved "https://registry.yarnpkg.com/@material/feature-targeting/-/feature-targeting-8.0.0-canary.096a7a066.0.tgz#fca721c287b08e0868467ee60daa5d32aad16430"
   integrity sha512-5nxnG08PjdwhrLMNxfeCOImbdEtP/bVveOVr72hdqldHuwfnzNjp0lwWAAh/QZrpJNl4Ve2Cnp/LkRnlOELIkw==
@@ -1839,7 +1839,7 @@
     "@material/typography" "8.0.0-canary.096a7a066.0"
     tslib "^1.9.3"
 
-"@material/theme@8.0.0-canary.096a7a066.0", "@material/theme@8.0.0-canary.a78ceb112.0", "@material/theme@=8.0.0-canary.096a7a066.0":
+"@material/theme@8.0.0-canary.096a7a066.0", "@material/theme@8.0.0-canary.a78ceb112.0":
   version "8.0.0-canary.096a7a066.0"
   resolved "https://registry.yarnpkg.com/@material/theme/-/theme-8.0.0-canary.096a7a066.0.tgz#f657eaa545797ee3e6a2d96e4a61f844ad3dc425"
   integrity sha512-FdAUEjq7KJ835sobJQL0w0XWD5PabXl77HmBuy5F3bEYbYterWOutvuHbTkAEN6sTzgHCKhdoMubRxMKidqafA==
@@ -4781,6 +4781,11 @@ create-hmac@^1.1.0, create-hmac@^1.1.2, create-hmac@^1.1.4:
     ripemd160 "^2.0.0"
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
+
+cropperjs@^1.5.7:
+  version "1.5.7"
+  resolved "https://registry.yarnpkg.com/cropperjs/-/cropperjs-1.5.7.tgz#b65019725bae1c6285e881fb661b2141fa57025b"
+  integrity sha512-sGj+G/ofKh+f6A4BtXLJwtcKJgMUsXYVUubfTo9grERiDGXncttefmue/fyQFvn8wfdyoD1KhDRYLfjkJFl0yw==
 
 cross-spawn@6.0.5, cross-spawn@^6.0.0, cross-spawn@^6.0.5:
   version "6.0.5"

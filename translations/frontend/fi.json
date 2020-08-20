@@ -798,7 +798,7 @@
                         "confirmation_text": "Tälle alueelle kuuluvien laitteiden osoitus poistetaan.",
                         "confirmation_title": "Haluatko varmasti poistaa tämän alueen?"
                     },
-                    "description": "Yleiskuva kaikista kotisi alueista.",
+                    "description": "Hallinnoi kotisi alueita",
                     "editor": {
                         "area_id": "Alueen tunnus",
                         "create": "Luo",
@@ -833,6 +833,15 @@
                             "name": "Toiminta",
                             "type_select": "Toiminnon tyyppi",
                             "type": {
+                                "choose": {
+                                    "add_option": "Lisää vaihtoehto",
+                                    "conditions": "Ehdot",
+                                    "default": "Oletustoiminnot",
+                                    "label": "Valitse",
+                                    "option": "Vaihtoehto {number}",
+                                    "remove_option": "Poista vaihtoehto",
+                                    "sequence": "Toiminnot"
+                                },
                                 "condition": {
                                     "label": "Ehto"
                                 },
@@ -851,6 +860,24 @@
                                     "event": "Tapahtuma",
                                     "label": "Lähetä tapahtuma",
                                     "service_data": "Palvelun data"
+                                },
+                                "repeat": {
+                                    "label": "Toista",
+                                    "sequence": "Toiminnot",
+                                    "type_select": "Toistotyyppi",
+                                    "type": {
+                                        "count": {
+                                            "label": "Laske"
+                                        },
+                                        "until": {
+                                            "conditions": "Kunnes ehdot",
+                                            "label": "Kunnes"
+                                        },
+                                        "while": {
+                                            "conditions": "Sillä aikaa, kun ehdot",
+                                            "label": "Sillä aikaa"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "Aktivoi tilanne"
@@ -1341,7 +1368,7 @@
                 },
                 "entities": {
                     "caption": "Kohteet",
-                    "description": "Yleiskuva kaikista tunnetuista entiteeteistä.",
+                    "description": "Hallitse kohteita",
                     "picker": {
                         "disable_selected": {
                             "button": "Poista valitut käytöstä",
@@ -1619,6 +1646,18 @@
                     "title": "MQTT",
                     "topic": "aihe"
                 },
+                "ozw": {
+                    "common": {
+                        "node_id": "Solmun tunnus",
+                        "ozw_instance": "OpenZWave-instanssi",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "Solmu epäonnistui",
+                        "stage": "Vaihe",
+                        "zwave_info": "Z-Wave-tiedot"
+                    }
+                },
                 "person": {
                     "add_person": "Lisää henkilö",
                     "caption": "Henkilöt",
@@ -1711,6 +1750,7 @@
                             "queued": "Jonon pituus"
                         },
                         "modes": {
+                            "description": "Moodi hallitsee sitä, mitä tapahtuu, kun skripti käynnistetään, kun se edelleen toimii yhdestä tai useammasta aiemmasta kutsusta. Katso lisätietoja {documentation_link} .",
                             "documentation": "skriptin dokumentaatio",
                             "label": "Tila",
                             "parallel": "Rinnakkain",
@@ -2386,6 +2426,9 @@
                         "para_migrate": "Home Assistant voi lisätä ID:t kaikkiin kortteihisi ja näkymiin automaattisesti painamalla 'Tuo vanhat asetukset'-nappia.",
                         "para_no_id": "Elementillä ei ole ID. Lisää ID elementille 'ui-lovelace.yaml'-tiedostossa."
                     },
+                    "move_card": {
+                        "header": "Valitse näkymä, johon kortti siirretään"
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "Lovelace käyttöliittymän näkymät luodaan automaattisesti alueistasi ja laitteistasi, jos poistat nykyisen määrityksen.",
                         "confirm_remove_config_title": "Haluatko varmasti poistaa Lovelace-käyttöliittymän asetukset? Lovelace käyttöliittymän asetukset luodaan automaattisesti alueistasi ja laitteistasi.",
@@ -2412,6 +2455,10 @@
                         "yaml_config": "Tämän aloittamisen helpottamiseksi on tämä hallintapaneelin nykyinen kokoonpano:",
                         "yaml_control": "Jos haluat hallita YAML-tilaa, luo YAML-tiedosto, jonka nimi on määritetty tämän kojelaudan kokoonpanossa, tai oletusarvoinen 'ui-lovelace.yaml'.",
                         "yaml_mode": "Käytät YAML-tilaa, mikä tarkoittaa, että et voi muuttaa Lovelace-asetuksia käyttöliittymästä. Jos haluat muuttaa Lovelacea käyttöliittymästä, poista 'mode: yaml' Lovelace-määrityksestäsi tiedostossa 'configuration.yaml'."
+                    },
+                    "select_view": {
+                        "dashboard_label": "Kojelauta",
+                        "header": "Valitse näkymä"
                     },
                     "suggest_card": {
                         "add": "Lisää Lovelace-käyttöliittymään",
@@ -2730,10 +2777,18 @@
                     "header": "Sulje yhteys automaattisesti"
                 },
                 "themes": {
+                    "accent_color": "Korostusväri",
+                    "dark_mode": {
+                        "auto": "Automaattinen",
+                        "dark": "Tumma",
+                        "light": "Vaalea"
+                    },
                     "dropdown_label": "Teema",
                     "error_no_theme": "Ei teemoja käytettävissä.",
                     "header": "Teema",
-                    "link_promo": "Lisätietoja teemoista"
+                    "link_promo": "Lisätietoja teemoista",
+                    "primary_color": "Ensisijainen väri",
+                    "reset": "Nollaa"
                 },
                 "vibrate": {
                     "description": "Ota tämän laitteen värinä käyttöön tai poista se käytöstä, kun ohjaat laitteita.",

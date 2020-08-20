@@ -1619,6 +1619,11 @@
                     "title": "MQTT",
                     "topic": "Topic"
                 },
+                "ozw": {
+                    "device_info": {
+                        "zwave_info": "Z-Wave Infos"
+                    }
+                },
                 "person": {
                     "add_person": "Person hinzufügen",
                     "caption": "Personen",
@@ -2731,10 +2736,16 @@
                     "header": "Verbindung automatisch schließen"
                 },
                 "themes": {
+                    "accent_color": "Akzentfarbe",
+                    "dark_mode": {
+                        "dark": "Dunkel",
+                        "light": "Hell"
+                    },
                     "dropdown_label": "Thema",
                     "error_no_theme": "Keine Themen verfügbar.",
                     "header": "Thema",
-                    "link_promo": "Erfahre mehr über Themen"
+                    "link_promo": "Erfahre mehr über Themen",
+                    "primary_color": "Primärfarbe"
                 },
                 "vibrate": {
                     "description": "Aktiviere oder deaktiviere die Vibration an diesem Gerät, wenn du Geräte steuerst.",

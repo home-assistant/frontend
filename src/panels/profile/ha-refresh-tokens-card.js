@@ -11,7 +11,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
-import "./ha-settings-row";
+import "../../components/ha-settings-row";
 
 /*
  * @appliesMixin EventsMixin

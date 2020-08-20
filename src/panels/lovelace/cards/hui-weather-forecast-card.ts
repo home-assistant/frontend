@@ -436,6 +436,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         .forecast-image-icon > * {
           width: 40px;
           height: 40px;
+          --mdc-icon-size: 40px;
         }
 
         .forecast-icon {
@@ -469,7 +470,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
           width: 52px;
         }
 
-        :host([narrow]) .weather-icon {
+        :host([narrow]) .icon-image .weather-icon {
           --mdc-icon-size: 52px;
         }
 
