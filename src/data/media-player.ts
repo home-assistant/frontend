@@ -35,19 +35,20 @@ export interface MediaPlayerItem {
   can_play: boolean;
   can_expand: boolean;
   thumbnail?: string;
+  children?: MediaPlayerItem[];
 }
 
-export interface MediaPlayerItemParent extends MediaPlayerItem {
-  children: MediaPlayerItem[];
-}
+// export interface MediaPlayerItemParent extends MediaPlayerItem {
+//   children: MediaPlayerItem[];
+// }
 
 export const browseMediaPlayer = (
   hass: HomeAssistant,
   entityId: string,
   mediaContentId?: string,
   mediaContentType?: string
-) =>
-  hass.callWS<MediaPlayerItemParent>({
+): Promise<MediaPlayerItem> =>
+  hass.callWS<MediaPlayerItem>({
     type: "media_player/browse_media",
     entity_id: entityId,
     media_content_id: mediaContentId,
