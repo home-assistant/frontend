@@ -952,8 +952,7 @@
                   "offset": "Offset (optional)"
                 },
                 "tag": {
-                  "label": "Tag",
-                  "tag_id": "Tag ID"
+                  "label": "Tag"
                 },
                 "template": {
                   "label": "Template",

@@ -35,7 +35,7 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
     return html`
       <ha-paper-dropdown-menu
         .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.type.tag.tag_id"
+          "ui.panel.config.automation.editor.triggers.type.tag.label"
         )}
         ?disabled=${this._tags.length === 0}
       >
