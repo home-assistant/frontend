@@ -37,7 +37,6 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.tag.tag_id"
         )}
-        .value=${tag_id}
         ?disabled=${this._tags.length === 0}
       >
         <paper-listbox
