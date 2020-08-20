@@ -115,7 +115,7 @@ export const getSecondaryWeatherAttribute = (
     return extrema;
   }
 
-  let value: number;
+  let value: string;
   let attribute: string;
 
   if (
@@ -123,10 +123,10 @@ export const getSecondaryWeatherAttribute = (
     stateObj.attributes.forecast[0].precipitation !== undefined &&
     stateObj.attributes.forecast[0].precipitation !== null
   ) {
-    value = stateObj.attributes.forecast[0].precipitation!;
+    value = stateObj.attributes.forecast[0].precipitation!.toFixed(1);
     attribute = "precipitation";
   } else if ("humidity" in stateObj.attributes) {
-    value = stateObj.attributes.humidity!;
+    value = stateObj.attributes.humidity!.toString();
     attribute = "humidity";
   } else {
     return undefined;
