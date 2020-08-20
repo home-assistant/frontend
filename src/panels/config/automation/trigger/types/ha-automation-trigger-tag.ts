@@ -64,8 +64,10 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
 
   private _tagChanged(ev) {
     fireEvent(this, "value-changed", {
-      ...this.trigger,
-      tag_id: ev.detail.item.tag.id,
+      value: {
+        ...this.trigger,
+        tag_id: ev.detail.item.tag.id,
+      },
     });
   }
 }
