@@ -30,13 +30,13 @@ export const fetchTags = async (hass: HomeAssistant) =>
 
 export const createTag = async (
   hass: HomeAssistant,
-  tagId: string,
-  name?: string
+  params: UpdateTagParams,
+  tagId?: string
 ) =>
-  hass.callWS<{ user: Tag }>({
+  hass.callWS<Tag>({
     type: "tag/create",
     tag_id: tagId,
-    name,
+    ...params,
   });
 
 export const updateTag = async (
@@ -44,7 +44,7 @@ export const updateTag = async (
   tagId: string,
   params: UpdateTagParams
 ) =>
-  hass.callWS<{ user: Tag }>({
+  hass.callWS<Tag>({
     ...params,
     type: "tag/update",
     tag_id: tagId,

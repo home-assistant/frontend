@@ -2,6 +2,7 @@ import { ExternalMessaging } from "./external_messaging";
 
 export interface ExternalConfig {
   hasSettingsScreen: boolean;
+  canWriteTag: boolean;
 }
 
 export const getExternalConfig = (
