@@ -896,7 +896,7 @@
               "duplicate": "Duplicate",
               "delete": "[%key:ui::panel::mailbox::delete_button%]",
               "delete_confirm": "Are you sure you want to delete this?",
-              "unsupported_platform": "Unsupported platform: {platform}",
+              "unsupported_platform": "No UI support for platform: {platform}",
               "type_select": "Trigger type",
               "type": {
                 "device": {
@@ -992,7 +992,7 @@
               "duplicate": "[%key:ui::panel::config::automation::editor::triggers::duplicate%]",
               "delete": "[%key:ui::panel::mailbox::delete_button%]",
               "delete_confirm": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm%]",
-              "unsupported_condition": "Unsupported condition: {condition}",
+              "unsupported_condition": "No UI support for condition: {condition}",
               "type_select": "Condition type",
               "type": {
                 "and": {
@@ -1057,7 +1057,7 @@
               "duplicate": "[%key:ui::panel::config::automation::editor::triggers::duplicate%]",
               "delete": "[%key:ui::panel::mailbox::delete_button%]",
               "delete_confirm": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm%]",
-              "unsupported_action": "Unsupported action: {action}",
+              "unsupported_action": "No UI support for action: {action}",
               "type_select": "Action type",
               "type": {
                 "service": {

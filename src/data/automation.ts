@@ -93,6 +93,7 @@ export interface ZoneTrigger {
 export interface TagTrigger {
   platform: "tag";
   tag_id: string;
+  device_id?: string;
 }
 
 export interface TimeTrigger {
