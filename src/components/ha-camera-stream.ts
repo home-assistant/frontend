@@ -181,7 +181,7 @@ class HaCameraStream extends LitElement {
 
   private async _renderHLSExoPlayer(url: string) {
     window.addEventListener("resize", this._resizeExoPlayer);
-    setTimeout(this._resizeExoPlayer, 200);
+    this.updateComplete.then(this._resizeExoPlayer);
     this._videoEl.style.visibility = "hidden";
     await this.hass!.auth.external!.sendMessage({
       type: "exoplayer/play_hls",
