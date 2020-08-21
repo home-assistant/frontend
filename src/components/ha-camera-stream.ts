@@ -1,5 +1,3 @@
-import * as URLToolkit from 'url-toolkit';
-
 import {
   css,
   CSSResult,
@@ -14,7 +12,7 @@ import {
 import { fireEvent } from "../common/dom/fire_event";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { supportsFeature } from "../common/entity/supports-feature";
-import { getExternalConfig} from "../external_app/external_config";
+import { getExternalConfig } from "../external_app/external_config";
 import {
   CAMERA_SUPPORT_STREAM,
   computeMJPEGStreamUrl,
@@ -40,9 +38,7 @@ class HaCameraStream extends LitElement {
 
   private _hlsPolyfillInstance?: Hls;
 
-  private _useExoPlayer = false; 
-
-  private _resizeExoPlayerListener;
+  private _useExoPlayer = false;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -144,11 +140,10 @@ class HaCameraStream extends LitElement {
     // eslint-disable-next-line
     let hls;
     const videoEl = this._videoEl;
-    this._useExoPlayer = await this._getUseExoPlayer()
+    this._useExoPlayer = await this._getUseExoPlayer();
     if (!this._useExoPlayer) {
-      hls = ((await import(
-        /* webpackChunkName: "hls.js" */ "hls.js"
-      )) as any).default as HLSModule;
+      hls = ((await import(/* webpackChunkName: "hls.js" */ "hls.js")) as any)
+        .default as HLSModule;
       let hlsSupported = hls.isSupported();
 
       if (!hlsSupported) {
@@ -168,7 +163,7 @@ class HaCameraStream extends LitElement {
         this.stateObj!.entity_id
       );
 
-      if (this._useExoPlayer){
+      if (this._useExoPlayer) {
         this._renderHLSExoPlayer(url);
       } else if (hls.isSupported()) {
         this._renderHLSPolyfill(videoEl, hls, url);
@@ -185,24 +180,27 @@ class HaCameraStream extends LitElement {
   }
 
   private async _renderHLSExoPlayer(url: string) {
-    this._resizeExoPlayerListener = () => this._resizeExoPlayer();
-    window.addEventListener('resize', this._resizeExoPlayerListener);
-    // https://github.com/typescript-eslint/typescript-eslint/issues/1642
-    // eslint-disable-next-line
-    setTimeout(this._resizeExoPlayerListener,200);
+    window.addEventListener("resize", this._resizeExoPlayer);
+    setTimeout(this._resizeExoPlayer, 200);
     this._videoEl.style.visibility = "hidden";
-    this.hass!.auth.external!.fireMessage({
-      type: "play_hls",
-      payload: URLToolkit.buildAbsoluteURL(window.location.href, url, {alwaysNormalize: true})});
+    await this.hass!.auth.external!.sendMessage({
+      type: "exoplayer/play_hls",
+      payload: new URL(url, window.location.href).toString(),
+    });
   }
 
-  private _resizeExoPlayer(){
+  private _resizeExoPlayer = () => {
     const rect = this._videoEl.getBoundingClientRect();
     this.hass!.auth.external!.fireMessage({
-      type: "resize_hls",
-      payload: {"left": rect.left, "top": rect.top, "right": rect.right, "bottom": rect.bottom}
-    })
-  }
+      type: "exoplayer/resize",
+      payload: {
+        left: rect.left,
+        top: rect.top,
+        right: rect.right,
+        bottom: rect.bottom,
+      },
+    });
+  };
 
   private async _renderHLSNative(videoEl: HTMLVideoElement, url: string) {
     videoEl.src = url;
@@ -241,9 +239,8 @@ class HaCameraStream extends LitElement {
       this._hlsPolyfillInstance = undefined;
     }
     if (this._useExoPlayer) {
-      window.removeEventListener('resize',this._resizeExoPlayerListener)
-      this.hass!.auth.external!.fireMessage({type: "stop_hls"});
-      this._videoEl.style.visibility = "hidden";
+      window.removeEventListener("resize", this._resizeExoPlayer);
+      this.hass!.auth.external!.fireMessage({ type: "exoplayer/stop" });
     }
   }
 
