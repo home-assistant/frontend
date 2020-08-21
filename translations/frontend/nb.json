@@ -554,6 +554,10 @@
                 "loading_history": "Laster statushistorikk...",
                 "no_history_found": "Ingen statushistorikk funnet."
             },
+            "picture-upload": {
+                "label": "Bilde",
+                "unsupported_format": "Formatet støttes ikke, vennligst velge et JPEG-, PNG- eller GIF-bilde."
+            },
             "related-items": {
                 "area": "Område",
                 "automation": "Del av følgende automasjoner",
@@ -655,6 +659,9 @@
                 "platform_not_loaded": "Integrasjonen av {platform} er ikke lastet. Legg den til i konfigurasjonen din enten ved å legge til 'default_config:' eller '' {platform} : ''.",
                 "required_error_msg": "Dette feltet er påkrevd",
                 "yaml_not_editable": "Innstillingene for denne entiteten kan ikke redigeres fra brukergrensesnittet. Bare entiteter som er satt opp fra brukergrensesnittet, kan konfigureres fra brukergrensesnittet."
+            },
+            "image_cropper": {
+                "crop": "Beskjære"
             },
             "more_info_control": {
                 "dismiss": "Avvis dialogboksen",

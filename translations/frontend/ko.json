@@ -554,6 +554,10 @@
                 "loading_history": "상태 기록 내용 읽는 중...",
                 "no_history_found": "상태 기록 내용이 없습니다."
             },
+            "picture-upload": {
+                "label": "그림",
+                "unsupported_format": "지원되지 않는 형식입니다. JPEG, PNG 또는 GIF 이미지를 선택해주세요."
+            },
             "related-items": {
                 "area": "영역",
                 "automation": "관련된 자동화",
@@ -655,6 +659,9 @@
                 "platform_not_loaded": "{platform} 통합 구성요소가 로드되지 않았습니다. 'default_config:' 또는 \"{platform}:\" 을 configuration.yaml 에 추가해주세요.",
                 "required_error_msg": "이 입력란은 필수 요소입니다",
                 "yaml_not_editable": "이 구성요소의 설정은 UI 에서 편집할 수 없습니다. UI 에서 설정한 구성요소만 UI 에서 구성할 수 있습니다."
+            },
+            "image_cropper": {
+                "crop": "자르기"
             },
             "more_info_control": {
                 "dismiss": "대화창 닫기",
@@ -1656,6 +1663,37 @@
                         "node_failed": "노드 실패",
                         "stage": "단계",
                         "zwave_info": "Z-Wave 정보"
+                    },
+                    "node_query_stages": {
+                        "associations": "연결 그룹 및 구성원 자격 새로고침",
+                        "cacheload": "OpenZWave 캐시 파일에서 정보를 읽어오기. 배터리 노드는 노드가 절전 해제 상태가 될 때까지 이 단계를 유지합니다.",
+                        "complete": "인터뷰 과정이 완료되었습니다",
+                        "configuration": "노드에서 구성 값 가져오기",
+                        "dynamic": "노드에서 자주 변경되는 값 가져오기",
+                        "instances": "기기가 지원하는 인스턴스 또는 채널에 대한 세부 정보 가져오기",
+                        "manufacturerspecific1": "노드에서 제조업체 및 제품 ID 코드 가져오기",
+                        "manufacturerspecific2": "노드에서 추가 제조업체 및 제품 ID 코드 가져오기",
+                        "neighbors": "노드의 연관 항목 목록 가져오기",
+                        "nodeinfo": "노드에서 지원되는 명령 클래스 가져오기",
+                        "nodeplusinfo": "노드에서 Z-Wave+ 정보 가져오기",
+                        "probe": "노드가 절전 해제 상태 또는 활성 상태인지 확인",
+                        "protocolinfo": "컨트롤러에서 이 노드의 기본 Z-Wave 기능 가져오기",
+                        "session": "노드에서 간헐적으로 변경되는 값 가져오기",
+                        "static": "기기에서 정적 값 가져오기",
+                        "versions": "펌웨어 및 명령 클래스 버전에 대한 정보 가져오기",
+                        "wakeup": "절전 해제 대기열 및 메시지에 대한 지원 설정"
+                    },
+                    "refresh_node": {
+                        "battery_note": "노드가 배터리 전원을 사용하는 경우 계속하기 전에 절전 모드가 해제되어 있는지 확인해주세요",
+                        "complete": "노드 새로고침 완료",
+                        "description": "OpenZWave 가 노드를 다시 인터뷰하고 노드의 명령 클래스, 기능 및 값을 업데이트하도록 지시합니다.",
+                        "node_status": "노드 상태",
+                        "refreshing_description": "노드 정보를 새로고침 하는 중...",
+                        "start_refresh_button": "새로고침 시작",
+                        "step": "단계",
+                        "title": "노드 정보 새로고침",
+                        "wakeup_header": "절전 해제 지침",
+                        "wakeup_instructions_source": "절전 해제 지침은 OpenZWave 커뮤니티 기기 데이터베이스에서 제공됩니다."
                     }
                 },
                 "person": {
@@ -2272,7 +2310,7 @@
                             "minimum": "최소",
                             "name": "이름",
                             "no_theme": "테마 없음",
-                            "refresh_interval": "새로 고침 간격",
+                            "refresh_interval": "새로고침 간격",
                             "search": "검색",
                             "secondary_info_attribute": "보조 정보 속성",
                             "show_icon": "아이콘 표시",
