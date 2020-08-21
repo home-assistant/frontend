@@ -56,7 +56,7 @@ const integrationsWithPanel = {
     path: "/config/zha/dashboard",
   },
   ozw: {
-    buttonLocalizeKey: "ui.panel.config.zwave.button",
+    buttonLocalizeKey: "ui.panel.config.ozw.button",
     path: "/config/ozw/dashboard",
   },
   zwave: {

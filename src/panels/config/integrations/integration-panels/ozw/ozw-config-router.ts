@@ -47,8 +47,6 @@ class OZWConfigRouter extends HassRouterPage {
     el.configEntryId = this._configEntry;
     if (this._currentPage === "network") {
       el.ozw_instance = this.routeTail.path.substr(1);
-      /*} else if (this._currentPage === "device") {
-      el.ieee = this.routeTail.path.substr(1);*/
     }
 
     const searchParams = new URLSearchParams(window.location.search);
