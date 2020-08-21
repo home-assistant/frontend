@@ -1,20 +1,20 @@
-import "../../../components/ha-circular-progress";
-import "../../../components/ha-code-editor";
+import "@material/mwc-button/mwc-button";
 import {
-  LitElement,
-  property,
-  internalProperty,
-  html,
   css,
   CSSResultArray,
+  html,
+  internalProperty,
+  LitElement,
+  property,
 } from "lit-element";
-import { HomeAssistant } from "../../../types";
 import { classMap } from "lit-html/directives/class-map";
 import { debounce } from "../../../common/util/debounce";
+import "../../../components/ha-circular-progress";
+import "../../../components/ha-code-editor";
 import { haStyle } from "../../../resources/styles";
-import "@material/mwc-button/mwc-button";
+import { HomeAssistant } from "../../../types";
 
-const DEMO_TEMPLATE = `Imitate available variables:
+const DEMO_TEMPLATE = `{## Imitate available variables: ##}
 {% set my_test_json = {
   "temperature": 25,
   "unit": "°C"
@@ -22,16 +22,16 @@ const DEMO_TEMPLATE = `Imitate available variables:
 
 The temperature is {{ my_test_json.temperature }} {{ my_test_json.unit }}.
 
-{% if is_state("device_tracker.paulus", "home") and
-      is_state("device_tracker.anne_therese", "home") -%}
-  You are both home, you silly
+{% if is_state("sun.sun", "above_horizon") -%}
+  The sun rose {{ relative_time(states.sun.sun.last_changed) }} ago.
 {%- else -%}
-  Anne Therese is at {{ states("device_tracker.anne_therese") }}
-  Paulus is at {{ states("device_tracker.paulus") }}
+  The sun will rise at {{ as_timestamp(strptime(state_attr("sun.sun", "next_rising"), "")) | timestamp_custom("%X") }}.
 {%- endif %}
 
-For loop example:
-{% for state in states.sensor -%}
+For loop example getting 3 random sensor values:
+
+{% for states in states.sensor|slice(3) -%}
+  {% set state = (states|random) %}
   {%- if loop.first %}The {% elif loop.last %} and the {% else %}, the {% endif -%}
   {{ state.name | lower }} is {{state.state_with_unit}}
 {%- endfor %}.`;
@@ -49,7 +49,7 @@ class HaPanelDevTemplate extends LitElement {
 
   private _template = "";
 
-  private inited = false;
+  private _inited = false;
 
   protected firstUpdated() {
     if (localStorage && localStorage["panel-dev-template-template"]) {
@@ -58,7 +58,7 @@ class HaPanelDevTemplate extends LitElement {
       this._template = DEMO_TEMPLATE;
     }
     this._renderTemplate();
-    this.inited = true;
+    this._inited = true;
   }
 
   protected render() {
@@ -111,10 +111,14 @@ class HaPanelDevTemplate extends LitElement {
             @value-changed=${this._templateChanged}
           ></ha-code-editor>
           <mwc-button @click=${this._renderTemplate}>
-            Reload
+            ${this.hass.localize(
+              "ui.panel.developer-tools.tabs.templates.reload"
+            )}
           </mwc-button>
           <mwc-button @click=${this._restoreDemo}>
-            Reset to demo template
+            ${this.hass.localize(
+              "ui.panel.developer-tools.tabs.templates.reset"
+            )}
           </mwc-button>
         </div>
 
@@ -177,7 +181,7 @@ ${this._processed}</pre
         }
 
         .rendered.error {
-          color: red;
+          color: var(--error-color);
         }
       `,
     ];
@@ -220,7 +224,7 @@ ${this._processed}</pre
   }
 
   private _storeTemplate() {
-    if (!this.inited) {
+    if (!this._inited) {
       return;
     }
     localStorage["panel-dev-template-template"] = this._template;
