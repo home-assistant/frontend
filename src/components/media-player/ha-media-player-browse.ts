@@ -1,32 +1,37 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-fab/mwc-fab";
-import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
 import {
-  LitElement,
-  html,
-  customElement,
-  property,
-  PropertyValues,
-  internalProperty,
   css,
   CSSResultArray,
+  customElement,
+  html,
+  internalProperty,
+  LitElement,
+  property,
+  PropertyValues,
   TemplateResult,
 } from "lit-element";
-import { mdiPlay, mdiFolder, mdiArrowLeft, mdiPlus } from "@mdi/js";
-
-import { haStyle } from "../../resources/styles";
-import { browseMediaPlayer } from "../../data/media-player";
-import { debounce } from "../../common/util/debounce";
-import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
+import { mdiArrowLeft, mdiFolder, mdiPlay, mdiPlus } from "@mdi/js";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { MediaPlayerItem } from "../../data/media-player";
+import { debounce } from "../../common/util/debounce";
+import {
+  browseMediaPlayer,
+  getBrowseMediaSources,
+} from "../../data/media-player";
+import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
+import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
+import type { MediaPlayerItem } from "../../data/media-player";
+import type { DataTableRowData } from "../data-table/ha-data-table";
 
-import "../ha-circular-progress";
-import "../ha-svg-icon";
+import "../data-table/ha-data-table";
+import "../entity/ha-entity-picker";
 import "../ha-card";
+import "../ha-circular-progress";
 import "../ha-paper-dropdown-menu";
+import "../ha-svg-icon";
 
 interface MediaPickedEvent {
   media_content_id: string;
@@ -88,6 +93,10 @@ export class HaMediaPlayerBrowse extends LitElement {
         ? this._mediaPlayerItems[this._mediaPlayerItems.length - 2]
         : undefined;
 
+    const hasExpandableChildren:
+      | MediaPlayerItem
+      | undefined = mostRecentItem.children?.find((item) => item.can_expand);
+
     return html`
       <div class="header">
         <div class="header-content">
@@ -102,7 +111,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                         <mwc-fab
                           mini
                           .item=${mostRecentItem}
-                          @click=${this._runAction}
+                          @click=${this._actionClicked}
                         >
                           <ha-svg-icon
                             slot="icon"
@@ -148,7 +157,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                     <mwc-button
                       raised
                       .item=${mostRecentItem}
-                      @click=${this._runAction}
+                      @click=${this._actionClicked}
                     >
                       <ha-svg-icon
                         slot="icon"
@@ -170,68 +179,92 @@ export class HaMediaPlayerBrowse extends LitElement {
           <ha-paper-dropdown-menu .label=${"Media Source"}>
             <paper-listbox
               slot="dropdown-content"
+              attr-for-selected="itemName"
               .selected=${this.entityId}
-              @iron-select=${() => console.log()}
-              attr-for-selected="item-name"
+              @iron-select=${this._selectMediaSource}
             >
-              <paper-item .itemName=${this.entityId}
-                >${this.hass.states[this.entityId].attributes
-                  .friendly_name}</paper-item
-              >
+              ${getBrowseMediaSources(this.hass).map(
+                (source) => html`
+                  <paper-item .itemName=${source.entity_id}
+                    >${source.attributes.friendly_name}</paper-item
+                  >
+                `
+              )}
             </paper-listbox>
           </ha-paper-dropdown-menu>
         </div>
       </div>
       <div class="divider"></div>
-      <div class="children">
-        ${mostRecentItem.children?.length
-          ? html`
-              ${mostRecentItem.children.map(
-                (child) => html`
-                  <div class="child" .item=${child} @click=${this._navigate}>
-                    <div class="ha-card-parent">
-                      <ha-card
-                        style="background-image: url(${child.thumbnail})"
-                      >
-                        ${child.can_expand && !child.thumbnail
-                          ? html`
-                              <ha-svg-icon
-                                class="folder"
-                                .path=${mdiFolder}
-                              ></ha-svg-icon>
-                            `
-                          : ""}
-                      </ha-card>
-                      ${child.can_play && !this._narrow
-                        ? html`
-                            <div class="ha-card-copy">
-                              <ha-svg-icon
-                                class="play"
-                                .item=${child}
-                                .label=${this.hass.localize(
-                                  `ui.components.media-browser.${this.action}-media`
-                                )}
-                                .path=${this.action === "play"
-                                  ? mdiPlay
-                                  : mdiPlus}
-                                @click=${this._runAction}
-                              ></ha-svg-icon>
-                            </div>
-                          `
-                        : ""}
-                    </div>
-                    <div class="title">${child.title}</div>
-                    <div class="type">
-                      ${this.hass.localize(
-                        `ui.components.media-browser.content-type.${child.media_content_type}`
-                      )}
-                    </div>
-                  </div>
-                `
-              )}
-            `
-          : ""}
-      </div>
+      ${hasExpandableChildren
+        ? html`
+            <div class="children">
+              ${mostRecentItem.children?.length
+                ? html`
+                    ${mostRecentItem.children.map(
+                      (child) => html`
+                        <div
+                          class="child"
+                          .item=${child}
+                          @click=${this._navigate}
+                        >
+                          <div class="ha-card-parent">
+                            <ha-card
+                              style="background-image: url(${child.thumbnail})"
+                            >
+                              ${child.can_expand && !child.thumbnail
+                                ? html`
+                                    <ha-svg-icon
+                                      class="folder"
+                                      .path=${mdiFolder}
+                                    ></ha-svg-icon>
+                                  `
+                                : ""}
+                            </ha-card>
+                            ${child.can_play && !this._narrow
+                              ? html`
+                                  <div class="ha-card-copy">
+                                    <ha-svg-icon
+                                      class="play"
+                                      .item=${child}
+                                      .label=${this.hass.localize(
+                                        `ui.components.media-browser.${this.action}-media`
+                                      )}
+                                      .path=${this.action === "play"
+                                        ? mdiPlay
+                                        : mdiPlus}
+                                      @click=${this._actionClicked}
+                                    ></ha-svg-icon>
+                                  </div>
+                                `
+                              : ""}
+                          </div>
+                          <div class="title">${child.title}</div>
+                          <div class="type">
+                            ${this.hass.localize(
+                              `ui.components.media-browser.content-type.${child.media_content_type}`
+                            )}
+                          </div>
+                        </div>
+                      `
+                    )}
+                  `
+                : ""}
+            </div>
+          `
+        : mostRecentItem.children
+        ? html`
+            <ha-data-table
+              .columns=${this._columns}
+              .data=${mostRecentItem.children.map((child) => {
+                return { icon: this.action, ...child };
+              }) as DataTableRowData[]}
+              .autoHeight=${true}
+              .showHeader=${false}
+              .id=${"media_content_id"}
+              @row-click=${this._rowClicked}
+            ></ha-data-table>
+          `
+        : ""}
     `;
   }
 
@@ -255,10 +288,14 @@ export class HaMediaPlayerBrowse extends LitElement {
     this._fetchData(this.mediaContentId, this.mediaContentType);
   }
 
-  private _runAction(ev: MouseEvent): void {
+  private _actionClicked(ev: MouseEvent): void {
     ev.stopPropagation();
     const item = (ev.currentTarget as any).item;
 
+    this._runAction(item);
+  }
+
+  private _runAction(item: MediaPlayerItem): void {
     if (this.action === "pick") {
       fireEvent(this, "media-picked", {
         media_content_id: item.media_content_id,
@@ -274,6 +311,17 @@ export class HaMediaPlayerBrowse extends LitElement {
     });
   }
 
+  private _selectMediaSource(ev: CustomEvent): void {
+    const entityId = ev.detail.item.itemName;
+    if (this.entityId === entityId) {
+      return;
+    }
+
+    this.entityId = entityId;
+    this.mediaContentId = undefined;
+    this.mediaContentType = undefined;
+  }
+
   private _navigate(ev: MouseEvent): void {
     const target = ev.currentTarget as any;
 
@@ -285,6 +333,18 @@ export class HaMediaPlayerBrowse extends LitElement {
 
     const item = target.item;
     this._fetchData(item.media_content_id, item.media_content_type);
+  }
+
+  private _rowClicked(ev: CustomEvent): void {
+    const item = this._mediaPlayerItems[
+      this._mediaPlayerItems.length - 1
+    ].children?.find((i) => i.media_content_id === ev.detail.id);
+
+    if (!item) {
+      return;
+    }
+
+    this._runAction(item);
   }
 
   private async _fetchData(
@@ -314,6 +374,30 @@ export class HaMediaPlayerBrowse extends LitElement {
 
     this._resizeObserver.observe(this);
   }
+
+  private _columns = {
+    icon: {
+      title: "",
+      type: "icon",
+      template: (icon: string, item: MediaPlayerItem) =>
+        html`
+          <ha-svg-icon
+            style="cursor: pointer;"
+            .item=${item}
+            .label=${this.hass.localize(
+              `ui.components.media-browser.${icon}-media`
+            )}
+            .path=${icon === "play" ? mdiPlay : mdiPlus}
+            @click=${this._actionClicked.bind(this)}
+          ></ha-svg-icon>
+        `,
+    },
+    title: {
+      title: "Title",
+      template: (title: string) =>
+        html`<div style="cursor: pointer;">${title}</div>`,
+    },
+  };
 
   static get styles(): CSSResultArray {
     return [
@@ -523,6 +607,10 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         :host([narrow]) .children {
           grid-template-columns: 1fr 1fr !important;
+        }
+
+        :host([narrow]) .breadcrumb .title {
+          font-size: 38px;
         }
       `,
     ];

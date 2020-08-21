@@ -102,6 +102,8 @@ export class HaDataTable extends LitElement {
 
   @property({ type: String }) public filter = "";
 
+  @property({ type: Boolean }) public showHeader = true;
+
   @internalProperty() private _filterable = false;
 
   @internalProperty() private _filter = "";
@@ -216,75 +218,85 @@ export class HaDataTable extends LitElement {
           })}"
           style=${styleMap({
             height: this.autoHeight
-              ? `${(this._filteredData.length || 1) * 53 + 57}px`
+              ? `${
+                  (this._filteredData.length || 1) * 53 +
+                  (this.showHeader ? 57 : 0)
+                }px`
               : `calc(100% - ${this._header?.clientHeight}px)`,
           })}
         >
-          <div class="mdc-data-table__header-row">
-            ${this.selectable
-              ? html`
-                  <div
-                    class="mdc-data-table__header-cell mdc-data-table__header-cell--checkbox"
-                    role="columnheader"
-                    scope="col"
-                  >
-                    <ha-checkbox
-                      class="mdc-data-table__row-checkbox"
-                      @change=${this._handleHeaderRowCheckboxClick}
-                      .indeterminate=${this._checkedRows.length &&
-                      this._checkedRows.length !== this._checkableRowsCount}
-                      .checked=${this._checkedRows.length ===
-                      this._checkableRowsCount}
-                    >
-                    </ha-checkbox>
-                  </div>
-                `
-              : ""}
-            ${Object.entries(this.columns).map((columnEntry) => {
-              const [key, column] = columnEntry;
-              const sorted = key === this._sortColumn;
-              const classes = {
-                "mdc-data-table__header-cell--numeric": Boolean(
-                  column.type === "numeric"
-                ),
-                "mdc-data-table__header-cell--icon": Boolean(
-                  column.type === "icon"
-                ),
-                "mdc-data-table__header-cell--icon-button": Boolean(
-                  column.type === "icon-button"
-                ),
-                sortable: Boolean(column.sortable),
-                "not-sorted": Boolean(column.sortable && !sorted),
-                grows: Boolean(column.grows),
-              };
-              return html`
-                <div
-                  class="mdc-data-table__header-cell ${classMap(classes)}"
-                  style=${column.width
-                    ? styleMap({
-                        [column.grows ? "minWidth" : "width"]: column.width,
-                        maxWidth: column.maxWidth || "",
-                      })
-                    : ""}
-                  role="columnheader"
-                  scope="col"
-                  @click=${this._handleHeaderClick}
-                  .columnId=${key}
-                >
-                  ${column.sortable
+          ${this.showHeader
+            ? html`
+                <div class="mdc-data-table__header-row">
+                  ${this.selectable
                     ? html`
-                        <ha-icon
-                          .icon=${sorted && this._sortDirection === "desc"
-                            ? "hass:arrow-down"
-                            : "hass:arrow-up"}
-                        ></ha-icon>
+                        <div
+                          class="mdc-data-table__header-cell mdc-data-table__header-cell--checkbox"
+                          role="columnheader"
+                          scope="col"
+                        >
+                          <ha-checkbox
+                            class="mdc-data-table__row-checkbox"
+                            @change=${this._handleHeaderRowCheckboxClick}
+                            .indeterminate=${this._checkedRows.length &&
+                            this._checkedRows.length !==
+                              this._checkableRowsCount}
+                            .checked=${this._checkedRows.length ===
+                            this._checkableRowsCount}
+                          >
+                          </ha-checkbox>
+                        </div>
                       `
                     : ""}
-                  <span>${column.title}</span>
+                  ${Object.entries(this.columns).map((columnEntry) => {
+                    const [key, column] = columnEntry;
+                    const sorted = key === this._sortColumn;
+                    const classes = {
+                      "mdc-data-table__header-cell--numeric": Boolean(
+                        column.type === "numeric"
+                      ),
+                      "mdc-data-table__header-cell--icon": Boolean(
+                        column.type === "icon"
+                      ),
+                      "mdc-data-table__header-cell--icon-button": Boolean(
+                        column.type === "icon-button"
+                      ),
+                      sortable: Boolean(column.sortable),
+                      "not-sorted": Boolean(column.sortable && !sorted),
+                      grows: Boolean(column.grows),
+                    };
+                    return html`
+                      <div
+                        class="mdc-data-table__header-cell ${classMap(classes)}"
+                        style=${column.width
+                          ? styleMap({
+                              [column.grows
+                                ? "minWidth"
+                                : "width"]: column.width,
+                              maxWidth: column.maxWidth || "",
+                            })
+                          : ""}
+                        role="columnheader"
+                        scope="col"
+                        @click=${this._handleHeaderClick}
+                        .columnId=${key}
+                      >
+                        ${column.sortable
+                          ? html`
+                              <ha-icon
+                                .icon=${sorted && this._sortDirection === "desc"
+                                  ? "hass:arrow-down"
+                                  : "hass:arrow-up"}
+                              ></ha-icon>
+                            `
+                          : ""}
+                        <span>${column.title}</span>
+                      </div>
+                    `;
+                  })}
                 </div>
-              `;
-            })}
-          </div>
+              `
+            : ""}
           ${!this._filteredData.length
             ? html`
                 <div class="mdc-data-table__content">
@@ -298,6 +310,9 @@ export class HaDataTable extends LitElement {
             : html`
                 <div
                   class="mdc-data-table__content scroller"
+                  style=${styleMap({
+                    height: `calc(100% - ${this.showHeader ? "57px" : "0px"})`,
+                  })}
                   @scroll=${this._saveScrollPos}
                 >
                   ${scroll({
@@ -851,7 +866,6 @@ export class HaDataTable extends LitElement {
         display: flex;
         position: relative;
         contain: strict;
-        height: calc(100% - 57px);
       }
       .mdc-data-table__table:not(.auto-height) .scroller {
         overflow: auto;

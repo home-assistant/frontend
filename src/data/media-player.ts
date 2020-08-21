@@ -1,5 +1,8 @@
-import { HassEntity } from "home-assistant-js-websocket";
-import { HomeAssistant } from "../types";
+import memoizeOne from "memoize-one";
+import { computeDomain } from "../common/entity/compute_domain";
+import { supportsFeature } from "../common/entity/supports-feature";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { HomeAssistant } from "../types";
 
 export const SUPPORT_PAUSE = 1;
 export const SUPPORT_SEEK = 2;
@@ -37,6 +40,24 @@ export interface MediaPlayerItem {
   thumbnail?: string;
   children?: MediaPlayerItem[];
 }
+
+export const getBrowseMediaSources = memoizeOne((hass: HomeAssistant) => {
+  if (!hass) {
+    return [];
+  }
+
+  let entityIds = Object.keys(hass.states);
+
+  entityIds = entityIds.filter((eid) =>
+    ["media_player"].includes(computeDomain(eid))
+  );
+
+  entityIds = entityIds.filter((eid) =>
+    supportsFeature(hass.states[eid], SUPPORT_BROWSE_MEDIA)
+  );
+
+  return entityIds.map((key) => hass.states[key]);
+});
 
 export const browseMediaPlayer = (
   hass: HomeAssistant,
