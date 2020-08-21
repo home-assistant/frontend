@@ -38,10 +38,6 @@ export interface MediaPlayerItem {
   children?: MediaPlayerItem[];
 }
 
-// export interface MediaPlayerItemParent extends MediaPlayerItem {
-//   children: MediaPlayerItem[];
-// }
-
 export const browseMediaPlayer = (
   hass: HomeAssistant,
   entityId: string,

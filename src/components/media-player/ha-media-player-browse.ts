@@ -10,13 +10,16 @@ import {
   PropertyValues,
   internalProperty,
   css,
+  CSSResultArray,
+  TemplateResult,
 } from "lit-element";
-import { mdiPlay, mdiFolder, mdiArrowLeft } from "@mdi/js";
+import { mdiPlay, mdiFolder, mdiArrowLeft, mdiPlus } from "@mdi/js";
 
 import { haStyle } from "../../resources/styles";
 import { browseMediaPlayer } from "../../data/media-player";
 import { debounce } from "../../common/util/debounce";
 import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
+import { fireEvent } from "../../common/dom/fire_event";
 import type { MediaPlayerItem } from "../../data/media-player";
 import type { HomeAssistant } from "../../types";
 
@@ -24,6 +27,17 @@ import "../ha-circular-progress";
 import "../ha-svg-icon";
 import "../ha-card";
 import "../ha-paper-dropdown-menu";
+
+interface MediaPickedEvent {
+  media_content_id: string;
+  media_content_type: string;
+}
+
+declare global {
+  interface HASSDomEvents {
+    "media-picked": MediaPickedEvent;
+  }
+}
 
 @customElement("ha-media-player-browse")
 export class HaMediaPlayerBrowse extends LitElement {
@@ -34,6 +48,8 @@ export class HaMediaPlayerBrowse extends LitElement {
   @property() public mediaContentId?: string;
 
   @property() public mediaContentType?: string;
+
+  @property() public action: "pick" | "play" = "play";
 
   @property({ type: Boolean, attribute: "narrow", reflect: true })
   private _narrow = false;
@@ -55,7 +71,7 @@ export class HaMediaPlayerBrowse extends LitElement {
     }
   }
 
-  public render() {
+  protected render(): TemplateResult {
     if (!this._mediaPlayerItems.length) {
       return html``;
     }
@@ -86,14 +102,18 @@ export class HaMediaPlayerBrowse extends LitElement {
                         <mwc-fab
                           mini
                           .item=${mostRecentItem}
-                          @click=${this._playMedia}
+                          @click=${this._runAction}
                         >
                           <ha-svg-icon
                             slot="icon"
-                            path=${mdiPlay}
+                            .label=${this.hass.localize(
+                              `ui.components.media-browser.${this.action}-media`
+                            )}
+                            .path=${this.action === "play" ? mdiPlay : mdiPlus}
                           ></ha-svg-icon>
-                          <!-- Lokalize -->
-                          Play
+                          ${this.hass.localize(
+                            `ui.components.media-browser.${this.action}`
+                          )}
                         </mwc-fab>
                       `
                     : ""}
@@ -117,7 +137,9 @@ export class HaMediaPlayerBrowse extends LitElement {
                 : ""}
               <div class="title">${mostRecentItem.title}</div>
               <div class="subtitle">
-                <!-- Lokalize -->${mostRecentItem.media_content_type}
+                ${this.hass.localize(
+                  `ui.components.media-browser.content-type.${mostRecentItem.media_content_type}`
+                )}
               </div>
             </div>
             ${!this._narrow && mostRecentItem?.can_play
@@ -126,11 +148,18 @@ export class HaMediaPlayerBrowse extends LitElement {
                     <mwc-button
                       raised
                       .item=${mostRecentItem}
-                      @click=${this._playMedia}
+                      @click=${this._runAction}
                     >
-                      <ha-svg-icon slot="icon" path=${mdiPlay}></ha-svg-icon>
-                      <!-- Lokalize -->
-                      Play
+                      <ha-svg-icon
+                        slot="icon"
+                        .label=${this.hass.localize(
+                          `ui.components.media-browser.${this.action}-media`
+                        )}
+                        .path=${this.action === "play" ? mdiPlay : mdiPlus}
+                      ></ha-svg-icon>
+                      ${this.hass.localize(
+                        `ui.components.media-browser.${this.action}`
+                      )}
                     </mwc-button>
                   </div>
                 `
@@ -159,7 +188,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           ? html`
               ${mostRecentItem.children.map(
                 (child) => html`
-                  <div class="child" @click=${this._navigate} .item=${child}>
+                  <div class="child" .item=${child} @click=${this._navigate}>
                     <div class="ha-card-parent">
                       <ha-card
                         style="background-image: url(${child.thumbnail})"
@@ -173,25 +202,29 @@ export class HaMediaPlayerBrowse extends LitElement {
                             `
                           : ""}
                       </ha-card>
-                      <div class="ha-card-copy">
-                        ${child.can_play
-                          ? html`
+                      ${child.can_play && !this._narrow
+                        ? html`
+                            <div class="ha-card-copy">
                               <ha-svg-icon
-                                title="Play Media"
                                 class="play"
                                 .item=${child}
-                                .path=${mdiPlay}
-                                @click=${this._playMedia}
+                                .label=${this.hass.localize(
+                                  `ui.components.media-browser.${this.action}-media`
+                                )}
+                                .path=${this.action === "play"
+                                  ? mdiPlay
+                                  : mdiPlus}
+                                @click=${this._runAction}
                               ></ha-svg-icon>
-                            `
-                          : ""}
-                      </div>
+                            </div>
+                          `
+                        : ""}
                     </div>
-                    <div class="title-type">
-                      <div class="title">${child.title}</div>
-                      <div class="type">
-                        <!-- Lokalize -->${child.media_content_type}
-                      </div>
+                    <div class="title">${child.title}</div>
+                    <div class="type">
+                      ${this.hass.localize(
+                        `ui.components.media-browser.content-type.${child.media_content_type}`
+                      )}
                     </div>
                   </div>
                 `
@@ -207,13 +240,14 @@ export class HaMediaPlayerBrowse extends LitElement {
     this._attachObserver();
   }
 
-  public updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
     if (
       !changedProps.has("entityId") &&
       !changedProps.has("mediaContentId") &&
-      !changedProps.has("mediaContentType")
+      !changedProps.has("mediaContentType") &&
+      !changedProps.has("action")
     ) {
       return;
     }
@@ -221,8 +255,53 @@ export class HaMediaPlayerBrowse extends LitElement {
     this._fetchData(this.mediaContentId, this.mediaContentType);
   }
 
-  private _measureCard() {
-    this._narrow = this.offsetWidth < 600;
+  private _runAction(ev: MouseEvent): void {
+    ev.stopPropagation();
+    const item = (ev.currentTarget as any).item;
+
+    if (this.action === "pick") {
+      fireEvent(this, "media-picked", {
+        media_content_id: item.media_content_id,
+        media_content_type: item.media_content_type,
+      });
+      return;
+    }
+
+    this.hass.callService("media_player", "play_media", {
+      entity_id: this.entityId,
+      media_content_id: item.media_content_id,
+      media_content_type: item.media_content_type,
+    });
+  }
+
+  private _navigate(ev: MouseEvent): void {
+    const target = ev.currentTarget as any;
+
+    if (target.previous) {
+      this._mediaPlayerItems!.pop();
+      this._mediaPlayerItems = [...this._mediaPlayerItems];
+      return; // Probably should re-request this incase it changed?
+    }
+
+    const item = target.item;
+    this._fetchData(item.media_content_id, item.media_content_type);
+  }
+
+  private async _fetchData(
+    mediaContentId?: string,
+    mediaContentType?: string
+  ): Promise<void> {
+    const itemData = await browseMediaPlayer(
+      this.hass,
+      this.entityId,
+      !mediaContentId ? undefined : mediaContentId,
+      mediaContentType
+    );
+    this._mediaPlayerItems = [...this._mediaPlayerItems, itemData];
+  }
+
+  private _measureCard(): void {
+    this._narrow = this.offsetWidth < 500;
   }
 
   private async _attachObserver(): Promise<void> {
@@ -236,51 +315,19 @@ export class HaMediaPlayerBrowse extends LitElement {
     this._resizeObserver.observe(this);
   }
 
-  private async _fetchData(mediaContentId?: string, mediaContentType?: string) {
-    const itemData = await browseMediaPlayer(
-      this.hass,
-      this.entityId,
-      !mediaContentId ? undefined : mediaContentId,
-      mediaContentType
-    );
-    this._mediaPlayerItems = [...this._mediaPlayerItems, itemData];
-  }
-
-  private _navigate(ev: MouseEvent) {
-    const target = ev.currentTarget as any;
-
-    if (target.previous) {
-      this._mediaPlayerItems!.pop();
-      this._mediaPlayerItems = [...this._mediaPlayerItems];
-      return; // Probably should re-request this incase it changed?
-    }
-
-    const item = target.item;
-    this._fetchData(item.media_content_id, item.media_content_type);
-  }
-
-  private _playMedia(ev: MouseEvent) {
-    ev.stopPropagation();
-    const item = (ev.currentTarget as any).item;
-    this.hass.callService("media_player", "play_media", {
-      entity_id: this.entityId,
-      media_content_id: item.media_content_id,
-      media_content_type: item.media_content_type,
-    });
-  }
-
-  static get styles() {
+  static get styles(): CSSResultArray {
     return [
       haStyle,
       css`
         :host {
           display: block;
-          padding: 16px;
+          padding: 0 16px;
         }
 
         .header {
           display: flex;
           justify-content: space-between;
+          flex-wrap: wrap;
         }
 
         .media-source {
@@ -308,6 +355,8 @@ export class HaMediaPlayerBrowse extends LitElement {
           flex-direction: column;
           justify-content: space-between;
           align-self: stretch;
+          min-width: 0;
+          flex: 1;
         }
 
         .header-info .actions {
@@ -327,7 +376,9 @@ export class HaMediaPlayerBrowse extends LitElement {
           font-weight: bold;
           margin: 0;
           overflow: hidden;
-          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
         }
 
         .breadcrumb .previous-title {
@@ -344,7 +395,6 @@ export class HaMediaPlayerBrowse extends LitElement {
           font-size: 16px;
           overflow: hidden;
           text-overflow: ellipsis;
-          text-transform: capitalize;
         }
 
         .divider {
@@ -358,35 +408,13 @@ export class HaMediaPlayerBrowse extends LitElement {
           content: " ";
         }
 
-        /* ============= Narrow Header ============= */
-
-        :host([narrow]) .header,
-        :host([narrow]) .header-content {
-          flex-direction: column;
-        }
-
-        :host([narrow]) .header-content .img {
-          height: auto;
-          width: 100%;
-          margin-right: 0;
-          padding-bottom: 100%;
-          margin-bottom: 8px;
-          position: relative;
-        }
-
-        :host([narrow]) .header-content .img mwc-fab {
-          position: absolute;
-          bottom: -20px;
-          right: 20px;
-        }
-
         /* ============= CHILDREN ============= */
 
         .children {
           display: grid;
           grid-template-columns: repeat(
             auto-fit,
-            var(--media-browse-item-size, 125px)
+            var(--media-browse-item-size, 175px)
           );
           grid-gap: 16px;
           margin: 8px 0px;
@@ -395,19 +423,19 @@ export class HaMediaPlayerBrowse extends LitElement {
         .child {
           display: flex;
           flex-direction: column;
-          align-items: center;
           cursor: pointer;
         }
 
         .ha-card-parent {
           position: relative;
+          width: 100%;
         }
 
         ha-card,
         .ha-card-copy {
+          width: 100%;
+          padding-bottom: 100%;
           position: relative;
-          width: var(--media-browse-item-size, 125px);
-          height: var(--media-browse-item-size, 125px);
           background-size: cover;
           background-position: center;
         }
@@ -422,7 +450,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           position: absolute;
           top: calc(50% - (var(--mdc-icon-size) / 2));
           left: calc(50% - (var(--mdc-icon-size) / 2));
-          --mdc-icon-size: calc(var(--media-browse-item-size, 125px) * 0.4);
+          --mdc-icon-size: calc(var(--media-browse-item-size, 175px) * 0.4);
         }
 
         .child .folder {
@@ -446,10 +474,6 @@ export class HaMediaPlayerBrowse extends LitElement {
           opacity: 1;
         }
 
-        .child .title-type {
-          width: 100%;
-        }
-
         .child .title {
           font-size: 16px;
           padding-top: 8px;
@@ -462,7 +486,43 @@ export class HaMediaPlayerBrowse extends LitElement {
         .child .type {
           font-size: 12px;
           color: var(--secondary-text-color);
-          text-transform: capitalize;
+        }
+
+        /* ============= Narrow ============= */
+
+        :host([narrow]) {
+          padding: 0;
+        }
+
+        :host([narrow]) .header,
+        :host([narrow]) .header-content {
+          flex-direction: column;
+          flex-wrap: nowrap;
+        }
+
+        :host([narrow]) .header-content .img {
+          height: auto;
+          width: 100%;
+          margin-right: 0;
+          padding-bottom: 100%;
+          margin-bottom: 8px;
+          position: relative;
+        }
+
+        :host([narrow]) .header-content .img mwc-fab {
+          position: absolute;
+          bottom: -20px;
+          right: 20px;
+        }
+
+        :host([narrow]) .header-info,
+        :host([narrow]) .media-source,
+        :host([narrow]) .children {
+          padding: 0 8px;
+        }
+
+        :host([narrow]) .children {
+          grid-template-columns: 1fr 1fr !important;
         }
       `,
     ];
