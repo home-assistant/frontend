@@ -1421,6 +1421,7 @@
           "scripts": "Scripts",
           "scenes": "Scenes",
           "confirm_rename_entity_ids": "Do you also want to rename the entity id's of your entities?",
+          "confirm_rename_entity_ids_warning": "This will not change any configuration (like automations, scripts, scenes, Lovelace) that is currently using these entities, you will have to update them yourself.",
           "data_table": {
             "device": "Device",
             "manufacturer": "Manufacturer",
