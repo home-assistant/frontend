@@ -25,7 +25,7 @@ The temperature is {{ my_test_json.temperature }} {{ my_test_json.unit }}.
 {% if is_state("sun.sun", "above_horizon") -%}
   The sun rose {{ relative_time(states.sun.sun.last_changed) }} ago.
 {%- else -%}
-  The sun will rise at {{ as_timestamp(strptime(state_attr("sun.sun", "next_rising"), "")) | timestamp_custom("%X") }}.
+  The sun will rise at {{ as_timestamp(strptime(state_attr("sun.sun", "next_rising"), "")) | timestamp_local }}.
 {%- endif %}
 
 For loop example getting 3 random sensor values:
