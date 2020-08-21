@@ -554,6 +554,10 @@
                 "loading_history": "Lued Status Verlaaf",
                 "no_history_found": "Keen Status Verlaaf fonnt"
             },
+            "picture-upload": {
+                "label": "Bild",
+                "unsupported_format": "Net ënnerstëtzte Format, wiel e JPEG, PNG oder GIF Bild."
+            },
             "related-items": {
                 "area": "Beräich",
                 "automation": "Deel vun de folgenden Automatismen",
@@ -655,6 +659,9 @@
                 "platform_not_loaded": "{platform} Integratioun ass net gelueden. Setz et an deng Konfiguration dobäi mat  'default_config:' oder ''{platform}:''.",
                 "required_error_msg": "Dëst Feld ass erfuerderlech",
                 "yaml_not_editable": "D'Astellunge vun dëser Entitéit kënnen net vun vum Benotzer Interface as  geännert ginn. Nëmmen Entitéiten déi iwwer den Benotzer Interface aus konfiguréiert sinn kënnen vun do aus geännert ginn."
+            },
+            "image_cropper": {
+                "crop": "Kierzen"
             },
             "more_info_control": {
                 "dismiss": "Dialog ofbriechen",
@@ -1659,6 +1666,7 @@
                     },
                     "node_query_stages": {
                         "associations": "Associatiounsgruppen a Memberen aktualiséieren",
+                        "cacheload": "Lued Informatioune vun der OpenZWave Cache Datei. Batterie Nodes bleiwen op dëser Etapp bis de Node erwächt.",
                         "complete": "Interview Prozess ass komplett",
                         "configuration": "Konfiguratiounswerter vum Node kréien",
                         "instances": "Detailer kréien iwwert wéieng Instanzen oder Kanäl en Apparat ënnerstëtzt",

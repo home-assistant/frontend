@@ -554,6 +554,10 @@
                 "loading_history": "Cargando historial de estado...",
                 "no_history_found": "No se encontró historial de estado."
             },
+            "picture-upload": {
+                "label": "Imagen",
+                "unsupported_format": "Formato no soportado, por favor, selecciona una imagen JPEG, PNG o GIF."
+            },
             "related-items": {
                 "area": "Área",
                 "automation": "Parte de las siguientes automatizaciones",
@@ -655,6 +659,9 @@
                 "platform_not_loaded": "La integración {platform} no se ha cargado. Por favor añádela a tu configuración, ya sea agregando 'default_config:' o ''{platform}:''.",
                 "required_error_msg": "Este campo es obligatorio",
                 "yaml_not_editable": "La configuración de esta entidad no se puede editar desde la IU. Solo las entidades configuradas desde la IU se pueden configurar desde la IU"
+            },
+            "image_cropper": {
+                "crop": "Recortar"
             },
             "more_info_control": {
                 "dismiss": "Descartar diálogo",
