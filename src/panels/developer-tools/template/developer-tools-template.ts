@@ -110,6 +110,9 @@ class HaPanelDevTemplate extends LitElement {
             autofocus
             @value-changed=${this._templateChanged}
           ></ha-code-editor>
+          <mwc-button @click=${this._renderTemplate}>
+            Reload
+          </mwc-button>
           <mwc-button @click=${this._restoreDemo}>
             Reset to demo template
           </mwc-button>
