@@ -899,7 +899,7 @@
                                     "wait_template": "Шаблон ожидания"
                                 }
                             },
-                            "unsupported_action": "Неподдерживаемое действие: {action}"
+                            "unsupported_action": "Отсутствует форма ввода для этого действия: {action}"
                         },
                         "alias": "Название",
                         "conditions": {
@@ -965,7 +965,7 @@
                                     "zone": "Зона"
                                 }
                             },
-                            "unsupported_condition": "Неподдерживаемое условие: {condition}"
+                            "unsupported_condition": "Отсутствует форма ввода для этого условия: {condition}"
                         },
                         "default_name": "Новая автоматизация",
                         "description": {
@@ -1057,6 +1057,9 @@
                                     "sunrise": "Восход",
                                     "sunset": "Закат"
                                 },
+                                "tag": {
+                                    "label": "Метка"
+                                },
                                 "template": {
                                     "label": "Шаблон",
                                     "value_template": "Значение шаблона"
@@ -1084,7 +1087,7 @@
                                     "zone": "Зона"
                                 }
                             },
-                            "unsupported_platform": "Неподдерживаемая платформа: {platform}"
+                            "unsupported_platform": "Отсутствует форма ввода для этой платформы: {platform}"
                         },
                         "unsaved_confirm": "У вас есть несохраненные изменения. Вы уверены, что хотите выйти?"
                     },
@@ -1849,6 +1852,31 @@
                             "valid": "Конфигурация выполнена верно"
                         }
                     }
+                },
+                "tags": {
+                    "add_tag": "Добавить метку",
+                    "automation_title": "Считана метка {name}",
+                    "caption": "Метки",
+                    "create_automation": "Создать автоматизацию с меткой",
+                    "description": "Управление метками",
+                    "detail": {
+                        "create": "Добавить",
+                        "create_and_write": "Добавить и записать",
+                        "delete": "Удалить",
+                        "description": "Описание",
+                        "name": "Название",
+                        "new_tag": "Новая метка",
+                        "tag_id": "ID метки",
+                        "tag_id_placeholder": "Если не указан, создается автоматически",
+                        "update": "Обновить"
+                    },
+                    "edit": "Изменить",
+                    "headers": {
+                        "last_scanned": "Последнее считывание",
+                        "name": "Название"
+                    },
+                    "no_tags": "Нет меток",
+                    "write": "Записать"
                 },
                 "users": {
                     "add_user": {
