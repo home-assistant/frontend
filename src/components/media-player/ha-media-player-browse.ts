@@ -19,6 +19,7 @@ import { debounce } from "../../common/util/debounce";
 import {
   browseMediaPlayer,
   getBrowseMediaSources,
+  MediaPickedEvent,
 } from "../../data/media-player";
 import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
 import { haStyle } from "../../resources/styles";
@@ -32,11 +33,6 @@ import "../ha-card";
 import "../ha-circular-progress";
 import "../ha-paper-dropdown-menu";
 import "../ha-svg-icon";
-
-interface MediaPickedEvent {
-  media_content_id: string;
-  media_content_type: string;
-}
 
 declare global {
   interface HASSDomEvents {
@@ -176,7 +172,11 @@ export class HaMediaPlayerBrowse extends LitElement {
           </div>
         </div>
         <div class="media-source">
-          <ha-paper-dropdown-menu .label=${"Media Source"}>
+          <ha-paper-dropdown-menu
+            .label=${this.hass.localize(
+              `ui.components.media-browser.media-source`
+            )}
+          >
             <paper-listbox
               slot="dropdown-content"
               attr-for-selected="itemName"

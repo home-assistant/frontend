@@ -21,6 +21,13 @@ export const SUPPORT_SELECT_SOUND_MODE = 65536;
 export const SUPPORT_BROWSE_MEDIA = 131072;
 export const CONTRAST_RATIO = 4.5;
 
+export type MediaPlayerBrowseAction = "pick" | "play";
+
+export interface MediaPickedEvent {
+  media_content_id: string;
+  media_content_type: string;
+}
+
 export interface MediaPlayerThumbnail {
   content_type: string;
   content: string;
