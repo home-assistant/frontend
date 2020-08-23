@@ -1,6 +1,3 @@
-import memoizeOne from "memoize-one";
-import { computeDomain } from "../common/entity/compute_domain";
-import { supportsFeature } from "../common/entity/supports-feature";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../types";
 
