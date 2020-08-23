@@ -1,4 +1,5 @@
 import "@material/mwc-button/mwc-button";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultArray,
@@ -11,6 +12,7 @@ import { classMap } from "lit-html/directives/class-map";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-code-editor";
+import { subscribeRenderTemplate } from "../../../data/ws-templates";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 
@@ -28,10 +30,10 @@ The temperature is {{ my_test_json.temperature }} {{ my_test_json.unit }}.
   The sun will rise at {{ as_timestamp(strptime(state_attr("sun.sun", "next_rising"), "")) | timestamp_local }}.
 {%- endif %}
 
-For loop example getting 3 random sensor values:
+For loop example getting 3 sensor values:
 
-{% for states in states.sensor|slice(3) -%}
-  {% set state = (states|random) %}
+{% for states in states.sensor | slice(3) -%}
+  {% set state = states | first %}
   {%- if loop.first %}The {% elif loop.last %} and the {% else %}, the {% endif -%}
   {{ state.name | lower }} is {{state.state_with_unit}}
 {%- endfor %}.`;
@@ -47,9 +49,22 @@ class HaPanelDevTemplate extends LitElement {
 
   @internalProperty() private _processed = "";
 
+  @internalProperty() private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
+
   private _template = "";
 
   private _inited = false;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this._template && !this._unsubRenderTemplate) {
+      this._subscribeTemplate();
+    }
+  }
+
+  public disconnectedCallback() {
+    this._unsubscribeTemplate();
+  }
 
   protected firstUpdated() {
     if (localStorage && localStorage["panel-dev-template-template"]) {
@@ -57,7 +72,7 @@ class HaPanelDevTemplate extends LitElement {
     } else {
       this._template = DEMO_TEMPLATE;
     }
-    this._renderTemplate();
+    this._subscribeTemplate();
     this._inited = true;
   }
 
@@ -110,11 +125,6 @@ class HaPanelDevTemplate extends LitElement {
             autofocus
             @value-changed=${this._templateChanged}
           ></ha-code-editor>
-          <mwc-button @click=${this._renderTemplate}>
-            ${this.hass.localize(
-              "ui.panel.developer-tools.tabs.templates.reload"
-            )}
-          </mwc-button>
           <mwc-button @click=${this._restoreDemo}>
             ${this.hass.localize(
               "ui.panel.developer-tools.tabs.templates.reset"
@@ -189,7 +199,7 @@ ${this._processed}</pre
 
   private _debounceRender = debounce(
     () => {
-      this._renderTemplate();
+      this._subscribeTemplate();
       this._storeTemplate();
     },
     500,
@@ -204,22 +214,46 @@ ${this._processed}</pre
     this._debounceRender();
   }
 
-  private async _renderTemplate() {
+  private async _subscribeTemplate() {
     this._rendering = true;
+    await this._unsubscribeTemplate();
+    try {
+      this._unsubRenderTemplate = subscribeRenderTemplate(
+        this.hass.connection,
+        (result) => {
+          this._processed = result;
+        },
+        {
+          template: this._template,
+        }
+      );
+      await this._unsubRenderTemplate;
+    } catch (err) {
+      this._error = true;
+      if (err.message) {
+        this._processed = err.message;
+      }
+      this._unsubRenderTemplate = undefined;
+    } finally {
+      this._rendering = false;
+    }
+  }
+
+  private async _unsubscribeTemplate(): Promise<void> {
+    if (!this._unsubRenderTemplate) {
+      return;
+    }
 
     try {
-      this._processed = await this.hass.callApi("POST", "template", {
-        template: this._template,
-      });
-      this._rendering = false;
-    } catch (error) {
-      this._processed =
-        (error && error.body && error.body.message) ||
-        this.hass.localize(
-          "ui.panel.developer-tools.tabs.templates.unknown_error_template"
-        );
-      this._error = true;
-      this._rendering = false;
+      const unsub = await this._unsubRenderTemplate;
+      unsub();
+      this._unsubRenderTemplate = undefined;
+    } catch (e) {
+      if (e.code === "not_found") {
+        // If we get here, the connection was probably already closed. Ignore.
+      } else {
+        throw e;
+      }
     }
   }
 
@@ -232,7 +266,7 @@ ${this._processed}</pre
 
   private _restoreDemo() {
     this._template = DEMO_TEMPLATE;
-    this._renderTemplate();
+    this._subscribeTemplate();
     delete localStorage["panel-dev-template-template"];
   }
 }
