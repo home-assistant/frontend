@@ -178,7 +178,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                   .title=${this.hass!.localize("ui.common.overflow_menu")}
                   .label=${this.hass!.localize("ui.common.overflow_menu")}
                 >
-                  <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+                  <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
                 </mwc-icon-button>
                 <mwc-list-item>
                   ${this.hass!.localize("ui.common.refresh")}
@@ -353,14 +353,19 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   private async _navigate(ev: MouseEvent): Promise<void> {
     const target = ev.currentTarget as any;
+    let item: MediaPlayerItem | undefined;
 
     if (target.previous) {
       this._mediaPlayerItems!.pop();
-      this._mediaPlayerItems = [...this._mediaPlayerItems];
-      return; // Probably should re-request this incase it changed?
+      item = this._mediaPlayerItems!.pop();
     }
 
-    const item = target.item;
+    item = target.item;
+
+    if (!item) {
+      return;
+    }
+
     const itemData = await this._fetchData(
       item.media_content_id,
       item.media_content_type
