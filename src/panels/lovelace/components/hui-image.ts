@@ -169,7 +169,9 @@ export class HuiImage extends LitElement {
     );
   }
 
-  private async _connectionChanged(ev: HASSDomEvent<ConnectionStatus>): void {
+  private async _connectionChanged(
+    ev: HASSDomEvent<ConnectionStatus>
+  ): Promise<void> {
     const connected = ev.detail === "connected";
     if (connected) {
       await this._updateCameraImageSrc();
