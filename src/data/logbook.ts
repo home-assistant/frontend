@@ -7,6 +7,8 @@ export interface LogbookEntry {
   entity_id?: string;
   domain: string;
   context_user_id?: string;
+  context_entity_id?: string;
+  context_entity_id_name?: string;
 }
 
 const DATA_CACHE: {

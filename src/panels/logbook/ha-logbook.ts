@@ -118,6 +118,18 @@ class HaLogbook extends LitElement {
                 ? ` (${item_username})`
                 : ``}</span
             >
+            ${!item.context_entity_id
+              ? ""
+              : html`
+                  by
+                  <a
+                    href="#"
+                    @click=${this._entityClicked}
+                    .entityId=${item.context_entity_id}
+                    class="name"
+                    >${item.context_entity_id_name}</a
+                  >
+                `}
           </div>
         </div>
       </div>
