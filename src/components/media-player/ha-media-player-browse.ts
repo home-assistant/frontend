@@ -662,7 +662,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         }
 
         :host([narrow]) .breadcrumb-overflow {
-          align-items: center;
+          align-items: flex-end;
         }
 
         :host([narrow]) .header-content {
