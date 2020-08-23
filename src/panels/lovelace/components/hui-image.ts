@@ -17,6 +17,8 @@ import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-camera-stream";
 import { fetchThumbnailUrlWithCache } from "../../../data/camera";
 import { CameraEntity, HomeAssistant } from "../../../types";
+import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { ConnectionStatus } from "../../../data/connection-status";
 
 const UPDATE_INTERVAL = 10000;
 const DEFAULT_FILTER = "grayscale(100%)";
@@ -48,6 +50,8 @@ export class HuiImage extends LitElement {
   @internalProperty() private _loadError?: boolean;
 
   @internalProperty() private _cameraImageSrc?: string;
+
+  @internalProperty() private _hassConnected = true;
 
   @query("img") private _image!: HTMLImageElement;
 
@@ -128,7 +132,7 @@ export class HuiImage extends LitElement {
           ratio: Boolean(ratio && ratio.w > 0 && ratio.h > 0),
         })}
       >
-        ${this.cameraImage && this.cameraView === "live"
+        ${this._hassConnected && this.cameraImage && this.cameraView === "live"
           ? html`
               <ha-camera-stream
                 .hass=${this.hass}
@@ -156,6 +160,22 @@ export class HuiImage extends LitElement {
         ></div>
       </div>
     `;
+  }
+
+  protected firstUpdated(): void {
+    window.addEventListener(
+      "connection-status",
+      (ev: HASSDomEvent<ConnectionStatus>) => this._connectionChanged(ev)
+    );
+  }
+
+  private async _connectionChanged(ev: HASSDomEvent<ConnectionStatus>): void {
+    const connected = ev.detail === "connected";
+    if (connected) {
+      await this._updateCameraImageSrc();
+      this._startUpdateCameraInterval();
+    }
+    this._hassConnected = connected;
   }
 
   protected updated(changedProps: PropertyValues): void {
