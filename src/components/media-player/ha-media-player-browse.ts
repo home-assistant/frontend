@@ -2,6 +2,12 @@ import "@material/mwc-button/mwc-button";
 import "@material/mwc-fab/mwc-fab";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
+import "@material/mwc-list/mwc-list-item";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+// eslint-disable-next-line import/no-duplicates
+import memoize from "memoize-one";
+// eslint-disable-next-line import/no-duplicates
+import memoizeOne from "memoize-one";
 import {
   css,
   CSSResultArray,
@@ -13,19 +19,31 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-import { mdiArrowLeft, mdiFolder, mdiPlay, mdiPlus } from "@mdi/js";
+import {
+  mdiArrowLeft,
+  mdiFolder,
+  mdiPlay,
+  mdiPlus,
+  mdiDotsVertical,
+} from "@mdi/js";
 import { fireEvent } from "../../common/dom/fire_event";
 import { debounce } from "../../common/util/debounce";
 import {
   browseMediaPlayer,
-  getBrowseMediaSources,
   MediaPickedEvent,
+  SUPPORT_BROWSE_MEDIA,
 } from "../../data/media-player";
 import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
+import { showSelectMediaSourceDialog } from "./show-select-media-source-dialog";
 import { haStyle } from "../../resources/styles";
+import { computeDomain } from "../../common/entity/compute_domain";
+import { supportsFeature } from "../../common/entity/supports-feature";
 import type { HomeAssistant } from "../../types";
 import type { MediaPlayerItem } from "../../data/media-player";
-import type { DataTableRowData } from "../data-table/ha-data-table";
+import type {
+  DataTableRowData,
+  DataTableColumnContainer,
+} from "../data-table/ha-data-table";
 
 import "../data-table/ha-data-table";
 import "../entity/ha-entity-picker";
@@ -33,6 +51,7 @@ import "../ha-card";
 import "../ha-circular-progress";
 import "../ha-paper-dropdown-menu";
 import "../ha-svg-icon";
+import "../ha-button-menu";
 
 declare global {
   interface HASSDomEvents {
@@ -51,6 +70,8 @@ export class HaMediaPlayerBrowse extends LitElement {
   @property() public mediaContentType?: string;
 
   @property() public action: "pick" | "play" = "play";
+
+  @property({ type: Boolean }) public allowChangeSource = true;
 
   @property({ type: Boolean, attribute: "narrow", reflect: true })
   private _narrow = false;
@@ -91,7 +112,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
     const hasExpandableChildren:
       | MediaPlayerItem
-      | undefined = mostRecentItem.children?.find((item) => item.can_expand);
+      | undefined = this._hasExpandableChildren(mostRecentItem.children);
 
     return html`
       <div class="header">
@@ -126,26 +147,52 @@ export class HaMediaPlayerBrowse extends LitElement {
               `
             : ""}
           <div class="header-info">
-            <div class="breadcrumb">
-              ${previousItem
-                ? html`
-                    <div
-                      class="previous-title"
-                      .previous=${true}
-                      .item=${previousItem}
-                      @click=${this._navigate}
-                    >
-                      <ha-svg-icon .path=${mdiArrowLeft}></ha-svg-icon>
-                      ${previousItem.title}
-                    </div>
-                  `
-                : ""}
-              <div class="title">${mostRecentItem.title}</div>
-              <div class="subtitle">
-                ${this.hass.localize(
-                  `ui.components.media-browser.content-type.${mostRecentItem.media_content_type}`
-                )}
+            <div class="breadcrumb-overflow">
+              <div class="breadcrumb">
+                ${previousItem
+                  ? html`
+                      <div
+                        class="previous-title"
+                        .previous=${true}
+                        .item=${previousItem}
+                        @click=${this._navigate}
+                      >
+                        <ha-svg-icon .path=${mdiArrowLeft}></ha-svg-icon>
+                        ${previousItem.title}
+                      </div>
+                    `
+                  : ""}
+                <div class="title">${mostRecentItem.title}</div>
+                <div class="subtitle">
+                  ${this.hass.localize(
+                    `ui.components.media-browser.content-type.${mostRecentItem.media_content_type}`
+                  )}
+                </div>
               </div>
+              <ha-button-menu
+                corner="BOTTOM_START"
+                @action=${this._handleOverFlowAction}
+              >
+                <mwc-icon-button
+                  slot="trigger"
+                  .title=${this.hass!.localize("ui.common.overflow_menu")}
+                  .label=${this.hass!.localize("ui.common.overflow_menu")}
+                >
+                  <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+                </mwc-icon-button>
+                <mwc-list-item>
+                  ${this.hass!.localize("ui.common.refresh")}
+                </mwc-list-item>
+                ${this.allowChangeSource
+                  ? html`
+                      <mwc-list-item>
+                        ${this.hass!.localize(
+                          "ui.components.media-browser.choose-source"
+                        )}
+                      </mwc-list-item>
+                    `
+                  : ""}
+              </ha-button-menu>
             </div>
             ${!this._narrow && mostRecentItem?.can_play
               ? html`
@@ -170,28 +217,6 @@ export class HaMediaPlayerBrowse extends LitElement {
                 `
               : ""}
           </div>
-        </div>
-        <div class="media-source">
-          <ha-paper-dropdown-menu
-            .label=${this.hass.localize(
-              `ui.components.media-browser.media-source`
-            )}
-          >
-            <paper-listbox
-              slot="dropdown-content"
-              attr-for-selected="itemName"
-              .selected=${this.entityId}
-              @iron-select=${this._selectMediaSource}
-            >
-              ${getBrowseMediaSources(this.hass).map(
-                (source) => html`
-                  <paper-item .itemName=${source.entity_id}
-                    >${source.attributes.friendly_name}</paper-item
-                  >
-                `
-              )}
-            </paper-listbox>
-          </ha-paper-dropdown-menu>
         </div>
       </div>
       <div class="divider"></div>
@@ -285,7 +310,11 @@ export class HaMediaPlayerBrowse extends LitElement {
       return;
     }
 
-    this._fetchData(this.mediaContentId, this.mediaContentType);
+    this._fetchData(this.mediaContentId, this.mediaContentType).then(
+      (itemData) => {
+        this._mediaPlayerItems = [itemData];
+      }
+    );
   }
 
   private _actionClicked(ev: MouseEvent): void {
@@ -311,18 +340,18 @@ export class HaMediaPlayerBrowse extends LitElement {
     });
   }
 
-  private _selectMediaSource(ev: CustomEvent): void {
-    const entityId = ev.detail.item.itemName;
-    if (this.entityId === entityId) {
-      return;
-    }
-
-    this.entityId = entityId;
-    this.mediaContentId = undefined;
-    this.mediaContentType = undefined;
+  private _showMediaSouceDialog(): void {
+    showSelectMediaSourceDialog(this, {
+      mediaSources: this._browseMediaSources(this.hass),
+      sourceSelectedCallback: (entityId) => {
+        this.entityId = entityId;
+        this.mediaContentId = undefined;
+        this.mediaContentType = undefined;
+      },
+    });
   }
 
-  private _navigate(ev: MouseEvent): void {
+  private async _navigate(ev: MouseEvent): Promise<void> {
     const target = ev.currentTarget as any;
 
     if (target.previous) {
@@ -332,7 +361,11 @@ export class HaMediaPlayerBrowse extends LitElement {
     }
 
     const item = target.item;
-    this._fetchData(item.media_content_id, item.media_content_type);
+    const itemData = await this._fetchData(
+      item.media_content_id,
+      item.media_content_type
+    );
+    this._mediaPlayerItems = [...this._mediaPlayerItems, itemData];
   }
 
   private _rowClicked(ev: CustomEvent): void {
@@ -347,17 +380,29 @@ export class HaMediaPlayerBrowse extends LitElement {
     this._runAction(item);
   }
 
+  private _handleOverFlowAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        this._refresh();
+        break;
+      case 1:
+        this._showMediaSouceDialog();
+        break;
+    }
+  }
+
   private async _fetchData(
     mediaContentId?: string,
     mediaContentType?: string
-  ): Promise<void> {
+  ): Promise<MediaPlayerItem> {
     const itemData = await browseMediaPlayer(
       this.hass,
       this.entityId,
       !mediaContentId ? undefined : mediaContentId,
       mediaContentType
     );
-    this._mediaPlayerItems = [...this._mediaPlayerItems, itemData];
+
+    return itemData;
   }
 
   private _measureCard(): void {
@@ -375,11 +420,11 @@ export class HaMediaPlayerBrowse extends LitElement {
     this._resizeObserver.observe(this);
   }
 
-  private _columns = {
+  private _columns: DataTableColumnContainer = {
     icon: {
       title: "",
       type: "icon",
-      template: (icon: string, item: MediaPlayerItem) =>
+      template: <MediaPlayerItem>(icon: string, item: MediaPlayerItem) =>
         html`
           <ha-svg-icon
             style="cursor: pointer;"
@@ -399,6 +444,41 @@ export class HaMediaPlayerBrowse extends LitElement {
     },
   };
 
+  private _browseMediaSources = memoize((hass: HomeAssistant) => {
+    if (!hass) {
+      return [];
+    }
+
+    let entityIds = Object.keys(hass.states);
+
+    entityIds = entityIds.filter((eid) =>
+      ["media_player"].includes(computeDomain(eid))
+    );
+
+    entityIds = entityIds.filter((eid) =>
+      supportsFeature(hass.states[eid], SUPPORT_BROWSE_MEDIA)
+    );
+
+    return entityIds.map((key) => hass.states[key]);
+  });
+
+  private _hasExpandableChildren = memoizeOne((children) =>
+    children.find((item: MediaPlayerItem) => item.can_expand)
+  );
+
+  private async _refresh(): Promise<void> {
+    for await (const [idx, item] of this._mediaPlayerItems.entries()) {
+      const itemData = await this._fetchData(
+        item.media_content_id,
+        item.media_content_type
+      );
+
+      this._mediaPlayerItems[idx] = itemData;
+    }
+
+    this._mediaPlayerItems = [...this._mediaPlayerItems];
+  }
+
   static get styles(): CSSResultArray {
     return [
       haStyle,
@@ -411,13 +491,11 @@ export class HaMediaPlayerBrowse extends LitElement {
         .header {
           display: flex;
           justify-content: space-between;
-          flex-wrap: wrap;
         }
 
-        .media-source {
+        .breadcrumb-overflow {
           display: flex;
-          justify-content: flex-end;
-          flex-direction: column;
+          justify-content: space-between;
         }
 
         .header-content {
@@ -452,6 +530,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           display: flex;
           flex-direction: column;
           overflow: hidden;
+          flex-grow: 1;
         }
 
         .breadcrumb .title {
@@ -578,7 +657,14 @@ export class HaMediaPlayerBrowse extends LitElement {
           padding: 0;
         }
 
-        :host([narrow]) .header,
+        :host([narrow]) .breadcrumb .title {
+          font-size: 38px;
+        }
+
+        :host([narrow]) .breadcrumb-overflow {
+          align-items: center;
+        }
+
         :host([narrow]) .header-content {
           flex-direction: column;
           flex-wrap: nowrap;
@@ -607,10 +693,6 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         :host([narrow]) .children {
           grid-template-columns: 1fr 1fr !important;
-        }
-
-        :host([narrow]) .breadcrumb .title {
-          font-size: 38px;
         }
       `,
     ];

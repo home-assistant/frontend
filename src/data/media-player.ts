@@ -48,24 +48,6 @@ export interface MediaPlayerItem {
   children?: MediaPlayerItem[];
 }
 
-export const getBrowseMediaSources = memoizeOne((hass: HomeAssistant) => {
-  if (!hass) {
-    return [];
-  }
-
-  let entityIds = Object.keys(hass.states);
-
-  entityIds = entityIds.filter((eid) =>
-    ["media_player"].includes(computeDomain(eid))
-  );
-
-  entityIds = entityIds.filter((eid) =>
-    supportsFeature(hass.states[eid], SUPPORT_BROWSE_MEDIA)
-  );
-
-  return entityIds.map((key) => hass.states[key]);
-});
-
 export const browseMediaPlayer = (
   hass: HomeAssistant,
   entityId: string,

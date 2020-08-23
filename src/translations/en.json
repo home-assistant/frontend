@@ -347,7 +347,7 @@
         "play": "Play",
         "play-media": "Play Media",
         "pick-media": "Pick Media",
-        "media-source": "Media Source",
+        "choose-source": "Choose Source",
         "media-player-browser": "Media Player Browser",
         "content-type": {
           "server": "Server",

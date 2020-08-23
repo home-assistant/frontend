@@ -35,7 +35,7 @@ class DialogMediaPlayerBrowse extends LitElement {
 
   @internalProperty() private _mediaContentType?: string;
 
-  @internalProperty() private _action: MediaPlayerBrowseAction = "play";
+  @internalProperty() private _action?: MediaPlayerBrowseAction;
 
   @internalProperty() private _params?: MediaPlayerBrowseDialogParams;
 
@@ -46,7 +46,7 @@ class DialogMediaPlayerBrowse extends LitElement {
     this._entityId = this._params.entityId;
     this._mediaContentId = this._params.mediaContentId;
     this._mediaContentType = this._params.mediaContentType;
-    this._action = this._params.action || this._action;
+    this._action = this._params.action || "play";
 
     await this.updateComplete;
   }
