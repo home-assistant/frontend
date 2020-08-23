@@ -12,6 +12,7 @@ import {
 import { fireEvent } from "../common/dom/fire_event";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { supportsFeature } from "../common/entity/supports-feature";
+import { nextRender } from "../common/util/render-status";
 import { getExternalConfig } from "../external_app/external_config";
 import {
   CAMERA_SUPPORT_STREAM,
@@ -181,7 +182,7 @@ class HaCameraStream extends LitElement {
 
   private async _renderHLSExoPlayer(url: string) {
     window.addEventListener("resize", this._resizeExoPlayer);
-    this.updateComplete.then(this._resizeExoPlayer);
+    this.updateComplete.then(() => nextRender()).then(this._resizeExoPlayer);
     this._videoEl.style.visibility = "hidden";
     await this.hass!.auth.external!.sendMessage({
       type: "exoplayer/play_hls",
