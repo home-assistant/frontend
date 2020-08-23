@@ -661,7 +661,7 @@
                 "yaml_not_editable": "Nastavení této entity nelze upravovat z uživatelského rozhraní. Pouze entity nastavené z uživatelského rozhraní lze konfigurovat v uživatelském rozhraní."
             },
             "image_cropper": {
-                "crop": "Ořiznout"
+                "crop": "Oříznout"
             },
             "more_info_control": {
                 "dismiss": "Zavřít dialog",
@@ -1329,6 +1329,7 @@
                     "caption": "Zařízení",
                     "confirm_delete": "Opravdu chcete toto zařízení odstranit?",
                     "confirm_rename_entity_ids": "Chcete také přejmenovat ID entit vašich entit?",
+                    "confirm_rename_entity_ids_warning": "Žádná konfigurace (např. automatizace, skripty, scény, Lovelace), která tyto entity aktuálně používá, nebude změněna. Budete je muset aktualizovat sami.",
                     "data_table": {
                         "area": "Oblast",
                         "battery": "Baterie",
