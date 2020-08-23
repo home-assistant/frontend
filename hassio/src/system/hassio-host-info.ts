@@ -37,6 +37,8 @@ import { hassioStyle } from "../resources/hassio-style";
 import "../../../src/components/ha-button-menu";
 import "@material/mwc-list/mwc-list-item";
 import "../../../src/components/ha-card";
+import { fetchNetworkInfo } from "../../../src/data/hassio/network";
+import { showNetworkDialog } from "../dialogs/network/show-dialog-network";
 
 @customElement("hassio-host-info")
 class HassioHostInfo extends LitElement {
@@ -48,9 +50,12 @@ class HassioHostInfo extends LitElement {
 
   @property({ attribute: false }) public hassOsInfo!: HassioHassOSInfo;
 
+  @internalProperty() public _networkInfo?: any;
+
   @internalProperty() private _errors?: string;
 
   public render(): TemplateResult | void {
+    console.log(this._networkInfo);
     return html`
       <ha-card header="Host System">
         <div class="card-content">
@@ -72,12 +77,27 @@ class HassioHostInfo extends LitElement {
             : ""}
           <ha-settings-row>
             <span slot="heading">
+              IP Address
+            </span>
+            <span slot="description">
+              ${this._networkInfo?.interfaces.enp0s31f6.ip_address}
+            </span>
+            <mwc-button
+              title="Change the network"
+              @click=${this._changeNetworkClicked}
+            >
+              Change
+            </mwc-button>
+          </ha-settings-row>
+          <ha-settings-row>
+            <span slot="heading">
               System
             </span>
             <span slot="description">
               ${this.hostInfo.operating_system}
             </span>
-            ${this.hostInfo.version === this.hostInfo.version_latest
+            ${this.hostInfo.version === this.hostInfo.version_latest &&
+            this.hostInfo.features.includes("hassos")
               ? html`
                   <mwc-button
                     title="Update the host OS"
@@ -216,6 +236,9 @@ class HassioHostInfo extends LitElement {
 
   protected firstUpdated(): void {
     this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
+    fetchNetworkInfo(this.hass).then((info) => {
+      this._networkInfo = info;
+    });
   }
 
   private async _handleAction(ev: CustomEvent<ActionDetail>) {
@@ -345,6 +368,13 @@ class HassioHostInfo extends LitElement {
     });
 
     return data;
+  }
+
+  private async _changeNetworkClicked(): Promise<void> {
+    showNetworkDialog(this, {
+      network: this._networkInfo!,
+      //  loadData: () => this._loadData(),
+    });
   }
 
   private async _changeHostnameClicked(): Promise<void> {
