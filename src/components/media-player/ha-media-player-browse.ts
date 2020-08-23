@@ -220,75 +220,75 @@ export class HaMediaPlayerBrowse extends LitElement {
         </div>
       </div>
       <div class="divider"></div>
-      ${hasExpandableChildren
-        ? html`
-            <div class="children">
-              ${mostRecentItem.children?.length
-                ? html`
-                    ${mostRecentItem.children.map(
-                      (child) => html`
-                        <div
-                          class="child"
-                          .item=${child}
-                          @click=${this._navigate}
-                        >
-                          <div class="ha-card-parent">
-                            <ha-card
-                              style="background-image: url(${child.thumbnail})"
-                            >
-                              ${child.can_expand && !child.thumbnail
+      ${mostRecentItem.children?.length
+        ? hasExpandableChildren
+          ? html`
+              <div class="children">
+                ${mostRecentItem.children?.length
+                  ? html`
+                      ${mostRecentItem.children.map(
+                        (child) => html`
+                          <div
+                            class="child"
+                            .item=${child}
+                            @click=${this._navigate}
+                          >
+                            <div class="ha-card-parent">
+                              <ha-card
+                                style="background-image: url(${child.thumbnail})"
+                              >
+                                ${child.can_expand && !child.thumbnail
+                                  ? html`
+                                      <ha-svg-icon
+                                        class="folder"
+                                        .path=${mdiFolder}
+                                      ></ha-svg-icon>
+                                    `
+                                  : ""}
+                              </ha-card>
+                              ${child.can_play && !this._narrow
                                 ? html`
-                                    <ha-svg-icon
-                                      class="folder"
-                                      .path=${mdiFolder}
-                                    ></ha-svg-icon>
+                                    <div class="ha-card-copy">
+                                      <ha-svg-icon
+                                        class="play"
+                                        .item=${child}
+                                        .label=${this.hass.localize(
+                                          `ui.components.media-browser.${this.action}-media`
+                                        )}
+                                        .path=${this.action === "play"
+                                          ? mdiPlay
+                                          : mdiPlus}
+                                        @click=${this._actionClicked}
+                                      ></ha-svg-icon>
+                                    </div>
                                   `
                                 : ""}
-                            </ha-card>
-                            ${child.can_play && !this._narrow
-                              ? html`
-                                  <div class="ha-card-copy">
-                                    <ha-svg-icon
-                                      class="play"
-                                      .item=${child}
-                                      .label=${this.hass.localize(
-                                        `ui.components.media-browser.${this.action}-media`
-                                      )}
-                                      .path=${this.action === "play"
-                                        ? mdiPlay
-                                        : mdiPlus}
-                                      @click=${this._actionClicked}
-                                    ></ha-svg-icon>
-                                  </div>
-                                `
-                              : ""}
+                            </div>
+                            <div class="title">${child.title}</div>
+                            <div class="type">
+                              ${this.hass.localize(
+                                `ui.components.media-browser.content-type.${child.media_content_type}`
+                              )}
+                            </div>
                           </div>
-                          <div class="title">${child.title}</div>
-                          <div class="type">
-                            ${this.hass.localize(
-                              `ui.components.media-browser.content-type.${child.media_content_type}`
-                            )}
-                          </div>
-                        </div>
-                      `
-                    )}
-                  `
-                : ""}
-            </div>
-          `
-        : mostRecentItem.children
-        ? html`
-            <ha-data-table
-              .columns=${this._columns}
-              .data=${mostRecentItem.children.map((child) => {
-                return { icon: this.action, ...child };
-              }) as DataTableRowData[]}
-              .autoHeight=${true}
-              .showHeader=${false}
-              .id=${"media_content_id"}
-              @row-click=${this._rowClicked}
-            ></ha-data-table>
-          `
+                        `
+                      )}
+                    `
+                  : ""}
+              </div>
+            `
+          : html`
+              <ha-data-table
+                .columns=${this._columns}
+                .data=${mostRecentItem.children.map((child) => {
+                  return { icon: this.action, ...child };
+                }) as DataTableRowData[]}
+                .autoHeight=${true}
+                .showHeader=${false}
+                .id=${"media_content_id"}
+                @row-click=${this._rowClicked}
+              ></ha-data-table>
+            `
         : ""}
     `;
   }
