@@ -193,7 +193,7 @@ export interface Resources {
 
 export interface Context {
   id: string;
-  parrent_id?: string;
+  parent_id?: string;
   user_id?: string;
 }
 
