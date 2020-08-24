@@ -106,6 +106,7 @@ const mdiRenameMapping = {
   pot: "pot-steam",
   ruby: "language-ruby",
   sailing: "sail-boat",
+  scooter: "human-scooter",
   settings: "cog",
   "settings-box": "cog-box",
   "settings-outline": "cog-outline",
