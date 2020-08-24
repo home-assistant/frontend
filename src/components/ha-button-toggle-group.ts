@@ -12,7 +12,6 @@ import { classMap } from "lit-html/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
 import type { ToggleButton } from "../types";
 
-import "./ha-icon-button";
 import "./ha-svg-icon";
 
 @customElement("ha-button-toggle-group")
