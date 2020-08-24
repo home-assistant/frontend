@@ -1376,6 +1376,7 @@
           }
         },
         "devices": {
+          "add_prompt": "No {name} have been added using this device yet. You can add one by clicking the + button above.",
           "caption": "Devices",
           "description": "Manage connected devices",
           "device_info": "Device info",
