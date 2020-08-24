@@ -875,6 +875,14 @@
                                     "type": {
                                         "count": {
                                             "label": "Počet"
+                                        },
+                                        "until": {
+                                            "conditions": "Podmínky \"Dokud nenastane\"",
+                                            "label": "Dokud nenastane"
+                                        },
+                                        "while": {
+                                            "conditions": "Podmínky \"Pokud platí\"",
+                                            "label": "Pokud platí"
                                         }
                                     }
                                 },
