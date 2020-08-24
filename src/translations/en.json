@@ -2592,6 +2592,7 @@
             "title": "Template",
             "description": "Templates are rendered using the Jinja2 template engine with some Home Assistant specific extensions.",
             "editor": "Template editor",
+            "reset": "Reset to demo template",
             "jinja_documentation": "Jinja2 template documentation",
             "template_extensions": "Home Assistant template extensions",
             "unknown_error_template": "Unknown error rendering template"
