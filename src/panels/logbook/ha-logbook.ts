@@ -118,18 +118,26 @@ class HaLogbook extends LitElement {
                 ? ` (${item_username})`
                 : ``}</span
             >
-            ${!item.context_entity_id
+            ${!item.context_event_type
               ? ""
-              : html`
-                  by
+              : item.context_event_type == "service_call"
+              ? // Service Call
+                html` by service ${item.context_domain}.${item.context_service}`
+              : item.context_entity_id == item.entity_id
+              ? // HomeKit or something that self references
+                html` by
+                ${item.context_name
+                  ? item.context_name
+                  : item.context_event_type}`
+              : // Another entity such as an automation or script
+                html` by
                   <a
                     href="#"
                     @click=${this._entityClicked}
                     .entityId=${item.context_entity_id}
                     class="name"
                     >${item.context_entity_id_name}</a
-                  >
-                `}
+                  >`}
           </div>
         </div>
       </div>
