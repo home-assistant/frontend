@@ -188,6 +188,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                           >
                             <div class="ha-card-parent">
                               <ha-card
+                                outlined
                                 style="background-image: url(${child.thumbnail})"
                               >
                                 ${child.can_expand && !child.thumbnail
@@ -442,12 +443,17 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         mwc-list {
           --mdc-list-vertical-padding: 0;
+          --mdc-theme-text-icon-on-background: var(--secondary-text-color);
           border: 1px solid var(--divider-color);
           border-radius: 4px;
         }
 
         mwc-list li:last-child {
           display: none;
+        }
+
+        mwc-list li[divider] {
+          border-bottom-color: var(--divider-color);
         }
 
         .children {
@@ -485,7 +491,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         }
 
         .child .folder {
-          color: var(--sidebar-icon-color);
+          color: var(--secondary-text-color);
           top: calc(50% - (var(--mdc-icon-size) / 2));
           left: calc(50% - (var(--mdc-icon-size) / 2));
           --mdc-icon-size: calc(var(--media-browse-item-size, 175px) * 0.4);
