@@ -4,7 +4,7 @@ import { LovelaceViewElement } from "../../../data/lovelace";
 const CUSTOM_PREFIX = "custom:";
 
 const layouts: { [key: string]: () => Promise<any> } = {
-  default: () => import("./default-view"),
+  masonry: () => import("./masonry-view"),
   panel: () => import("./panel-view"),
   // grid: () => import("./grid").GridLovelaceViewLayout,
 };
@@ -25,7 +25,9 @@ export const getLovelaceViewElement = (name: string): LovelaceViewElement => {
 
   const element = document.createElement(tag) as LovelaceViewElement;
 
-  customElements.whenDefined(tag).then(() => customElements.get(tag));
+  console.log(
+    customElements.whenDefined(tag).then(() => customElements.get(tag))
+  );
 
   return element;
 };

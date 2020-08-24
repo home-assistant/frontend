@@ -75,7 +75,7 @@ export interface LovelaceDashboardCreateParams
 export interface LovelaceViewConfig {
   index?: number;
   title?: string;
-  type?: string;
+  layout?: string;
   badges?: Array<string | LovelaceBadgeConfig>;
   cards?: LovelaceCardConfig[];
   path?: string;
@@ -90,7 +90,6 @@ export interface LovelaceViewElement extends HTMLElement {
   hass?: HomeAssistant;
   lovelace?: Lovelace;
   index?: number;
-  columns: number;
   cards?: Array<LovelaceCard | HuiErrorCard>;
   badges?: LovelaceBadge[];
   editMode?: boolean;

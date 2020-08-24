@@ -5,8 +5,7 @@ import {
   internalProperty,
   PropertyValues,
   TemplateResult,
-  CSSResult,
-  css,
+  customElement,
 } from "lit-element";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/entity/ha-state-label-badge";
@@ -25,12 +24,11 @@ import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
 import "../../../components/ha-svg-icon";
 import { getLovelaceViewElement } from "./get-view";
 
+@customElement("hui-view")
 export class HUIView extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public lovelace?: Lovelace;
-
-  @property({ type: Number }) public columns?: number;
 
   @property({ type: Number }) public index?: number;
 
@@ -86,6 +84,8 @@ export class HUIView extends LitElement {
     const lovelace = this.lovelace!;
     const viewConfig = lovelace.config.views[this.index!];
     const hassChanged = changedProperties.has("hass");
+    const oldLovelace = changedProperties.get("lovelace") as Lovelace;
+    const oldViewConfig = oldLovelace.config.views[this.index!];
 
     let editModeChanged = false;
     let configChanged = false;
@@ -93,15 +93,19 @@ export class HUIView extends LitElement {
     if (changedProperties.has("index")) {
       configChanged = true;
     } else if (changedProperties.has("lovelace")) {
-      const oldLovelace = changedProperties.get("lovelace") as Lovelace;
       editModeChanged =
         oldLovelace && lovelace.editMode !== oldLovelace.editMode;
       configChanged = !oldLovelace || lovelace.config !== oldLovelace.config;
     }
 
-    if (configChanged && !this._layoutElement) {
+    if (
+      (configChanged && !this._layoutElement) ||
+      oldViewConfig.layout !== viewConfig.layout
+    ) {
+      console.log("");
+
       this._layoutElement = getLovelaceViewElement(
-        viewConfig.panel ? "panel" : viewConfig.type || "default"
+        viewConfig.panel ? "panel" : viewConfig.layout || "masonry"
       );
     }
 
@@ -130,10 +134,6 @@ export class HUIView extends LitElement {
     if (configChanged || hassChanged || editModeChanged) {
       this._layoutElement!.cards = this._cards;
       this._layoutElement!.badges = this._badges;
-    }
-
-    if (changedProperties.has("columns")) {
-      this._layoutElement!.columns = this.columns!;
     }
 
     const oldHass = changedProperties.get("hass") as this["hass"] | undefined;
@@ -208,20 +208,6 @@ export class HUIView extends LitElement {
       curBadgeEl === badgeElToReplace ? newBadgeEl : curBadgeEl
     );
   }
-
-  static get styles(): CSSResult {
-    return css`
-      :host {
-        display: block;
-        box-sizing: border-box;
-        padding: 4px 4px env(safe-area-inset-bottom);
-        transform: translateZ(0);
-        position: relative;
-        color: var(--primary-text-color);
-        background: var(--lovelace-background, var(--primary-background-color));
-      }
-    `;
-  }
 }
 
 declare global {
@@ -229,5 +215,3 @@ declare global {
     "hui-view": HUIView;
   }
 }
-
-customElements.define("hui-view", HUIView);

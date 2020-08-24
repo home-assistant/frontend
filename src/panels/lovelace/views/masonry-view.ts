@@ -48,8 +48,6 @@ export class DefaultView extends LitElement implements LovelaceViewElement {
 
   @property({ type: Number }) public index?: number;
 
-  @property({ type: Number }) public columns!: number;
-
   @property({ attribute: false }) public cards: Array<
     LovelaceCard | HuiErrorCard
   > = [];
@@ -59,6 +57,12 @@ export class DefaultView extends LitElement implements LovelaceViewElement {
   @property({ type: Boolean }) public editMode = false;
 
   private _createColumnsIteration = 0;
+
+  private _columns?: number;
+
+  private _mqls?: MediaQueryList[];
+
+  private _narrow?: boolean;
 
   public constructor() {
     super();
@@ -90,6 +94,14 @@ export class DefaultView extends LitElement implements LovelaceViewElement {
           `
         : ""}
     `;
+  }
+
+  protected firstUpdated(): void {
+    this._mqls = [300, 600, 900, 1200].map((width) => {
+      const mql = matchMedia(`(min-width: ${width}px)`);
+      mql.addListener(this._updateColumns);
+      return mql;
+    });
   }
 
   protected updated(changedProperties: PropertyValues): void {
@@ -131,7 +143,7 @@ export class DefaultView extends LitElement implements LovelaceViewElement {
     const columnSizes: number[] = [];
     const columnElements: HTMLDivElement[] = [];
     // Add columns to DOM, limit number of columns to the number of cards
-    for (let i = 0; i < Math.min(this.columns!, this.cards.length); i++) {
+    for (let i = 0; i < Math.min(this._columns!, this.cards.length); i++) {
       const columnEl = document.createElement("div");
       columnEl.classList.add("column");
       root.appendChild(columnEl);
@@ -202,6 +214,19 @@ export class DefaultView extends LitElement implements LovelaceViewElement {
       wrapper.appendChild(card);
       columnEl.appendChild(wrapper);
     }
+  }
+
+  private _updateColumns() {
+    const matchColumns = this._mqls!.reduce(
+      (cols, mql) => cols + Number(mql.matches),
+      0
+    );
+    // Do -1 column if the menu is docked and open
+    this._columns = Math.max(
+      1,
+      matchColumns -
+        Number(!this._narrow && this.hass!.dockedSidebar === "docked")
+    );
   }
 
   static get styles(): CSSResult {

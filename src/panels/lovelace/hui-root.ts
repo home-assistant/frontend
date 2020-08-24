@@ -64,8 +64,6 @@ class HUIRoot extends LitElement {
 
   @property({ attribute: false }) public lovelace?: Lovelace;
 
-  @property() public columns?: number;
-
   @property({ type: Boolean }) public narrow = false;
 
   @property() public route?: { path: string; prefix: string };
@@ -386,14 +384,6 @@ class HUIRoot extends LitElement {
     const view = this._viewRoot;
     const huiView = view.lastChild as HUIView;
 
-    if (
-      changedProperties.has("columns") &&
-      huiView &&
-      huiView instanceof HUIView
-    ) {
-      huiView.columns = this.columns;
-    }
-
     if (changedProperties.has("hass") && huiView) {
       huiView.hass = this.hass;
     }
@@ -653,7 +643,6 @@ class HUIRoot extends LitElement {
       view = this._viewCache![viewIndex];
     } else {
       view = document.createElement("hui-view");
-      view.columns = this.columns;
       view.index = viewIndex;
       this._viewCache![viewIndex] = view;
     }
