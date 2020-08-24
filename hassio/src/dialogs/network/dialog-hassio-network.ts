@@ -1,12 +1,6 @@
-import "@material/mwc-button/mwc-button";
-import "@material/mwc-icon-button/mwc-icon-button";
-import "@polymer/paper-radio-button/paper-radio-button";
-import "@polymer/paper-radio-group/paper-radio-group";
-import "@polymer/paper-input/paper-input";
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
-import "../../../../src/components/ha-circular-progress";
+import "@material/mwc-tab-bar";
+import "@material/mwc-tab";
+import "@material/mwc-icon-button";
 import {
   css,
   CSSResult,
@@ -15,154 +9,228 @@ import {
   LitElement,
   property,
   internalProperty,
-  query,
-  PolymerChangedEvent,
   TemplateResult,
 } from "lit-element";
-import memoizeOne from "memoize-one";
+import { cache } from "lit-html/directives/cache";
+import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-dialog";
+import "../../../../src/components/ha-header-bar";
 import "../../../../src/components/ha-svg-icon";
-import {
-  fetchHassioAddonsInfo,
-  HassioAddonRepository,
-} from "../../../../src/data/hassio/addon";
-import { setSupervisorOption } from "../../../../src/data/hassio/supervisor";
-import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
+import "../../../../src/components/ha-related-items";
+
+import { haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
-import { HassioNetworkDialogParams } from "./show-dialog-network";
-import { PaperRadioGroupElement } from "@polymer/paper-radio-group/paper-radio-group";
+import { mdiClose } from "@mdi/js";
+import "../../../../src/../src/components/ha-dialog";
+import "../../../../src/../src/components/ha-header-bar";
+import "@polymer/paper-radio-group/paper-radio-group";
+import "@polymer/paper-radio-button/paper-radio-button";
+import "@polymer/paper-input/paper-input";
+import type { PolymerChangedEvent } from "../../../../src/../src/polymer-types";
+import "@material/mwc-button/mwc-button";
 
 @customElement("dialog-hassio-network")
-class HassioNetworkDialog extends LitElement {
+export class DialogHassioNetwork extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) private _network: any = {};
+  @internalProperty() private _params?: any;
 
-  @property({ attribute: false })
-  private _dialogParams?: HassioNetworkDialogParams;
+  @internalProperty() private _network!: any[];
 
-  @query("#repository_input") private _optionInput?: PaperInputElement;
+  @internalProperty() private _curTab!: string;
 
-  @internalProperty() private _opened = false;
+  private _curTabIndex = 0;
 
-  @internalProperty() private _prosessing = false;
-
-  @internalProperty() private _error?: string;
-
-  public async showDialog(_dialogParams: any): Promise<void> {
-    this._dialogParams = _dialogParams;
-    this._opened = true;
-    this._network = Object.keys(_dialogParams.network?.interfaces).map(
-      (device) => ({
+  public async showDialog(params: any): Promise<void> {
+    this._params = params;
+    this._network = Object.keys(params.network?.interfaces)
+      .map((device) => ({
         interface: device,
-        data: _dialogParams.network.interfaces[device],
-      })
-    );
+        data: params.network.interfaces[device],
+      }))
+      .sort((a, b) => {
+        return a.data.primary - b.data.primary;
+      });
     await this.updateComplete;
   }
 
   public closeDialog(): void {
-    this._opened = false;
-    this._error = "";
+    this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  private _filteredRepositories = memoizeOne((repos: HassioAddonRepository[]) =>
-    repos.sort((a, b) => (a.name < b.name ? -1 : 1))
-  );
-
   protected render(): TemplateResult {
-    //const repositories = this._filteredRepositories(this._network);
-    console.log(this._network);
-    this._network[0].data.method = "manual";
+    if (!this._params || !this._network) {
+      return html``;
+    }
+
     return html`
       <ha-dialog
-        .open=${this._opened}
-        @closing=${this.closeDialog}
-        scrimClickAction
-        escapeKeyAction
-        heading="Change network"
+        open
+        .heading=${true}
+        hideActions
+        @closed=${this.closeDialog}
+        @close-dialog=${this.closeDialog}
       >
-        ${this._error ? html`<div class="error">${this._error}</div>` : ""}
-        <div class="form" @keydown=${this._handleKeyAdd}>
-          <paper-radio-group
-            name="snapshotType"
-            .selected=${this._network[0].data.method}
-            @selected-changed=${this._handleRadioValueChanged}
+        <div slot="heading">
+          <ha-header-bar>
+            <mwc-icon-button slot="navigationIcon" dialogAction="cancel">
+              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+            </mwc-icon-button>
+            <span slot="title">
+              Network settings
+            </span>
+          </ha-header-bar>
+          <mwc-tab-bar
+            .activeIndex=${this._curTabIndex}
+            @MDCTabBar:activated=${this._handleTabActivated}
+            @MDCTab:interacted=${this._handleTabInteracted}
           >
-            <paper-radio-button name="auto">
-              DHCP
-            </paper-radio-button>
-            <paper-radio-button name="manual">
-              Static
-            </paper-radio-button>
-          </paper-radio-group>
-          ${this._network[0].data.method !== "auto"
-            ? html` <paper-input
-                  class="flex-auto"
-                  id="repository_input"
-                  label="IP Address"
-                  ?disabled=${this._network[0].data.method === "auto"}
-                  .value="${this._network[0].data.ip_address}"
-                ></paper-input>
-                <paper-input
-                  class="flex-auto"
-                  id="repository_input"
-                  label="Gateway"
-                  ?disabled=${this._network[0].data.method === "auto"}
-                  .value="${this._network[0].data.gateway}"
-                ></paper-input>
-                <paper-input
-                  class="flex-auto"
-                  id="repository_input"
-                  label="DNS"
-                  ?disabled=${this._network[0].data.method === "auto"}
-                  .value="${this._network[0].data.nameservers}"
-                ></paper-input>
-                NB!: If you are changing IP or gateway addresses, you might
-                loose the connection.`
-            : ""}
+            <mwc-tab id="eth0" label="eth0"> </mwc-tab>
+            <mwc-tab id="eth1" label="eth1"> </mwc-tab>
+          </mwc-tab-bar>
         </div>
-        <mwc-button slot="secondaryAction" @click="${this.closeDialog}">
-          Close
-        </mwc-button>
-        <mwc-button slot="primaryAction" @click="${this.closeDialog}">
-          Save
-        </mwc-button>
+        <div class="wrapper">
+          ${cache(this._renderTab())}
+        </div>
       </ha-dialog>
     `;
   }
 
-  private _handleRadioValueChanged(ev: PolymerChangedEvent<string>) {
-    this._network[0].data.method = ev.detail.value;
+  private _renderTab() {
+    const device = this._network[this._curTabIndex];
+    return html` <div class="form container">
+        <paper-radio-group
+          name="snapshotType"
+          .selected=${device.data.method}
+          @selected-changed=${this._handleRadioValueChanged}
+        >
+          <paper-radio-button name="auto">
+            DHCP
+          </paper-radio-button>
+          <paper-radio-button name="manual">
+            Static
+          </paper-radio-button>
+        </paper-radio-group>
+        ${device.data.method !== "auto"
+          ? html` <paper-input
+                class="flex-auto"
+                id="repository_input"
+                label="IP Address"
+                ?disabled=${device.data.method === "auto"}
+                .value="${device.data.ip_address}"
+              ></paper-input>
+              <paper-input
+                class="flex-auto"
+                id="repository_input"
+                label="Gateway"
+                ?disabled=${device.data.method === "auto"}
+                .value="${device.data.gateway}"
+              ></paper-input>
+              <paper-input
+                class="flex-auto"
+                id="repository_input"
+                label="DNS"
+                ?disabled=${device.data.method === "auto"}
+                .value="${device.data.nameservers}"
+              ></paper-input>
+              NB!: If you are changing IP or gateway addresses, you might loose
+              the connection.`
+          : ""}
+      </div>
+      <div class="buttons">
+        <mwc-button @click=${this.closeDialog}>
+          close
+        </mwc-button>
+        <mwc-button @click=${this._updateNetwork}>
+          Update
+        </mwc-button>
+      </div>`;
+  }
+
+  private async _updateNetwork() {}
+
+  private _handleTabActivated(ev: CustomEvent): void {
+    this._curTabIndex = ev.detail.index;
+  }
+
+  private _handleTabInteracted(ev: CustomEvent): void {
+    this._curTab = ev.detail.tabId;
   }
 
   static get styles(): CSSResult[] {
     return [
-      haStyle,
       haStyleDialog,
       css`
-        ha-dialog.button-left {
-          --justify-action-buttons: flex-start;
+        ha-header-bar {
+          --mdc-theme-on-primary: var(--primary-text-color);
+          --mdc-theme-primary: var(--mdc-theme-surface);
+          flex-shrink: 0;
         }
-        paper-icon-item {
-          cursor: pointer;
+
+        mwc-tab-bar {
+          border-bottom: 1px solid
+            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
+        }
+
+        ha-dialog {
+          --dialog-content-position: static;
+          --dialog-content-padding: 0;
+          --dialog-z-index: 6;
+        }
+
+        @media all and (min-width: 451px) and (min-height: 501px) {
+          .wrapper {
+            width: 400px;
+          }
+        }
+
+        .content {
+          display: block;
+          padding: 20px 24px;
+        }
+
+        /* overrule the ha-style-dialog max-height on small screens */
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          ha-header-bar {
+            --mdc-theme-primary: var(--app-header-background-color);
+            --mdc-theme-on-primary: var(--app-header-text-color, white);
+          }
+        }
+
+        mwc-button.warning {
+          --mdc-theme-primary: var(--error-color);
+        }
+
+        :host([rtl]) app-toolbar {
+          direction: rtl;
+          text-align: right;
+        }
+        .container {
+          padding: 20px 24px;
         }
         .form {
-          color: var(--primary-text-color);
+          margin-bottom: 53px;
         }
-        .option {
-          border: 1px solid var(--divider-color);
-          border-radius: 4px;
-          margin-top: 4px;
-        }
-        mwc-button {
-          margin-left: 8px;
-        }
-        ha-paper-dropdown-menu {
-          display: block;
+        .buttons {
+          position: absolute;
+          bottom: 0;
+          width: 100%;
+          box-sizing: border-box;
+          border-top: 1px solid
+            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
+          display: flex;
+          justify-content: space-between;
+          padding: 8px;
+          padding-bottom: max(env(safe-area-inset-bottom), 8px);
+          background-color: var(--mdc-theme-surface, #fff);
         }
       `,
     ];
+  }
+
+  private _handleRadioValueChanged(ev: PolymerChangedEvent<string>) {
+    this._network[this._curTabIndex].data.method = ev.detail.value;
   }
 
   public focus() {
@@ -172,78 +240,10 @@ class HassioNetworkDialog extends LitElement {
       ) as HTMLElement)?.focus()
     );
   }
-
-  private _handleKeyAdd(ev: KeyboardEvent) {
-    ev.stopPropagation();
-    if (ev.keyCode !== 13) {
-      return;
-    }
-    this._addRepository();
-  }
-
-  private async _addRepository() {
-    const input = this._optionInput;
-    if (!input || !input.value) {
-      return;
-    }
-    this._prosessing = true;
-    const repositories = this._filteredRepositories(this._network);
-    const newRepositories = repositories.map((repo) => {
-      return repo.source;
-    });
-    newRepositories.push(input.value);
-
-    try {
-      await setSupervisorOption(this.hass, {
-        addons_repositories: newRepositories,
-      });
-
-      const addonsInfo = await fetchHassioAddonsInfo(this.hass);
-      this._network = addonsInfo.repositories;
-
-      await this._dialogParams!.loadData();
-
-      input.value = "";
-    } catch (err) {
-      this._error = err.message;
-    }
-    this._prosessing = false;
-  }
-
-  private async _removeRepository(ev: Event) {
-    const slug = (ev.currentTarget as any).slug;
-    const repositories = this._filteredRepositories(this._network);
-    const repository = repositories.find((repo) => {
-      return repo.slug === slug;
-    });
-    if (!repository) {
-      return;
-    }
-    const newRepositories = repositories
-      .map((repo) => {
-        return repo.source;
-      })
-      .filter((repo) => {
-        return repo !== repository.source;
-      });
-
-    try {
-      await setSupervisorOption(this.hass, {
-        addons_repositories: newRepositories,
-      });
-
-      const addonsInfo = await fetchHassioAddonsInfo(this.hass);
-      this._network = addonsInfo.repositories;
-
-      await this._dialogParams!.loadData();
-    } catch (err) {
-      this._error = err.message;
-    }
-  }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "dialog-hassio-network": HassioNetworkDialog;
+    "dialog-hassio-network": DialogHassioNetwork;
   }
 }
