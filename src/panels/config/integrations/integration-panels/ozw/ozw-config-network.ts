@@ -7,7 +7,6 @@ import {
   internalProperty,
   LitElement,
   property,
-  PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { navigate } from "../../../../../common/navigate";
@@ -57,18 +56,15 @@ class OZWConfigNetwork extends LitElement {
 
   @internalProperty() private _statistics?: OZWNetworkStatistics;
 
+  @internalProperty() private _status = "";
+
+  @internalProperty() private _icon = mdiCircle;
+
   public connectedCallback(): void {
     super.connectedCallback();
     if (this.ozw_instance <= 0) {
       navigate(this, "/config/ozw/dashboard", true);
     }
-    if (this.hass) {
-      this._fetchData();
-    }
-  }
-
-  protected firstUpdated(changedProperties: PropertyValues): void {
-    super.firstUpdated(changedProperties);
     if (this.hass) {
       this._fetchData();
     }
@@ -80,6 +76,17 @@ class OZWConfigNetwork extends LitElement {
       this.hass!,
       this.ozw_instance
     );
+    if (networkOnlineStatuses.includes(this._network.Status)) {
+      this._status = "online";
+      this._icon = mdiCheckCircle;
+    }
+    if (networkStartingStatuses.includes(this._network.Status)) {
+      this._status = "starting";
+    }
+    if (networkOfflineStatuses.includes(this._network.Status)) {
+      this._status = "offline";
+      this._icon = mdiCloseCircle;
+    }
   }
 
   private _generateServiceButton(service: string) {
@@ -115,69 +122,17 @@ class OZWConfigNetwork extends LitElement {
                 <ha-card class="content network-status">
                   <div class="card-content">
                     <div class="details">
-                      ${networkOnlineStatuses.indexOf(this._network.Status) !==
-                      -1
-                        ? html`
-                            <ha-svg-icon
-                              .path=${mdiCheckCircle}
-                              class="network-status-icon online"
-                              slot="item-icon"
-                            ></ha-svg-icon>
-                          `
-                        : networkStartingStatuses.indexOf(
-                            this._network.Status
-                          ) !== -1
-                        ? html`
-                            <ha-svg-icon
-                              .path=${mdiCircle}
-                              class="network-status-icon starting"
-                              slot="item-icon"
-                            ></ha-svg-icon>
-                          `
-                        : networkOfflineStatuses.indexOf(
-                            this._network.Status
-                          ) !== -1
-                        ? html`
-                            <ha-svg-icon
-                              .path=${mdiCloseCircle}
-                              class="network-status-icon offline"
-                              slot="item-icon"
-                            ></ha-svg-icon>
-                          `
-                        : html`
-                            <ha-svg-icon
-                              .path=${mdiCircle}
-                              class="network-status-icon"
-                              slot="item-icon"
-                            ></ha-svg-icon>
-                          `}
+                      <ha-svg-icon
+                        .path=${this._icon}
+                        class="network-status-icon ${this._status}"
+                        slot="item-icon"
+                      ></ha-svg-icon>
                       ${this.hass.localize(
                         "ui.panel.config.ozw.common.network"
                       )}
-                      ${networkOnlineStatuses.indexOf(this._network.Status) !==
-                      -1
-                        ? html`
-                            ${this.hass.localize(
-                              "ui.panel.config.ozw.network_status.online"
-                            )}
-                          `
-                        : networkStartingStatuses.indexOf(
-                            this._network.Status
-                          ) !== -1
-                        ? html`
-                            ${this.hass.localize(
-                              "ui.panel.config.ozw.network_status.starting"
-                            )}
-                          `
-                        : networkOfflineStatuses.indexOf(
-                            this._network.Status
-                          ) !== -1
-                        ? html`
-                            ${this.hass.localize(
-                              "ui.panel.config.ozw.network_status.offline"
-                            )}
-                          `
-                        : ``}
+                      ${this.hass.localize(
+                        "ui.panel.config.ozw.network_status." + this._status
+                      )}
                       <br />
                       <small>
                         ${this.hass.localize(

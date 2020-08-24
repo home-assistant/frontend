@@ -9,7 +9,6 @@ import {
   internalProperty,
   LitElement,
   property,
-  PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { navigate } from "../../../../../common/navigate";
