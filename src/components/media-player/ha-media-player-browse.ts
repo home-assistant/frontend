@@ -205,12 +205,12 @@ export class HaMediaPlayerBrowse extends LitElement {
                                     <mwc-icon-button
                                       class="play"
                                       .item=${child}
+                                      .label=${this.hass.localize(
+                                        `ui.components.media-browser.${this.action}-media`
+                                      )}
                                       @click=${this._actionClicked}
                                     >
                                       <ha-svg-icon
-                                        .label=${this.hass.localize(
-                                          `ui.components.media-browser.${this.action}-media`
-                                        )}
                                         .path=${this.action === "play"
                                           ? mdiPlay
                                           : mdiPlus}
