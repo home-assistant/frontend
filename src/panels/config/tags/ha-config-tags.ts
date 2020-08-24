@@ -12,6 +12,7 @@ import memoizeOne from "memoize-one";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-card";
 import "../../../components/ha-relative-time";
+import { showAutomationEditor, TagTrigger } from "../../../data/automation";
 import {
   createTag,
   deleteTag,
@@ -23,14 +24,13 @@ import {
   UpdateTagParams,
 } from "../../../data/tag";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import { getExternalConfig } from "../../../external_app/external_config";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { showTagDetailDialog } from "./show-dialog-tag-detail";
 import "./tag-image";
-import { getExternalConfig } from "../../../external_app/external_config";
-import { showAutomationEditor, TagTrigger } from "../../../data/automation";
 
 export interface TagRowData extends Tag {
   last_scanned_datetime: Date | null;
