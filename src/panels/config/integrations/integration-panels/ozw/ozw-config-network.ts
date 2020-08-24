@@ -30,13 +30,7 @@ import {
   OZWNetworkStatistics,
 } from "../../../../../data/ozw";
 
-export const ozwTabs: PageNavigation[] = [
-  {
-    translationKey: "ui.panel.config.ozw.navigation.select_instance",
-    path: `/config/ozw/dashboard`,
-    iconPath: mdiNetwork,
-  },
-];
+export const ozwTabs: PageNavigation[] = [];
 
 @customElement("ozw-config-network")
 class OZWConfigNetwork extends LitElement {
