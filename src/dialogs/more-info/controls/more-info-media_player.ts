@@ -1,43 +1,45 @@
+import "@material/mwc-button/mwc-button";
+import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-input/paper-input";
-
 import {
   css,
   CSSResult,
+  customElement,
   html,
   LitElement,
   property,
-  TemplateResult,
-  customElement,
   query,
+  TemplateResult,
 } from "lit-element";
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
-import { HomeAssistant, MediaEntity } from "../../../types";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import { UNAVAILABLE_STATES, UNAVAILABLE, UNKNOWN } from "../../../data/entity";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
+import "../../../components/ha-icon";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-paper-dropdown-menu";
+import "../../../components/ha-slider";
+import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
+import { UNAVAILABLE, UNAVAILABLE_STATES, UNKNOWN } from "../../../data/entity";
 import {
-  SUPPORT_TURN_ON,
-  SUPPORT_TURN_OFF,
+  ControlButton,
+  MediaPickedEvent,
   SUPPORTS_PLAY,
-  SUPPORT_PREVIOUS_TRACK,
-  SUPPORT_PAUSE,
-  SUPPORT_STOP,
+  SUPPORT_BROWSE_MEDIA,
   SUPPORT_NEXT_TRACK,
+  SUPPORT_PAUSE,
+  SUPPORT_PLAY_MEDIA,
+  SUPPORT_PREVIOUS_TRACK,
+  SUPPORT_SELECT_SOUND_MODE,
+  SUPPORT_SELECT_SOURCE,
+  SUPPORT_STOP,
+  SUPPORT_TURN_OFF,
+  SUPPORT_TURN_ON,
+  SUPPORT_VOLUME_BUTTONS,
   SUPPORT_VOLUME_MUTE,
   SUPPORT_VOLUME_SET,
-  SUPPORT_VOLUME_BUTTONS,
-  SUPPORT_SELECT_SOURCE,
-  SUPPORT_SELECT_SOUND_MODE,
-  SUPPORT_PLAY_MEDIA,
-  ControlButton,
 } from "../../../data/media-player";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-
-import "../../../components/ha-paper-dropdown-menu";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-slider";
-import "../../../components/ha-icon";
+import { HomeAssistant, MediaEntity } from "../../../types";
 
 @customElement("more-info-media_player")
 class MoreInfoMediaPlayer extends LitElement {
@@ -60,15 +62,29 @@ class MoreInfoMediaPlayer extends LitElement {
         ? ""
         : html`
             <div class="controls">
-              ${controls!.map(
-                (control) => html`
-                  <ha-icon-button
-                    action=${control.action}
-                    .icon=${control.icon}
-                    @click=${this._handleClick}
-                  ></ha-icon-button>
-                `
-              )}
+              <div class="basic-controls">
+                ${controls!.map(
+                  (control) => html`
+                    <ha-icon-button
+                      action=${control.action}
+                      .icon=${control.icon}
+                      @click=${this._handleClick}
+                    ></ha-icon-button>
+                  `
+                )}
+              </div>
+              ${supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA)
+                ? html`
+                    <ha-icon-button
+                      icon="hass:folder-multiple"
+                      .title=${this.hass.localize(
+                        "ui.card.media_player.browse_media"
+                      )}
+                      @click=${this._showBrowseMedia}
+                    >
+                    </ha-icon-button>
+                  `
+                : ""}
             </div>
           `}
       ${(supportsFeature(stateObj, SUPPORT_VOLUME_SET) ||
@@ -196,8 +212,16 @@ class MoreInfoMediaPlayer extends LitElement {
         flex-grow: 1;
       }
 
+      .controls {
+        display: flex;
+        align-items: center;
+      }
+
+      .basic-controls {
+        flex-grow: 1;
+      }
+
       .volume,
-      .controls,
       .source-input,
       .sound-input,
       .tts {
@@ -371,6 +395,26 @@ class MoreInfoMediaPlayer extends LitElement {
       message: ttsInput.value,
     });
     ttsInput.value = "";
+  }
+
+  private _showBrowseMedia(): void {
+    showMediaBrowserDialog(this, {
+      action: "play",
+      entityId: this.stateObj!.entity_id,
+      mediaPickedCallback: (pickedMedia: MediaPickedEvent) =>
+        this._playMedia(
+          pickedMedia.media_content_id,
+          pickedMedia.media_content_type
+        ),
+    });
+  }
+
+  private _playMedia(media_content_id: string, media_content_type: string) {
+    this.hass!.callService("media_player", "play_media", {
+      entity_id: this.stateObj!.entity_id,
+      media_content_id,
+      media_content_type,
+    });
   }
 }
 

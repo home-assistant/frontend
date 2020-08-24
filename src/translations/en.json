@@ -179,6 +179,13 @@
       "media_player": {
         "source": "Source",
         "sound_mode": "Sound mode",
+        "browse_media": "Browse media",
+        "turn_on": "Turn on",
+        "turn_off": "Turn off",
+        "media_play": "Play",
+        "media_play_pause": "Play/pause",
+        "media_next_track": "Next",
+        "media_previous_track": "Previous",
         "text_to_speak": "Text to speak"
       },
       "persistent_notification": {
@@ -341,6 +348,22 @@
       "data-table": {
         "search": "Search",
         "no-data": "No data"
+      },
+      "media-browser": {
+        "pick": "Pick",
+        "play": "Play",
+        "play-media": "Play Media",
+        "pick-media": "Pick Media",
+        "no_items": "No items",
+        "choose-source": "Choose Source",
+        "media-player-browser": "Media Player Browser",
+        "content-type": {
+          "server": "Server",
+          "library": "Library",
+          "artist": "Artist",
+          "album": "Album",
+          "playlist": "Playlist"
+        }
       }
     },
     "dialogs": {

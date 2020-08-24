@@ -1,4 +1,5 @@
-import { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { HomeAssistant } from "../types";
 
 export const SUPPORT_PAUSE = 1;
 export const SUPPORT_SEEK = 2;
@@ -14,7 +15,15 @@ export const SUPPORT_SELECT_SOURCE = 2048;
 export const SUPPORT_STOP = 4096;
 export const SUPPORTS_PLAY = 16384;
 export const SUPPORT_SELECT_SOUND_MODE = 65536;
+export const SUPPORT_BROWSE_MEDIA = 131072;
 export const CONTRAST_RATIO = 4.5;
+
+export type MediaPlayerBrowseAction = "pick" | "play";
+
+export interface MediaPickedEvent {
+  media_content_id: string;
+  media_content_type: string;
+}
 
 export interface MediaPlayerThumbnail {
   content_type: string;
@@ -25,6 +34,29 @@ export interface ControlButton {
   icon: string;
   action: string;
 }
+
+export interface MediaPlayerItem {
+  title: string;
+  media_content_type: string;
+  media_content_id: string;
+  can_play: boolean;
+  can_expand: boolean;
+  thumbnail?: string;
+  children?: MediaPlayerItem[];
+}
+
+export const browseMediaPlayer = (
+  hass: HomeAssistant,
+  entityId: string,
+  mediaContentId?: string,
+  mediaContentType?: string
+): Promise<MediaPlayerItem> =>
+  hass.callWS<MediaPlayerItem>({
+    type: "media_player/browse_media",
+    entity_id: entityId,
+    media_content_id: mediaContentId,
+    media_content_type: mediaContentType,
+  });
 
 export const getCurrentProgress = (stateObj: HassEntity): number => {
   let progress = stateObj.attributes.media_position;
