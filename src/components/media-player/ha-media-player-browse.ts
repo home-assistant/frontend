@@ -564,7 +564,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         :host([narrow]) .header-info,
         :host([narrow]) .media-source,
         :host([narrow]) .children {
-          padding: 0 8px;
+          padding: 0 24px;
         }
 
         :host([narrow]) .children {

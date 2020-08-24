@@ -89,6 +89,7 @@ class DialogMediaPlayerBrowse extends LitElement {
       css`
         ha-dialog {
           --dialog-z-index: 8;
+          --dialog-content-padding: 0;
         }
 
         @media (min-width: 800px) {
@@ -97,6 +98,7 @@ class DialogMediaPlayerBrowse extends LitElement {
           }
           ha-media-player-browse {
             width: 700px;
+            padding: 20px 24px;
           }
         }
       `,
