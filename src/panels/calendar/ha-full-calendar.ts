@@ -11,7 +11,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { mdiViewModule, mdiViewWeek, mdiViewDay, mdiViewAgenda } from "@mdi/js";
-import { Calendar } from "@fullcalendar/core";
+import { Calendar, memoize } from "@fullcalendar/core";
 import type { CalendarOptions } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import listPlugin from "@fullcalendar/list";
@@ -79,9 +79,7 @@ class HAFullCalendar extends LitElement {
   @internalProperty() private _activeView: FullCalendarView = "dayGridMonth";
 
   protected render(): TemplateResult {
-    const viewToggleButtons = viewButtons.filter((button) =>
-      this.views.includes(button.value as FullCalendarView)
-    );
+    const viewToggleButtons = this._viewToggleButtons(this.views);
 
     return html`
       ${this.calendar
@@ -191,33 +189,36 @@ class HAFullCalendar extends LitElement {
       ...defaultFullCalendarConfig,
       locale: this.hass.language,
     };
-    config.dateClick = (info) => {
-      if (info.view.type !== "dayGridMonth") {
-        return;
-      }
-      this._activeView = "dayGridDay";
-      this.calendar!.changeView("dayGridDay");
-      this.calendar!.gotoDate(info.dateStr);
-    };
 
-    config.eventClick = (info) => {
-      if (info.view.type !== "dayGridMonth") {
-        return;
-      }
-
-      this._activeView = "dayGridDay";
-      this.calendar!.changeView("dayGridDay");
-      this.calendar!.gotoDate(info.event.startStr);
-    };
+    config.dateClick = this._handleDateClick;
+    config.eventClick = this._handleEventClick;
 
     this.calendar = new Calendar(
       this.shadowRoot!.getElementById("calendar")!,
-      // @ts-ignore
       config
     );
 
     this.calendar!.render();
     this._fireViewChanged();
+  }
+
+  private _handleEventClick(info): void {
+    if (info.view.type !== "dayGridMonth") {
+      return;
+    }
+
+    this._activeView = "dayGridDay";
+    this.calendar!.changeView("dayGridDay");
+    this.calendar!.gotoDate(info.event.startStr);
+  }
+
+  private _handleDateClick(info): void {
+    if (info.view.type !== "dayGridMonth") {
+      return;
+    }
+    this._activeView = "dayGridDay";
+    this.calendar!.changeView("dayGridDay");
+    this.calendar!.gotoDate(info.dateStr);
   }
 
   private _handleNext(): void {
@@ -248,6 +249,12 @@ class HAFullCalendar extends LitElement {
       view: this.calendar!.view.type,
     });
   }
+
+  private _viewToggleButtons = memoize((views) =>
+    viewButtons.filter((button) =>
+      views.includes(button.value as FullCalendarView)
+    )
+  );
 
   static get styles(): CSSResult[] {
     return [
