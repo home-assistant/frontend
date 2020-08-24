@@ -11,7 +11,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { mdiViewModule, mdiViewWeek, mdiViewDay, mdiViewAgenda } from "@mdi/js";
-import { Calendar, memoize } from "@fullcalendar/core";
+import { Calendar } from "@fullcalendar/core";
 import type { CalendarOptions } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import listPlugin from "@fullcalendar/list";
@@ -22,6 +22,7 @@ import fullcalendarStyle from "@fullcalendar/common/main.css";
 import daygridStyle from "@fullcalendar/daygrid/main.css";
 // @ts-ignore
 import listStyle from "@fullcalendar/list/main.css";
+import memoize from "memoize-one";
 
 import "../../components/ha-icon-button";
 import "../../components/ha-button-toggle-group";
