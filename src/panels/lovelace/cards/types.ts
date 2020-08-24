@@ -12,6 +12,12 @@ export interface AlarmPanelCardConfig extends LovelaceCardConfig {
   theme?: string;
 }
 
+export interface CalendarCardConfig extends LovelaceCardConfig {
+  entities: string[];
+  title?: string;
+  theme?: string;
+}
+
 export interface ConditionalCardConfig extends LovelaceCardConfig {
   card: LovelaceCardConfig;
   conditions: Condition[];

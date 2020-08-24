@@ -1,3 +1,4 @@
+import "@material/mwc-button";
 import {
   property,
   internalProperty,
@@ -9,13 +10,19 @@ import {
   unsafeCSS,
   TemplateResult,
 } from "lit-element";
+import { mdiViewModule, mdiViewWeek, mdiViewDay, mdiViewAgenda } from "@mdi/js";
 import { Calendar } from "@fullcalendar/core";
+import type { CalendarOptions } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
+import listPlugin from "@fullcalendar/list";
+import interactionPlugin from "@fullcalendar/interaction";
 // @ts-ignore
-import fullcalendarStyle from "@fullcalendar/core/main.css";
+import fullcalendarStyle from "@fullcalendar/common/main.css";
 // @ts-ignore
 import daygridStyle from "@fullcalendar/daygrid/main.css";
-import "@material/mwc-button";
+// @ts-ignore
+import listStyle from "@fullcalendar/list/main.css";
+import memoize from "memoize-one";
 
 import "../../components/ha-icon-button";
 import "../../components/ha-button-toggle-group";
@@ -25,43 +32,56 @@ import type {
   CalendarEvent,
   ToggleButton,
   HomeAssistant,
+  FullCalendarView,
 } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 import { haStyle } from "../../resources/styles";
 
 declare global {
+  interface HTMLElementTagNameMap {
+    "ha-full-calendar": HAFullCalendar;
+  }
   interface HASSDomEvents {
     "view-changed": CalendarViewChanged;
   }
 }
 
-const fullCalendarConfig = {
+const defaultFullCalendarConfig: CalendarOptions = {
   headerToolbar: false,
-  plugins: [dayGridPlugin],
+  plugins: [dayGridPlugin, listPlugin, interactionPlugin],
   initialView: "dayGridMonth",
   dayMaxEventRows: true,
   height: "parent",
+  eventDisplay: "list-item",
 };
 
 const viewButtons: ToggleButton[] = [
-  { label: "Month View", value: "dayGridMonth", icon: "hass:view-module" },
-  { label: "Week View", value: "dayGridWeek", icon: "hass:view-week" },
-  { label: "Day View", value: "dayGridDay", icon: "hass:view-day" },
+  { label: "Month View", value: "dayGridMonth", iconPath: mdiViewModule },
+  { label: "Week View", value: "dayGridWeek", iconPath: mdiViewWeek },
+  { label: "Day View", value: "dayGridDay", iconPath: mdiViewDay },
+  { label: "List View", value: "listWeek", iconPath: mdiViewAgenda },
 ];
 
 class HAFullCalendar extends LitElement {
   public hass!: HomeAssistant;
 
-  @property() public events: CalendarEvent[] = [];
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property({ type: Boolean, reflect: true })
-  public narrow!: boolean;
+  @property({ attribute: false }) public events: CalendarEvent[] = [];
+
+  @property({ attribute: false }) public views: FullCalendarView[] = [
+    "dayGridMonth",
+    "dayGridWeek",
+    "dayGridDay",
+  ];
 
   @internalProperty() private calendar?: Calendar;
 
-  @internalProperty() private _activeView = "dayGridMonth";
+  @internalProperty() private _activeView: FullCalendarView = "dayGridMonth";
 
   protected render(): TemplateResult {
+    const viewToggleButtons = this._viewToggleButtons(this.views);
+
     return html`
       ${this.calendar
         ? html`
@@ -96,27 +116,12 @@ class HAFullCalendar extends LitElement {
                       ${this.calendar.view.title}
                     </h1>
                     <ha-button-toggle-group
-                      .buttons=${viewButtons}
+                      .buttons=${viewToggleButtons}
                       .active=${this._activeView}
                       @value-changed=${this._handleView}
                     ></ha-button-toggle-group>
                   `
                 : html`
-                    <div class="controls">
-                      <mwc-button
-                        outlined
-                        class="today"
-                        @click=${this._handleToday}
-                        >${this.hass.localize(
-                          "ui.panel.calendar.today"
-                        )}</mwc-button
-                      >
-                      <ha-button-toggle-group
-                        .buttons=${viewButtons}
-                        .active=${this._activeView}
-                        @value-changed=${this._handleView}
-                      ></ha-button-toggle-group>
-                    </div>
                     <div class="controls">
                       <h1>
                         ${this.calendar.view.title}
@@ -138,6 +143,21 @@ class HAFullCalendar extends LitElement {
                         </ha-icon-button>
                       </div>
                     </div>
+                    <div class="controls">
+                      <mwc-button
+                        outlined
+                        class="today"
+                        @click=${this._handleToday}
+                        >${this.hass.localize(
+                          "ui.panel.calendar.today"
+                        )}</mwc-button
+                      >
+                      <ha-button-toggle-group
+                        .buttons=${viewToggleButtons}
+                        .active=${this._activeView}
+                        @value-changed=${this._handleView}
+                      ></ha-button-toggle-group>
+                    </div>
                   `}
             </div>
           `
@@ -157,19 +177,49 @@ class HAFullCalendar extends LitElement {
       this.calendar.removeAllEventSources();
       this.calendar.addEventSource(this.events);
     }
+
+    if (changedProps.has("views") && !this.views.includes(this._activeView)) {
+      this._activeView = this.views[0];
+      this.calendar!.changeView(this._activeView);
+      this._fireViewChanged();
+    }
   }
 
   protected firstUpdated(): void {
-    const config = { ...fullCalendarConfig, locale: this.hass.language };
+    const config: CalendarOptions = {
+      ...defaultFullCalendarConfig,
+      locale: this.hass.language,
+    };
+
+    config.dateClick = this._handleDateClick;
+    config.eventClick = this._handleEventClick;
 
     this.calendar = new Calendar(
       this.shadowRoot!.getElementById("calendar")!,
-      // @ts-ignore
       config
     );
 
     this.calendar!.render();
     this._fireViewChanged();
+  }
+
+  private _handleEventClick(info): void {
+    if (info.view.type !== "dayGridMonth") {
+      return;
+    }
+
+    this._activeView = "dayGridDay";
+    this.calendar!.changeView("dayGridDay");
+    this.calendar!.gotoDate(info.event.startStr);
+  }
+
+  private _handleDateClick(info): void {
+    if (info.view.type !== "dayGridMonth") {
+      return;
+    }
+    this._activeView = "dayGridDay";
+    this.calendar!.changeView("dayGridDay");
+    this.calendar!.gotoDate(info.dateStr);
   }
 
   private _handleNext(): void {
@@ -201,14 +251,21 @@ class HAFullCalendar extends LitElement {
     });
   }
 
+  private _viewToggleButtons = memoize((views) =>
+    viewButtons.filter((button) =>
+      views.includes(button.value as FullCalendarView)
+    )
+  );
+
   static get styles(): CSSResult[] {
     return [
       haStyle,
       css`
         ${unsafeCSS(fullcalendarStyle)}
         ${unsafeCSS(daygridStyle)}
-
-      :host {
+        ${unsafeCSS(listStyle)}
+        
+        :host {
           display: flex;
           flex-direction: column;
           --fc-theme-standard-border-color: var(--divider-color);
@@ -262,6 +319,15 @@ class HAFullCalendar extends LitElement {
         #calendar {
           flex-grow: 1;
           background-color: var(--card-background-color);
+          min-height: 400px;
+          --fc-neutral-bg-color: var(--card-background-color);
+          --fc-list-event-hover-bg-color: var(--card-background-color);
+          --fc-theme-standard-border-color: var(--divider-color);
+          --fc-border-color: var(--divider-color);
+        }
+
+        a {
+            color: inherit !important; 
         }
 
         .fc-theme-standard .fc-scrollgrid {
@@ -273,15 +339,20 @@ class HAFullCalendar extends LitElement {
         }
 
         th.fc-col-header-cell.fc-day {
-          color: #70757a;
+          color: var(--secondary-text-color);
           font-size: 11px;
           font-weight: 400;
           text-transform: uppercase;
         }
 
+        .fc-daygrid-dot-event:hover {
+          background-color: inherit
+        }
+
         .fc-daygrid-day-top {
           text-align: center;
-          padding-top: 8px;
+          padding-top: 5px;
+          justify-content: center;
         }
 
         table.fc-scrollgrid-sync-table
@@ -296,13 +367,21 @@ class HAFullCalendar extends LitElement {
           font-size: 12px;
         }
 
-        td.fc-day-today {
+        .fc .fc-daygrid-day-number {
+            padding: 3px !important;
+        }
+
+        .fc .fc-daygrid-day.fc-day-today {
           background: inherit;
+        }
+
+        td.fc-day-today .fc-daygrid-day-top {
+          padding-top: 4px;
         }
 
         td.fc-day-today .fc-daygrid-day-number {
           height: 24px;
-          color: var(--text-primary-color);
+          color: var(--text-primary-color) !important;
           background-color: var(--primary-color);
           border-radius: 50%;
           display: inline-block;
@@ -341,6 +420,66 @@ class HAFullCalendar extends LitElement {
 
         .fc-popover-header {
           background-color: var(--secondary-background-color) !important;
+        }
+
+        .fc-theme-standard .fc-list-day-frame {
+          background-color: transparent;
+        }
+
+        .fc-list.fc-view,
+        .fc-list-event.fc-event td {
+          border: none;
+        }
+
+        .fc-list-day.fc-day th {
+          border-bottom: none;
+          border-top: 1px solid var(--fc-theme-standard-border-color, #ddd) !important;
+        }
+
+        .fc-list-day-text {
+          font-size: 16px;
+          font-weight: 400;
+        }
+
+        .fc-list-day-side-text {
+          font-weight: 400;
+          font-size: 16px;
+          color: var(--primary-color);
+        }
+
+        .fc-list-table td,
+        .fc-list-day-frame {
+          padding-top: 12px;
+          padding-bottom: 12px;
+        }
+
+        :host([narrow]) .fc-dayGridMonth-view
+          .fc-daygrid-dot-event
+          .fc-event-time,
+        :host([narrow]) .fc-dayGridMonth-view
+          .fc-daygrid-dot-event
+          .fc-event-title,
+          :host([narrow]) .fc-dayGridMonth-view .fc-daygrid-day-bottom {
+          display: none;
+        }
+
+        :host([narrow]) .fc .fc-dayGridMonth-view .fc-daygrid-event-harness-abs {
+          visibility: visible !important;
+          position: static;
+        }
+
+        :host([narrow]) .fc-dayGridMonth-view .fc-daygrid-day-events {
+          display: flex;
+          min-height: 2em !important;
+          justify-content: center;
+          flex-wrap: wrap;
+          max-height: 2em;
+          height: 2em;
+          overflow: hidden;
+        }
+
+        :host([narrow]) .fc-dayGridMonth-view .fc-scrollgrid-sync-table {
+          overflow: hidden;
         }
       `,
     ];
