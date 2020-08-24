@@ -505,11 +505,6 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         ha-card:hover {
           opacity: 0.5;
-          color: var(--primary-color);
-        }
-
-        ha-card:hover .folder {
-          color: var(--primary-color);
         }
 
         .child .title {
