@@ -70,7 +70,7 @@ class DialogMediaPlayerBrowse extends LitElement {
         <ha-media-player-browse
           .hass=${this.hass}
           .entityId=${this._entityId}
-          .action=${this._action}
+          .action=${this._action!}
           .mediaContentId=${this._mediaContentId}
           .mediaContentType=${this._mediaContentType}
           @media-picked=${this._mediaPicked}
@@ -91,7 +91,20 @@ class DialogMediaPlayerBrowse extends LitElement {
   }
 
   static get styles(): CSSResultArray {
-    return [haStyleDialog, css``];
+    return [
+      haStyleDialog,
+      css`
+        ha-dialog {
+          --mdc-dialog-max-width: 800px;
+        }
+
+        @media (min-width: 800px) {
+          ha-media-player-browse {
+            width: 700px;
+          }
+        }
+      `,
+    ];
   }
 }
 

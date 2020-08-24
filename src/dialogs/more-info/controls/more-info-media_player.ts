@@ -1,6 +1,7 @@
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-input/paper-input";
+import "@material/mwc-button/mwc-button";
 
 import {
   css,
@@ -15,6 +16,7 @@ import {
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { HomeAssistant, MediaEntity } from "../../../types";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
 import { UNAVAILABLE_STATES, UNAVAILABLE, UNKNOWN } from "../../../data/entity";
 import {
   SUPPORT_TURN_ON,
@@ -31,6 +33,7 @@ import {
   SUPPORT_SELECT_SOUND_MODE,
   SUPPORT_PLAY_MEDIA,
   ControlButton,
+  SUPPORT_BROWSE_MEDIA,
 } from "../../../data/media-player";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
@@ -111,6 +114,15 @@ class MoreInfoMediaPlayer extends LitElement {
                     ></ha-icon-button>
                   `
                 : ""}
+            </div>
+          `
+        : ""}
+      ${supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA)
+        ? html`
+            <div class="browse-media">
+              <mwc-button raised @click=${this._showBrowseMedia}
+                >Browse Media</mwc-button
+              >
             </div>
           `
         : ""}
@@ -196,8 +208,17 @@ class MoreInfoMediaPlayer extends LitElement {
         flex-grow: 1;
       }
 
+      .controls {
+        display: flex;
+        align-items: center;
+      }
+
+      .browse-media {
+        display: flex;
+        justify-content: center;
+      }
+
       .volume,
-      .controls,
       .source-input,
       .sound-input,
       .tts {
@@ -371,6 +392,13 @@ class MoreInfoMediaPlayer extends LitElement {
       message: ttsInput.value,
     });
     ttsInput.value = "";
+  }
+
+  private _showBrowseMedia(): void {
+    showMediaBrowserDialog(this, {
+      action: "play",
+      entityId: this.stateObj!.entity_id,
+    });
   }
 }
 
