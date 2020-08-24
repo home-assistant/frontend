@@ -56,7 +56,7 @@ class OZWConfigNetwork extends LitElement {
 
   @internalProperty() private _statistics?: OZWNetworkStatistics;
 
-  @internalProperty() private _status = "";
+  @internalProperty() private _status = "unknown";
 
   @internalProperty() private _icon = mdiCircle;
 

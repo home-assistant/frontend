@@ -1670,6 +1670,7 @@
             "online": "Online",
             "offline": "Offline",
             "starting": "Starting",
+            "unknown": "Unknown",
             "details": {
               "driverallnodesqueried": "All nodes have been queried",
               "driverallnodesqueriedsomedead": "All nodes have been queried. Some nodes were found dead",
