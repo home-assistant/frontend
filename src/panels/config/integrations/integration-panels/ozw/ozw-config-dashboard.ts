@@ -65,17 +65,14 @@ class OZWConfigDashboard extends LitElement {
     }
   }
 
-  protected firstUpdated(changedProperties: PropertyValues): void {
-    super.firstUpdated(changedProperties);
-    if (this.hass) {
-      this._fetchData();
-    }
-  }
-
   private async _fetchData() {
     this._instances = await fetchOZWInstances(this.hass!);
     if (this._instances.length === 1) {
-      navigate(this, `/config/ozw/network/${this._instances[0].ozw_instance}`);
+      navigate(
+        this,
+        `/config/ozw/network/${this._instances[0].ozw_instance}`,
+        true
+      );
     }
   }
 
@@ -117,9 +114,7 @@ class OZWConfigDashboard extends LitElement {
                             )}
                             ${instance.ozw_instance}
                             <div secondary>
-                              ${networkOnlineStatuses.indexOf(
-                                instance.Status
-                              ) !== -1
+                              ${networkOnlineStatuses.includes(instance.Status)
                                 ? html`
                                     <ha-svg-icon
                                       .path=${mdiCheckCircle}
@@ -129,9 +124,9 @@ class OZWConfigDashboard extends LitElement {
                                       "ui.panel.config.ozw.network_status.online"
                                     )}
                                   `
-                                : networkStartingStatuses.indexOf(
+                                : networkStartingStatuses.includes(
                                     instance.Status
-                                  ) !== -1
+                                  )
                                 ? html`
                                     <ha-svg-icon
                                       .path=${mdiCircle}
@@ -141,9 +136,9 @@ class OZWConfigDashboard extends LitElement {
                                       "ui.panel.config.ozw.network_status.starting"
                                     )}
                                   `
-                                : networkOfflineStatuses.indexOf(
+                                : networkOfflineStatuses.includes(
                                     instance.Status
-                                  ) !== -1
+                                  )
                                 ? html`
                                     <ha-svg-icon
                                       .path=${mdiCloseCircle}
