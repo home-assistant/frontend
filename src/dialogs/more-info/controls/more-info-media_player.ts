@@ -62,15 +62,29 @@ class MoreInfoMediaPlayer extends LitElement {
         ? ""
         : html`
             <div class="controls">
-              ${controls!.map(
-                (control) => html`
-                  <ha-icon-button
-                    action=${control.action}
-                    .icon=${control.icon}
-                    @click=${this._handleClick}
-                  ></ha-icon-button>
-                `
-              )}
+              <div class="basic-controls">
+                ${controls!.map(
+                  (control) => html`
+                    <ha-icon-button
+                      action=${control.action}
+                      .icon=${control.icon}
+                      @click=${this._handleClick}
+                    ></ha-icon-button>
+                  `
+                )}
+              </div>
+              ${supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA)
+                ? html`
+                    <ha-icon-button
+                      icon="hass:folder-multiple"
+                      .title=${this.hass.localize(
+                        "ui.card.media_player.browse_media"
+                      )}
+                      @click=${this._showBrowseMedia}
+                    >
+                    </ha-icon-button>
+                  `
+                : ""}
             </div>
           `}
       ${(supportsFeature(stateObj, SUPPORT_VOLUME_SET) ||
@@ -114,13 +128,6 @@ class MoreInfoMediaPlayer extends LitElement {
                   `
                 : ""}
             </div>
-          `
-        : ""}
-      ${supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA)
-        ? html`
-            <mwc-button raised @click=${this._showBrowseMedia}>
-              ${this.hass.localize("ui.card.media_player.browse_media")}
-            </mwc-button>
           `
         : ""}
       ${stateObj.state !== "off" &&
@@ -210,9 +217,8 @@ class MoreInfoMediaPlayer extends LitElement {
         align-items: center;
       }
 
-      .browse-media {
-        display: flex;
-        justify-content: center;
+      .basic-controls {
+        flex-grow: 1;
       }
 
       .volume,

@@ -402,14 +402,16 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                             `
                           )}
                           ${supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA)
-                            ? html` <ha-icon-button
-                                .title=${this.hass.localize(
-                                  "ui.card.media_player.browse_media"
-                                )}
-                                class="browse-media"
-                                icon="hass:folder-multiple"
-                                @click=${this._handleBrowseMedia}
-                              ></ha-icon-button>`
+                            ? html`
+                                <ha-icon-button
+                                  class="browse-media"
+                                  icon="hass:folder-multiple"
+                                  .title=${this.hass.localize(
+                                    "ui.card.media_player.browse_media"
+                                  )}
+                                  @click=${this._handleBrowseMedia}
+                                ></ha-icon-button>
+                              `
                             : ""}
                         </div>
                       `}
