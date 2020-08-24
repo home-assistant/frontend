@@ -1684,10 +1684,14 @@
           "message_received": "Message {id} received on {topic} at {time}:"
         },
         "ozw": {
+          "button": "Configure",
           "common": {
             "zwave": "Z-Wave",
             "node_id": "Node ID",
-            "ozw_instance": "OpenZWave Instance"
+            "ozw_instance": "OpenZWave Instance",
+            "instance": "Instance",
+            "controller": "Controller",
+            "network": "Network"
           },
           "device_info": {
             "zwave_info": "Z-Wave Info",
@@ -1724,6 +1728,44 @@
             "refreshing_description": "Refreshing node information...",
             "node_status": "Node Status",
             "step": "Step"
+          },
+          "network_status": {
+            "online": "Online",
+            "offline": "Offline",
+            "starting": "Starting",
+            "unknown": "Unknown",
+            "details": {
+              "driverallnodesqueried": "All nodes have been queried",
+              "driverallnodesqueriedsomedead": "All nodes have been queried. Some nodes were found dead",
+              "driverawakenodesqueries": "All awake nodes have been queried",
+              "driverremoved": "The driver has been removed",
+              "driverreset": "The driver has been reset",
+              "driverfailed": "Failed to connect to Z-Wave controller",
+              "driverready": "Initializing the Z-Wave controller",
+              "ready": "Ready to connect",
+              "stopped": "OpenZWave stopped",
+              "started": "Connected to MQTT",
+              "starting": "Connecting to MQTT",
+              "offline": "OZWDaemon offline"
+            }
+          },
+          "navigation": {
+            "select_instance": "Select Instance",
+            "network": "Network",
+            "nodes": "Nodes"
+          },
+          "select_instance": {
+            "header": "Select an OpenZWave Instance",
+            "introduction": "You have more than one OpenZWave instance running. Which instance would you like to manage?"
+          },
+          "network": {
+            "header": "Network Management",
+            "introduction": "Manage network-wide functions.",
+            "node_count": "{count} nodes"
+          },
+          "services": {
+            "add_node": "Add Node",
+            "remove_node": "Remove Node"
           }
         },
         "zha": {
