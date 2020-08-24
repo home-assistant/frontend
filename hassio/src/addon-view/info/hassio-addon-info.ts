@@ -242,19 +242,23 @@ class HassioAddonInfo extends LitElement {
               `
             : ""}
           <div class="security">
-            <ha-label-badge
-              class=${classMap({
-                green: this.addon.stage === "stable",
-                yellow: this.addon.stage === "experimental",
-                red: this.addon.stage === "deprecated",
-              })}
-              @click=${this._showMoreInfo}
-              id="stage"
-              label="stage"
-              description=""
-            >
-              <ha-svg-icon .path=${STAGE_ICON[this.addon.stage]}></ha-svg-icon>
-            </ha-label-badge>
+            ${this.addon.stage !== "stable"
+              ? html` <ha-label-badge
+                  class=${classMap({
+                    yellow: this.addon.stage === "experimental",
+                    red: this.addon.stage === "deprecated",
+                  })}
+                  @click=${this._showMoreInfo}
+                  id="stage"
+                  label="stage"
+                  description=""
+                >
+                  <ha-svg-icon
+                    .path=${STAGE_ICON[this.addon.stage]}
+                  ></ha-svg-icon>
+                </ha-label-badge>`
+              : ""}
+
             <ha-label-badge
               class=${classMap({
                 green: [5, 6].includes(Number(this.addon.rating)),

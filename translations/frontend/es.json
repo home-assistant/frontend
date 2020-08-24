@@ -201,7 +201,7 @@
         },
         "climate": {
             "cool": "Frío",
-            "dry": "Seco",
+            "dry": "Deshumidificador",
             "fan_only": "Sólo ventilador",
             "heat": "Calor",
             "heat_cool": "Calor/Frío",
@@ -528,6 +528,7 @@
                 "show_areas": "Mostrar áreas"
             },
             "data-table": {
+                "no-data": "Sin datos",
                 "search": "Buscar"
             },
             "date-range-picker": {
@@ -552,6 +553,10 @@
             "history_charts": {
                 "loading_history": "Cargando historial de estado...",
                 "no_history_found": "No se encontró historial de estado."
+            },
+            "picture-upload": {
+                "label": "Imagen",
+                "unsupported_format": "Formato no soportado, por favor, selecciona una imagen JPEG, PNG o GIF."
             },
             "related-items": {
                 "area": "Área",
@@ -654,6 +659,9 @@
                 "platform_not_loaded": "La integración {platform} no se ha cargado. Por favor añádela a tu configuración, ya sea agregando 'default_config:' o ''{platform}:''.",
                 "required_error_msg": "Este campo es obligatorio",
                 "yaml_not_editable": "La configuración de esta entidad no se puede editar desde la IU. Solo las entidades configuradas desde la IU se pueden configurar desde la IU"
+            },
+            "image_cropper": {
+                "crop": "Recortar"
             },
             "more_info_control": {
                 "dismiss": "Descartar diálogo",
@@ -797,7 +805,7 @@
                         "confirmation_text": "Todos los dispositivos en esta área quedarán sin asignar.",
                         "confirmation_title": "¿Estás seguro de que deseas eliminar esta área?"
                     },
-                    "description": "Visión general de todas las áreas de tu casa.",
+                    "description": "Administra áreas en tu hogar",
                     "editor": {
                         "area_id": "ID de área",
                         "create": "Crear",
@@ -819,7 +827,7 @@
                 },
                 "automation": {
                     "caption": "Automatizaciones",
-                    "description": "Crea y edita automatizaciones",
+                    "description": "Administra las automatizaciones",
                     "editor": {
                         "actions": {
                             "add": "Añadir acción",
@@ -832,6 +840,15 @@
                             "name": "Acción",
                             "type_select": "Tipo de acción",
                             "type": {
+                                "choose": {
+                                    "add_option": "Añadir opción",
+                                    "conditions": "Condiciones",
+                                    "default": "Acciones predeterminadas",
+                                    "label": "Elegir",
+                                    "option": "Opción {number}",
+                                    "remove_option": "Eliminar opción",
+                                    "sequence": "Acciones"
+                                },
                                 "condition": {
                                     "label": "Condición"
                                 },
@@ -851,6 +868,24 @@
                                     "label": "Disparar evento",
                                     "service_data": "Datos de servicio"
                                 },
+                                "repeat": {
+                                    "label": "Repetir",
+                                    "sequence": "Acciones",
+                                    "type_select": "Tipo de repetición",
+                                    "type": {
+                                        "count": {
+                                            "label": "Cuenta"
+                                        },
+                                        "until": {
+                                            "conditions": "Condiciones de repetición",
+                                            "label": "Hasta"
+                                        },
+                                        "while": {
+                                            "conditions": "Condiciones de repetición",
+                                            "label": "Mientras"
+                                        }
+                                    }
+                                },
                                 "scene": {
                                     "label": "Activar escena"
                                 },
@@ -864,7 +899,7 @@
                                     "wait_template": "Plantilla de espera"
                                 }
                             },
-                            "unsupported_action": "Acción no admitida: {action}"
+                            "unsupported_action": "No hay soporte en la IU para la acción: {action}"
                         },
                         "alias": "Nombre",
                         "conditions": {
@@ -930,7 +965,7 @@
                                     "zone": "Zona"
                                 }
                             },
-                            "unsupported_condition": "Condición no admitida: {condition}"
+                            "unsupported_condition": "No hay soporte en la IU para la condición: {condition}"
                         },
                         "default_name": "Nueva automatización",
                         "description": {
@@ -1022,6 +1057,9 @@
                                     "sunrise": "Amanecer",
                                     "sunset": "Puesta de sol"
                                 },
+                                "tag": {
+                                    "label": "Etiqueta"
+                                },
                                 "template": {
                                     "label": "Plantilla",
                                     "value_template": "Valor de la plantilla"
@@ -1049,7 +1087,7 @@
                                     "zone": "Zona"
                                 }
                             },
-                            "unsupported_platform": "Plataforma no admitida: {platform}"
+                            "unsupported_platform": "No hay soporte en la IU para la plataforma: {platform}"
                         },
                         "unsaved_confirm": "Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?"
                     },
@@ -1299,6 +1337,7 @@
                     "caption": "Dispositivos",
                     "confirm_delete": "¿Estás seguro de que quieres eliminar este dispositivo?",
                     "confirm_rename_entity_ids": "¿También quieres cambiar el nombre de los identificadores de entidad de tus entidades?",
+                    "confirm_rename_entity_ids_warning": "Esto no cambiará ninguna configuración (como automatizaciones, scripts, escenas, Lovelace) que estén utilizando actualmente estas entidades, tendrá que actualizarlas usted mismo.",
                     "data_table": {
                         "area": "Área",
                         "battery": "Batería",
@@ -1340,7 +1379,7 @@
                 },
                 "entities": {
                     "caption": "Entidades",
-                    "description": "Resumen de todas las entidades conocidas.",
+                    "description": "Administra las entidades conocidas.",
                     "picker": {
                         "disable_selected": {
                             "button": "Desactivar seleccionadas",
@@ -1392,7 +1431,7 @@
                 "header": "Configurar Home Assistant",
                 "helpers": {
                     "caption": "Ayudantes",
-                    "description": "Elementos que pueden ayudar a construir automatizaciones.",
+                    "description": "Administra los elementos que pueden ayudar a construir automatizaciones.",
                     "dialog": {
                         "add_helper": "Añadir ayudante",
                         "add_platform": "Añadir {platform}",
@@ -1420,7 +1459,7 @@
                     "built_using": "Construido usando",
                     "caption": "Información",
                     "custom_uis": "IU personalizadas:",
-                    "description": "Información sobre tu instalación de Home Assistant",
+                    "description": "Ver información sobre tu instalación de Home Assistant",
                     "developed_by": "Desarrollado por un montón de gente impresionante.",
                     "documentation": "Documentación",
                     "frontend": "interfaz de usuario",
@@ -1485,7 +1524,7 @@
                     },
                     "configure": "Configurar",
                     "configured": "Configurado",
-                    "description": "Administra y configura integraciones",
+                    "description": "Administra las integraciones",
                     "details": "Detalles de la integración",
                     "discovered": "Descubierto",
                     "home_assistant_website": "Sitio web de Home Assistant",
@@ -1513,7 +1552,7 @@
                     "rename_input_label": "Nombre de la entrada",
                     "search": "Buscar integraciones"
                 },
-                "introduction": "Aquí puedes configurar tus componentes y Home Assistant. Aún no es posible configurar todo desde la interfaz de usuario, pero estamos trabajando en ello.",
+                "introduction": "En esta vista puedes configurar tus componentes y Home Assistant. Aún no es posible configurar todo desde la IU, pero estamos trabajando en ello.",
                 "logs": {
                     "caption": "Registros",
                     "clear": "Limpiar",
@@ -1569,7 +1608,7 @@
                             "open": "Abrir"
                         }
                     },
-                    "description": "Configura tus Paneles de Control Lovelace",
+                    "description": "Administra tus Paneles de Control Lovelace",
                     "resources": {
                         "cant_edit_yaml": "Estás utilizando Lovelace en modo YAML, por tanto no puedes administrar tus recursos a través de la IU. Adminístralos en configuration.yaml.",
                         "caption": "Recursos",
@@ -1618,13 +1657,56 @@
                     "title": "MQTT",
                     "topic": "tema"
                 },
+                "ozw": {
+                    "common": {
+                        "node_id": "ID del Nodo",
+                        "ozw_instance": "Instancia OpenZWave",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "Error en el Nodo",
+                        "stage": "Etapa",
+                        "zwave_info": "Información Z-Wave"
+                    },
+                    "node_query_stages": {
+                        "associations": "Refrescando grupos de asociaciones y miembros",
+                        "cacheload": "Cargando información del archivo de caché de OpenZWave. Los nodos con batería permanecerán en esta etapa hasta que el nodo se active.",
+                        "complete": "El proceso de entrevista está completo",
+                        "configuration": "Obteniendo valores de configuración del nodo",
+                        "dynamic": "Obteniendo valores que cambian con frecuencia del nodo",
+                        "instances": "Obteniendo detalles sobre qué instancias o canales admite un dispositivo",
+                        "manufacturerspecific1": "Obteniendo del nodo los códigos de identificación de producto y del fabricante",
+                        "manufacturerspecific2": "Obteniendo del nodo códigos de identificación de producto y del fabricante adicionales",
+                        "neighbors": "Obteniendo una lista de los vecinos del nodo",
+                        "nodeinfo": "Obteniendo clases de órdenes admitidas por el nodo",
+                        "nodeplusinfo": "Obteniendo información Z-Wave+ del nodo",
+                        "probe": "Comprobando si el nodo está despierto/vivo",
+                        "protocolinfo": "Obteniendo las capacidades básicas de Z-Wave de este nodo desde el controlador",
+                        "session": "Obteniendo valores que cambian con poca frecuencia del nodo",
+                        "static": "Obteniendo valores estáticos del dispositivo",
+                        "versions": "Obteniendo información sobre versiones de firmware y clases de órdenes",
+                        "wakeup": "Configurando soporte para colas de despertador y mensajes"
+                    },
+                    "refresh_node": {
+                        "battery_note": "Si el nodo funciona con batería, asegúrate de despertarlo antes de continuar",
+                        "complete": "Refresco del Nodo Finalizado",
+                        "description": "Esto le indicará a OpenZWave que vuelva a entrevistar un nodo y actualice las clases de órdenes, las capacidades y los valores del mismo.",
+                        "node_status": "Estado del Nodo",
+                        "refreshing_description": "Refrescando la información del nodo ...",
+                        "start_refresh_button": "Iniciar Refresco",
+                        "step": "Paso",
+                        "title": "Refrescar Información del Nodo",
+                        "wakeup_header": "Instrucciones para despertar a",
+                        "wakeup_instructions_source": "Las instrucciones para despertarlo se obtienen de la base de datos de dispositivos de la comunidad OpenZWave."
+                    }
+                },
                 "person": {
                     "add_person": "Añadir persona",
                     "caption": "Personas",
                     "confirm_delete": "¿Estás seguro de que deseas eliminar a esta persona?",
                     "confirm_delete2": "Todos los dispositivos que pertenecen a esta persona quedarán sin asignar.",
                     "create_person": "Crear persona",
-                    "description": "Gestiona las personas a las que rastrea Home Assistant.",
+                    "description": "Administra las personas a las que rastrea Home Assistant.",
                     "detail": {
                         "create": "Crear",
                         "delete": "Eliminar",
@@ -1647,7 +1729,7 @@
                 "scene": {
                     "activated": "Activada escena {name}.",
                     "caption": "Escenas",
-                    "description": "Crea y edita escenas",
+                    "description": "Administra las escenas",
                     "editor": {
                         "default_name": "Nueva Escena",
                         "devices": {
@@ -1691,7 +1773,7 @@
                 },
                 "script": {
                     "caption": "Scripts",
-                    "description": "Crea y edita scripts",
+                    "description": "Administra los scripts",
                     "editor": {
                         "alias": "Nombre",
                         "default_name": "Nuevo script",
@@ -1771,6 +1853,31 @@
                             "valid": "¡Configuración valida!"
                         }
                     }
+                },
+                "tags": {
+                    "add_tag": "Añadir etiqueta",
+                    "automation_title": "Se escanea la etiqueta {name}",
+                    "caption": "Etiquetas",
+                    "create_automation": "Crear automatización con etiqueta",
+                    "description": "Administrar etiquetas",
+                    "detail": {
+                        "create": "Crear",
+                        "create_and_write": "Crear y escribir",
+                        "delete": "Eliminar",
+                        "description": "Descripción",
+                        "name": "Nombre",
+                        "new_tag": "Nueva etiqueta",
+                        "tag_id": "ID de etiqueta",
+                        "tag_id_placeholder": "Autogenerado cuando se deja vacío",
+                        "update": "Actualizar"
+                    },
+                    "edit": "Editar",
+                    "headers": {
+                        "last_scanned": "Última vez escaneada",
+                        "name": "Nombre"
+                    },
+                    "no_tags": "Sin etiquetas",
+                    "write": "Escribir"
                 },
                 "users": {
                     "add_user": {
@@ -1878,7 +1985,7 @@
                         "create_group": "Domótica Zigbee - Crear grupo",
                         "create_group_details": "Introduce los detalles necesarios para crear un nuevo grupo de zigbee",
                         "creating_group": "Creación de grupo",
-                        "description": "Crea y modifica grupos Zigbee.",
+                        "description": "Administra los grupos Zigbee.",
                         "group_details": "Aquí están todos los detalles del grupo Zigbee seleccionado.",
                         "group_id": "ID de grupo",
                         "group_info": "Información del grupo",
@@ -1921,7 +2028,7 @@
                     "configured_in_yaml": "Las zonas configuradas a través de configuration.yaml no se pueden editar a través de la interfaz de usuario.",
                     "confirm_delete": "¿Estás seguro de que deseas eliminar esta zona?",
                     "create_zone": "Crear zona",
-                    "description": "Gestiona las zonas en las que deseas realizar un seguimiento de las personas.",
+                    "description": "Administra las zonas en las que deseas realizar un seguimiento de las personas.",
                     "detail": {
                         "create": "Crear",
                         "delete": "Eliminar",
@@ -2048,7 +2155,7 @@
                         "description": "Disparar un evento en el bus de eventos.",
                         "documentation": "Documentación de eventos.",
                         "event_fired": "Evento {name} disparado",
-                        "fire_event": "Disparar evento",
+                        "fire_event": "Lanzar evento",
                         "listen_to_events": "Escuchar eventos",
                         "listening_to": "Escuchando",
                         "notification_event_fired": "¡Evento {tipe} disparado con éxito!",
@@ -2351,6 +2458,7 @@
                         "show_code_editor": "Mostrar editor de código",
                         "show_visual_editor": "Mostrar editor visual",
                         "toggle_editor": "Alternar editor",
+                        "typed_header": "Configuración de tarjeta {type}",
                         "unsaved_changes": "Tienes cambios sin guardar"
                     },
                     "edit_lovelace": {
@@ -2385,6 +2493,9 @@
                         "para_migrate": "Home Assistant puede añadir IDs a todas tus tarjetas y vistas automáticamente pulsando el botón 'Migrar configuración'.",
                         "para_no_id": "Este elemento no tiene un ID. Por favor añade uno a este elemento en 'ui-lovelace.yaml'."
                     },
+                    "move_card": {
+                        "header": "Elige una vista hacia la que mover la tarjeta"
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "Generaremos automáticamente tus vistas de la IU Lovelace con tus áreas y dispositivos si eliminas tu configuración de Lovelace.",
                         "confirm_remove_config_title": "¿Estás seguro de que deseas eliminar tu configuración de la IU Lovelace? Generaremos automáticamente tus vistas de la IU Lovelace con tus áreas y dispositivos.",
@@ -2412,6 +2523,10 @@
                         "yaml_control": "Para tomar el control en modo YAML, crea un archivo YAML con el nombre que especificaste en la configuración para este panel de control, o el valor predeterminado 'ui-lovelace.yaml'.",
                         "yaml_mode": "Estás utilizando el modo YAML para este panel de control, lo que significa que no puedes cambiar la configuración de Lovelace desde la IU. Si quieres gestionar este panel de control desde la IU, elimina 'mode: yaml' de la configuración de Lovelace en 'configuration.yaml.'"
                     },
+                    "select_view": {
+                        "dashboard_label": "Panel de control",
+                        "header": "Elige una vista"
+                    },
                     "suggest_card": {
                         "add": "Añadir a la IU Lovelace",
                         "create_own": "Elige una tarjeta diferente",
@@ -2427,7 +2542,7 @@
                 },
                 "menu": {
                     "close": "Cerrar",
-                    "configure_ui": "Configurar la interfaz de usuario",
+                    "configure_ui": "Editar panel de control",
                     "exit_edit_mode": "Salir del modo de edición de la interfaz de usuario",
                     "help": "Ayuda",
                     "refresh": "Actualizar",
@@ -2444,6 +2559,8 @@
                     "entity": "Entidad",
                     "entity_id": "ID de entidad",
                     "last_changed": "Última modificación",
+                    "no_data": "No se han encontrado entidades sin utilizar",
+                    "search": "Buscar entidades",
                     "select_to_add": "Selecciona las entidades que quieres añadir a una tarjeta y, a continuación, haz clic en el botón Añadir tarjeta.",
                     "title": "Entidades no utilizadas"
                 },
@@ -2727,10 +2844,18 @@
                     "header": "Cerrar automáticamente la conexión"
                 },
                 "themes": {
+                    "accent_color": "Color de acento",
+                    "dark_mode": {
+                        "auto": "Automático",
+                        "dark": "Oscuro",
+                        "light": "Claro"
+                    },
                     "dropdown_label": "Tema",
                     "error_no_theme": "No hay temas disponibles",
                     "header": "Tema",
-                    "link_promo": "Aprende sobre los temas"
+                    "link_promo": "Aprende sobre los temas",
+                    "primary_color": "Color primario",
+                    "reset": "Reiniciar"
                 },
                 "vibrate": {
                     "description": "Activar o deshabilitar la vibración en este dispositivo al controlar dispositivos.",

@@ -3,19 +3,21 @@ import {
   css,
   CSSResult,
   customElement,
+  eventOptions,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   query,
   TemplateResult,
-  eventOptions,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { ifDefined } from "lit-html/directives/if-defined";
 import { styleMap } from "lit-html/directives/style-map";
 import { scroll } from "lit-virtualizer";
+import memoizeOne from "memoize-one";
+import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../common/search/search-input";
 import { debounce } from "../../common/util/debounce";
@@ -24,8 +26,6 @@ import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-icon";
 import { filterData, sortData } from "./sort-filter";
-import memoizeOne from "memoize-one";
-import { restoreScroll } from "../../common/decorators/restore-scroll";
 
 declare global {
   // for fire event
@@ -541,7 +541,7 @@ export class HaDataTable extends LitElement {
         border-radius: 4px;
         border-width: 1px;
         border-style: solid;
-        border-color: rgba(var(--rgb-primary-text-color), 0.12);
+        border-color: var(--divider-color);
         display: inline-flex;
         flex-direction: column;
         box-sizing: border-box;
@@ -559,7 +559,7 @@ export class HaDataTable extends LitElement {
       }
 
       .mdc-data-table__row ~ .mdc-data-table__row {
-        border-top: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
+        border-top: 1px solid var(--divider-color);
       }
 
       .mdc-data-table__row:not(.mdc-data-table__row--selected):hover {
@@ -578,7 +578,7 @@ export class HaDataTable extends LitElement {
         height: 56px;
         display: flex;
         width: 100%;
-        border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
+        border-bottom: 1px solid var(--divider-color);
         overflow-x: auto;
       }
 
@@ -831,7 +831,7 @@ export class HaDataTable extends LitElement {
         right: 12px;
       }
       .table-header {
-        border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
+        border-bottom: 1px solid var(--divider-color);
         padding: 0 16px;
       }
       search-input {

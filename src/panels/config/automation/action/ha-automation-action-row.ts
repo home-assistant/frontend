@@ -15,6 +15,7 @@ import {
   LitElement,
   property,
   internalProperty,
+  PropertyValues,
 } from "lit-element";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -29,6 +30,8 @@ import "./types/ha-automation-action-event";
 import "./types/ha-automation-action-scene";
 import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-wait_template";
+import "./types/ha-automation-action-repeat";
+import "./types/ha-automation-action-choose";
 import { handleStructError } from "../../../lovelace/common/structs/handle-errors";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import { haStyle } from "../../../../resources/styles";
@@ -41,6 +44,8 @@ const OPTIONS = [
   "scene",
   "service",
   "wait_template",
+  "repeat",
+  "choose",
 ];
 
 const getType = (action: Action) => {
@@ -95,6 +100,16 @@ export default class HaAutomationActionRow extends LitElement {
   @internalProperty() private _uiModeAvailable = true;
 
   @internalProperty() private _yamlMode = false;
+
+  protected updated(changedProperties: PropertyValues) {
+    if (!changedProperties.has("action")) {
+      return;
+    }
+    this._uiModeAvailable = Boolean(getType(this.action));
+    if (!this._uiModeAvailable && !this._yamlMode) {
+      this._yamlMode = true;
+    }
+  }
 
   protected render() {
     const type = getType(this.action);

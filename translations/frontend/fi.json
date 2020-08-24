@@ -430,6 +430,8 @@
                 "activate": "Aktivoi"
             },
             "script": {
+                "cancel": "Peruuta",
+                "cancel_multiple": "Peruuta {number}",
                 "execute": "Suorita"
             },
             "service": {
@@ -524,6 +526,10 @@
                 "area": "Alue",
                 "clear": "Tyhjennä",
                 "show_areas": "Näytä alueet"
+            },
+            "data-table": {
+                "no-data": "Ei dataa",
+                "search": "Hae"
             },
             "date-range-picker": {
                 "end_date": "Päättymispäivä",
@@ -792,7 +798,7 @@
                         "confirmation_text": "Tälle alueelle kuuluvien laitteiden osoitus poistetaan.",
                         "confirmation_title": "Haluatko varmasti poistaa tämän alueen?"
                     },
-                    "description": "Yleiskuva kaikista kotisi alueista.",
+                    "description": "Hallinnoi kotisi alueita",
                     "editor": {
                         "area_id": "Alueen tunnus",
                         "create": "Luo",
@@ -827,6 +833,15 @@
                             "name": "Toiminta",
                             "type_select": "Toiminnon tyyppi",
                             "type": {
+                                "choose": {
+                                    "add_option": "Lisää vaihtoehto",
+                                    "conditions": "Ehdot",
+                                    "default": "Oletustoiminnot",
+                                    "label": "Valitse",
+                                    "option": "Vaihtoehto {number}",
+                                    "remove_option": "Poista vaihtoehto",
+                                    "sequence": "Toiminnot"
+                                },
                                 "condition": {
                                     "label": "Ehto"
                                 },
@@ -845,6 +860,24 @@
                                     "event": "Tapahtuma",
                                     "label": "Lähetä tapahtuma",
                                     "service_data": "Palvelun data"
+                                },
+                                "repeat": {
+                                    "label": "Toista",
+                                    "sequence": "Toiminnot",
+                                    "type_select": "Toistotyyppi",
+                                    "type": {
+                                        "count": {
+                                            "label": "Laske"
+                                        },
+                                        "until": {
+                                            "conditions": "Kunnes ehdot",
+                                            "label": "Kunnes"
+                                        },
+                                        "while": {
+                                            "conditions": "Sillä aikaa, kun ehdot",
+                                            "label": "Sillä aikaa"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "Aktivoi tilanne"
@@ -938,6 +971,19 @@
                         "introduction": "Käytä automaatioita herättääksesi kotisi eloon",
                         "load_error_not_editable": "Vain automaatiot tiedostossa automations.yaml ovat muokattavissa.",
                         "load_error_unknown": "Virhe ladatessa automaatiota ( {err_no} )",
+                        "max": {
+                            "parallel": "Rinnakkaisten ajojen enimmäismäärä",
+                            "queued": "Jonon pituus"
+                        },
+                        "modes": {
+                            "description": "Tila määrittää, mitä tapahtuu, kun automaatio käynnistyy, kun toiminnot ovat edelleen käynnissä edellisestä käynnistyksestä. Lisätietoja osoitteessa {documentation_link}.",
+                            "documentation": "automaation dokumentaatio",
+                            "label": "Tila",
+                            "parallel": "Rinnakkain",
+                            "queued": "Jonossa",
+                            "restart": "Käynnistä uudelleen",
+                            "single": "Yksittäinen (oletus)"
+                        },
                         "move_down": "Siirrä alaspäin",
                         "move_up": "Siirrä ylöspäin",
                         "save": "Tallenna",
@@ -1322,7 +1368,7 @@
                 },
                 "entities": {
                     "caption": "Kohteet",
-                    "description": "Yleiskuva kaikista tunnetuista entiteeteistä.",
+                    "description": "Hallitse kohteita",
                     "picker": {
                         "disable_selected": {
                             "button": "Poista valitut käytöstä",
@@ -1356,6 +1402,7 @@
                             "confirm_text": "Sinun tulisi poistaa ne Lovelace-käyttöliittymästä ja automaatioista, jos ne sisältävät näitä kohteita.",
                             "confirm_title": "Haluatko poistaa {number} kohdetta?"
                         },
+                        "search": "Hae kohteita",
                         "selected": "{number} valittuna",
                         "status": {
                             "disabled": "Poistettu käytöstä",
@@ -1386,7 +1433,8 @@
                             "entity_id": "Kohde ID",
                             "name": "Nimi",
                             "type": "Tyyppi"
-                        }
+                        },
+                        "no_helpers": "Näyttää siltä, että sinulla ei ole vielä avustajia!"
                     },
                     "types": {
                         "input_boolean": "Kytkin",
@@ -1431,6 +1479,7 @@
                         "delete_confirm": "Haluatko varmasti poistaa tämän integraation?",
                         "device_unavailable": "laite ei saatavissa",
                         "devices": "{count} {count, plural,\n  one {laite}\n  other {laitteet}\n}",
+                        "documentation": "Dokumentointi",
                         "entities": "{count} {count, plural,\n  one {kohde}\n  other {kohteet}\n}",
                         "entity_unavailable": "kohde ei saatavilla",
                         "firmware": "Laiteohjelmisto: {version}",
@@ -1489,7 +1538,8 @@
                     "note_about_integrations": "Kaikkia integraatioita ei voi vielä määrittää käyttöliittymän kautta.",
                     "note_about_website_reference": "Lisää saatavilla",
                     "rename_dialog": "Muokkaa tämän määritysmerkinnän nimeä",
-                    "rename_input_label": "Merkinnän nimi"
+                    "rename_input_label": "Merkinnän nimi",
+                    "search": "Etsi integraatioita"
                 },
                 "introduction": "Täällä voit säätää Home Assistanttia ja sen komponentteja. Huomioithan, ettei kaikkea voi vielä säätää käyttöliittymän kautta, mutta teemme jatkuvasti töitä sen mahdollistamiseksi.",
                 "logs": {
@@ -1596,6 +1646,18 @@
                     "title": "MQTT",
                     "topic": "aihe"
                 },
+                "ozw": {
+                    "common": {
+                        "node_id": "Solmun tunnus",
+                        "ozw_instance": "OpenZWave-instanssi",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "Solmu epäonnistui",
+                        "stage": "Vaihe",
+                        "zwave_info": "Z-Wave-tiedot"
+                    }
+                },
                 "person": {
                     "add_person": "Lisää henkilö",
                     "caption": "Henkilöt",
@@ -1642,6 +1704,7 @@
                             "introduction": "Kohteet, jotka eivät kuulu laitteisiin, voidaan asettaa täällä.",
                             "without_device": "Kohteet ilman laitetta"
                         },
+                        "icon": "Kuvake",
                         "introduction": "Käytä tilanteita herättääksesi kotisi eloon.",
                         "load_error_not_editable": "Vain tilanteet tiedostossa scenes.yaml ovat muokattavissa.",
                         "load_error_unknown": "Virhe ladattaessa tilannetta ({err_no}).",
@@ -1675,9 +1738,26 @@
                         "delete_confirm": "Haluatko varmasti poistaa tämän skriptin?",
                         "delete_script": "Poista skripti",
                         "header": "Skripti: {name}",
+                        "icon": "Kuvake",
+                        "id": "Kohde ID",
+                        "id_already_exists": "Tämä tunnus on jo olemassa",
+                        "id_already_exists_save_error": "Et voi tallentaa tätä skriptiä, koska tunnus ei ole yksilöivä. Valitse toinen tunnus tai jätä se tyhjäksi, jolloin se luodaan automaattisesti.",
                         "introduction": "Käytä scriptejä suorittaaksesi toimintasarjan.",
                         "link_available_actions": "Lisätietoja saatavilla olevista toiminnoista",
                         "load_error_not_editable": "Vain scripts.yaml-tiedostossa olevat skriptit ovat muokattavissa.",
+                        "max": {
+                            "parallel": "Rinnakkaisten ajojen enimmäismäärä",
+                            "queued": "Jonon pituus"
+                        },
+                        "modes": {
+                            "description": "Moodi hallitsee sitä, mitä tapahtuu, kun skripti käynnistetään, kun se edelleen toimii yhdestä tai useammasta aiemmasta kutsusta. Katso lisätietoja {documentation_link} .",
+                            "documentation": "skriptin dokumentaatio",
+                            "label": "Tila",
+                            "parallel": "Rinnakkain",
+                            "queued": "Jonossa",
+                            "restart": "Käynnistä uudelleen",
+                            "single": "Yksittäinen (oletus)"
+                        },
                         "sequence": "Järjestys",
                         "sequence_sentence": "Skriptin toimintojen järjestys."
                     },
@@ -2193,6 +2273,7 @@
                             "name": "Nimi",
                             "no_theme": "Ei teemaa",
                             "refresh_interval": "Päivitysväli",
+                            "search": "Hae",
                             "secondary_info_attribute": "Toissijainen info-attribuutti",
                             "show_icon": "Näytä kuvake?",
                             "show_name": "Näytä nimi?",
@@ -2298,6 +2379,7 @@
                     },
                     "edit_card": {
                         "add": "Lisää kortti",
+                        "confirm_cancel": "Haluatko varmasti peruuttaa?",
                         "delete": "Poista kortti",
                         "duplicate": "Kopioi kortti",
                         "edit": "Muokkaa",
@@ -2308,12 +2390,15 @@
                         "pick_card_view_title": "Minkä kortin haluat lisätä {name} -näkymääsi?",
                         "show_code_editor": "Näytä koodieditori",
                         "show_visual_editor": "Näytä visuaalinen editori",
-                        "toggle_editor": "Vaihda editori"
+                        "toggle_editor": "Vaihda editori",
+                        "typed_header": "{type}-kortin kokoonpano",
+                        "unsaved_changes": "Sinulla on tallentamattomia muutoksia"
                     },
                     "edit_lovelace": {
                         "edit_title": "Muokkaa otsikkoa",
                         "explanation": "Tämä otsikko on esillä näkymien yläpuolella Lovelace-käyttöliittymässä.",
-                        "header": "Lovelace-käyttöliittymän otsikko"
+                        "header": "Lovelace-käyttöliittymän otsikko",
+                        "title": "Otsikko"
                     },
                     "edit_view": {
                         "add": "Lisää näkymä",
@@ -2341,6 +2426,9 @@
                         "para_migrate": "Home Assistant voi lisätä ID:t kaikkiin kortteihisi ja näkymiin automaattisesti painamalla 'Tuo vanhat asetukset'-nappia.",
                         "para_no_id": "Elementillä ei ole ID. Lisää ID elementille 'ui-lovelace.yaml'-tiedostossa."
                     },
+                    "move_card": {
+                        "header": "Valitse näkymä, johon kortti siirretään"
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "Lovelace käyttöliittymän näkymät luodaan automaattisesti alueistasi ja laitteistasi, jos poistat nykyisen määrityksen.",
                         "confirm_remove_config_title": "Haluatko varmasti poistaa Lovelace-käyttöliittymän asetukset? Lovelace käyttöliittymän asetukset luodaan automaattisesti alueistasi ja laitteistasi.",
@@ -2367,6 +2455,10 @@
                         "yaml_config": "Tämän aloittamisen helpottamiseksi on tämä hallintapaneelin nykyinen kokoonpano:",
                         "yaml_control": "Jos haluat hallita YAML-tilaa, luo YAML-tiedosto, jonka nimi on määritetty tämän kojelaudan kokoonpanossa, tai oletusarvoinen 'ui-lovelace.yaml'.",
                         "yaml_mode": "Käytät YAML-tilaa, mikä tarkoittaa, että et voi muuttaa Lovelace-asetuksia käyttöliittymästä. Jos haluat muuttaa Lovelacea käyttöliittymästä, poista 'mode: yaml' Lovelace-määrityksestäsi tiedostossa 'configuration.yaml'."
+                    },
+                    "select_view": {
+                        "dashboard_label": "Kojelauta",
+                        "header": "Valitse näkymä"
                     },
                     "suggest_card": {
                         "add": "Lisää Lovelace-käyttöliittymään",
@@ -2400,6 +2492,8 @@
                     "entity": "Kohde",
                     "entity_id": "Kohde ID",
                     "last_changed": "Viimeksi muutettu",
+                    "no_data": "Käyttämättömiä kohteita ei löytynyt",
+                    "search": "Hae kohteita",
                     "select_to_add": "Valitse kohteet, jotka haluat lisätä korttiin, ja napsauta sitten Lisää kortti -painiketta.",
                     "title": "Käyttämättömät entiteetit"
                 },
@@ -2502,6 +2596,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "Tietokone ei ole sallittu.",
                                 "not_whitelisted": "Tietokonettasi ei ole sallittu."
                             },
                             "step": {
@@ -2677,11 +2772,23 @@
                     "not_used": "Ei ole koskaan käytetty",
                     "token_title": "Päivitä tunnus kohteelle {clientId}"
                 },
+                "suspend": {
+                    "description": "Suljetaanko yhteys palvelimeen 5 minuuttia piilottamisen jälkeen?",
+                    "header": "Sulje yhteys automaattisesti"
+                },
                 "themes": {
+                    "accent_color": "Korostusväri",
+                    "dark_mode": {
+                        "auto": "Automaattinen",
+                        "dark": "Tumma",
+                        "light": "Vaalea"
+                    },
                     "dropdown_label": "Teema",
                     "error_no_theme": "Ei teemoja käytettävissä.",
                     "header": "Teema",
-                    "link_promo": "Lisätietoja teemoista"
+                    "link_promo": "Lisätietoja teemoista",
+                    "primary_color": "Ensisijainen väri",
+                    "reset": "Nollaa"
                 },
                 "vibrate": {
                     "description": "Ota tämän laitteen värinä käyttöön tai poista se käytöstä, kun ohjaat laitteita.",

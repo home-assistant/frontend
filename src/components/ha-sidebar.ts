@@ -126,7 +126,7 @@ class HaSidebar extends LitElement {
 
   // property used only in css
   // @ts-ignore
-  @property({ type: Boolean, reflect: true }) private _rtl = false;
+  @property({ type: Boolean, reflect: true }) public rtl = false;
 
   private _mouseLeaveTimeout?: number;
 
@@ -312,6 +312,7 @@ class HaSidebar extends LitElement {
       hass.panelUrl !== oldHass.panelUrl ||
       hass.user !== oldHass.user ||
       hass.localize !== oldHass.localize ||
+      hass.language !== oldHass.language ||
       hass.states !== oldHass.states ||
       hass.defaultPanel !== oldHass.defaultPanel
     );
@@ -339,12 +340,14 @@ class HaSidebar extends LitElement {
       return;
     }
 
-    this._rtl = computeRTL(this.hass);
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (!oldHass || oldHass.language !== this.hass.language) {
+      this.rtl = computeRTL(this.hass);
+    }
 
     if (!SUPPORT_SCROLL_IF_NEEDED) {
       return;
     }
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (!oldHass || oldHass.panelUrl !== this.hass.panelUrl) {
       const selectedEl = this.shadowRoot!.querySelector(".iron-selected");
       if (selectedEl) {
@@ -496,9 +499,12 @@ class HaSidebar extends LitElement {
         width: 64px;
       }
       :host([expanded]) {
-        width: 256px;
+        width: calc(256px + env(safe-area-inset-left));
       }
-
+      :host([rtl]) {
+        border-right: 0;
+        border-left: 1px solid var(--divider-color);
+      }
       .menu {
         box-sizing: border-box;
         height: 65px;
@@ -512,18 +518,25 @@ class HaSidebar extends LitElement {
         background-color: var(--primary-background-color);
         font-size: 20px;
         align-items: center;
+        padding-left: calc(8.5px + env(safe-area-inset-left));
+      }
+      :host([rtl]) .menu {
+        padding-left: 8.5px;
+        padding-right: calc(8.5px + env(safe-area-inset-right));
       }
       :host([expanded]) .menu {
-        width: 256px;
+        width: calc(256px + env(safe-area-inset-left));
       }
-
+      :host([rtl][expanded]) .menu {
+        width: calc(256px + env(safe-area-inset-right));
+      }
       .menu mwc-icon-button {
         color: var(--sidebar-icon-color);
       }
       :host([expanded]) .menu mwc-icon-button {
         margin-right: 23px;
       }
-      :host([expanded][_rtl]) .menu mwc-icon-button {
+      :host([expanded][rtl]) .menu mwc-icon-button {
         margin-right: 0px;
         margin-left: 23px;
       }
@@ -551,12 +564,18 @@ class HaSidebar extends LitElement {
         display: flex;
         flex-direction: column;
         box-sizing: border-box;
-        height: calc(100% - 196px);
+        height: calc(100% - 196px - env(safe-area-inset-bottom));
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-color: var(--scrollbar-thumb-color) transparent;
         scrollbar-width: thin;
         background: none;
+        margin-left: env(safe-area-inset-left);
+      }
+
+      :host([rtl]) paper-listbox {
+        margin-left: initial;
+        margin-right: env(safe-area-inset-right);
       }
 
       a {
@@ -580,7 +599,7 @@ class HaSidebar extends LitElement {
       :host([expanded]) paper-icon-item {
         width: 240px;
       }
-      :host([_rtl]) paper-icon-item {
+      :host([rtl]) paper-icon-item {
         padding-left: auto;
         padding-right: 12px;
       }
@@ -656,6 +675,11 @@ class HaSidebar extends LitElement {
       }
       .notifications-container {
         display: flex;
+        margin-left: env(safe-area-inset-left);
+      }
+      :host([rtl]) .notifications-container {
+        margin-left: initial;
+        margin-right: env(safe-area-inset-right);
       }
       .notifications {
         cursor: pointer;
@@ -664,18 +688,23 @@ class HaSidebar extends LitElement {
         flex: 1;
       }
       .profile {
+        margin-left: env(safe-area-inset-left);
+      }
+      :host([rtl]) .profile {
+        margin-left: initial;
+        margin-right: env(safe-area-inset-right);
       }
       .profile paper-icon-item {
         padding-left: 4px;
       }
-      :host([_rtl]) .profile paper-icon-item {
+      :host([rtl]) .profile paper-icon-item {
         padding-left: auto;
         padding-right: 4px;
       }
       .profile .item-text {
         margin-left: 8px;
       }
-      :host([_rtl]) .profile .item-text {
+      :host([rtl]) .profile .item-text {
         margin-right: 8px;
       }
 
@@ -688,7 +717,7 @@ class HaSidebar extends LitElement {
         line-height: 20px;
         text-align: center;
         padding: 0px 6px;
-        color: var(--text-primary-color);
+        color: var(--text-accent-color, var(--text-primary-color));
       }
       ha-svg-icon + .notification-badge {
         position: absolute;
@@ -735,7 +764,7 @@ class HaSidebar extends LitElement {
         font-weight: 500;
       }
 
-      :host([_rtl]) .menu mwc-icon-button {
+      :host([rtl]) .menu mwc-icon-button {
         -webkit-transform: scaleX(-1);
         transform: scaleX(-1);
       }

@@ -235,7 +235,7 @@ export class DialogEntityEditor extends LitElement {
       css`
         ha-header-bar {
           --mdc-theme-on-primary: var(--primary-text-color);
-          --mdc-theme-primary: var(--card-background-color);
+          --mdc-theme-primary: var(--mdc-theme-surface);
           flex-shrink: 0;
         }
 
@@ -247,6 +247,7 @@ export class DialogEntityEditor extends LitElement {
         ha-dialog {
           --dialog-content-position: static;
           --dialog-content-padding: 0;
+          --dialog-z-index: 6;
         }
 
         @media all and (min-width: 451px) and (min-height: 501px) {

@@ -123,12 +123,12 @@ class MoreInfoConfigurator extends PolymerElement {
   }
 
   fieldChanged(ev) {
-    var el = ev.target;
+    const el = ev.target;
     this.fieldInput[el.name] = el.value;
   }
 
   submitClicked() {
-    var data = {
+    const data = {
       configure_id: this.stateObj.attributes.configure_id,
       fields: this.fieldInput,
     };

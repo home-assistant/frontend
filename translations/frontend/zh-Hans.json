@@ -528,6 +528,7 @@
                 "show_areas": "显示区域"
             },
             "data-table": {
+                "no-data": "没有数据",
                 "search": "搜索"
             },
             "date-range-picker": {
@@ -552,6 +553,10 @@
             "history_charts": {
                 "loading_history": "正在加载历史状态...",
                 "no_history_found": "没有找到历史状态。"
+            },
+            "picture-upload": {
+                "label": "图片",
+                "unsupported_format": "格式不受支持，请选择 JPEG、PNG 或 GIF 图像。"
             },
             "related-items": {
                 "area": "区域",
@@ -654,6 +659,9 @@
                 "platform_not_loaded": "{platform} 组件尚未加载。请从 'default_config:' 或 ''{platform}:'' 中选择一种方式，将其写入配置中。",
                 "required_error_msg": "此字段为必填字段",
                 "yaml_not_editable": "无法从 UI 编辑此实体的设置。只有通过 UI 设置的实体可以从 UI 配置。"
+            },
+            "image_cropper": {
+                "crop": "剪裁"
             },
             "more_info_control": {
                 "dismiss": "关闭对话框",
@@ -797,7 +805,7 @@
                         "confirmation_text": "此区域中的所有设备都将取消分配。",
                         "confirmation_title": "您确定要删除此区域吗？"
                     },
-                    "description": "您家中所有区域的概览。",
+                    "description": "管理家中的区域",
                     "editor": {
                         "area_id": "区域 ID",
                         "create": "创建",
@@ -819,7 +827,7 @@
                 },
                 "automation": {
                     "caption": "自动化",
-                    "description": "创建和编辑自动化",
+                    "description": "管理自动化",
                     "editor": {
                         "actions": {
                             "add": "添加动作",
@@ -832,6 +840,15 @@
                             "name": "执行",
                             "type_select": "动作类型",
                             "type": {
+                                "choose": {
+                                    "add_option": "添加选项",
+                                    "conditions": "条件",
+                                    "default": "默认动作",
+                                    "label": "选择",
+                                    "option": "选项 {number}",
+                                    "remove_option": "删除选项",
+                                    "sequence": "动作"
+                                },
                                 "condition": {
                                     "label": "环境条件"
                                 },
@@ -850,6 +867,24 @@
                                     "event": "事件：",
                                     "label": "触发事件",
                                     "service_data": "服务数据"
+                                },
+                                "repeat": {
+                                    "label": "重复",
+                                    "sequence": "动作",
+                                    "type_select": "重复类型",
+                                    "type": {
+                                        "count": {
+                                            "label": "按次数"
+                                        },
+                                        "until": {
+                                            "conditions": "Until 条件",
+                                            "label": "满足条件后退出循环"
+                                        },
+                                        "while": {
+                                            "conditions": "While 条件",
+                                            "label": "满足条件就循环"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "激活场景"
@@ -1340,7 +1375,7 @@
                 },
                 "entities": {
                     "caption": "实体注册表",
-                    "description": "所有已知实体的概览。",
+                    "description": "管理已知实体",
                     "picker": {
                         "disable_selected": {
                             "button": "禁用所选实体",
@@ -1392,7 +1427,7 @@
                 "header": "配置 Home Assistant",
                 "helpers": {
                     "caption": "辅助元素",
-                    "description": "可以帮助构建自动化的元素。",
+                    "description": "管理辅助构建自动化的元素",
                     "dialog": {
                         "add_helper": "添加辅助元素",
                         "add_platform": "添加 {platform}",
@@ -1420,7 +1455,7 @@
                     "built_using": "建于",
                     "caption": "信息",
                     "custom_uis": "自定义用户界面：",
-                    "description": "关于您的 Home Assistant 安装的信息",
+                    "description": "查看关于此 Home Assistant 安装的信息",
                     "developed_by": "由一帮很 Awesome~~~ 的人开发。",
                     "documentation": "文档",
                     "frontend": "前端用户界面",
@@ -1485,7 +1520,7 @@
                     },
                     "configure": "配置",
                     "configured": "已配置",
-                    "description": "管理并设置集成",
+                    "description": "管理集成",
                     "details": "集成详细信息",
                     "discovered": "已发现",
                     "home_assistant_website": "Home Assistant 网站",
@@ -1569,7 +1604,7 @@
                             "open": "打开"
                         }
                     },
-                    "description": "配置 Lovelace 仪表盘",
+                    "description": "管理 Lovelace 仪表盘",
                     "resources": {
                         "cant_edit_yaml": "您正在 YAML 模式下使用 Lovelace，因此无法通过 UI 管理资源。请在 configuration.yaml 中管理它们。",
                         "caption": "资源",
@@ -1618,13 +1653,56 @@
                     "title": "MQTT",
                     "topic": "主题(Topic)"
                 },
+                "ozw": {
+                    "common": {
+                        "node_id": "节点 ID",
+                        "ozw_instance": "OpenZWave 实例",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "节点故障",
+                        "stage": "阶段",
+                        "zwave_info": "Z-Wave 信息"
+                    },
+                    "node_query_stages": {
+                        "associations": "正在刷新关联组和成员",
+                        "cacheload": "正在从 OpenZWave 缓存文件加载信息。电池供电的节点将停留在此阶段，直到节点唤醒。",
+                        "complete": "协商完成",
+                        "configuration": "正在从节点获取配置值",
+                        "dynamic": "正在从节点获取频繁更改的值",
+                        "instances": "正在获取设备支持的实例或通道的详细信息",
+                        "manufacturerspecific1": "正在从节点获取制造商和产品 ID 代码",
+                        "manufacturerspecific2": "从节点获取附加制造商和产品 ID 代码",
+                        "neighbors": "正在获取邻居节点的列表",
+                        "nodeinfo": "正在从节点获取受支持的命令类",
+                        "nodeplusinfo": "正在从节点获取 Z-Wave+ 信息",
+                        "probe": "正在检查节点是否处于唤醒状态",
+                        "protocolinfo": "正在从控制器获取此节点的基本 Z-Wave 功能",
+                        "session": "正在从节点获取不经常更改的值",
+                        "static": "正在从设备获取静态值",
+                        "versions": "正在获取固件和命令类版本信息",
+                        "wakeup": "正在设置对唤醒队列和消息的支持"
+                    },
+                    "refresh_node": {
+                        "battery_note": "如果节点由电池供电，请确保在继续操作之前将其唤醒",
+                        "complete": "节点刷新完成",
+                        "description": "这将通知 OpenZWave 重新访问节点并更新节点的命令类、功能和值。",
+                        "node_status": "节点状态",
+                        "refreshing_description": "正在刷新节点信息...",
+                        "start_refresh_button": "开始刷新",
+                        "step": "步骤",
+                        "title": "刷新节点信息",
+                        "wakeup_header": "唤醒方法：",
+                        "wakeup_instructions_source": "唤醒方法来自 OpenZWave 社区设备数据库。"
+                    }
+                },
                 "person": {
                     "add_person": "添加人员",
                     "caption": "人员",
                     "confirm_delete": "您确定要删除此人员吗？",
                     "confirm_delete2": "属于此人的所有设备都将被取消分配。",
                     "create_person": "创建人员",
-                    "description": "管理 Home Assistant 跟踪的人员。",
+                    "description": "管理 Home Assistant 跟踪的人员",
                     "detail": {
                         "create": "创建",
                         "delete": "删除",
@@ -1647,7 +1725,7 @@
                 "scene": {
                     "activated": "已激活场景 {name}。",
                     "caption": "场景",
-                    "description": "创建和编辑场景",
+                    "description": "管理场景",
                     "editor": {
                         "default_name": "新场景",
                         "devices": {
@@ -1691,7 +1769,7 @@
                 },
                 "script": {
                     "caption": "脚本",
-                    "description": "创建和编辑脚本",
+                    "description": "管理脚本",
                     "editor": {
                         "alias": "名称",
                         "default_name": "新建脚本",
@@ -1878,7 +1956,7 @@
                         "create_group": "Zigbee 家庭自动化 - 新增群组",
                         "create_group_details": "输入所需的详细信息以创建新的zigbee组",
                         "creating_group": "创建群组中",
-                        "description": "创建和修改Zigbee组",
+                        "description": "管理 Zigbee 组",
                         "group_details": "以下是所选Zigbee组的所有详细信息。",
                         "group_id": "组号",
                         "group_info": "群组信息",
@@ -1921,7 +1999,7 @@
                     "configured_in_yaml": "通过 configuration.yaml 配置的地点不能通过 UI 编辑。",
                     "confirm_delete": "您确定要删除此地点吗？",
                     "create_zone": "创建地点",
-                    "description": "管理要跟踪人员的区域。",
+                    "description": "管理要跟踪人员的区域",
                     "detail": {
                         "create": "创建",
                         "delete": "删除",
@@ -2351,6 +2429,7 @@
                         "show_code_editor": "显示代码编辑器",
                         "show_visual_editor": "显示可视化编辑器",
                         "toggle_editor": "切换编辑器",
+                        "typed_header": "{type}卡片配置",
                         "unsaved_changes": "有更改尚未保存"
                     },
                     "edit_lovelace": {
@@ -2385,6 +2464,9 @@
                         "para_migrate": "通过点击“迁移配置”按钮，Home Assistant 可以自动为您的所有卡片和视图添加 ID。",
                         "para_no_id": "此元素没有 ID。请在 'ui-lovelace.yaml' 中为此元素添加 ID。"
                     },
+                    "move_card": {
+                        "header": "选择要将卡片移动到哪个视图"
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "如果您删除了 Lovelace 配置，我们将通过您的区域和设备自动生成 Lovelace 视图。",
                         "confirm_remove_config_title": "您确定要删除 Lovelace 配置吗？我们将通过您的区域和设备自动生成 Lovelace 视图。",
@@ -2412,6 +2494,10 @@
                         "yaml_control": "要以 YAML 模式下自行编辑，请创建 YAML 文件并命名为在配置中为此仪表盘指定的名称，或使用默认的 'ui-lovelace.yaml'。",
                         "yaml_mode": "此仪表盘正在使用 YAML 模式，因此无法从 UI 更改 Lovelace 配置。若要从 UI 管理此仪表盘，请从 'configuration.yaml' 中的 Lovelace 配置中删除 'mode: yaml'。"
                     },
+                    "select_view": {
+                        "dashboard_label": "仪表盘",
+                        "header": "选择视图"
+                    },
                     "suggest_card": {
                         "add": "添加至 Lovelace UI",
                         "create_own": "选择其他卡片",
@@ -2427,7 +2513,7 @@
                 },
                 "menu": {
                     "close": "关闭",
-                    "configure_ui": "配置 UI",
+                    "configure_ui": "编辑仪表盘",
                     "exit_edit_mode": "退出 UI 编辑模式",
                     "help": "帮助",
                     "refresh": "刷新",
@@ -2444,6 +2530,8 @@
                     "entity": "实体",
                     "entity_id": "实体 ID",
                     "last_changed": "最后更改",
+                    "no_data": "没有未使用的实体",
+                    "search": "搜索实体",
                     "select_to_add": "选择要添加到卡片中的实体，然后单击添加卡片按钮。",
                     "title": "未使用的实体"
                 },
@@ -2727,10 +2815,18 @@
                     "header": "自动关闭连接"
                 },
                 "themes": {
+                    "accent_color": "强调色",
+                    "dark_mode": {
+                        "auto": "自动",
+                        "dark": "深色",
+                        "light": "浅色"
+                    },
                     "dropdown_label": "主题",
                     "error_no_theme": "没有可用的主题。",
                     "header": "主题",
-                    "link_promo": "了解主题"
+                    "link_promo": "了解主题",
+                    "primary_color": "主色调",
+                    "reset": "重置"
                 },
                 "vibrate": {
                     "description": "控制设备时，在此设备上启用或禁用振动。",

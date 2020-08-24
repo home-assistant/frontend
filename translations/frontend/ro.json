@@ -48,6 +48,19 @@
                 "none": "Nici unul",
                 "sleep": "Adormit"
             }
+        },
+        "humidifier": {
+            "mode": {
+                "auto": "Auto",
+                "away": "Plecat",
+                "baby": "Bebelus",
+                "boost": "Boost",
+                "comfort": "Confort",
+                "eco": "Eco",
+                "home": "Acasa",
+                "normal": "Normal",
+                "sleep": "Somn"
+            }
         }
     },
     "state_badge": {
@@ -380,6 +393,11 @@
                 "reverse": "Invers",
                 "speed": "Viteză"
             },
+            "humidifier": {
+                "humidity": "Umiditatea țintă",
+                "mode": "mod",
+                "on_entity": "{nume} activat"
+            },
             "light": {
                 "brightness": "Luminozitate",
                 "color_temperature": "Temperatura de culoare",
@@ -403,6 +421,8 @@
                 "activate": "Activati"
             },
             "script": {
+                "cancel": "Anulare",
+                "cancel_multiple": "Revocare {număr}",
                 "execute": "Executa"
             },
             "service": {
@@ -472,6 +492,7 @@
             "delete": "Șterge",
             "error_required": "Necesar",
             "loading": "Se încarcă",
+            "menu": "Meniu",
             "next": "Următorul",
             "no": "Nu",
             "previous": "Anterior",
@@ -495,6 +516,15 @@
                 "area": "Zonă",
                 "clear": "Şterge",
                 "show_areas": "Arată zonele"
+            },
+            "data-table": {
+                "no-data": "Fără date",
+                "search": "Căutare"
+            },
+            "date-range-picker": {
+                "end_date": "Data de încheiere",
+                "select": "Selectați",
+                "start_date": "Data de început"
             },
             "device-picker": {
                 "clear": "Şterge",
@@ -774,6 +804,14 @@
                             "name": "Acțiune",
                             "type_select": "Tip acțiune",
                             "type": {
+                                "choose": {
+                                    "add_option": "Adauga optiune",
+                                    "conditions": "Condiții",
+                                    "default": "Acţiuni implicite",
+                                    "label": "Alege",
+                                    "remove_option": "Elimina optiune",
+                                    "sequence": "Acţiuni"
+                                },
                                 "condition": {
                                     "label": "Condiție"
                                 },
@@ -791,6 +829,22 @@
                                     "event": "Eveniment",
                                     "label": "Eveniment declansare",
                                     "service_data": "Date servicii"
+                                },
+                                "repeat": {
+                                    "label": "Repetaţi",
+                                    "sequence": "Acţiuni",
+                                    "type": {
+                                        "count": {
+                                            "label": "Numara"
+                                        },
+                                        "until": {
+                                            "label": "Pana cand"
+                                        },
+                                        "while": {
+                                            "conditions": "Condiții in timp ce",
+                                            "label": "In timp ce"
+                                        }
+                                    }
                                 },
                                 "service": {
                                     "label": "Cheama serviciu",
@@ -875,6 +929,20 @@
                         "introduction": "Utilizați automatizări pentru a vă aduce casa în viață",
                         "load_error_not_editable": "Numai automatizările din automations.yaml pot fi editate.",
                         "load_error_unknown": "Eroare la încărcarea automatizării ({err_no}).",
+                        "max": {
+                            "parallel": "Numărul maxim de piste paralele",
+                            "queued": "Lungimea cozii"
+                        },
+                        "modes": {
+                            "documentation": "documentații de automatizare",
+                            "label": "mod",
+                            "parallel": "Paralel",
+                            "queued": "În așteptare",
+                            "restart": "Repornire",
+                            "single": "Singur (default)"
+                        },
+                        "move_down": "Mută în jos",
+                        "move_up": "Mută în sus",
                         "save": "Salvați",
                         "triggers": {
                             "add": "Adăugați acțiune",
@@ -1131,6 +1199,7 @@
                             "confirm_text": "Entitățile pot fi eliminate numai atunci când integrarea nu mai oferă entitățile.",
                             "confirm_title": "Doriți să eliminați {number} entități?"
                         },
+                        "search": "Căutare entități",
                         "selected": "{number} selectate",
                         "status": {
                             "disabled": "Dezactivat",
@@ -1161,7 +1230,8 @@
                             "entity_id": "ID entitate",
                             "name": "Nume",
                             "type": "Tip"
-                        }
+                        },
+                        "no_helpers": "Se pare că nu ai încă ajutoare!"
                     },
                     "types": {
                         "input_boolean": "Comutare",
@@ -1173,6 +1243,7 @@
                 },
                 "info": {
                     "built_using": "Construit folosind",
+                    "caption": "Info",
                     "documentation": "Documentație",
                     "frontend": "front-end-ui",
                     "home_assistant_logo": "Logo-ul Home Assistant",
@@ -1184,6 +1255,9 @@
                     "source": "Sursă:",
                     "title": "Info"
                 },
+                "integration_panel_move": {
+                    "link_integration_page": "Pagina de integrari"
+                },
                 "integrations": {
                     "add_integration": "Adăugați integrare",
                     "caption": "Integrări",
@@ -1191,6 +1265,7 @@
                         "delete": "Șterge",
                         "delete_confirm": "Sigur doriți să ștergeți această integrare?",
                         "device_unavailable": "dispozitiv indisponibil",
+                        "documentation": "Documentație",
                         "entity_unavailable": "Entitatea nu este disponibilă",
                         "firmware": "Firmware: {version}",
                         "hub": "Conectat prin",
@@ -1243,10 +1318,12 @@
                     "none_found": "Nu s-au găsit integrări",
                     "none_found_detail": "Ajustați criteriile de căutare.",
                     "rename_dialog": "Editați numele acestei intrări de configurare",
-                    "rename_input_label": "Introdu nume"
+                    "rename_input_label": "Introdu nume",
+                    "search": "Căutare integrari"
                 },
                 "introduction": "Aici este posibil să vă configurați componentele și Home Assistant. Nu este posibilă configurarea de la UI, dar lucrăm la asta.",
                 "logs": {
+                    "caption": "Jurnale",
                     "clear": "Şterge",
                     "details": "Detalii jurnal ({level})",
                     "load_full_log": "Încărcare jurnal complet Home Assistant",
@@ -1332,6 +1409,7 @@
                     }
                 },
                 "mqtt": {
+                    "button": "Configurare",
                     "description_listen": "Ascultă un subiect",
                     "description_publish": "Publică un pachet",
                     "listening_to": "Ascultand",
@@ -1343,6 +1421,18 @@
                     "subscribe_to": "Topic la care să vă abonați",
                     "title": "MQTT",
                     "topic": "subiect"
+                },
+                "ozw": {
+                    "common": {
+                        "node_id": "ID Nod",
+                        "ozw_instance": "Instanta OpenZWave",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "Nod nereușit",
+                        "stage": "Etapă",
+                        "zwave_info": "Z-Wave Info"
+                    }
                 },
                 "person": {
                     "caption": "Persoane",
@@ -1374,6 +1464,7 @@
                             "introduction": "Entitățile care nu aparțin unui dispozitiv pot fi setate aici.",
                             "without_device": "Entități fără dispozitiv"
                         },
+                        "icon": "Pictograma",
                         "introduction": "Utilizeaza scene pentru a aduce casa ta la viață.",
                         "load_error_not_editable": "Numai scenele din scene.yaml sunt editabile.",
                         "load_error_unknown": "Eroare la încărcarea scenei ({err_no}).",
@@ -1403,8 +1494,23 @@
                     "editor": {
                         "alias": "Nume",
                         "delete_script": "Ștergere script",
+                        "icon": "Pictograma",
+                        "id": "ID entitate",
+                        "id_already_exists": "Acest ID există deja",
                         "introduction": "Folosiți scripturi pentru a executa o secvență de acțiuni.",
                         "link_available_actions": "Aflați mai multe despre acțiunile disponibile.",
+                        "max": {
+                            "parallel": "Numărul maxim de piste paralele",
+                            "queued": "Lungimea cozii"
+                        },
+                        "modes": {
+                            "documentation": "documentație script",
+                            "label": "mod",
+                            "parallel": "Paralel",
+                            "queued": "În așteptare",
+                            "restart": "Repornire",
+                            "single": "Singur (default)"
+                        },
                         "sequence": "Secvenţă",
                         "sequence_sentence": "Secvența acțiunilor acestui scenariu."
                     },
@@ -1481,6 +1587,7 @@
                 },
                 "zha": {
                     "add_device_page": {
+                        "discovered_text": "Dispozitivele vor apărea aici odată descoperite.",
                         "discovery_text": "Dispozitivele descoperite vor apărea aici. Urmați instrucțiunile pentru dispozitiv (e) și așezați dispozitivul (ele) în modul de împerechere.",
                         "header": "Zigbee Home Automation - Adăugați dispozitive",
                         "search_again": "Caută din nou",
@@ -1490,6 +1597,7 @@
                         "caption": "Adaugă dispozitive",
                         "description": "Adaugă dispozitive la rețeaua Zigbee"
                     },
+                    "button": "Configurează",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributele clusterului selectat",
@@ -1565,6 +1673,9 @@
                         "header": "Administrare rețea",
                         "introduction": "Comenzi care afectează întreaga rețea"
                     },
+                    "network": {
+                        "caption": "Reţea"
+                    },
                     "node_management": {
                         "header": "Gestionare dispozitive"
                     },
@@ -1600,6 +1711,7 @@
                     "no_zones_created_yet": "Se pare că nu ai creat încă nici o zonă."
                 },
                 "zwave": {
+                    "button": "Configurează",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "Index",
@@ -1633,12 +1745,16 @@
                     },
                     "node_management": {
                         "add_to_group": "Adăugare la grup",
+                        "entities": "Entități ale acestui nod",
+                        "entity_info": "Informații Entitate",
                         "exclude_entity": "Excludeți această entitate din Home Assistant",
                         "group": "Grup",
                         "max_associations": "Asociații maxime:",
                         "node_group_associations": "Asociații de grupuri de noduri",
                         "node_protection": "Protecție nod",
                         "node_to_control": "Nod de controlat",
+                        "nodes": "Noduri",
+                        "nodes_hint": "Selectați nodul pentru a vizualiza opțiunile per nod",
                         "nodes_in_group": "Alte noduri din acest grup:",
                         "protection": "Protecţie",
                         "remove_broadcast": "Eliminare difuzare",
@@ -1743,11 +1859,23 @@
             },
             "history": {
                 "period": "Perioadă",
+                "ranges": {
+                    "last_week": "Săptămâna trecută",
+                    "this_week": "Săptămâna aceasta",
+                    "today": "Astăzi",
+                    "yesterday": "Ieri"
+                },
                 "showing_entries": "Se afișează intrările pentru"
             },
             "logbook": {
                 "entries_not_found": "Nu s-au găsit intrări în jurnal.",
                 "period": "Perioadă",
+                "ranges": {
+                    "last_week": "Săptămâna trecută",
+                    "this_week": "Săptămâna aceasta",
+                    "today": "Astăzi",
+                    "yesterday": "Ieri"
+                },
                 "showing_entries": "Arată intrări pentru"
             },
             "lovelace": {
@@ -1828,6 +1956,7 @@
                             "manual": "Manual",
                             "manual_description": "Trebuie să adăugați un card personalizat sau doriți doar să scrieți manual yaml?",
                             "no_theme": "Nicio temă",
+                            "search": "Căutare",
                             "secondary_info_attribute": "Atribut informații secundare",
                             "state": "Stare"
                         },
@@ -1841,6 +1970,9 @@
                         },
                         "horizontal-stack": {
                             "name": "Stivă orizontală"
+                        },
+                        "humidifier": {
+                            "name": "Umidificator"
                         },
                         "iframe": {
                             "name": "Pagină web"
@@ -1901,6 +2033,7 @@
                     },
                     "edit_card": {
                         "add": "Adăugare card",
+                        "confirm_cancel": "Ești sigur că vrei să anulezi?",
                         "delete": "Ștergeți cardul",
                         "duplicate": "Duplicare card",
                         "edit": "Editeaza",
@@ -1908,12 +2041,15 @@
                         "move": "Mutați la Vizualizare",
                         "options": "Mai multe optiuni",
                         "pick_card": "Ce card doriți să adăugați?",
-                        "toggle_editor": "Activeaza editor"
+                        "toggle_editor": "Activeaza editor",
+                        "typed_header": "{tip} Configurare card",
+                        "unsaved_changes": "Aveți modificări nesalvate"
                     },
                     "edit_lovelace": {
                         "edit_title": "Editează titlul",
                         "explanation": "Acest titlu este arătat mai sus de toate punctele de vedere în Lovelace.",
-                        "header": "Titlul interfeței dvs. Lovelace"
+                        "header": "Titlul interfeței dvs. Lovelace",
+                        "title": "Titlu"
                     },
                     "edit_view": {
                         "add": "Adăugați vizualizare",
@@ -1939,6 +2075,9 @@
                         "migrate": "Migrează configurația",
                         "para_migrate": "Home Assistant poate adăuga ID-ul la toate cărțile și vizualizările în mod automat pentru tine apăsând butonul \"Migrează configurația\".",
                         "para_no_id": "Acest element nu are un ID. Adăugați un ID la acest element în \"ui-lovelace.yaml\"."
+                    },
+                    "move_card": {
+                        "header": "Alegeți o vedere pentru a muta cardul în"
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "Vom genera automat vizualizările UI Lovelace cu zonele și dispozitivele dvs., dacă eliminați configurația UI Lovelace.",
@@ -1966,6 +2105,10 @@
                         "yaml_config": "Pentru a vă ajuta să începeți aici este configurarea curentă a acestui tablou de bord:",
                         "yaml_control": "Pentru a prelua controlul în modul YAML, creați un fișier YAML cu numele pe care l-ați specificat în configurația dvs. pentru acest tablou de bord sau implicit „ui-lovelace.yaml”.",
                         "yaml_mode": "Utilizați modul YAML, ceea ce înseamnă că nu puteți modifica configurația Lovelace din UI. Dacă doriți să schimbați Lovelace din interfața de utilizator, eliminați „modul: yaml” din configurația dvs. Lovelace din „configuration.yaml”."
+                    },
+                    "select_view": {
+                        "dashboard_label": "Tablou de bord",
+                        "header": "Alegeți o vizualizare"
                     },
                     "suggest_card": {
                         "add": "Adăugați la Lovelace UI",
@@ -1999,6 +2142,8 @@
                     "entity": "Entitate",
                     "entity_id": "ID-ul entității",
                     "last_changed": "Ultima modificare",
+                    "no_data": "Nu s-au găsit entități neutilizate",
+                    "search": "Căutare entități",
                     "select_to_add": "Selectați entitățile pe care doriți să le adăugați pe un card, apoi faceți clic pe butonul Adăugare card.",
                     "title": "Entități neutilizate"
                 },
@@ -2098,6 +2243,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "Calculatorul dvs. nu este permis.",
                                 "not_whitelisted": "Calculatorul dvs. nu este pe lista albă."
                             },
                             "step": {
@@ -2272,11 +2418,22 @@
                     "not_used": "Nu a fost utilizat niciodata",
                     "token_title": "înnoirea token pentru {clientId}"
                 },
+                "suspend": {
+                    "header": "Închideți automat conexiunea"
+                },
                 "themes": {
+                    "accent_color": "Culoare de accent",
+                    "dark_mode": {
+                        "auto": "Auto",
+                        "dark": "Întuneric",
+                        "light": "Lumina"
+                    },
                     "dropdown_label": "Temă",
                     "error_no_theme": "Nu există teme disponibile.",
                     "header": "Temă",
-                    "link_promo": "Aflați mai multe despre teme"
+                    "link_promo": "Aflați mai multe despre teme",
+                    "primary_color": "Culoare primară",
+                    "reset": "Resetați"
                 }
             },
             "shopping-list": {

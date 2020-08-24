@@ -22,6 +22,7 @@ import "../components/ha-svg-icon";
 import "../components/ha-icon";
 import "../components/ha-tab";
 import { restoreScroll } from "../common/decorators/restore-scroll";
+import { computeRTL } from "../common/util/compute_rtl";
 
 export interface PageNavigation {
   path: string;
@@ -52,6 +53,11 @@ class HassTabsSubpage extends LitElement {
   @property() public tabs!: PageNavigation[];
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
+
+  @property({ type: Boolean, reflect: true, attribute: "is-wide" })
+  public isWide = false;
+
+  @property({ type: Boolean, reflect: true }) public rtl = false;
 
   @internalProperty() private _activeTab?: PageNavigation;
 
@@ -107,6 +113,14 @@ class HassTabsSubpage extends LitElement {
         `${this.route.prefix}${this.route.path}`.includes(tab.path)
       );
     }
+    if (changedProperties.has("hass")) {
+      const oldHass = changedProperties.get("hass") as
+        | HomeAssistant
+        | undefined;
+      if (!oldHass || oldHass.language !== this.hass.language) {
+        this.rtl = computeRTL(this.hass);
+      }
+    }
   }
 
   protected render(): TemplateResult {
@@ -152,6 +166,7 @@ class HassTabsSubpage extends LitElement {
       <div class="content" @scroll=${this._saveScrollPos}>
         <slot></slot>
       </div>
+      <div id="fab"><slot name="fab"></slot></div>
     `;
   }
 
@@ -182,6 +197,11 @@ class HassTabsSubpage extends LitElement {
         display: block;
         height: 100%;
         background-color: var(--primary-background-color);
+      }
+
+      :host([narrow]) {
+        width: 100%;
+        position: fixed;
       }
 
       ha-menu-button {
@@ -215,9 +235,10 @@ class HassTabsSubpage extends LitElement {
         background-color: var(--sidebar-background-color);
         border-top: 1px solid var(--divider-color);
         justify-content: space-between;
-        z-index: 1;
+        z-index: 2;
         font-size: 12px;
         width: 100%;
+        padding-bottom: env(safe-area-inset-bottom);
       }
 
       #tabbar:not(.bottom-bar) {
@@ -247,7 +268,11 @@ class HassTabsSubpage extends LitElement {
 
       .content {
         position: relative;
-        width: 100%;
+        width: calc(
+          100% - env(safe-area-inset-left) - env(safe-area-inset-right)
+        );
+        margin-left: env(safe-area-inset-left);
+        margin-right: env(safe-area-inset-right);
         height: calc(100% - 65px);
         overflow-y: auto;
         overflow: auto;
@@ -256,6 +281,30 @@ class HassTabsSubpage extends LitElement {
 
       :host([narrow]) .content {
         height: calc(100% - 128px);
+        height: calc(100% - 128px - env(safe-area-inset-bottom));
+      }
+
+      #fab {
+        position: fixed;
+        right: calc(16px + env(safe-area-inset-right));
+        bottom: calc(16px + env(safe-area-inset-bottom));
+        z-index: 1;
+      }
+      :host([narrow]) #fab {
+        bottom: calc(84px + env(safe-area-inset-bottom));
+      }
+      #fab[is-wide] {
+        bottom: 24px;
+        right: 24px;
+      }
+      :host([rtl]) #fab {
+        right: auto;
+        left: calc(16px + env(safe-area-inset-left));
+      }
+      :host([rtl][is-wide]) #fab {
+        bottom: 24px;
+        left: 24px;
+        right: auto;
       }
     `;
   }

@@ -430,6 +430,8 @@
                 "activate": "Aktivéieren"
             },
             "script": {
+                "cancel": "Ofbriechen",
+                "cancel_multiple": "{number} ofbriechen",
                 "execute": "Ausféieren"
             },
             "service": {
@@ -525,6 +527,10 @@
                 "clear": "Läschen",
                 "show_areas": "Beräicher uweisen"
             },
+            "data-table": {
+                "no-data": "Keng Donnée",
+                "search": "Sichen"
+            },
             "date-range-picker": {
                 "end_date": "End Datum",
                 "select": "Auswielen",
@@ -547,6 +553,10 @@
             "history_charts": {
                 "loading_history": "Lued Status Verlaaf",
                 "no_history_found": "Keen Status Verlaaf fonnt"
+            },
+            "picture-upload": {
+                "label": "Bild",
+                "unsupported_format": "Net ënnerstëtzte Format, wiel e JPEG, PNG oder GIF Bild."
             },
             "related-items": {
                 "area": "Beräich",
@@ -649,6 +659,9 @@
                 "platform_not_loaded": "{platform} Integratioun ass net gelueden. Setz et an deng Konfiguration dobäi mat  'default_config:' oder ''{platform}:''.",
                 "required_error_msg": "Dëst Feld ass erfuerderlech",
                 "yaml_not_editable": "D'Astellunge vun dëser Entitéit kënnen net vun vum Benotzer Interface as  geännert ginn. Nëmmen Entitéiten déi iwwer den Benotzer Interface aus konfiguréiert sinn kënnen vun do aus geännert ginn."
+            },
+            "image_cropper": {
+                "crop": "Kierzen"
             },
             "more_info_control": {
                 "dismiss": "Dialog ofbriechen",
@@ -827,6 +840,15 @@
                             "name": "Aktioun",
                             "type_select": "Aktioun Typ",
                             "type": {
+                                "choose": {
+                                    "add_option": "Optioun dobäisetzen",
+                                    "conditions": "Konditiounen",
+                                    "default": "Standard Aktiounen",
+                                    "label": "Auswielen",
+                                    "option": "Optioun {number}",
+                                    "remove_option": "Optioun läschen",
+                                    "sequence": "Aktiounen"
+                                },
                                 "condition": {
                                     "label": "Konditioun"
                                 },
@@ -845,6 +867,24 @@
                                     "event": "Evenement:",
                                     "label": "Evenement starten",
                                     "service_data": "Service-Donnéeën"
+                                },
+                                "repeat": {
+                                    "label": "Widderhuelen",
+                                    "sequence": "Aktiounen",
+                                    "type_select": "Widderhuelen Typ",
+                                    "type": {
+                                        "count": {
+                                            "label": "Ziel"
+                                        },
+                                        "until": {
+                                            "conditions": "Bis Konditiounen",
+                                            "label": "Bis"
+                                        },
+                                        "while": {
+                                            "conditions": "Während Konditiounen",
+                                            "label": "Während"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "Zeen aktivéieren"
@@ -938,6 +978,19 @@
                         "introduction": "Benotzt Automatismen fir däin Haus zum Liewen ze bréngen",
                         "load_error_not_editable": "Nëmmen Automatiounen am automations.yaml kënnen editéiert ginn.",
                         "load_error_unknown": "Feeler beim luede vun der Automatioun ({err_no}).",
+                        "max": {
+                            "parallel": "Max. Unzuel vun parallelen Duerchleef.",
+                            "queued": "Längt vun der Schlaang"
+                        },
+                        "modes": {
+                            "description": "Dëse Modus kontrolléiert wat passéiert wann den Automatisme ausgeléist gëtt während d'Aktiounen vun engem virechten Ausléiser nach laafen.Kuck {documentation_link} fir méi Informatiounen.",
+                            "documentation": "Dokumentatioun vum Automatisme",
+                            "label": "Modus",
+                            "parallel": "Parrallel",
+                            "queued": "an der Schlaang",
+                            "restart": "Neistart",
+                            "single": "Eenzel (Standard)"
+                        },
                         "move_down": "No ënne réckelen",
                         "move_up": "No uewe réckelen",
                         "save": "Späicheren",
@@ -1356,6 +1409,7 @@
                             "confirm_text": "Du solls déi vun der Lovelace Konfiguratioun an Automatisme läschen falls se dës Entitéiten enthalen.",
                             "confirm_title": "Wëllt dir {number} Entitéite läschen?"
                         },
+                        "search": "Entitéite sichen",
                         "selected": "{number} ausgewielt",
                         "status": {
                             "disabled": "Deaktivéiert",
@@ -1386,7 +1440,8 @@
                             "entity_id": "ID vun der Entitéit",
                             "name": "Numm",
                             "type": "Typ"
-                        }
+                        },
+                        "no_helpers": "Et gesäit sou aus wéi wann nach keng Helpers erstallt goufen."
                     },
                     "types": {
                         "input_boolean": "Ëmschalten",
@@ -1431,6 +1486,7 @@
                         "delete_confirm": "Sécher fir dës Integratioun ze läsche?",
                         "device_unavailable": "Apparat net erreechbar",
                         "devices": "{count} {count, plural,\n  one {Apparat}\n  other {Apparaten}\n}",
+                        "documentation": "Dokumentatioun",
                         "entities": "{count} {count, plural,\n  one {Entitéit}\n  other {Entitéiten}\n}",
                         "entity_unavailable": "Entitéit net erreechbar",
                         "firmware": "Firmware: {version}",
@@ -1489,7 +1545,8 @@
                     "note_about_integrations": "Net all Integratioune könne nach via den Benotzer Interface konfiguréiert ginn.",
                     "note_about_website_reference": "Méi sin der disponibel op der ",
                     "rename_dialog": "Numm vun dësem Objet läschen",
-                    "rename_input_label": "Numm"
+                    "rename_input_label": "Numm",
+                    "search": "Integratioune sichen"
                 },
                 "introduction": "Hei ass et méiglech är Komponenten vum Home Assistant ze konfiguréieren. Net alles ass méiglech fir iwwert den Interface anzestellen, mee mir schaffen drun.",
                 "logs": {
@@ -1596,6 +1653,47 @@
                     "title": "MQTT",
                     "topic": "Sujet"
                 },
+                "ozw": {
+                    "common": {
+                        "node_id": "Node ID",
+                        "ozw_instance": "OpenZWave Instanz",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "Feeler am Node",
+                        "stage": "Stage",
+                        "zwave_info": "Z-Wave Info"
+                    },
+                    "node_query_stages": {
+                        "associations": "Associatiounsgruppen a Memberen aktualiséieren",
+                        "cacheload": "Lued Informatioune vun der OpenZWave Cache Datei. Batterie Nodes bleiwen op dëser Etapp bis de Node erwächt.",
+                        "complete": "Interview Prozess ass komplett",
+                        "configuration": "Konfiguratiounswerter vum Node kréien",
+                        "instances": "Detailer kréien iwwert wéieng Instanzen oder Kanäl en Apparat ënnerstëtzt",
+                        "manufacturerspecific1": "Hiersteller a Produkt ID Code vum Node kréien",
+                        "manufacturerspecific2": "Zousätzlech Hiersteller a Produkt ID Coden vum Node kréien",
+                        "neighbors": "Eng Lëscht vun den Nopere vum Node kréien",
+                        "nodeinfo": "Kommando Klassen vum Node kréien",
+                        "nodeplusinfo": "Z-Wave+ Informatiounen vum Node kréien",
+                        "probe": "Checken op de Node un ass",
+                        "protocolinfo": "Basis Z-Wave Fäegkeeten fir dësem Node vum Kontroller kréien",
+                        "static": "Statesch Wäerter vum Apparat kréien",
+                        "versions": "Informatioun kréien iwwert Firmware a Kommando Klass Versiounen",
+                        "wakeup": "Ënnerstëtzung fir Erwäche Waardeschlaangen an Noriichten astellen"
+                    },
+                    "refresh_node": {
+                        "battery_note": "Falls den Node Batterie bedriwwen ass, stell sécher fir en z'erwächen iers de weiderfiers",
+                        "complete": "Aktualiséierung vun den Node Informatioune komplett",
+                        "description": "Dëst befeelt OpenZWave fir en Node ofzefroen a Kommando Klassen, Fäegkeeten a Wäerter vum Node aktualiséieren.",
+                        "node_status": "Status vum Node",
+                        "refreshing_description": "Node Informatiounen aktualiséieren...",
+                        "start_refresh_button": "Aktualiséierung starten",
+                        "step": "Schrëtt",
+                        "title": "Node Informatiounen aktualiséieren",
+                        "wakeup_header": "Instruktioune fir d'erwäche vun",
+                        "wakeup_instructions_source": "D'Instruktioune fir d'erwäche si vun der OpenZwave Communautéit Datebank."
+                    }
+                },
                 "person": {
                     "add_person": "Persoun dobäisetzen",
                     "caption": "Persounen",
@@ -1642,6 +1740,7 @@
                             "introduction": "Entitéiten déi zu kengem Apparat gehéiere kënnen hei definéiert ginn.",
                             "without_device": "Entitéiten ouni Apparater"
                         },
+                        "icon": "Ikon",
                         "introduction": "Benotzt Zeene fir äert Haus zum Liewen ze bréngen",
                         "load_error_not_editable": "Nëmme Zeene am scenes.yaml kënnen editéiert ginn.",
                         "load_error_unknown": "Feeler beim luede vun der Zeen ({err_no}).",
@@ -1675,9 +1774,26 @@
                         "delete_confirm": "Sécher fir dësen Skript ze läsche?",
                         "delete_script": "Skript läschen",
                         "header": "Skript: {name}",
+                        "icon": "Ikon",
+                        "id": "ID vun der Entitéit",
+                        "id_already_exists": "Dës ID gëtt et schonn",
+                        "id_already_exists_save_error": "Du kanns dëse Skript net späicheren well d'ID net eenzegarteg ass. Wiel eng aaner ID aus oder loss se eidel fir automatesch eng z'erstellen.",
                         "introduction": "Benotzt Skripter fir eng Sequenz vun Aktiounen auszeféieren.",
                         "link_available_actions": "Méi iwwert verfügbar Aktioune liesen.",
                         "load_error_not_editable": "Nëmme Skripten am scripts.yaml kënnen editéiert ginn.",
+                        "max": {
+                            "parallel": "Max. Unzuel vun parallelen Duerchleef.",
+                            "queued": "Längt vun der Schlaang"
+                        },
+                        "modes": {
+                            "description": "Dëse Modus kontrolléiert wat passéieert wann de Skript opgeruff gëtt während e schon duerch virecht Opriff nach ëmmer leeft. Kuck {documentation_link} fir méi Informatiounen.",
+                            "documentation": "Dokumentatioun vum Skript",
+                            "label": "Modus",
+                            "parallel": "Parrallel",
+                            "queued": "an der Schlaang",
+                            "restart": "Neistart",
+                            "single": "Eenzel (Standard)"
+                        },
                         "sequence": "Sequenz",
                         "sequence_sentence": "D'Sequenz vun Aktiounen an dësem Skript."
                     },
@@ -1704,6 +1820,9 @@
                             "core": "Standuert and Personnalisatioun néi lueden",
                             "group": "Gruppe nei lueden",
                             "heading": "YAML Konfiguratioun frësch lueden",
+                            "input_number": "Agab Zuelen frësch lueden",
+                            "input_select": "Agab Auswiel frësch lueden",
+                            "input_text": "Agab Text frësch lueden",
                             "introduction": "E puer Deeler vum Home Assistant kënne frësch geluede ginn ouni datt een Neistart néideg ass. Klick op nei luede fir di aktuell Konfiguratioun z'entlueden an di nei Konfiguratioun ze lueden.",
                             "person": "Persoune frësch lueden",
                             "scene": "Szeene néi lueden",
@@ -2188,6 +2307,7 @@
                             "name": "Numm",
                             "no_theme": "Kee Thema",
                             "refresh_interval": "Aktualiséierungs Intervall",
+                            "search": "Sichen",
                             "secondary_info_attribute": "Sekundär Informatiouns Attribut",
                             "show_icon": "Ikon uweisen?",
                             "show_name": "Numm uweisen?",
@@ -2293,6 +2413,7 @@
                     },
                     "edit_card": {
                         "add": "Kaart dobäisetzen",
+                        "confirm_cancel": "Sécher fir ofzebriechen ?",
                         "delete": "Kaart läschen",
                         "duplicate": "Kaart Replikéieren",
                         "edit": "Änneren",
@@ -2303,12 +2424,15 @@
                         "pick_card_view_title": "Wéieng Kaart wëllt dir zu ärer {name}Usiicht dobäisetzen?",
                         "show_code_editor": "Code Editeur uweisen",
                         "show_visual_editor": "Visuellen Editeur uweisen",
-                        "toggle_editor": "Editeur ëmschalten"
+                        "toggle_editor": "Editeur ëmschalten",
+                        "typed_header": "{type} Kaart Konfiguratioun",
+                        "unsaved_changes": "Du hues ongespäichert Ännerungen"
                     },
                     "edit_lovelace": {
                         "edit_title": "Titel änneren",
                         "explanation": "Dësen Titel gëtt iwwert den Usiichte vu Lovelace ugewisen.",
-                        "header": "Titel vun ärem Lovelace Benotzer Interface"
+                        "header": "Titel vun ärem Lovelace Benotzer Interface",
+                        "title": "Titel"
                     },
                     "edit_view": {
                         "add": "Vue dobäisetzen",
@@ -2336,6 +2460,9 @@
                         "para_migrate": "Home Assistant kann ID's zu all äre Kaarten automatesch dobäisetzen andeem dir de Knäppche 'Konfiguratioun migréieren' dréckt.",
                         "para_no_id": "Dëst Element huet keng ID. Definéiert w.e.g. eng ID fir dëst Element am 'ui-lovelace.yaml'."
                     },
+                    "move_card": {
+                        "header": "Vue auswielen wou d'Kaart geréckelt soll ginn."
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "Mir erstellen automatesch är Lovelace Usiichte mat äre Beräicher an Apparaten wann dir är Lovelace Konfiguratioun läscht.",
                         "confirm_remove_config_title": "Sécher fir är Lovelace Konfiguratioun ze läschen? Mir erstellen automatesch är Lovelace Usiichte mat äre Beräicher an Apparaten.",
@@ -2362,6 +2489,10 @@
                         "yaml_config": "Fir de Start ze vereinfachen, hei ass déi aktuell Konfiguratioun vun dësem Tableau de Bord:",
                         "yaml_control": "Fir d'Kontroll am YAML Modus z'iwwerhuelen, erstell ee YAML Fichier mam Numm deen an der Konfiguratioun vun dësem Tableau de Bord uginn ass, oder de Standard 'ui-lovelace.yaml'",
                         "yaml_mode": "Du benotz de YAML Modus fir dësen Tableau de Bord, dëst bedeit dass du d'Lovelace Konfiguratioun net kanns aus dem Benotzer Interface änneren. Wann's du Lovelace vum Benotzer Interface aus wëlls änneren, läsch de 'mode: yaml' aus denger Lovelace Konfiguratioun am 'configuration.yaml'"
+                    },
+                    "select_view": {
+                        "dashboard_label": "Tableau de Bord",
+                        "header": "Vue auswielen"
                     },
                     "suggest_card": {
                         "add": "Zu Lovelace bäisetzen",
@@ -2395,6 +2526,8 @@
                     "entity": "Entitéit",
                     "entity_id": "ID vun der Entitéit",
                     "last_changed": "Läscht Ännerung",
+                    "no_data": "Keng onbenotzten Entitéite fonnt",
+                    "search": "Entitéite sichen",
                     "select_to_add": "Wielt d'Entitéite aus déi zu enger Kaart dobäigesaat solle ginn an klickt den Kaart dobäisetzen Knäppchen",
                     "title": "Onbenotzten Entitéiten"
                 },
@@ -2497,6 +2630,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "Däi Computer ass net erlaabt.",
                                 "not_whitelisted": "Äre Computer ass net fräigeschalt."
                             },
                             "step": {
@@ -2672,11 +2806,23 @@
                     "not_used": "Nach nie benotzt ginn",
                     "token_title": "Jeton erneiren fir {clientId}"
                 },
+                "suspend": {
+                    "description": "Soll d'Verbindung automateschzougemaach gin nodeems se 5 Minutten verstoppt war?",
+                    "header": "Verbindung autmatesch zoumaachen"
+                },
                 "themes": {
+                    "accent_color": "Faarf vum Accent",
+                    "dark_mode": {
+                        "auto": "Auto",
+                        "dark": "Däischter",
+                        "light": "Hell"
+                    },
                     "dropdown_label": "Thema",
                     "error_no_theme": "Keen Thema disponibel",
                     "header": "Thema",
-                    "link_promo": "Méi iwwert Thema liesen"
+                    "link_promo": "Méi iwwert Thema liesen",
+                    "primary_color": "Primär Faarf",
+                    "reset": "Reset"
                 },
                 "vibrate": {
                     "description": "Vibratioun op dësem Apparat un oder ausschalte wann aner Apparater gesteiert ginn.",

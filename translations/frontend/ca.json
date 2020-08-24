@@ -528,6 +528,7 @@
                 "show_areas": "Mostra àrees"
             },
             "data-table": {
+                "no-data": "No hi ha dades",
                 "search": "Cerca"
             },
             "date-range-picker": {
@@ -797,7 +798,7 @@
                         "confirmation_text": "Tots els dispositius d'aquesta àrea quedaran sense assignar.",
                         "confirmation_title": "Estàs segur que vols eliminar aquesta àrea?"
                     },
-                    "description": "Visió general de totes les àrees de la casa.",
+                    "description": "Gestiona les àrees de la casa",
                     "editor": {
                         "area_id": "ID d'àrea",
                         "create": "Crea",
@@ -819,7 +820,7 @@
                 },
                 "automation": {
                     "caption": "Automatització",
-                    "description": "Crea i edita automatitzacions",
+                    "description": "Gestiona les automatitzacions",
                     "editor": {
                         "actions": {
                             "add": "Afegir acció",
@@ -832,6 +833,15 @@
                             "name": "Acció",
                             "type_select": "Tipus d'acció",
                             "type": {
+                                "choose": {
+                                    "add_option": "Afegeix opció",
+                                    "conditions": "Condicions",
+                                    "default": "Accions per defecte",
+                                    "label": "Tria",
+                                    "option": "Opció {number}",
+                                    "remove_option": "Elimina opció",
+                                    "sequence": "Accions"
+                                },
                                 "condition": {
                                     "label": "Condició"
                                 },
@@ -850,6 +860,24 @@
                                     "event": "Esdeveniment:",
                                     "label": "Disparar esdeveniment",
                                     "service_data": "Dades de servei"
+                                },
+                                "repeat": {
+                                    "label": "Repeteix",
+                                    "sequence": "Accions",
+                                    "type_select": "Tipus de repetició",
+                                    "type": {
+                                        "count": {
+                                            "label": "Compta"
+                                        },
+                                        "until": {
+                                            "conditions": "Condicions de \"Fins que\"",
+                                            "label": "Fins que"
+                                        },
+                                        "while": {
+                                            "conditions": "Condicions de \"Mentre\"",
+                                            "label": "Mentre"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "Activa escena"
@@ -948,12 +976,12 @@
                             "queued": "Longitud de la cua"
                         },
                         "modes": {
-                            "description": "El mode controla què passa quan es dispara l'automatització i encara hi ha accions executant-se d'un disparament anterior. Consulta {documentation_link} per a més informació.",
+                            "description": "El mode controla què passa quan es dispara l'automatització i encara hi ha accions d'un disparament anterior executant-se. Consulta {documentation_link} per a més informació.",
                             "documentation": "documentació d'automatització",
                             "label": "Mode",
                             "parallel": "Paral·lel",
-                            "queued": "A la cua",
-                            "restart": "Reinicia",
+                            "queued": "Afegeix al final",
+                            "restart": "Reinici",
                             "single": "Individual (per defecte)"
                         },
                         "move_down": "Mou avall",
@@ -1340,7 +1368,7 @@
                 },
                 "entities": {
                     "caption": "Entitats",
-                    "description": "Visió general de totes les entitats conegudes.",
+                    "description": "Gestiona les entitats conegudes",
                     "picker": {
                         "disable_selected": {
                             "button": "Desactiva seleccionada/es",
@@ -1392,7 +1420,7 @@
                 "header": "Configuració de Home Assistant",
                 "helpers": {
                     "caption": "Ajudants",
-                    "description": "Possibles elements útils per a construir automatitzacions.",
+                    "description": "Gestiona elements útils per a construir automatitzacions",
                     "dialog": {
                         "add_helper": "Afegeix ajudant",
                         "add_platform": "Afegeix {platform}",
@@ -1420,7 +1448,7 @@
                     "built_using": "Creat utilitzant",
                     "caption": "Informació",
                     "custom_uis": "Interfícies d'usuari personalitzades:",
-                    "description": "Informació de la instal·lació de Home Assistant",
+                    "description": "Consulta informació de la teva instal·lació de Home Assistant",
                     "developed_by": "Desenvolupat per un munt de gent fantàstica.",
                     "documentation": "Documentació",
                     "frontend": "frontend-ui",
@@ -1485,7 +1513,7 @@
                     },
                     "configure": "Configurar",
                     "configured": "Configurades",
-                    "description": "Gestiona i configura les integracions",
+                    "description": "Gestiona les integracions",
                     "details": "Detalls de la integració",
                     "discovered": "Descobertes",
                     "home_assistant_website": "lloc web de Home Assistant",
@@ -1513,7 +1541,7 @@
                     "rename_input_label": "Nom de l'entrada",
                     "search": "Cerca integracions"
                 },
-                "introduction": "Aquí pots configurar Home Assistant i els seus components. Encara no és possible configurar-ho tot des de la interfície d'usuari, però hi estem treballant.",
+                "introduction": "Aquí pots configurar Home Assistant i els teus components. Encara no és possible configurar-ho tot des de la interfície d'usuari, però hi estem treballant.",
                 "logs": {
                     "caption": "Registres",
                     "clear": "Esborra",
@@ -1569,7 +1597,7 @@
                             "open": "Obrir"
                         }
                     },
-                    "description": "Configura els teus panells Lovelace",
+                    "description": "Gestiona els teus panells Lovelace",
                     "resources": {
                         "cant_edit_yaml": "Estàs utilitzant Lovelace en mode YAML per tant no pots gestionar els recursos des de la interfície d'usuari. Els pots gestionar des del fitxer 'configuration.yaml'.",
                         "caption": "Recursos",
@@ -1618,13 +1646,29 @@
                     "title": "MQTT",
                     "topic": "tòpic"
                 },
+                "ozw": {
+                    "common": {
+                        "node_id": "ID del node",
+                        "ozw_instance": "Instància OpenZWave",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "Ha fallat el node",
+                        "stage": "Etapa",
+                        "zwave_info": "Informació Z-Wave"
+                    },
+                    "refresh_node": {
+                        "node_status": "Estat del node",
+                        "step": "Pas"
+                    }
+                },
                 "person": {
                     "add_person": "Afegeix persona",
                     "caption": "Persones",
                     "confirm_delete": "Estàs segur que vols eliminar aquesta persona?",
                     "confirm_delete2": "Tots els dispositius vinculats a aquesta persona quedaran sense assignar.",
                     "create_person": "Crea persona",
-                    "description": "Gestiona a quines persones fa seguiment Home Assistant.",
+                    "description": "Gestiona les persones a qui Home Assistant fa seguiment",
                     "detail": {
                         "create": "Crea",
                         "delete": "Elimina",
@@ -1647,7 +1691,7 @@
                 "scene": {
                     "activated": "Escena {name} activada.",
                     "caption": "Escenes",
-                    "description": "Crea i edita escenes",
+                    "description": "Gestiona les escenes",
                     "editor": {
                         "default_name": "Nova escena",
                         "devices": {
@@ -1691,7 +1735,7 @@
                 },
                 "script": {
                     "caption": "Programació (scripts)",
-                    "description": "Crea i edita programes (scripts)",
+                    "description": "Gestiona els programes (scripts)",
                     "editor": {
                         "alias": "Nom",
                         "default_name": "Nou script",
@@ -1714,8 +1758,8 @@
                             "documentation": "documentació de scripts",
                             "label": "Mode",
                             "parallel": "Paral·lel",
-                            "queued": "A la cua",
-                            "restart": "Reinicia",
+                            "queued": "Afegeix al final",
+                            "restart": "Reinici",
                             "single": "Individual (per defecte)"
                         },
                         "sequence": "Seqüència",
@@ -1878,7 +1922,7 @@
                         "create_group": "Domòtica Zigbee (ZHA) - Creació de grups",
                         "create_group_details": "Introdueix els detalls necessaris per crear un nou grup Zigbee",
                         "creating_group": "Creant grup",
-                        "description": "Crea i modifica grups Zigbee",
+                        "description": "Gestiona els grups Zigbee",
                         "group_details": "Detalls del grup Zigbee seleccionat.",
                         "group_id": "ID del grup",
                         "group_info": "Informació del grup",
@@ -1921,7 +1965,7 @@
                     "configured_in_yaml": "Les zones configurades mitjançant configuration.yaml no es poden editar des de la UI.",
                     "confirm_delete": "Estàs segur que vols eliminar aquesta zona?",
                     "create_zone": "Crea zona",
-                    "description": "Gestiona les zones en les quals es fa seguiment de persones.",
+                    "description": "Gestiona les zones en les quals vols fer seguiment de persones",
                     "detail": {
                         "create": "Crea",
                         "delete": "Elimina",
@@ -2351,6 +2395,7 @@
                         "show_code_editor": "Mostra l'editor de codi",
                         "show_visual_editor": "Mostra l'editor visual",
                         "toggle_editor": "Commutar l'editor",
+                        "typed_header": "Configuració de la targeta {type}",
                         "unsaved_changes": "Hi ha canvis no desats"
                     },
                     "edit_lovelace": {
@@ -2385,6 +2430,9 @@
                         "para_migrate": "Home Assistant pot afegir ID's a totes les targetes i visualitzacions automàticament fent clic al botó 'Migrar la configuració'.",
                         "para_no_id": "Aquest element no té ID. Afegeix un ID per aquest element a 'ui-lovelace.yaml'."
                     },
+                    "move_card": {
+                        "header": "Trieu una vista per desplaçar la tarjeta a"
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "Si elimines la configuració de la interfície d'usuari Lovelace es generaran automàticament les visualitzacions de Lovelace amb les teves àrees i dispositius.",
                         "confirm_remove_config_title": "Estàs segur que vols eliminar la configuració de la interfície d'usuari Lovelace? Es generaran automàticament les visualitzacions de Lovelace amb les teves àrees i dispositius.",
@@ -2412,6 +2460,10 @@
                         "yaml_control": "Per configurar el panell en mode YAML, crea un fitxer YAML amb el nom que hagis establert a la configuració del panell, o bé el nom per defecte 'ui-lovelace.yaml'.",
                         "yaml_mode": "Estàs utilitzant el mode YAML per aquest panell, per tant no pots editar-lo des de la interfície d'usuari. Si vols poder editar-lo des de la UI, elimina 'mode: yaml' del fitxer 'configuration.yaml' en l'apartat de configuració de Lovelace."
                     },
+                    "select_view": {
+                        "dashboard_label": "Panell",
+                        "header": "Trieu una vista"
+                    },
                     "suggest_card": {
                         "add": "Afegeix a la UI Lovelace",
                         "create_own": "Escull una targeta diferent",
@@ -2427,7 +2479,7 @@
                 },
                 "menu": {
                     "close": "Tanca",
-                    "configure_ui": "Configurar la interfície d'usuari",
+                    "configure_ui": "Edita panell",
                     "exit_edit_mode": "Surt del mode d'edició d'interfície",
                     "help": "Ajuda",
                     "refresh": "Actualitzar",
@@ -2444,6 +2496,8 @@
                     "entity": "Entitat",
                     "entity_id": "ID de l'entitat",
                     "last_changed": "Últim canvi",
+                    "no_data": "No s'han trobat entitats sense utilitzar",
+                    "search": "Cerca entitats",
                     "select_to_add": "Selecciona les entitats que vols afegir a una targeta i fés clic al botó d'afegir targeta.",
                     "title": "Entitats sense utilitzar"
                 },
@@ -2727,10 +2781,18 @@
                     "header": "Tanca la connexió automàticament"
                 },
                 "themes": {
+                    "accent_color": "Color d'èmfasi",
+                    "dark_mode": {
+                        "auto": "Auto",
+                        "dark": "Fosc",
+                        "light": "Clar"
+                    },
                     "dropdown_label": "Tema",
                     "error_no_theme": "No hi ha temes disponibles.",
                     "header": "Tema",
-                    "link_promo": "Crea temes personalitzats"
+                    "link_promo": "Crea temes personalitzats",
+                    "primary_color": "Color primari",
+                    "reset": "Restablir"
                 },
                 "vibrate": {
                     "description": "Activa o desactiva la vibració en d'aquest dispositiu.",

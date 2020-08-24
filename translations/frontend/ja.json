@@ -512,7 +512,8 @@
         },
         "login-form": {
             "log_in": "ログイン",
-            "password": "パスワード"
+            "password": "パスワード",
+            "remember": "覚えて"
         },
         "notification_drawer": {
             "close": "閉じる",
@@ -654,6 +655,7 @@
                                 },
                                 "state": {
                                     "from": "変化前",
+                                    "label": "状態",
                                     "to": "変化後"
                                 },
                                 "sun": {
@@ -993,6 +995,17 @@
                     "title": "MQTT",
                     "topic": "トピック"
                 },
+                "ozw": {
+                    "common": {
+                        "node_id": "ノードID",
+                        "ozw_instance": "OpenZWaveインスタンス"
+                    },
+                    "device_info": {
+                        "node_failed": "ノードが失敗しました",
+                        "stage": "段階",
+                        "zwave_info": "Z-Wave情報"
+                    }
+                },
                 "person": {
                     "caption": "人",
                     "description": "Home Assistant を追跡している人の管理。",
@@ -1331,6 +1344,9 @@
                     "menu": {
                         "open": "Lovelace メニューを開く"
                     },
+                    "move_card": {
+                        "header": "カードを移動するビューを選択してください"
+                    },
                     "raw_editor": {
                         "confirm_unsaved_changes": "未保存の変更があります、終了してもよろしいですか？",
                         "confirm_unsaved_comments": "コンフィグレーションはコメントが含まれています、これらは保存されません。本当に続けますか？",
@@ -1340,6 +1356,10 @@
                     },
                     "save_config": {
                         "close": "閉じる"
+                    },
+                    "select_view": {
+                        "dashboard_label": "ダッシュボード",
+                        "header": "ビューに移動"
                     }
                 },
                 "menu": {
@@ -1363,7 +1383,8 @@
             "mailbox": {
                 "delete_button": "削除",
                 "delete_prompt": "このメッセージを削除しますか？",
-                "empty": "メッセージはありません"
+                "empty": "メッセージはありません",
+                "playback_title": "メッセージの再生"
             },
             "page-authorize": {
                 "abort_intro": "ログインが中止されました",

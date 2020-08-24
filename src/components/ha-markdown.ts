@@ -57,6 +57,10 @@ class HaMarkdown extends LitElement {
         background-color: var(--markdown-code-background-color, none);
         border-radius: 3px;
       }
+      ha-markdown-element svg {
+        background-color: var(--markdown-svg-background-color, none);
+        color: var(--markdown-svg-color, none);
+      }
       ha-markdown-element code {
         font-size: 85%;
         padding: 0.2em 0.4em;
@@ -70,8 +74,8 @@ class HaMarkdown extends LitElement {
         line-height: 1.45;
       }
       ha-markdown-element h2 {
-        font-size: 1.5em !important;
-        font-weight: bold !important;
+        font-size: 1.5em;
+        font-weight: bold;
       }
     `;
   }

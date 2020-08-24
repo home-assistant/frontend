@@ -29,11 +29,11 @@ import {
   EntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../../../data/entity_registry";
-import { createValidEntityId } from "../../../../../common/entity/valid_entity_id";
 import memoizeOne from "memoize-one";
 import { EntityRegistryStateEntry } from "../../../devices/ha-config-device-page";
 import { compare } from "../../../../../common/string/compare";
 import { getIeeeTail } from "./functions";
+import { slugify } from "../../../../../common/string/slugify";
 
 @customElement("zha-device-card")
 class ZHADeviceCard extends SubscribeMixin(LitElement) {
@@ -142,8 +142,8 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
     }
     const entities = this._deviceEntities(device.device_reg_id, this._entities);
 
-    const oldDeviceEntityId = createValidEntityId(oldDeviceName);
-    const newDeviceEntityId = createValidEntityId(newDeviceName);
+    const oldDeviceEntityId = slugify(oldDeviceName);
+    const newDeviceEntityId = slugify(newDeviceName);
     const ieeeTail = getIeeeTail(device.ieee);
 
     const updateProms = entities.map((entity) => {

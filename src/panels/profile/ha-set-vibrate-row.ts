@@ -10,7 +10,7 @@ import "../../components/ha-switch";
 import type { HaSwitch } from "../../components/ha-switch";
 import { forwardHaptic } from "../../data/haptics";
 import type { HomeAssistant } from "../../types";
-import "./ha-settings-row";
+import "../../components/ha-settings-row";
 
 @customElement("ha-set-vibrate-row")
 class HaSetVibrateRow extends LitElement {

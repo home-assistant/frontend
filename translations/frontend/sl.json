@@ -528,6 +528,7 @@
                 "show_areas": "Pokaži cone"
             },
             "data-table": {
+                "no-data": "Ni podatkov",
                 "search": "Iskanje"
             },
             "date-range-picker": {
@@ -2351,6 +2352,7 @@
                         "show_code_editor": "Pokaži urejevalnik kode",
                         "show_visual_editor": "Pokaži vizualni urejevalnik",
                         "toggle_editor": "Preklop na urejevalnik",
+                        "typed_header": "{type} Konfiguracija kartice",
                         "unsaved_changes": "Imate neshranjene spremembe"
                     },
                     "edit_lovelace": {
@@ -2444,6 +2446,8 @@
                     "entity": "Subjekt",
                     "entity_id": "ID subjekta",
                     "last_changed": "Zadnja sprememba",
+                    "no_data": "Najdenih ni bilo neuporabljenih subjektov",
+                    "search": "Iskanje subjektov",
                     "select_to_add": "Izberite entitete, ki jih želite dodati na kartico, in nato kliknite gumb Dodaj kartico.",
                     "title": "Neuporabljene entitete"
                 },

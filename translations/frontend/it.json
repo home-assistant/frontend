@@ -40,13 +40,13 @@
             },
             "preset_mode": {
                 "activity": "Attività",
-                "away": "Fuori casa",
+                "away": "Stand by",
                 "boost": "Boost",
                 "comfort": "Comfort",
-                "eco": "Eco",
-                "home": "Casa",
-                "none": "Nessuna",
-                "sleep": "Dormire"
+                "eco": "Protezione antigelo",
+                "home": "In casa",
+                "none": "Nessuno",
+                "sleep": "Notte"
             }
         },
         "humidifier": {
@@ -430,6 +430,8 @@
                 "activate": "Attiva"
             },
             "script": {
+                "cancel": "Annulla",
+                "cancel_multiple": "Annulla {number}",
                 "execute": "Esegui"
             },
             "service": {
@@ -524,6 +526,10 @@
                 "area": "Area",
                 "clear": "Cancella",
                 "show_areas": "Mostra le aree"
+            },
+            "data-table": {
+                "no-data": "Nessun dato",
+                "search": "Ricerca"
             },
             "date-range-picker": {
                 "end_date": "Data di fine",
@@ -792,7 +798,7 @@
                         "confirmation_text": "Tutti i dispositivi in quest'area non saranno assegnati.",
                         "confirmation_title": "Sei sicuro di voler cancellare quest'area?"
                     },
-                    "description": "Panoramica di tutte le aree della tua casa.",
+                    "description": "Gestisci le aree della tua casa",
                     "editor": {
                         "area_id": "Area ID",
                         "create": "Crea",
@@ -814,7 +820,7 @@
                 },
                 "automation": {
                     "caption": "Automazioni",
-                    "description": "Crea e modifica automazioni",
+                    "description": "Gestisci le automazioni",
                     "editor": {
                         "actions": {
                             "add": "Aggiungi azione",
@@ -827,6 +833,15 @@
                             "name": "Azione",
                             "type_select": "Tipo di azione",
                             "type": {
+                                "choose": {
+                                    "add_option": "Aggiungi opzione",
+                                    "conditions": "Condizioni",
+                                    "default": "Azioni predefinite",
+                                    "label": "Scegli",
+                                    "option": "Opzione {number}",
+                                    "remove_option": "Rimuovi opzione",
+                                    "sequence": "Azioni"
+                                },
                                 "condition": {
                                     "label": "Condizione"
                                 },
@@ -845,6 +860,24 @@
                                     "event": "Evento:",
                                     "label": "Attiva Evento",
                                     "service_data": "Dati del servizio"
+                                },
+                                "repeat": {
+                                    "label": "Ripetere",
+                                    "sequence": "Azioni",
+                                    "type_select": "Tipo \"ripetizione\"",
+                                    "type": {
+                                        "count": {
+                                            "label": "Conteggio"
+                                        },
+                                        "until": {
+                                            "conditions": "Condizioni \"fino a\"",
+                                            "label": "Fino a"
+                                        },
+                                        "while": {
+                                            "conditions": "Condizioni \"mentre\"",
+                                            "label": "Mentre"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "Attivare la scena"
@@ -938,6 +971,19 @@
                         "introduction": "Usa le automazioni per dare vita alla tua casa.",
                         "load_error_not_editable": "Solo le Automazioni in automations.yaml sono modificabili.",
                         "load_error_unknown": "Errore durante il caricamento dell'Automazione ({err_no}).",
+                        "max": {
+                            "parallel": "Numero massimo di esecuzioni parallele",
+                            "queued": "Lunghezza della coda"
+                        },
+                        "modes": {
+                            "description": "La modalità controlla cosa succede quando l'automazione viene attivata mentre le azioni sono ancora in esecuzione da una attivazione precedente. Controllare {documentation_link} per maggiori informazioni.",
+                            "documentation": "documentazione di automazione",
+                            "label": "Modalità",
+                            "parallel": "Parallelo",
+                            "queued": "In coda",
+                            "restart": "Riavviare",
+                            "single": "Singolo (predefinito)"
+                        },
                         "move_down": "Sposta sotto",
                         "move_up": "Sposta sopra",
                         "save": "Salva",
@@ -1322,7 +1368,7 @@
                 },
                 "entities": {
                     "caption": "Entità",
-                    "description": "Panoramica di tutte le entità conosciute.",
+                    "description": "Gestisci le entità conosciute",
                     "picker": {
                         "disable_selected": {
                             "button": "Disabilita selezionato",
@@ -1356,6 +1402,7 @@
                             "confirm_text": "Dovresti rimuoverli dalla configurazione di Lovelace e dalle automazioni se contengono queste entità.",
                             "confirm_title": "Vuoi rimuovere {number} entità?"
                         },
+                        "search": "Cerca entità",
                         "selected": "{number} selezionato",
                         "status": {
                             "disabled": "Disabilitato",
@@ -1373,7 +1420,7 @@
                 "header": "Configura Home Assistant",
                 "helpers": {
                     "caption": "Aiutanti",
-                    "description": "Elementi che possono aiutare a costruire le automazioni.",
+                    "description": "Gestisci elementi che possono aiutare a costruire le automazioni.",
                     "dialog": {
                         "add_helper": "Aggiungi aiutante",
                         "add_platform": "Aggiungi {platform}",
@@ -1386,7 +1433,8 @@
                             "entity_id": "ID Entità",
                             "name": "Nome",
                             "type": "Tipo"
-                        }
+                        },
+                        "no_helpers": "Sembra che tu non abbia ancora nessun aiutante!"
                     },
                     "types": {
                         "input_boolean": "Commutatore",
@@ -1400,7 +1448,7 @@
                     "built_using": "Costruito usando",
                     "caption": "Informazioni",
                     "custom_uis": "Interfacce Utente personalizzate:",
-                    "description": "Informazioni sulla tua installazione di Home Assistant",
+                    "description": "Visualizza le informazioni sull'installazione di Home Assistant",
                     "developed_by": "Sviluppato da un gruppo di persone fantastiche.",
                     "documentation": "Documentazione",
                     "frontend": "frontend-ui",
@@ -1465,7 +1513,7 @@
                     },
                     "configure": "Configura",
                     "configured": "Configurato",
-                    "description": "Gestire e configurare le integrazioni",
+                    "description": "Gestisci le integrazioni",
                     "details": "Dettagli dell'integrazione",
                     "discovered": "Scoperto",
                     "home_assistant_website": "Sito Web di Home Assistant",
@@ -1490,9 +1538,10 @@
                     "note_about_integrations": "Non tutte le integrazioni possono ancora essere configurate tramite l'interfaccia utente.",
                     "note_about_website_reference": "Ulteriori informazioni sono disponibili su ",
                     "rename_dialog": "Modifica il nome di questa voce di configurazione",
-                    "rename_input_label": "Nome della voce"
+                    "rename_input_label": "Nome della voce",
+                    "search": "Cerca integrazioni"
                 },
-                "introduction": "Qui è possibile configurare i componenti e Home Assistant. Non è ancora possibile configurare tutto dall'Interfaccia Utente, ma ci stiamo lavorando.",
+                "introduction": "In questa vista è possibile configurare i componenti e l'Home Assistant. Non tutto è ancora configurabile dall'interfaccia utente, ma ci stiamo lavorando.",
                 "logs": {
                     "caption": "Logs",
                     "clear": "Pulisci",
@@ -1548,7 +1597,7 @@
                             "open": "Aprire"
                         }
                     },
-                    "description": "Configura le tue plance di Lovelace",
+                    "description": "Gestisci le tue plance di Lovelace",
                     "resources": {
                         "cant_edit_yaml": "Si utilizza Lovelace in modalità YAML, pertanto non è possibile gestire le risorse tramite l'Interfaccia Utente. Gestirli in configuration.yaml.",
                         "caption": "Risorse",
@@ -1597,13 +1646,25 @@
                     "title": "MQTT",
                     "topic": "argomento"
                 },
+                "ozw": {
+                    "common": {
+                        "node_id": "ID del nodo",
+                        "ozw_instance": "Istanza OpenZWave",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "Nodo non riuscito",
+                        "stage": "Fase",
+                        "zwave_info": "Informazioni Z-Wave"
+                    }
+                },
                 "person": {
                     "add_person": "Aggiungi persona",
                     "caption": "Persone",
                     "confirm_delete": "Sei sicuro di voler cancellare questa persona?",
                     "confirm_delete2": "Tutti i dispositivi appartenenti a questa persona non saranno assegnati.",
                     "create_person": "Crea persona",
-                    "description": "Gestisci le persone di cui tiene traccia Home Assistant",
+                    "description": "Gestisci le persone tracciate da Home Assistant",
                     "detail": {
                         "create": "Crea",
                         "delete": "Elimina",
@@ -1626,7 +1687,7 @@
                 "scene": {
                     "activated": "Scena attivata {name}.",
                     "caption": "Scene",
-                    "description": "Crea e modifica scene",
+                    "description": "Gestisci le scene",
                     "editor": {
                         "default_name": "Nuova scena",
                         "devices": {
@@ -1643,6 +1704,7 @@
                             "introduction": "Le entità che non appartengono a un dispositivo possono essere impostate qui.",
                             "without_device": "Entità senza dispositivo"
                         },
+                        "icon": "Icona",
                         "introduction": "Usa le scene per dare vita alla tua casa.",
                         "load_error_not_editable": "Solo le scene in scene.yaml sono modificabili.",
                         "load_error_unknown": "Errore durante il caricamento della scena ({err_no}).",
@@ -1669,16 +1731,33 @@
                 },
                 "script": {
                     "caption": "Script",
-                    "description": "Crea e modifica script",
+                    "description": "Gestisci gli script",
                     "editor": {
                         "alias": "Nome",
                         "default_name": "Nuovo script",
                         "delete_confirm": "Sei sicuro di voler eliminare questo script?",
                         "delete_script": "Elimina script",
                         "header": "Script: {name}",
+                        "icon": "Icona",
+                        "id": "ID Entità",
+                        "id_already_exists": "Questo ID esiste già",
+                        "id_already_exists_save_error": "Non è possibile salvare questo script perché l'ID non è univoco, scegliere un altro ID o lasciarlo vuoto per generarne automaticamente uno.",
                         "introduction": "Utilizzare gli script per eseguire una sequenza di azioni.",
                         "link_available_actions": "Ulteriori informazioni sulle azioni disponibili.",
                         "load_error_not_editable": "Solo gli script all'interno di scripts.yaml sono modificabili.",
+                        "max": {
+                            "parallel": "Numero massimo di esecuzioni parallele",
+                            "queued": "Lunghezza della coda"
+                        },
+                        "modes": {
+                            "description": "La modalità controlla cosa succede quando lo script viene invocato mentre è ancora in esecuzione da una o più invocazioni precedenti. Controllare il {documentation_link} per maggiori informazioni.",
+                            "documentation": "documentazione dello script",
+                            "label": "Modalità",
+                            "parallel": "Parallelo",
+                            "queued": "In coda",
+                            "restart": "Riavviare",
+                            "single": "Singolo (predefinito)"
+                        },
                         "sequence": "Sequenza",
                         "sequence_sentence": "Sequenza di azioni di questo script."
                     },
@@ -1776,7 +1855,7 @@
                         "discovered_text": "I dispositivi verranno visualizzati qui una volta scoperti.",
                         "discovery_text": "I dispositivi rilevati verranno visualizzati qui. Seguire le istruzioni per il / i dispositivo / i e posizionare il / i dispositivo / i in modalità accoppiamento.",
                         "header": "Zigbee Home Automation - Aggiungi dispositivi",
-                        "no_devices_found": "Nessun dispositivo trovato, assicurati che siano in modalità di associazione e tienili svegli mentre la scansione è in esecuzione.",
+                        "no_devices_found": "Nessun dispositivo trovato, assicurati che siano in modalità di associazione e tienili attivi mentre la scansione è in esecuzione.",
                         "pairing_mode": "Assicurati che i tuoi dispositivi siano in modalità di associazione. Controlla le istruzioni del tuo dispositivo su come eseguire questa operazione.",
                         "search_again": "Cerca di nuovo",
                         "spinner": "Ricerca di dispositivi ZHA Zigbee ..."
@@ -1839,7 +1918,7 @@
                         "create_group": "Zigbee Home Automation - Crea gruppo",
                         "create_group_details": "Immettere i dettagli richiesti per creare un nuovo gruppo Zigbee",
                         "creating_group": "Creazione di un gruppo",
-                        "description": "Crea e modifica gruppi Zigbee",
+                        "description": "Gestisci gruppi Zigbee",
                         "group_details": "Qui ci sono tutti i dettagli per il gruppo Zigbee selezionato.",
                         "group_id": "ID gruppo",
                         "group_info": "Informazioni sul gruppo",
@@ -1882,7 +1961,7 @@
                     "configured_in_yaml": "Le zone configurate tramite configuration.yaml non possono essere modificate tramite l'interfaccia utente.",
                     "confirm_delete": "Sei sicuro di voler cancellare questa zona?",
                     "create_zone": "Crea zona",
-                    "description": "Gestisci le zone in cui vuoi rintracciare le persone.",
+                    "description": "Gestisci le zone in cui vuoi rintracciare le persone",
                     "detail": {
                         "create": "Crea",
                         "delete": "Elimina",
@@ -1971,7 +2050,7 @@
                         "add_node": "Aggiungi Nodo",
                         "add_node_secure": "Aggiungi nodo sicuro",
                         "cancel_command": "Annulla Comando",
-                        "heal_network": "Testa la rete",
+                        "heal_network": "Risana la rete",
                         "heal_node": "Resuscita Nodo",
                         "node_info": "Informazioni sul Nodo",
                         "print_node": "Stampa Nodo",
@@ -2194,6 +2273,7 @@
                             "name": "Nome",
                             "no_theme": "Nessun tema",
                             "refresh_interval": "Intervallo di aggiornamento",
+                            "search": "Ricerca",
                             "secondary_info_attribute": "Attributo informazioni secondarie",
                             "show_icon": "Mostrare l'icona?",
                             "show_name": "Mostrare il nome?",
@@ -2299,6 +2379,7 @@
                     },
                     "edit_card": {
                         "add": "Aggiungi scheda",
+                        "confirm_cancel": "Sei sicuro di voler annullare?",
                         "delete": "Elimina scheda",
                         "duplicate": "Duplica scheda",
                         "edit": "Modifica",
@@ -2309,12 +2390,15 @@
                         "pick_card_view_title": "Quale scheda vorresti aggiungere alla tua vista {name}?",
                         "show_code_editor": "Mostra Editor di Codice",
                         "show_visual_editor": "Mostra Editor Visivo",
-                        "toggle_editor": "Attiva / disattiva l'editor"
+                        "toggle_editor": "Attiva / disattiva l'editor",
+                        "typed_header": "{type} Configurazione Scheda",
+                        "unsaved_changes": "Sono state apportate modifiche non salvate"
                     },
                     "edit_lovelace": {
                         "edit_title": "Modifica titolo",
                         "explanation": "Questo titolo è mostrato sopra tutte le tue viste nell'Interfaccia Utente di Lovelace.",
-                        "header": "Titolo della tua interfaccia utente di Lovelace"
+                        "header": "Titolo della tua interfaccia utente di Lovelace",
+                        "title": "Titolo"
                     },
                     "edit_view": {
                         "add": "Aggiungi vista",
@@ -2341,6 +2425,9 @@
                         "migrate": "Esporta Configurazione",
                         "para_migrate": "Home Assistant può aggiungere automaticamente gli ID a tutte le tue schede e viste in maniera automatica premendo il pulsante \"Esporta Configurazione\".",
                         "para_no_id": "Questo elemento non ha un ID. Aggiungi un ID a questo elemento in 'ui-lovelace.yaml'."
+                    },
+                    "move_card": {
+                        "header": "Scegli una visualizzazione in cui spostare la scheda"
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "Genereremo automaticamente le tue viste dell'Interfaccia utente di Lovelace con le tue aree e dispositivi se rimuovi la tua configurazione dell'interfaccia utente di Lovelace.",
@@ -2369,6 +2456,10 @@
                         "yaml_control": "Per assumere il controllo in modalità YAML, creare un file YAML con il nome specificato nella tua configurazione per questa plancia, o il predefinito 'ui-lovelace.yaml'.",
                         "yaml_mode": "Questa plancia sta utilizzando la modalità YAML, il che significa che non è possibile modificare la configurazione di Lovelace dall'Interfaccia Utente. Se volete gestire questa plancia dall'Interfaccia Utente, rimuovere 'mode: yaml' dalla configurazione di Lovelace in 'configuration.yaml'."
                     },
+                    "select_view": {
+                        "dashboard_label": "Plancia",
+                        "header": "Scegliere una visualizzazione"
+                    },
                     "suggest_card": {
                         "add": "Aggiungi all'interfaccia utente di Lovelace",
                         "create_own": "Scegliere una scheda diversa",
@@ -2384,7 +2475,7 @@
                 },
                 "menu": {
                     "close": "Chiudi",
-                    "configure_ui": "Configurare l'Interfaccia Utente",
+                    "configure_ui": "Modifica la Plancia",
                     "exit_edit_mode": "Esci dalla modalità di modifica dell'Interfaccia Utente",
                     "help": "Aiuto",
                     "refresh": "Aggiorna",
@@ -2401,6 +2492,8 @@
                     "entity": "Entità",
                     "entity_id": "ID entità",
                     "last_changed": "Ultima modifica",
+                    "no_data": "Trovate entità non utilizzate",
+                    "search": "Cerca entità",
                     "select_to_add": "Selezionare le entità che si desidera aggiungere a una scheda, quindi fare clic sul pulsante Aggiungi scheda.",
                     "title": "Entità non utilizzate"
                 },
@@ -2503,6 +2596,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "Il tuo computer non è consentito.",
                                 "not_whitelisted": "Il tuo computer non è nella whitelist."
                             },
                             "step": {
@@ -2683,10 +2777,18 @@
                     "header": "Chiudi automaticamente la connessione"
                 },
                 "themes": {
+                    "accent_color": "Colore accento",
+                    "dark_mode": {
+                        "auto": "Auto",
+                        "dark": "Scuro",
+                        "light": "Chiaro"
+                    },
                     "dropdown_label": "Tema",
                     "error_no_theme": "Nessun tema disponibile.",
                     "header": "Tema",
-                    "link_promo": "Per saperne di più sui temi"
+                    "link_promo": "Per saperne di più sui temi",
+                    "primary_color": "Colore principale",
+                    "reset": "Reset"
                 },
                 "vibrate": {
                     "description": "Abilitare o disabilitare la vibrazione su questo dispositivo durante il controllo dei dispositivi.",

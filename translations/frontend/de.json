@@ -57,7 +57,7 @@
                 "boost": "Boost",
                 "comfort": "Komfort",
                 "eco": "Eco",
-                "home": "Zu Hause",
+                "home": "Zuhause",
                 "normal": "Normal",
                 "sleep": "Schlafen"
             }
@@ -96,7 +96,7 @@
             "armed": "Aktiv",
             "armed_away": "Aktiv, abwesend",
             "armed_custom_bypass": "Aktiv, benutzerdefiniert",
-            "armed_home": "Aktiv, zu Hause",
+            "armed_home": "Aktiv, Zuhause",
             "armed_night": "Aktiv, Nacht",
             "arming": "Aktiviere",
             "disarmed": "Inaktiv",
@@ -267,7 +267,7 @@
             "standby": "Standby"
         },
         "person": {
-            "home": "Zu Hause"
+            "home": "Zuhause"
         },
         "plant": {
             "ok": "OK",
@@ -528,6 +528,7 @@
                 "show_areas": "Bereiche anzeigen"
             },
             "data-table": {
+                "no-data": "Keine Daten",
                 "search": "Suche"
             },
             "date-range-picker": {
@@ -774,7 +775,7 @@
             "connection_lost": "Verbindung getrennt. Verbinde erneut...",
             "service_call_failed": "Fehler beim Aufrufen des Service {service}.",
             "started": "Home Assistant wurde vollständig gestartet!",
-            "starting": "Home Assistant startet, währenddessen kann es sein das nicht alles verfügbar ist.",
+            "starting": "Home Assistant startet. Währenddessen kann es sein, dass nicht alles verfügbar ist.",
             "triggered": "{name} ausgelöst"
         },
         "panel": {
@@ -797,7 +798,7 @@
                         "confirmation_text": "Alle Geräte in diesem Bereich werden nicht mehr zugewiesen sein.",
                         "confirmation_title": "Möchtest du diesen Bereich wirklich löschen?"
                     },
-                    "description": "Überblick über alle Bereiche in Deinem Haus.",
+                    "description": "Die Bereiche deines Zuhause verwalten",
                     "editor": {
                         "area_id": "Bereich-ID",
                         "create": "Erstellen",
@@ -819,7 +820,7 @@
                 },
                 "automation": {
                     "caption": "Automatisierung",
-                    "description": "Automatisierungen erstellen und bearbeiten",
+                    "description": "Automatisierungen verwalten",
                     "editor": {
                         "actions": {
                             "add": "Aktion hinzufügen",
@@ -1618,6 +1619,11 @@
                     "title": "MQTT",
                     "topic": "Topic"
                 },
+                "ozw": {
+                    "device_info": {
+                        "zwave_info": "Z-Wave Infos"
+                    }
+                },
                 "person": {
                     "add_person": "Person hinzufügen",
                     "caption": "Personen",
@@ -1647,7 +1653,7 @@
                 "scene": {
                     "activated": "Aktivierte Szene {name}.",
                     "caption": "Szenen",
-                    "description": "Erstelle und bearbeite Szenen.",
+                    "description": "Szenen verwalten",
                     "editor": {
                         "default_name": "Neue Szene",
                         "devices": {
@@ -1691,7 +1697,7 @@
                 },
                 "script": {
                     "caption": "Skript",
-                    "description": "Skripte erstellen und bearbeiten",
+                    "description": "Skripte verwalten",
                     "editor": {
                         "alias": "Name",
                         "default_name": "Neues Skript",
@@ -1878,7 +1884,7 @@
                         "create_group": "Zigbee Home Automation - Gruppe erstellen",
                         "create_group_details": "Gib die erforderlichen Details ein, um eine neue Zigbee-Gruppe zu erstellen",
                         "creating_group": "Erstelle Gruppe",
-                        "description": "Erstellen und Ändern von Zigbee-Gruppen",
+                        "description": "Verwalten von Zigbee-Gruppen",
                         "group_details": "Hier sind alle Details der ausgewählten Zigbee Gruppe.",
                         "group_id": "Gruppen-ID",
                         "group_info": "Gruppen Information",
@@ -2131,7 +2137,7 @@
                     "empty_state": {
                         "go_to_integrations_page": "Gehe zur Integrationsseite.",
                         "no_devices": "Auf dieser Seite können Sie Ihre Geräte steuern, es sieht jedoch so aus, als hätten Sie noch keine eingerichtet. Gehen Sie zur Integrationsseite, um damit zu beginnen.",
-                        "title": "Willkommen zu Hause"
+                        "title": "Willkommen Zuhause"
                     },
                     "entities": {
                         "never_triggered": "Nie ausgelöst"
@@ -2351,6 +2357,7 @@
                         "show_code_editor": "Code-Editor anzeigen",
                         "show_visual_editor": "Visuellen Editor anzeigen",
                         "toggle_editor": "Editor umschalten",
+                        "typed_header": "{type} Kartenkonfiguration",
                         "unsaved_changes": "Nicht gespeicherte Änderungen"
                     },
                     "edit_lovelace": {
@@ -2444,6 +2451,8 @@
                     "entity": "Entität",
                     "entity_id": "Entitäts-ID",
                     "last_changed": "Zuletzt geändert",
+                    "no_data": "Keine ungenutzten Entitäten gefunden",
+                    "search": "Entitäten durchsuchen",
                     "select_to_add": "Wähle die Entitäten aus, die du zur Karte hinzufügen möchtest und klicke auf den Karte hinzufügen-Button.",
                     "title": "Nicht verwendete Entitäten"
                 },
@@ -2727,10 +2736,16 @@
                     "header": "Verbindung automatisch schließen"
                 },
                 "themes": {
+                    "accent_color": "Akzentfarbe",
+                    "dark_mode": {
+                        "dark": "Dunkel",
+                        "light": "Hell"
+                    },
                     "dropdown_label": "Thema",
                     "error_no_theme": "Keine Themen verfügbar.",
                     "header": "Thema",
-                    "link_promo": "Erfahre mehr über Themen"
+                    "link_promo": "Erfahre mehr über Themen",
+                    "primary_color": "Primärfarbe"
                 },
                 "vibrate": {
                     "description": "Aktiviere oder deaktiviere die Vibration an diesem Gerät, wenn du Geräte steuerst.",

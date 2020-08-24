@@ -528,6 +528,7 @@
                 "show_areas": "Afficher les pièces"
             },
             "data-table": {
+                "no-data": "Pas de données",
                 "search": "Chercher"
             },
             "date-range-picker": {
@@ -552,6 +553,10 @@
             "history_charts": {
                 "loading_history": "Chargement de l'historique des valeurs ...",
                 "no_history_found": "Aucun historique des valeurs trouvé."
+            },
+            "picture-upload": {
+                "label": "Image",
+                "unsupported_format": "Format non pris en charge, veuillez choisir une image JPEG, PNG ou GIF."
             },
             "related-items": {
                 "area": "Pièce",
@@ -654,6 +659,9 @@
                 "platform_not_loaded": "L'intégration {platform} n'est pas chargée. Veuillez l'ajouter à votre configuration en ajoutant 'default_config:' ou ''{platform}:''.",
                 "required_error_msg": "Ce champ est requis",
                 "yaml_not_editable": "Les paramètres de cette entité ne peuvent pas être modifiés à partir de l'interface utilisateur. Seules les entités configurées à partir de l'interface utilisateur sont configurables à partir de l'interface utilisateur."
+            },
+            "image_cropper": {
+                "crop": "Recadrer"
             },
             "more_info_control": {
                 "dismiss": "Fermer la fenêtre de dialogue",
@@ -832,6 +840,15 @@
                             "name": "Action",
                             "type_select": "Type d'action",
                             "type": {
+                                "choose": {
+                                    "add_option": "Ajouter une option",
+                                    "conditions": "Conditions",
+                                    "default": "Actions par défaut",
+                                    "label": "Choisir",
+                                    "option": "Option {number}",
+                                    "remove_option": "Supprimer l'option",
+                                    "sequence": "Actions"
+                                },
                                 "condition": {
                                     "label": "Condition"
                                 },
@@ -851,6 +868,24 @@
                                     "label": "Déclencher l'évènement",
                                     "service_data": "Données du service"
                                 },
+                                "repeat": {
+                                    "label": "Répéter",
+                                    "sequence": "Actions",
+                                    "type_select": "Type de répétition",
+                                    "type": {
+                                        "count": {
+                                            "label": "Nombre"
+                                        },
+                                        "until": {
+                                            "conditions": "Jusqu'à ce que les conditions",
+                                            "label": "Jusqu'à ce que"
+                                        },
+                                        "while": {
+                                            "conditions": "Tant que les conditions",
+                                            "label": "Tant que"
+                                        }
+                                    }
+                                },
                                 "scene": {
                                     "label": "Activer la scène"
                                 },
@@ -864,7 +899,7 @@
                                     "wait_template": "Template d'attente"
                                 }
                             },
-                            "unsupported_action": "Action non supportée : {action}"
+                            "unsupported_action": "Pas d'interface utilisateur pour l'action : {action}"
                         },
                         "alias": "Nom",
                         "conditions": {
@@ -930,7 +965,7 @@
                                     "zone": "Zone"
                                 }
                             },
-                            "unsupported_condition": "Condition non supportée: {condition}"
+                            "unsupported_condition": "Pas d'interface utilisateur pour la condition : {condition}"
                         },
                         "default_name": "Nouvelle automatisation",
                         "description": {
@@ -1022,6 +1057,9 @@
                                     "sunrise": "Lever du soleil",
                                     "sunset": "Coucher du soleil"
                                 },
+                                "tag": {
+                                    "label": "Balise"
+                                },
                                 "template": {
                                     "label": "Template",
                                     "value_template": "Contenu du template"
@@ -1049,7 +1087,7 @@
                                     "zone": "Zone"
                                 }
                             },
-                            "unsupported_platform": "Plateforme non supportée : {platform}"
+                            "unsupported_platform": "Pas d'interface utilisateur pour la plateforme : {platform}"
                         },
                         "unsaved_confirm": "Vous avez des changements non enregistrés. Êtes-vous sûr de vouloir quitter?"
                     },
@@ -1299,6 +1337,7 @@
                     "caption": "Appareils",
                     "confirm_delete": "Voulez-vous vraiment supprimer cet appareil ?",
                     "confirm_rename_entity_ids": "Voulez-vous aussi renommer les ID de vos entités?",
+                    "confirm_rename_entity_ids_warning": "Cela ne changera aucune configuration (comme les automatismes, les scripts, les scènes, Lovelace) qui utilise actuellement ces entités, vous devrez les mettre à jour vous-même.",
                     "data_table": {
                         "area": "Zone",
                         "battery": "Batterie",
@@ -1392,7 +1431,7 @@
                 "header": "Configurer Home Assistant",
                 "helpers": {
                     "caption": "Entrées",
-                    "description": "Éléments pouvant aider à construire des automatisations.",
+                    "description": "Gérez les éléments qui peuvent aident à créer des automatisations",
                     "dialog": {
                         "add_helper": "Ajouter une entrée",
                         "add_platform": "Ajouter {platform}",
@@ -1513,7 +1552,7 @@
                     "rename_input_label": "Nom de l'entrée",
                     "search": "Chercher les intégrations"
                 },
-                "introduction": "Ici, il est possible de configurer vos composants et Home Assistant. Tout n'est pas encore possible de configurer à partir de l'interface utilisateur, mais nous y travaillons.",
+                "introduction": "Ici, il est possible de configurer vos composants et Home Assistant. Tout n'est pas encore configurable à partir de l'interface utilisateur, mais nous y travaillons.",
                 "logs": {
                     "caption": "Journaux",
                     "clear": "Nettoyer",
@@ -1617,6 +1656,49 @@
                     "subscribe_to": "Sujet auquel s'abonner",
                     "title": "MQTT",
                     "topic": "sujet"
+                },
+                "ozw": {
+                    "common": {
+                        "node_id": "ID du nœud",
+                        "ozw_instance": "Instance Z-Wave",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "Nœud Défaillant",
+                        "stage": "Étape",
+                        "zwave_info": "Informations Z-Wave"
+                    },
+                    "node_query_stages": {
+                        "associations": "Rafraîchissement les associations et les membres",
+                        "cacheload": "Chargement des informations à partir du fichier de cache OpenZWave. Les nœuds de batterie resteront à cette étape jusqu'à ce que le nœud se réveille.",
+                        "complete": "Le processus d'interrogation est terminé",
+                        "configuration": "Obtention la configuration à partir du nœud",
+                        "dynamic": "Obtention de valeurs fréquemment modifiées du nœud",
+                        "instances": "Obtention des détails sur les instances ou les canaux pris en charge par un appareil",
+                        "manufacturerspecific1": "Obtention des codes d'identification du fabricant et du produit auprès du nœud",
+                        "manufacturerspecific2": "Obtention de codes d’identification supplémentaires du fabricant et du produit à partir du nœud",
+                        "neighbors": "Obtenir une liste des nœuds voisins",
+                        "nodeinfo": "Obtention des classes de commande prises en charge à partir du nœud",
+                        "nodeplusinfo": "Obtention d'informations Z-Wave + à partir du nœud",
+                        "probe": "Vérification si le nœud est éveillé/vivant",
+                        "protocolinfo": "Obtention des capacités Z-Wave de base de ce nœud à partir du contrôleur",
+                        "session": "Obtention de valeurs rarement modifiées du nœud",
+                        "static": "Obtention des valeurs statiques de l'appareil",
+                        "versions": "Obtention d'informations sur les versions des microprogrammes et des classes de commande",
+                        "wakeup": "Configuration de la prise en charge des files d'attente et des messages de réveil"
+                    },
+                    "refresh_node": {
+                        "battery_note": "Si le nœud est alimenté par batterie, assurez-vous de l'activer avant de continuer",
+                        "complete": "Actualisation du nœud terminée",
+                        "description": "Cela indiquera à OpenZWave de réinterroger le nœud et de le mettre à jour (commandes, possibilités et valeurs).",
+                        "node_status": "État du nœud",
+                        "refreshing_description": "Rafraîchissement des informations sur le nœud...",
+                        "start_refresh_button": "Démarrer l'actualisation",
+                        "step": "Étape",
+                        "title": "Actualiser les informations du nœud",
+                        "wakeup_header": "Instructions de réveil pour",
+                        "wakeup_instructions_source": "Les instructions de réveil proviennent de la base de données de la communauté OpenZWave."
+                    }
                 },
                 "person": {
                     "add_person": "Ajouter une personne",
@@ -1771,6 +1853,31 @@
                             "valid": "Configuration valide !"
                         }
                     }
+                },
+                "tags": {
+                    "add_tag": "Ajouter une balise",
+                    "automation_title": "La balise {name} est analysée",
+                    "caption": "Balises",
+                    "create_automation": "Créer une automatisation avec une balise",
+                    "description": "Gérer les balises",
+                    "detail": {
+                        "create": "Créer",
+                        "create_and_write": "Créer et Ecrire",
+                        "delete": "Supprimer",
+                        "description": "Description",
+                        "name": "Nom",
+                        "new_tag": "Nouvelle balise",
+                        "tag_id": "Id de balise",
+                        "tag_id_placeholder": "Généré automatiquement lorsque laissé vide",
+                        "update": "Mise à jour"
+                    },
+                    "edit": "Modifier",
+                    "headers": {
+                        "last_scanned": "Dernière analyse",
+                        "name": "Nom"
+                    },
+                    "no_tags": "Aucunes balises",
+                    "write": "Écrire"
                 },
                 "users": {
                     "add_user": {
@@ -2339,7 +2446,7 @@
                     },
                     "edit_card": {
                         "add": "Ajouter une action",
-                        "confirm_cancel": "Êtes-vous sûrs de vouloir annuler ?",
+                        "confirm_cancel": "Êtes-vous sûr de vouloir annuler ?",
                         "delete": "Supprimer",
                         "duplicate": "Dupliquer la carte",
                         "edit": "Modifier",
@@ -2351,6 +2458,7 @@
                         "show_code_editor": "Afficher l'éditeur de code",
                         "show_visual_editor": "Afficher l'éditeur visuel",
                         "toggle_editor": "Permuter l’éditeur",
+                        "typed_header": "{type} Configuration de la carte",
                         "unsaved_changes": "Vous avez des changements non enregistrés"
                     },
                     "edit_lovelace": {
@@ -2385,6 +2493,9 @@
                         "para_migrate": "Home Assistant peut ajouter automatiquement des identifiants à toutes vos cartes et vues en appuyant sur le bouton «Migrer la configuration».",
                         "para_no_id": "Cet élément n'a pas d'identifiant. Veuillez ajouter un identifiant à cet élément dans 'ui-lovelace.yaml'."
                     },
+                    "move_card": {
+                        "header": "Choisissez une vue vers laquelle déplacer la carte"
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "Nous générerons automatiquement vos vues Lovelace UI avec vos zones et appareils si vous supprimez votre configuration Lovelace UI.",
                         "confirm_remove_config_title": "Êtes-vous sûr de vouloir supprimer votre configuration Lovelace UI? Nous générerons automatiquement vos vues Lovelace UI avec vos zones et vos appareils.",
@@ -2412,6 +2523,10 @@
                         "yaml_control": "Pour prendre le contrôle en mode YAML, créez un fichier YAML avec le nom que vous avez spécifié dans votre configuration pour ce tableau de bord, ou le 'ui-lovelace.yaml' par défaut.",
                         "yaml_mode": "Vous utilisez le mode YAML pour ce tableau de bord, ce qui signifie que vous ne pouvez pas modifier votre configuration Lovelace depuis l'interface utilisateur. Si vous souhaitez gérer votre tableau de bord via l'interface utilisateur, supprimez «mode: yaml» de votre configuration Lovelace dans «configuration.yaml»."
                     },
+                    "select_view": {
+                        "dashboard_label": "Tableau de bord",
+                        "header": "Choisissez une vue"
+                    },
                     "suggest_card": {
                         "add": "Ajouter à Lovelace UI",
                         "create_own": "Choisissez une autre carte",
@@ -2427,7 +2542,7 @@
                 },
                 "menu": {
                     "close": "Fermer",
-                    "configure_ui": "Configurer l'interface utilisateur",
+                    "configure_ui": "Modifier le tableau de bord",
                     "exit_edit_mode": "Quitter le mode d'édition de l'interface utilisateur",
                     "help": "Aide",
                     "refresh": "Actualiser",
@@ -2444,6 +2559,8 @@
                     "entity": "Entité",
                     "entity_id": "ID de l'entité",
                     "last_changed": "Dernière modification",
+                    "no_data": "Aucune entité inutilisée trouvée",
+                    "search": "Rechercher des entités",
                     "select_to_add": "Sélectionner les entités que vous souhaitez ajouter à une carte, puis cliquez sur le bouton Ajouter une carte.",
                     "title": "Entités inutilisées"
                 },
@@ -2727,10 +2844,18 @@
                     "header": "Fermer automatiquement la connexion"
                 },
                 "themes": {
+                    "accent_color": "Couleur d'accentuation",
+                    "dark_mode": {
+                        "auto": "Auto",
+                        "dark": "Sombre",
+                        "light": "Clair"
+                    },
                     "dropdown_label": "Thème",
                     "error_no_theme": "Aucun thème disponible.",
                     "header": "Thème",
-                    "link_promo": "En savoir plus sur les thèmes"
+                    "link_promo": "En savoir plus sur les thèmes",
+                    "primary_color": "Couleur primaire",
+                    "reset": "Réinitialiser"
                 },
                 "vibrate": {
                     "description": "Activer ou désactiver les vibrations sur cet appareil lors du contrôle des périphériques.",

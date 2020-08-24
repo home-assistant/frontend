@@ -1,4 +1,4 @@
-import "@polymer/paper-item/paper-item";
+import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 import {
   css,
@@ -32,7 +32,7 @@ import {
 } from "./show-dialog-person-detail";
 import "../../../components/ha-svg-icon";
 import { mdiPlus } from "@mdi/js";
-import { computeRTL } from "../../../common/util/compute_rtl";
+import { styleMap } from "lit-html/directives/style-map";
 
 class HaConfigPerson extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -85,11 +85,20 @@ class HaConfigPerson extends LitElement {
           <ha-card class="storage">
             ${this._storageItems.map((entry) => {
               return html`
-                <paper-item @click=${this._openEditEntry} .entry=${entry}>
+                <paper-icon-item @click=${this._openEditEntry} .entry=${entry}>
+                  ${entry.picture
+                    ? html`<div
+                        style=${styleMap({
+                          backgroundImage: `url(${entry.picture})`,
+                        })}
+                        class="picture"
+                        slot="item-icon"
+                      ></div>`
+                    : ""}
                   <paper-item-body>
                     ${entry.name}
                   </paper-item-body>
-                </paper-item>
+                </paper-icon-item>
               `;
             })}
             ${this._storageItems.length === 0
@@ -112,28 +121,34 @@ class HaConfigPerson extends LitElement {
                 <ha-card header="Configuration.yaml persons">
                   ${this._configItems.map((entry) => {
                     return html`
-                      <paper-item>
+                      <paper-icon-item>
+                        ${entry.picture
+                          ? html`<div
+                              style=${styleMap({
+                                backgroundImage: `url(${entry.picture})`,
+                              })}
+                              class="picture"
+                              slot="item-icon"
+                            ></div>`
+                          : ""}
                         <paper-item-body>
                           ${entry.name}
                         </paper-item-body>
-                      </paper-item>
+                      </paper-icon-item>
                     `;
                   })}
                 </ha-card>
               `
             : ""}
         </ha-config-section>
+        <mwc-fab
+          slot="fab"
+          title="${hass.localize("ui.panel.config.person.add_person")}"
+          @click=${this._createPerson}
+        >
+          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+        </mwc-fab>
       </hass-tabs-subpage>
-
-      <mwc-fab
-        ?is-wide=${this.isWide}
-        ?narrow=${this.narrow}
-        ?rtl=${computeRTL(this.hass!)}
-        title="${hass.localize("ui.panel.config.person.add_person")}"
-        @click=${this._createPerson}
-      >
-        <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
-      </mwc-fab>
     `;
   }
 
@@ -232,38 +247,22 @@ class HaConfigPerson extends LitElement {
         margin: 16px auto;
         overflow: hidden;
       }
+      .picture {
+        width: 40px;
+        height: 40px;
+        background-size: cover;
+        border-radius: 50%;
+      }
       .empty {
         text-align: center;
         padding: 8px;
       }
-      paper-item {
+      paper-icon-item {
         padding-top: 4px;
         padding-bottom: 4px;
       }
-      ha-card.storage paper-item {
+      ha-card.storage paper-icon-item {
         cursor: pointer;
-      }
-      mwc-fab {
-        position: fixed;
-        bottom: 16px;
-        right: 16px;
-        z-index: 1;
-      }
-      mwc-fab[narrow] {
-        bottom: 84px;
-      }
-      mwc-fab[is-wide] {
-        bottom: 24px;
-        right: 24px;
-      }
-      mwc-fab[rtl] {
-        right: auto;
-        left: 16px;
-      }
-      mwc-fab[is-wide][rtl] {
-        bottom: 24px;
-        left: 24px;
-        right: auto;
       }
     `;
   }

@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import "@polymer/app-layout/app-header-layout/app-header-layout";
+import "../../layouts/ha-app-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "../../components/ha-icon-button";
@@ -51,8 +51,8 @@ class LovelaceFullConfigEditor extends LitElement {
 
   public render(): TemplateResult | void {
     return html`
-      <app-header-layout>
-        <app-header>
+      <ha-app-layout>
+        <app-header slot="header">
           <app-toolbar>
             <ha-icon-button
               icon="hass:close"
@@ -98,7 +98,7 @@ class LovelaceFullConfigEditor extends LitElement {
           >
           </ha-code-editor>
         </div>
-      </app-header-layout>
+      </ha-app-layout>
     `;
   }
 
@@ -114,7 +114,7 @@ class LovelaceFullConfigEditor extends LitElement {
           --code-mirror-height: 100%;
         }
 
-        app-header-layout {
+        ha-app-layout {
           height: 100vh;
         }
 
