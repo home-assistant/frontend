@@ -1648,12 +1648,19 @@
                 },
                 "ozw": {
                     "common": {
+                        "node_id": "ID de nó",
                         "ozw_instance": "Instância OpenZWave",
                         "zwave": "Z-Wave"
                     },
                     "device_info": {
                         "node_failed": "Falha no nó",
                         "zwave_info": "Informações sobre Z-Wave"
+                    },
+                    "refresh_node": {
+                        "node_status": "Estado do Nó",
+                        "refreshing_description": "A atualizar as informações do nó ...",
+                        "start_refresh_button": "Iniciar atualização",
+                        "step": "Passo"
                     }
                 },
                 "person": {

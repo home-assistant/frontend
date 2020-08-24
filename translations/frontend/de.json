@@ -57,7 +57,7 @@
                 "boost": "Boost",
                 "comfort": "Komfort",
                 "eco": "Eco",
-                "home": "Zu Hause",
+                "home": "Zuhause",
                 "normal": "Normal",
                 "sleep": "Schlafen"
             }
@@ -96,7 +96,7 @@
             "armed": "Aktiv",
             "armed_away": "Aktiv, abwesend",
             "armed_custom_bypass": "Aktiv, benutzerdefiniert",
-            "armed_home": "Aktiv, zu Hause",
+            "armed_home": "Aktiv, Zuhause",
             "armed_night": "Aktiv, Nacht",
             "arming": "Aktiviere",
             "disarmed": "Inaktiv",
@@ -267,7 +267,7 @@
             "standby": "Standby"
         },
         "person": {
-            "home": "Zu Hause"
+            "home": "Zuhause"
         },
         "plant": {
             "ok": "OK",
@@ -2137,7 +2137,7 @@
                     "empty_state": {
                         "go_to_integrations_page": "Gehe zur Integrationsseite.",
                         "no_devices": "Auf dieser Seite können Sie Ihre Geräte steuern, es sieht jedoch so aus, als hätten Sie noch keine eingerichtet. Gehen Sie zur Integrationsseite, um damit zu beginnen.",
-                        "title": "Willkommen zu Hause"
+                        "title": "Willkommen Zuhause"
                     },
                     "entities": {
                         "never_triggered": "Nie ausgelöst"

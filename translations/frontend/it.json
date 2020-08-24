@@ -836,7 +836,7 @@
                                 "choose": {
                                     "add_option": "Aggiungi opzione",
                                     "conditions": "Condizioni",
-                                    "default": "Azione predefinita",
+                                    "default": "Azioni predefinite",
                                     "label": "Scegli",
                                     "option": "Opzione {number}",
                                     "remove_option": "Rimuovi opzione",
@@ -2050,7 +2050,7 @@
                         "add_node": "Aggiungi Nodo",
                         "add_node_secure": "Aggiungi nodo sicuro",
                         "cancel_command": "Annulla Comando",
-                        "heal_network": "Testa la rete",
+                        "heal_network": "Risana la rete",
                         "heal_node": "Resuscita Nodo",
                         "node_info": "Informazioni sul Nodo",
                         "print_node": "Stampa Nodo",
