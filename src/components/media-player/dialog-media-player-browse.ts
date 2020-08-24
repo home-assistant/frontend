@@ -58,7 +58,7 @@ class DialogMediaPlayerBrowse extends LitElement {
         hideActions
         .heading=${createCloseHeading(
           this.hass,
-          this.hass.localize(`ui.components.media-browser.media-player-browser`)
+          this.hass.localize("ui.components.media-browser.media-player-browser")
         )}
         @closed=${this._closeDialog}
       >
@@ -79,7 +79,7 @@ class DialogMediaPlayerBrowse extends LitElement {
   }
 
   private _mediaPicked(ev: HASSDomEvent<MediaPickedEvent>): void {
-    this._params.mediaPickedCallback(ev.detail);
+    this._params!.mediaPickedCallback(ev.detail);
     this._closeDialog();
   }
 
@@ -88,11 +88,13 @@ class DialogMediaPlayerBrowse extends LitElement {
       haStyleDialog,
       css`
         ha-dialog {
-          --mdc-dialog-max-width: 800px;
           --dialog-z-index: 8;
         }
 
         @media (min-width: 800px) {
+          ha-dialog {
+            --mdc-dialog-max-width: 800px;
+          }
           ha-media-player-browse {
             width: 700px;
           }
