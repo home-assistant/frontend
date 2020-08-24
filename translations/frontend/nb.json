@@ -554,6 +554,10 @@
                 "loading_history": "Laster statushistorikk...",
                 "no_history_found": "Ingen statushistorikk funnet."
             },
+            "picture-upload": {
+                "label": "Bilde",
+                "unsupported_format": "Formatet støttes ikke, vennligst velge et JPEG-, PNG- eller GIF-bilde."
+            },
             "related-items": {
                 "area": "Område",
                 "automation": "Del av følgende automasjoner",
@@ -655,6 +659,9 @@
                 "platform_not_loaded": "Integrasjonen av {platform} er ikke lastet. Legg den til i konfigurasjonen din enten ved å legge til 'default_config:' eller '' {platform} : ''.",
                 "required_error_msg": "Dette feltet er påkrevd",
                 "yaml_not_editable": "Innstillingene for denne entiteten kan ikke redigeres fra brukergrensesnittet. Bare entiteter som er satt opp fra brukergrensesnittet, kan konfigureres fra brukergrensesnittet."
+            },
+            "image_cropper": {
+                "crop": "Beskjære"
             },
             "more_info_control": {
                 "dismiss": "Avvis dialogboksen",
@@ -892,7 +899,7 @@
                                     "wait_template": "Ventemal"
                                 }
                             },
-                            "unsupported_action": "Ikke-støttet handling: {action}"
+                            "unsupported_action": "Ingen brukergrensesnitt for handling: {action}"
                         },
                         "alias": "Navn",
                         "conditions": {
@@ -958,7 +965,7 @@
                                     "zone": "Sone"
                                 }
                             },
-                            "unsupported_condition": "Ikke-støttet tilstand: {condition}"
+                            "unsupported_condition": "Ingen brukergrensesnitt for bruk: {condition}"
                         },
                         "default_name": "Ny automasjon",
                         "description": {
@@ -1050,6 +1057,9 @@
                                     "sunrise": "Soloppgang",
                                     "sunset": "Solnedgang"
                                 },
+                                "tag": {
+                                    "label": "Tag"
+                                },
                                 "template": {
                                     "label": "Mal",
                                     "value_template": "Verdi mal"
@@ -1077,7 +1087,7 @@
                                     "zone": "Sone"
                                 }
                             },
-                            "unsupported_platform": "Ikke-støttet plattform: {platform}"
+                            "unsupported_platform": "Ingen UI-støtte for plattform: {platform}"
                         },
                         "unsaved_confirm": "Du har ulagrede endringer. Er du sikker på at du vil lukke?"
                     },
@@ -1842,6 +1852,31 @@
                             "valid": "Gyldig konfigurasjon"
                         }
                     }
+                },
+                "tags": {
+                    "add_tag": "Legg til tag",
+                    "automation_title": "Tag {name} skannes",
+                    "caption": "Tags",
+                    "create_automation": "Opprett automatisering med tag",
+                    "description": "Administrer tagger",
+                    "detail": {
+                        "create": "Opprett",
+                        "create_and_write": "Opprette og skrive",
+                        "delete": "Slett",
+                        "description": "Beskrivelse",
+                        "name": "Navn",
+                        "new_tag": "Ny tag",
+                        "tag_id": "Tag id",
+                        "tag_id_placeholder": "Automatisk generert når den er tom",
+                        "update": "Oppdater"
+                    },
+                    "edit": "Redigere",
+                    "headers": {
+                        "last_scanned": "Sist skannet",
+                        "name": "Navn"
+                    },
+                    "no_tags": "Ingen tagger",
+                    "write": "Skrive"
                 },
                 "users": {
                     "add_user": {

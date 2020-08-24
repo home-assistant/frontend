@@ -25,6 +25,7 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
         }
       </style>
       <ha-chart-base
+        hass="[[hass]]"
         data="[[chartData]]"
         rendered="{{rendered}}"
         rtl="{{rtl}}"

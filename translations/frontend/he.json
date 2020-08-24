@@ -554,6 +554,10 @@
                 "loading_history": "טוען היסטוריה...",
                 "no_history_found": "לא נמצאה היסטוריה"
             },
+            "picture-upload": {
+                "label": "תמונה",
+                "unsupported_format": "פורמט לא נתמך, בחר תמונת JPEG, PNG או GIF."
+            },
             "related-items": {
                 "area": "אֵזוֹר",
                 "automation": "חלק מהאוטומציות הבאות",
@@ -655,6 +659,9 @@
                 "platform_not_loaded": "האינטגרציה {platform} אינה טעונה. אנא הוסף אותה לקונפיגורציה שלך על ידי הוספת 'default_config:' או '' {platform} : ''.",
                 "required_error_msg": "שדה זה הוא חובה",
                 "yaml_not_editable": "אין אפשרות לערוך את ההגדרות של ישות זו מממשק המשתמש. רק ישויות שהוגדרו מממשק המשתמש ניתנות להגדרה מתוך ממשק המשתמש."
+            },
+            "image_cropper": {
+                "crop": "חתוך"
             },
             "more_info_control": {
                 "dismiss": "סגור",
@@ -1050,6 +1057,9 @@
                                     "sunrise": "זריחה",
                                     "sunset": "שקיעה"
                                 },
+                                "tag": {
+                                    "label": "תג "
+                                },
                                 "template": {
                                     "label": "תבנית",
                                     "value_template": "תבנית ערך"
@@ -1327,6 +1337,7 @@
                     "caption": "התקנים",
                     "confirm_delete": "האם אתה בטוח שברצונך למחוק מכשיר זה?",
                     "confirm_rename_entity_ids": "האם אתה רוצה גם לשנות את המזהים של הישויות שלך?",
+                    "confirm_rename_entity_ids_warning": "שינוי זה לא ישפיע על התצורה (כמו אוטומציות, קבצי Script, סצנות, Lovelace) המשתמשת כעת בישויות אלה, יהיה עליך לעדכן אותן בעצמך.",
                     "data_table": {
                         "area": "אזור",
                         "battery": "סוללה",
@@ -1656,6 +1667,37 @@
                         "node_failed": "הרכיב נכשל",
                         "stage": "שלב",
                         "zwave_info": "מידע Z-Wave"
+                    },
+                    "node_query_stages": {
+                        "associations": "מרענן קבוצות וחברויות",
+                        "cacheload": "טוען מידע מקובץ המטמון של OpenZWave. רכיבי סוללה יישארו בשלב זה עד שהרכיב יתעורר.",
+                        "complete": "תהליך הראיון הושלם",
+                        "configuration": "מקבל ערכי תצורה מהרכיב",
+                        "dynamic": "מקבל ערכים המשתנים לעתים קרובות מהרכיב",
+                        "instances": "מקבל פרטים אודות המופעים או הערוצים שבהם הרכיב תומך",
+                        "manufacturerspecific1": "קבלת קודי יצרן ומזהי מוצר מהרכיב",
+                        "manufacturerspecific2": "מקבל קודי יצרן ומזהי מוצר נוספים מהרכיב",
+                        "neighbors": "קבלת רשימת שכנים מהרכיב",
+                        "nodeinfo": "קבלת מחלקות פקודות נתמכות מהרכיב",
+                        "nodeplusinfo": "קבלת מידע Z-Wave+ מהרכיב",
+                        "probe": "בדיקה האם הרכיב ער/חי",
+                        "protocolinfo": "קבלת יכולות Z-Wave בסיסיות של רכיב זה מהבקר",
+                        "session": "מקבל ערכים המשתנים לעתים רחוקות מהרכיב",
+                        "static": "מקבל ערכים סטטיים מהרכיב",
+                        "versions": "מקבל מידע אודות גירסאות קושחה ומחלקות פקודות",
+                        "wakeup": "הגדרת תמיכה עבור תורי התעוררות והודעות"
+                    },
+                    "refresh_node": {
+                        "battery_note": "אם הרכיב מופעל באמצעות סוללה, הקפד להעיר אותו לפני שתמשיך",
+                        "complete": "רענון הרכיב הושלם",
+                        "description": "זה יגיד ל- OpenZWave לראיין מחדש את הרכיב ולעדכן את הפקודות, היכולות והערכים של הרכיב.",
+                        "node_status": "מצה הרכיב",
+                        "refreshing_description": "מרענן מידע על הרכיב",
+                        "start_refresh_button": "התחל לרענן",
+                        "step": "שלב",
+                        "title": "רענן מידע הרכיב",
+                        "wakeup_header": "הוראות התעוררות עבור",
+                        "wakeup_instructions_source": "הוראות ההתעוררות מקורן במסד הנתונים של קהילת ה OpenZWave."
                     }
                 },
                 "person": {
@@ -1811,6 +1853,31 @@
                             "valid": "קונפיגורציה תקינה!"
                         }
                     }
+                },
+                "tags": {
+                    "add_tag": "הוסף תג",
+                    "automation_title": "התג {name} נסרק",
+                    "caption": "תגים",
+                    "create_automation": "צור אוטומציה עם תג",
+                    "description": "ניהול תגים",
+                    "detail": {
+                        "create": "צור",
+                        "create_and_write": "צור וכתוב",
+                        "delete": "מחק",
+                        "description": "תיאור",
+                        "name": "שם",
+                        "new_tag": "תג חדש",
+                        "tag_id": "מזהה תג",
+                        "tag_id_placeholder": "מחולל אוטומטית אם ריק",
+                        "update": "עדכן"
+                    },
+                    "edit": "ערוך",
+                    "headers": {
+                        "last_scanned": "נסרק לאחרונה",
+                        "name": "שם"
+                    },
+                    "no_tags": "אין תגים",
+                    "write": "כתוב"
                 },
                 "users": {
                     "add_user": {

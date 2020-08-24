@@ -19,6 +19,8 @@ import { processConfigEntities } from "../common/process-config-entities";
 import { EntityConfig } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
 import { HistoryGraphCardConfig } from "./types";
+import { HistoryResult } from "../../../data/history";
+import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 
 @customElement("hui-history-graph-card")
 export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
@@ -49,7 +51,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _stateHistory?: any;
+  @internalProperty() private _stateHistory?: HistoryResult;
 
   @internalProperty() private _config?: HistoryGraphCardConfig;
 
@@ -59,9 +61,9 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   private _cacheConfig?: CacheConfig;
 
-  private _interval?: number;
-
   private _fetching = false;
+
+  private _date?: Date;
 
   public getCardSize(): number {
     return 4;
@@ -97,9 +99,8 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     };
   }
 
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this._clearInterval();
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigOrEntitiesChanged(this, changedProps);
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -108,21 +109,19 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    if (!changedProps.has("_config")) {
+    if (!changedProps.has("_config") && !changedProps.has("hass")) {
       return;
     }
 
     const oldConfig = changedProps.get("_config") as HistoryGraphCardConfig;
 
-    if (oldConfig !== this._config) {
+    if (changedProps.has("_config") && oldConfig !== this._config) {
       this._getStateHistory();
-      this._clearInterval();
-
-      if (!this._interval && this._cacheConfig.refresh) {
-        this._interval = window.setInterval(() => {
-          this._getStateHistory();
-        }, this._cacheConfig.refresh * 1000);
-      }
+    } else if (
+      this._cacheConfig.refresh &&
+      Date.now() - this._date!.getTime() >= this._cacheConfig.refresh * 100
+    ) {
+      this._getStateHistory();
     }
   }
 
@@ -155,24 +154,20 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     if (this._fetching) {
       return;
     }
+    this._date = new Date();
     this._fetching = true;
     try {
-      this._stateHistory = await getRecentWithCache(
-        this.hass!,
-        this._cacheConfig!.cacheKey,
-        this._cacheConfig!,
-        this.hass!.localize,
-        this.hass!.language
-      );
+      this._stateHistory = {
+        ...(await getRecentWithCache(
+          this.hass!,
+          this._cacheConfig!.cacheKey,
+          this._cacheConfig!,
+          this.hass!.localize,
+          this.hass!.language
+        )),
+      };
     } finally {
       this._fetching = false;
-    }
-  }
-
-  private _clearInterval(): void {
-    if (this._interval) {
-      window.clearInterval(this._interval);
-      this._interval = undefined;
     }
   }
 

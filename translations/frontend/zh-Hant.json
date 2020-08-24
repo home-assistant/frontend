@@ -554,6 +554,10 @@
                 "loading_history": "正在載入狀態歷史...",
                 "no_history_found": "找不到狀態歷史。"
             },
+            "picture-upload": {
+                "label": "照片",
+                "unsupported_format": "不支援的格式，請選擇 JPEG、PNG 或 GIF 圖檔。"
+            },
             "related-items": {
                 "area": "分區",
                 "automation": "以下自動化部分",
@@ -655,6 +659,9 @@
                 "platform_not_loaded": "整合 {platform} 未載入。請於設定檔進行添加、新增 'default_config:' 或 ''{platform}:''。",
                 "required_error_msg": "必填欄位",
                 "yaml_not_editable": "此物件的設定無法藉由 UI 編輯、僅有透過 UI 設定的物件可於 UI 進行設定。"
+            },
+            "image_cropper": {
+                "crop": "裁切"
             },
             "more_info_control": {
                 "dismiss": "忽略對話",
@@ -892,7 +899,7 @@
                                     "wait_template": "等待模板"
                                 }
                             },
-                            "unsupported_action": "不支援的觸發動作: {action}"
+                            "unsupported_action": "UI 介面不支援觸發動作：{action}"
                         },
                         "alias": "名稱",
                         "conditions": {
@@ -958,7 +965,7 @@
                                     "zone": "區域"
                                 }
                             },
-                            "unsupported_condition": "不支援的觸發判斷: {condition}"
+                            "unsupported_condition": "UI 介面不支援觸發判斷：{condition}"
                         },
                         "default_name": "建立新的自動化",
                         "description": {
@@ -1050,6 +1057,9 @@
                                     "sunrise": "日出",
                                     "sunset": "日落"
                                 },
+                                "tag": {
+                                    "label": "標籤"
+                                },
                                 "template": {
                                     "label": "模板",
                                     "value_template": "數值模板"
@@ -1077,7 +1087,7 @@
                                     "zone": "區域"
                                 }
                             },
-                            "unsupported_platform": "不支持的平台: {platform}"
+                            "unsupported_platform": "UI 介面不支援平台：{platform}"
                         },
                         "unsaved_confirm": "設定尚未儲存，確定要放棄嗎？"
                     },
@@ -1327,6 +1337,7 @@
                     "caption": "設備",
                     "confirm_delete": "確定要刪除此設備？",
                     "confirm_rename_entity_ids": "是否也要變更物件的物件 ID？",
+                    "confirm_rename_entity_ids_warning": "將不會變更任何物件正在使用的設定（例如自動化、腳本、場景與 Lovelace），必須自行更新。",
                     "data_table": {
                         "area": "分區",
                         "battery": "電量",
@@ -1842,6 +1853,31 @@
                             "valid": "設定檔內容檢查正確"
                         }
                     }
+                },
+                "tags": {
+                    "add_tag": "新增標籤",
+                    "automation_title": "標籤 {name} 已掃描",
+                    "caption": "標籤",
+                    "create_automation": "以標籤新增自動化",
+                    "description": "管理標籤",
+                    "detail": {
+                        "create": "新增",
+                        "create_and_write": "新增與編寫",
+                        "delete": "刪除",
+                        "description": "說明",
+                        "name": "名稱",
+                        "new_tag": "新標籤",
+                        "tag_id": "標籤 ID",
+                        "tag_id_placeholder": "空白時將自動產生",
+                        "update": "更新"
+                    },
+                    "edit": "編輯",
+                    "headers": {
+                        "last_scanned": "最後掃描時間",
+                        "name": "名稱"
+                    },
+                    "no_tags": "無標籤",
+                    "write": "編寫"
                 },
                 "users": {
                     "add_user": {

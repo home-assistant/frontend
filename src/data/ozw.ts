@@ -39,6 +39,28 @@ export interface OZWDeviceMetaData {
   ProductPicBase64: string;
 }
 
+export interface OZWInstance {
+  ozw_instance: number;
+  OZWDaemon_Version: string;
+  OpenZWave_Version: string;
+  QTOpenZWave_Version: string;
+  Status: string;
+  getControllerPath: string;
+  homeID: string;
+}
+
+export interface OZWNetworkStatistics {
+  ozw_instance: number;
+  node_count: number;
+  readCnt: number;
+  writeCnt: number;
+  ACKCnt: number;
+  CANCnt: number;
+  NAKCnt: number;
+  dropped: number;
+  retries: number;
+}
+
 export const nodeQueryStages = [
   "ProtocolInfo",
   "Probe",
@@ -57,6 +79,26 @@ export const nodeQueryStages = [
   "Dynamic",
   "Configuration",
   "Complete",
+];
+
+export const networkOnlineStatuses = [
+  "driverAllNodesQueried",
+  "driverAllNodesQueriedSomeDead",
+  "driverAwakeNodesQueried",
+];
+export const networkStartingStatuses = [
+  "starting",
+  "started",
+  "Ready",
+  "driverReady",
+];
+export const networkOfflineStatuses = [
+  "Offline",
+  "stopped",
+  "driverFailed",
+  "driverReset",
+  "driverRemoved",
+  "driverAllNodesOnFire",
 ];
 
 export const getIdentifiersFromDevice = function (
@@ -79,6 +121,31 @@ export const getIdentifiersFromDevice = function (
     ozw_instance: parseInt(identifiers[0]),
   };
 };
+
+export const fetchOZWInstances = (
+  hass: HomeAssistant
+): Promise<OZWInstance[]> =>
+  hass.callWS({
+    type: "ozw/get_instances",
+  });
+
+export const fetchOZWNetworkStatus = (
+  hass: HomeAssistant,
+  ozw_instance: number
+): Promise<OZWInstance> =>
+  hass.callWS({
+    type: "ozw/network_status",
+    ozw_instance: ozw_instance,
+  });
+
+export const fetchOZWNetworkStatistics = (
+  hass: HomeAssistant,
+  ozw_instance: number
+): Promise<OZWNetworkStatistics> =>
+  hass.callWS({
+    type: "ozw/network_statistics",
+    ozw_instance: ozw_instance,
+  });
 
 export const fetchOZWNodeStatus = (
   hass: HomeAssistant,

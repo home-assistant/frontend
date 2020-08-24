@@ -352,6 +352,13 @@ class HaPanelConfig extends HassRouterPage {
             /* webpackChunkName: "panel-config-mqtt" */ "./integrations/integration-panels/mqtt/mqtt-config-panel"
           ),
       },
+      ozw: {
+        tag: "ozw-config-router",
+        load: () =>
+          import(
+            /* webpackChunkName: "panel-config-ozw" */ "./integrations/integration-panels/ozw/ozw-config-router"
+          ),
+      },
     },
   };
 

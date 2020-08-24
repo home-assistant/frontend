@@ -804,6 +804,14 @@
                             "name": "Acțiune",
                             "type_select": "Tip acțiune",
                             "type": {
+                                "choose": {
+                                    "add_option": "Adauga optiune",
+                                    "conditions": "Condiții",
+                                    "default": "Acţiuni implicite",
+                                    "label": "Alege",
+                                    "remove_option": "Elimina optiune",
+                                    "sequence": "Acţiuni"
+                                },
                                 "condition": {
                                     "label": "Condiție"
                                 },
@@ -821,6 +829,22 @@
                                     "event": "Eveniment",
                                     "label": "Eveniment declansare",
                                     "service_data": "Date servicii"
+                                },
+                                "repeat": {
+                                    "label": "Repetaţi",
+                                    "sequence": "Acţiuni",
+                                    "type": {
+                                        "count": {
+                                            "label": "Numara"
+                                        },
+                                        "until": {
+                                            "label": "Pana cand"
+                                        },
+                                        "while": {
+                                            "conditions": "Condiții in timp ce",
+                                            "label": "In timp ce"
+                                        }
+                                    }
                                 },
                                 "service": {
                                     "label": "Cheama serviciu",
@@ -1397,6 +1421,18 @@
                     "subscribe_to": "Topic la care să vă abonați",
                     "title": "MQTT",
                     "topic": "subiect"
+                },
+                "ozw": {
+                    "common": {
+                        "node_id": "ID Nod",
+                        "ozw_instance": "Instanta OpenZWave",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "Nod nereușit",
+                        "stage": "Etapă",
+                        "zwave_info": "Z-Wave Info"
+                    }
                 },
                 "person": {
                     "caption": "Persoane",
@@ -2040,6 +2076,9 @@
                         "para_migrate": "Home Assistant poate adăuga ID-ul la toate cărțile și vizualizările în mod automat pentru tine apăsând butonul \"Migrează configurația\".",
                         "para_no_id": "Acest element nu are un ID. Adăugați un ID la acest element în \"ui-lovelace.yaml\"."
                     },
+                    "move_card": {
+                        "header": "Alegeți o vedere pentru a muta cardul în"
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "Vom genera automat vizualizările UI Lovelace cu zonele și dispozitivele dvs., dacă eliminați configurația UI Lovelace.",
                         "confirm_remove_config_title": "Sigur eliminați configurația Ui Lovelace? Vom genera automat vizualizările UI Lovelace cu zonele și dispozitivele dvs.",
@@ -2066,6 +2105,10 @@
                         "yaml_config": "Pentru a vă ajuta să începeți aici este configurarea curentă a acestui tablou de bord:",
                         "yaml_control": "Pentru a prelua controlul în modul YAML, creați un fișier YAML cu numele pe care l-ați specificat în configurația dvs. pentru acest tablou de bord sau implicit „ui-lovelace.yaml”.",
                         "yaml_mode": "Utilizați modul YAML, ceea ce înseamnă că nu puteți modifica configurația Lovelace din UI. Dacă doriți să schimbați Lovelace din interfața de utilizator, eliminați „modul: yaml” din configurația dvs. Lovelace din „configuration.yaml”."
+                    },
+                    "select_view": {
+                        "dashboard_label": "Tablou de bord",
+                        "header": "Alegeți o vizualizare"
                     },
                     "suggest_card": {
                         "add": "Adăugați la Lovelace UI",
@@ -2379,10 +2422,18 @@
                     "header": "Închideți automat conexiunea"
                 },
                 "themes": {
+                    "accent_color": "Culoare de accent",
+                    "dark_mode": {
+                        "auto": "Auto",
+                        "dark": "Întuneric",
+                        "light": "Lumina"
+                    },
                     "dropdown_label": "Temă",
                     "error_no_theme": "Nu există teme disponibile.",
                     "header": "Temă",
-                    "link_promo": "Aflați mai multe despre teme"
+                    "link_promo": "Aflați mai multe despre teme",
+                    "primary_color": "Culoare primară",
+                    "reset": "Resetați"
                 }
             },
             "shopping-list": {

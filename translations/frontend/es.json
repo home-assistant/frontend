@@ -554,6 +554,10 @@
                 "loading_history": "Cargando historial de estado...",
                 "no_history_found": "No se encontró historial de estado."
             },
+            "picture-upload": {
+                "label": "Imagen",
+                "unsupported_format": "Formato no soportado, por favor, selecciona una imagen JPEG, PNG o GIF."
+            },
             "related-items": {
                 "area": "Área",
                 "automation": "Parte de las siguientes automatizaciones",
@@ -655,6 +659,9 @@
                 "platform_not_loaded": "La integración {platform} no se ha cargado. Por favor añádela a tu configuración, ya sea agregando 'default_config:' o ''{platform}:''.",
                 "required_error_msg": "Este campo es obligatorio",
                 "yaml_not_editable": "La configuración de esta entidad no se puede editar desde la IU. Solo las entidades configuradas desde la IU se pueden configurar desde la IU"
+            },
+            "image_cropper": {
+                "crop": "Recortar"
             },
             "more_info_control": {
                 "dismiss": "Descartar diálogo",
@@ -892,7 +899,7 @@
                                     "wait_template": "Plantilla de espera"
                                 }
                             },
-                            "unsupported_action": "Acción no admitida: {action}"
+                            "unsupported_action": "No hay soporte en la IU para la acción: {action}"
                         },
                         "alias": "Nombre",
                         "conditions": {
@@ -958,7 +965,7 @@
                                     "zone": "Zona"
                                 }
                             },
-                            "unsupported_condition": "Condición no admitida: {condition}"
+                            "unsupported_condition": "No hay soporte en la IU para la condición: {condition}"
                         },
                         "default_name": "Nueva automatización",
                         "description": {
@@ -1050,6 +1057,9 @@
                                     "sunrise": "Amanecer",
                                     "sunset": "Puesta de sol"
                                 },
+                                "tag": {
+                                    "label": "Etiqueta"
+                                },
                                 "template": {
                                     "label": "Plantilla",
                                     "value_template": "Valor de la plantilla"
@@ -1077,7 +1087,7 @@
                                     "zone": "Zona"
                                 }
                             },
-                            "unsupported_platform": "Plataforma no admitida: {platform}"
+                            "unsupported_platform": "No hay soporte en la IU para la plataforma: {platform}"
                         },
                         "unsaved_confirm": "Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?"
                     },
@@ -1327,6 +1337,7 @@
                     "caption": "Dispositivos",
                     "confirm_delete": "¿Estás seguro de que quieres eliminar este dispositivo?",
                     "confirm_rename_entity_ids": "¿También quieres cambiar el nombre de los identificadores de entidad de tus entidades?",
+                    "confirm_rename_entity_ids_warning": "Esto no cambiará ninguna configuración (como automatizaciones, scripts, escenas, Lovelace) que estén utilizando actualmente estas entidades, tendrá que actualizarlas usted mismo.",
                     "data_table": {
                         "area": "Área",
                         "battery": "Batería",
@@ -1842,6 +1853,31 @@
                             "valid": "¡Configuración valida!"
                         }
                     }
+                },
+                "tags": {
+                    "add_tag": "Añadir etiqueta",
+                    "automation_title": "Se escanea la etiqueta {name}",
+                    "caption": "Etiquetas",
+                    "create_automation": "Crear automatización con etiqueta",
+                    "description": "Administrar etiquetas",
+                    "detail": {
+                        "create": "Crear",
+                        "create_and_write": "Crear y escribir",
+                        "delete": "Eliminar",
+                        "description": "Descripción",
+                        "name": "Nombre",
+                        "new_tag": "Nueva etiqueta",
+                        "tag_id": "ID de etiqueta",
+                        "tag_id_placeholder": "Autogenerado cuando se deja vacío",
+                        "update": "Actualizar"
+                    },
+                    "edit": "Editar",
+                    "headers": {
+                        "last_scanned": "Última vez escaneada",
+                        "name": "Nombre"
+                    },
+                    "no_tags": "Sin etiquetas",
+                    "write": "Escribir"
                 },
                 "users": {
                     "add_user": {
