@@ -138,12 +138,12 @@ export class HaMediaPlayerBrowse extends LitElement {
                       </div>
                     `
                   : ""}
-                <div class="title">${mostRecentItem.title}</div>
-                <div class="subtitle">
+                <h1 class="title">${mostRecentItem.title}</h1>
+                <h2 class="subtitle">
                   ${this.hass.localize(
                     `ui.components.media-browser.content-type.${mostRecentItem.media_content_type}`
                   )}
-                </div>
+                </h2>
               </div>
             </div>
             ${mostRecentItem?.can_play &&
@@ -250,7 +250,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                 )}
               </mwc-list>
             `
-        : ""}
+        : this.hass.localize("ui.components.media-browser.no_items")}
     `;
   }
 

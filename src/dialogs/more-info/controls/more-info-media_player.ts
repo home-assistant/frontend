@@ -118,11 +118,9 @@ class MoreInfoMediaPlayer extends LitElement {
         : ""}
       ${supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA)
         ? html`
-            <div class="browse-media">
-              <mwc-button raised @click=${this._showBrowseMedia}
-                >Browse Media</mwc-button
-              >
-            </div>
+            <mwc-button raised @click=${this._showBrowseMedia}>
+              ${this.hass.localize("ui.card.media_player.browse_media")}
+            </mwc-button>
           `
         : ""}
       ${stateObj.state !== "off" &&

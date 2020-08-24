@@ -188,7 +188,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     return { type: "media-control", entity: foundEntities[0] || "" };
   }
 
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @internalProperty() private _config?: MediaControlCardConfig;
 
@@ -392,6 +392,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                           ${controls!.map(
                             (control) => html`
                               <ha-icon-button
+                                .title=${this.hass.localize(
+                                  `ui.card.media_player.${control.action}`
+                                )}
                                 .icon=${control.icon}
                                 action=${control.action}
                                 @click=${this._handleClick}
@@ -400,6 +403,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                           )}
                           ${supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA)
                             ? html` <ha-icon-button
+                                .title=${this.hass.localize(
+                                  "ui.card.media_player.browse_media"
+                                )}
                                 class="browse-media"
                                 icon="hass:folder-multiple"
                                 @click=${this._handleBrowseMedia}
