@@ -144,6 +144,7 @@ export class HaIntegrationCard extends LitElement {
         class="single integration"
         .configEntry=${item}
         .id=${item.entry_id}
+        .canReload=${item.state === "loaded" && item.supports_unload}
       >
         ${this.items.length > 1
           ? html`<ha-icon-button
@@ -260,18 +261,18 @@ export class HaIntegrationCard extends LitElement {
                     </mwc-list-item>
                   </a>
                 `}
-            <mwc-list-item class="warning">
-              ${this.hass.localize(
-                "ui.panel.config.integrations.config_entry.delete"
-              )}
-            </mwc-list-item>
-            ${item.state === "loaded"
+            ${item.state === "loaded" && item.supports_unload
               ? html`<mwc-list-item>
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.reload"
                   )}
                 </mwc-list-item>`
               : ""}
+            <mwc-list-item class="warning">
+              ${this.hass.localize(
+                "ui.panel.config.integrations.config_entry.delete"
+              )}
+            </mwc-list-item>
           </ha-button-menu>
         </div>
       </ha-card>
@@ -318,18 +319,31 @@ export class HaIntegrationCard extends LitElement {
   }
 
   private _handleAction(ev: CustomEvent<ActionDetail>) {
-    const configEntry = ((ev.target as HTMLElement).closest("ha-card") as any)
-      .configEntry;
-    switch (ev.detail.index) {
-      case 0:
-        this._showSystemOptions(configEntry);
-        break;
-      case 1:
-        this._removeIntegration(configEntry);
-        break;
-      case 2:
-        this._reloadIntegration(configEntry);
-        break;
+    const thisCard = (ev.target as HTMLElement).closest("ha-card") as any;
+    const configEntry = thisCard.configEntry;
+    const canReload = thisCard.canReload;
+
+    if (canReload) {
+      switch (ev.detail.index) {
+        case 0:
+          this._showSystemOptions(configEntry);
+          break;
+        case 1:
+          this._reloadIntegration(configEntry);
+          break;
+        case 2:
+          this._removeIntegration(configEntry);
+          break;
+      }
+    } else {
+      switch (ev.detail.index) {
+        case 0:
+          this._showSystemOptions(configEntry);
+          break;
+        case 1:
+          this._removeIntegration(configEntry);
+          break;
+      }
     }
   }
 

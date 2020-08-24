@@ -8,6 +8,7 @@ export interface ConfigEntry {
   state: string;
   connection_class: string;
   supports_options: boolean;
+  supports_unload: boolean;
 }
 
 export interface ConfigEntryMutableParams {
