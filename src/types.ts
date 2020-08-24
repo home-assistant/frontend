@@ -118,8 +118,8 @@ export interface Panels {
 
 export interface Calendar {
   entity_id: string;
-  name: string;
-  backgroundColor: string;
+  name?: string;
+  backgroundColor?: string;
 }
 
 export interface SelectedCalendar {
@@ -144,9 +144,15 @@ export interface CalendarViewChanged {
   view: string;
 }
 
+export type FullCalendarView =
+  | "dayGridMonth"
+  | "dayGridWeek"
+  | "dayGridDay"
+  | "listWeek";
+
 export interface ToggleButton {
-  label?: string;
-  icon: string;
+  label: string;
+  iconPath: string;
   value: string;
 }
 

@@ -23,8 +23,11 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@formatjs/intl-pluralrules": "^1.5.8",
-    "@fullcalendar/core": "^5.0.0-beta.2",
-    "@fullcalendar/daygrid": "^5.0.0-beta.2",
+    "@fullcalendar/common": "5.1.0",
+    "@fullcalendar/core": "5.1.0",
+    "@fullcalendar/daygrid": "5.1.0",
+    "@fullcalendar/interaction": "5.1.0",
+    "@fullcalendar/list": "5.1.0",
     "@material/chips": "=8.0.0-canary.096a7a066.0",
     "@material/circular-progress": "=8.0.0-canary.a78ceb112.0",
     "@material/mwc-button": "^0.18.0",

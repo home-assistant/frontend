@@ -2134,6 +2134,10 @@
               "available_states": "Available States",
               "description": "The Alarm Panel card allows you to Arm and Disarm your alarm control panel integrations."
             },
+            "calendar": {
+              "name": "Calendar",
+              "description": "The Calendar card displays a calendar including day, week and list views"
+            },
             "conditional": {
               "name": "Conditional",
               "description": "The Conditional card displays another card based on entity states.",
