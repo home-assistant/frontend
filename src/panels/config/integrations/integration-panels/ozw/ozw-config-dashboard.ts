@@ -85,18 +85,18 @@ class OZWConfigDashboard extends LitElement {
           ${this._instances.length > 0
             ? html`
                 ${this._instances.map((instance) => {
-                  let _status = "unknown";
-                  let _icon = mdiCircle;
+                  let status = "unknown";
+                  let icon = mdiCircle;
                   if (networkOnlineStatuses.includes(instance.Status)) {
-                    _status = "online";
-                    _icon = mdiCheckCircle;
+                    status = "online";
+                    icon = mdiCheckCircle;
                   }
                   if (networkStartingStatuses.includes(instance.Status)) {
-                    _status = "starting";
+                    status = "starting";
                   }
                   if (networkOfflineStatuses.includes(instance.Status)) {
-                    _status = "offline";
-                    _icon = mdiCloseCircle;
+                    status = "offline";
+                    icon = mdiCloseCircle;
                   }
 
                   return html`
@@ -116,11 +116,11 @@ class OZWConfigDashboard extends LitElement {
                             ${instance.ozw_instance}
                             <div secondary>
                               <ha-svg-icon
-                                .path=${_icon}
-                                class="network-status-icon ${_status}"
+                                .path=${icon}
+                                class="network-status-icon ${status}"
                               ></ha-svg-icon>
                               ${this.hass.localize(
-                                "ui.panel.config.ozw.network_status." + _status
+                                "ui.panel.config.ozw.network_status." + status
                               )}
                               -
                               ${this.hass.localize(
