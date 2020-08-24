@@ -120,7 +120,7 @@ class HaLogbook extends LitElement {
             >
             ${!item.context_event_type
               ? ""
-              : item.context_event_type == "service_call"
+              : item.context_event_type == "call_service"
               ? // Service Call
                 html` by service ${item.context_domain}.${item.context_service}`
               : item.context_entity_id == item.entity_id
