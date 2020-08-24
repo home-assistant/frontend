@@ -105,6 +105,7 @@ export class DialogHassioNetwork extends LitElement {
           .selected=${device.data.method}
           @selected-changed=${this._handleRadioValueChanged}
         >
+          Interface mode
           <paper-radio-button name="auto">
             DHCP
           </paper-radio-button>
