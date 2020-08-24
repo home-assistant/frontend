@@ -25,15 +25,13 @@ export class HaButtonToggleGroup extends LitElement {
       <div>
         ${this.buttons.map(
           (button) => html`
-            <mwc-icon-button>
-              <ha-svg-icon
-                .label=${button.label}
-                .path=${button.iconPath}
-                .value=${button.value}
-                ?active=${this.active === button.value}
-                @click=${this._handleClick}
-              >
-              </ha-svg-icon>
+            <mwc-icon-button
+              .label=${button.label}
+              .value=${button.value}
+              ?active=${this.active === button.value}
+              @click=${this._handleClick}
+            >
+              <ha-svg-icon .path=${button.iconPath}></ha-svg-icon>
             </mwc-icon-button>
           `
         )}
