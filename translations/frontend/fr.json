@@ -554,6 +554,10 @@
                 "loading_history": "Chargement de l'historique des valeurs ...",
                 "no_history_found": "Aucun historique des valeurs trouvé."
             },
+            "picture-upload": {
+                "label": "Image",
+                "unsupported_format": "Format non pris en charge, veuillez choisir une image JPEG, PNG ou GIF."
+            },
             "related-items": {
                 "area": "Pièce",
                 "automation": "Partie des automatisations suivantes",
@@ -655,6 +659,9 @@
                 "platform_not_loaded": "L'intégration {platform} n'est pas chargée. Veuillez l'ajouter à votre configuration en ajoutant 'default_config:' ou ''{platform}:''.",
                 "required_error_msg": "Ce champ est requis",
                 "yaml_not_editable": "Les paramètres de cette entité ne peuvent pas être modifiés à partir de l'interface utilisateur. Seules les entités configurées à partir de l'interface utilisateur sont configurables à partir de l'interface utilisateur."
+            },
+            "image_cropper": {
+                "crop": "Recadrer"
             },
             "more_info_control": {
                 "dismiss": "Fermer la fenêtre de dialogue",
@@ -892,7 +899,7 @@
                                     "wait_template": "Template d'attente"
                                 }
                             },
-                            "unsupported_action": "Action non supportée : {action}"
+                            "unsupported_action": "Pas d'interface utilisateur pour l'action : {action}"
                         },
                         "alias": "Nom",
                         "conditions": {
@@ -958,7 +965,7 @@
                                     "zone": "Zone"
                                 }
                             },
-                            "unsupported_condition": "Condition non supportée: {condition}"
+                            "unsupported_condition": "Pas d'interface utilisateur pour la condition : {condition}"
                         },
                         "default_name": "Nouvelle automatisation",
                         "description": {
@@ -1050,6 +1057,9 @@
                                     "sunrise": "Lever du soleil",
                                     "sunset": "Coucher du soleil"
                                 },
+                                "tag": {
+                                    "label": "Balise"
+                                },
                                 "template": {
                                     "label": "Template",
                                     "value_template": "Contenu du template"
@@ -1077,7 +1087,7 @@
                                     "zone": "Zone"
                                 }
                             },
-                            "unsupported_platform": "Plateforme non supportée : {platform}"
+                            "unsupported_platform": "Pas d'interface utilisateur pour la plateforme : {platform}"
                         },
                         "unsaved_confirm": "Vous avez des changements non enregistrés. Êtes-vous sûr de vouloir quitter?"
                     },
@@ -1327,6 +1337,7 @@
                     "caption": "Appareils",
                     "confirm_delete": "Voulez-vous vraiment supprimer cet appareil ?",
                     "confirm_rename_entity_ids": "Voulez-vous aussi renommer les ID de vos entités?",
+                    "confirm_rename_entity_ids_warning": "Cela ne changera aucune configuration (comme les automatismes, les scripts, les scènes, Lovelace) qui utilise actuellement ces entités, vous devrez les mettre à jour vous-même.",
                     "data_table": {
                         "area": "Zone",
                         "battery": "Batterie",
@@ -1663,9 +1674,18 @@
                         "complete": "Le processus d'interrogation est terminé",
                         "configuration": "Obtention la configuration à partir du nœud",
                         "dynamic": "Obtention de valeurs fréquemment modifiées du nœud",
+                        "instances": "Obtention des détails sur les instances ou les canaux pris en charge par un appareil",
+                        "manufacturerspecific1": "Obtention des codes d'identification du fabricant et du produit auprès du nœud",
+                        "manufacturerspecific2": "Obtention de codes d’identification supplémentaires du fabricant et du produit à partir du nœud",
                         "neighbors": "Obtenir une liste des nœuds voisins",
+                        "nodeinfo": "Obtention des classes de commande prises en charge à partir du nœud",
+                        "nodeplusinfo": "Obtention d'informations Z-Wave + à partir du nœud",
+                        "probe": "Vérification si le nœud est éveillé/vivant",
+                        "protocolinfo": "Obtention des capacités Z-Wave de base de ce nœud à partir du contrôleur",
                         "session": "Obtention de valeurs rarement modifiées du nœud",
-                        "static": "Obtention des valeurs statiques de l'appareil"
+                        "static": "Obtention des valeurs statiques de l'appareil",
+                        "versions": "Obtention d'informations sur les versions des microprogrammes et des classes de commande",
+                        "wakeup": "Configuration de la prise en charge des files d'attente et des messages de réveil"
                     },
                     "refresh_node": {
                         "battery_note": "Si le nœud est alimenté par batterie, assurez-vous de l'activer avant de continuer",
@@ -1833,6 +1853,31 @@
                             "valid": "Configuration valide !"
                         }
                     }
+                },
+                "tags": {
+                    "add_tag": "Ajouter une balise",
+                    "automation_title": "La balise {name} est analysée",
+                    "caption": "Balises",
+                    "create_automation": "Créer une automatisation avec une balise",
+                    "description": "Gérer les balises",
+                    "detail": {
+                        "create": "Créer",
+                        "create_and_write": "Créer et Ecrire",
+                        "delete": "Supprimer",
+                        "description": "Description",
+                        "name": "Nom",
+                        "new_tag": "Nouvelle balise",
+                        "tag_id": "Id de balise",
+                        "tag_id_placeholder": "Généré automatiquement lorsque laissé vide",
+                        "update": "Mise à jour"
+                    },
+                    "edit": "Modifier",
+                    "headers": {
+                        "last_scanned": "Dernière analyse",
+                        "name": "Nom"
+                    },
+                    "no_tags": "Aucunes balises",
+                    "write": "Écrire"
                 },
                 "users": {
                     "add_user": {
@@ -2497,7 +2542,7 @@
                 },
                 "menu": {
                     "close": "Fermer",
-                    "configure_ui": "Configurer l'interface utilisateur",
+                    "configure_ui": "Modifier le tableau de bord",
                     "exit_edit_mode": "Quitter le mode d'édition de l'interface utilisateur",
                     "help": "Aide",
                     "refresh": "Actualiser",

@@ -554,6 +554,10 @@
                 "loading_history": "Historie stavu se načítá...",
                 "no_history_found": "Historie stavu chybí."
             },
+            "picture-upload": {
+                "label": "Obrázek",
+                "unsupported_format": "Nepodporovaný formát, prosím vyberte obrázek typu JPEG, PNG nebo GIF."
+            },
             "related-items": {
                 "area": "Oblast",
                 "automation": "Část následujících automatizací",
@@ -655,6 +659,9 @@
                 "platform_not_loaded": "Integrace {platform} není načtena. Přidejte ji do své konfigurace buďto přidáním 'default_config:' nebo ''{platform}:''.",
                 "required_error_msg": "Toto pole je povinné",
                 "yaml_not_editable": "Nastavení této entity nelze upravovat z uživatelského rozhraní. Pouze entity nastavené z uživatelského rozhraní lze konfigurovat v uživatelském rozhraní."
+            },
+            "image_cropper": {
+                "crop": "Oříznout"
             },
             "more_info_control": {
                 "dismiss": "Zavřít dialog",
@@ -837,7 +844,7 @@
                                     "add_option": "Přidat volbu",
                                     "conditions": "Podmínky",
                                     "default": "Výchozí akce",
-                                    "label": "Vybrat",
+                                    "label": "Volby",
                                     "option": "Volba {number}",
                                     "remove_option": "Odebrat volbu",
                                     "sequence": "Akce"
@@ -862,12 +869,20 @@
                                     "service_data": "Data služby"
                                 },
                                 "repeat": {
-                                    "label": "Opakovat",
+                                    "label": "Opakovaní",
                                     "sequence": "Akce",
                                     "type_select": "Typ opakování",
                                     "type": {
                                         "count": {
                                             "label": "Počet"
+                                        },
+                                        "until": {
+                                            "conditions": "Podmínky \"Dokud nenastane\"",
+                                            "label": "Dokud nenastane"
+                                        },
+                                        "while": {
+                                            "conditions": "Podmínky \"Pokud platí\"",
+                                            "label": "Pokud platí"
                                         }
                                     }
                                 },
@@ -1041,6 +1056,9 @@
                                     "offset": "Posun",
                                     "sunrise": "Východ slunce",
                                     "sunset": "Západ slunce"
+                                },
+                                "tag": {
+                                    "label": "Značka"
                                 },
                                 "template": {
                                     "label": "Šablona",
@@ -1319,6 +1337,7 @@
                     "caption": "Zařízení",
                     "confirm_delete": "Opravdu chcete toto zařízení odstranit?",
                     "confirm_rename_entity_ids": "Chcete také přejmenovat ID entit vašich entit?",
+                    "confirm_rename_entity_ids_warning": "Žádná konfigurace (např. automatizace, skripty, scény, Lovelace), která tyto entity aktuálně používá, nebude změněna. Budete je muset aktualizovat sami.",
                     "data_table": {
                         "area": "Oblast",
                         "battery": "Baterie",
@@ -1641,6 +1660,9 @@
                 "ozw": {
                     "common": {
                         "zwave": "Z-Wave"
+                    },
+                    "refresh_node": {
+                        "step": "Krok"
                     }
                 },
                 "person": {
@@ -1796,6 +1818,31 @@
                             "valid": "Konfigurace je v pořádku!"
                         }
                     }
+                },
+                "tags": {
+                    "add_tag": "Přidat značku",
+                    "automation_title": "Značka {name} je naskenována",
+                    "caption": "Značky",
+                    "create_automation": "Vytvořit automatizaci se značkou",
+                    "description": "Správa značek",
+                    "detail": {
+                        "create": "Vytvořit",
+                        "create_and_write": "Vytvořit a zapsat",
+                        "delete": "Smazat",
+                        "description": "Popis",
+                        "name": "Název",
+                        "new_tag": "Nová značka",
+                        "tag_id": "ID značky",
+                        "tag_id_placeholder": "Automaticky vygenerováno, pokud zůstane prázdné",
+                        "update": "Aktualizovat"
+                    },
+                    "edit": "Upravit",
+                    "headers": {
+                        "last_scanned": "Naposledy naskenováno",
+                        "name": "Název"
+                    },
+                    "no_tags": "Žádné značky",
+                    "write": "Zapsat"
                 },
                 "users": {
                     "add_user": {

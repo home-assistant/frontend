@@ -19,6 +19,7 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
       </style>
       <ha-chart-base
         id="chart"
+        hass="[[hass]]"
         data="[[chartData]]"
         identifier="[[identifier]]"
         rendered="{{rendered}}"
@@ -28,6 +29,9 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
 
   static get properties() {
     return {
+      hass: {
+        type: Object,
+      },
       chartData: Object,
       data: Object,
       names: Object,

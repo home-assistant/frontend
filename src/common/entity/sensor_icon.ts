@@ -5,12 +5,16 @@ import { domainIcon } from "./domain_icon";
 import { batteryIcon } from "./battery_icon";
 
 const fixedDeviceClassIcons = {
+  current: "hass:current-ac",
+  energy: "hass:flash",
   humidity: "hass:water-percent",
   illuminance: "hass:brightness-5",
   temperature: "hass:thermometer",
   pressure: "hass:gauge",
   power: "hass:flash",
+  power_factor: "hass:angle-acute",
   signal_strength: "hass:wifi",
+  voltage: "hass:sine-wave",
 };
 
 export const sensorIcon = (state: HassEntity) => {

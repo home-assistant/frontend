@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="home-assistant-frontend",
-    version="20200820.0",
+    version="20200824.0",
     description="The Home Assistant frontend",
     url="https://github.com/home-assistant/home-assistant-polymer",
     author="The Home Assistant Authors",

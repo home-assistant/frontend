@@ -3,23 +3,23 @@ import "@polymer/paper-input/paper-input";
 import {
   css,
   CSSResult,
+  customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
-  customElement,
 } from "lit-element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../components/ha-dialog";
-import "../../../components/ha-switch";
 import "../../../components/ha-formfield";
+import "../../../components/ha-switch";
 import "../../../components/map/ha-location-editor";
+import { Tag, UpdateTagParams } from "../../../data/tag";
+import { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { TagDetailDialogParams } from "./show-dialog-tag-detail";
-import { UpdateTagParams, Tag } from "../../../data/tag";
 
 @customElement("dialog-tag-detail")
 class DialogTagDetail extends LitElement implements HassDialog {
@@ -162,7 +162,7 @@ class DialogTagDetail extends LitElement implements HassDialog {
       } else {
         newValue = await this._params!.createEntry(values, this._id);
       }
-      this._params = undefined;
+      this.closeDialog();
     } catch (err) {
       this._error = err ? err.message : "Unknown error";
     } finally {
@@ -172,11 +172,12 @@ class DialogTagDetail extends LitElement implements HassDialog {
   }
 
   private async _updateWriteEntry() {
+    const openWrite = this._params?.openWrite;
     const tag = await this._updateEntry();
-    if (!tag) {
+    if (!tag || !openWrite) {
       return;
     }
-    this._params?.openWrite!(tag);
+    openWrite(tag);
   }
 
   private async _deleteEntry() {
