@@ -319,6 +319,7 @@
         "past": "{time} ago",
         "future": "In {time}",
         "never": "Never",
+        "just_now": "Just now",
         "duration": {
           "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n}",
           "minute": "{count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
@@ -631,6 +632,7 @@
           "add_tag": "Add tag",
           "write": "Write",
           "edit": "Edit",
+          "never_scanned": "Never scanned",
           "create_automation": "Create automation with tag",
           "automation_title": "Tag {name} is scanned",
           "headers": {
