@@ -71,7 +71,11 @@ export const createHassioSession = async (hass: HomeAssistant) => {
     "POST",
     "hassio/ingress/session"
   );
-  document.cookie = `ingress_session=${response.data.session};path=/api/hassio_ingress/;SameSite=Strict`;
+  document.cookie = `ingress_session=${
+    response.data.session
+  };path=/api/hassio_ingress/;SameSite=Strict${
+    location.protocol === "https:" ? ";Secure" : ""
+  }`;
 };
 
 export const setSupervisorOption = async (
