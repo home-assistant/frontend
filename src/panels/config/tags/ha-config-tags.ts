@@ -70,12 +70,12 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
           template: (name, tag: any) => html`${name}
           ${narrow
             ? html`<div class="secondary">
-                ${tag.last_scanned
+                ${tag.last_scanned_datetime
                   ? html`<ha-relative-time
                       .hass=${this.hass}
                       .datetimeObj=${tag.last_scanned_datetime}
                     ></ha-relative-time>`
-                  : this.hass.localize("ui.components.relative_time.never")}
+                  : this.hass.localize("ui.panel.config.tags.never_scanned")}
               </div>`
             : ""}`,
         },
@@ -94,7 +94,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
                   .hass=${this.hass}
                   .datetimeObj=${last_scanned_datetime}
                 ></ha-relative-time>`
-              : this.hass.localize("ui.components.relative_time.never")}
+              : this.hass.localize("ui.panel.config.tags.never_scanned")}
           `,
         };
       }
