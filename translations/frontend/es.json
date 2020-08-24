@@ -1337,6 +1337,7 @@
                     "caption": "Dispositivos",
                     "confirm_delete": "¿Estás seguro de que quieres eliminar este dispositivo?",
                     "confirm_rename_entity_ids": "¿También quieres cambiar el nombre de los identificadores de entidad de tus entidades?",
+                    "confirm_rename_entity_ids_warning": "Esto no cambiará ninguna configuración (como automatizaciones, scripts, escenas, Lovelace) que estén utilizando actualmente estas entidades, tendrá que actualizarlas usted mismo.",
                     "data_table": {
                         "area": "Área",
                         "battery": "Batería",

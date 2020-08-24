@@ -1337,6 +1337,7 @@
                     "caption": "設備",
                     "confirm_delete": "確定要刪除此設備？",
                     "confirm_rename_entity_ids": "是否也要變更物件的物件 ID？",
+                    "confirm_rename_entity_ids_warning": "將不會變更任何物件正在使用的設定（例如自動化、腳本、場景與 Lovelace），必須自行更新。",
                     "data_table": {
                         "area": "分區",
                         "battery": "電量",
