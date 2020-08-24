@@ -80,7 +80,9 @@ class DialogMediaPlayerBrowse extends LitElement {
 
   private _mediaPicked(ev: HASSDomEvent<MediaPickedEvent>): void {
     this._params!.mediaPickedCallback(ev.detail);
-    this._closeDialog();
+    if (this._action !== "play") {
+      this._closeDialog();
+    }
   }
 
   static get styles(): CSSResultArray {
