@@ -16,7 +16,7 @@ import { HomeAssistant, Route } from "../../../types";
 
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { isServiceLoaded } from "../../../common/config/is_service_loaded";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-card";
 import "../ha-config-section";
@@ -35,6 +35,7 @@ const reloadableDomains = [
   "input_number",
   "input_datetime",
   "input_select",
+  "template",
 ];
 
 @customElement("ha-config-server-control")
@@ -202,7 +203,7 @@ export class HaConfigServerControl extends LitElement {
                     </ha-call-service-button>
                   </div>
                   ${reloadableDomains.map((domain) =>
-                    isComponentLoaded(this.hass, domain)
+                    isServiceLoaded(this.hass, domain, "reload")
                       ? html`<div class="card-actions">
                           <ha-call-service-button
                             .hass=${this.hass}

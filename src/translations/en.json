@@ -812,7 +812,8 @@
               "input_text": "Reload input texts",
               "input_number": "Reload input numbers",
               "input_datetime": "Reload input date times",
-              "input_select": "Reload input selects"
+              "input_select": "Reload input selects",
+              "template": "Reload template entities"
             },
             "server_management": {
               "heading": "Server management",
