@@ -446,6 +446,10 @@ export class HaMediaPlayerBrowse extends LitElement {
           border-radius: 4px;
         }
 
+        mwc-list li:last-child {
+          display: none;
+        }
+
         .children {
           display: grid;
           grid-template-columns: repeat(
@@ -552,6 +556,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         :host([narrow]) .header-content .img mwc-fab {
           position: absolute;
+          --mdc-theme-secondary: var(--primary-color);
           bottom: -20px;
           right: 20px;
         }
