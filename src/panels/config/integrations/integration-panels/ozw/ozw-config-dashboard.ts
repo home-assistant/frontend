@@ -17,13 +17,7 @@ import "../../../../../components/ha-icon-next";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
-import {
-  mdiNetwork,
-  mdiCircle,
-  mdiCheckCircle,
-  mdiCloseCircle,
-  mdiZWave,
-} from "@mdi/js";
+import { mdiCircle, mdiCheckCircle, mdiCloseCircle, mdiZWave } from "@mdi/js";
 import "../../../../../layouts/hass-tabs-subpage";
 import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 import "@material/mwc-button/mwc-button";
