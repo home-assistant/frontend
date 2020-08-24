@@ -1,3 +1,4 @@
+import "@material/mwc-icon-button/mwc-icon-button";
 import {
   customElement,
   html,
@@ -7,7 +8,6 @@ import {
   CSSResult,
   css,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
 
 import { fireEvent } from "../common/dom/fire_event";
 import type { ToggleButton } from "../types";
@@ -22,17 +22,19 @@ export class HaButtonToggleGroup extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <div class=${classMap({ single: this.buttons.length === 1 })}>
+      <div>
         ${this.buttons.map(
           (button) => html`
-            <ha-svg-icon
-              .label=${button.label}
-              .path=${button.iconPath}
-              .value=${button.value}
-              ?active=${this.active === button.value}
-              @click=${this._handleClick}
-            >
-            </ha-svg-icon>
+            <mwc-icon-button>
+              <ha-svg-icon
+                .label=${button.label}
+                .path=${button.iconPath}
+                .value=${button.value}
+                ?active=${this.active === button.value}
+                @click=${this._handleClick}
+              >
+              </ha-svg-icon>
+            </mwc-icon-button>
           `
         )}
       </div>
@@ -48,16 +50,16 @@ export class HaButtonToggleGroup extends LitElement {
     return css`
       div {
         display: flex;
+        --mdc-icon-button-size: var(--button-toggle-size, 36px);
         --mdc-icon-size: var(--button-toggle-icon-size, 20px);
       }
-      ha-svg-icon {
+      mwc-icon-button {
         border: 1px solid var(--primary-color);
         border-right-width: 0px;
         position: relative;
-        padding: 6px;
         cursor: pointer;
       }
-      ha-svg-icon::before {
+      mwc-icon-button::before {
         top: 0;
         left: 0;
         width: 100%;
@@ -69,17 +71,17 @@ export class HaButtonToggleGroup extends LitElement {
         content: "";
         transition: opacity 15ms linear, background-color 15ms linear;
       }
-      ha-svg-icon[active]::before {
+      mwc-icon-button[active]::before {
         opacity: var(--mdc-icon-button-ripple-opacity, 0.12);
       }
-      ha-svg-icon:first-child {
+      mwc-icon-button:first-child {
         border-radius: 4px 0 0 4px;
       }
-      ha-svg-icon:last-child {
+      mwc-icon-button:last-child {
         border-radius: 0 4px 4px 0;
         border-right-width: 1px;
       }
-      .single ha-svg-icon {
+      mwc-icon-button:only-child {
         border-radius: 4px;
         border-right-width: 1px;
       }
