@@ -92,7 +92,6 @@ export interface LovelaceViewElement extends HTMLElement {
   index?: number;
   cards?: Array<LovelaceCard | HuiErrorCard>;
   badges?: LovelaceBadge[];
-  editMode?: boolean;
 }
 
 export interface ShowViewConfig {

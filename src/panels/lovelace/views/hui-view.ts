@@ -1,31 +1,35 @@
 import {
-  html,
-  LitElement,
+  customElement,
   property,
   internalProperty,
   PropertyValues,
-  TemplateResult,
-  customElement,
+  UpdatingElement,
 } from "lit-element";
+
+import { getLovelaceViewElement } from "./get-view";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import "../../../components/entity/ha-state-label-badge";
+import { processConfigEntities } from "../common/process-config-entities";
+import { createBadgeElement } from "../create-element/create-badge-element";
+import { createCardElement } from "../create-element/create-card-element";
+
+import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
+import type { HomeAssistant } from "../../../types";
+import type { HuiErrorCard } from "../cards/hui-error-card";
 import type {
   LovelaceBadgeConfig,
   LovelaceCardConfig,
   LovelaceViewConfig,
   LovelaceViewElement,
 } from "../../../data/lovelace";
-import type { HomeAssistant } from "../../../types";
-import type { HuiErrorCard } from "../cards/hui-error-card";
-import { processConfigEntities } from "../common/process-config-entities";
-import { createBadgeElement } from "../create-element/create-badge-element";
-import { createCardElement } from "../create-element/create-card-element";
-import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
+
+import "../../../components/entity/ha-state-label-badge";
 import "../../../components/ha-svg-icon";
-import { getLovelaceViewElement } from "./get-view";
+
+const DEFAULT_VIEW_LAYOUT = "masonry";
+const PANEL_VIEW_LAYOUT = "panel";
 
 @customElement("hui-view")
-export class HUIView extends LitElement {
+export class HUIView extends UpdatingElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public lovelace?: Lovelace;
@@ -69,14 +73,6 @@ export class HUIView extends LitElement {
     return element;
   }
 
-  protected render(): TemplateResult {
-    if (!this._layoutElement) {
-      return html``;
-    }
-
-    return html`${this._layoutElement}`;
-  }
-
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
@@ -85,7 +81,6 @@ export class HUIView extends LitElement {
     const viewConfig = lovelace.config.views[this.index!];
     const hassChanged = changedProperties.has("hass");
     const oldLovelace = changedProperties.get("lovelace") as Lovelace;
-    const oldViewConfig = oldLovelace.config.views[this.index!];
 
     let editModeChanged = false;
     let configChanged = false;
@@ -98,14 +93,11 @@ export class HUIView extends LitElement {
       configChanged = !oldLovelace || lovelace.config !== oldLovelace.config;
     }
 
-    if (
-      (configChanged && !this._layoutElement) ||
-      oldViewConfig.layout !== viewConfig.layout
-    ) {
-      console.log("");
-
+    if (configChanged && !this._layoutElement) {
       this._layoutElement = getLovelaceViewElement(
-        viewConfig.panel ? "panel" : viewConfig.layout || "masonry"
+        viewConfig.panel
+          ? PANEL_VIEW_LAYOUT
+          : viewConfig.layout || DEFAULT_VIEW_LAYOUT
       );
     }
 
@@ -113,9 +105,12 @@ export class HUIView extends LitElement {
       this._createBadges(viewConfig);
       this._createCards(viewConfig);
 
+      this._layoutElement!.hass = this.hass;
       this._layoutElement!.lovelace = lovelace;
       this._layoutElement!.index = this.index;
-    } else if (hassChanged) {
+    }
+
+    if (hassChanged) {
       this._badges.forEach((badge) => {
         badge.hass = hass;
       });
@@ -125,10 +120,6 @@ export class HUIView extends LitElement {
       });
 
       this._layoutElement!.hass = this.hass;
-    }
-
-    if (editModeChanged) {
-      this._layoutElement!.editMode = lovelace.editMode;
     }
 
     if (configChanged || hassChanged || editModeChanged) {
@@ -151,6 +142,10 @@ export class HUIView extends LitElement {
         hass.themes,
         lovelace.config.views[this.index!].theme
       );
+    }
+
+    if (this._layoutElement && !this.lastChild) {
+      this.appendChild(this._layoutElement);
     }
   }
 

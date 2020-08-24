@@ -11,15 +11,17 @@ import { classMap } from "lit-html/directives/class-map";
 import { mdiPlus } from "@mdi/js";
 
 import { computeRTL } from "../../../common/util/compute_rtl";
-import "../../../components/entity/ha-state-label-badge";
-import { HuiErrorCard } from "../cards/hui-error-card";
 import { computeCardSize } from "../common/compute-card-size";
-import { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
-import "../../../components/ha-svg-icon";
 import { nextRender } from "../../../common/util/render-status";
-import type { LovelaceViewElement } from "../../../data/lovelace";
-import { HomeAssistant } from "../../../types";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
+
+import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
+import type { LovelaceViewElement } from "../../../data/lovelace";
+import type { HomeAssistant } from "../../../types";
+import type { HuiErrorCard } from "../cards/hui-error-card";
+
+import "../../../components/ha-svg-icon";
+import "../../../components/entity/ha-state-label-badge";
 
 let editCodeLoaded = false;
 
@@ -41,7 +43,7 @@ const getColumnIndex = (columnSizes: number[], size: number) => {
   return minIndex;
 };
 
-export class DefaultView extends LitElement implements LovelaceViewElement {
+export class MasonryView extends LitElement implements LovelaceViewElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public lovelace?: Lovelace;
@@ -53,8 +55,6 @@ export class DefaultView extends LitElement implements LovelaceViewElement {
   > = [];
 
   @property({ attribute: false }) public badges: LovelaceBadge[] = [];
-
-  @property({ type: Boolean }) public editMode = false;
 
   private _createColumnsIteration = 0;
 
@@ -107,7 +107,7 @@ export class DefaultView extends LitElement implements LovelaceViewElement {
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
-    if (this.editMode && !editCodeLoaded) {
+    if (this.lovelace?.editMode && !editCodeLoaded) {
       editCodeLoaded = true;
       import(
         /* webpackChunkName: "default-layout-editable" */ "./default-view-editable"
@@ -116,6 +116,15 @@ export class DefaultView extends LitElement implements LovelaceViewElement {
 
     if (changedProperties.has("hass") && changedProperties.size === 1) {
       return;
+    }
+
+    const oldHass = changedProperties.get("hass") as HomeAssistant;
+
+    if (
+      (oldHass && this.hass!.dockedSidebar !== oldHass.dockedSidebar) ||
+      (!oldHass && this.hass)
+    ) {
+      this._updateColumns();
     }
 
     this._createColumns();
@@ -291,8 +300,8 @@ export class DefaultView extends LitElement implements LovelaceViewElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ll-view-default": DefaultView;
+    "ll-view-masonry": MasonryView;
   }
 }
 
-customElements.define("ll-view-default", DefaultView);
+customElements.define("ll-view-masonry", MasonryView);

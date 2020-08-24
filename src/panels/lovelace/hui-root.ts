@@ -13,6 +13,7 @@ import "@polymer/app-layout/app-scroll-effects/effects/waterfall";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
+import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import {
   css,
   CSSResult,
@@ -25,39 +26,42 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import memoizeOne from "memoize-one";
+
+import scrollToTarget from "../../common/dom/scroll-to-target";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
-import scrollToTarget from "../../common/dom/scroll-to-target";
 import { navigate } from "../../common/navigate";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
 import { afterNextRender } from "../../common/util/render-status";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../dialogs/generic/show-dialog-box";
+import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
+import { haStyle } from "../../resources/styles";
+import { swapView } from "./editor/config-util";
+import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovelace-dialog";
+import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
+import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
+
+import type { HomeAssistant } from "../../types";
+import type { Lovelace } from "./types";
+import type { HUIView } from "./views/hui-view";
+import type {
+  LovelaceConfig,
+  LovelacePanelConfig,
+  LovelaceViewConfig,
+} from "../../data/lovelace";
+
+import "./views/hui-view";
+import "../../layouts/ha-app-layout";
 import "../../components/ha-button-menu";
 import "../../components/ha-icon";
 import "../../components/ha-svg-icon";
 import "../../components/ha-icon-button-arrow-next";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
-import type {
-  LovelaceConfig,
-  LovelacePanelConfig,
-  LovelaceViewConfig,
-} from "../../data/lovelace";
-import {
-  showAlertDialog,
-  showConfirmationDialog,
-} from "../../dialogs/generic/show-dialog-box";
-import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
-import "../../layouts/ha-app-layout";
-import { haStyle } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
-import { swapView } from "./editor/config-util";
-import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovelace-dialog";
-import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
-import type { Lovelace } from "./types";
-import { HUIView } from "./views/hui-view";
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
-import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 
 class HUIRoot extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -644,6 +648,7 @@ class HUIRoot extends LitElement {
     } else {
       view = document.createElement("hui-view");
       view.index = viewIndex;
+      // view.columns = this.columns;
       this._viewCache![viewIndex] = view;
     }
 
