@@ -84,8 +84,22 @@ class OZWConfigDashboard extends LitElement {
           </div>
           ${this._instances.length > 0
             ? html`
-                ${this._instances.map(
-                  (instance) => html`
+                ${this._instances.map((instance) => {
+                  let _status = "unknown";
+                  let _icon = mdiCircle;
+                  if (networkOnlineStatuses.includes(instance.Status)) {
+                    _status = "online";
+                    _icon = mdiCheckCircle;
+                  }
+                  if (networkStartingStatuses.includes(instance.Status)) {
+                    _status = "starting";
+                  }
+                  if (networkOfflineStatuses.includes(instance.Status)) {
+                    _status = "offline";
+                    _icon = mdiCloseCircle;
+                  }
+
+                  return html`
                     <ha-card>
                       <a
                         href="/config/ozw/network/${instance.ozw_instance}"
@@ -101,46 +115,13 @@ class OZWConfigDashboard extends LitElement {
                             )}
                             ${instance.ozw_instance}
                             <div secondary>
-                              ${networkOnlineStatuses.includes(instance.Status)
-                                ? html`
-                                    <ha-svg-icon
-                                      .path=${mdiCheckCircle}
-                                      class="network-status-icon online"
-                                    ></ha-svg-icon>
-                                    ${this.hass.localize(
-                                      "ui.panel.config.ozw.network_status.online"
-                                    )}
-                                  `
-                                : networkStartingStatuses.includes(
-                                    instance.Status
-                                  )
-                                ? html`
-                                    <ha-svg-icon
-                                      .path=${mdiCircle}
-                                      class="network-status-icon starting"
-                                    ></ha-svg-icon>
-                                    ${this.hass.localize(
-                                      "ui.panel.config.ozw.network_status.starting"
-                                    )}
-                                  `
-                                : networkOfflineStatuses.includes(
-                                    instance.Status
-                                  )
-                                ? html`
-                                    <ha-svg-icon
-                                      .path=${mdiCloseCircle}
-                                      class="network-status-icon offline"
-                                    ></ha-svg-icon>
-                                    ${this.hass.localize(
-                                      "ui.panel.config.ozw.network_status.offline"
-                                    )}
-                                  `
-                                : html`
-                                    <ha-svg-icon
-                                      .path=${mdiCircle}
-                                      class="network-status-icon"
-                                    ></ha-svg-icon>
-                                  `}
+                              <ha-svg-icon
+                                .path=${_icon}
+                                class="network-status-icon ${_status}"
+                              ></ha-svg-icon>
+                              ${this.hass.localize(
+                                "ui.panel.config.ozw.network_status." + _status
+                              )}
                               -
                               ${this.hass.localize(
                                 "ui.panel.config.ozw.network_status.details." +
@@ -158,8 +139,8 @@ class OZWConfigDashboard extends LitElement {
                         </paper-icon-item>
                       </a>
                     </ha-card>
-                  `
-                )}
+                  `;
+                })}
               `
             : ``}
         </ha-config-section>
