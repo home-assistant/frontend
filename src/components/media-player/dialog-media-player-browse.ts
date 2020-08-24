@@ -1,29 +1,23 @@
 import {
+  css,
+  CSSResultArray,
+  customElement,
+  html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
-  html,
   TemplateResult,
-  CSSResultArray,
-  css,
-  customElement,
 } from "lit-element";
-import type { HomeAssistant } from "../../types";
+import { HASSDomEvent } from "../../common/dom/fire_event";
 import type {
-  MediaPlayerBrowseAction,
   MediaPickedEvent,
+  MediaPlayerBrowseAction,
 } from "../../data/media-player";
+import { haStyleDialog } from "../../resources/styles";
+import type { HomeAssistant } from "../../types";
 import { createCloseHeading } from "../ha-dialog";
 import "./ha-media-player-browse";
-import { HASSDomEvent, fireEvent } from "../../common/dom/fire_event";
-import { haStyleDialog } from "../../resources/styles";
-
-interface MediaPlayerBrowseDialogParams {
-  action: MediaPlayerBrowseAction;
-  entityId: string;
-  mediaContentId?: string;
-  mediaContentType?: string;
-}
+import { MediaPlayerBrowseDialogParams } from "./show-media-browser-dialog";
 
 @customElement("dialog-media-player-browse")
 class DialogMediaPlayerBrowse extends LitElement {
@@ -84,9 +78,7 @@ class DialogMediaPlayerBrowse extends LitElement {
   }
 
   private _mediaPicked(ev: HASSDomEvent<MediaPickedEvent>): void {
-    const mediaPicked = ev.detail;
-
-    fireEvent(this, "media-picked", mediaPicked);
+    this._params.mediaPickedCallback(ev.detail);
     this._closeDialog();
   }
 

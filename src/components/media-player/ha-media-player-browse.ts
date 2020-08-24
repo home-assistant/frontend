@@ -1,13 +1,16 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-fab/mwc-fab";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import "@material/mwc-list/mwc-list-item";
+import {
+  mdiArrowLeft,
+  mdiDotsVertical,
+  mdiFolder,
+  mdiPlay,
+  mdiPlus,
+} from "@mdi/js";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "@material/mwc-list/mwc-list-item";
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
-// eslint-disable-next-line import/no-duplicates
-import memoize from "memoize-one";
-// eslint-disable-next-line import/no-duplicates
-import memoizeOne from "memoize-one";
 import {
   css,
   CSSResultArray,
@@ -19,39 +22,33 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-import {
-  mdiArrowLeft,
-  mdiFolder,
-  mdiPlay,
-  mdiPlus,
-  mdiDotsVertical,
-} from "@mdi/js";
+// eslint-disable-next-line import/no-duplicates
+import { default as memoize, default as memoizeOne } from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeDomain } from "../../common/entity/compute_domain";
+import { supportsFeature } from "../../common/entity/supports-feature";
 import { debounce } from "../../common/util/debounce";
 import {
   browseMediaPlayer,
   MediaPickedEvent,
   SUPPORT_BROWSE_MEDIA,
 } from "../../data/media-player";
-import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
-import { showSelectMediaSourceDialog } from "./show-select-media-source-dialog";
-import { haStyle } from "../../resources/styles";
-import { computeDomain } from "../../common/entity/compute_domain";
-import { supportsFeature } from "../../common/entity/supports-feature";
-import type { HomeAssistant } from "../../types";
 import type { MediaPlayerItem } from "../../data/media-player";
-import type {
-  DataTableRowData,
-  DataTableColumnContainer,
-} from "../data-table/ha-data-table";
-
+import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
+import { haStyle } from "../../resources/styles";
+import type { HomeAssistant } from "../../types";
 import "../data-table/ha-data-table";
+import type {
+  DataTableColumnContainer,
+  DataTableRowData,
+} from "../data-table/ha-data-table";
 import "../entity/ha-entity-picker";
+import "../ha-button-menu";
 import "../ha-card";
 import "../ha-circular-progress";
 import "../ha-paper-dropdown-menu";
 import "../ha-svg-icon";
-import "../ha-button-menu";
+import { showSelectMediaSourceDialog } from "./show-select-media-source-dialog";
 
 declare global {
   interface HASSDomEvents {
@@ -325,16 +322,7 @@ export class HaMediaPlayerBrowse extends LitElement {
   }
 
   private _runAction(item: MediaPlayerItem): void {
-    if (this.action === "pick") {
-      fireEvent(this, "media-picked", {
-        media_content_id: item.media_content_id,
-        media_content_type: item.media_content_type,
-      });
-      return;
-    }
-
-    this.hass.callService("media_player", "play_media", {
-      entity_id: this.entityId,
+    fireEvent(this, "media-picked", {
       media_content_id: item.media_content_id,
       media_content_type: item.media_content_type,
     });
