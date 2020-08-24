@@ -1,41 +1,39 @@
-import "@material/mwc-button";
-import {
-  property,
-  internalProperty,
-  PropertyValues,
-  LitElement,
-  CSSResult,
-  html,
-  css,
-  unsafeCSS,
-  TemplateResult,
-} from "lit-element";
-import { mdiViewModule, mdiViewWeek, mdiViewDay, mdiViewAgenda } from "@mdi/js";
+// @ts-ignore
+import fullcalendarStyle from "@fullcalendar/common/main.css";
 import { Calendar } from "@fullcalendar/core";
 import type { CalendarOptions } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
-import listPlugin from "@fullcalendar/list";
-import interactionPlugin from "@fullcalendar/interaction";
-// @ts-ignore
-import fullcalendarStyle from "@fullcalendar/common/main.css";
 // @ts-ignore
 import daygridStyle from "@fullcalendar/daygrid/main.css";
+import interactionPlugin from "@fullcalendar/interaction";
+import listPlugin from "@fullcalendar/list";
 // @ts-ignore
 import listStyle from "@fullcalendar/list/main.css";
+import "@material/mwc-button";
+import { mdiViewAgenda, mdiViewDay, mdiViewModule, mdiViewWeek } from "@mdi/js";
+import {
+  css,
+  CSSResult,
+  html,
+  internalProperty,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
+  unsafeCSS,
+} from "lit-element";
 import memoize from "memoize-one";
-
-import "../../components/ha-icon-button";
-import "../../components/ha-button-toggle-group";
-
-import type {
-  CalendarViewChanged,
-  CalendarEvent,
-  ToggleButton,
-  HomeAssistant,
-  FullCalendarView,
-} from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-button-toggle-group";
+import "../../components/ha-icon-button";
 import { haStyle } from "../../resources/styles";
+import type {
+  CalendarEvent,
+  CalendarViewChanged,
+  FullCalendarView,
+  HomeAssistant,
+  ToggleButton,
+} from "../../types";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -191,8 +189,8 @@ class HAFullCalendar extends LitElement {
       locale: this.hass.language,
     };
 
-    config.dateClick = this._handleDateClick;
-    config.eventClick = this._handleEventClick;
+    config.dateClick = (info) => this._handleDateClick(info);
+    config.eventClick = (info) => this._handleEventClick(info);
 
     this.calendar = new Calendar(
       this.shadowRoot!.getElementById("calendar")!,

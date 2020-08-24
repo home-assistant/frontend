@@ -1,17 +1,15 @@
 import "@material/mwc-icon-button/mwc-icon-button";
 import {
+  css,
+  CSSResult,
   customElement,
   html,
-  TemplateResult,
-  property,
   LitElement,
-  CSSResult,
-  css,
+  property,
+  TemplateResult,
 } from "lit-element";
-
 import { fireEvent } from "../common/dom/fire_event";
 import type { ToggleButton } from "../types";
-
 import "./ha-svg-icon";
 
 @customElement("ha-button-toggle-group")
@@ -40,7 +38,7 @@ export class HaButtonToggleGroup extends LitElement {
   }
 
   private _handleClick(ev): void {
-    this.active = ev.target.value;
+    this.active = ev.currentTarget.value;
     fireEvent(this, "value-changed", { value: this.active });
   }
 
