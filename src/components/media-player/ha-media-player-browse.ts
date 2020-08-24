@@ -18,14 +18,8 @@ import {
 } from "lit-element";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
-import { computeDomain } from "../../common/entity/compute_domain";
-import { supportsFeature } from "../../common/entity/supports-feature";
 import { debounce } from "../../common/util/debounce";
-import {
-  browseMediaPlayer,
-  MediaPickedEvent,
-  SUPPORT_BROWSE_MEDIA,
-} from "../../data/media-player";
+import { browseMediaPlayer, MediaPickedEvent } from "../../data/media-player";
 import type { MediaPlayerItem } from "../../data/media-player";
 import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
 import { haStyle } from "../../resources/styles";
@@ -127,7 +121,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                     : ""}
                 </div>
               `
-            : ""}
+            : html``}
           <div class="header-info">
             <div class="breadcrumb-overflow">
               <div class="breadcrumb">
@@ -152,7 +146,8 @@ export class HaMediaPlayerBrowse extends LitElement {
                 </div>
               </div>
             </div>
-            ${!this._narrow && mostRecentItem?.can_play
+            ${mostRecentItem?.can_play &&
+            (!this._narrow || (this._narrow && !mostRecentItem.thumbnail))
               ? html`
                   <div class="actions">
                     <mwc-button
@@ -204,11 +199,10 @@ export class HaMediaPlayerBrowse extends LitElement {
                                     `
                                   : ""}
                               </ha-card>
-                              ${child.can_play && !this._narrow
+                              ${child.can_play
                                 ? html`
-                                    <div class="ha-card-copy">
+                                    <mwc-icon-button class="play">
                                       <ha-svg-icon
-                                        class="play"
                                         .item=${child}
                                         .label=${this.hass.localize(
                                           `ui.components.media-browser.${this.action}-media`
@@ -218,7 +212,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                                           : mdiPlus}
                                         @click=${this._actionClicked}
                                       ></ha-svg-icon>
-                                    </div>
+                                    </mwc-icon-button>
                                   `
                                 : ""}
                             </div>
@@ -349,24 +343,6 @@ export class HaMediaPlayerBrowse extends LitElement {
     this._resizeObserver.observe(this);
   }
 
-  private _browseMediaSources = memoizeOne((hass: HomeAssistant) => {
-    if (!hass) {
-      return [];
-    }
-
-    let entityIds = Object.keys(hass.states);
-
-    entityIds = entityIds.filter((eid) =>
-      ["media_player"].includes(computeDomain(eid))
-    );
-
-    entityIds = entityIds.filter((eid) =>
-      supportsFeature(hass.states[eid], SUPPORT_BROWSE_MEDIA)
-    );
-
-    return entityIds.map((key) => hass.states[key]);
-  });
-
   private _hasExpandableChildren = memoizeOne((children) =>
     children.find((item: MediaPlayerItem) => item.can_expand)
   );
@@ -377,7 +353,6 @@ export class HaMediaPlayerBrowse extends LitElement {
       css`
         :host {
           display: block;
-          padding: 0 16px;
         }
 
         .header {
@@ -415,7 +390,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         .header-info .actions {
           padding-top: 24px;
-          --mdc-theme-primary: var(--accent-color);
+          --mdc-theme-primary: var(--primary-color);
         }
 
         .breadcrumb {
@@ -475,7 +450,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           display: grid;
           grid-template-columns: repeat(
             auto-fit,
-            var(--media-browse-item-size, 175px)
+            minmax(var(--media-browse-item-size, 175px), 0.33fr)
           );
           grid-gap: 16px;
           margin: 8px 0px;
@@ -492,8 +467,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           width: 100%;
         }
 
-        ha-card,
-        .ha-card-copy {
+        ha-card {
           width: 100%;
           padding-bottom: 100%;
           position: relative;
@@ -501,38 +475,37 @@ export class HaMediaPlayerBrowse extends LitElement {
           background-position: center;
         }
 
-        .ha-card-copy {
-          position: absolute;
-          top: 0;
-        }
-
         .child .folder,
         .child .play {
           position: absolute;
+        }
+
+        .child .folder {
+          color: var(--sidebar-icon-color);
           top: calc(50% - (var(--mdc-icon-size) / 2));
           left: calc(50% - (var(--mdc-icon-size) / 2));
           --mdc-icon-size: calc(var(--media-browse-item-size, 175px) * 0.4);
         }
 
-        .child .folder {
-          color: var(--sidebar-icon-color);
-        }
-
         .child .play {
-          opacity: 0;
+          bottom: 4px;
+          right: 4px;
           transition: all 0.5s;
+          background-color: rgba(255, 255, 255, 0.5);
+          border-radius: 50%;
         }
 
         .child .play:hover {
-          color: var(--accent-color);
+          color: var(--primary-color);
         }
 
-        .ha-card-parent:hover > ha-card {
+        ha-card:hover {
           opacity: 0.5;
+          color: var(--primary-color);
         }
 
-        .ha-card-parent:hover > .ha-card-copy > .play {
-          opacity: 1;
+        ha-card:hover .folder {
+          color: var(--primary-color);
         }
 
         .child .title {

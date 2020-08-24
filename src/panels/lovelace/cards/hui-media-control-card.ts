@@ -398,6 +398,13 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                               ></ha-icon-button>
                             `
                           )}
+                          ${supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA)
+                            ? html` <ha-icon-button
+                                class="browse-media"
+                                icon="hass:folder-multiple"
+                                @click=${this._handleBrowseMedia}
+                              ></ha-icon-button>`
+                            : ""}
                         </div>
                       `}
                 </div>
@@ -577,13 +584,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       });
     }
 
-    if (supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA)) {
-      buttons.push({
-        icon: "hass:folder-multiple",
-        action: "browse_media",
-      });
-    }
-
     return buttons.length > 0 ? buttons : undefined;
   }
 
@@ -675,10 +675,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   private _handleClick(e: MouseEvent): void {
     const action = (e.currentTarget! as HTMLElement).getAttribute("action")!;
-    if (action === "browse_media") {
-      this._handleBrowseMedia();
-      return;
-    }
     this.hass!.callService("media_player", action, {
       entity_id: this._config!.entity,
     });
@@ -862,7 +858,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         --mdc-icon-size: 40px;
       }
 
-      ha-icon-button[action="browse_media"] {
+      ha-icon-button.browse-media {
         position: absolute;
         right: 0;
         --mdc-icon-size: 24px;
@@ -937,7 +933,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         --mdc-icon-size: 36px;
       }
 
-      .narrow ha-icon-button[action="browse_media"] {
+      .narrow ha-icon-button.browse-media {
         --mdc-icon-size: 24px;
       }
 

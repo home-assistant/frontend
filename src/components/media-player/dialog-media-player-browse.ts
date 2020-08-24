@@ -55,6 +55,7 @@ class DialogMediaPlayerBrowse extends LitElement {
         open
         scrimClickAction
         escapeKeyAction
+        hideActions
         .heading=${createCloseHeading(
           this.hass,
           this.hass.localize(`ui.components.media-browser.media-player-browser`)
@@ -88,6 +89,7 @@ class DialogMediaPlayerBrowse extends LitElement {
       css`
         ha-dialog {
           --mdc-dialog-max-width: 800px;
+          --dialog-z-index: 8;
         }
 
         @media (min-width: 800px) {
