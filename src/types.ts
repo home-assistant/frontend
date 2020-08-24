@@ -152,7 +152,7 @@ export type FullCalendarView =
 
 export interface ToggleButton {
   label: string;
-  icon: string;
+  iconPath: string;
   value: string;
 }
 

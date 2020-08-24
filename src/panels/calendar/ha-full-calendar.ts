@@ -1,3 +1,4 @@
+import "@material/mwc-button";
 import {
   property,
   internalProperty,
@@ -9,6 +10,7 @@ import {
   unsafeCSS,
   TemplateResult,
 } from "lit-element";
+import { mdiViewModule, mdiViewWeek, mdiViewDay, mdiViewAgenda } from "@mdi/js";
 import { Calendar } from "@fullcalendar/core";
 import type { CalendarOptions } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -20,7 +22,6 @@ import fullcalendarStyle from "@fullcalendar/common/main.css";
 import daygridStyle from "@fullcalendar/daygrid/main.css";
 // @ts-ignore
 import listStyle from "@fullcalendar/list/main.css";
-import "@material/mwc-button";
 
 import "../../components/ha-icon-button";
 import "../../components/ha-button-toggle-group";
@@ -54,10 +55,10 @@ const defaultFullCalendarConfig: CalendarOptions = {
 };
 
 const viewButtons: ToggleButton[] = [
-  { label: "Month View", value: "dayGridMonth", icon: "hass:view-module" },
-  { label: "Week View", value: "dayGridWeek", icon: "hass:view-week" },
-  { label: "Day View", value: "dayGridDay", icon: "hass:view-day" },
-  { label: "List View", value: "listWeek", icon: "hass:view-agenda" },
+  { label: "Month View", value: "dayGridMonth", iconPath: mdiViewModule },
+  { label: "Week View", value: "dayGridWeek", iconPath: mdiViewWeek },
+  { label: "Day View", value: "dayGridDay", iconPath: mdiViewDay },
+  { label: "List View", value: "listWeek", iconPath: mdiViewAgenda },
 ];
 
 class HAFullCalendar extends LitElement {
@@ -372,7 +373,7 @@ class HAFullCalendar extends LitElement {
 
         td.fc-day-today .fc-daygrid-day-number {
           height: 24px;
-          color: var(--text-primary-color);
+          color: var(--text-primary-color) !important;
           background-color: var(--primary-color);
           border-radius: 50%;
           display: inline-block;

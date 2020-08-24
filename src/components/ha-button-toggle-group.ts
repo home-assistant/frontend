@@ -7,11 +7,13 @@ import {
   CSSResult,
   css,
 } from "lit-element";
-
-import "./ha-icon-button";
+import { classMap } from "lit-html/directives/class-map";
 
 import { fireEvent } from "../common/dom/fire_event";
 import type { ToggleButton } from "../types";
+
+import "./ha-icon-button";
+import "./ha-svg-icon";
 
 @customElement("ha-button-toggle-group")
 export class HaButtonToggleGroup extends LitElement {
@@ -20,22 +22,18 @@ export class HaButtonToggleGroup extends LitElement {
   @property() public active?: string;
 
   protected render(): TemplateResult {
-    if (this.buttons.length <= 1) {
-      return html``;
-    }
-
     return html`
-      <div>
+      <div class=${classMap({ single: this.buttons.length === 1 })}>
         ${this.buttons.map(
           (button) => html`
-            <ha-icon-button
+            <ha-svg-icon
               .label=${button.label}
-              .icon=${button.icon}
+              .path=${button.iconPath}
               .value=${button.value}
               ?active=${this.active === button.value}
               @click=${this._handleClick}
             >
-            </ha-icon-button>
+            </ha-svg-icon>
           `
         )}
       </div>
@@ -51,15 +49,16 @@ export class HaButtonToggleGroup extends LitElement {
     return css`
       div {
         display: flex;
-        --mdc-icon-button-size: var(--button-toggle-size, 36px);
         --mdc-icon-size: var(--button-toggle-icon-size, 20px);
       }
-      ha-icon-button {
+      ha-svg-icon {
         border: 1px solid var(--primary-color);
         border-right-width: 0px;
         position: relative;
+        padding: 6px;
+        cursor: pointer;
       }
-      ha-icon-button::before {
+      ha-svg-icon::before {
         top: 0;
         left: 0;
         width: 100%;
@@ -71,14 +70,18 @@ export class HaButtonToggleGroup extends LitElement {
         content: "";
         transition: opacity 15ms linear, background-color 15ms linear;
       }
-      ha-icon-button[active]::before {
+      ha-svg-icon[active]::before {
         opacity: var(--mdc-icon-button-ripple-opacity, 0.12);
       }
-      ha-icon-button:first-child {
+      ha-svg-icon:first-child {
         border-radius: 4px 0 0 4px;
       }
-      ha-icon-button:last-child {
+      ha-svg-icon:last-child {
         border-radius: 0 4px 4px 0;
+        border-right-width: 1px;
+      }
+      .single ha-svg-icon {
+        border-radius: 4px;
         border-right-width: 1px;
       }
     `;
@@ -87,6 +90,6 @@ export class HaButtonToggleGroup extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-button-toggle-button": HaButtonToggleGroup;
+    "ha-button-toggle-group": HaButtonToggleGroup;
   }
 }
