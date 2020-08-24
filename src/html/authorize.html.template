@@ -27,6 +27,7 @@
           background-color: #111111;
           color: #e1e1e1;
           --primary-text-color: #e1e1e1;
+          --secondary-text-color: #9b9b9b;
         }
       }
     </style>

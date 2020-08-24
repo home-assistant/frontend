@@ -8,9 +8,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
@@ -27,6 +27,7 @@ import type { PolymerChangedEvent } from "../polymer-types";
 import type { HomeAssistant } from "../types";
 
 const amsterdam = [52.3731339, 4.8903147];
+const mql = matchMedia("(prefers-color-scheme: dark)");
 
 @customElement("onboarding-core-config")
 class OnboardingCoreConfig extends LitElement {
@@ -93,6 +94,7 @@ class OnboardingCoreConfig extends LitElement {
           .hass=${this.hass}
           .location=${this._locationValue}
           .fitZoom=${14}
+          .darkMode=${mql.matches}
           @change=${this._locationChanged}
         ></ha-location-editor>
       </div>
