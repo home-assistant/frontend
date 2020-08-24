@@ -532,6 +532,10 @@ export class HaMediaPlayerBrowse extends LitElement {
           padding: 0;
         }
 
+        :host([narrow]) mwc-list {
+          border: 0;
+        }
+
         :host([narrow]) .breadcrumb .title {
           font-size: 38px;
         }
