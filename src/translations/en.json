@@ -2171,7 +2171,9 @@
             "no_description": "No description available.",
             "custom_card": "Custom",
             "domain": "Domain",
-            "entity": "Entity"
+            "entity": "Entity",
+            "by_entity": "By Entity",
+            "by_card": "By Card"
           }
         },
         "warning": {

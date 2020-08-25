@@ -186,8 +186,16 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
                   @MDCTabBar:activated=${(ev: CustomEvent) =>
                     this._handleTabChanged(ev)}
                 >
-                  <mwc-tab label="By Card"></mwc-tab>
-                  <mwc-tab label="By Entity"></mwc-tab>
+                  <mwc-tab
+                    .label=${this.hass!.localize(
+                      "ui.panel.lovelace.editor.cardpicker.by_card"
+                    )}
+                  ></mwc-tab>
+                  <mwc-tab
+                    .label=${this.hass!.localize(
+                      "ui.panel.lovelace.editor.cardpicker.by_entity"
+                    )}
+                  ></mwc-tab>
                 </mwc-tab-bar>
               `
             : ""}
