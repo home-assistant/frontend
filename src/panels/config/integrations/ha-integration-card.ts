@@ -30,6 +30,8 @@ import "../../../components/ha-icon-next";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
+import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 
 export interface ConfigEntryUpdatedEvent {
   entry: ConfigEntry;
@@ -144,7 +146,6 @@ export class HaIntegrationCard extends LitElement {
         class="single integration"
         .configEntry=${item}
         .id=${item.entry_id}
-        .canReload=${item.state === "loaded" && item.supports_unload}
       >
         ${this.items.length > 1
           ? html`<ha-icon-button
@@ -230,7 +231,7 @@ export class HaIntegrationCard extends LitElement {
                 `
               : ""}
           </div>
-          <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
+          <ha-button-menu corner="BOTTOM_START">
             <mwc-icon-button
               .title=${this.hass.localize("ui.common.menu")}
               .label=${this.hass.localize("ui.common.overflow_menu")}
@@ -238,7 +239,7 @@ export class HaIntegrationCard extends LitElement {
             >
               <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
             </mwc-icon-button>
-            <mwc-list-item>
+            <mwc-list-item @request-selected="${this._handleSystemOptions}">
               ${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.system_options"
               )}
@@ -262,13 +263,16 @@ export class HaIntegrationCard extends LitElement {
                   </a>
                 `}
             ${item.state === "loaded" && item.supports_unload
-              ? html`<mwc-list-item>
+              ? html`<mwc-list-item @request-selected="${this._handleReload}">
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.reload"
                   )}
                 </mwc-list-item>`
               : ""}
-            <mwc-list-item class="warning">
+            <mwc-list-item
+              class="warning"
+              @request-selected="${this._handleDelete}"
+            >
               ${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.delete"
               )}
@@ -318,33 +322,31 @@ export class HaIntegrationCard extends LitElement {
     showOptionsFlowDialog(this, ev.target.closest("ha-card").configEntry);
   }
 
-  private _handleAction(ev: CustomEvent<ActionDetail>) {
-    const thisCard = (ev.target as HTMLElement).closest("ha-card") as any;
-    const configEntry = thisCard.configEntry;
-    const canReload = thisCard.canReload;
-
-    if (canReload) {
-      switch (ev.detail.index) {
-        case 0:
-          this._showSystemOptions(configEntry);
-          break;
-        case 1:
-          this._reloadIntegration(configEntry);
-          break;
-        case 2:
-          this._removeIntegration(configEntry);
-          break;
-      }
-    } else {
-      switch (ev.detail.index) {
-        case 0:
-          this._showSystemOptions(configEntry);
-          break;
-        case 1:
-          this._removeIntegration(configEntry);
-          break;
-      }
+  private _handleReload(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
     }
+    this._reloadIntegration(
+      ((ev.target as HTMLElement).closest("ha-card") as any).configEntry
+    );
+  }
+
+  private _handleDelete(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+    this._removeIntegration(
+      ((ev.target as HTMLElement).closest("ha-card") as any).configEntry
+    );
+  }
+
+  private _handleSystemOptions(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+    this._showSystemOptions(
+      ((ev.target as HTMLElement).closest("ha-card") as any).configEntry
+    );
   }
 
   private _showSystemOptions(configEntry: ConfigEntry) {
