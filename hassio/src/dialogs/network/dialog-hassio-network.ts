@@ -176,77 +176,6 @@ export class DialogHassioNetwork extends LitElement implements HassDialog {
       </div>`;
   }
 
-  static get styles(): CSSResult[] {
-    return [
-      haStyleDialog,
-      css`
-        ha-header-bar {
-          --mdc-theme-on-primary: var(--primary-text-color);
-          --mdc-theme-primary: var(--mdc-theme-surface);
-          flex-shrink: 0;
-        }
-
-        mwc-tab-bar {
-          border-bottom: 1px solid
-            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
-        }
-
-        ha-dialog {
-          --dialog-content-position: static;
-          --dialog-content-padding: 0;
-          --dialog-z-index: 6;
-        }
-
-        @media all and (min-width: 451px) and (min-height: 501px) {
-          .container {
-            width: 400px;
-          }
-        }
-
-        .content {
-          display: block;
-          padding: 20px 24px;
-        }
-
-        /* overrule the ha-style-dialog max-height on small screens */
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          ha-header-bar {
-            --mdc-theme-primary: var(--app-header-background-color);
-            --mdc-theme-on-primary: var(--app-header-text-color, white);
-          }
-        }
-
-        mwc-button.warning {
-          --mdc-theme-primary: var(--error-color);
-        }
-
-        :host([rtl]) app-toolbar {
-          direction: rtl;
-          text-align: right;
-        }
-        .container {
-          padding: 20px 24px;
-        }
-        .form {
-          margin-bottom: 53px;
-        }
-        .buttons {
-          position: absolute;
-          bottom: 0;
-          width: 100%;
-          box-sizing: border-box;
-          border-top: 1px solid
-            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
-          display: flex;
-          justify-content: space-between;
-          padding: 8px;
-          padding-bottom: max(env(safe-area-inset-bottom), 8px);
-          background-color: var(--mdc-theme-surface, #fff);
-        }
-      `,
-    ];
-  }
-
   private async _updateNetwork() {
     this._prosessing = true;
     let options: Partial<NetworkInterface> = {
@@ -318,6 +247,77 @@ export class DialogHassioNetwork extends LitElement implements HassDialog {
     this._dirty = true;
 
     this._device.data[id] = value;
+  }
+
+  static get styles(): CSSResult[] {
+    return [
+      haStyleDialog,
+      css`
+        ha-header-bar {
+          --mdc-theme-on-primary: var(--primary-text-color);
+          --mdc-theme-primary: var(--mdc-theme-surface);
+          flex-shrink: 0;
+        }
+
+        mwc-tab-bar {
+          border-bottom: 1px solid
+            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
+        }
+
+        ha-dialog {
+          --dialog-content-position: static;
+          --dialog-content-padding: 0;
+          --dialog-z-index: 6;
+        }
+
+        @media all and (min-width: 451px) and (min-height: 501px) {
+          .container {
+            width: 400px;
+          }
+        }
+
+        .content {
+          display: block;
+          padding: 20px 24px;
+        }
+
+        /* overrule the ha-style-dialog max-height on small screens */
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          ha-header-bar {
+            --mdc-theme-primary: var(--app-header-background-color);
+            --mdc-theme-on-primary: var(--app-header-text-color, white);
+          }
+        }
+
+        mwc-button.warning {
+          --mdc-theme-primary: var(--error-color);
+        }
+
+        :host([rtl]) app-toolbar {
+          direction: rtl;
+          text-align: right;
+        }
+        .container {
+          padding: 20px 24px;
+        }
+        .form {
+          margin-bottom: 53px;
+        }
+        .buttons {
+          position: absolute;
+          bottom: 0;
+          width: 100%;
+          box-sizing: border-box;
+          border-top: 1px solid
+            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
+          display: flex;
+          justify-content: space-between;
+          padding: 8px;
+          padding-bottom: max(env(safe-area-inset-bottom), 8px);
+          background-color: var(--mdc-theme-surface, #fff);
+        }
+      `,
+    ];
   }
 }
 
