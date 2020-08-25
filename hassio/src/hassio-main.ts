@@ -106,7 +106,9 @@ export class HassioMain extends urlSyncMixin(ProvideHassLitMixin(LitElement)) {
         };
       }
     } else {
-      themeName = (this.hass.selectedTheme as unknown) as string;
+      themeName =
+        ((this.hass.selectedTheme as unknown) as string) ||
+        this.hass.themes.default_theme;
     }
 
     applyThemesOnElement(

@@ -554,6 +554,10 @@
                 "loading_history": "Caricamento storico...",
                 "no_history_found": "Nessuno storico trovato."
             },
+            "picture-upload": {
+                "label": "Immagine",
+                "unsupported_format": "Formato non supportato, scegliere un'immagine JPEG, PNG o GIF."
+            },
             "related-items": {
                 "area": "Area",
                 "automation": "Parte delle seguenti automazioni",
@@ -655,6 +659,9 @@
                 "platform_not_loaded": "L'integrazione {platform} non è stata caricata. Si prega di aggiungerla alla propria configurazione, aggiungendo 'default_config:' o ''{platform}:''.",
                 "required_error_msg": "Questo campo è obbligatorio",
                 "yaml_not_editable": "Le impostazioni di questa entità non possono essere modificate dall'Interfaccia Utente. Solo le entità impostate dall'Interfaccia Utente sono configurabili dall'Interfaccia Utente."
+            },
+            "image_cropper": {
+                "crop": "Ritaglia"
             },
             "more_info_control": {
                 "dismiss": "Chiudi finestra di dialogo",
@@ -834,9 +841,12 @@
                             "type_select": "Tipo di azione",
                             "type": {
                                 "choose": {
+                                    "add_option": "Aggiungi opzione",
                                     "conditions": "Condizioni",
-                                    "default": "Azione predefinita",
+                                    "default": "Azioni predefinite",
                                     "label": "Scegli",
+                                    "option": "Opzione {number}",
+                                    "remove_option": "Rimuovi opzione",
                                     "sequence": "Azioni"
                                 },
                                 "condition": {
@@ -858,6 +868,24 @@
                                     "label": "Attiva Evento",
                                     "service_data": "Dati del servizio"
                                 },
+                                "repeat": {
+                                    "label": "Ripetere",
+                                    "sequence": "Azioni",
+                                    "type_select": "Tipo \"ripetizione\"",
+                                    "type": {
+                                        "count": {
+                                            "label": "Conteggio"
+                                        },
+                                        "until": {
+                                            "conditions": "Condizioni \"fino a\"",
+                                            "label": "Fino a"
+                                        },
+                                        "while": {
+                                            "conditions": "Condizioni \"mentre\"",
+                                            "label": "Mentre"
+                                        }
+                                    }
+                                },
                                 "scene": {
                                     "label": "Attivare la scena"
                                 },
@@ -871,7 +899,7 @@
                                     "wait_template": "Modello di attesa"
                                 }
                             },
-                            "unsupported_action": "Azione non supportata: {action}"
+                            "unsupported_action": "Nessun supporto dell'Interfaccia Utente per l'azione: {action}"
                         },
                         "alias": "Nome",
                         "conditions": {
@@ -937,7 +965,7 @@
                                     "zone": "Zona"
                                 }
                             },
-                            "unsupported_condition": "Condizione non supportata: {condition}"
+                            "unsupported_condition": "Nessun supporto dell'Interfaccia Utente per la condizione: {condition}"
                         },
                         "default_name": "Nuova Automazione",
                         "description": {
@@ -1029,6 +1057,9 @@
                                     "sunrise": "Alba",
                                     "sunset": "Tramonto"
                                 },
+                                "tag": {
+                                    "label": "Etichetta"
+                                },
                                 "template": {
                                     "label": "Modello",
                                     "value_template": "Valore modello"
@@ -1056,7 +1087,7 @@
                                     "zone": "Zona"
                                 }
                             },
-                            "unsupported_platform": "Piattaforma non supportata: {platform}"
+                            "unsupported_platform": "Nessun supporto dell'Interfaccia Utente per la piattaforma: {platform}"
                         },
                         "unsaved_confirm": "Hai delle modifiche non salvate. Sei sicuro di voler uscire?"
                     },
@@ -1306,6 +1337,7 @@
                     "caption": "Dispositivi",
                     "confirm_delete": "Sei sicuro di voler eliminare questo dispositivo?",
                     "confirm_rename_entity_ids": "Vuoi anche rinominare gli ID entità delle tue entità?",
+                    "confirm_rename_entity_ids_warning": "Questo non cambierà alcuna configurazione (come automazioni, script, scene, Lovelace) che attualmente utilizza queste entità, dovrai aggiornarle tu stesso.",
                     "data_table": {
                         "area": "Area",
                         "battery": "Batteria",
@@ -1625,6 +1657,49 @@
                     "title": "MQTT",
                     "topic": "argomento"
                 },
+                "ozw": {
+                    "common": {
+                        "node_id": "ID del nodo",
+                        "ozw_instance": "Istanza OpenZWave",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "Nodo non riuscito",
+                        "stage": "Fase",
+                        "zwave_info": "Informazioni Z-Wave"
+                    },
+                    "node_query_stages": {
+                        "associations": "Aggiornamento dell'associazione gruppi e appartenenze",
+                        "cacheload": "Caricamento delle informazioni dal file di cache di OpenZWave. I nodi a batteria rimarranno in questa fase fino a quando il nodo non si riattiva.",
+                        "complete": "Il processo di interrogazione è completo",
+                        "configuration": "Recupero dei valori di configurazione dal nodo",
+                        "dynamic": "Recupero di valori che cambiano di frequente dal nodo",
+                        "instances": "Recupero dei dettagli sulle istanze o sui canali supportati da un dispositivo",
+                        "manufacturerspecific1": "Recupero dei codici ID produttore e prodotto dal nodo",
+                        "manufacturerspecific2": "Recupero di ulteriori codici ID prodotto e produttore dal nodo",
+                        "neighbors": "Ottenere un elenco dei vicini del nodo",
+                        "nodeinfo": "Recupero delle classi di comando supportate dal nodo",
+                        "nodeplusinfo": "Recupero delle informazioni Z-Wave+ dal nodo",
+                        "probe": "Controllo se il nodo è sveglio/attivo",
+                        "protocolinfo": "Recupero delle funzionalità di base Z-Wave di questo nodo dal controller",
+                        "session": "Recupero di valori che cambiano di rado dal nodo",
+                        "static": "Recupero di valori statici dal dispositivo",
+                        "versions": "Recupero di informazioni sulle versioni del firmware e della classe di comando",
+                        "wakeup": "Configurazione del supporto per code di riattivazione e messaggi "
+                    },
+                    "refresh_node": {
+                        "battery_note": "Se il nodo è alimentato a batteria, assicurarsi di riattivarlo prima di procedere",
+                        "complete": "Aggiornamento del nodo completato",
+                        "description": "In questo modo si dirà a OpenZWave di re-interrogare un nodo e aggiornare le classi di comando, le funzionalità e i valori del nodo.",
+                        "node_status": "Stato del nodo",
+                        "refreshing_description": "Aggiornamento delle informazioni sul nodo in corso ...",
+                        "start_refresh_button": "Avvia aggiornamento",
+                        "step": "Passo",
+                        "title": "Aggiorna le informazioni sul nodo",
+                        "wakeup_header": "Istruzioni di riattivazione per",
+                        "wakeup_instructions_source": "Le istruzioni di riattivazione provengono dal database dei dispositivi della comunità di OpenZWave."
+                    }
+                },
                 "person": {
                     "add_person": "Aggiungi persona",
                     "caption": "Persone",
@@ -1778,6 +1853,31 @@
                             "valid": "Configurazione valida!"
                         }
                     }
+                },
+                "tags": {
+                    "add_tag": "Aggiungi Etichetta",
+                    "automation_title": "L'etichetta {name} è scansionata",
+                    "caption": "Etichette",
+                    "create_automation": "Creare un'automazione con l'etichetta",
+                    "description": "Gestisci le etichette",
+                    "detail": {
+                        "create": "Crea",
+                        "create_and_write": "Crea e Scrivi",
+                        "delete": "Cancella",
+                        "description": "Descrizione",
+                        "name": "Nome",
+                        "new_tag": "Nuova Etichetta",
+                        "tag_id": "Id Etichetta",
+                        "tag_id_placeholder": "Autogenerato quando lasciato vuoto",
+                        "update": "Aggiorna"
+                    },
+                    "edit": "Modifica",
+                    "headers": {
+                        "last_scanned": "Ultima scansione",
+                        "name": "Nome"
+                    },
+                    "no_tags": "Nessuna etichetta",
+                    "write": "Scrivi"
                 },
                 "users": {
                     "add_user": {
@@ -2017,7 +2117,7 @@
                         "add_node": "Aggiungi Nodo",
                         "add_node_secure": "Aggiungi nodo sicuro",
                         "cancel_command": "Annulla Comando",
-                        "heal_network": "Testa la rete",
+                        "heal_network": "Risana la rete",
                         "heal_node": "Resuscita Nodo",
                         "node_info": "Informazioni sul Nodo",
                         "print_node": "Stampa Nodo",
@@ -2393,6 +2493,9 @@
                         "para_migrate": "Home Assistant può aggiungere automaticamente gli ID a tutte le tue schede e viste in maniera automatica premendo il pulsante \"Esporta Configurazione\".",
                         "para_no_id": "Questo elemento non ha un ID. Aggiungi un ID a questo elemento in 'ui-lovelace.yaml'."
                     },
+                    "move_card": {
+                        "header": "Scegli una visualizzazione in cui spostare la scheda"
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "Genereremo automaticamente le tue viste dell'Interfaccia utente di Lovelace con le tue aree e dispositivi se rimuovi la tua configurazione dell'interfaccia utente di Lovelace.",
                         "confirm_remove_config_title": "Sei sicuro di voler rimuovere la tua configurazione dell'interfaccia utente di Lovelace? Genereremo automaticamente le tue viste Lovelace con le tue aree e dispositivi.",
@@ -2420,6 +2523,10 @@
                         "yaml_control": "Per assumere il controllo in modalità YAML, creare un file YAML con il nome specificato nella tua configurazione per questa plancia, o il predefinito 'ui-lovelace.yaml'.",
                         "yaml_mode": "Questa plancia sta utilizzando la modalità YAML, il che significa che non è possibile modificare la configurazione di Lovelace dall'Interfaccia Utente. Se volete gestire questa plancia dall'Interfaccia Utente, rimuovere 'mode: yaml' dalla configurazione di Lovelace in 'configuration.yaml'."
                     },
+                    "select_view": {
+                        "dashboard_label": "Plancia",
+                        "header": "Scegliere una visualizzazione"
+                    },
                     "suggest_card": {
                         "add": "Aggiungi all'interfaccia utente di Lovelace",
                         "create_own": "Scegliere una scheda diversa",
@@ -2435,7 +2542,7 @@
                 },
                 "menu": {
                     "close": "Chiudi",
-                    "configure_ui": "Configurare l'Interfaccia Utente",
+                    "configure_ui": "Modifica la Plancia",
                     "exit_edit_mode": "Esci dalla modalità di modifica dell'Interfaccia Utente",
                     "help": "Aiuto",
                     "refresh": "Aggiorna",

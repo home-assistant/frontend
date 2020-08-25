@@ -554,6 +554,10 @@
                 "loading_history": "Ładowanie historii...",
                 "no_history_found": "Nie znaleziono historii."
             },
+            "picture-upload": {
+                "label": "Obraz",
+                "unsupported_format": "Nieobsługiwany format, wybierz obraz JPEG, PNG lub GIF."
+            },
             "related-items": {
                 "area": "Obszar",
                 "automation": "Element następujących automatyzacji",
@@ -655,6 +659,9 @@
                 "platform_not_loaded": "Komponent {platform} nie jest załadowany, dodaj go do swojej konfiguracji dodając 'default_config:' lub ''{platform}:''.",
                 "required_error_msg": "To pole jest wymagane",
                 "yaml_not_editable": "Ustawienia tej encji nie mogą być edytowane z interfejsu użytkownika. Tylko encje dodane z interfejsu użytkownika można konfigurować z poziomu interfejsu użytkownika."
+            },
+            "image_cropper": {
+                "crop": "Przytnij"
             },
             "more_info_control": {
                 "dismiss": "Zamknij okno dialogowe",
@@ -1656,6 +1663,37 @@
                         "node_failed": "Węzeł uszkodzony",
                         "stage": "Etap",
                         "zwave_info": "Informacje Z-Wave"
+                    },
+                    "node_query_stages": {
+                        "associations": "Odświeżanie grup skojarzeń i członkostwa",
+                        "cacheload": "Ładowanie informacji z pliku pamięci podręcznej OpenZWave. Węzły baterii pozostaną na tym etapie, dopóki węzeł się nie wybudzi.",
+                        "complete": "Proces wywiadu jest zakończony",
+                        "configuration": "Pobieranie wartości konfiguracyjnych z węzła",
+                        "dynamic": "Pobieranie często zmieniających się wartości z węzła",
+                        "instances": "Pobieranie szczegółowych informacji o instancjach lub kanałach obsługiwanych przez urządzenie",
+                        "manufacturerspecific1": "Pobieranie kodów producenta i produktu z węzła",
+                        "manufacturerspecific2": "Pobieranie dodatkowych kodów producenta i produktu z węzła",
+                        "neighbors": "Pobieranie listy sąsiadów węzła",
+                        "nodeinfo": "Pobieranie obsługiwanych klas poleceń z węzła",
+                        "nodeplusinfo": "Pobieranie informacji Z-Wave+ z węzła",
+                        "probe": "Sprawdzanie, czy węzeł jest wybudzony/żywy",
+                        "protocolinfo": "Pobieranie z kontrolera informacji o podstawowych możliwościach Z-Wave tego węzła",
+                        "session": "Pobieranie rzadko zmieniających się wartości z węzła",
+                        "static": "Pobieranie wartości statycznych z urządzenia",
+                        "versions": "Pobieranie informacji o wersjach oprogramowania i klas poleceń",
+                        "wakeup": "Konfigurowanie obsługi kolejek wybudzania i wiadomości"
+                    },
+                    "refresh_node": {
+                        "battery_note": "Jeśli węzeł jest zasilany bateryjnie, przed kontynuowaniem należy go wybudzić",
+                        "complete": "Odświeżanie węzła zakończone",
+                        "description": "Poinformuje to OpenZWave o konieczności ponownego odpytania węzła i zaktualizowaniu jego klas poleceń, możliwości i wartości.",
+                        "node_status": "Stan węzła",
+                        "refreshing_description": "Odświeżanie informacji o węźle...",
+                        "start_refresh_button": "Rozpocznij odświeżanie",
+                        "step": "Krok",
+                        "title": "Odświeżanie informacji o węźle",
+                        "wakeup_header": "Instrukcje budzenia dla",
+                        "wakeup_instructions_source": "Instrukcje budzenia pochodzą z bazy danych urządzeń społeczności OpenZWave."
                     }
                 },
                 "person": {
