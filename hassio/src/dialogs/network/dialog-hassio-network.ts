@@ -164,7 +164,7 @@ export class DialogHassioNetwork extends LitElement implements HassDialog {
                 class="flex-auto"
                 id="nameservers"
                 label="DNS servers"
-                .value="${this._device!.data.nameservers.join(",")}"
+                .value="${String(this._device!.data.nameservers)}"
                 @value-changed=${this._handleInputValueChanged}
               ></paper-input>
               NB!: If you are changing IP or gateway addresses, you might lose
@@ -262,7 +262,7 @@ export class DialogHassioNetwork extends LitElement implements HassDialog {
         ...options,
         address: this._device!.data.ip_address,
         gateway: this._device!.data.gateway,
-        dns: this._device!.data.nameservers,
+        dns: String(this._device!.data.nameservers).split(","),
       };
     }
     try {
