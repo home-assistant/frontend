@@ -7,18 +7,20 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
-import "../../../src/components/ha-card";
+
 import { fetchHassioLogs } from "../../../src/data/hassio/supervisor";
-import "../../../src/layouts/hass-loading-screen";
+import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
+
+import "../../../src/components/ha-card";
+import "../../../src/layouts/hass-loading-screen";
 import "../components/hassio-ansi-to-html";
-import { hassioStyle } from "../resources/hassio-style";
 
 interface LogProvider {
   key: string;
@@ -102,7 +104,7 @@ class HassioSupervisorLog extends LitElement {
             : html`<hass-loading-screen no-toolbar></hass-loading-screen>`}
         </div>
         <div class="card-actions">
-          <mwc-button @click=${this._refresh}>Refresh</mwc-button>
+          <mwc-button @click=${this._loadData}>Refresh</mwc-button>
         </div>
       </ha-card>
     `;
@@ -150,13 +152,9 @@ class HassioSupervisorLog extends LitElement {
       );
     } catch (err) {
       this._error = `Failed to get supervisor logs, ${
-        err.body?.message || err
+        typeof err === "object" ? err.body?.message || "Unkown error" : err
       }`;
     }
-  }
-
-  private async _refresh(): Promise<void> {
-    await this._loadData();
   }
 }
 

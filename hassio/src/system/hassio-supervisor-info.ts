@@ -4,7 +4,6 @@ import {
   CSSResult,
   customElement,
   html,
-  internalProperty,
   LitElement,
   property,
   TemplateResult,
@@ -38,8 +37,6 @@ class HassioSupervisorInfo extends LitElement {
   @property() public supervisorInfo!: HassioSupervisorInfoType;
 
   @property() public hostInfo!: HassioHostInfoType;
-
-  @internalProperty() private _errors?: string;
 
   public render(): TemplateResult | void {
     return html`
@@ -135,9 +132,6 @@ class HassioSupervisorInfo extends LitElement {
                   Learn More
                 </a>
               </div>`}
-          ${this._errors
-            ? html` <div class="error">Error: ${this._errors}</div> `
-            : ""}
         </div>
         <div class="card-actions">
           <mwc-button

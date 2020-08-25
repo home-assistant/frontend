@@ -1,20 +1,23 @@
 import "@material/mwc-button";
+import "@material/mwc-list/mwc-list-item";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import { mdiDotsVertical } from "@mdi/js";
+import { safeDump } from "js-yaml";
+import memoizeOne from "memoize-one";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 
-import "../../../src/components/buttons/ha-call-api-button";
-import { fetchHassioHardwareInfo } from "../../../src/data/hassio/hardware";
 import {
   changeHostOptions,
+  configSyncOS,
   fetchHassioHostInfo,
   HassioHassOSInfo,
   HassioHostInfo as HassioHostInfoType,
@@ -22,23 +25,27 @@ import {
   shutdownHost,
   updateOS,
 } from "../../../src/data/hassio/host";
-import { mdiDotsVertical } from "@mdi/js";
+import { fetchHassioHardwareInfo } from "../../../src/data/hassio/hardware";
+import {
+  fetchNetworkInfo,
+  NetworkInfo,
+} from "../../../src/data/hassio/network";
 import { HassioInfo } from "../../../src/data/hassio/supervisor";
+import { hassioStyle } from "../resources/hassio-style";
+import { haStyle } from "../../../src/resources/styles";
+import { HomeAssistant } from "../../../src/types";
 import {
   showAlertDialog,
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../src/dialogs/generic/show-dialog-box";
-import "../../../src/components/ha-settings-row";
-import { haStyle } from "../../../src/resources/styles";
-import { HomeAssistant } from "../../../src/types";
 import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
-import { hassioStyle } from "../resources/hassio-style";
-import "../../../src/components/ha-button-menu";
-import "@material/mwc-list/mwc-list-item";
-import "../../../src/components/ha-card";
-import { fetchNetworkInfo } from "../../../src/data/hassio/network";
 import { showNetworkDialog } from "../dialogs/network/show-dialog-network";
+
+import "../../../src/components/ha-button-menu";
+import "../../../src/components/ha-card";
+import "../../../src/components/buttons/ha-call-api-button";
+import "../../../src/components/ha-settings-row";
 
 @customElement("hassio-host-info")
 class HassioHostInfo extends LitElement {
@@ -50,11 +57,10 @@ class HassioHostInfo extends LitElement {
 
   @property({ attribute: false }) public hassOsInfo!: HassioHassOSInfo;
 
-  @internalProperty() public _networkInfo?: any;
-
-  @internalProperty() private _errors?: string;
+  @internalProperty() public _networkInfo?: NetworkInfo;
 
   public render(): TemplateResult | void {
+    const primaryIpAddress = this._primaryIpAddress(this._networkInfo!);
     return html`
       <ha-card header="Host System">
         <div class="card-content">
@@ -79,7 +85,7 @@ class HassioHostInfo extends LitElement {
               IP Address
             </span>
             <span slot="description">
-              ${this._networkInfo?.interfaces.eth0.ip_address}
+              ${primaryIpAddress}
             </span>
             <mwc-button
               title="Change the network"
@@ -95,18 +101,19 @@ class HassioHostInfo extends LitElement {
             <span slot="description">
               ${this.hostInfo.operating_system}
             </span>
-            ${this.hostInfo.version === this.hostInfo.version_latest &&
+            ${this.hostInfo.version !== this.hostInfo.version_latest &&
             this.hostInfo.features.includes("hassos")
               ? html`
                   <mwc-button
                     title="Update the host OS"
-                    @click=${this._updateOS}
-                    >Update</mwc-button
+                    @click=${this._osUpdate}
                   >
+                    Update
+                  </mwc-button>
                 `
               : ""}
           </ha-settings-row>
-          ${this.hostInfo.features.includes("hassos")
+          ${!this.hostInfo.features.includes("hassos")
             ? html` <ha-settings-row>
                 <span slot="heading">
                   Docker version
@@ -126,42 +133,43 @@ class HassioHostInfo extends LitElement {
                 </span>
               </ha-settings-row>`
             : ""}
-          ${this._errors
-            ? html` <div class="errors">Error: ${this._errors}</div> `
-            : ""}
         </div>
         <div class="card-actions">
           ${this.hostInfo.features.includes("reboot")
             ? html`
-                <mwc-button class="warning" @click=${this._rebootHost}
-                  >Reboot</mwc-button
+                <mwc-button
+                  title="Reboot the host OS"
+                  class="warning"
+                  @click=${this._hostReboot}
                 >
+                  Reboot
+                </mwc-button>
               `
             : ""}
           ${this.hostInfo.features.includes("shutdown")
             ? html`
-                <mwc-button class="warning" @click=${this._shutdownHost}
-                  >Shutdown</mwc-button
+                <mwc-button
+                  title="Shut down the host OS"
+                  class="warning"
+                  @click=${this._hostShutdown}
                 >
+                  Shutdown
+                </mwc-button>
               `
             : ""}
 
-          <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
-            <mwc-icon-button
-              .title=${this.hass.localize("ui.common.menu")}
-              .label=${this.hass.localize("ui.common.overflow_menu")}
-              slot="trigger"
-            >
+          <ha-button-menu
+            corner="BOTTOM_START"
+            @action=${this._handleMenuAction}
+          >
+            <mwc-icon-button slot="trigger">
               <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
             </mwc-icon-button>
-            <mwc-list-item
-              title="Show a list of hardware
-            "
-              >Hardware
+            <mwc-list-item title="Show a list of hardware">
+              Hardware
             </mwc-list-item>
             ${this.hostInfo.features.includes("hassos")
               ? html` <mwc-list-item
-                  class="warning"
                   title="Load HassOS configs or updates from USB"
                 >
                   Import from USB
@@ -191,27 +199,23 @@ class HassioHostInfo extends LitElement {
           justify-content: space-between;
           align-items: center;
         }
-        .errors {
-          color: var(--error-color);
-          margin-top: 16px;
+        ha-settings-row {
+          padding: 0;
+          height: 54px;
+          width: 100%;
         }
-        mwc-button.info {
-          max-width: calc(50% - 12px);
+        ha-settings-row[three-line] {
+          height: 74px;
         }
+        ha-settings-row[three-line] > div {
+          white-space: normal;
+          color: var(--secondary-text-color);
+        }
+
         .warning {
           --mdc-theme-primary: var(--error-color);
         }
-        ha-settings-row {
-          padding: 8px 0;
-          width: 100%;
-          height: 32px;
-        }
-        ha-settings-row:first-child {
-          padding: 0px 0 8px;
-        }
-        ha-settings-row:last-child {
-          padding: 8px 0 0;
-        }
+
         ha-button-menu {
           color: var(--secondary-text-color);
           --mdc-menu-min-width: 200px;
@@ -234,11 +238,21 @@ class HassioHostInfo extends LitElement {
   }
 
   protected firstUpdated(): void {
-    this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
     this._loadData();
   }
 
-  private async _handleAction(ev: CustomEvent<ActionDetail>) {
+  private _primaryIpAddress = memoizeOne((network_info: NetworkInfo) => {
+    if (!network_info) {
+      return "";
+    }
+    return (
+      Object.keys(network_info?.interfaces)
+        .map((device) => network_info.interfaces[device])
+        .find((device) => device.primary)?.ip_address || ""
+    );
+  });
+
+  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
         await this._showHardware();
@@ -249,38 +263,24 @@ class HassioHostInfo extends LitElement {
     }
   }
 
-  private _apiCalled(ev): void {
-    if (ev.detail.success) {
-      this._errors = undefined;
-      return;
-    }
-
-    const response = ev.detail.response;
-
-    this._errors =
-      typeof response.body === "object"
-        ? response.body.message || "Unknown error"
-        : response.body;
-  }
-
   private async _showHardware(): Promise<void> {
     try {
-      const content = this._objectToMarkdown(
-        await fetchHassioHardwareInfo(this.hass)
-      );
+      const content = await fetchHassioHardwareInfo(this.hass);
+      console.log(content);
       showHassioMarkdownDialog(this, {
         title: "Hardware",
-        content,
+        content: `<pre>${safeDump(content, { indent: 2 })}</pre>`,
       });
     } catch (err) {
       showAlertDialog(this, {
-        title: "Hardware",
-        text: err.body?.message || err,
+        title: "Failed to get Hardware list",
+        text:
+          typeof err === "object" ? err.body?.message || "Unkown error" : err,
       });
     }
   }
 
-  private async _rebootHost(): Promise<void> {
+  private async _hostReboot(): Promise<void> {
     const confirmed = await showConfirmationDialog(this, {
       title: "Reboot",
       text: "Are you sure you want to reboot the host?",
@@ -297,12 +297,13 @@ class HassioHostInfo extends LitElement {
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to reboot",
-        text: err.body?.message || err,
+        text:
+          typeof err === "object" ? err.body?.message || "Unkown error" : err,
       });
     }
   }
 
-  private async _shutdownHost(): Promise<void> {
+  private async _hostShutdown(): Promise<void> {
     const confirmed = await showConfirmationDialog(this, {
       title: "Shutdown",
       text: "Are you sure you want to shutdown the host?",
@@ -319,12 +320,13 @@ class HassioHostInfo extends LitElement {
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to shutdown",
-        text: err.body?.message || err,
+        text:
+          typeof err === "object" ? err.body?.message || "Unkown error" : err,
       });
     }
   }
 
-  private async _updateOS(): Promise<void> {
+  private async _osUpdate(): Promise<void> {
     const confirmed = await showConfirmationDialog(this, {
       title: "Update",
       text: "Are you sure you want to update the OS?",
@@ -341,30 +343,10 @@ class HassioHostInfo extends LitElement {
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to update",
-        text: err.body?.message || err,
+        text:
+          typeof err === "object" ? err.body?.message || "Unkown error" : err,
       });
     }
-  }
-
-  private _objectToMarkdown(obj, indent = ""): string {
-    let data = "";
-    Object.keys(obj).forEach((key) => {
-      if (typeof obj[key] !== "object") {
-        data += `${indent}- ${key}: ${obj[key]}\n`;
-      } else {
-        data += `${indent}- ${key}:\n`;
-        if (Array.isArray(obj[key])) {
-          if (obj[key].length) {
-            data +=
-              `${indent}    - ` + obj[key].join(`\n${indent}    - `) + "\n";
-          }
-        } else {
-          data += this._objectToMarkdown(obj[key], `    ${indent}`);
-        }
-      }
-    });
-
-    return data;
   }
 
   private async _changeNetworkClicked(): Promise<void> {
@@ -390,21 +372,22 @@ class HassioHostInfo extends LitElement {
       } catch (err) {
         showAlertDialog(this, {
           title: "Setting hostname failed",
-          text: err.body.message,
+          text:
+            typeof err === "object" ? err.body?.message || "Unkown error" : err,
         });
       }
     }
   }
 
   private async _importFromUSB(): Promise<void> {
-    this._errors = undefined;
     try {
-      await changeHostOptions(this.hass, { hostname });
+      await configSyncOS(this.hass);
       this.hostInfo = await fetchHassioHostInfo(this.hass);
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to import from USB",
-        text: err.body?.message || err,
+        text:
+          typeof err === "object" ? err.body?.message || "Unkown error" : err,
       });
     }
   }

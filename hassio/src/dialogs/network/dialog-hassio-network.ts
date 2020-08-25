@@ -188,38 +188,6 @@ export class DialogHassioNetwork extends LitElement {
       </div>`;
   }
 
-  private async _updateNetwork() {
-    this._prosessing = true;
-    const device = this._network[this._curTabIndex];
-    let options: Partial<NetworkInterface> = {
-      method: device.data.method,
-    };
-    if (options.method !== "dhcp") {
-      options = {
-        ...options,
-        address: this._ip_address!.value!,
-        gateway: this._gateway!.value!,
-        dns: String(this._nameservers!.value!).split(","),
-      };
-    }
-    try {
-      await updateNetworkInterface(this.hass, device.interface, options);
-    } catch (err) {
-      showAlertDialog(this, {
-        title: "Failed to change network settings",
-        text: err.body?.message || err,
-      });
-      this._prosessing = false;
-      return;
-    }
-    this._params?.loadData();
-    this.closeDialog();
-  }
-
-  private _handleTabActivated(ev: CustomEvent): void {
-    this._curTabIndex = ev.detail.index;
-  }
-
   static get styles(): CSSResult[] {
     return [
       haStyleDialog,
@@ -291,19 +259,44 @@ export class DialogHassioNetwork extends LitElement {
     ];
   }
 
+  private async _updateNetwork() {
+    this._prosessing = true;
+    const device = this._network[this._curTabIndex];
+    let options: Partial<NetworkInterface> = {
+      method: device.data.method,
+    };
+    if (options.method !== "dhcp") {
+      options = {
+        ...options,
+        address: this._ip_address!.value!,
+        gateway: this._gateway!.value!,
+        dns: String(this._nameservers!.value!).split(","),
+      };
+    }
+    try {
+      await updateNetworkInterface(this.hass, device.interface, options);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Failed to change network settings",
+        text:
+          typeof err === "object" ? err.body.message || "Unkown error" : err,
+      });
+      this._prosessing = false;
+      return;
+    }
+    this._params?.loadData();
+    this.closeDialog();
+  }
+
+  private _handleTabActivated(ev: CustomEvent): void {
+    this._curTabIndex = ev.detail.index;
+  }
+
   private _handleRadioValueChanged(ev: PolymerChangedEvent<string>) {
     this._network[this._curTabIndex].data.method = ev.detail.value as
       | "dhcp"
       | "static";
     this.requestUpdate("_network");
-  }
-
-  public focus() {
-    this.updateComplete.then(() =>
-      (this.shadowRoot?.querySelector(
-        "[dialogInitialFocus]"
-      ) as HTMLElement)?.focus()
-    );
   }
 }
 
