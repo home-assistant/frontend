@@ -81,7 +81,7 @@ class HassioHostInfo extends LitElement {
             : ""}
           <ha-settings-row>
             <span slot="heading">
-              IP Address
+              IP address
             </span>
             <span slot="description">
               ${primaryIpAddress}
