@@ -96,7 +96,7 @@ class HassioHostInfo extends LitElement {
           </ha-settings-row>
           <ha-settings-row>
             <span slot="heading">
-              System
+              Operating system
             </span>
             <span slot="description">
               ${this.hostInfo.operating_system}
