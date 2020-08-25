@@ -143,7 +143,7 @@ export class DialogHassioNetwork extends LitElement {
           ? html` <paper-input
                 class="flex-auto"
                 id="ip_address"
-                label="IP Address/Netmask"
+                label="IP address/Netmask"
                 .value="${device.data.ip_address}"
               ></paper-input>
               <paper-input
@@ -155,7 +155,7 @@ export class DialogHassioNetwork extends LitElement {
               <paper-input
                 class="flex-auto"
                 id="nameservers"
-                label="DNS Servers"
+                label="DNS servers"
                 .value="${device.data.nameservers.join(", ")}"
               ></paper-input>
               NB!: If you are changing IP or gateway addresses, you might loose
