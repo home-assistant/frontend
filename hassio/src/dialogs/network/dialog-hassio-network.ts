@@ -289,17 +289,11 @@ export class DialogHassioNetwork extends LitElement {
     if (!value || !this._device) {
       return;
     }
-    switch ((ev.target as PaperInputElement).id) {
-      case "ip_address":
-        this._device!.data.ip_address = value;
-        break;
-      case "gateway":
-        this._device!.data.gateway = value;
-        break;
-      case "nameservers":
-        this._device!.data.nameservers = String(value!).split(",");
-        break;
+    const id = (ev.target as PaperInputElement).id;
+    if (id === "nameservers") {
+    	value = String(value!).split(",");
     }
+    this._device.data[id] = value;
   }
 }
 
