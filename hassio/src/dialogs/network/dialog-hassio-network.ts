@@ -57,6 +57,7 @@ export class DialogHassioNetwork extends LitElement {
 
   public async showDialog(params: HassioNetworkDialogParams): Promise<void> {
     this._params = params;
+    this._curTabIndex = 0;
     this._network = Object.keys(params.network?.interfaces)
       .map((device) => ({
         interface: device,
