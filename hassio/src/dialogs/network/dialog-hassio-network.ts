@@ -2,7 +2,6 @@ import "@material/mwc-button/mwc-button";
 import "@material/mwc-icon-button";
 import "@material/mwc-tab-bar";
 import "@material/mwc-tab";
-import "@polymer/paper-input/paper-input";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { mdiClose } from "@mdi/js";
 import {
@@ -30,9 +29,7 @@ import type { HaRadio } from "../../../../src/components/ha-radio";
 
 import "../../../../src/components/ha-circular-progress";
 import "../../../../src/components/ha-dialog";
-import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-formfield";
-import "../../../../src/components/ha-header-bar";
 import "../../../../src/components/ha-header-bar";
 import "../../../../src/components/ha-radio";
 import "../../../../src/components/ha-related-items";
@@ -42,7 +39,7 @@ import "../../../../src/components/ha-svg-icon";
 export class DialogHassioNetwork extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _prosessing: boolean = false;
+  @internalProperty() private _prosessing = false;
 
   @internalProperty() private _params?: HassioNetworkDialogParams;
 
@@ -51,7 +48,7 @@ export class DialogHassioNetwork extends LitElement {
     data: NetworkInterface;
   }[];
 
-  @internalProperty() private _curTabIndex: number = 0;
+  @internalProperty() private _curTabIndex = 0;
 
   @internalProperty() private _device?: {
     interface: string;
