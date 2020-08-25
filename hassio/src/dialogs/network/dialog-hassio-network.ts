@@ -285,13 +285,17 @@ export class DialogHassioNetwork extends LitElement {
   }
 
   private _handleInputValueChanged(ev: CustomEvent): void {
-    const value = (ev.target as PaperInputElement).value;
+    let value:
+      | string
+      | null
+      | undefined
+      | string[] = (ev.target as PaperInputElement).value;
     if (!value || !this._device) {
       return;
     }
     const id = (ev.target as PaperInputElement).id;
     if (id === "nameservers") {
-    	value = String(value!).split(",");
+      value = String(value!).split(",");
     }
     this._device.data[id] = value;
   }
