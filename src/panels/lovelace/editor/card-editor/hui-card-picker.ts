@@ -154,10 +154,6 @@ export class HuiCardPicker extends LitElement {
       return true;
     }
 
-    if (changedProps.has("tabIndex")) {
-      return true;
-    }
-
     return false;
   }
 
