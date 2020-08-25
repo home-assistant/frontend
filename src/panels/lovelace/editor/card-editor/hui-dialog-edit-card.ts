@@ -34,6 +34,7 @@ import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { showSuggestCardDialog } from "./show-suggest-card-dialog";
+import "../../../../components/ha-header-bar";
 
 declare global {
   // for fire event
@@ -160,28 +161,32 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
         @keydown=${this._ignoreKeydown}
         @closed=${this._cancel}
         @opened=${this._opened}
-        .heading=${html`
-          ${heading}
-          ${this._documentationURL !== undefined
-            ? html`
-                <a
-                  class="header_button"
-                  href=${this._documentationURL}
-                  title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
-                  target="_blank"
-                  rel="noreferrer"
-                  dir=${computeRTLDirection(this.hass)}
-                >
-                  <mwc-icon-button>
-                    <ha-svg-icon path=${mdiHelpCircle}></ha-svg-icon>
-                  </mwc-icon-button>
-                </a>
-              `
-            : ""}
+        .heading=${true}
+      >
+        <div slot="heading">
+          <ha-header-bar>
+            <div slot="title">${heading}</div>
+            ${this._documentationURL !== undefined
+              ? html`
+                  <a
+                    slot="actionItems"
+                    class="header_button"
+                    href=${this._documentationURL}
+                    title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
+                    target="_blank"
+                    rel="noreferrer"
+                    dir=${computeRTLDirection(this.hass)}
+                  >
+                    <mwc-icon-button>
+                      <ha-svg-icon path=${mdiHelpCircle}></ha-svg-icon>
+                    </mwc-icon-button>
+                  </a>
+                `
+              : ""}
+          </ha-header-bar>
           ${!this._cardConfig
             ? html`
                 <mwc-tab-bar
-                  style="padding-top: 8px"
                   .activeIndex=${this._tabIndex}
                   @MDCTabBar:activated=${(ev: CustomEvent) =>
                     this._handleTabChanged(ev)}
@@ -199,8 +204,7 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
                 </mwc-tab-bar>
               `
             : ""}
-        `}
-      >
+        </div>
         <div>
           ${this._cardConfig === undefined
             ? html`
@@ -324,6 +328,14 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
           --mdc-dialog-max-width: 845px;
         }
 
+        ha-header-bar {
+          --mdc-theme-on-primary: var(--primary-text-color);
+          --mdc-theme-primary: var(--mdc-theme-surface);
+          flex-shrink: 0;
+          border-bottom: 1px solid
+            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
+        }
+
         .center {
           margin-left: auto;
           margin-right: auto;
@@ -399,6 +411,13 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
           display: flex;
           align-items: center;
           justify-content: space-between;
+        }
+        .header_button {
+          color: inherit;
+          text-decoration: none;
+        }
+        mwc-tab-bar {
+          padding-top: 8px;
         }
       `,
     ];
