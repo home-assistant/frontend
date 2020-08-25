@@ -20,6 +20,7 @@ import type {
   DataTableRowData,
   SelectionChangedEvent,
 } from "../../../../components/data-table/ha-data-table";
+import "../../../../components/data-table/ha-data-table";
 
 import "../../../../components/entity/state-badge";
 
