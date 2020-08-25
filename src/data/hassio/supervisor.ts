@@ -35,6 +35,14 @@ export interface SupervisorOptions {
   addons_repositories?: string[];
 }
 
+export const reloadSupervisor = async (hass: HomeAssistant) => {
+  await hass.callApi<HassioResponse<void>>("POST", `hassio/supervisor/reload`);
+};
+
+export const updateSupervisor = async (hass: HomeAssistant) => {
+  await hass.callApi<HassioResponse<void>>("POST", `hassio/supervisor/update`);
+};
+
 export const fetchHassioHomeAssistantInfo = async (hass: HomeAssistant) => {
   return hassioApiResultExtractor(
     await hass.callApi<HassioResponse<HassioHomeAssistantInfo>>(
