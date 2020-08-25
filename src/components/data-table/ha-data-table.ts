@@ -214,13 +214,15 @@ export class HaDataTable extends LitElement {
           class="mdc-data-table__table ${classMap({
             "auto-height": this.autoHeight,
           })}"
+          role="table"
+          aria-rowcount=${this._filteredData.length}
           style=${styleMap({
             height: this.autoHeight
               ? `${(this._filteredData.length || 1) * 53 + 57}px`
               : `calc(100% - ${this._header?.clientHeight}px)`,
           })}
         >
-          <div class="mdc-data-table__header-row">
+          <div class="mdc-data-table__header-row" role="row">
             ${this.selectable
               ? html`
                   <div
@@ -288,8 +290,8 @@ export class HaDataTable extends LitElement {
           ${!this._filteredData.length
             ? html`
                 <div class="mdc-data-table__content">
-                  <div class="mdc-data-table__row">
-                    <div class="mdc-data-table__cell grows center">
+                  <div class="mdc-data-table__row" role="row">
+                    <div class="mdc-data-table__cell grows center" role="cell">
                       ${this.noDataText || "No data"}
                     </div>
                   </div>
@@ -304,12 +306,14 @@ export class HaDataTable extends LitElement {
                     items: !this.hasFab
                       ? this._filteredData
                       : [...this._filteredData, ...[{ empty: true }]],
-                    renderItem: (row: DataTableRowData) => {
+                    renderItem: (row: DataTableRowData, index) => {
                       if (row.empty) {
                         return html` <div class="mdc-data-table__row"></div> `;
                       }
                       return html`
                         <div
+                          aria-rowindex=${index}
+                          role="row"
                           .rowId="${row[this.id]}"
                           @click=${this._handleRowClick}
                           class="mdc-data-table__row ${classMap({
@@ -328,6 +332,7 @@ export class HaDataTable extends LitElement {
                             ? html`
                                 <div
                                   class="mdc-data-table__cell mdc-data-table__cell--checkbox"
+                                  role="cell"
                                 >
                                   <ha-checkbox
                                     class="mdc-data-table__row-checkbox"
@@ -345,6 +350,7 @@ export class HaDataTable extends LitElement {
                             const [key, column] = columnEntry;
                             return html`
                               <div
+                                role="cell"
                                 class="mdc-data-table__cell ${classMap({
                                   "mdc-data-table__cell--numeric": Boolean(
                                     column.type === "numeric"
