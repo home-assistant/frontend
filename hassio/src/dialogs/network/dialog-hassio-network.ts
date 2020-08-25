@@ -3,8 +3,6 @@ import "@material/mwc-icon-button";
 import "@material/mwc-tab-bar";
 import "@material/mwc-tab";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-radio-button/paper-radio-button";
-import "@polymer/paper-radio-group/paper-radio-group";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { mdiClose } from "@mdi/js";
 import {
@@ -29,13 +27,15 @@ import { HassioNetworkDialogParams } from "./show-dialog-network";
 import { haStyleDialog } from "../../../../src/resources/styles";
 import { showAlertDialog } from "../../../../src/dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../src/types";
-import type { PolymerChangedEvent } from "../../../../src/polymer-types";
+import type { HaRadio } from "../../../../src/components/ha-radio";
 
 import "../../../../src/components/ha-circular-progress";
 import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-dialog";
+import "../../../../src/components/ha-formfield";
 import "../../../../src/components/ha-header-bar";
 import "../../../../src/components/ha-header-bar";
+import "../../../../src/components/ha-radio";
 import "../../../../src/components/ha-related-items";
 import "../../../../src/components/ha-svg-icon";
 
@@ -124,19 +124,24 @@ export class DialogHassioNetwork extends LitElement {
   private _renderTab() {
     const device = this._network[this._curTabIndex];
     return html` <div class="form container">
-        <paper-radio-group
-          name="snapshotType"
-          .selected=${device.data.method}
-          @selected-changed=${this._handleRadioValueChanged}
-        >
-          Interface mode
-          <paper-radio-button name="dhcp">
-            DHCP
-          </paper-radio-button>
-          <paper-radio-button name="static">
-            Static
-          </paper-radio-button>
-        </paper-radio-group>
+        <ha-formfield label="DHCP">
+          <ha-radio
+            @change=${this._handleRadioValueChanged}
+            value="dhcp"
+            name="method"
+            ?checked=${device.data.method === "dhcp"}
+          >
+          </ha-radio>
+        </ha-formfield>
+        <ha-formfield label="Static">
+          <ha-radio
+            @change=${this._handleRadioValueChanged}
+            value="static"
+            name="method"
+            ?checked=${device.data.method === "static"}
+          >
+          </ha-radio>
+        </ha-formfield>
         ${device.data.method !== "dhcp"
           ? html` <paper-input
                 class="flex-auto"
@@ -274,10 +279,9 @@ export class DialogHassioNetwork extends LitElement {
     this._curTabIndex = ev.detail.index;
   }
 
-  private _handleRadioValueChanged(ev: PolymerChangedEvent<string>) {
-    this._network[this._curTabIndex].data.method = ev.detail.value as
-      | "dhcp"
-      | "static";
+  private _handleRadioValueChanged(ev: CustomEvent): void {
+    this._network[this._curTabIndex].data.method = (ev.target as HaRadio)
+      .value as "dhcp" | "static";
     this.requestUpdate("_network");
   }
 }
