@@ -23,7 +23,10 @@ import {
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { HassioNetworkDialogParams } from "./show-dialog-network";
 import { haStyleDialog } from "../../../../src/resources/styles";
-import { showAlertDialog } from "../../../../src/dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../../src/dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../src/types";
 import type { HaRadio } from "../../../../src/components/ha-radio";
 import { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
@@ -56,8 +59,11 @@ export class DialogHassioNetwork extends LitElement implements HassDialog {
     data: NetworkInterface;
   };
 
+  @internalProperty() private _dirty = false;
+
   public async showDialog(params: HassioNetworkDialogParams): Promise<void> {
     this._params = params;
+    this._dirty = false;
     this._curTabIndex = 0;
     this._network = Object.keys(params.network?.interfaces)
       .map((device) => ({
@@ -158,7 +164,7 @@ export class DialogHassioNetwork extends LitElement implements HassDialog {
                 class="flex-auto"
                 id="nameservers"
                 label="DNS servers"
-                .value="${this._device!.data.nameservers.join(", ")}"
+                .value="${this._device!.data.nameservers.join(",")}"
                 @value-changed=${this._handleInputValueChanged}
               ></paper-input>
               NB!: If you are changing IP or gateway addresses, you might lose
@@ -167,7 +173,7 @@ export class DialogHassioNetwork extends LitElement implements HassDialog {
       </div>
       <div class="buttons">
         <mwc-button label="close" @click=${this.closeDialog}> </mwc-button>
-        <mwc-button @click=${this._updateNetwork}>
+        <mwc-button @click=${this._updateNetwork} ?disabled=${!this._dirty}>
           ${this._prosessing
             ? html`<ha-circular-progress active></ha-circular-progress>`
             : "Update"}
@@ -274,15 +280,38 @@ export class DialogHassioNetwork extends LitElement implements HassDialog {
     this.closeDialog();
   }
 
-  private _handleTabActivated(ev: CustomEvent): void {
+  private async _handleTabActivated(ev: CustomEvent): Promise<void> {
+    if (this._dirty) {
+      const confirm = await showConfirmationDialog(this, {
+        text:
+          "You have unsaved changes, this will get lost if you change tabs, do you want to continue?",
+        confirmText: "yes",
+        dismissText: "no",
+      });
+      if (!confirm) {
+        this.requestUpdate("_device");
+        return;
+      }
+    }
     this._curTabIndex = ev.detail.index;
     this._device = this._network[ev.detail.index];
   }
 
   private _handleRadioValueChanged(ev: CustomEvent): void {
-    this._device!.data.method = (ev.target as HaRadio).value as
-      | "dhcp"
-      | "static";
+    const value = (ev.target as HaRadio).value as "dhcp" | "static";
+
+    if (!value || !this._device || this._device!.data.method === value) {
+      return;
+    }
+
+    if (
+      JSON.stringify(this._network[this._curTabIndex].data.method) !==
+      JSON.stringify(value)
+    ) {
+      this._dirty = true;
+    }
+
+    this._device!.data.method = value;
     this.requestUpdate("_device");
   }
 
@@ -292,13 +321,23 @@ export class DialogHassioNetwork extends LitElement implements HassDialog {
       | null
       | undefined
       | string[] = (ev.target as PaperInputElement).value;
+
     if (!value || !this._device) {
       return;
     }
+
     const id = (ev.target as PaperInputElement).id;
     if (id === "nameservers") {
       value = String(value!).split(",");
     }
+
+    if (
+      JSON.stringify(this._network[this._curTabIndex].data[id]) !==
+      JSON.stringify(value)
+    ) {
+      this._dirty = true;
+    }
+
     this._device.data[id] = value;
   }
 }
