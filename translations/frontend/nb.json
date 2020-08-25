@@ -1337,6 +1337,7 @@
                     "caption": "Enheter",
                     "confirm_delete": "Er du sikker på at du vil slette denne enheten?",
                     "confirm_rename_entity_ids": "Vil du også endre navn på entitets-ID-en for entitetene dine?",
+                    "confirm_rename_entity_ids_warning": "Dette vil ikke endre noen konfigurasjon (som automatiseringer, skript, scener, Lovelace) som bruker disse enhetene, må du oppdatere dem selv.",
                     "data_table": {
                         "area": "Område",
                         "battery": "Batteri",

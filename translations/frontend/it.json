@@ -554,6 +554,10 @@
                 "loading_history": "Caricamento storico...",
                 "no_history_found": "Nessuno storico trovato."
             },
+            "picture-upload": {
+                "label": "Immagine",
+                "unsupported_format": "Formato non supportato, scegliere un'immagine JPEG, PNG o GIF."
+            },
             "related-items": {
                 "area": "Area",
                 "automation": "Parte delle seguenti automazioni",
@@ -655,6 +659,9 @@
                 "platform_not_loaded": "L'integrazione {platform} non è stata caricata. Si prega di aggiungerla alla propria configurazione, aggiungendo 'default_config:' o ''{platform}:''.",
                 "required_error_msg": "Questo campo è obbligatorio",
                 "yaml_not_editable": "Le impostazioni di questa entità non possono essere modificate dall'Interfaccia Utente. Solo le entità impostate dall'Interfaccia Utente sono configurabili dall'Interfaccia Utente."
+            },
+            "image_cropper": {
+                "crop": "Ritaglia"
             },
             "more_info_control": {
                 "dismiss": "Chiudi finestra di dialogo",
@@ -892,7 +899,7 @@
                                     "wait_template": "Modello di attesa"
                                 }
                             },
-                            "unsupported_action": "Azione non supportata: {action}"
+                            "unsupported_action": "Nessun supporto dell'Interfaccia Utente per l'azione: {action}"
                         },
                         "alias": "Nome",
                         "conditions": {
@@ -958,7 +965,7 @@
                                     "zone": "Zona"
                                 }
                             },
-                            "unsupported_condition": "Condizione non supportata: {condition}"
+                            "unsupported_condition": "Nessun supporto dell'Interfaccia Utente per la condizione: {condition}"
                         },
                         "default_name": "Nuova Automazione",
                         "description": {
@@ -1050,6 +1057,9 @@
                                     "sunrise": "Alba",
                                     "sunset": "Tramonto"
                                 },
+                                "tag": {
+                                    "label": "Etichetta"
+                                },
                                 "template": {
                                     "label": "Modello",
                                     "value_template": "Valore modello"
@@ -1077,7 +1087,7 @@
                                     "zone": "Zona"
                                 }
                             },
-                            "unsupported_platform": "Piattaforma non supportata: {platform}"
+                            "unsupported_platform": "Nessun supporto dell'Interfaccia Utente per la piattaforma: {platform}"
                         },
                         "unsaved_confirm": "Hai delle modifiche non salvate. Sei sicuro di voler uscire?"
                     },
@@ -1327,6 +1337,7 @@
                     "caption": "Dispositivi",
                     "confirm_delete": "Sei sicuro di voler eliminare questo dispositivo?",
                     "confirm_rename_entity_ids": "Vuoi anche rinominare gli ID entità delle tue entità?",
+                    "confirm_rename_entity_ids_warning": "Questo non cambierà alcuna configurazione (come automazioni, script, scene, Lovelace) che attualmente utilizza queste entità, dovrai aggiornarle tu stesso.",
                     "data_table": {
                         "area": "Area",
                         "battery": "Batteria",
@@ -1656,6 +1667,37 @@
                         "node_failed": "Nodo non riuscito",
                         "stage": "Fase",
                         "zwave_info": "Informazioni Z-Wave"
+                    },
+                    "node_query_stages": {
+                        "associations": "Aggiornamento dell'associazione gruppi e appartenenze",
+                        "cacheload": "Caricamento delle informazioni dal file di cache di OpenZWave. I nodi a batteria rimarranno in questa fase fino a quando il nodo non si riattiva.",
+                        "complete": "Il processo di interrogazione è completo",
+                        "configuration": "Recupero dei valori di configurazione dal nodo",
+                        "dynamic": "Recupero di valori che cambiano di frequente dal nodo",
+                        "instances": "Recupero dei dettagli sulle istanze o sui canali supportati da un dispositivo",
+                        "manufacturerspecific1": "Recupero dei codici ID produttore e prodotto dal nodo",
+                        "manufacturerspecific2": "Recupero di ulteriori codici ID prodotto e produttore dal nodo",
+                        "neighbors": "Ottenere un elenco dei vicini del nodo",
+                        "nodeinfo": "Recupero delle classi di comando supportate dal nodo",
+                        "nodeplusinfo": "Recupero delle informazioni Z-Wave+ dal nodo",
+                        "probe": "Controllo se il nodo è sveglio/attivo",
+                        "protocolinfo": "Recupero delle funzionalità di base Z-Wave di questo nodo dal controller",
+                        "session": "Recupero di valori che cambiano di rado dal nodo",
+                        "static": "Recupero di valori statici dal dispositivo",
+                        "versions": "Recupero di informazioni sulle versioni del firmware e della classe di comando",
+                        "wakeup": "Configurazione del supporto per code di riattivazione e messaggi "
+                    },
+                    "refresh_node": {
+                        "battery_note": "Se il nodo è alimentato a batteria, assicurarsi di riattivarlo prima di procedere",
+                        "complete": "Aggiornamento del nodo completato",
+                        "description": "In questo modo si dirà a OpenZWave di re-interrogare un nodo e aggiornare le classi di comando, le funzionalità e i valori del nodo.",
+                        "node_status": "Stato del nodo",
+                        "refreshing_description": "Aggiornamento delle informazioni sul nodo in corso ...",
+                        "start_refresh_button": "Avvia aggiornamento",
+                        "step": "Passo",
+                        "title": "Aggiorna le informazioni sul nodo",
+                        "wakeup_header": "Istruzioni di riattivazione per",
+                        "wakeup_instructions_source": "Le istruzioni di riattivazione provengono dal database dei dispositivi della comunità di OpenZWave."
                     }
                 },
                 "person": {
@@ -1811,6 +1853,31 @@
                             "valid": "Configurazione valida!"
                         }
                     }
+                },
+                "tags": {
+                    "add_tag": "Aggiungi Etichetta",
+                    "automation_title": "L'etichetta {name} è scansionata",
+                    "caption": "Etichette",
+                    "create_automation": "Creare un'automazione con l'etichetta",
+                    "description": "Gestisci le etichette",
+                    "detail": {
+                        "create": "Crea",
+                        "create_and_write": "Crea e Scrivi",
+                        "delete": "Cancella",
+                        "description": "Descrizione",
+                        "name": "Nome",
+                        "new_tag": "Nuova Etichetta",
+                        "tag_id": "Id Etichetta",
+                        "tag_id_placeholder": "Autogenerato quando lasciato vuoto",
+                        "update": "Aggiorna"
+                    },
+                    "edit": "Modifica",
+                    "headers": {
+                        "last_scanned": "Ultima scansione",
+                        "name": "Nome"
+                    },
+                    "no_tags": "Nessuna etichetta",
+                    "write": "Scrivi"
                 },
                 "users": {
                     "add_user": {
