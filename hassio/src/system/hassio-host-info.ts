@@ -263,7 +263,6 @@ class HassioHostInfo extends LitElement {
   private async _showHardware(): Promise<void> {
     try {
       const content = await fetchHassioHardwareInfo(this.hass);
-      console.log(content);
       showHassioMarkdownDialog(this, {
         title: "Hardware",
         content: `<pre>${safeDump(content, { indent: 2 })}</pre>`,
