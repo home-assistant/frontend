@@ -76,6 +76,8 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
     const staticColors = {
       on: 1,
       off: 0,
+      home: "#8bc34a",
+      not_home: "#f44336",
       unavailable: "#a0a0a0",
       unknown: "#606060",
       idle: 2,
