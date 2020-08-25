@@ -284,7 +284,7 @@ export class DialogHassioNetwork extends LitElement implements HassDialog {
     if (this._dirty) {
       const confirm = await showConfirmationDialog(this, {
         text:
-          "You have unsaved changes, this will get lost if you change tabs, do you want to continue?",
+          "You have unsaved changes, these will get lost if you change tabs, do you want to continue?",
         confirmText: "yes",
         dismissText: "no",
       });
