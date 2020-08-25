@@ -52,7 +52,6 @@ class HassioSystem extends LitElement {
       >
         <span slot="header">System</span>
         <div class="content">
-          <h1>Information</h1>
           <div class="card-group">
             <hassio-supervisor-info
               .hass=${this.hass}
@@ -66,7 +65,6 @@ class HassioSystem extends LitElement {
               .hassOsInfo=${this.hassOsInfo}
             ></hassio-host-info>
           </div>
-          <h1>System log</h1>
           <hassio-supervisor-log .hass=${this.hass}></hassio-supervisor-log>
         </div>
       </hass-tabs-subpage>
