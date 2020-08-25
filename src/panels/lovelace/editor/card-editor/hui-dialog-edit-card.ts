@@ -33,16 +33,22 @@ import { mdiHelpCircle } from "@mdi/js";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
+import { showSuggestCardDialog } from "./show-suggest-card-dialog";
 
 declare global {
   // for fire event
   interface HASSDomEvents {
     "reload-lovelace": undefined;
+    "selected-changed": SelectedChangedEvent;
   }
   // for add event listener
   interface HTMLElementEventMap {
     "reload-lovelace": HASSDomEvent<undefined>;
   }
+}
+
+interface SelectedChangedEvent {
+  selectedEntities: string[];
 }
 
 @customElement("hui-dialog-edit-card")
@@ -68,6 +74,8 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
   @internalProperty() private _documentationURL?: string;
 
   @internalProperty() private _dirty = false;
+
+  @internalProperty() private _selectedEntities: string[] = [];
 
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
@@ -175,6 +183,7 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
                   .lovelace=${this._params.lovelaceConfig}
                   .hass=${this.hass}
                   @config-changed=${this._handleCardPicked}
+                  @selected-changed=${this._handleSelectedChanged}
                 ></hui-card-picker>
               `
             : html`
@@ -247,6 +256,13 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
                 </mwc-button>
               `
             : ``}
+          ${this._selectedEntities.length
+            ? html`
+                <mwc-button @click=${this._suggestCards}>
+                  ${this.hass!.localize("ui.common.continue")}
+                </mwc-button>
+              `
+            : ""}
         </div>
       </ha-dialog>
     `;
@@ -383,6 +399,10 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
     this._dirty = true;
   }
 
+  private _handleSelectedChanged(ev: CustomEvent): void {
+    this._selectedEntities = ev.detail.selectedEntities;
+  }
+
   private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {
     ev.stopPropagation();
     this._GUImode = ev.detail.guiMode;
@@ -461,6 +481,17 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
     this._saving = false;
     this._dirty = false;
     showSaveSuccessToast(this, this.hass);
+    this.closeDialog();
+  }
+
+  private _suggestCards(): void {
+    showSuggestCardDialog(this, {
+      lovelaceConfig: this._params!.lovelaceConfig,
+      saveConfig: this._params!.saveConfig,
+      path: this._params!.path as [number],
+      entities: this._selectedEntities,
+    });
+
     this.closeDialog();
   }
 }
