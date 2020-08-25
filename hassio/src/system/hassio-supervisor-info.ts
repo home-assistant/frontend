@@ -79,78 +79,38 @@ class HassioSupervisorInfo extends LitElement {
                 </ha-settings-row>
               `
             : ""}
-
-          <ha-settings-row>
-            <span slot="heading">
-              Share Diagnostics
-            </span>
-            <div slot="description" class="diagnostics-description">
-              Share crash reports and diagnostic information.
-              <button class="link" @click=${this._diagnosticsInformationDialog}>
-                Learn more
-              </button>
-            </div>
-            <ha-switch
-              .checked=${this.supervisorInfo.diagnostics}
-              @change=${this._toggleDiagnostics}
-            ></ha-switch>
-          </ha-settings-row>
-
-          <h2>Supervisor</h2>
-          <table class="info">
-            <tbody>
-              <tr>
-                <td>Version</td>
-                <td>${this.supervisorInfo.version}</td>
-              </tr>
-              <tr>
-                <td>Latest version</td>
-                <td>${this.supervisorInfo.version_latest}</td>
-              </tr>
-              ${this.supervisorInfo.channel !== "stable"
-                ? html`
-                    <tr>
-                      <td>Channel</td>
-                      <td>${this.supervisorInfo.channel}</td>
-                    </tr>
-                  `
-                : ""}
-            </tbody>
-          </table>
-          <div class="options">
-            ${this.supervisorInfo?.supported
-              ? html` <ha-settings-row>
-                  <span slot="heading">
-                    Share Diagnostics
-                  </span>
-                  <div slot="description" class="diagnostics-description">
-                    Share crash reports and diagnostic information.
-                    <button
-                      class="link"
-                      @click=${this._diagnosticsInformationDialog}
-                    >
-                      Learn more
-                    </button>
-                  </div>
-                  <ha-switch
-                    .checked=${this.supervisorInfo.diagnostics}
-                    @change=${this._toggleDiagnostics}
-                  ></ha-switch>
-                </ha-settings-row>`
-              : html`<div class="error">
-                  You are running an unsupported installation.
-                  <a
-                    href="https://github.com/home-assistant/architecture/blob/master/adr/${this.hostInfo.features.includes(
-                      "hassos"
-                    )
-                      ? "0015-home-assistant-os.md"
-                      : "0014-home-assistant-supervised.md"}"
-                    target="_blank"
-                    rel="noreferrer"
-                    >Learn More</a
+          ${this.supervisorInfo?.supported
+            ? html` <ha-settings-row>
+                <span slot="heading">
+                  Share Diagnostics
+                </span>
+                <div slot="description" class="diagnostics-description">
+                  Share crash reports and diagnostic information.
+                  <button
+                    class="link"
+                    @click=${this._diagnosticsInformationDialog}
                   >
-                </div>`}
-          </div>
+                    Learn more
+                  </button>
+                </div>
+                <ha-switch
+                  .checked=${this.supervisorInfo.diagnostics}
+                  @change=${this._toggleDiagnostics}
+                ></ha-switch>
+              </ha-settings-row>`
+            : html`<div class="error">
+                You are running an unsupported installation.
+                <a
+                  href="https://github.com/home-assistant/architecture/blob/master/adr/${this.hostInfo.features.includes(
+                    "hassos"
+                  )
+                    ? "0015-home-assistant-os.md"
+                    : "0014-home-assistant-supervised.md"}"
+                  target="_blank"
+                  rel="noreferrer"
+                  >Learn More</a
+                >
+              </div>`}
           ${this._errors
             ? html` <div class="error">Error: ${this._errors}</div> `
             : ""}
