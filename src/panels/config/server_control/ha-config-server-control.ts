@@ -36,6 +36,7 @@ const reloadableDomains = [
   "input_datetime",
   "input_select",
   "template",
+  "universal",
 ];
 
 @customElement("ha-config-server-control")
