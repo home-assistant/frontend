@@ -156,7 +156,7 @@ export class DialogHassioNetwork extends LitElement {
                 label="DNS servers"
                 .value="${device.data.nameservers.join(", ")}"
               ></paper-input>
-              NB!: If you are changing IP or gateway addresses, you might loose
+              NB!: If you are changing IP or gateway addresses, you might lose
               the connection.`
           : ""}
       </div>
