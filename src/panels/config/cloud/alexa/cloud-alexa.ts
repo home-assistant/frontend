@@ -1,12 +1,11 @@
-import "../../../../components/ha-icon-button";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
@@ -19,8 +18,11 @@ import {
   isEmptyFilter,
 } from "../../../../common/entity/entity_filter";
 import { compare } from "../../../../common/string/compare";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/entity/state-info";
 import "../../../../components/ha-card";
+import "../../../../components/ha-formfield";
+import "../../../../components/ha-icon-button";
 import "../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import { AlexaEntity, fetchCloudAlexaEntities } from "../../../../data/alexa";
@@ -29,21 +31,15 @@ import {
   CloudPreferences,
   CloudStatusLoggedIn,
   updateCloudAlexaEntityConfig,
+  updateCloudPref,
 } from "../../../../data/cloud";
 import { showDomainTogglerDialog } from "../../../../dialogs/domain-toggler/show-dialog-domain-toggler";
 import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../../types";
-import "../../../../components/ha-formfield";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 
 const DEFAULT_CONFIG_EXPOSE = true;
 const IGNORE_INTERFACES = ["Alexa.EndpointHealth"];
-
-const configIsExposed = (config: AlexaEntityConfig) =>
-  config.should_expose === undefined
-    ? DEFAULT_CONFIG_EXPOSE
-    : config.should_expose;
 
 @customElement("cloud-alexa")
 class CloudAlexa extends LitElement {
@@ -100,7 +96,7 @@ class CloudAlexa extends LitElement {
       const stateObj = this.hass.states[entity.entity_id];
       const config = this._entityConfigs[entity.entity_id] || {};
       const isExposed = emptyFilter
-        ? configIsExposed(config)
+        ? this._configIsExposed(entity.entity_id, config)
         : filterFunc(entity.entity_id);
       if (isExposed) {
         selected++;
@@ -144,6 +140,13 @@ class CloudAlexa extends LitElement {
               >
               </ha-switch>
             </ha-formfield>
+            ${config.should_expose !== null
+              ? html`<mwc-button
+                  .entityId=${entity.entity_id}
+                  @click=${this._resetExpose}
+                  >Revert to domain default</mwc-button
+                >`
+              : ""}
           </div>
         </ha-card>
       `);
@@ -239,17 +242,27 @@ class CloudAlexa extends LitElement {
     fireEvent(this, "hass-more-info", { entityId });
   }
 
+  private _configIsExposed(entityId: string, config: AlexaEntityConfig) {
+    const domain = computeDomain(entityId);
+    return config.should_expose === null
+      ? this.cloudStatus.prefs.alexa_default_expose
+        ? this.cloudStatus.prefs.alexa_default_expose.includes(domain)
+        : DEFAULT_CONFIG_EXPOSE
+      : config.should_expose;
+  }
+
   private async _exposeChanged(ev: Event) {
     const entityId = (ev.currentTarget as any).entityId;
     const newExposed = (ev.target as HaSwitch).checked;
     await this._updateExposed(entityId, newExposed);
   }
 
-  private async _updateExposed(entityId: string, newExposed: boolean) {
-    const curExposed = configIsExposed(this._entityConfigs[entityId] || {});
-    if (newExposed === curExposed) {
-      return;
-    }
+  private async _resetExpose(ev: Event) {
+    const entityId = (ev.currentTarget as any).entityId;
+    await this._updateExposed(entityId, null);
+  }
+
+  private async _updateExposed(entityId: string, newExposed: boolean | null) {
     await this._updateConfig(entityId, {
       should_expose: newExposed,
     });
@@ -274,14 +287,44 @@ class CloudAlexa extends LitElement {
       domains: this._entities!.map((entity) =>
         computeDomain(entity.entity_id)
       ).filter((value, idx, self) => self.indexOf(value) === idx),
-      toggleDomain: (domain, turnOn) => {
+      exposedDomains: this.cloudStatus.prefs.alexa_default_expose,
+      toggleDomain: (domain, expose) => {
+        this._updateDomainExposed(domain, expose);
+      },
+      resetDomain: (domain) => {
         this._entities!.forEach((entity) => {
           if (computeDomain(entity.entity_id) === domain) {
-            this._updateExposed(entity.entity_id, turnOn);
+            this._updateExposed(entity.entity_id, null);
           }
         });
       },
     });
+  }
+
+  private async _updateDomainExposed(domain: string, expose: boolean) {
+    const defaultExpose =
+      this.cloudStatus.prefs.alexa_default_expose ||
+      this._entities!.map((entity) => computeDomain(entity.entity_id)).filter(
+        (value, idx, self) => self.indexOf(value) === idx
+      );
+
+    if (
+      (expose && defaultExpose.includes(domain)) ||
+      (!expose && !defaultExpose.includes(domain))
+    ) {
+      return;
+    }
+
+    if (expose) {
+      defaultExpose.push(domain);
+    } else {
+      defaultExpose.splice(defaultExpose.indexOf(domain), 1);
+    }
+
+    await updateCloudPref(this.hass!, {
+      alexa_default_expose: defaultExpose,
+    });
+    fireEvent(this, "ha-refresh-cloud-status");
   }
 
   private _ensureStatusReload() {
