@@ -77,6 +77,8 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
 
   @internalProperty() private _selectedEntities: string[] = [];
 
+  @internalProperty() private _tabIndex = 0;
+
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
     this._GUImode = true;
@@ -108,6 +110,8 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
   }
 
   protected updated(changedProps: PropertyValues): void {
+    console.log("updated");
+
     if (
       !this._cardConfig ||
       this._documentationURL !== undefined ||
@@ -158,30 +162,47 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
         @keydown=${this._ignoreKeydown}
         @closed=${this._cancel}
         @opened=${this._opened}
-        .heading=${html`${heading}
-        ${this._documentationURL !== undefined
-          ? html`
-              <a
-                class="header_button"
-                href=${this._documentationURL}
-                title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
-                target="_blank"
-                rel="noreferrer"
-                dir=${computeRTLDirection(this.hass)}
-              >
-                <mwc-icon-button>
-                  <ha-svg-icon path=${mdiHelpCircle}></ha-svg-icon>
-                </mwc-icon-button>
-              </a>
-            `
-          : ""}`}
+        .heading=${html`
+          ${heading}
+          ${this._documentationURL !== undefined
+            ? html`
+                <a
+                  class="header_button"
+                  href=${this._documentationURL}
+                  title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
+                  target="_blank"
+                  rel="noreferrer"
+                  dir=${computeRTLDirection(this.hass)}
+                >
+                  <mwc-icon-button>
+                    <ha-svg-icon path=${mdiHelpCircle}></ha-svg-icon>
+                  </mwc-icon-button>
+                </a>
+              `
+            : ""}
+          ${!this._cardConfig
+            ? html`
+                <mwc-tab-bar
+                  style="padding-top: 8px"
+                  .activeIndex=${this._tabIndex}
+                  @MDCTabBar:activated=${(ev: CustomEvent) =>
+                    this._handleTabChanged(ev)}
+                >
+                  <mwc-tab label="By Card"></mwc-tab>
+                  <mwc-tab label="By Entity"></mwc-tab>
+                </mwc-tab-bar>
+              `
+            : ""}
+        `}
       >
         <div>
           ${this._cardConfig === undefined
             ? html`
+                ${console.log(this._tabIndex)}
                 <hui-card-picker
                   .lovelace=${this._params.lovelaceConfig}
                   .hass=${this.hass}
+                  .tabIndex=${this._tabIndex}
                   @config-changed=${this._handleCardPicked}
                   @selected-changed=${this._handleSelectedChanged}
                 ></hui-card-picker>
@@ -397,6 +418,16 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
     this._error = ev.detail.error;
     this._guiModeAvailable = ev.detail.guiModeAvailable;
     this._dirty = true;
+  }
+
+  private _handleTabChanged(ev: CustomEvent): void {
+    const newTab = ev.detail.index;
+    if (newTab === this._tabIndex) {
+      return;
+    }
+
+    this._tabIndex = ev.detail.index;
+    this._selectedEntities = [];
   }
 
   private _handleSelectedChanged(ev: CustomEvent): void {

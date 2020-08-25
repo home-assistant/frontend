@@ -1,7 +1,10 @@
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
 import Fuse from "fuse.js";
+// eslint-disable-next-line import/no-duplicates
 import memoizeOne from "memoize-one";
+// eslint-disable-next-line import/no-duplicates
+import memoize from "memoize-one";
 import {
   css,
   CSSResult,
@@ -59,6 +62,8 @@ interface CardElement {
 export class HuiCardPicker extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property({ attribute: false }) public tabIndex = 0;
+
   @internalProperty() private _cards: CardElement[] = [];
 
   public lovelace?: LovelaceConfig;
@@ -70,8 +75,6 @@ export class HuiCardPicker extends LitElement {
   @internalProperty() private _width?: number;
 
   @internalProperty() private _height?: number;
-
-  @internalProperty() private _tabIndex = 0;
 
   private _unusedEntities?: string[];
 
@@ -110,16 +113,7 @@ export class HuiCardPicker extends LitElement {
     }
 
     return html`
-      <mwc-tab-bar
-        .activeIndex=${this._tabIndex}
-        @MDCTabBar:activated=${(tabIndex) => {
-          this._tabIndex = tabIndex.detail.index;
-        }}
-      >
-        <mwc-tab label="By Card"></mwc-tab>
-        <mwc-tab label="By Entity"></mwc-tab>
-      </mwc-tab-bar>
-      ${this._tabIndex === 0
+      ${this.tabIndex === 0
         ? html`
             <search-input
               .filter=${this._filter}
@@ -168,7 +162,7 @@ export class HuiCardPicker extends LitElement {
                 selectable
                 .id=${"entity_id"}
                 .columns=${this._columns()}
-                .data=${Object.keys(this.hass.states).map((entity) => {
+                .data=${this._allEntities(this.hass).map((entity) => {
                   const stateObj = this.hass!.states[entity];
                   return {
                     icon: "",
@@ -197,6 +191,10 @@ export class HuiCardPicker extends LitElement {
     }
 
     if (oldHass.language !== this.hass!.language) {
+      return true;
+    }
+
+    if (changedProps.has("tabIndex")) {
       return true;
     }
 
@@ -325,6 +323,8 @@ export class HuiCardPicker extends LitElement {
       },
     };
   }
+
+  private _allEntities = memoize((hass) => Object.keys(hass.states));
 
   static get styles(): CSSResult[] {
     return [
