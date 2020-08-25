@@ -90,13 +90,7 @@ export class DialogHassioNetwork extends LitElement implements HassDialog {
     }
 
     return html`
-      <ha-dialog
-        open
-        .heading=${true}
-        hideActions
-        @closed=${this.closeDialog}
-        @close-dialog=${this.closeDialog}
-      >
+      <ha-dialog open .heading=${true} hideActions @closed=${this.closeDialog}>
         <div slot="heading">
           <ha-header-bar>
             <mwc-icon-button slot="navigationIcon" dialogAction="cancel">
@@ -317,13 +311,10 @@ export class DialogHassioNetwork extends LitElement implements HassDialog {
       .value;
     const id = (ev.target as PaperInputElement).id;
 
-    if (!value || !this._device) {
+    if (!value || !this._device || this._device.data[id] === value) {
       return;
     }
 
-    if (this._device.data[id] === value) {
-      return;
-    }
     this._dirty = true;
 
     this._device.data[id] = value;
