@@ -12,7 +12,6 @@ import {
   html,
   LitElement,
   property,
-  query,
   internalProperty,
   TemplateResult,
 } from "lit-element";
@@ -54,11 +53,10 @@ export class DialogHassioNetwork extends LitElement {
 
   @internalProperty() private _curTabIndex: number = 0;
 
-  @query("#ip_address") private _ip_address?: PaperInputElement;
-
-  @query("#gateway") private _gateway?: PaperInputElement;
-
-  @query("#nameservers") private _nameservers?: PaperInputElement;
+  @internalProperty() private _device?: {
+    interface: string;
+    data: NetworkInterface;
+  };
 
   public async showDialog(params: HassioNetworkDialogParams): Promise<void> {
     this._params = params;
@@ -70,6 +68,7 @@ export class DialogHassioNetwork extends LitElement {
       .sort((a, b) => {
         return a.data.primary > b.data.primary ? -1 : 1;
       });
+    this._device = this._network[this._curTabIndex];
     await this.updateComplete;
   }
 
@@ -122,14 +121,13 @@ export class DialogHassioNetwork extends LitElement {
   }
 
   private _renderTab() {
-    const device = this._network[this._curTabIndex];
     return html` <div class="form container">
         <ha-formfield label="DHCP">
           <ha-radio
             @change=${this._handleRadioValueChanged}
             value="dhcp"
             name="method"
-            ?checked=${device.data.method === "dhcp"}
+            ?checked=${this._device!.data.method === "dhcp"}
           >
           </ha-radio>
         </ha-formfield>
@@ -138,28 +136,31 @@ export class DialogHassioNetwork extends LitElement {
             @change=${this._handleRadioValueChanged}
             value="static"
             name="method"
-            ?checked=${device.data.method === "static"}
+            ?checked=${this._device!.data.method === "static"}
           >
           </ha-radio>
         </ha-formfield>
-        ${device.data.method !== "dhcp"
+        ${this._device!.data.method !== "dhcp"
           ? html` <paper-input
                 class="flex-auto"
                 id="ip_address"
                 label="IP address/Netmask"
-                .value="${device.data.ip_address}"
+                .value="${this._device!.data.ip_address}"
+                @value-changed=${this._handleInputValueChanged}
               ></paper-input>
               <paper-input
                 class="flex-auto"
                 id="gateway"
                 label="Gateway address"
-                .value="${device.data.gateway}"
+                .value="${this._device!.data.gateway}"
+                @value-changed=${this._handleInputValueChanged}
               ></paper-input>
               <paper-input
                 class="flex-auto"
                 id="nameservers"
                 label="DNS servers"
-                .value="${device.data.nameservers.join(", ")}"
+                .value="${this._device!.data.nameservers.join(", ")}"
+                @value-changed=${this._handleInputValueChanged}
               ></paper-input>
               NB!: If you are changing IP or gateway addresses, you might lose
               the connection.`
@@ -248,20 +249,19 @@ export class DialogHassioNetwork extends LitElement {
 
   private async _updateNetwork() {
     this._prosessing = true;
-    const device = this._network[this._curTabIndex];
     let options: Partial<NetworkInterface> = {
-      method: device.data.method,
+      method: this._device!.data.method,
     };
     if (options.method !== "dhcp") {
       options = {
         ...options,
-        address: this._ip_address!.value!,
-        gateway: this._gateway!.value!,
-        dns: String(this._nameservers!.value!).split(","),
+        address: this._device!.data.ip_address,
+        gateway: this._device!.data.gateway,
+        dns: this._device!.data.nameservers,
       };
     }
     try {
-      await updateNetworkInterface(this.hass, device.interface, options);
+      await updateNetworkInterface(this.hass, this._device!.interface, options);
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to change network settings",
@@ -277,12 +277,32 @@ export class DialogHassioNetwork extends LitElement {
 
   private _handleTabActivated(ev: CustomEvent): void {
     this._curTabIndex = ev.detail.index;
+    this._device = this._network[ev.detail.index];
   }
 
   private _handleRadioValueChanged(ev: CustomEvent): void {
-    this._network[this._curTabIndex].data.method = (ev.target as HaRadio)
-      .value as "dhcp" | "static";
-    this.requestUpdate("_network");
+    this._device!.data.method = (ev.target as HaRadio).value as
+      | "dhcp"
+      | "static";
+    this.requestUpdate("_device");
+  }
+
+  private _handleInputValueChanged(ev: CustomEvent): void {
+    const value = (ev.target as PaperInputElement).value;
+    if (!value || !this._device) {
+      return;
+    }
+    switch ((ev.target as PaperInputElement).id) {
+      case "ip_address":
+        this._device!.data.ip_address = value;
+        break;
+      case "gateway":
+        this._device!.data.gateway = value;
+        break;
+      case "nameservers":
+        this._device!.data.nameservers = String(value!).split(",");
+        break;
+    }
   }
 }
 
