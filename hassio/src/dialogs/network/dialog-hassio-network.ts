@@ -304,12 +304,7 @@ export class DialogHassioNetwork extends LitElement implements HassDialog {
       return;
     }
 
-    if (
-      JSON.stringify(this._network[this._curTabIndex].data.method) !==
-      JSON.stringify(value)
-    ) {
       this._dirty = true;
-    }
 
     this._device!.data.method = value;
     this.requestUpdate("_device");
@@ -321,22 +316,19 @@ export class DialogHassioNetwork extends LitElement implements HassDialog {
       | null
       | undefined
       | string[] = (ev.target as PaperInputElement).value;
-
+    const id = (ev.target as PaperInputElement).id;
+	if (this._device.data[id] === value) {
+		return;
+	}
+	this._dirty = true;
     if (!value || !this._device) {
       return;
     }
 
-    const id = (ev.target as PaperInputElement).id;
     if (id === "nameservers") {
       value = String(value!).split(",");
     }
 
-    if (
-      JSON.stringify(this._network[this._curTabIndex].data[id]) !==
-      JSON.stringify(value)
-    ) {
-      this._dirty = true;
-    }
 
     this._device.data[id] = value;
   }
