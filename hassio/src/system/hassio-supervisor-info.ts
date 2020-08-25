@@ -213,6 +213,7 @@ class HassioSupervisorInfo extends LitElement {
         channel: this.supervisorInfo.channel !== "stable" ? "beta" : "stable",
       };
       await setSupervisorOption(this.hass, data);
+      await reloadSupervisor(this.hass);
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to set supervisor option",
