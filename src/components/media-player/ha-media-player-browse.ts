@@ -483,7 +483,9 @@ export class HaMediaPlayerBrowse extends LitElement {
           width: 100%;
           padding-bottom: 100%;
           position: relative;
+          box-sizing: border-box;
           background-size: cover;
+          background-repeat: no-repeat;
           background-position: center;
         }
 
