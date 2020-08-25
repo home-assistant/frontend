@@ -223,7 +223,8 @@ class HassioSupervisorInfo extends LitElement {
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to set supervisor option",
-        text: err.body?.message || err,
+        text:
+          typeof err === "object" ? err.body?.message || "Unkown error" : err,
       });
     }
   }
@@ -234,7 +235,8 @@ class HassioSupervisorInfo extends LitElement {
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to reload the supervisor",
-        text: err.body?.message || err,
+        text:
+          typeof err === "object" ? err.body?.message || "Unkown error" : err,
       });
     }
   }
@@ -245,7 +247,8 @@ class HassioSupervisorInfo extends LitElement {
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to update the supervisor",
-        text: err.body?.message || err,
+        text:
+          typeof err === "object" ? err.body.message || "Unkown error" : err,
       });
     }
   }
@@ -274,7 +277,8 @@ class HassioSupervisorInfo extends LitElement {
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to set supervisor option",
-        text: err.body?.message || err,
+        text:
+          typeof err === "object" ? err.body.message || "Unkown error" : err,
       });
     }
   }
