@@ -148,7 +148,7 @@ class HassioHostInfo extends LitElement {
           ${this.hostInfo.features.includes("shutdown")
             ? html`
                 <mwc-button
-                  title="Shut down the host OS"
+                  title="Shutdown the host OS"
                   class="warning"
                   @click=${this._hostShutdown}
                 >
