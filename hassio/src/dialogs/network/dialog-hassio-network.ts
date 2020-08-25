@@ -116,9 +116,7 @@ export class DialogHassioNetwork extends LitElement {
               </mwc-tab-bar>`
             : ""}
         </div>
-        <div class="wrapper">
-          ${cache(this._renderTab())}
-        </div>
+        ${cache(this._renderTab())}
       </ha-dialog>
     `;
   }
@@ -196,7 +194,7 @@ export class DialogHassioNetwork extends LitElement {
         }
 
         @media all and (min-width: 451px) and (min-height: 501px) {
-          .wrapper {
+          .container {
             width: 400px;
           }
         }
