@@ -110,8 +110,6 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
   }
 
   protected updated(changedProps: PropertyValues): void {
-    console.log("updated");
-
     if (
       !this._cardConfig ||
       this._documentationURL !== undefined ||
@@ -198,7 +196,6 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
         <div>
           ${this._cardConfig === undefined
             ? html`
-                ${console.log(this._tabIndex)}
                 <hui-card-picker
                   .lovelace=${this._params.lovelaceConfig}
                   .hass=${this.hass}
