@@ -25,7 +25,6 @@ import {
   showConfirmationDialog,
 } from "../../../src/dialogs/generic/show-dialog-box";
 
-import "../../../src/components/buttons/ha-call-api-button";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-settings-row";
 import "../../../src/components/ha-switch";
