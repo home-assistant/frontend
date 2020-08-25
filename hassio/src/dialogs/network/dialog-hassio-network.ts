@@ -236,7 +236,7 @@ export class DialogHassioNetwork extends LitElement implements HassDialog {
   }
 
   private _handleInputValueChanged(ev: CustomEvent): void {
-    let value: string | null | undefined = (ev.target as PaperInputElement)
+    const value: string | null | undefined = (ev.target as PaperInputElement)
       .value;
     const id = (ev.target as PaperInputElement).id;
 
