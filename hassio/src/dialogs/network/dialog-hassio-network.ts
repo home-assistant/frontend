@@ -74,6 +74,7 @@ export class DialogHassioNetwork extends LitElement implements HassDialog {
         return a.data.primary > b.data.primary ? -1 : 1;
       });
     this._device = this._network[this._curTabIndex];
+    this._device.data.nameservers = String(this._device.data.nameservers);
     await this.updateComplete;
   }
 
@@ -164,7 +165,7 @@ export class DialogHassioNetwork extends LitElement implements HassDialog {
                 class="flex-auto"
                 id="nameservers"
                 label="DNS servers"
-                .value="${String(this._device!.data.nameservers)}"
+                .value="${this._device!.data.nameservers as string}"
                 @value-changed=${this._handleInputValueChanged}
               ></paper-input>
               NB!: If you are changing IP or gateway addresses, you might lose
@@ -295,6 +296,7 @@ export class DialogHassioNetwork extends LitElement implements HassDialog {
     }
     this._curTabIndex = ev.detail.index;
     this._device = this._network[ev.detail.index];
+    this._device.data.nameservers = String(this._device.data.nameservers);
   }
 
   private _handleRadioValueChanged(ev: CustomEvent): void {
@@ -304,31 +306,25 @@ export class DialogHassioNetwork extends LitElement implements HassDialog {
       return;
     }
 
-      this._dirty = true;
+    this._dirty = true;
 
     this._device!.data.method = value;
     this.requestUpdate("_device");
   }
 
   private _handleInputValueChanged(ev: CustomEvent): void {
-    let value:
-      | string
-      | null
-      | undefined
-      | string[] = (ev.target as PaperInputElement).value;
+    let value: string | null | undefined = (ev.target as PaperInputElement)
+      .value;
     const id = (ev.target as PaperInputElement).id;
-	if (this._device.data[id] === value) {
-		return;
-	}
-	this._dirty = true;
+
     if (!value || !this._device) {
       return;
     }
 
-    if (id === "nameservers") {
-      value = String(value!).split(",");
+    if (this._device.data[id] === value) {
+      return;
     }
-
+    this._dirty = true;
 
     this._device.data[id] = value;
   }

@@ -7,7 +7,7 @@ export interface NetworkInterface {
   ip_address: string;
   address?: string;
   method: "static" | "dhcp";
-  nameservers: string[];
+  nameservers: string[] | string;
   dns?: string[];
   primary: boolean;
   type: string;
