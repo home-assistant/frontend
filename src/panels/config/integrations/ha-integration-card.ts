@@ -29,7 +29,6 @@ import { haStyle } from "../../../resources/styles";
 import "../../../components/ha-icon-next";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 
