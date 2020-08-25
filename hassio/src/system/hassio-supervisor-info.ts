@@ -55,7 +55,7 @@ class HassioSupervisorInfo extends LitElement {
           </ha-settings-row>
           <ha-settings-row>
             <span slot="heading">
-              Latest Version
+              Newest version
             </span>
             <span slot="description">
               ${this.supervisorInfo.version_latest}
@@ -102,7 +102,7 @@ class HassioSupervisorInfo extends LitElement {
           ${this.supervisorInfo?.supported
             ? html` <ha-settings-row three-line>
                 <span slot="heading">
-                  Share Diagnostics
+                  Share diagnostics
                 </span>
                 <div slot="description" class="diagnostics-description">
                   Share crash reports and diagnostic information.
