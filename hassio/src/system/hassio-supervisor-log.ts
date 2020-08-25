@@ -116,6 +116,7 @@ class HassioSupervisorLog extends LitElement {
       hassioStyle,
       css`
         ha-card {
+          margin-top: 8px;
           width: 100%;
         }
         pre {
@@ -128,9 +129,6 @@ class HassioSupervisorLog extends LitElement {
         .errors {
           color: var(--error-color);
           margin-bottom: 16px;
-        }
-        .card-content {
-          padding-top: 0px;
         }
       `,
     ];
