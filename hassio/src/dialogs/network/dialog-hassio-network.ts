@@ -161,9 +161,7 @@ export class DialogHassioNetwork extends LitElement {
           : ""}
       </div>
       <div class="buttons">
-        <mwc-button @click=${this.closeDialog}>
-          close
-        </mwc-button>
+        <mwc-button label="close" @click=${this.closeDialog}> </mwc-button>
         <mwc-button @click=${this._updateNetwork}>
           ${this._prosessing
             ? html`<ha-circular-progress active></ha-circular-progress>`

@@ -73,9 +73,9 @@ class HassioHostInfo extends LitElement {
                 </span>
                 <mwc-button
                   title="Change the hostname"
+                  label="Change"
                   @click=${this._changeHostnameClicked}
                 >
-                  Change
                 </mwc-button>
               </ha-settings-row>`
             : ""}
@@ -88,9 +88,9 @@ class HassioHostInfo extends LitElement {
             </span>
             <mwc-button
               title="Change the network"
+              label="Change"
               @click=${this._changeNetworkClicked}
             >
-              Change
             </mwc-button>
           </ha-settings-row>
           <ha-settings-row>
@@ -105,9 +105,9 @@ class HassioHostInfo extends LitElement {
               ? html`
                   <mwc-button
                     title="Update the host OS"
+                    label="Update"
                     @click=${this._osUpdate}
                   >
-                    Update
                   </mwc-button>
                 `
               : ""}
@@ -138,10 +138,10 @@ class HassioHostInfo extends LitElement {
             ? html`
                 <mwc-button
                   title="Reboot the host OS"
+                  label="Reboot"
                   class="warning"
                   @click=${this._hostReboot}
                 >
-                  Reboot
                 </mwc-button>
               `
             : ""}
@@ -149,10 +149,10 @@ class HassioHostInfo extends LitElement {
             ? html`
                 <mwc-button
                   title="Shutdown the host OS"
+                  label="Shutdown"
                   class="warning"
                   @click=${this._hostShutdown}
                 >
-                  Shutdown
                 </mwc-button>
               `
             : ""}

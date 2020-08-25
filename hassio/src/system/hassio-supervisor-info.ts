@@ -60,9 +60,9 @@ class HassioSupervisorInfo extends LitElement {
               ? html`
                   <mwc-button
                     title="Update the supervisor"
+                    label="Update"
                     @click=${this._supervisorUpdate}
                   >
-                    Update
                   </mwc-button>
                 `
               : ""}
@@ -78,18 +78,18 @@ class HassioSupervisorInfo extends LitElement {
               ? html`
                   <mwc-button
                     @click=${this._toggleBeta}
+                    label="Leave beta channel"
                     title="Get stable updates for Home Assistant, supervisor and host"
                   >
-                    Leave beta channel
                   </mwc-button>
                 `
               : this.supervisorInfo.channel === "stable"
               ? html`
                   <mwc-button
                     @click=${this._toggleBeta}
+                    label="Join beta channel"
                     title="Get beta updates for Home Assistant (RCs), supervisor and host"
                   >
-                    Join beta channel
                   </mwc-button>
                 `
               : ""}
@@ -136,8 +136,8 @@ class HassioSupervisorInfo extends LitElement {
           <mwc-button
             @click=${this._supervisorReload}
             title="Reload parts of the supervisor."
+            label="Reload"
           >
-            Reload
           </mwc-button>
         </div>
       </ha-card>
