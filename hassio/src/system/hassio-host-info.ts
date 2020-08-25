@@ -65,7 +65,7 @@ class HassioHostInfo extends LitElement {
       <ha-card header="Host System">
         <div class="card-content">
           ${this.hostInfo.features.includes("hostname")
-            ? html` <ha-settings-row>
+            ? html`<ha-settings-row>
                 <span slot="heading">
                   Hostname
                 </span>
@@ -114,7 +114,7 @@ class HassioHostInfo extends LitElement {
               : ""}
           </ha-settings-row>
           ${!this.hostInfo.features.includes("hassos")
-            ? html` <ha-settings-row>
+            ? html`<ha-settings-row>
                 <span slot="heading">
                   Docker version
                 </span>
@@ -124,7 +124,7 @@ class HassioHostInfo extends LitElement {
               </ha-settings-row>`
             : ""}
           ${this.hostInfo.deployment
-            ? html` <ha-settings-row>
+            ? html`<ha-settings-row>
                 <span slot="heading">
                   Deployment
                 </span>
@@ -169,7 +169,7 @@ class HassioHostInfo extends LitElement {
               Hardware
             </mwc-list-item>
             ${this.hostInfo.features.includes("hassos")
-              ? html` <mwc-list-item
+              ? html`<mwc-list-item
                   title="Load HassOS configs or updates from USB"
                 >
                   Import from USB
@@ -245,11 +245,9 @@ class HassioHostInfo extends LitElement {
     if (!network_info) {
       return "";
     }
-    return (
-      Object.keys(network_info?.interfaces)
-        .map((device) => network_info.interfaces[device])
-        .find((device) => device.primary)?.ip_address || ""
-    );
+    return Object.keys(network_info?.interfaces)
+      .map((device) => network_info.interfaces[device])
+      .find((device) => device.primary)?.ip_address;
   });
 
   private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
