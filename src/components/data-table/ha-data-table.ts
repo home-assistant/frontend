@@ -215,7 +215,6 @@ export class HaDataTable extends LitElement {
             "auto-height": this.autoHeight,
           })}"
           role="table"
-          tabindex="0"
           aria-rowcount=${this._filteredData.length}
           style=${styleMap({
             height: this.autoHeight
