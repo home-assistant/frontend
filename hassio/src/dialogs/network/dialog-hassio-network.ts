@@ -70,20 +70,6 @@ export class DialogHassioNetwork extends LitElement {
       .sort((a, b) => {
         return a.data.primary > b.data.primary ? -1 : 1;
       });
-    this._network = this._network.concat([
-      {
-        interface: "eth1",
-        data: {
-          ip_address: "192.168.2.146/24",
-          nameservers: ["1.1.1.1"],
-          gateway: "192.168.2.1",
-          primary: false,
-          id: "test",
-          method: "dhcp",
-          type: "test",
-        },
-      },
-    ]);
     await this.updateComplete;
   }
 
