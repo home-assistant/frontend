@@ -419,9 +419,16 @@
                 "unlock": "Unlock"
             },
             "media_player": {
+                "browse_media": "Browse media",
+                "media_next_track": "Next",
+                "media_play": "Play",
+                "media_play_pause": "Play/pause",
+                "media_previous_track": "Previous",
                 "sound_mode": "Sound mode",
                 "source": "Source",
-                "text_to_speak": "Text to speak"
+                "text_to_speak": "Text to speak",
+                "turn_off": "Turn off",
+                "turn_on": "Turn on"
             },
             "persistent_notification": {
                 "dismiss": "Dismiss"
@@ -554,6 +561,22 @@
                 "loading_history": "Loading state history...",
                 "no_history_found": "No state history found."
             },
+            "media-browser": {
+                "choose-source": "Choose Source",
+                "content-type": {
+                    "album": "Album",
+                    "artist": "Artist",
+                    "library": "Library",
+                    "playlist": "Playlist",
+                    "server": "Server"
+                },
+                "media-player-browser": "Media Player Browser",
+                "no_items": "No items",
+                "pick": "Pick",
+                "pick-media": "Pick Media",
+                "play": "Play",
+                "play-media": "Play Media"
+            },
             "picture-upload": {
                 "label": "Picture",
                 "unsupported_format": "Unsupported format, please choose a JPEG, PNG or GIF image."
@@ -578,6 +601,7 @@
                     "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
                 },
                 "future": "In {time}",
+                "just_now": "Just now",
                 "never": "Never",
                 "past": "{time} ago"
             },
@@ -1318,6 +1342,7 @@
                     }
                 },
                 "devices": {
+                    "add_prompt": "No {name} have been added using this device yet. You can add one by clicking the + button above.",
                     "automation": {
                         "actions": {
                             "caption": "When something is triggered..."
@@ -1658,7 +1683,11 @@
                     "topic": "topic"
                 },
                 "ozw": {
+                    "button": "Configure",
                     "common": {
+                        "controller": "Controller",
+                        "instance": "Instance",
+                        "network": "Network",
                         "node_id": "Node ID",
                         "ozw_instance": "OpenZWave Instance",
                         "zwave": "Z-Wave"
@@ -1667,6 +1696,36 @@
                         "node_failed": "Node Failed",
                         "stage": "Stage",
                         "zwave_info": "Z-Wave Info"
+                    },
+                    "navigation": {
+                        "network": "Network",
+                        "nodes": "Nodes",
+                        "select_instance": "Select Instance"
+                    },
+                    "network_status": {
+                        "details": {
+                            "driverallnodesqueried": "All nodes have been queried",
+                            "driverallnodesqueriedsomedead": "All nodes have been queried. Some nodes were found dead",
+                            "driverawakenodesqueries": "All awake nodes have been queried",
+                            "driverfailed": "Failed to connect to Z-Wave controller",
+                            "driverready": "Initializing the Z-Wave controller",
+                            "driverremoved": "The driver has been removed",
+                            "driverreset": "The driver has been reset",
+                            "offline": "OZWDaemon offline",
+                            "ready": "Ready to connect",
+                            "started": "Connected to MQTT",
+                            "starting": "Connecting to MQTT",
+                            "stopped": "OpenZWave stopped"
+                        },
+                        "offline": "Offline",
+                        "online": "Online",
+                        "starting": "Starting",
+                        "unknown": "Unknown"
+                    },
+                    "network": {
+                        "header": "Network Management",
+                        "introduction": "Manage network-wide functions.",
+                        "node_count": "{count} nodes"
                     },
                     "node_query_stages": {
                         "associations": "Refreshing association groups and memberships",
@@ -1698,6 +1757,14 @@
                         "title": "Refresh Node Information",
                         "wakeup_header": "Wakeup Instructions for",
                         "wakeup_instructions_source": "Wakeup instructions are sourced from the OpenZWave community device database."
+                    },
+                    "select_instance": {
+                        "header": "Select an OpenZWave Instance",
+                        "introduction": "You have more than one OpenZWave instance running. Which instance would you like to manage?"
+                    },
+                    "services": {
+                        "add_node": "Add Node",
+                        "remove_node": "Remove Node"
                     }
                 },
                 "person": {
@@ -1835,6 +1902,7 @@
                             "person": "Reload persons",
                             "scene": "Reload scenes",
                             "script": "Reload scripts",
+                            "template": "Reload template entities",
                             "zone": "Reload zones"
                         },
                         "server_management": {
@@ -1876,6 +1944,7 @@
                         "last_scanned": "Last scanned",
                         "name": "Name"
                     },
+                    "never_scanned": "Never scanned",
                     "no_tags": "No tags",
                     "write": "Write"
                 },
@@ -2200,6 +2269,7 @@
                         "description": "Templates are rendered using the Jinja2 template engine with some Home Assistant specific extensions.",
                         "editor": "Template editor",
                         "jinja_documentation": "Jinja2 template documentation",
+                        "reset": "Reset to demo template",
                         "template_extensions": "Home Assistant template extensions",
                         "title": "Template",
                         "unknown_error_template": "Unknown error rendering template"
@@ -2280,6 +2350,10 @@
                         "button": {
                             "description": "The Button card allows you to add buttons to perform tasks.",
                             "name": "Button"
+                        },
+                        "calendar": {
+                            "description": "The Calendar card displays a calendar including day, week and list views",
+                            "name": "Calendar"
                         },
                         "conditional": {
                             "card": "Card",
@@ -2735,6 +2809,7 @@
                     "intro": "Hello {name}, welcome to Home Assistant. How would you like to name your home?",
                     "intro_location": "We would like to know where you live. This information will help with displaying information and setting up sun-based automations. This data is never shared outside of your network.",
                     "intro_location_detect": "We can help you fill in this information by making a one-time request to an external service.",
+                    "location_name": "Name of your Home Assistant installation",
                     "location_name_default": "Home"
                 },
                 "integration": {
