@@ -93,12 +93,12 @@ export class DialogHassioNetwork extends LitElement implements HassDialog {
       <ha-dialog open .heading=${true} hideActions @closed=${this.closeDialog}>
         <div slot="heading">
           <ha-header-bar>
-            <mwc-icon-button slot="navigationIcon" dialogAction="cancel">
-              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-            </mwc-icon-button>
             <span slot="title">
               Network settings
             </span>
+            <mwc-icon-button slot="actionItems" dialogAction="cancel">
+              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+            </mwc-icon-button>
           </ha-header-bar>
           ${this._network.length > 1
             ? html` <mwc-tab-bar
