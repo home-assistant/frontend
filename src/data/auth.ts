@@ -14,6 +14,7 @@ export interface AuthProvider {
 
 export interface Credential {
   type: string;
+  username?: string;
 }
 
 export interface SignedPath {
@@ -42,5 +43,16 @@ export const createAuthForUser = async (
     type: "config/auth_provider/homeassistant/create",
     user_id: userId,
     username,
+    password,
+  });
+
+export const adminChangePassword = async (
+  hass: HomeAssistant,
+  userId: string,
+  password: string
+) =>
+  hass.callWS<void>({
+    type: "config/auth_provider/homeassistant/admin_change_password",
+    user_id: userId,
     password,
   });
