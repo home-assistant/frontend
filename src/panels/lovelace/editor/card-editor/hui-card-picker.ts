@@ -1,10 +1,7 @@
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
 import Fuse from "fuse.js";
-// eslint-disable-next-line import/no-duplicates
 import memoizeOne from "memoize-one";
-// eslint-disable-next-line import/no-duplicates
-import memoize from "memoize-one";
 import {
   css,
   CSSResult,
@@ -19,7 +16,8 @@ import {
 import { classMap } from "lit-html/directives/class-map";
 import { styleMap } from "lit-html/directives/style-map";
 import { until } from "lit-html/directives/until";
-import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { UNAVAILABLE_STATES } from "../../../../data/entity";
 import {
   CustomCardEntry,
@@ -34,13 +32,7 @@ import {
 import { tryCreateCardElement } from "../../create-element/create-card-element";
 import { getCardStubConfig } from "../get-card-stub-config";
 import { coreCards } from "../lovelace-cards";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
-import { computeDomain } from "../../../../common/entity/compute_domain";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
-import type {
-  DataTableRowData,
-  SelectionChangedEvent,
-} from "../../../../components/data-table/ha-data-table";
+
 import type { CardPickTarget, Card } from "../types";
 import type { LovelaceCard } from "../../types";
 import type { HomeAssistant } from "../../../../types";
@@ -48,9 +40,8 @@ import type {
   LovelaceCardConfig,
   LovelaceConfig,
 } from "../../../../data/lovelace";
-import "../../../../components/entity/state-badge";
+
 import "../../../../components/ha-circular-progress";
-import "../../../../components/data-table/ha-data-table";
 import "../../../../common/search/search-input";
 
 interface CardElement {
@@ -61,8 +52,6 @@ interface CardElement {
 @customElement("hui-card-picker")
 export class HuiCardPicker extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
-
-  @property({ attribute: false }) public tabIndex = 0;
 
   @internalProperty() private _cards: CardElement[] = [];
 
@@ -113,74 +102,45 @@ export class HuiCardPicker extends LitElement {
     }
 
     return html`
-      ${this.tabIndex === 0
-        ? html`
-            <search-input
-              .filter=${this._filter}
-              no-label-float
-              @value-changed=${this._handleSearchChange}
-              .label=${this.hass.localize(
-                "ui.panel.lovelace.editor.card.generic.search"
+      <search-input
+        .filter=${this._filter}
+        no-label-float
+        @value-changed=${this._handleSearchChange}
+        .label=${this.hass.localize(
+          "ui.panel.lovelace.editor.card.generic.search"
+        )}
+      ></search-input>
+      <div
+        id="content"
+        style=${styleMap({
+          width: this._width ? `${this._width}px` : "auto",
+          height: this._height ? `${this._height}px` : "auto",
+        })}
+      >
+        <div class="cards-container">
+          ${this._filterCards(this._cards, this._filter).map(
+            (cardElement: CardElement) => cardElement.element
+          )}
+        </div>
+        <div class="cards-container">
+          <div
+            class="card manual"
+            @click=${this._cardPicked}
+            .config=${{ type: "" }}
+          >
+            <div class="card-header">
+              ${this.hass!.localize(
+                `ui.panel.lovelace.editor.card.generic.manual`
               )}
-            ></search-input>
-            <div
-              id="content"
-              style=${styleMap({
-                width: this._width ? `${this._width}px` : "auto",
-                height: this._height ? `${this._height}px` : "auto",
-              })}
-            >
-              <div class="cards-container">
-                ${this._filterCards(this._cards, this._filter).map(
-                  (cardElement: CardElement) => cardElement.element
-                )}
-              </div>
-              <div class="cards-container">
-                <div
-                  class="card manual"
-                  @click=${this._cardPicked}
-                  .config=${{ type: "" }}
-                >
-                  <div class="card-header">
-                    ${this.hass!.localize(
-                      `ui.panel.lovelace.editor.card.generic.manual`
-                    )}
-                  </div>
-                  <div class="preview description">
-                    ${this.hass!.localize(
-                      `ui.panel.lovelace.editor.card.generic.manual_description`
-                    )}
-                  </div>
-                </div>
-              </div>
             </div>
-          `
-        : html`
-            <div class="container">
-              <ha-data-table
-                auto-height
-                selectable
-                .id=${"entity_id"}
-                .columns=${this._columns()}
-                .data=${this._allEntities(this.hass).map((entity) => {
-                  const stateObj = this.hass!.states[entity];
-                  return {
-                    icon: "",
-                    entity_id: entity,
-                    stateObj,
-                    name: computeStateName(stateObj),
-                    domain: computeDomain(entity),
-                    last_changed: stateObj!.last_changed,
-                  };
-                }) as DataTableRowData[]}
-                .dir=${computeRTLDirection(this.hass)}
-                .searchLabel=${this.hass.localize(
-                  "ui.panel.lovelace.unused_entities.search"
-                )}
-                @selection-changed=${this._handleSelectionChanged}
-              ></ha-data-table>
+            <div class="preview description">
+              ${this.hass!.localize(
+                `ui.panel.lovelace.editor.card.generic.manual_description`
+              )}
             </div>
-          `}
+          </div>
+        </div>
+      </div>
     `;
   }
 
@@ -284,153 +244,11 @@ export class HuiCardPicker extends LitElement {
     this._filter = value;
   }
 
-  private _columns() {
-    return {
-      icon: {
-        title: "",
-        type: "icon",
-        template: (_icon, entity: any) => html`
-          <state-badge
-            .hass=${this.hass!}
-            .stateObj=${entity.stateObj}
-          ></state-badge>
-        `,
-      },
-      name: {
-        title: this.hass!.localize(
-          "ui.panel.lovelace.editor.cardpicker.entity"
-        ),
-        sortable: true,
-        filterable: true,
-        grows: true,
-        direction: "asc",
-        template: (name, entity: any) => html`
-          <div style="cursor: pointer;">
-            ${name}
-            <div class="secondary">
-              ${entity.stateObj.entity_id}
-            </div>
-          </div>
-        `,
-      },
-      domain: {
-        title: this.hass!.localize(
-          "ui.panel.lovelace.editor.cardpicker.domain"
-        ),
-        sortable: true,
-        filterable: true,
-        width: "25%",
-      },
-    };
-  }
-
-  private _allEntities = memoize((hass) => Object.keys(hass.states));
-
-  static get styles(): CSSResult[] {
-    return [
-      css`
-        .cards-container {
-          display: grid;
-          grid-gap: 8px 8px;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-          margin-top: 20px;
-        }
-
-        .card {
-          height: 100%;
-          max-width: 500px;
-          display: flex;
-          flex-direction: column;
-          border-radius: 4px;
-          border: 1px solid var(--divider-color);
-          background: var(--primary-background-color, #fafafa);
-          cursor: pointer;
-          box-sizing: border-box;
-          position: relative;
-        }
-
-        .card-header {
-          color: var(--ha-card-header-color, --primary-text-color);
-          font-family: var(--ha-card-header-font-family, inherit);
-          font-size: 16px;
-          font-weight: bold;
-          letter-spacing: -0.012em;
-          line-height: 20px;
-          padding: 12px 16px;
-          display: block;
-          text-align: center;
-          background: var(
-            --ha-card-background,
-            var(--card-background-color, white)
-          );
-          border-radius: 0 0 4px 4px;
-          border-bottom: 1px solid var(--divider-color);
-        }
-
-        .preview {
-          pointer-events: none;
-          margin: 20px;
-          flex-grow: 1;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .preview > :first-child {
-          zoom: 0.6;
-          display: block;
-          width: 100%;
-        }
-
-        .description {
-          text-align: center;
-        }
-
-        .spinner {
-          align-items: center;
-          justify-content: center;
-        }
-
-        .overlay {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          z-index: 1;
-        }
-
-        .manual {
-          max-width: none;
-        }
-
-        ha-data-table {
-          --data-table-border-width: 0;
-          flex-grow: 1;
-          margin-top: -20px;
-        }
-
-        .container {
-          display: flex;
-          flex-direction: column;
-          height: 100%;
-          min-height: calc(100vh - 112px);
-        }
-      `,
-    ];
-  }
-
   private _cardPicked(ev: Event): void {
     const config: LovelaceCardConfig = (ev.currentTarget! as CardPickTarget)
       .config;
 
     fireEvent(this, "config-changed", { config });
-  }
-
-  private _handleSelectionChanged(
-    ev: HASSDomEvent<SelectionChangedEvent>
-  ): void {
-    const selectedEntities = ev.detail.value;
-
-    fireEvent(this, "selected-changed", { selectedEntities });
   }
 
   private _tryCreateCardElement(cardConfig: LovelaceCardConfig) {
@@ -520,6 +338,85 @@ export class HuiCardPicker extends LitElement {
         </div>
       </div>
     `;
+  }
+
+  static get styles(): CSSResult[] {
+    return [
+      css`
+        .cards-container {
+          display: grid;
+          grid-gap: 8px 8px;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          margin-top: 20px;
+        }
+
+        .card {
+          height: 100%;
+          max-width: 500px;
+          display: flex;
+          flex-direction: column;
+          border-radius: 4px;
+          border: 1px solid var(--divider-color);
+          background: var(--primary-background-color, #fafafa);
+          cursor: pointer;
+          box-sizing: border-box;
+          position: relative;
+        }
+
+        .card-header {
+          color: var(--ha-card-header-color, --primary-text-color);
+          font-family: var(--ha-card-header-font-family, inherit);
+          font-size: 16px;
+          font-weight: bold;
+          letter-spacing: -0.012em;
+          line-height: 20px;
+          padding: 12px 16px;
+          display: block;
+          text-align: center;
+          background: var(
+            --ha-card-background,
+            var(--card-background-color, white)
+          );
+          border-radius: 0 0 4px 4px;
+          border-bottom: 1px solid var(--divider-color);
+        }
+
+        .preview {
+          pointer-events: none;
+          margin: 20px;
+          flex-grow: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .preview > :first-child {
+          zoom: 0.6;
+          display: block;
+          width: 100%;
+        }
+
+        .description {
+          text-align: center;
+        }
+
+        .spinner {
+          align-items: center;
+          justify-content: center;
+        }
+
+        .overlay {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          z-index: 1;
+        }
+
+        .manual {
+          max-width: none;
+        }
+      `,
+    ];
   }
 }
 

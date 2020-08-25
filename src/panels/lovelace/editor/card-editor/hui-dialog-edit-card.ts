@@ -11,36 +11,38 @@ import {
   TemplateResult,
   PropertyValues,
 } from "lit-element";
-import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-dialog";
+import { mdiHelpCircle } from "@mdi/js";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { haStyleDialog } from "../../../../resources/styles";
+import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
+import { addCard, replaceCard } from "../config-util";
+import { getCardDocumentationURL } from "../get-card-documentation-url";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
+import { showSuggestCardDialog } from "./show-suggest-card-dialog";
+
+import type { HomeAssistant } from "../../../../types";
+import type { GUIModeChangedEvent } from "../types";
+import type { ConfigChangedEvent, HuiCardEditor } from "./hui-card-editor";
+import type { EditCardDialogParams } from "./show-edit-card-dialog";
+import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import type {
   LovelaceCardConfig,
   LovelaceViewConfig,
 } from "../../../../data/lovelace";
-import { haStyleDialog } from "../../../../resources/styles";
-import "../../../../components/ha-circular-progress";
-import type { HomeAssistant } from "../../../../types";
-import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
-import { addCard, replaceCard } from "../config-util";
-import type { GUIModeChangedEvent } from "../types";
+
 import "./hui-card-editor";
-import type { ConfigChangedEvent, HuiCardEditor } from "./hui-card-editor";
-import "./hui-card-picker";
 import "./hui-card-preview";
-import type { EditCardDialogParams } from "./show-edit-card-dialog";
-import { getCardDocumentationURL } from "../get-card-documentation-url";
-import { mdiHelpCircle } from "@mdi/js";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
-import { HassDialog } from "../../../../dialogs/make-dialog-manager";
-import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
-import { showSuggestCardDialog } from "./show-suggest-card-dialog";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-header-bar";
+import "../../../../components/ha-circular-progress";
 
 declare global {
   // for fire event
   interface HASSDomEvents {
     "reload-lovelace": undefined;
-    "selected-changed": SelectedChangedEvent;
   }
   // for add event listener
   interface HTMLElementEventMap {
@@ -48,13 +50,9 @@ declare global {
   }
 }
 
-interface SelectedChangedEvent {
-  selectedEntities: string[];
-}
-
 @customElement("hui-dialog-edit-card")
 export class HuiDialogEditCard extends LitElement implements HassDialog {
-  @property() protected hass!: HomeAssistant;
+  @property({ attribute: false }) protected hass!: HomeAssistant;
 
   @internalProperty() private _params?: EditCardDialogParams;
 
@@ -77,8 +75,6 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
   @internalProperty() private _dirty = false;
 
   @internalProperty() private _selectedEntities: string[] = [];
-
-  @internalProperty() private _tabIndex = 0;
 
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
@@ -184,67 +180,33 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
                 `
               : ""}
           </ha-header-bar>
-          ${!this._cardConfig
-            ? html`
-                <mwc-tab-bar
-                  .activeIndex=${this._tabIndex}
-                  @MDCTabBar:activated=${(ev: CustomEvent) =>
-                    this._handleTabChanged(ev)}
-                >
-                  <mwc-tab
-                    .label=${this.hass!.localize(
-                      "ui.panel.lovelace.editor.cardpicker.by_card"
-                    )}
-                  ></mwc-tab>
-                  <mwc-tab
-                    .label=${this.hass!.localize(
-                      "ui.panel.lovelace.editor.cardpicker.by_entity"
-                    )}
-                  ></mwc-tab>
-                </mwc-tab-bar>
-              `
-            : ""}
         </div>
-        <div>
-          ${this._cardConfig === undefined
-            ? html`
-                <hui-card-picker
-                  .lovelace=${this._params.lovelaceConfig}
-                  .hass=${this.hass}
-                  .tabIndex=${this._tabIndex}
-                  @config-changed=${this._handleCardPicked}
-                  @selected-changed=${this._handleSelectedChanged}
-                ></hui-card-picker>
-              `
-            : html`
-                <div class="content">
-                  <div class="element-editor">
-                    <hui-card-editor
-                      .hass=${this.hass}
-                      .lovelace=${this._params.lovelaceConfig}
-                      .value=${this._cardConfig}
-                      @config-changed=${this._handleConfigChanged}
-                      @GUImode-changed=${this._handleGUIModeChanged}
-                      @editor-save=${this._save}
-                    ></hui-card-editor>
-                  </div>
-                  <div class="element-preview">
-                    <hui-card-preview
-                      .hass=${this.hass}
-                      .config=${this._cardConfig}
-                      class=${this._error ? "blur" : ""}
-                    ></hui-card-preview>
-                    ${this._error
-                      ? html`
-                          <ha-circular-progress
-                            active
-                            alt="Can't update card"
-                          ></ha-circular-progress>
-                        `
-                      : ``}
-                  </div>
-                </div>
-              `}
+        <div class="content">
+          <div class="element-editor">
+            <hui-card-editor
+              .hass=${this.hass}
+              .lovelace=${this._params.lovelaceConfig}
+              .value=${this._cardConfig}
+              @config-changed=${this._handleConfigChanged}
+              @GUImode-changed=${this._handleGUIModeChanged}
+              @editor-save=${this._save}
+            ></hui-card-editor>
+          </div>
+          <div class="element-preview">
+            <hui-card-preview
+              .hass=${this.hass}
+              .config=${this._cardConfig}
+              class=${this._error ? "blur" : ""}
+            ></hui-card-preview>
+            ${this._error
+              ? html`
+                  <ha-circular-progress
+                    active
+                    alt="Can't update card"
+                  ></ha-circular-progress>
+                `
+              : ``}
+          </div>
         </div>
         ${this._cardConfig !== undefined
           ? html`
@@ -300,6 +262,105 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
 
   private _ignoreKeydown(ev: KeyboardEvent) {
     ev.stopPropagation();
+  }
+
+  private _handleConfigChanged(ev: HASSDomEvent<ConfigChangedEvent>) {
+    this._cardConfig = deepFreeze(ev.detail.config);
+    this._error = ev.detail.error;
+    this._guiModeAvailable = ev.detail.guiModeAvailable;
+    this._dirty = true;
+  }
+
+  private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {
+    ev.stopPropagation();
+    this._GUImode = ev.detail.guiMode;
+    this._guiModeAvailable = ev.detail.guiModeAvailable;
+  }
+
+  private _toggleMode(): void {
+    this._cardEditorEl?.toggleMode();
+  }
+
+  private _opened() {
+    this._cardEditorEl?.refreshYamlEditor();
+  }
+
+  private get _canSave(): boolean {
+    if (this._saving) {
+      return false;
+    }
+    if (this._cardConfig === undefined) {
+      return false;
+    }
+    if (this._cardEditorEl && this._cardEditorEl.hasError) {
+      return false;
+    }
+    return true;
+  }
+
+  private async _confirmCancel() {
+    // Make sure the open state of this dialog is handled before the open state of confirm dialog
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    const confirm = await showConfirmationDialog(this, {
+      title: this.hass!.localize(
+        "ui.panel.lovelace.editor.edit_card.unsaved_changes"
+      ),
+      text: this.hass!.localize(
+        "ui.panel.lovelace.editor.edit_card.confirm_cancel"
+      ),
+      dismissText: this.hass!.localize("ui.common.no"),
+      confirmText: this.hass!.localize("ui.common.yes"),
+    });
+    if (confirm) {
+      this._cancel();
+    }
+  }
+
+  private _cancel(ev?: Event) {
+    if (ev) {
+      ev.stopPropagation();
+    }
+    this._dirty = false;
+    this.closeDialog();
+  }
+
+  private async _save(): Promise<void> {
+    if (!this._canSave) {
+      return;
+    }
+    if (!this._dirty) {
+      this.closeDialog();
+      return;
+    }
+    this._saving = true;
+    await this._params!.saveConfig(
+      this._params!.path.length === 1
+        ? addCard(
+            this._params!.lovelaceConfig,
+            this._params!.path as [number],
+            this._cardConfig!
+          )
+        : replaceCard(
+            this._params!.lovelaceConfig,
+            this._params!.path as [number, number],
+            this._cardConfig!
+          )
+    );
+    this._saving = false;
+    this._dirty = false;
+    showSaveSuccessToast(this, this.hass);
+    this.closeDialog();
+  }
+
+  private _suggestCards(): void {
+    showSuggestCardDialog(this, {
+      lovelaceConfig: this._params!.lovelaceConfig,
+      saveConfig: this._params!.saveConfig,
+      path: this._params!.path as [number],
+      entities: this._selectedEntities,
+    });
+
+    this.closeDialog();
   }
 
   static get styles(): CSSResultArray {
@@ -416,138 +477,8 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
           color: inherit;
           text-decoration: none;
         }
-        mwc-tab-bar {
-          padding-top: 8px;
-        }
       `,
     ];
-  }
-
-  private _handleCardPicked(ev) {
-    const config = ev.detail.config;
-    if (this._params!.entities && this._params!.entities.length) {
-      if (Object.keys(config).includes("entities")) {
-        config.entities = this._params!.entities;
-      } else if (Object.keys(config).includes("entity")) {
-        config.entity = this._params!.entities[0];
-      }
-    }
-    this._cardConfig = deepFreeze(config);
-    this._error = ev.detail.error;
-    this._dirty = true;
-  }
-
-  private _handleConfigChanged(ev: HASSDomEvent<ConfigChangedEvent>) {
-    this._cardConfig = deepFreeze(ev.detail.config);
-    this._error = ev.detail.error;
-    this._guiModeAvailable = ev.detail.guiModeAvailable;
-    this._dirty = true;
-  }
-
-  private _handleTabChanged(ev: CustomEvent): void {
-    const newTab = ev.detail.index;
-    if (newTab === this._tabIndex) {
-      return;
-    }
-
-    this._tabIndex = ev.detail.index;
-    this._selectedEntities = [];
-  }
-
-  private _handleSelectedChanged(ev: CustomEvent): void {
-    this._selectedEntities = ev.detail.selectedEntities;
-  }
-
-  private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {
-    ev.stopPropagation();
-    this._GUImode = ev.detail.guiMode;
-    this._guiModeAvailable = ev.detail.guiModeAvailable;
-  }
-
-  private _toggleMode(): void {
-    this._cardEditorEl?.toggleMode();
-  }
-
-  private _opened() {
-    this._cardEditorEl?.refreshYamlEditor();
-  }
-
-  private get _canSave(): boolean {
-    if (this._saving) {
-      return false;
-    }
-    if (this._cardConfig === undefined) {
-      return false;
-    }
-    if (this._cardEditorEl && this._cardEditorEl.hasError) {
-      return false;
-    }
-    return true;
-  }
-
-  private async _confirmCancel() {
-    // Make sure the open state of this dialog is handled before the open state of confirm dialog
-    await new Promise((resolve) => setTimeout(resolve, 0));
-    const confirm = await showConfirmationDialog(this, {
-      title: this.hass!.localize(
-        "ui.panel.lovelace.editor.edit_card.unsaved_changes"
-      ),
-      text: this.hass!.localize(
-        "ui.panel.lovelace.editor.edit_card.confirm_cancel"
-      ),
-      dismissText: this.hass!.localize("ui.common.no"),
-      confirmText: this.hass!.localize("ui.common.yes"),
-    });
-    if (confirm) {
-      this._cancel();
-    }
-  }
-
-  private _cancel(ev?: Event) {
-    if (ev) {
-      ev.stopPropagation();
-    }
-    this._dirty = false;
-    this.closeDialog();
-  }
-
-  private async _save(): Promise<void> {
-    if (!this._canSave) {
-      return;
-    }
-    if (!this._dirty) {
-      this.closeDialog();
-      return;
-    }
-    this._saving = true;
-    await this._params!.saveConfig(
-      this._params!.path.length === 1
-        ? addCard(
-            this._params!.lovelaceConfig,
-            this._params!.path as [number],
-            this._cardConfig!
-          )
-        : replaceCard(
-            this._params!.lovelaceConfig,
-            this._params!.path as [number, number],
-            this._cardConfig!
-          )
-    );
-    this._saving = false;
-    this._dirty = false;
-    showSaveSuccessToast(this, this.hass);
-    this.closeDialog();
-  }
-
-  private _suggestCards(): void {
-    showSuggestCardDialog(this, {
-      lovelaceConfig: this._params!.lovelaceConfig,
-      saveConfig: this._params!.saveConfig,
-      path: this._params!.path as [number],
-      entities: this._selectedEntities,
-    });
-
-    this.closeDialog();
   }
 }
 
