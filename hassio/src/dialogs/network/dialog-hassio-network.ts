@@ -26,6 +26,7 @@ import { haStyleDialog } from "../../../../src/resources/styles";
 import { showAlertDialog } from "../../../../src/dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../src/types";
 import type { HaRadio } from "../../../../src/components/ha-radio";
+import { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
 
 import "../../../../src/components/ha-circular-progress";
 import "../../../../src/components/ha-dialog";
@@ -36,7 +37,7 @@ import "../../../../src/components/ha-related-items";
 import "../../../../src/components/ha-svg-icon";
 
 @customElement("dialog-hassio-network")
-export class DialogHassioNetwork extends LitElement {
+export class DialogHassioNetwork extends LitElement implements HassDialog {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @internalProperty() private _prosessing = false;
