@@ -839,7 +839,9 @@
               "input_datetime": "Reload input date times",
               "input_select": "Reload input selects",
               "template": "Reload template entities",
-              "universal": "Reload universal media player entities"
+              "universal": "Reload universal media player entities",
+              "rest": "Reload rest entities",
+              "command_line": "Reload command_line entities"
             },
             "server_management": {
               "heading": "Server management",
