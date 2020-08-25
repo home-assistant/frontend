@@ -5,8 +5,10 @@ export interface NetworkInterface {
   gateway: string;
   id: string;
   ip_address: string;
+  address?: string;
   method: "static" | "dhcp";
   nameservers: string[];
+  dns?: string[];
   primary: boolean;
   type: string;
 }

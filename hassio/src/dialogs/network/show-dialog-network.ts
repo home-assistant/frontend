@@ -1,8 +1,9 @@
 import { fireEvent } from "../../../../src/common/dom/fire_event";
+import { NetworkInfo } from "../../../../src/data/hassio/network";
 import "./dialog-hassio-network";
 
 export interface HassioNetworkDialogParams {
-  network: any;
+  network: NetworkInfo;
   loadData: () => Promise<void>;
 }
 

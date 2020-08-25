@@ -1,6 +1,12 @@
+import "@material/mwc-button/mwc-button";
+import "@material/mwc-icon-button";
 import "@material/mwc-tab-bar";
 import "@material/mwc-tab";
-import "@material/mwc-icon-button";
+import "@polymer/paper-input/paper-input";
+import "@polymer/paper-radio-button/paper-radio-button";
+import "@polymer/paper-radio-group/paper-radio-group";
+import { PaperInputElement } from "@polymer/paper-input/paper-input";
+import { mdiClose } from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -8,40 +14,53 @@ import {
   html,
   LitElement,
   property,
+  query,
   internalProperty,
   TemplateResult,
 } from "lit-element";
 import { cache } from "lit-html/directives/cache";
+
+import {
+  updateNetworkInterface,
+  NetworkInterface,
+} from "../../../../src/data/hassio/network";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
+import { HassioNetworkDialogParams } from "./show-dialog-network";
+import { haStyleDialog } from "../../../../src/resources/styles";
+import { showAlertDialog } from "../../../../src/dialogs/generic/show-dialog-box";
+import type { HomeAssistant } from "../../../../src/types";
+import type { PolymerChangedEvent } from "../../../../src/polymer-types";
+
+import "../../../../src/components/ha-circular-progress";
+import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-header-bar";
-import "../../../../src/components/ha-svg-icon";
+import "../../../../src/components/ha-header-bar";
 import "../../../../src/components/ha-related-items";
-
-import { haStyleDialog } from "../../../../src/resources/styles";
-import type { HomeAssistant } from "../../../../src/types";
-import { mdiClose } from "@mdi/js";
-import "../../../../src/../src/components/ha-dialog";
-import "../../../../src/../src/components/ha-header-bar";
-import "@polymer/paper-radio-group/paper-radio-group";
-import "@polymer/paper-radio-button/paper-radio-button";
-import "@polymer/paper-input/paper-input";
-import type { PolymerChangedEvent } from "../../../../src/../src/polymer-types";
-import "@material/mwc-button/mwc-button";
+import "../../../../src/components/ha-svg-icon";
 
 @customElement("dialog-hassio-network")
 export class DialogHassioNetwork extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _params?: any;
+  @internalProperty() private _prosessing: boolean = false;
 
-  @internalProperty() private _network!: any[];
+  @internalProperty() private _params?: HassioNetworkDialogParams;
 
-  @internalProperty() private _curTab!: string;
+  @internalProperty() private _network!: {
+    interface: string;
+    data: NetworkInterface;
+  }[];
 
-  private _curTabIndex = 0;
+  @internalProperty() private _curTabIndex: number = 0;
 
-  public async showDialog(params: any): Promise<void> {
+  @query("#ip_address") private _ip_address?: PaperInputElement;
+
+  @query("#gateway") private _gateway?: PaperInputElement;
+
+  @query("#nameservers") private _nameservers?: PaperInputElement;
+
+  public async showDialog(params: HassioNetworkDialogParams): Promise<void> {
     this._params = params;
     this._network = Object.keys(params.network?.interfaces)
       .map((device) => ({
@@ -49,13 +68,28 @@ export class DialogHassioNetwork extends LitElement {
         data: params.network.interfaces[device],
       }))
       .sort((a, b) => {
-        return a.data.primary - b.data.primary;
+        return a.data.primary > b.data.primary ? -1 : 1;
       });
+    this._network = this._network.concat([
+      {
+        interface: "eth1",
+        data: {
+          ip_address: "192.168.2.146/24",
+          nameservers: ["1.1.1.1"],
+          gateway: "192.168.2.1",
+          primary: false,
+          id: "test",
+          method: "dhcp",
+          type: "test",
+        },
+      },
+    ]);
     await this.updateComplete;
   }
 
   public closeDialog(): void {
     this._params = undefined;
+    this._prosessing = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -81,14 +115,20 @@ export class DialogHassioNetwork extends LitElement {
               Network settings
             </span>
           </ha-header-bar>
-          <mwc-tab-bar
-            .activeIndex=${this._curTabIndex}
-            @MDCTabBar:activated=${this._handleTabActivated}
-            @MDCTab:interacted=${this._handleTabInteracted}
-          >
-            <mwc-tab id="eth0" label="eth0"> </mwc-tab>
-            <mwc-tab id="eth1" label="eth1"> </mwc-tab>
-          </mwc-tab-bar>
+          ${this._network.length > 1
+            ? html` <mwc-tab-bar
+                .activeIndex=${this._curTabIndex}
+                @MDCTabBar:activated=${this._handleTabActivated}
+                >${this._network.map(
+                  (device) =>
+                    html`<mwc-tab
+                      .id=${device.interface}
+                      .label=${device.interface}
+                    >
+                    </mwc-tab>`
+                )}
+              </mwc-tab-bar>`
+            : ""}
         </div>
         <div class="wrapper">
           ${cache(this._renderTab())}
@@ -106,34 +146,31 @@ export class DialogHassioNetwork extends LitElement {
           @selected-changed=${this._handleRadioValueChanged}
         >
           Interface mode
-          <paper-radio-button name="auto">
+          <paper-radio-button name="dhcp">
             DHCP
           </paper-radio-button>
-          <paper-radio-button name="manual">
+          <paper-radio-button name="static">
             Static
           </paper-radio-button>
         </paper-radio-group>
-        ${device.data.method !== "auto"
+        ${device.data.method !== "dhcp"
           ? html` <paper-input
                 class="flex-auto"
-                id="repository_input"
-                label="IP Address"
-                ?disabled=${device.data.method === "auto"}
+                id="ip_address"
+                label="IP Address/Netmask"
                 .value="${device.data.ip_address}"
               ></paper-input>
               <paper-input
                 class="flex-auto"
-                id="repository_input"
-                label="Gateway"
-                ?disabled=${device.data.method === "auto"}
+                id="gateway"
+                label="Gateway address"
                 .value="${device.data.gateway}"
               ></paper-input>
               <paper-input
                 class="flex-auto"
-                id="repository_input"
-                label="DNS"
-                ?disabled=${device.data.method === "auto"}
-                .value="${device.data.nameservers}"
+                id="nameservers"
+                label="DNS Servers"
+                .value="${device.data.nameservers.join(", ")}"
               ></paper-input>
               NB!: If you are changing IP or gateway addresses, you might loose
               the connection.`
@@ -144,19 +181,43 @@ export class DialogHassioNetwork extends LitElement {
           close
         </mwc-button>
         <mwc-button @click=${this._updateNetwork}>
-          Update
+          ${this._prosessing
+            ? html`<ha-circular-progress active></ha-circular-progress>`
+            : "Update"}
         </mwc-button>
       </div>`;
   }
 
-  private async _updateNetwork() {}
+  private async _updateNetwork() {
+    this._prosessing = true;
+    const device = this._network[this._curTabIndex];
+    let options: Partial<NetworkInterface> = {
+      method: device.data.method,
+    };
+    if (options.method !== "dhcp") {
+      options = {
+        ...options,
+        address: this._ip_address!.value!,
+        gateway: this._gateway!.value!,
+        dns: String(this._nameservers!.value!).split(","),
+      };
+    }
+    try {
+      await updateNetworkInterface(this.hass, device.interface, options);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Failed to change network settings",
+        text: err.body?.message || err,
+      });
+      this._prosessing = false;
+      return;
+    }
+    this._params?.loadData();
+    this.closeDialog();
+  }
 
   private _handleTabActivated(ev: CustomEvent): void {
     this._curTabIndex = ev.detail.index;
-  }
-
-  private _handleTabInteracted(ev: CustomEvent): void {
-    this._curTab = ev.detail.tabId;
   }
 
   static get styles(): CSSResult[] {
@@ -231,7 +292,10 @@ export class DialogHassioNetwork extends LitElement {
   }
 
   private _handleRadioValueChanged(ev: PolymerChangedEvent<string>) {
-    this._network[this._curTabIndex].data.method = ev.detail.value;
+    this._network[this._curTabIndex].data.method = ev.detail.value as
+      | "dhcp"
+      | "static";
+    this.requestUpdate("_network");
   }
 
   public focus() {

@@ -55,7 +55,6 @@ class HassioHostInfo extends LitElement {
   @internalProperty() private _errors?: string;
 
   public render(): TemplateResult | void {
-    console.log(this._networkInfo);
     return html`
       <ha-card header="Host System">
         <div class="card-content">
@@ -80,7 +79,7 @@ class HassioHostInfo extends LitElement {
               IP Address
             </span>
             <span slot="description">
-              ${this._networkInfo?.interfaces.enp0s31f6.ip_address}
+              ${this._networkInfo?.interfaces.eth0.ip_address}
             </span>
             <mwc-button
               title="Change the network"
@@ -236,9 +235,7 @@ class HassioHostInfo extends LitElement {
 
   protected firstUpdated(): void {
     this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
-    fetchNetworkInfo(this.hass).then((info) => {
-      this._networkInfo = info;
-    });
+    this._loadData();
   }
 
   private async _handleAction(ev: CustomEvent<ActionDetail>) {
@@ -276,9 +273,9 @@ class HassioHostInfo extends LitElement {
         content,
       });
     } catch (err) {
-      showHassioMarkdownDialog(this, {
+      showAlertDialog(this, {
         title: "Hardware",
-        content: "Error getting hardware info",
+        text: err.body?.message || err,
       });
     }
   }
@@ -300,7 +297,7 @@ class HassioHostInfo extends LitElement {
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to reboot",
-        text: err.body.message,
+        text: err.body?.message || err,
       });
     }
   }
@@ -322,7 +319,7 @@ class HassioHostInfo extends LitElement {
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to shutdown",
-        text: err.body.message,
+        text: err.body?.message || err,
       });
     }
   }
@@ -344,7 +341,7 @@ class HassioHostInfo extends LitElement {
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to update",
-        text: err.body.message,
+        text: err.body?.message || err,
       });
     }
   }
@@ -373,7 +370,7 @@ class HassioHostInfo extends LitElement {
   private async _changeNetworkClicked(): Promise<void> {
     showNetworkDialog(this, {
       network: this._networkInfo!,
-      //  loadData: () => this._loadData(),
+      loadData: () => this._loadData(),
     });
   }
 
@@ -410,6 +407,10 @@ class HassioHostInfo extends LitElement {
         text: err.body?.message || err,
       });
     }
+  }
+
+  private async _loadData(): Promise<void> {
+    this._networkInfo = await fetchNetworkInfo(this.hass);
   }
 }
 
