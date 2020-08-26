@@ -21,6 +21,11 @@ import {
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import { hassioStyle } from "../resources/hassio-style";
+import {
+  showConfirmationDialog,
+  showAlertDialog,
+} from "../../../src/dialogs/generic/show-dialog-box";
+import { HassioResponse } from "../../../src/data/hassio/common";
 
 @customElement("hassio-update")
 export class HassioUpdate extends LitElement {
@@ -126,30 +131,38 @@ export class HassioUpdate extends LitElement {
           <a href="${releaseNotesUrl}" target="_blank" rel="noreferrer">
             <mwc-button>Release notes</mwc-button>
           </a>
-          <ha-call-api-button
-            .hass=${this.hass}
-            .path=${apiPath}
-            @hass-api-called=${this._apiCalled}
-          >
-            Update
-          </ha-call-api-button>
+          <mwc-button
+            label="Update"
+            .apiPath=${apiPath}
+            .name=${name}
+            .version=${lastVersion}
+            @click=${this._confirmUpdate}
+          ></mwc-button>
         </div>
       </ha-card>
     `;
   }
 
-  private _apiCalled(ev): void {
-    if (ev.detail.success) {
-      this._error = "";
+  private async _confirmUpdate(ev): Promise<void> {
+    const item = ev.target;
+    const confirmed = await showConfirmationDialog(this, {
+      title: `Update ${item.name}`,
+      text: `Are you sure you want to upgrade ${item.name} to version ${item.version}?`,
+      confirmText: "update",
+      dismissText: "cancel",
+    });
+
+    if (!confirmed) {
       return;
     }
-
-    const response = ev.detail.response;
-
-    if (typeof response.body === "object") {
-      this._error = response.body.message || "Unknown error";
-    } else {
-      this._error = response.body;
+    try {
+      await this.hass.callApi<HassioResponse<void>>("POST", item.apiPath);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Update failed",
+        text:
+          typeof err === "object" ? err.body?.message || "Unkown error" : err,
+      });
     }
   }
 
