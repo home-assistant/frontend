@@ -253,7 +253,12 @@ class DialogUserDetail extends LitElement {
       });
       return;
     }
-    adminChangePassword(this.hass, this._params!.entry.id, newPassword);
+    await adminChangePassword(this.hass, this._params!.entry.id, newPassword);
+    showAlertDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.users.add_user.password_changed"
+      ),
+    });
   }
 
   private _close(): void {
