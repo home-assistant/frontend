@@ -34,8 +34,8 @@ export class HaBar extends LitElement {
     return html`
       <svg width="100%">
         <g>
-          <rect width="100%" height="12"></rect>
-          <rect width="${valuePrecentage}%" height="12" rx="4"></rect>
+          <rect width="100%"></rect>
+          <rect width="${valuePrecentage}%" rx="4"></rect>
         </g>
       </svg>
     `;
@@ -44,14 +44,7 @@ export class HaBar extends LitElement {
   static get styles(): CSSResult {
     return css`
       :host {
-        display: block;
-        line-height: 12px;
-        min-height: 12px;
         width: 100%;
-      }
-      .bar {
-        display: flex;
-        max-width: calc(100% - 8px);
       }
       rect:first-child {
         fill: var(--ha-bar-background-color, var(--secondary-background-color));

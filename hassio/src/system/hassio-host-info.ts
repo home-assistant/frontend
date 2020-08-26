@@ -45,7 +45,6 @@ import { showNetworkDialog } from "../dialogs/network/show-dialog-network";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-settings-row";
-import "../../../src/components/ha-bar";
 
 @customElement("hassio-host-info")
 class HassioHostInfo extends LitElement {
@@ -63,7 +62,6 @@ class HassioHostInfo extends LitElement {
     const primaryIpAddress = this._primaryIpAddress(this._networkInfo!);
     return html`
       <ha-card header="Host System">
-        <ha-bar value="60"></ha-bar>
         <div class="card-content">
           ${this.hostInfo.features.includes("hostname")
             ? html`<ha-settings-row>
