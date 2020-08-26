@@ -90,6 +90,10 @@ export class HaMediaPlayerBrowse extends LitElement {
       | MediaPlayerItem
       | undefined = this._hasExpandableChildren(mostRecentItem.children);
 
+    const showImages = mostRecentItem.children?.some(
+      (child) => child.thumbnail && child.thumbnail !== mostRecentItem.thumbnail
+    );
+
     return html`
       <div class="header">
         <div class="header-content">
@@ -238,11 +242,11 @@ export class HaMediaPlayerBrowse extends LitElement {
                   (child) => html`<mwc-list-item
                       @click=${this._actionClicked}
                       .item=${child}
-                      graphic="avatar"
+                      .graphic=${showImages ? "avatar" : null}
                       hasMeta
                     >
                       <span>${child.title}</span>
-                      ${child.thumbnail
+                      ${showImages && child.thumbnail
                         ? html` <img slot="graphic" .src=${child.thumbnail} />`
                         : ""}
                       <ha-svg-icon
