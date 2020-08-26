@@ -9,7 +9,6 @@ import {
   mdiExclamationThick,
   mdiFlask,
   mdiHomeAssistant,
-  mdiInformation,
   mdiKey,
   mdiNetwork,
   mdiPound,
