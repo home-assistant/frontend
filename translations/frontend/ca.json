@@ -419,9 +419,16 @@
                 "unlock": "Desbloquejar"
             },
             "media_player": {
+                "browse_media": "Navega pels mitjans",
+                "media_next_track": "Següent",
+                "media_play": "Reprodueix",
+                "media_play_pause": "Reprodueix/pausa",
+                "media_previous_track": "Anterior",
                 "sound_mode": "Mode de so",
                 "source": "Entrada",
-                "text_to_speak": "Text a veu"
+                "text_to_speak": "Text a veu",
+                "turn_off": "Apaga",
+                "turn_on": "Engega"
             },
             "persistent_notification": {
                 "dismiss": "Desestimar"
@@ -554,6 +561,22 @@
                 "loading_history": "Carregant historial d'estats...",
                 "no_history_found": "No s'ha trobat cap historial d'estats."
             },
+            "media-browser": {
+                "choose-source": "Tria la font",
+                "content-type": {
+                    "album": "Àlbum",
+                    "artist": "Artista",
+                    "library": "Biblioteca",
+                    "playlist": "Llista de reproducció",
+                    "server": "Servidor"
+                },
+                "media-player-browser": "Navegador del reproductor multimèdia",
+                "no_items": "Sense elements",
+                "pick": "Escull",
+                "pick-media": "Tria mitjans",
+                "play": "Reprodueix",
+                "play-media": "Reprodueix mitjans"
+            },
             "picture-upload": {
                 "label": "Imatge",
                 "unsupported_format": "Format no compatible, tria una imatge JPEG, PNG o GIF."
@@ -578,6 +601,7 @@
                     "week": "{count} {count, plural,\n  one {setmana}\n  other {setmanes}\n}"
                 },
                 "future": "D'aquí a {time}",
+                "just_now": "Ara mateix",
                 "never": "Mai",
                 "past": "Fa {time}"
             },
@@ -1318,6 +1342,7 @@
                     }
                 },
                 "devices": {
+                    "add_prompt": "Encara no s'han afegit {name} mitjançant aquest dispositiu. Pots afegir-ne fent clic al botó + a sobre.",
                     "automation": {
                         "actions": {
                             "caption": "Quan es dispara alguna cosa..."
@@ -1658,7 +1683,11 @@
                     "topic": "tòpic"
                 },
                 "ozw": {
+                    "button": "Configura",
                     "common": {
+                        "controller": "Controlador",
+                        "instance": "Instància",
+                        "network": "Xarxa",
                         "node_id": "ID del node",
                         "ozw_instance": "Instància OpenZWave",
                         "zwave": "Z-Wave"
@@ -1667,6 +1696,36 @@
                         "node_failed": "Ha fallat el node",
                         "stage": "Etapa",
                         "zwave_info": "Informació Z-Wave"
+                    },
+                    "navigation": {
+                        "network": "Xarxa",
+                        "nodes": "Nodes",
+                        "select_instance": "Selecciona instància"
+                    },
+                    "network_status": {
+                        "details": {
+                            "driverallnodesqueried": "S'han cosultat tots els nodes",
+                            "driverallnodesqueriedsomedead": "S'han consultat tots els nodes. Se n'han trobat alguns morts",
+                            "driverawakenodesqueries": "S'han cosultat tots els nodes desperts",
+                            "driverfailed": "No s'ha pogut connectar amb el controlador Z-Wave",
+                            "driverready": "Iniciant el controlador Z-Wave",
+                            "driverremoved": "El controlador s'ha eliminat",
+                            "driverreset": "El controlador s'ha restablert",
+                            "offline": "OZWDaemon fora de línia",
+                            "ready": "A punt per connectar-se",
+                            "started": "Connectat a MQTT",
+                            "starting": "Connectant a MQTT",
+                            "stopped": "OpenZWave aturat"
+                        },
+                        "offline": "Fora de línia",
+                        "online": "En línia",
+                        "starting": "Iniciant",
+                        "unknown": "Desconegut"
+                    },
+                    "network": {
+                        "header": "Gestió de la xarxa",
+                        "introduction": "Gestiona les funcions de tota la xarxa.",
+                        "node_count": "{count} nodes"
                     },
                     "node_query_stages": {
                         "associations": "Actualitzant de grups d'associacions i membres",
@@ -1698,6 +1757,14 @@
                         "title": "Informació d'actualització del node",
                         "wakeup_header": "Instruccions en despertar de",
                         "wakeup_instructions_source": "Les instruccions en despertar provenen de la base de dades de dispositius de la comunitat OpenZWave."
+                    },
+                    "select_instance": {
+                        "header": "Selecciona una instància d'OpenZWave",
+                        "introduction": "Tens més d'una instància d'OpenZWave en funcionament. Quina instància vols gestionar?"
+                    },
+                    "services": {
+                        "add_node": "Afegeix node",
+                        "remove_node": "Elimina node"
                     }
                 },
                 "person": {
@@ -1835,6 +1902,7 @@
                             "person": "Actualitza persones",
                             "scene": "Actualitza escenes",
                             "script": "Actualitza programes",
+                            "template": "Torna a carregar entitats de plantilla",
                             "zone": "Actualitza zones"
                         },
                         "server_management": {
@@ -1876,6 +1944,7 @@
                         "last_scanned": "Últim escaneig",
                         "name": "Nom"
                     },
+                    "never_scanned": "Mai escanejat",
                     "no_tags": "Sense etiquetes",
                     "write": "Escriu"
                 },
@@ -2200,6 +2269,7 @@
                         "description": "Les plantilles es renderitzen mitjançant el motor Jinja2 amb algunes extensions específiques de Home Assistant.",
                         "editor": "Editor de plantilles",
                         "jinja_documentation": "Documentació sobre plantilles amb Jinja2",
+                        "reset": "Restableix a la plantilla de demostració",
                         "template_extensions": "Extensions de plantilla de Home Assistant",
                         "title": "Plantilla",
                         "unknown_error_template": "Error desconegut renderitzant plantilla"
@@ -2280,6 +2350,10 @@
                         "button": {
                             "description": "La targeta botó et permet afegir botons per realitzar diferents tasques.",
                             "name": "Botó"
+                        },
+                        "calendar": {
+                            "description": "La targeta Calendari mostra un calendari que inclou visualitzacions de dia, setmana i llista",
+                            "name": "Calendari"
                         },
                         "conditional": {
                             "card": "Targeta",
@@ -2735,6 +2809,7 @@
                     "intro": "Hola {name}, benvingut/uda a Home Assistant. Quin nom t'agradaria posar a la teva casa?",
                     "intro_location": "Voldirem saber la zona on vius. Aquesta informació servirà per poder mostrar certa informació i configurar automatitzacions relatives a la posició del sol. Aquestes dades mai es compartiran fora de la teva xarxa personal.",
                     "intro_location_detect": "Et podem ajudar a completar aquesta informació fent una única sol·licitud a un servei extern.",
+                    "location_name": "Nom de la instal·lació de Home Assistant",
                     "location_name_default": "Casa"
                 },
                 "integration": {

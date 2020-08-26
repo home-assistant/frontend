@@ -419,9 +419,16 @@
                 "unlock": "Odblokuj"
             },
             "media_player": {
+                "browse_media": "Przeglądaj media",
+                "media_next_track": "Następny",
+                "media_play": "Odtwarzaj",
+                "media_play_pause": "Odtwarzaj/pauza",
+                "media_previous_track": "Poprzedni",
                 "sound_mode": "Tryb dźwięku",
                 "source": "Źródło",
-                "text_to_speak": "Zamień tekst na mowę"
+                "text_to_speak": "Zamień tekst na mowę",
+                "turn_off": "Wyłącz",
+                "turn_on": "Włącz"
             },
             "persistent_notification": {
                 "dismiss": "Odrzuć"
@@ -554,6 +561,22 @@
                 "loading_history": "Ładowanie historii...",
                 "no_history_found": "Nie znaleziono historii."
             },
+            "media-browser": {
+                "choose-source": "Wybierz źródło",
+                "content-type": {
+                    "album": "Album",
+                    "artist": "Artysta",
+                    "library": "Biblioteka",
+                    "playlist": "Lista odtwarzania",
+                    "server": "Serwer"
+                },
+                "media-player-browser": "Przeglądarka odtwarzacza mediów",
+                "no_items": "Brak elementów",
+                "pick": "Wybierz",
+                "pick-media": "Wybierz media",
+                "play": "Odtwarzaj",
+                "play-media": "Odtwarzaj media"
+            },
             "picture-upload": {
                 "label": "Obraz",
                 "unsupported_format": "Nieobsługiwany format, wybierz obraz JPEG, PNG lub GIF."
@@ -578,6 +601,7 @@
                     "week": "{count} {count, plural,\n  one {tydzień}\n  few {tygodnie}\n  many {tygodni}\n  other {tygodni}\n}"
                 },
                 "future": "Za {time}",
+                "just_now": "Właśnie teraz",
                 "never": "Nigdy",
                 "past": "{time} temu"
             },
@@ -1057,6 +1081,9 @@
                                     "sunrise": "wschód słońca",
                                     "sunset": "zachód słońca"
                                 },
+                                "tag": {
+                                    "label": "Tag"
+                                },
                                 "template": {
                                     "label": "Szablon",
                                     "value_template": "Szablon wartości"
@@ -1315,6 +1342,7 @@
                     }
                 },
                 "devices": {
+                    "add_prompt": "Żadne {name} nie zostały jeszcze dodane przy użyciu tego urządzenia. Możesz je dodać, klikając przycisk + powyżej.",
                     "automation": {
                         "actions": {
                             "caption": "Wykonaj akcje..."
@@ -1334,6 +1362,7 @@
                     "caption": "Urządzenia",
                     "confirm_delete": "Czy na pewno chcesz usunąć to urządzenie?",
                     "confirm_rename_entity_ids": "Czy chcesz także zmienić identyfikatory encji?",
+                    "confirm_rename_entity_ids_warning": "Nie zmieni to żadnej konfiguracji (jak automatyzacje, skrypty, sceny, Lovelace), która obecnie używa tych encji, będziesz musiał je zaktualizować samodzielnie.",
                     "data_table": {
                         "area": "Obszar",
                         "battery": "Bateria",
@@ -1654,7 +1683,11 @@
                     "topic": "temat"
                 },
                 "ozw": {
+                    "button": "Konfiguruj",
                     "common": {
+                        "controller": "Kontroler",
+                        "instance": "Instancja",
+                        "network": "Sieć",
                         "node_id": "Identyfikator węzła",
                         "ozw_instance": "Instancja OpenZWave",
                         "zwave": "Z-Wave"
@@ -1663,6 +1696,36 @@
                         "node_failed": "Węzeł uszkodzony",
                         "stage": "Etap",
                         "zwave_info": "Informacje Z-Wave"
+                    },
+                    "navigation": {
+                        "network": "Sieć",
+                        "nodes": "Węzły",
+                        "select_instance": "Wybierz instancję"
+                    },
+                    "network_status": {
+                        "details": {
+                            "driverallnodesqueried": "Wszystkie węzły zostały odpytane",
+                            "driverallnodesqueriedsomedead": "Wszystkie węzły zostały odpytane. Niektóre węzły zostały znalezione martwe.",
+                            "driverawakenodesqueries": "Wszystkie wybudzone węzły zostały odpytane",
+                            "driverfailed": "Nie udało się połączyć z kontrolerem Z-Wave",
+                            "driverready": "Inicjalizacja kontrolera Z-Wave",
+                            "driverremoved": "Sterownik został usunięty",
+                            "driverreset": "Sterownik został zresetowany",
+                            "offline": "OZWDaemon jest offline",
+                            "ready": "Gotowy do połączenia",
+                            "started": "Połączono z MQTT",
+                            "starting": "Łączenie się z MQTT",
+                            "stopped": "OpenZWave zatrzymany"
+                        },
+                        "offline": "Offline",
+                        "online": "Online",
+                        "starting": "Uruchamianie",
+                        "unknown": "Nieznany"
+                    },
+                    "network": {
+                        "header": "Zarządzanie siecią",
+                        "introduction": "Zarządzaj funkcjami w całej sieci.",
+                        "node_count": "{count} węzłów"
                     },
                     "node_query_stages": {
                         "associations": "Odświeżanie grup skojarzeń i członkostwa",
@@ -1694,6 +1757,14 @@
                         "title": "Odświeżanie informacji o węźle",
                         "wakeup_header": "Instrukcje budzenia dla",
                         "wakeup_instructions_source": "Instrukcje budzenia pochodzą z bazy danych urządzeń społeczności OpenZWave."
+                    },
+                    "select_instance": {
+                        "header": "Wybierz instancję OpenZWave",
+                        "introduction": "Masz uruchomionych więcej niż jedną instancję OpenZWave. Którą instancją chcesz zarządzać?"
+                    },
+                    "services": {
+                        "add_node": "Dodaj węzeł",
+                        "remove_node": "Usuń węzeł"
                     }
                 },
                 "person": {
@@ -1831,6 +1902,7 @@
                             "person": "Osoby",
                             "scene": "Sceny",
                             "script": "Skrypty",
+                            "template": "Szablony encji",
                             "zone": "Strefy"
                         },
                         "server_management": {
@@ -1849,6 +1921,32 @@
                             "valid": "Konfiguracja prawidłowa!"
                         }
                     }
+                },
+                "tags": {
+                    "add_tag": "Dodaj tag",
+                    "automation_title": "Tag {name} jest skanowany",
+                    "caption": "Tagi",
+                    "create_automation": "Utwórz automatyzację z tagiem",
+                    "description": "Zarządzaj tagami",
+                    "detail": {
+                        "create": "Stwórz",
+                        "create_and_write": "Stwórz i zapisz",
+                        "delete": "Usuń",
+                        "description": "Opis",
+                        "name": "Nazwa",
+                        "new_tag": "Nowy tag",
+                        "tag_id": "Identyfikator tagu",
+                        "tag_id_placeholder": "Generowany automatycznie, gdy pole pozostawione puste",
+                        "update": "Aktualizuj"
+                    },
+                    "edit": "Edytuj",
+                    "headers": {
+                        "last_scanned": "Ostatnie skanowanie",
+                        "name": "Nazwa"
+                    },
+                    "never_scanned": "Nigdy nie zeskanowany",
+                    "no_tags": "Brak tagów",
+                    "write": "Zapisz"
                 },
                 "users": {
                     "add_user": {
@@ -2171,6 +2269,7 @@
                         "description": "Szablony są renderowane przy użyciu silnika szablonów Jinja2 z kilkoma specyficznymi rozszerzeniami Home Assistanta.",
                         "editor": "Edytor szablonów",
                         "jinja_documentation": "Dokumentacja szablonów Jinja2",
+                        "reset": "Zresetuj do szablonu demonstracyjnego",
                         "template_extensions": "Rozszerzenia szablonów Home Assistanta",
                         "title": "Szablon",
                         "unknown_error_template": "Nieznany błąd podczas renderowania szablonu."
@@ -2251,6 +2350,10 @@
                         "button": {
                             "description": "Karta przycisku umożliwia dodawanie przycisków do wykonywania zadań.",
                             "name": "Przycisk"
+                        },
+                        "calendar": {
+                            "description": "Karta kalendarza wyświetla kalendarz zawierający widoki dnia, tygodnia i listy",
+                            "name": "Kalendarz"
                         },
                         "conditional": {
                             "card": "Karta",
@@ -2706,6 +2809,7 @@
                     "intro": "{name}, witamy w Home Assistant. Jak chcesz nazwać swój dom?",
                     "intro_location": "Chcielibyśmy wiedzieć, gdzie mieszkasz. Te dane pomogą w wyświetlaniu informacji i konfigurowaniu automatyki opartej na położeniu słońca. Te dane nigdy nie będą udostępniane poza Twoją sieć lokalną.",
                     "intro_location_detect": "Możemy pomóc Ci wprowadzić te informacje, wysyłając jednorazowe zapytanie do usługi zewnętrznej.",
+                    "location_name": "Nazwa instalacji Home Assistanta",
                     "location_name_default": "Dom"
                 },
                 "integration": {

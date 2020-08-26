@@ -419,9 +419,16 @@
                 "unlock": "Lås opp"
             },
             "media_player": {
+                "browse_media": "Bla gjennom medier",
+                "media_next_track": "Neste",
+                "media_play": "Spille",
+                "media_play_pause": "Spill av/pause",
+                "media_previous_track": "Forrige",
                 "sound_mode": "Lydmodus",
                 "source": "Kilde",
-                "text_to_speak": "Tekst til tale"
+                "text_to_speak": "Tekst til tale",
+                "turn_off": "Slå av",
+                "turn_on": "Slå på"
             },
             "persistent_notification": {
                 "dismiss": "Avvis"
@@ -554,6 +561,22 @@
                 "loading_history": "Laster statushistorikk...",
                 "no_history_found": "Ingen statushistorikk funnet."
             },
+            "media-browser": {
+                "choose-source": "Velg kilde",
+                "content-type": {
+                    "album": "Album",
+                    "artist": "Artist",
+                    "library": "Bibliotek",
+                    "playlist": "Spilleliste",
+                    "server": "Server"
+                },
+                "media-player-browser": "Nettleser for Mediespiller",
+                "no_items": "Ingen elementer",
+                "pick": "Velg",
+                "pick-media": "Velg Media",
+                "play": "Spille",
+                "play-media": "Spill media"
+            },
             "picture-upload": {
                 "label": "Bilde",
                 "unsupported_format": "Formatet støttes ikke, vennligst velge et JPEG-, PNG- eller GIF-bilde."
@@ -578,6 +601,7 @@
                     "week": "{count} {count, plural,\n  one {uke}\n  other {uker}\n}"
                 },
                 "future": "om {time}",
+                "just_now": "Akkurat nå",
                 "never": "Aldri",
                 "past": "{time} siden"
             },
@@ -1318,6 +1342,7 @@
                     }
                 },
                 "devices": {
+                    "add_prompt": "Ingen {navn} er lagt til ved hjelp av denne enheten ennå. Du kan legge til en ved å klikke på + knappen ovenfor.",
                     "automation": {
                         "actions": {
                             "caption": "Når noe er utløst..."
@@ -1658,7 +1683,11 @@
                     "topic": "emne"
                 },
                 "ozw": {
+                    "button": "Konfigurer",
                     "common": {
+                        "controller": "Kontroller",
+                        "instance": "Forekomst",
+                        "network": "Nettverk",
                         "node_id": "Node-ID",
                         "ozw_instance": "OpenZWave Instance",
                         "zwave": "Z-Wave"
@@ -1667,6 +1696,36 @@
                         "node_failed": "Noden mislyktes",
                         "stage": "Scene",
                         "zwave_info": "Z-Wave Info"
+                    },
+                    "navigation": {
+                        "network": "Nettverk",
+                        "nodes": "Noder",
+                        "select_instance": "Velg Forekomst"
+                    },
+                    "network_status": {
+                        "details": {
+                            "driverallnodesqueried": "Alle noder har blitt spurt",
+                            "driverallnodesqueriedsomedead": "Alle noder har blitt spurt. Noen noder ble funnet døde",
+                            "driverawakenodesqueries": "Alle våkne noder har blitt spurt",
+                            "driverfailed": "Kunne ikke koble til Z-Wave-kontrolleren",
+                            "driverready": "Initialiserer Z-Wave-kontrolleren",
+                            "driverremoved": "Driveren er blitt fjernet",
+                            "driverreset": "Driveren har blitt tilbakestilt",
+                            "offline": "OZWDaemon frakoblet",
+                            "ready": "Klar til å koble til",
+                            "started": "Koblet til MQTT",
+                            "starting": "Koble til MQTT",
+                            "stopped": "OpenZWave stoppet"
+                        },
+                        "offline": "Frakoblet",
+                        "online": "Online",
+                        "starting": "Starter",
+                        "unknown": "Ukjent"
+                    },
+                    "network": {
+                        "header": "Nettverksadministrasjon",
+                        "introduction": "Administrer funksjoner for hele nettverket.",
+                        "node_count": "{count} noder"
                     },
                     "node_query_stages": {
                         "associations": "Oppdatere tilknytningsgrupper og medlemskap",
@@ -1698,6 +1757,14 @@
                         "title": "Oppdater nodeinformasjon",
                         "wakeup_header": "Wakeup Instruksjoner for",
                         "wakeup_instructions_source": "Wakeup-instruksjoner hentes fra OpenZWave-fellesskapets enhetsdatabase."
+                    },
+                    "select_instance": {
+                        "header": "Velg en OpenZWave-forekomst",
+                        "introduction": "Du har mer enn én OpenZWave-forekomst som kjører. Hvilken forekomst vil du administrere?"
+                    },
+                    "services": {
+                        "add_node": "Legg til node",
+                        "remove_node": "Fjern node"
                     }
                 },
                 "person": {
@@ -1835,6 +1902,7 @@
                             "person": "Last inn personer på nytt",
                             "scene": "Last inn scener på nytt",
                             "script": "Last inn skript på nytt",
+                            "template": "Laste inn malenheter på nytt",
                             "zone": "Last inn soner på nytt"
                         },
                         "server_management": {
@@ -1876,6 +1944,7 @@
                         "last_scanned": "Sist skannet",
                         "name": "Navn"
                     },
+                    "never_scanned": "Aldri skannet",
                     "no_tags": "Ingen tagger",
                     "write": "Skrive"
                 },
@@ -2200,6 +2269,7 @@
                         "description": "Maler blir rendret ved hjelp av Jinja2-malmotoren med noen spesifikke utvidelser for Home Assistant.",
                         "editor": "Maleditor",
                         "jinja_documentation": "Jinja2 mal dokumentasjon",
+                        "reset": "Tilbakestill til demomal",
                         "template_extensions": "Mal utvidelser for Home Assistant",
                         "title": "Mal",
                         "unknown_error_template": "Ukjent feil ved rendring av mal"
@@ -2280,6 +2350,10 @@
                         "button": {
                             "description": "The Button card lar deg legge til knapper for å utføre oppgaver.",
                             "name": "Knapp"
+                        },
+                        "calendar": {
+                            "description": "Kalenderkortet viser en kalender som inkluderer dag, uke og listevisninger",
+                            "name": "Kalender"
                         },
                         "conditional": {
                             "card": "Kort",
@@ -2735,6 +2809,7 @@
                     "intro": "Hei {name}, velkommen til Home Assistant. Hva ønsker du å kalle hjemmet ditt?",
                     "intro_location": "Vi vil gjerne vite hvor du bor. Denne informasjonen vil bidra til å vise informasjon og sette opp automasjon basert på solen. Dette deles ikke ut av nettet ditt.",
                     "intro_location_detect": "Vi kan hjelpe deg med å fylle ut denne informasjonen ved å gjøre en engangsforespørsel til en ekstern tjeneste.",
+                    "location_name": "Navn på installasjonen av Home Assistant",
                     "location_name_default": "Hjem"
                 },
                 "integration": {
