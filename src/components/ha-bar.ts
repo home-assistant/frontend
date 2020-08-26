@@ -2,9 +2,9 @@ import {
   css,
   CSSResult,
   customElement,
-  html,
   LitElement,
   property,
+  svg,
   TemplateResult,
 } from "lit-element";
 
@@ -31,7 +31,7 @@ export class HaBar extends LitElement {
       )
     );
 
-    return html`
+    return svg`
       <svg>
         <g>
           <rect></rect>
