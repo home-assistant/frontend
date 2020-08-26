@@ -8,6 +8,7 @@ import {
 describe("Calculate tests", function () {
   it("Test getValueInPercentage", function () {
     assert.equal(getValueInPercentage(10, 0, 100), 10);
+    assert.equal(getValueInPercentage(120, 0, 100), 120);
     assert.equal(getValueInPercentage(-10, 0, 100), -10);
     assert.equal(getValueInPercentage(10.33333, 0, 100), 10.33333);
   });
