@@ -9,16 +9,30 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 
+import {
+  getValueInPercentage,
+  normalize,
+  roundWithOneDecimal,
+} from "../util/calculate";
+
 @customElement("ha-bar")
 export class HaBar extends LitElement {
-  @property({ type: Number, attribute: "max-value" }) public maxValue = 100;
+  @property({ type: Number }) public min = 0;
+
+  @property({ type: Number }) public max = 100;
 
   @property({ type: Number }) public value!: number;
 
-  @property({ type: Number }) public target!: number; // Number between 0 and 100
+  @property({ type: Number }) public target?: number; // Number between 0 and 100
 
   protected render(): TemplateResult {
-    const valuePrecentage = this._calculateValuePrecentage();
+    const valuePrecentage = roundWithOneDecimal(
+      getValueInPercentage(
+        normalize(this.value, this.min, this.max),
+        this.min,
+        this.max
+      )
+    );
 
     return html`
       <slot></slot>
@@ -31,7 +45,8 @@ export class HaBar extends LitElement {
             <rect width="100%" height="12"></rect>
             <rect
               class="${classMap({
-                "target-reached": this.target && valuePrecentage >= this.target,
+                "target-reached":
+                  this.target !== undefined && valuePrecentage >= this.target,
               })}"
               width="${valuePrecentage}%"
               height="12"
@@ -41,22 +56,6 @@ export class HaBar extends LitElement {
         </svg>
       </div>
     `;
-  }
-
-  private _calculateValuePrecentage(): number {
-    if (isNaN(this.value)) {
-      // Not a number, return 0
-      return 0;
-    }
-    if (this.maxValue === 100) {
-      return Math.round(this.value * 10) / 10;
-    }
-    if (this.value >= this.maxValue) {
-      // The given value is hihger than the max value
-      return 100;
-    }
-
-    return Math.round((this.value / this.maxValue) * 100 * 10) / 10;
   }
 
   static get styles(): CSSResult {
