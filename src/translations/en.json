@@ -841,7 +841,7 @@
               "template": "Reload template entities",
               "universal": "Reload universal media player entities",
               "rest": "Reload rest entities",
-              "command_line": "Reload command_line entities"
+              "command_line": "Reload command line entities"
             },
             "server_management": {
               "heading": "Server management",
