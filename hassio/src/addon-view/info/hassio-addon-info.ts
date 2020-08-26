@@ -9,7 +9,6 @@ import {
   mdiExclamationThick,
   mdiFlask,
   mdiHomeAssistant,
-  mdiInformation,
   mdiKey,
   mdiNetwork,
   mdiPound,
@@ -53,6 +52,7 @@ import { HomeAssistant } from "../../../../src/types";
 import "../../components/hassio-card-content";
 import { showHassioMarkdownDialog } from "../../dialogs/markdown/show-dialog-hassio-markdown";
 import { hassioStyle } from "../../resources/hassio-style";
+import "../../../../src/components/ha-settings-row";
 
 const STAGE_ICON = {
   stable: mdiCheckCircle,
@@ -386,79 +386,94 @@ class HassioAddonInfo extends LitElement {
 
           ${this.addon.version
             ? html`
-                <div class="state">
-                  <div>Start on boot</div>
-                  <ha-switch
-                    @change=${this._startOnBootToggled}
-                    .checked=${this.addon.boot === "auto"}
-                    haptic
-                  ></ha-switch>
-                </div>
-                ${this.hass.userData?.showAdvanced
-                  ? html`
-                      <div class="state">
-                        <div>Watchdog</div>
-                        <ha-switch
-                          @change=${this._watchdogToggled}
-                          .checked=${this.addon.watchdog}
-                          haptic
-                        ></ha-switch>
-                      </div>
-                    `
-                  : ""}
-                ${this.addon.auto_update || this.hass.userData?.showAdvanced
-                  ? html`
-                      <div class="state">
-                        <div>Auto update</div>
-                        <ha-switch
-                          @change=${this._autoUpdateToggled}
-                          .checked=${this.addon.auto_update}
-                          haptic
-                        ></ha-switch>
-                      </div>
-                    `
-                  : ""}
-                ${this.addon.ingress
-                  ? html`
-                      <div class="state">
-                        <div>Show in sidebar</div>
-                        <ha-switch
-                          @change=${this._panelToggled}
-                          .checked=${this.addon.ingress_panel}
-                          .disabled=${this._computeCannotIngressSidebar}
-                          haptic
-                        ></ha-switch>
-                        ${this._computeCannotIngressSidebar
-                          ? html`
-                              <span>
-                                This option requires Home Assistant 0.92 or
-                                later.
-                              </span>
-                            `
-                          : ""}
-                      </div>
-                    `
-                  : ""}
-                ${this._computeUsesProtectedOptions
-                  ? html`
-                      <div class="state">
-                        <div>
-                          Protection mode
-                          <span>
-                            <ha-svg-icon path=${mdiInformation}></ha-svg-icon>
-                            <paper-tooltip>
-                              Grant the add-on elevated system access.
-                            </paper-tooltip>
+                <div class="addon-options">
+                  <ha-settings-row ?three-line=${this.narrow}>
+                    <span slot="heading">
+                      Start on boot
+                    </span>
+                    <span slot="description">
+                      Make the add-on start during a system boot
+                    </span>
+                    <ha-switch
+                      @change=${this._startOnBootToggled}
+                      .checked=${this.addon.boot === "auto"}
+                      haptic
+                    ></ha-switch>
+                  </ha-settings-row>
+
+                  ${this.hass.userData?.showAdvanced
+                    ? html`
+                        <ha-settings-row ?three-line=${this.narrow}>
+                          <span slot="heading">
+                            Watchdog
                           </span>
-                        </div>
-                        <ha-switch
-                          @change=${this._protectionToggled}
-                          .checked=${this.addon.protected}
-                          haptic
-                        ></ha-switch>
-                      </div>
-                    `
-                  : ""}
+                          <span slot="description">
+                            This will start the add-on if it crashes
+                          </span>
+                          <ha-switch
+                            @change=${this._watchdogToggled}
+                            .checked=${this.addon.watchdog}
+                            haptic
+                          ></ha-switch>
+                        </ha-settings-row>
+                      `
+                    : ""}
+                  ${this.addon.auto_update || this.hass.userData?.showAdvanced
+                    ? html`
+                        <ha-settings-row ?three-line=${this.narrow}>
+                          <span slot="heading">
+                            Auto update
+                          </span>
+                          <span slot="description">
+                            Auto update the add-on when there is a new version
+                            available
+                          </span>
+                          <ha-switch
+                            @change=${this._autoUpdateToggled}
+                            .checked=${this.addon.auto_update}
+                            haptic
+                          ></ha-switch>
+                        </ha-settings-row>
+                      `
+                    : ""}
+                  ${this.addon.ingress
+                    ? html`
+                        <ha-settings-row ?three-line=${this.narrow}>
+                          <span slot="heading">
+                            Show in sidebar
+                          </span>
+                          <span slot="description">
+                            ${this._computeCannotIngressSidebar
+                              ? "This option requires Home Assistant 0.92 or later."
+                              : "Add this add-on to your sidebar"}
+                          </span>
+                          <ha-switch
+                            @change=${this._panelToggled}
+                            .checked=${this.addon.ingress_panel}
+                            .disabled=${this._computeCannotIngressSidebar}
+                            haptic
+                          ></ha-switch>
+                        </ha-settings-row>
+                      `
+                    : ""}
+                  ${this._computeUsesProtectedOptions
+                    ? html`
+                        <ha-settings-row ?three-line=${this.narrow}>
+                          <span slot="heading">
+                            Protection mode
+                          </span>
+                          <span slot="description">
+                            Blocks elevated system access from the add-on
+                          </span>
+                          <ha-switch
+                            @change=${this._protectionToggled}
+                            .checked=${this.addon.protected}
+                            haptic
+                          ></ha-switch>
+                        </ha-settings-row>
+                      `
+                    : ""}
+                </div>
               `
             : ""}
           ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
@@ -562,137 +577,6 @@ class HassioAddonInfo extends LitElement {
           `
         : ""}
     `;
-  }
-
-  static get styles(): CSSResult[] {
-    return [
-      haStyle,
-      hassioStyle,
-      css`
-        :host {
-          display: block;
-        }
-        ha-card {
-          display: block;
-          margin-bottom: 16px;
-        }
-        ha-card.warning {
-          background-color: var(--error-color);
-          color: white;
-        }
-        ha-card.warning .card-header {
-          color: white;
-        }
-        ha-card.warning .card-content {
-          color: white;
-        }
-        ha-card.warning mwc-button {
-          --mdc-theme-primary: white !important;
-        }
-        .warning {
-          color: var(--error-color);
-          --mdc-theme-primary: var(--error-color);
-        }
-        .light-color {
-          color: var(--secondary-text-color);
-        }
-        .addon-header {
-          padding-left: 8px;
-          font-size: 24px;
-          color: var(--ha-card-header-color, --primary-text-color);
-        }
-        .addon-version {
-          float: right;
-          font-size: 15px;
-          vertical-align: middle;
-        }
-        .errors {
-          color: var(--error-color);
-          margin-bottom: 16px;
-        }
-        .description {
-          margin-bottom: 16px;
-        }
-        img.logo {
-          max-height: 60px;
-          margin: 16px 0;
-          display: block;
-        }
-        .state {
-          display: flex;
-          margin: 33px 0;
-        }
-        .state div {
-          width: 180px;
-          display: inline-block;
-        }
-        .state ha-svg-icon {
-          width: 16px;
-          height: 16px;
-          color: var(--secondary-text-color);
-        }
-        ha-switch {
-          display: flex;
-        }
-        ha-svg-icon.running {
-          color: var(--paper-green-400);
-        }
-        ha-svg-icon.stopped {
-          color: var(--google-red-300);
-        }
-        ha-call-api-button {
-          font-weight: 500;
-          color: var(--primary-color);
-        }
-        .right {
-          float: right;
-        }
-        protection-enable mwc-button {
-          --mdc-theme-primary: white;
-        }
-        .description a {
-          color: var(--primary-color);
-        }
-        .red {
-          --ha-label-badge-color: var(--label-badge-red, #df4c1e);
-        }
-        .blue {
-          --ha-label-badge-color: var(--label-badge-blue, #039be5);
-        }
-        .green {
-          --ha-label-badge-color: var(--label-badge-green, #0da035);
-        }
-        .yellow {
-          --ha-label-badge-color: var(--label-badge-yellow, #f4b400);
-        }
-        .security {
-          margin-bottom: 16px;
-        }
-        .card-actions {
-          display: flow-root;
-        }
-        .security h3 {
-          margin-bottom: 8px;
-          font-weight: normal;
-        }
-        .security ha-label-badge {
-          cursor: pointer;
-          margin-right: 4px;
-          --ha-label-badge-padding: 8px 0 0 0;
-        }
-        .changelog {
-          display: contents;
-        }
-        .changelog-link {
-          color: var(--primary-color);
-          text-decoration: underline;
-          cursor: pointer;
-        }
-        ha-markdown {
-          padding: 16px;
-        }
-      `,
-    ];
   }
 
   private get _computeHassioApi(): boolean {
@@ -916,6 +800,146 @@ class HassioAddonInfo extends LitElement {
     } catch (err) {
       this._error = `Failed to uninstall addon, ${err.body?.message || err}`;
     }
+  }
+
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      hassioStyle,
+      css`
+        :host {
+          display: block;
+        }
+        ha-card {
+          display: block;
+          margin-bottom: 16px;
+        }
+        ha-card.warning {
+          background-color: var(--error-color);
+          color: white;
+        }
+        ha-card.warning .card-header {
+          color: white;
+        }
+        ha-card.warning .card-content {
+          color: white;
+        }
+        ha-card.warning mwc-button {
+          --mdc-theme-primary: white !important;
+        }
+        .warning {
+          color: var(--error-color);
+          --mdc-theme-primary: var(--error-color);
+        }
+        .light-color {
+          color: var(--secondary-text-color);
+        }
+        .addon-header {
+          padding-left: 8px;
+          font-size: 24px;
+          color: var(--ha-card-header-color, --primary-text-color);
+        }
+        .addon-version {
+          float: right;
+          font-size: 15px;
+          vertical-align: middle;
+        }
+        .errors {
+          color: var(--error-color);
+          margin-bottom: 16px;
+        }
+        .description {
+          margin-bottom: 16px;
+        }
+        img.logo {
+          max-height: 60px;
+          margin: 16px 0;
+          display: block;
+        }
+
+        ha-switch {
+          display: flex;
+        }
+        ha-svg-icon.running {
+          color: var(--paper-green-400);
+        }
+        ha-svg-icon.stopped {
+          color: var(--google-red-300);
+        }
+        ha-call-api-button {
+          font-weight: 500;
+          color: var(--primary-color);
+        }
+        .right {
+          float: right;
+        }
+        protection-enable mwc-button {
+          --mdc-theme-primary: white;
+        }
+        .description a {
+          color: var(--primary-color);
+        }
+        .red {
+          --ha-label-badge-color: var(--label-badge-red, #df4c1e);
+        }
+        .blue {
+          --ha-label-badge-color: var(--label-badge-blue, #039be5);
+        }
+        .green {
+          --ha-label-badge-color: var(--label-badge-green, #0da035);
+        }
+        .yellow {
+          --ha-label-badge-color: var(--label-badge-yellow, #f4b400);
+        }
+        .security {
+          margin-bottom: 16px;
+        }
+        .card-actions {
+          display: flow-root;
+        }
+        .security h3 {
+          margin-bottom: 8px;
+          font-weight: normal;
+        }
+        .security ha-label-badge {
+          cursor: pointer;
+          margin-right: 4px;
+          --ha-label-badge-padding: 8px 0 0 0;
+        }
+        .changelog {
+          display: contents;
+        }
+        .changelog-link {
+          color: var(--primary-color);
+          text-decoration: underline;
+          cursor: pointer;
+        }
+        ha-markdown {
+          padding: 16px;
+        }
+        ha-settings-row {
+          padding: 0;
+          height: 54px;
+          width: 100%;
+        }
+        ha-settings-row > span[slot="description"] {
+          white-space: normal;
+          color: var(--secondary-text-color);
+        }
+        ha-settings-row[three-line] {
+          height: 74px;
+        }
+
+        .addon-options {
+          max-width: 50%;
+        }
+        @media (max-width: 720px) {
+          .addon-options {
+            max-width: 100%;
+          }
+        }
+      `,
+    ];
   }
 }
 declare global {
