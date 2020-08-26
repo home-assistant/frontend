@@ -27,6 +27,7 @@ export default class HaAutomationCondition extends LitElement {
           <ha-automation-condition-row
             .index=${idx}
             .condition=${cond}
+            @duplicate=${this._duplicateCondition}
             @value-changed=${this._conditionChanged}
             .hass=${this.hass}
           ></ha-automation-condition-row>
@@ -66,6 +67,13 @@ export default class HaAutomationCondition extends LitElement {
     }
 
     fireEvent(this, "value-changed", { value: conditions });
+  }
+
+  private _duplicateCondition(ev: CustomEvent) {
+    const index = (ev.target as any).index;
+    fireEvent(this, "value-changed", {
+      value: this.conditions.concat(this.conditions[index]),
+    });
   }
 
   static get styles(): CSSResult {

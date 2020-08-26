@@ -5,7 +5,7 @@ import {
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { navigate } from "../common/navigate";
 import { HomeAssistant } from "../types";
-import { Condition } from "./automation";
+import { Condition, Trigger } from "./automation";
 
 export const MODES = ["single", "restart", "queued", "parallel"];
 export const MODES_MAX = ["queued", "parallel"];
@@ -56,6 +56,13 @@ export interface SceneAction {
 export interface WaitAction {
   wait_template: string;
   timeout?: number;
+  continue_on_timeout?: boolean;
+}
+
+export interface WaitForTriggerAction {
+  wait_for_trigger: Trigger[];
+  timeout?: number;
+  continue_on_timeout?: boolean;
 }
 
 export interface RepeatAction {
@@ -91,6 +98,7 @@ export type Action =
   | DelayAction
   | SceneAction
   | WaitAction
+  | WaitForTriggerAction
   | RepeatAction
   | ChooseAction;
 

@@ -285,6 +285,10 @@
           "entity": "Entity",
           "clear": "Clear",
           "show_entities": "Show entities"
+        },
+        "entity-attribute-picker": {
+          "attribute": "Attribute",
+          "show_attributes": "Show attributes"
         }
       },
       "device-picker": {
@@ -983,6 +987,7 @@
                 },
                 "state": {
                   "label": "State",
+                  "attribute": "Attribute (Optional)",
                   "from": "From",
                   "for": "For",
                   "to": "To"
@@ -1020,7 +1025,8 @@
                 },
                 "time": {
                   "label": "Time",
-                  "at": "At"
+                  "at": "At time",
+                  "at_input_datetime": "At the value of an date/time input"
                 },
                 "time_pattern": {
                   "label": "Time Pattern",
@@ -1131,6 +1137,9 @@
                   "label": "Wait",
                   "wait_template": "Wait Template",
                   "timeout": "Timeout (optional)"
+                },
+                "wait_for_trigger": {
+                  "label": "Wait for trigger"
                 },
                 "condition": {
                   "label": "Condition"
