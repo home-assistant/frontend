@@ -59,7 +59,9 @@ class HassioHostInfo extends LitElement {
   @internalProperty() public _networkInfo?: NetworkInfo;
 
   public render(): TemplateResult | void {
-    const primaryIpAddress = this._primaryIpAddress(this._networkInfo!);
+    const primaryIpAddress = this.hostInfo.features.includes("network")
+      ? this._primaryIpAddress(this._networkInfo!)
+      : "";
     return html`
       <ha-card header="Host System">
         <div class="card-content">
@@ -79,20 +81,23 @@ class HassioHostInfo extends LitElement {
                 </mwc-button>
               </ha-settings-row>`
             : ""}
-          <ha-settings-row>
-            <span slot="heading">
-              IP address
-            </span>
-            <span slot="description">
-              ${primaryIpAddress}
-            </span>
-            <mwc-button
-              title="Change the network"
-              label="Change"
-              @click=${this._changeNetworkClicked}
-            >
-            </mwc-button>
-          </ha-settings-row>
+          ${this.hostInfo.features.includes("network")
+            ? html` <ha-settings-row>
+                <span slot="heading">
+                  IP address
+                </span>
+                <span slot="description">
+                  ${primaryIpAddress}
+                </span>
+                <mwc-button
+                  title="Change the network"
+                  label="Change"
+                  @click=${this._changeNetworkClicked}
+                >
+                </mwc-button>
+              </ha-settings-row>`
+            : ""}
+
           <ha-settings-row>
             <span slot="heading">
               Operating system
