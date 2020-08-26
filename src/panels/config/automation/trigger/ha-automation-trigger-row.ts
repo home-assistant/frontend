@@ -4,7 +4,7 @@ import { mdiDotsVertical } from "@mdi/js";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
+import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
 import {
   css,
   CSSResult,
