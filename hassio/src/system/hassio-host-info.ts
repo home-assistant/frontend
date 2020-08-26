@@ -79,20 +79,23 @@ class HassioHostInfo extends LitElement {
                 </mwc-button>
               </ha-settings-row>`
             : ""}
-          <ha-settings-row>
-            <span slot="heading">
-              IP address
-            </span>
-            <span slot="description">
-              ${primaryIpAddress}
-            </span>
-            <mwc-button
-              title="Change the network"
-              label="Change"
-              @click=${this._changeNetworkClicked}
-            >
-            </mwc-button>
-          </ha-settings-row>
+          ${this.hostInfo.features.includes("network")
+            ? html` <ha-settings-row>
+                <span slot="heading">
+                  IP address
+                </span>
+                <span slot="description">
+                  ${primaryIpAddress}
+                </span>
+                <mwc-button
+                  title="Change the network"
+                  label="Change"
+                  @click=${this._changeNetworkClicked}
+                >
+                </mwc-button>
+              </ha-settings-row>`
+            : ""}
+
           <ha-settings-row>
             <span slot="heading">
               Operating system
