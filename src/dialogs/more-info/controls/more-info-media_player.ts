@@ -174,7 +174,7 @@ class MoreInfoMediaPlayer extends LitElement {
                 >
                   ${stateObj.attributes.sound_mode_list.map(
                     (mode) => html`
-                      <paper-item itemName=${mode}>${mode}</paper-item>
+                      <paper-item .itemName=${mode}>${mode}</paper-item>
                     `
                   )}
                 </paper-listbox>
@@ -352,21 +352,27 @@ class MoreInfoMediaPlayer extends LitElement {
   }
 
   private _handleSourceChanged(e: CustomEvent) {
-    const newVal = e.detail.value;
+    const newVal = e.detail.item.itemName;
 
-    if (!newVal || this.stateObj!.attributes.source === newVal) return;
+    if (!newVal || this.stateObj!.attributes.source === newVal) {
+      return;
+    }
 
     this.hass.callService("media_player", "select_source", {
+      entity_id: this.stateObj!.entity_id,
       source: newVal,
     });
   }
 
   private _handleSoundModeChanged(e: CustomEvent) {
-    const newVal = e.detail.value;
+    const newVal = e.detail.item.itemName;
 
-    if (!newVal || this.stateObj?.attributes.sound_mode === newVal) return;
+    if (!newVal || this.stateObj?.attributes.sound_mode === newVal) {
+      return;
+    }
 
     this.hass.callService("media_player", "select_sound_mode", {
+      entity_id: this.stateObj!.entity_id,
       sound_mode: newVal,
     });
   }
