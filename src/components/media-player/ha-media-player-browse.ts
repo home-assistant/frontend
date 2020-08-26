@@ -149,7 +149,7 @@ export class HaMediaPlayerBrowse extends LitElement {
             ${mostRecentItem?.can_play &&
             (!this._narrow || (this._narrow && !mostRecentItem.thumbnail))
               ? html`
-                  <div class="actions">
+                  <div>
                     <mwc-button
                       raised
                       .item=${mostRecentItem}
@@ -238,17 +238,21 @@ export class HaMediaPlayerBrowse extends LitElement {
                   (child) => html`<mwc-list-item
                       @click=${this._actionClicked}
                       .item=${child}
-                      graphic="icon"
+                      graphic="avatar"
+                      hasMeta
                     >
                       <span>${child.title}</span>
+                      ${child.thumbnail
+                        ? html` <img slot="graphic" .src=${child.thumbnail} />`
+                        : ""}
                       <ha-svg-icon
-                        slot="graphic"
+                        slot="meta"
                         .label=${this.hass.localize(
                           `ui.components.media-browser.${this.action}-media`
                         )}
                         .path=${this.action === "play" ? mdiPlay : mdiPlus}
-                      ></ha-svg-icon
-                    ></mwc-list-item>
+                      ></ha-svg-icon>
+                    </mwc-list-item>
                     <li divider role="separator"></li>`
                 )}
               </mwc-list>
@@ -391,11 +395,6 @@ export class HaMediaPlayerBrowse extends LitElement {
           flex: 1;
         }
 
-        .header-info .actions {
-          padding-top: 24px;
-          --mdc-theme-primary: var(--primary-color);
-        }
-
         .breadcrumb {
           display: flex;
           flex-direction: column;
@@ -404,7 +403,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         }
 
         .breadcrumb .title {
-          font-size: 48px;
+          font-size: 32px;
           line-height: 1.2;
           font-weight: bold;
           margin: 0;
