@@ -173,7 +173,7 @@ class HassioSupervisorInfo extends LitElement {
         ha-settings-row[three-line] {
           height: 74px;
         }
-        ha-settings-row[three-line] > div {
+        ha-settings-row > span[slot="description"] {
           white-space: normal;
           color: var(--secondary-text-color);
         }
