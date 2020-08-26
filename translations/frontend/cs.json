@@ -419,9 +419,16 @@
                 "unlock": "Odemknout"
             },
             "media_player": {
+                "browse_media": "Procházet média",
+                "media_next_track": "Další",
+                "media_play": "Přehrát",
+                "media_play_pause": "Přehrát/pozastavit",
+                "media_previous_track": "Předchozí",
                 "sound_mode": "Režim zvuku",
                 "source": "Zdroj",
-                "text_to_speak": "Převod textu na řeč"
+                "text_to_speak": "Převod textu na řeč",
+                "turn_off": "Vypnout",
+                "turn_on": "Zapnout"
             },
             "persistent_notification": {
                 "dismiss": "Zavřít"
@@ -554,6 +561,22 @@
                 "loading_history": "Historie stavu se načítá...",
                 "no_history_found": "Historie stavu chybí."
             },
+            "media-browser": {
+                "choose-source": "Zvolte zdroj",
+                "content-type": {
+                    "album": "Album",
+                    "artist": "Umělec",
+                    "library": "Knihovna",
+                    "playlist": "Seznam skladeb",
+                    "server": "Server"
+                },
+                "media-player-browser": "Prohlížeč přehrávače médií",
+                "no_items": "Žádné položky",
+                "pick": "Vybrat",
+                "pick-media": "Vybrat média",
+                "play": "Přehrát",
+                "play-media": "Přehrát média"
+            },
             "picture-upload": {
                 "label": "Obrázek",
                 "unsupported_format": "Nepodporovaný formát, prosím vyberte obrázek typu JPEG, PNG nebo GIF."
@@ -578,6 +601,7 @@
                     "week": "{count} {count, plural,\none {týden}\nother {týdnů}\n}"
                 },
                 "future": "Za {time}",
+                "just_now": "Právě teď",
                 "never": "Nikdy",
                 "past": "Před {time}"
             },
@@ -1658,11 +1682,58 @@
                     "topic": "téma"
                 },
                 "ozw": {
+                    "button": "Konfigurovat",
                     "common": {
+                        "instance": "Instance",
+                        "network": "Síť",
+                        "node_id": "ID uzlu",
+                        "ozw_instance": "Instance OpenZWave",
                         "zwave": "Z-Wave"
                     },
+                    "device_info": {
+                        "node_failed": "Uzel selhal"
+                    },
+                    "navigation": {
+                        "network": "Síť",
+                        "nodes": "Uzly",
+                        "select_instance": "Vyberte instanci"
+                    },
+                    "network_status": {
+                        "details": {
+                            "driverremoved": "Ovladač byl odstraněn",
+                            "driverreset": "Ovladač byl resetován",
+                            "offline": "OZWDaemon je offline",
+                            "ready": "Připraveno k připojení",
+                            "started": "Připojeno k MQTT",
+                            "starting": "Připojování k MQTT",
+                            "stopped": "OpenZWave zastaven"
+                        },
+                        "offline": "Offline",
+                        "online": "Online",
+                        "unknown": "Nezjištěno"
+                    },
+                    "network": {
+                        "header": "Správa sítě",
+                        "node_count": "{count} uzlů"
+                    },
+                    "node_query_stages": {
+                        "configuration": "Získávám konfiguraci z uzlu",
+                        "dynamic": "Získávám často se měnící hodnoty z uzlu",
+                        "neighbors": "Získávám seznam sousedů uzlu",
+                        "nodeplusinfo": "Získávám informace o Z-Wave + z uzlu",
+                        "session": "Získávám zřídka se měnící hodnoty z uzlu",
+                        "static": "Získávám statické hodnoty ze zařízení"
+                    },
                     "refresh_node": {
-                        "step": "Krok"
+                        "complete": "Obnova uzlu dokončena",
+                        "node_status": "Stav uzlu",
+                        "refreshing_description": "Aktualizuji informací o uzlu...",
+                        "step": "Krok",
+                        "title": "Aktualizovat informace o uzlu"
+                    },
+                    "services": {
+                        "add_node": "Přidat uzel",
+                        "remove_node": "Odebrat uzel"
                     }
                 },
                 "person": {
@@ -1800,6 +1871,7 @@
                             "person": "Znovu načíst osoby",
                             "scene": "Znovu načíst scény",
                             "script": "Znovu načíst skripty",
+                            "template": "Znovu načíst entity šablon",
                             "zone": "Znovu načíst zóny"
                         },
                         "server_management": {
@@ -1841,6 +1913,7 @@
                         "last_scanned": "Naposledy naskenováno",
                         "name": "Název"
                     },
+                    "never_scanned": "Nikdy naskenováno",
                     "no_tags": "Žádné značky",
                     "write": "Zapsat"
                 },
@@ -2085,7 +2158,7 @@
                         "heal_network": "Vyléčit síť",
                         "heal_node": "Uzdravit uzel",
                         "node_info": "Informace o uzlu",
-                        "print_node": "Otisk nodu",
+                        "print_node": "Otisk uzlu",
                         "refresh_entity": "Znovu načíst Entitu",
                         "refresh_node": "Obnovit uzel",
                         "remove_failed_node": "Odebrat selhaný uzel",
@@ -2165,6 +2238,7 @@
                         "description": "Šablony jsou vykreslovány pomocí Jinja2 šablonového enginu s některými specifickými rozšířeními pro Home Assistant.",
                         "editor": "Editor šablon",
                         "jinja_documentation": "Dokumentace šablony Jinja2",
+                        "reset": "Obnovit ukázkovou šablonu",
                         "template_extensions": "Rozšíření šablony Home Assistant",
                         "title": "Šablony",
                         "unknown_error_template": "Šablona vykreslování neznámých chyb"
@@ -2245,6 +2319,10 @@
                         "button": {
                             "description": "Karta Tlačítko umožňuje přidat tlačítka k provádění úkolů.",
                             "name": "Tlačítko"
+                        },
+                        "calendar": {
+                            "description": "Karta Kalendář zobrazuje kalendář včetně zobrazení dnů, týdnů a seznamů",
+                            "name": "Kalendář"
                         },
                         "conditional": {
                             "card": "Karta",
@@ -2700,6 +2778,7 @@
                     "intro": "Dobrý den, {name} , vítejte v Home Assistant. Jak byste chtěli pojmenovat svůj domov?",
                     "intro_location": "Rádi bychom věděli, kde žijete. Tyto informace pomohou při zobrazování informací a určování přesné polohy slunce. Tato data nejsou nikdy sdílena mimo vaši síť.",
                     "intro_location_detect": "Můžeme vám pomoci vyplnit tyto informace jednorázovým požadavkem na externí službu.",
+                    "location_name": "Název vaší instalace Home Assistant",
                     "location_name_default": "Domov"
                 },
                 "integration": {

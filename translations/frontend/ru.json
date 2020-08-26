@@ -419,9 +419,16 @@
                 "unlock": "Открыть"
             },
             "media_player": {
+                "browse_media": "Просмотр медиа",
+                "media_next_track": "Следующий",
+                "media_play": "Воспроизведение",
+                "media_play_pause": "Воспроизведение / пауза",
+                "media_previous_track": "Предыдущий",
                 "sound_mode": "Режим звука",
                 "source": "Источник",
-                "text_to_speak": "Воспроизвести текст"
+                "text_to_speak": "Воспроизвести текст",
+                "turn_off": "Выключить",
+                "turn_on": "Включить"
             },
             "persistent_notification": {
                 "dismiss": "Закрыть"
@@ -554,6 +561,22 @@
                 "loading_history": "Загрузка истории...",
                 "no_history_found": "История не найдена."
             },
+            "media-browser": {
+                "choose-source": "Выбрать источник",
+                "content-type": {
+                    "album": "Альбом",
+                    "artist": "Исполнитель",
+                    "library": "Библиотека",
+                    "playlist": "Плейлист",
+                    "server": "Сервер"
+                },
+                "media-player-browser": "Браузер медиаплеера",
+                "no_items": "Нет элементов",
+                "pick": "Выбрать",
+                "pick-media": "Выбрать Медиа",
+                "play": "Воспроизведение",
+                "play-media": "Воспроизведение Медиа"
+            },
             "picture-upload": {
                 "label": "Изображение",
                 "unsupported_format": "Неподдерживаемый формат. Выберите изображение в формате JPEG, PNG или GIF."
@@ -578,6 +601,7 @@
                     "week": "{count} {count, plural,\none {нед.}\nother {нед.}\n}"
                 },
                 "future": "через {time}",
+                "just_now": "Сейчас",
                 "never": "Никогда",
                 "past": "{time} назад"
             },
@@ -1354,7 +1378,7 @@
                     "device_not_found": "Устройство не найдено",
                     "entities": {
                         "add_entities_lovelace": "Добавить объекты в Lovelace UI",
-                        "disabled_entities": "+{count} {count, plural,\n  one {скрытый объект}\n  other {скрытых объектов}\n}",
+                        "disabled_entities": "Показать {count} {count, plural,\n  one {скрытый объект}\n  other {скрытых объектов}\n}",
                         "entities": "Объекты",
                         "hide_disabled": "Не показывать скрытые",
                         "none": "У этого устройства нет объектов"
@@ -1658,7 +1682,11 @@
                     "topic": "Топик"
                 },
                 "ozw": {
+                    "button": "Настройки",
                     "common": {
+                        "controller": "Контроллер",
+                        "instance": "Экземпляр",
+                        "network": "Сеть",
                         "node_id": "ID узла",
                         "ozw_instance": "Экземпляр OpenZWave",
                         "zwave": "Z-Wave"
@@ -1667,6 +1695,36 @@
                         "node_failed": "Ошибка узла",
                         "stage": "Этап",
                         "zwave_info": "Информация о Z-Wave"
+                    },
+                    "navigation": {
+                        "network": "Сеть",
+                        "nodes": "Узлы",
+                        "select_instance": "Выбор экземпляра"
+                    },
+                    "network_status": {
+                        "details": {
+                            "driverallnodesqueried": "Все узлы опрошены",
+                            "driverallnodesqueriedsomedead": "Все узлы опрошены. В сети обнаружены мертвые узлы",
+                            "driverawakenodesqueries": "Все активные узлы опрошены",
+                            "driverfailed": "Не удалось подключиться к контроллеру Z-Wave",
+                            "driverready": "Инициализация контроллера Z-Wave",
+                            "driverremoved": "Драйвер удален",
+                            "driverreset": "Драйвер сброшен",
+                            "offline": "OZWDaemon не в сети",
+                            "ready": "Готов к подключению",
+                            "started": "Подключен к MQTT",
+                            "starting": "Подключение к MQTT",
+                            "stopped": "OpenZWave остановлен"
+                        },
+                        "offline": "Не в сети",
+                        "online": "В сети",
+                        "starting": "Запускается",
+                        "unknown": "Неизвестно"
+                    },
+                    "network": {
+                        "header": "Управление сетью",
+                        "introduction": "Управление сетевыми функциями.",
+                        "node_count": "{count} узлов"
                     },
                     "node_query_stages": {
                         "associations": "Обновление ассоциативных групп и членства",
@@ -1698,6 +1756,14 @@
                         "title": "Обновить информацию об узле",
                         "wakeup_header": "Инструкции по пробуждению для",
                         "wakeup_instructions_source": "Инструкции по пробуждению взяты из базы данных устройств сообщества OpenZWave."
+                    },
+                    "select_instance": {
+                        "header": "Выберите экземпляр OpenZWave",
+                        "introduction": "У Вас работает более одного экземпляра OpenZWave. Каким экземпляром Вы хотите управлять?"
+                    },
+                    "services": {
+                        "add_node": "Добавить узел",
+                        "remove_node": "Удалить узел"
                     }
                 },
                 "person": {
@@ -1835,6 +1901,7 @@
                             "person": "Перезагрузить персоны",
                             "scene": "Перезагрузить сцены",
                             "script": "Перезагрузить сценарии",
+                            "template": "Перезагрузить шаблоны",
                             "zone": "Перезагрузить зоны"
                         },
                         "server_management": {
@@ -1876,6 +1943,7 @@
                         "last_scanned": "Последнее считывание",
                         "name": "Название"
                     },
+                    "never_scanned": "Сканирование ещё не выполнялось",
                     "no_tags": "Нет меток",
                     "write": "Записать"
                 },
@@ -2200,6 +2268,7 @@
                         "description": "Здесь Вы можете протестировать поведение шаблонов. В Home Assistant используется шаблонизатор Jinja2 с некоторыми специальными расширениями.",
                         "editor": "Редактор шаблонов",
                         "jinja_documentation": "Узнайте больше о шаблонизаторе Jinja2",
+                        "reset": "Вернуться к демонстрационному шаблону",
                         "template_extensions": "Узнайте больше о шаблонах Home Assistant",
                         "title": "Шаблоны",
                         "unknown_error_template": "Неизвестная ошибка при визуализации шаблона."
@@ -2280,6 +2349,10 @@
                         "button": {
                             "description": "Позволяет добавлять кнопки для выполнения каких-либо задач.",
                             "name": "Кнопка"
+                        },
+                        "calendar": {
+                            "description": "Отображает календарь, включая день, неделю и списки задач.",
+                            "name": "Календарь"
                         },
                         "conditional": {
                             "card": "Карточка",
@@ -2735,6 +2808,7 @@
                     "intro": "Добро пожаловать, {name}! Как Вы хотите назвать свой Home Assistant?",
                     "intro_location": "Мы хотели бы знать, где Вы живете. Это поможет нам правильно отображать информацию и позволит Вам настраивать автоматизацию на основе данных о рассвете и закате. Эти данные никогда не будут переданы за пределы Вашей локальной сети.",
                     "intro_location_detect": "Мы можем помочь Вам заполнить эту информацию, сделав однократный запрос во внешнюю службу.",
+                    "location_name": "Название для Вашего Home Assistant",
                     "location_name_default": "Home Assistant"
                 },
                 "integration": {
