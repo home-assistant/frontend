@@ -43,9 +43,6 @@ export class HaBar extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      :host {
-        width: 100%;
-      }
       rect:first-child {
         fill: var(--ha-bar-background-color, var(--secondary-background-color));
       }
