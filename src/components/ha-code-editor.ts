@@ -1,8 +1,8 @@
 import { Editor } from "codemirror";
 import {
   customElement,
-  property,
   internalProperty,
+  property,
   PropertyValues,
   UpdatingElement,
 } from "lit-element";
@@ -123,7 +123,7 @@ export class HaCodeEditor extends UpdatingElement {
         transition: 0.2s ease border-right;
       }
       .cm-s-default.CodeMirror {
-        background-color: var(--card-background-color);
+        background-color: var(--code-editor-background-color, var(--card-background-color));
         color: var(--primary-text-color);
       }
       .cm-s-default .CodeMirror-cursor {

@@ -72,6 +72,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   ingress_panel: boolean;
   ingress_entry: null | string;
   ingress_url: null | string;
+  watchdog: null | boolean;
 }
 
 export interface HassioAddonsInfo {
@@ -99,6 +100,7 @@ export interface HassioAddonSetOptionParams {
   auto_update?: boolean;
   ingress_panel?: boolean;
   network?: object | null;
+  watchdog?: boolean;
 }
 
 export const reloadHassioAddons = async (hass: HomeAssistant) => {

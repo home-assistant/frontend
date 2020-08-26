@@ -401,6 +401,23 @@ class HassioAddonInfo extends LitElement {
                     ></ha-switch>
                   </ha-settings-row>
 
+                  ${this.hass.userData?.showAdvanced
+                    ? html`
+                        <ha-settings-row ?three-line=${this.narrow}>
+                          <span slot="heading">
+                            Watchdog
+                          </span>
+                          <span slot="description">
+                            This will start the add-on if it crashes
+                          </span>
+                          <ha-switch
+                            @change=${this._watchdogToggled}
+                            .checked=${this.addon.watchdog}
+                            haptic
+                          ></ha-switch>
+                        </ha-settings-row>
+                      `
+                    : ""}
                   ${this.addon.auto_update || this.hass.userData?.showAdvanced
                     ? html`
                         <ha-settings-row ?three-line=${this.narrow}>
@@ -636,6 +653,24 @@ class HassioAddonInfo extends LitElement {
     this._error = undefined;
     const data: HassioAddonSetOptionParams = {
       boot: this.addon.boot === "auto" ? "manual" : "auto",
+    };
+    try {
+      await setHassioAddonOption(this.hass, this.addon.slug, data);
+      const eventdata = {
+        success: true,
+        response: undefined,
+        path: "option",
+      };
+      fireEvent(this, "hass-api-called", eventdata);
+    } catch (err) {
+      this._error = `Failed to set addon option, ${err.body?.message || err}`;
+    }
+  }
+
+  private async _watchdogToggled(): Promise<void> {
+    this._error = undefined;
+    const data: HassioAddonSetOptionParams = {
+      watchdog: !this.addon.watchdog,
     };
     try {
       await setHassioAddonOption(this.hass, this.addon.slug, data);
