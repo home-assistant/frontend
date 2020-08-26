@@ -37,6 +37,10 @@ const reloadableDomains = [
   "input_select",
   "template",
   "universal",
+  "rest",
+  "command_line",
+  "filter",
+  "statistics",
 ];
 
 @customElement("ha-config-server-control")
