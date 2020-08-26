@@ -59,7 +59,9 @@ class HassioHostInfo extends LitElement {
   @internalProperty() public _networkInfo?: NetworkInfo;
 
   public render(): TemplateResult | void {
-    const primaryIpAddress = this._primaryIpAddress(this._networkInfo!);
+    const primaryIpAddress = this.hostInfo.features.includes("network")
+      ? this._primaryIpAddress(this._networkInfo!)
+      : "";
     return html`
       <ha-card header="Host System">
         <div class="card-content">
