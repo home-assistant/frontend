@@ -7,7 +7,6 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
 
 import {
   getValueInPercentage,
@@ -23,8 +22,6 @@ export class HaBar extends LitElement {
 
   @property({ type: Number }) public value!: number;
 
-  @property({ type: Number }) public target?: number; // Number between 0 and 100
-
   protected render(): TemplateResult {
     const valuePrecentage = roundWithOneDecimal(
       getValueInPercentage(
@@ -35,53 +32,26 @@ export class HaBar extends LitElement {
     );
 
     return html`
-      <slot></slot>
-      <div class="bar">
-        <div class="value">
-          ${valuePrecentage}%
-        </div>
-        <svg width="150">
-          <g>
-            <rect width="100%" height="12"></rect>
-            <rect
-              class="${classMap({
-                "target-reached":
-                  this.target !== undefined && valuePrecentage >= this.target,
-              })}"
-              width="${valuePrecentage}%"
-              height="12"
-              rx="4"
-            ></rect>
-          </g>
-        </svg>
-      </div>
+      <svg width="100%">
+        <g>
+          <rect width="100%" height="12"></rect>
+          <rect width="${valuePrecentage}%" height="12" rx="4"></rect>
+        </g>
+      </svg>
     `;
   }
 
   static get styles(): CSSResult {
     return css`
       :host {
-        align-items: center;
-        display: flex;
-        justify-content: space-between;
+        display: block;
         line-height: 12px;
         min-height: 12px;
         width: 100%;
       }
-      slot {
-        display: block;
-        max-width: calc(100% - 164px);
-      }
       .bar {
         display: flex;
         max-width: calc(100% - 8px);
-      }
-      .value {
-        height: 12px;
-        line-height: 12px;
-        margin-left: 6px;
-        margin-right: 2px;
-        text-align: end;
       }
       rect:first-child {
         fill: var(--ha-bar-background-color, var(--secondary-background-color));
@@ -89,11 +59,8 @@ export class HaBar extends LitElement {
       rect:last-child {
         fill: var(--ha-bar-primary-color, var(--primary-color));
       }
-      rect:last-child.target-reached {
-        fill: var(--ha-bar-target-color, var(--error-color));
-      }
       svg {
-        border-radius: 4px;
+        border-radius: var(--ha-bar-border-radius, 4px);
         height: 12px;
       }
     `;
