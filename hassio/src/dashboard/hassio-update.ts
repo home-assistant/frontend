@@ -149,7 +149,7 @@ export class HassioUpdate extends LitElement {
       title: `Update ${item.name}`,
       text: `Are you sure you want to upgrade ${item.name} to version ${item.version}?`,
       confirmText: "update",
-      dismissText: "no",
+      dismissText: "cancel",
     });
 
     if (!confirmed) {
