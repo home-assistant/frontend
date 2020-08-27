@@ -175,13 +175,10 @@ export class HuiUnusedEntities extends LitElement {
         margin-top: -20px;
       }
       .fab {
-        overflow: hidden;
-        position: absolute;
-        right: 0;
-        bottom: 0;
-        padding: 16px;
-        padding-right: calc(16px + env(safe-area-inset-right));
-        padding-bottom: calc(16px + env(safe-area-inset-bottom));
+        position: sticky;
+        float: right;
+        right: calc(16px + env(safe-area-inset-right));
+        bottom: calc(16px + env(safe-area-inset-bottom));
         z-index: 1;
       }
       .fab.rtl {

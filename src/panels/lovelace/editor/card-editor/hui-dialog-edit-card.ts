@@ -20,7 +20,6 @@ import { addCard, replaceCard } from "../config-util";
 import { getCardDocumentationURL } from "../get-card-documentation-url";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
-import { showSuggestCardDialog } from "./show-suggest-card-dialog";
 
 import type { HomeAssistant } from "../../../../types";
 import type { GUIModeChangedEvent } from "../types";
