@@ -90,7 +90,7 @@ class HaEntityAttributePicker extends LitElement {
             "ui.components.entity.entity-attribute-picker.attribute"
           )}
           .value=${this._value}
-          .disabled=${this.disabled}
+          .disabled=${this.disabled || !this.entityId}
           class="input"
           autocapitalize="none"
           autocomplete="off"
