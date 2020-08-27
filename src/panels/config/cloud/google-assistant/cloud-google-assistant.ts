@@ -150,7 +150,7 @@ class CloudGoogleAssistant extends LitElement {
                 <mwc-icon-button
                   slot="trigger"
                   class=${classMap({
-                    exposed: isExposed,
+                    exposed: isExposed!,
                     "not-exposed": !isExposed,
                   })}
                   .title=${this.hass!.localize(
