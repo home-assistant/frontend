@@ -1,3 +1,4 @@
+import memoize from "memoize-one";
 import {
   css,
   CSSResultArray,
@@ -22,9 +23,12 @@ import {
 } from "./show-edit-card-dialog";
 
 import "./hui-card-picker";
-import "./hui-entity-picker";
+import "./hui-entity-picker-table";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-header-bar";
+import { computeStateName } from "../../../../common/entity/compute_state_name";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { DataTableRowData } from "../../../../components/data-table/ha-data-table";
 
 declare global {
   interface HASSDomEvents {
@@ -113,17 +117,31 @@ export class HuiCreateDialogCard extends LitElement implements HassDialog {
               ></hui-card-picker>
             `
           : html`
-              <hui-entity-picker
-                .hass=${this.hass}
-                @selected-changed=${this._handleSelectedChanged}
-              ></hui-entity-picker>
+              <div class="entity-picker-container">
+                <hui-entity-picker-table
+                  .hass=${this.hass}
+                  .narrow=${true}
+                  .entities=${this._allEntities().map((entity) => {
+                    const stateObj = this.hass.states[entity];
+                    return {
+                      icon: "",
+                      entity_id: entity,
+                      stateObj,
+                      name: computeStateName(stateObj),
+                      domain: computeDomain(entity),
+                      last_changed: stateObj!.last_changed,
+                    };
+                  }) as DataTableRowData[]}
+                  @selected-changed=${this._handleSelectedChanged}
+                ></hui-entity-picker-table>
+              </div>
             `}
 
         <div slot="primaryAction">
           <mwc-button @click=${this._cancel}>
             ${this.hass!.localize("ui.common.cancel")}
           </mwc-button>
-          ${this._currTabIndex === 1
+          ${this._selectedEntities.length
             ? html`
                 <mwc-button @click=${this._suggestCards}>
                   ${this.hass!.localize("ui.common.continue")}
@@ -184,6 +202,14 @@ export class HuiCreateDialogCard extends LitElement implements HassDialog {
         mwc-tab-bar {
           padding-top: 8px;
         }
+
+        .entity-picker-container {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+          min-height: calc(100vh - 112px);
+          margin-top: -20px;
+        }
       `,
     ];
   }
@@ -239,6 +265,8 @@ export class HuiCreateDialogCard extends LitElement implements HassDialog {
 
     this.closeDialog();
   }
+
+  private _allEntities = memoize(() => Object.keys(this.hass.states));
 }
 
 declare global {

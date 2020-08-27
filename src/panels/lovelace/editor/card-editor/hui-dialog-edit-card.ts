@@ -52,7 +52,7 @@ declare global {
 
 @customElement("hui-dialog-edit-card")
 export class HuiDialogEditCard extends LitElement implements HassDialog {
-  @property({ attribute: false }) protected hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @internalProperty() private _params?: EditCardDialogParams;
 
@@ -73,8 +73,6 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
   @internalProperty() private _documentationURL?: string;
 
   @internalProperty() private _dirty = false;
-
-  @internalProperty() private _selectedEntities: string[] = [];
 
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
@@ -248,13 +246,6 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
                 </mwc-button>
               `
             : ``}
-          ${this._selectedEntities.length
-            ? html`
-                <mwc-button @click=${this._suggestCards}>
-                  ${this.hass!.localize("ui.common.continue")}
-                </mwc-button>
-              `
-            : ""}
         </div>
       </ha-dialog>
     `;
@@ -349,17 +340,6 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
     this._saving = false;
     this._dirty = false;
     showSaveSuccessToast(this, this.hass);
-    this.closeDialog();
-  }
-
-  private _suggestCards(): void {
-    showSuggestCardDialog(this, {
-      lovelaceConfig: this._params!.lovelaceConfig,
-      saveConfig: this._params!.saveConfig,
-      path: this._params!.path as [number],
-      entities: this._selectedEntities,
-    });
-
     this.closeDialog();
   }
 

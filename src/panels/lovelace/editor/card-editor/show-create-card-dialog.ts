@@ -1,7 +1,7 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { LovelaceConfig } from "../../../../data/lovelace";
 
-export interface ShowCardDialogParams {
+export interface CreateCardDialogParams {
   lovelaceConfig: LovelaceConfig;
   saveConfig: (config: LovelaceConfig) => void;
   path: [number] | [number, number];
@@ -10,12 +10,12 @@ export interface ShowCardDialogParams {
 
 const importCreateCardDialog = () =>
   import(
-    /* webpackChunkName: "hui-dialog-edit-card" */ "./hui-dialog-create-card"
+    /* webpackChunkName: "hui-dialog-create-card" */ "./hui-dialog-create-card"
   );
 
 export const showCreateCardDialog = (
   element: HTMLElement,
-  createCardDialogParams: ShowCardDialogParams
+  createCardDialogParams: CreateCardDialogParams
 ): void => {
   fireEvent(element, "show-dialog", {
     dialogTag: "hui-dialog-create-card",
