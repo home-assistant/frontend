@@ -147,6 +147,15 @@ export const fetchOZWNetworkStatistics = (
     ozw_instance: ozw_instance,
   });
 
+export const fetchOZWNodes = (
+  hass: HomeAssistant,
+  ozw_instance: number
+): Promise<OZWDevice[]> =>
+  hass.callWS({
+    type: "ozw/get_nodes",
+    ozw_instance: ozw_instance,
+  });
+
 export const fetchOZWNodeStatus = (
   hass: HomeAssistant,
   ozw_instance: number,

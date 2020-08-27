@@ -1,31 +1,19 @@
 import { customElement, property } from "lit-element";
-import memoizeOne from "memoize-one";
 import {
   HassRouterPage,
   RouterOptions,
 } from "../../../../../layouts/hass-router-page";
-import { HomeAssistant, Route } from "../../../../../types";
+import { HomeAssistant } from "../../../../../types";
 
-export const computeTail = memoizeOne((route: Route) => {
-  const dividerPos = route.path.indexOf("/", 1);
-  return dividerPos === -1
-    ? {
-        prefix: route.prefix + route.path,
-        path: "",
-      }
-    : {
-        prefix: route.prefix + route.path.substr(0, dividerPos),
-        path: route.path.substr(dividerPos),
-      };
-});
-
-@customElement("ozw-config-router")
-class OZWConfigRouter extends HassRouterPage {
+@customElement("ozw-network-router")
+class OZWNetworkRouter extends HassRouterPage {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public isWide!: boolean;
 
   @property() public narrow!: boolean;
+
+  @property() public ozw_instance!: number;
 
   private _configEntry = new URLSearchParams(window.location.search).get(
     "config_entry"
@@ -36,18 +24,23 @@ class OZWConfigRouter extends HassRouterPage {
     showLoading: true,
     routes: {
       dashboard: {
-        tag: "ozw-config-dashboard",
+        tag: "ozw-network-dashboard",
         load: () =>
           import(
-            /* webpackChunkName: "ozw-config-dashboard" */ "./ozw-config-dashboard"
+            /* webpackChunkName: "ozw-network-dashboard" */ "./ozw-network-dashboard"
           ),
       },
-      network: {
-        tag: "ozw-config-network",
+      nodes: {
+        tag: "ozw-network-nodes",
         load: () =>
           import(
-            /* webpackChunkName: "ozw-config-network" */ "./ozw-config-network"
+            /* webpackChunkName: "ozw-network-nodes" */ "./ozw-network-nodes"
           ),
+      },
+      node: {
+        tag: "ozw-config-node",
+        load: () =>
+          import(/* webpackChunkName: "ozw-config-node" */ "./ozw-config-node"),
       },
     },
   };
@@ -58,15 +51,16 @@ class OZWConfigRouter extends HassRouterPage {
     el.isWide = this.isWide;
     el.narrow = this.narrow;
     el.configEntryId = this._configEntry;
-    if (this._currentPage === "network") {
+    el.ozw_instance = this.ozw_instance;
+    if (this._currentPage === "node") {
       const path = this.routeTail.path.split("/");
-      el.ozw_instance = path[1];
+      el.node_id = path[1];
     }
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ozw-config-router": OZWConfigRouter;
+    "ozw-network-router": OZWNetworkRouter;
   }
 }

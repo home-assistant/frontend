@@ -6,17 +6,16 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { mdiNetwork, mdiServerNetwork } from "@mdi/js";
+import memoizeOne from "memoize-one";
 import { navigate } from "../../../../../common/navigate";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../../../layouts/hass-tabs-subpage";
-import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
-import "./ozw-network-router";
+import "./ozw-node-router";
 import { computeTail } from "./ozw-config-router";
 
-@customElement("ozw-config-network")
-class OZWConfigNetwork extends LitElement {
+@customElement("ozw-config-node")
+class OZWConfigNode extends LitElement {
   @property({ type: Object }) public hass!: HomeAssistant;
 
   @property({ type: Object }) public route!: Route;
@@ -29,6 +28,8 @@ class OZWConfigNetwork extends LitElement {
 
   @property() public ozw_instance = 0;
 
+  @property() public node_id = 0;
+
   public connectedCallback(): void {
     super.connectedCallback();
     if (this.ozw_instance <= 0) {
@@ -38,47 +39,15 @@ class OZWConfigNetwork extends LitElement {
 
   protected render(): TemplateResult {
     const route = computeTail(this.route);
-
-    const ozwTabs: PageNavigation[] = [
-      {
-        translationKey: "ui.panel.config.ozw.navigation.network",
-        path: `/config/ozw/network/${this.ozw_instance}/dashboard`,
-        iconPath: mdiServerNetwork,
-      },
-      {
-        translationKey: "ui.panel.config.ozw.navigation.nodes",
-        path: `/config/ozw/network/${this.ozw_instance}/nodes`,
-        iconPath: mdiNetwork,
-      },
-    ];
-
-    if (route.path !== "/nodes") {
-      return html`
-        <hass-tabs-subpage
-          .hass=${this.hass}
-          .narrow=${this.narrow}
-          .route=${route}
-          .tabs=${ozwTabs}
-        >
-          <ozw-network-router
-            .ozw_instance=${this.ozw_instance}
-            .route=${route}
-            .hass=${this.hass}
-            .narrow=${this.narrow}
-          >
-          </ozw-network-router>
-        </hass-tabs-subpage>
-      `;
-    }
-
     return html`
-      <ozw-network-router
+      <ozw-node-router
         .ozw_instance=${this.ozw_instance}
+        .node_id=${this.node_id}
         .route=${route}
         .hass=${this.hass}
         .narrow=${this.narrow}
       >
-      </ozw-network-router>
+      </ozw-node-router>
     `;
   }
 
@@ -89,6 +58,6 @@ class OZWConfigNetwork extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ozw-config-network": OZWConfigNetwork;
+    "ozw-config-node": OZWConfigNode;
   }
 }
