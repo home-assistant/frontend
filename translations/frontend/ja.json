@@ -26,6 +26,19 @@
                 "away": "外出",
                 "home": "在宅"
             }
+        },
+        "humidifier": {
+            "mode": {
+                "auto": "自動",
+                "away": "外出",
+                "baby": "赤ちゃん",
+                "boost": "ブースト",
+                "comfort": "快適さ",
+                "eco": "エコ",
+                "home": "ホーム",
+                "normal": "通常",
+                "sleep": "睡眠"
+            }
         }
     },
     "state_badge": {
@@ -219,6 +232,10 @@
             "off": "オフ",
             "on": "オン"
         },
+        "vacuum": {
+            "off": "オフ",
+            "on": "オン"
+        },
         "weather": {
             "clear-night": "晴れた夜",
             "cloudy": "曇り",
@@ -281,6 +298,12 @@
             "fan": {
                 "speed": "風速"
             },
+            "humidifier": {
+                "humidity": "目標湿度",
+                "mode": "モード",
+                "on_entity": "{名前} オン",
+                "target_humidity_entity": "目標湿度"
+            },
             "light": {
                 "brightness": "明るさ",
                 "color_temperature": "色温度"
@@ -290,7 +313,14 @@
                 "unlock": "ロック解除"
             },
             "media_player": {
-                "text_to_speak": "音声合成"
+                "browse_media": "メディアを参照する",
+                "media_next_track": "次",
+                "media_play": "再生",
+                "media_play_pause": "再生/一時停止",
+                "media_previous_track": "前",
+                "text_to_speak": "音声合成",
+                "turn_off": "終了する",
+                "turn_on": "オンにする"
             },
             "persistent_notification": {
                 "dismiss": "消去"
@@ -299,6 +329,8 @@
                 "activate": "有効化"
             },
             "script": {
+                "cancel": "キャンセル",
+                "cancel_multiple": "キャンセル",
                 "execute": "実行"
             },
             "service": {
@@ -340,10 +372,18 @@
             }
         },
         "common": {
+            "and": "そして",
+            "back": "戻る",
             "cancel": "キャンセル",
             "delete": "削除",
+            "error_required": "必須",
             "loading": "読込中",
+            "menu": "メニュー",
+            "next": "次",
             "no": "いいえ",
+            "overflow_menu": "オーバーフローメニュー",
+            "previous": "前",
+            "refresh": "更新",
             "successfully_deleted": "正常に削除されました",
             "undo": "元に戻す",
             "yes": "はい"
@@ -362,9 +402,19 @@
                 "clear": "消去",
                 "show_areas": "エリアを表示"
             },
+            "data-table": {
+                "no-data": "データなし",
+                "search": "検索"
+            },
+            "date-range-picker": {
+                "end_date": "終了日",
+                "select": "選択",
+                "start_date": "開始日"
+            },
             "device-picker": {
                 "clear": "削除",
                 "device": "デバイス",
+                "no_area": "エリアなし",
                 "show_devices": "デバイスを表示",
                 "toggle": "切り替え"
             },
@@ -379,6 +429,26 @@
                 "loading_history": "状態履歴を読込中...",
                 "no_history_found": "状態履歴がありません。"
             },
+            "media-browser": {
+                "choose-source": "ソースを選択",
+                "content-type": {
+                    "album": "アルバム",
+                    "artist": "アーティスト",
+                    "library": "ライブラリ",
+                    "playlist": "プレイリスト",
+                    "server": "サーバー"
+                },
+                "media-player-browser": "メディアプレーヤーブラウザ",
+                "no_items": "アイテムなし",
+                "pick": "選択",
+                "pick-media": "メディアを選択",
+                "play": "再生",
+                "play-media": "メディアを再生"
+            },
+            "picture-upload": {
+                "label": "画像",
+                "unsupported_format": "サポートされていない形式です。JPEG、PNG、またはGIF画像を選択してください。"
+            },
             "related-items": {
                 "integration": "インテグレーション",
                 "no_related_found": "関連するアイテムが見つかりませんでした。"
@@ -388,6 +458,7 @@
                     "hour": "{count} {count, plural,\n  one {時間}\n  other {時間}\n}"
                 },
                 "future": "{time}以内",
+                "just_now": "ちょうど今",
                 "past": "{time}前"
             },
             "service-picker": {
@@ -413,10 +484,12 @@
                     "enabled_label": "エンティティを有効化",
                     "entity_id": "エンティティ ID",
                     "icon": "アイコンの上書き",
+                    "icon_error": "アイコンは「prefix：iconname」の形式にする必要があります（例：「mdi：home」）。",
                     "name": "名前の上書き",
                     "unavailable": "このエンティティは現在利用できません。",
                     "update": "更新"
-                }
+                },
+                "no_unique_id": "このエンティティには一意のIDがないため、その設定はUIから管理できません。"
             },
             "generic": {
                 "cancel": "キャンセル",
@@ -451,11 +524,19 @@
                     "options": "オプション"
                 },
                 "input_text": {
+                    "max": "最大の長さ",
+                    "min": "最小の長さ",
                     "mode": "表示モード",
                     "password": "パスワード",
+                    "pattern": "クライアント側検証の正規表現パターン",
                     "text": "テキスト"
                 },
-                "required_error_msg": "この項目は必須です"
+                "platform_not_loaded": "{platform}統合がロードされていません。 'default_config：'または '' {platform} ： ''を追加して、構成に追加してください。",
+                "required_error_msg": "この項目は必須です",
+                "yaml_not_editable": "このエンティティの設定は UI から編集できません。UI から設定されたエンティティのみが UI から構成できます。"
+            },
+            "image_cropper": {
+                "crop": "収納"
             },
             "more_info_control": {
                 "dismiss": "ダイアログを閉じる",
@@ -483,7 +564,14 @@
                 }
             },
             "mqtt_device_debug_info": {
+                "deserialize": "MQTTメッセージをJSONとして解析する",
+                "entities": "エンティティ",
+                "no_entities": "エンティティなし",
+                "no_triggers": "トリガーなし",
+                "payload_display": "ペイロード表示",
+                "recent_messages": "{n}最近受信したメッセージ",
                 "show_as_yaml": "YAML として表示",
+                "title": "{device}デバッグ情報",
                 "triggers": "トリガー"
             },
             "voice_command": {
@@ -496,15 +584,22 @@
             },
             "zha_device_info": {
                 "buttons": {
+                    "add": "このデバイス経由でデバイスを追加",
+                    "clusters": "クラスタの管理",
                     "zigbee_information": "Zigbee 情報"
                 },
                 "device_signature": "Zigbee デバイス署名",
                 "services": {
-                    "remove": "Zigbee ネットワークからデバイスを削除します。"
+                    "remove": "Zigbee ネットワークからデバイスを削除します。",
+                    "zigbee_information": "デバイスのZigbee情報を表示します。"
+                },
+                "zha_device_card": {
+                    "device_name_placeholder": "デバイス名の変更"
                 }
             }
         },
         "duration": {
+            "day": "{count} {count, plural,\n  one {日}\n  other {日間}\n}",
             "hour": "{count} {count, plural,\n  one {時間}\n  other {時間}\n}",
             "minute": "{count} {count, plural,\n  one {分}\n  other {分}\n}",
             "second": "{count} {count, plural,\n  one {秒}\n  other {秒}\n}",
@@ -523,9 +618,14 @@
         "notification_toast": {
             "connection_lost": "切断されました。再接続中...",
             "service_call_failed": "サービス{service}の呼び出しに失敗しました。",
+            "started": "ホームアシスタントが開始されました！",
             "triggered": "トリガーしました {name}"
         },
         "panel": {
+            "calendar": {
+                "my_calendars": "マイカレンダー",
+                "today": "今日"
+            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "設定オプションが見つかりませんか？アドバイスモードを有効にしてください。",
@@ -538,11 +638,24 @@
                         "devices": "デバイス"
                     },
                     "delete": {
+                        "confirmation_text": "このエリアのすべてのデバイスは割り当て解除されます。",
                         "confirmation_title": "このエリアを削除してもよろしいですか？"
                     },
                     "description": "すべて自宅のエリアの一覧",
+                    "editor": {
+                        "area_id": "エリア ID",
+                        "create": "作成",
+                        "default_name": "新しいエリア",
+                        "delete": "削除",
+                        "name": "名前",
+                        "name_required": "名前は必須です",
+                        "unknown_error": "不明なエラー",
+                        "update": "更新"
+                    },
                     "picker": {
-                        "header": "エリア"
+                        "create_area": "エリアの作成",
+                        "header": "エリア",
+                        "no_areas": "まだエリアがないようです！"
                     }
                 },
                 "automation": {
@@ -559,16 +672,46 @@
                             "name": "アクション",
                             "type_select": "アクションの種類",
                             "type": {
+                                "choose": {
+                                    "add_option": "オプションを追加",
+                                    "conditions": "条件",
+                                    "default": "デフォルトのアクション",
+                                    "label": "選択",
+                                    "option": "オプション {番号}",
+                                    "remove_option": "オプションを削除",
+                                    "sequence": "アクション"
+                                },
                                 "condition": {
                                     "label": "条件"
                                 },
                                 "delay": {
                                     "delay": "遅延"
                                 },
+                                "device_id": {
+                                    "action": "アクション"
+                                },
                                 "event": {
                                     "event": "イベント：",
                                     "label": "イベントを実行",
                                     "service_data": "サービスデータ"
+                                },
+                                "repeat": {
+                                    "label": "繰り返す",
+                                    "sequence": "アクション",
+                                    "type_select": "繰り返しのタイプ",
+                                    "type": {
+                                        "count": {
+                                            "label": "カウント"
+                                        },
+                                        "until": {
+                                            "conditions": "条件まで",
+                                            "label": "まで"
+                                        },
+                                        "while": {
+                                            "conditions": "条件",
+                                            "label": "しばらくの間"
+                                        }
+                                    }
                                 },
                                 "service": {
                                     "service_data": "サービスのデータ"
@@ -586,9 +729,16 @@
                             "delete_confirm": "本当に削除しますか？",
                             "duplicate": "デュプリケート",
                             "header": "条件",
+                            "introduction": "条件はオプションであり、すべての条件が満たされない限り、それ以上の実行を防ぎます。",
                             "name": "条件",
                             "type_select": "条件の種類",
                             "type": {
+                                "device": {
+                                    "condition": "条件"
+                                },
+                                "not": {
+                                    "label": "ない"
+                                },
                                 "numeric_state": {
                                     "above": "超過",
                                     "below": "未満",
@@ -623,6 +773,21 @@
                         "edit_yaml": "YAML で編集",
                         "enable_disable": "オートメーションの有効化/無効化",
                         "introduction": "オートメーションを使用して、あなたの家を生き生きとさせましょう。",
+                        "max": {
+                            "parallel": "並列実行の最大数",
+                            "queued": "キューの長さ"
+                        },
+                        "modes": {
+                            "description": "このモードは、アクションが以前のトリガーから実行されている間に自動化がトリガーされたときに何が起こるかを制御します。詳細については{documentation_link}を確認してください。",
+                            "documentation": "自動化ドキュメント",
+                            "label": "モード",
+                            "parallel": "並列",
+                            "queued": "待機中",
+                            "restart": "再起動",
+                            "single": "シングル（デフォルト）"
+                        },
+                        "move_down": "下に移動",
+                        "move_up": "上に移動",
                         "save": "保存",
                         "triggers": {
                             "add": "トリガーを追加",
@@ -634,6 +799,9 @@
                             "name": "トリガー",
                             "type_select": "トリガーの種類",
                             "type": {
+                                "device": {
+                                    "trigger": "トリガー"
+                                },
                                 "event": {
                                     "event_data": "イベントのデータ",
                                     "event_type": "イベントの種類",
@@ -665,6 +833,9 @@
                                     "sunrise": "日の出",
                                     "sunset": "日の入"
                                 },
+                                "tag": {
+                                    "label": "タグ"
+                                },
                                 "template": {
                                     "label": "テンプレート",
                                     "value_template": "バリューテンプレート"
@@ -689,6 +860,7 @@
                         "headers": {
                             "name": "名前"
                         },
+                        "introduction": "オートメーションエディタを使用すると、オートメーションを作成および編集できます。以下のリンクをクリックして、ホーム アシスタントを正しく設定したことを確認する手順を確認してください。",
                         "no_automations": "編集可能なオートメーションが見つかりません。",
                         "only_editable": "automations.yaml で定義されたオートメーションのみが編集可能です。",
                         "show_info_automation": "オートメーションに関する情報を表示"
@@ -696,7 +868,11 @@
                 },
                 "cloud": {
                     "account": {
+                        "alexa": {
+                            "config_documentation": "設定に関するドキュメント"
+                        },
                         "google": {
+                            "config_documentation": "設定に関するドキュメント",
                             "devices_pin": "セキュリティデバイス PIN",
                             "enter_pin_hint": "セキュリティデバイスを使用するには PIN を入力してください",
                             "security_devices": "セキュリティデバイス"
@@ -747,6 +923,8 @@
                     "section": {
                         "core": {
                             "core_config": {
+                                "external_url": "外部 URL",
+                                "internal_url": "内部 URL",
                                 "time_zone": "タイムゾーン"
                             },
                             "header": "一般的な設定"
@@ -761,6 +939,7 @@
                     "description": "エンティティのカスタマイズ",
                     "pick_attribute": "オーバーライドする属性を選択してください",
                     "picker": {
+                        "entity": "エンティティ",
                         "header": "カスタマイズ"
                     },
                     "warning": {
@@ -768,6 +947,7 @@
                     }
                 },
                 "devices": {
+                    "add_prompt": "このデバイスを使用した{name}はまだ追加されていません。上の[+]ボタンをクリックして追加できます。",
                     "automation": {
                         "automations": "オートメーション",
                         "create": "デバイスからオートメーションを作成",
@@ -777,6 +957,7 @@
                     "cant_edit": "編集できるのは、UI で作成された項目のみです。",
                     "confirm_delete": "このデバイスを削除してもよろしいですか？",
                     "confirm_rename_entity_ids": "エンティティの ID も変更しますか？",
+                    "confirm_rename_entity_ids_warning": "この場合、これらのエンティティを現在使用している構成 (オートメーション、スクリプト、シーン、Lovelace など) は変更されません。",
                     "data_table": {
                         "area": "エリア",
                         "battery": "バッテリー",
@@ -784,11 +965,18 @@
                         "integration": "インテグレーション",
                         "manufacturer": "メーカー",
                         "model": "型番",
+                        "no_area": "エリアなし",
                         "no_devices": "デバイスなし"
                     },
                     "delete": "削除",
                     "description": "接続されたデバイスの管理",
+                    "device_info": "デバイス情報",
                     "device_not_found": "デバイスが見つかりません。",
+                    "entities": {
+                        "add_entities_lovelace": "Lovelaceに追加",
+                        "disabled_entities": "{count} {count, plural,\n  one {無効なエンティティ}\n  other {無効なエンティティ}\n}",
+                        "hide_disabled": "無効を非表示"
+                    },
                     "name": "名前",
                     "no_devices": "デバイスなし",
                     "scene": {
@@ -820,6 +1008,11 @@
                             "integration": "インテグレーション",
                             "name": "名前"
                         },
+                        "introduction2": "エンティティ レジストリを使用して、名前を上書きするか、エンティティ ID を変更するか、またはホーム アシスタントからエントリを削除します。",
+                        "remove_selected": {
+                            "confirm_text": "これらのエンティティが含まれている場合は、Lovelace の構成および自動化からそれらを削除する必要があります。"
+                        },
+                        "search": "エンティティを検索",
                         "status": {
                             "readonly": "読み取り専用"
                         }
@@ -832,6 +1025,7 @@
                 "header": "Home Assistant の設定",
                 "helpers": {
                     "caption": "ヘルパー",
+                    "description": "自動化の構築に役立つ要素を管理する",
                     "dialog": {
                         "add_helper": "ヘルパーを追加",
                         "add_platform": "{platform} を追加",
@@ -844,7 +1038,8 @@
                             "entity_id": "エンティティ ID",
                             "name": "名前",
                             "type": "タイプ"
-                        }
+                        },
+                        "no_helpers": "まだヘルパーがいないようです！"
                     },
                     "types": {
                         "input_boolean": "切り替え",
@@ -855,20 +1050,35 @@
                     }
                 },
                 "info": {
+                    "caption": "情報",
+                    "description": "ホーム アシスタントのインストールに関する情報を表示する",
+                    "documentation": "ドキュメント",
                     "frontend_version": "フロントエンドバージョン: {version} - {type}",
+                    "integrations": "インテグレーション",
                     "issues": "問題",
                     "path_configuration": "ディスク上に configuration.yaml へのパス: {path}",
                     "server": "サーバー",
                     "system_health_error": "「システムの正常性」コンポーネントが有効されていません、configuration.yaml に 'system_health:' を追加してください。",
                     "title": "情報"
                 },
+                "integration_panel_move": {
+                    "link_integration_page": "インテグレーションページ",
+                    "missing_zha": "ZHA設定パネルがありませんか？ {integrations_page} ZHAエントリに移動されました。",
+                    "missing_zwave": "Z-Wave設定パネルがありませんか？ {integrations_page}のZ-Waveエントリに移動されました。"
+                },
                 "integrations": {
                     "add_integration": "インテグレーションを追加",
                     "config_entry": {
                         "delete": "削除",
                         "delete_button": "{integration} を削除",
+                        "devices": "{count} {count, plural,\n  one {デバイス}\n  other {デバイス}\n}",
+                        "documentation": "ドキュメント",
+                        "entities": "{count} {count, plural,\n  one {エンティティ}\n  other {エントリー}\n}",
                         "no_area": "エリアなし",
                         "options": "オプション",
+                        "reload": "再読込",
+                        "reload_confirm": "インテグレーションが再読み込みされました",
+                        "reload_restart_confirm": "ホームアシスタントを再起動してこのインテグレーションの再読み込みを完了してください。\n",
                         "rename": "名前を変更",
                         "settings_button": "{integration} の設定を編集",
                         "system_options": "システムオプション",
@@ -893,6 +1103,7 @@
                     "home_assistant_website": "Home Assistant のウェブサイト",
                     "ignore": {
                         "confirm_delete_ignore_title": "{name} の無視を停止しますか？",
+                        "confirm_ignore": "この統合を設定しないでよろしいですか？右上のオーバーフローメニューで[無視された統合を表示]をクリックすると、これを元に戻すことができます。",
                         "confirm_ignore_title": "{name} の検出を無視しますか？",
                         "hide_ignored": "無視されたインテグレーションを非表示にする",
                         "ignore": "無視する",
@@ -902,13 +1113,18 @@
                     },
                     "integration": "インテグレーション",
                     "integration_not_found": "インテグレーションが見つかりません。",
+                    "no_integrations": "まだ設定されていないようです。あなたの最初の統合を追加するには、下のボタンをクリックしてください!",
                     "none_found": "インテグレーションが見つかりません。",
                     "none_found_detail": "別の検索基準をためしてみます。",
                     "rename_dialog": "このコンフィグレーションエントリーの名前を変更",
-                    "rename_input_label": "エントリー名"
+                    "rename_input_label": "エントリー名",
+                    "search": "インテグレーションを検索"
                 },
+                "introduction": "このビューでは、コンポーネントとHome Assistantを構成できます。まだすべてをUIから構成できるわけではありませんが、現在取り組んでいます。",
                 "logs": {
+                    "caption": "ログ",
                     "clear": "消去",
+                    "description": "Home Assistantログを表示する",
                     "load_full_log": "完全な Home Assistant ログを読み込む",
                     "loading_log": "エラーログを読み込んでいます…",
                     "no_errors": "エラーは報告されていません。",
@@ -919,11 +1135,14 @@
                 "lovelace": {
                     "caption": "Lovelace ダッシュボード",
                     "dashboards": {
+                        "cant_edit_default": "標準の Lovelace ダッシュボードは UI から編集できません。別のダッシュボードをデフォルトとして設定することで、非表示にすることができます。",
+                        "cant_edit_yaml": "YAMLで定義されたダッシュボードはUIから編集できません。それらをconfiguration.yamlで変更します。",
                         "caption": "ダッシュボード",
                         "conf_mode": {
                             "storage": "UI 制御",
                             "yaml": "YAML ファイル"
                         },
+                        "confirm_delete": "このダッシュボードを削除してもよろしいですか？",
                         "default_dashboard": "これはデフォルトのダッシュボードです",
                         "detail": {
                             "create": "作成",
@@ -937,11 +1156,13 @@
                             "title": "タイトル",
                             "title_required": "タイトルが必要です。",
                             "update": "更新",
-                            "url": "URL"
+                            "url": "URL",
+                            "url_error_msg": "URLには-を含める必要があり、スペースや特殊文字を含めることはできません（_および-を除く）"
                         },
                         "picker": {
                             "add_dashboard": "ダッシュボードを追加",
                             "headers": {
+                                "conf_mode": "設定方法",
                                 "default": "デフォルト",
                                 "filename": "ファイル名",
                                 "require_admin": "管理者のみ",
@@ -953,6 +1174,7 @@
                     },
                     "description": "Lovelace ダッシュボードを設定する",
                     "resources": {
+                        "cant_edit_yaml": "LovelaceをYAMLモードで使用しているため、UIを使用してリソースを管理することはできません。それらをconfiguration.yamlで管理します。",
                         "caption": "リソース",
                         "confirm_delete": "このリソースを削除してもよろしいですか？",
                         "detail": {
@@ -964,7 +1186,8 @@
                             "update": "更新",
                             "url": "URL",
                             "url_error_msg": "URL は必須フィールドです",
-                            "warning_header": "注意してください！"
+                            "warning_header": "注意してください！",
+                            "warning_text": "リソースを追加することは危険であり、リソースのソースを把握し、信頼してください。リソースが悪いと、システムに深刻な損害を与える可能性があります。"
                         },
                         "picker": {
                             "add_resource": "リソースを追加",
@@ -974,6 +1197,7 @@
                             },
                             "no_resources": "リソースなし"
                         },
+                        "refresh_body": "削除を完了するにはページを更新する必要があります。今すぐ更新しますか？",
                         "refresh_header": "更新しますか？",
                         "types": {
                             "css": "Stylesheet",
@@ -984,6 +1208,7 @@
                     }
                 },
                 "mqtt": {
+                    "button": "設定",
                     "description_listen": "トピックをリッスン",
                     "description_publish": "パケットをパブリッシュ",
                     "listening_to": "リッスンします",
@@ -996,14 +1221,88 @@
                     "topic": "トピック"
                 },
                 "ozw": {
+                    "button": "設定",
                     "common": {
+                        "controller": "コントローラ",
+                        "instance": "インスタンス",
+                        "network": "ネットワーク",
                         "node_id": "ノードID",
-                        "ozw_instance": "OpenZWaveインスタンス"
+                        "ozw_instance": "OpenZWaveインスタンス",
+                        "zwave": "Z-Wave"
                     },
                     "device_info": {
                         "node_failed": "ノードが失敗しました",
                         "stage": "段階",
                         "zwave_info": "Z-Wave情報"
+                    },
+                    "navigation": {
+                        "network": "ネットワーク",
+                        "nodes": "ノード",
+                        "select_instance": "インスタンスを選択"
+                    },
+                    "network_status": {
+                        "details": {
+                            "driverallnodesqueried": "すべての稼働中のノードが照会されました",
+                            "driverallnodesqueriedsomedead": "すべてのノードが照会されました。一部のノードがダウンしているのが見つかりました",
+                            "driverawakenodesqueries": "すべての稼働中のノードが照会されました",
+                            "driverfailed": "Z-Waveコントローラーへの接続に失敗しました",
+                            "driverready": "Z-Waveコントローラーの初期化",
+                            "driverremoved": "ドライバーが削除されました",
+                            "driverreset": "ドライバーがリセットされました",
+                            "offline": "OZWデーモンオフライン",
+                            "ready": "接続の準備完了",
+                            "started": "MQTTに接続されています",
+                            "starting": "MQTTへの接続",
+                            "stopped": "OpenZWaveが停止しました"
+                        },
+                        "offline": "オフライン",
+                        "online": "オンライン",
+                        "starting": "開始",
+                        "unknown": "不明"
+                    },
+                    "network": {
+                        "header": "ネットワーク管理",
+                        "introduction": "接続されたデバイスの管理",
+                        "node_count": "{count}ノード"
+                    },
+                    "node_query_stages": {
+                        "associations": "関連グループとメンバーシップの更新",
+                        "cacheload": "OpenZWave キャッシュファイルから情報を読み込んでいます。バッテリー・ノードは、ノードがウェイクアップするまでこの段階にとどまります。",
+                        "complete": "面接プロセスが完了しました",
+                        "configuration": "ノードから構成値を取得する",
+                        "dynamic": "ノードから頻繁に変更される値を取得する",
+                        "instances": "デバイスがサポートするインスタンスまたはチャネルに関する詳細の取得",
+                        "manufacturerspecific1": "ノードからの製造元および製品IDコードの取得",
+                        "manufacturerspecific2": "ノードから頻繁に変更される値を取得する",
+                        "neighbors": "ノードの近隣ノードのリストの取得",
+                        "nodeinfo": "ノードから構成値を取得する",
+                        "nodeplusinfo": "ノードからZ-Wave +情報を取得する",
+                        "probe": "ノードが起動しているかどうかの確認",
+                        "protocolinfo": "コントローラからこのノードの基本的なZ-Wave機能を取得する",
+                        "session": "ノードから頻繁に変更される値を取得する",
+                        "static": "ノードから構成値を取得する",
+                        "versions": "ファームウェアおよびコマンドクラスのバージョンに関する情報の取得",
+                        "wakeup": "ウェイクアップ キューとメッセージのサポートのセットアップ"
+                    },
+                    "refresh_node": {
+                        "battery_note": "ノードがバッテリ駆動の場合は、必ずスリープ解除してから続行してください。",
+                        "complete": "ノードの更新が完了しました",
+                        "description": "これにより、OpenZWaveはノードに再インタビューし、ノードのコマンドクラス、機能、および値を更新するように指示します。",
+                        "node_status": "ノードの状態",
+                        "refreshing_description": "ノード情報を更新しています。",
+                        "start_refresh_button": "更新を開始",
+                        "step": "ステップ",
+                        "title": "ノード情報を更新",
+                        "wakeup_header": "ウェイクアップの手順",
+                        "wakeup_instructions_source": "ウェイクアップの手順は、OpenZWaveコミュニティデバイスデータベースから提供されます。"
+                    },
+                    "select_instance": {
+                        "header": "OpenZWaveインスタンスを選択",
+                        "introduction": "複数のOpenZWaveインスタンスが実行されています。どのインスタンスを管理しますか？"
+                    },
+                    "services": {
+                        "add_node": "ノードを追加",
+                        "remove_node": "ノードを削除"
                     }
                 },
                 "person": {
@@ -1035,8 +1334,10 @@
                             "delete": "エンティティを削除",
                             "device_entities": "デバイスに属するエンティティを追加するには、デバイスも追加されます。",
                             "header": "エンティティ",
+                            "introduction": "デバイスに属していないエンティティをここで設定できます。",
                             "without_device": "デバイスのないエンティティ"
                         },
+                        "icon": "アイコン",
                         "introduction": "シーンを使用して、あなたの家を生き生きとさせましょう。",
                         "load_error_not_editable": "scenes.yaml で定義されたシーンのみが編集可能です。",
                         "load_error_unknown": "シーンの読み込みエラー ({err_no})。",
@@ -1065,7 +1366,24 @@
                     "description": "スクリプトの作成と編集",
                     "editor": {
                         "delete_script": "スクリプトを削除",
+                        "icon": "アイコン",
+                        "id": "エンティティ ID",
+                        "id_already_exists": "このIDはすでに存在します",
+                        "id_already_exists_save_error": "IDが一意ではないため、このスクリプトを保存できません。別のIDを選択するか、空白のままにして自動的に生成します。",
                         "link_available_actions": "使用可能なアクションに関する情報をもっと見る。",
+                        "max": {
+                            "parallel": "並列実行の最大数",
+                            "queued": "キューの長さ"
+                        },
+                        "modes": {
+                            "description": "このモードは、アクションが以前のトリガーから実行されている間に自動化がトリガーされたときに何が起こるかを制御します。詳細については{documentation_link}を確認してください。",
+                            "documentation": "スクリプトのドキュメント",
+                            "label": "モード",
+                            "parallel": "並列",
+                            "queued": "待機中",
+                            "restart": "再起動",
+                            "single": "シングル（デフォルト）"
+                        },
                         "sequence": "シーケンス"
                     },
                     "picker": {
@@ -1086,10 +1404,17 @@
                             "core": "ロケーションとカスタマイズの再読込",
                             "group": "グループの再読込",
                             "heading": "設定の再読込",
+                            "input_boolean": "入力ブール値を再読み込み",
+                            "input_datetime": "入力日時を再読み込み",
+                            "input_number": "入力番号を再読み込み",
+                            "input_select": "入力選択の再読み込み",
+                            "input_text": "入力テキストを再読み込み",
                             "introduction": "Home Assistant の一部は、再起動を必要とせずに再読込できます。再読込を押すと、現在の設定をアンロードし、新しい設定を読み込みます。",
                             "person": "人の再読込",
                             "scene": "シーンの再読込",
                             "script": "スクリプトの再読込",
+                            "template": "テンプレート エンティティの再読み込み",
+                            "universal": "ユニバーサル メディア プレーヤー エンティティの再読み込み",
                             "zone": "ゾーンの再読込"
                         },
                         "server_management": {
@@ -1105,6 +1430,32 @@
                             "valid": "設定は有効です！"
                         }
                     }
+                },
+                "tags": {
+                    "add_tag": "タグを追加する",
+                    "automation_title": "タグ {名前} がスキャンされます",
+                    "caption": "タグ",
+                    "create_automation": "タグを使用したオートメーションの作成",
+                    "description": "タグの管理",
+                    "detail": {
+                        "create": "作成",
+                        "create_and_write": "作成と書き込み",
+                        "delete": "削除",
+                        "description": "説明",
+                        "name": "名前",
+                        "new_tag": "新しいタグ",
+                        "tag_id": "タグID",
+                        "tag_id_placeholder": "空のままにすると自動生成",
+                        "update": "更新"
+                    },
+                    "edit": "編集",
+                    "headers": {
+                        "last_scanned": "最後にスキャンされた",
+                        "name": "名前"
+                    },
+                    "never_scanned": "最後にスキャンされた",
+                    "no_tags": "タグなし",
+                    "write": "書き込み"
                 },
                 "users": {
                     "caption": "ユーザー",
@@ -1130,19 +1481,32 @@
                             "name": "名前",
                             "system": "システム"
                         }
-                    }
+                    },
+                    "users_privileges_note": "ユーザーグループは作業中です。ユーザーは、UIを介してインスタンスを管理できなくなります。すべての管理APIエンドポイントを引き続き監査して、管理者へのアクセスを正しく制限していることを確認しています。"
                 },
                 "zha": {
                     "add_device_page": {
+                        "discovered_text": "検出されると、デバイスがここに表示されます。",
+                        "no_devices_found": "デバイスが見つかりませんでした。デバイスがペアリングモードであることを確認し、検出の実行中はデバイスをウェイクアップしてください。",
+                        "pairing_mode": "デバイスがペアリングモードになっていることを確認します。これを行う方法については、デバイスの手順を確認してください。",
                         "search_again": "もう一度検索"
                     },
+                    "button": "構成",
                     "common": {
                         "add_devices": "デバイスを追加",
                         "devices": "デバイス",
                         "value": "バリュー"
                     },
+                    "groups": {
+                        "create_group": "Zigbeeホームオートメーション-グループの作成",
+                        "description": "Zigbeeグループを管理する",
+                        "header": "Zigbeeホームオートメーション-グループ管理"
+                    },
                     "network_management": {
                         "header": "ネットワーク管理"
+                    },
+                    "network": {
+                        "caption": "ネットワーク"
                     },
                     "node_management": {
                         "header": "デバイス管理"
@@ -1153,6 +1517,7 @@
                     "caption": "ゾーン",
                     "confirm_delete": "このゾーンを削除してもよろしいですか？",
                     "create_zone": "ゾーンを作成",
+                    "description": "ユーザーを追跡するゾーンを管理する",
                     "detail": {
                         "create": "作成",
                         "delete": "削除",
@@ -1162,21 +1527,64 @@
                         "name": "名前",
                         "new_zone": "新しいゾーン",
                         "passive": "パッシブ",
+                        "passive_note": "パッシブゾーンはフロントエンドで非表示になり、デバイストラッカーの場所として使用されません。これは、自動化に使用するだけの場合に役立ちます。",
                         "radius": "半径",
                         "required_error_msg": "この項目は必須です",
                         "update": "更新"
                     },
-                    "go_to_core_config": "一般的な構成に移動しますか？"
+                    "edit_home_zone": "ホームゾーンの半径は、フロントエンドからはまだ編集できません。マップ上のマーカーをドラッグして、ホームゾーンを移動します。",
+                    "edit_home_zone_narrow": "ホームゾーンの半径は、フロントエンドからはまだ編集できません。場所は、一般設定から変更できます。",
+                    "go_to_core_config": "一般的な構成に移動しますか？",
+                    "home_zone_core_config": "ホームゾーンの場所は、一般構成ページから編集できます。ホームゾーンの半径は、フロントエンドからはまだ編集できません。一般構成に移動しますか？"
                 },
                 "zwave": {
+                    "button": "設定",
                     "caption": "Z-Wave",
                     "common": {
                         "value": "バリュー"
                     },
                     "description": "Z-waveネットワークを管理します",
                     "node_config": {
+                        "config_parameter": "構成パラメーターの設定",
                         "config_value": "バリューを設定",
+                        "header": "ノード構成オプション",
                         "set_config_parameter": "構成パラメーターの設定"
+                    },
+                    "node_management": {
+                        "add_to_group": "グループに追加",
+                        "entities": "このノードのエンティティ",
+                        "entity_info": "エンティティ情報",
+                        "exclude_entity": "このエンティティをHome Assistantから除外する",
+                        "group": "グループ",
+                        "introduction": "単一ノードに影響するZ-Waveコマンドを実行します。ノードを選択すると、使用可能なコマンドのリストが表示されます。",
+                        "max_associations": "最大関連付け：",
+                        "node_group_associations": "ノードグループの関連付け",
+                        "node_protection": "ノード保護",
+                        "node_to_control": "制御するノード",
+                        "nodes": "ノード",
+                        "nodes_hint": "ノードを選択してノードごとのオプションを表示します",
+                        "nodes_in_group": "このグループの他のノード:",
+                        "pooling_intensity": "ポーリングの強度",
+                        "protection": "保護",
+                        "remove_broadcast": "ブロードキャストを削除",
+                        "remove_from_group": "グループから削除",
+                        "set_protection": "保護を設定する"
+                    },
+                    "ozw_log": {
+                        "last_log_lines": "最後のログ行数",
+                        "load": "読み込み",
+                        "tail": "最終行"
+                    },
+                    "services": {
+                        "heal_node": "ノードの修復",
+                        "node_info": "ノード情報",
+                        "print_node": "ノードの印刷",
+                        "refresh_entity": "エンティティの更新",
+                        "refresh_node": "ノードを更新",
+                        "remove_failed_node": "失敗したノードを削除",
+                        "replace_failed_node": "失敗したノードの置換",
+                        "save_config": "設定を保存",
+                        "test_node": "テストノード"
                     }
                 }
             },
@@ -1223,19 +1631,38 @@
                     },
                     "templates": {
                         "editor": "テンプレートエディター",
+                        "reset": "デモ テンプレートにリセット",
                         "title": "テンプレート",
                         "unknown_error_template": "不明なテンプレートレンダリングエラー"
                     }
                 }
             },
             "history": {
-                "period": "期間"
+                "period": "期間",
+                "ranges": {
+                    "last_week": "先週",
+                    "this_week": "今週",
+                    "today": "今日",
+                    "yesterday": "昨日"
+                }
             },
             "logbook": {
                 "entries_not_found": "ログブックエントリが見つかりません。",
-                "period": "期間"
+                "period": "期間",
+                "ranges": {
+                    "last_week": "先週",
+                    "this_week": "今週",
+                    "today": "今日",
+                    "yesterday": "昨日"
+                },
+                "showing_entries": "エントリを表示します"
             },
             "lovelace": {
+                "add_entities": {
+                    "generated_unsupported": "この機能は、Lovelace UIを制御している場合にのみ使用できます。",
+                    "saving_failed": "Lovelace UI構成の保存に失敗しました。",
+                    "yaml_unsupported": "YAMLモードでLovelace UIを使用している場合、この関数は使用できません。"
+                },
                 "cards": {
                     "safe-mode": {
                         "description": "Home Assistant は、構成の読み込み中に問題が発生し、セーフモードで実行されています。エラーログを見て、何が問題だったかを確認してください。",
@@ -1244,12 +1671,23 @@
                     "shopping-list": {
                         "add_item": "アイテムを追加",
                         "clear_items": "チェックされたアイテムを削除"
+                    },
+                    "starting": {
+                        "description": "ホームアシスタントを開始しています。お待ちください...",
+                        "header": "ホームアシスタントを開始しています..."
                     }
+                },
+                "changed_toast": {
+                    "message": "このダッシュボードのLovelace UI設定が更新されました。更新して変更を確認しますか？"
                 },
                 "editor": {
                     "card": {
                         "button": {
                             "name": "ボタン"
+                        },
+                        "calendar": {
+                            "description": "カレンダーカードには、日、週、リストビューを含むカレンダーが表示されます",
+                            "name": "カレンダー"
                         },
                         "conditional": {
                             "card": "カード",
@@ -1263,9 +1701,11 @@
                             "toggle": "エンティテを切り替え"
                         },
                         "entity-filter": {
+                            "description": "エンティティフィルタカードを使用すると、特定の状態にある場合にのみ追跡するエンティティのリストを定義できます。",
                             "name": "エンティティフィルター"
                         },
                         "entity": {
+                            "description": "エンティティ カードは、エンティティの状態の概要を簡単に示します。",
                             "name": "エンティティ"
                         },
                         "gauge": {
@@ -1275,49 +1715,85 @@
                             "attribute": "属性",
                             "double_tap_action": "ダブルタップアクション",
                             "manual": "マニュアル",
+                            "manual_description": "カスタムカードを追加する必要があるか、手動でyamlを記述したいだけですか？",
                             "no_theme": "テーマなし",
+                            "search": "検索",
+                            "secondary_info_attribute": "セカンダリ情報属性",
                             "state": "状態",
                             "theme": "テーマ"
                         },
+                        "glance": {
+                            "description": "Glance カードは、複数のセンサーをコンパクトな概要でグループ化するのに便利です。"
+                        },
                         "history-graph": {
+                            "description": "履歴グラフ カードを使用すると、一覧表示された各エンティティのグラフを表示できます。",
                             "name": "履歴グラフ"
                         },
                         "horizontal-stack": {
+                            "description": "水平スタックカードを使用すると、複数のカードを一緒に積み重ねることができます。そのため、これらのカードは常に1つの列のスペースで隣り合って配置されます。",
                             "name": "水平スタック"
                         },
+                        "humidifier": {
+                            "description": "加湿器カードは、加湿器エンティティを制御します。エンティティの湿度とモードを変更できます。",
+                            "name": "加湿器"
+                        },
                         "iframe": {
-                            "name": "iFrame"
+                            "description": "Web ページ カードを使用すると、お気に入りの Web ページをホーム アシスタントに埋め込むことができます。",
+                            "name": "ウェブページ"
                         },
                         "light": {
+                            "description": "ライトカードを使用すると、ライトの明るさを変更できます。",
                             "name": "照明"
                         },
                         "map": {
+                            "description": "マップ上にエンティティを表示できるマップカード。",
+                            "hours_to_show": "表示する時間",
                             "name": "地図"
                         },
                         "markdown": {
+                            "description": "マークダウン カードは、マークダウンのレンダリングに使用されます。",
                             "name": "マークダウン"
                         },
                         "media-control": {
+                            "description": "メディアコントロールカードは、使いやすいコントロールを備えたインターフェイスにメディアプレーヤーエンティティを表示するために使用されます。",
                             "name": "メディアコントロール"
+                        },
+                        "picture-elements": {
+                            "description": "ピクチャー・エレメント・カードは、最も汎用性の高いタイプのカードの1つです。カードは、アイコンやテキスト、さらにはサービスを配置することができます!座標に基づくイメージ上。"
                         },
                         "picture-entity": {
                             "name": "画像エンティティ"
                         },
+                        "picture-glance": {
+                            "description": "画像の一覧カードは、イメージと対応するエンティティの状態をアイコンで示します。右側のエンティティは切り替えアクションを許可し、他のエンティティは詳細ダイアログを表示します。"
+                        },
                         "picture": {
+                            "description": "ピクチャーカードを使用すると、インターフェイスのさまざまなパスへのナビゲーションに使用する画像を設定したり、サービスを呼び出したりできます。",
                             "name": "画像"
                         },
+                        "plant-status": {
+                            "description": "植物ステータスカードは、そこにすべての素敵な植物学者のためのものです。"
+                        },
                         "sensor": {
+                            "description": "センサーカードは、時間の経過に伴う変化を視覚化するオプションのグラフを使用して、センサーの状態をすばやく提供します。",
                             "name": "センサー"
                         },
                         "shopping-list": {
+                            "description": "ショッピングリストカードを使用すると、ショッピングリストのアイテムを追加、編集、チェックオフ、およびクリアができます。",
                             "integration_not_loaded": "このカードを設定するには、「shopping_list」インテグレーションが必要です。",
                             "name": "買い物リスト"
                         },
                         "thermostat": {
+                            "description": "サーモスタットカードは、気候エンティティを制御します。エンティティの温度とモードを変更できます。",
                             "name": "サーモスタット"
                         },
                         "vertical-stack": {
+                            "description": "垂直スタックカードを使用すると、複数のカードをグループ化して、常に同じ列に配置することができます。",
                             "name": "垂直スタック"
+                        },
+                        "weather-forecast": {
+                            "description": "天気予報カードは天気を表示します。表示するインターフェースに含めると非常に便利です。",
+                            "show_forecast": "予測を表示"
                         }
                     },
                     "cardpicker": {
@@ -1325,45 +1801,76 @@
                         "no_description": "説明がありません。"
                     },
                     "edit_card": {
+                        "confirm_cancel": "キャンセルしてもよいですか?",
                         "delete": "カードを削除",
                         "duplicate": "重複するカード",
                         "move": "ビューに移動",
                         "options": "その他のオプション",
-                        "pick_card": "どのカードを追加しますか？"
+                        "pick_card": "どのカードを追加しますか？",
+                        "typed_header": "{type}カードの構成",
+                        "unsaved_changes": "変更が保存されていません"
                     },
                     "edit_lovelace": {
-                        "edit_title": "タイトルを編集"
+                        "edit_title": "タイトルを編集",
+                        "explanation": "このタイトルは、Lovelace UIのすべてのビューの上に表示されます。",
+                        "title": "タイトル"
                     },
                     "edit_view": {
                         "move_left": "ビューを左に移動",
                         "move_right": "ビューを右に移動",
                         "tab_badges": "バッジ",
                         "tab_settings": "設定",
-                        "tab_visibility": "可視性"
+                        "tab_visibility": "可視性",
+                        "visibility": {
+                            "select_users": "ナビゲーションでこのビューを表示するユーザーを選択します。"
+                        }
                     },
                     "menu": {
-                        "open": "Lovelace メニューを開く"
+                        "open": "Lovelace メニューを開く",
+                        "raw_editor": "詳細設定エディター"
+                    },
+                    "migrate": {
+                        "migrate": "構成を移行する",
+                        "para_migrate": "Home Assistantは、「設定の移行」ボタンを押すことで、すべてのカードとビューにIDを自動的に追加できます。"
                     },
                     "move_card": {
                         "header": "カードを移動するビューを選択してください"
                     },
                     "raw_editor": {
+                        "confirm_remove_config_text": "Lovelace UI構成を削除すると、エリアとデバイスを含むLovelace UIビューが自動的に生成されます。",
+                        "confirm_remove_config_title": "Lovelace UI構成を削除してもよろしいですか？エリアとデバイスを使用してLovelace UIビューを自動的に生成します。",
                         "confirm_unsaved_changes": "未保存の変更があります、終了してもよろしいですか？",
                         "confirm_unsaved_comments": "コンフィグレーションはコメントが含まれています、これらは保存されません。本当に続けますか？",
                         "error_invalid_config": "設定が無効です: {error}",
                         "error_parse_yaml": "YAMLを解析できません: {error}",
-                        "error_save_yaml": "YAMLを保存できません: {error}"
+                        "error_remove": "構成を削除できません： {error}",
+                        "error_save_yaml": "YAMLを保存できません: {error}",
+                        "header": "設定を編集",
+                        "resources_moved": "リソースはLovelace構成に追加されなくなりましたが、Lovelace構成パネルで追加できます。"
                     },
                     "save_config": {
-                        "close": "閉じる"
+                        "close": "閉じる",
+                        "empty_config": "新しいダッシュボードから開始する",
+                        "para": "このダッシュボードは現在、Home Assistantによって管理されています。新しいエンティティまたはLovelace UIコンポーネントが利用可能になると、自動的に更新されます。制御すると、このダッシュボードは自動的に更新されなくなります。いつでも構成で新しいダッシュボードを作成して、変更することができます。",
+                        "yaml_mode": "このダッシュボードで YAML モードを使用している場合は、UI から Lovelace 設定を変更することはできません。UI からこのダッシュボードを管理する場合は、'configuration.yaml' の Lovelace 設定から 'mode: yaml' を削除します。"
                     },
                     "select_view": {
                         "dashboard_label": "ダッシュボード",
                         "header": "ビューに移動"
+                    },
+                    "suggest_card": {
+                        "add": "Lovelace UIに追加",
+                        "create_own": "別のカードを選択する"
+                    },
+                    "view": {
+                        "panel_mode": {
+                            "warning_multiple_cards": "このビューには複数のカードが含まれていますが、パネルビューでは 1 枚のカードしか表示できません。"
+                        }
                     }
                 },
                 "menu": {
                     "close": "閉じる",
+                    "configure_ui": "ダッシュボードを編集",
                     "exit_edit_mode": "UI 編集モードを終了",
                     "reload_resources": "リソースの再読込"
                 },
@@ -1377,7 +1884,19 @@
                     "entity": "エンティティ",
                     "entity_id": "エンティティ ID",
                     "last_changed": "最終変更",
+                    "no_data": "未使用のエンティティが見つかりません",
+                    "search": "エンティティを検索",
                     "title": "未使用のエンティティ"
+                },
+                "views": {
+                    "confirm_delete": "ビューを削除しますか？",
+                    "confirm_delete_existing_cards_text": "'' {name} ''ビューを削除してもよろしいですか？ビューには、削除される{number}枚のカードが含まれています。この操作は元に戻せません。",
+                    "confirm_delete_text": "'' {name} ''ビューを削除してもよろしいですか？"
+                },
+                "warning": {
+                    "attribute_not_found": "属性{attribute}は次の場所では使用できません： {entity}",
+                    "entity_unavailable": "{entity}は現在利用できません",
+                    "starting": "ホームアシスタントが起動していますが、まだすべてが利用可能なわけではありません"
                 }
             },
             "mailbox": {
@@ -1389,6 +1908,8 @@
             "page-authorize": {
                 "abort_intro": "ログインが中止されました",
                 "form": {
+                    "error": "エラー： {error}",
+                    "next": "次",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -1446,7 +1967,8 @@
                                 "init": {
                                     "data": {
                                         "password": "API パスワード"
-                                    }
+                                    },
+                                    "description": "HTTP設定にAPIパスワードを入力してください："
                                 },
                                 "mfa": {
                                     "data": {
@@ -1456,6 +1978,9 @@
                             }
                         },
                         "trusted_networks": {
+                            "abort": {
+                                "not_allowed": "お使いのコンピューターは許可されていません。"
+                            },
                             "step": {
                                 "init": {
                                     "data": {
@@ -1465,6 +1990,7 @@
                             }
                         }
                     },
+                    "start_over": "やり直す",
                     "unknown_error": "エラーが発生しました",
                     "working": "お待ちください"
                 },
@@ -1482,6 +2008,7 @@
             "page-onboarding": {
                 "core-config": {
                     "intro_location": "どこに住んでいるか知りたいです。 この情報は、他の情報の表示および太陽の位置に関する自動化の設定に役立ちます。 これらの情報がインターネットで外部と共有されることがありません。",
+                    "location_name": "ホーム アシスタントの名前",
                     "location_name_default": "自宅"
                 },
                 "integration": {
@@ -1490,6 +2017,7 @@
             },
             "profile": {
                 "advanced_mode": {
+                    "description": "高度な機能のロックを解除します。",
                     "link_promo": "もっと見る",
                     "title": "高度モード"
                 },
@@ -1523,11 +2051,26 @@
                     "link_promo": "もっと見る",
                     "push_notifications": "プッシュ通知"
                 },
+                "refresh_tokens": {
+                    "description": "各更新トークンはログインセッションを表します。ログアウトをクリックすると、更新トークンが自動的に削除されます。現在、次の更新トークンがアカウントでアクティブになっています。"
+                },
+                "suspend": {
+                    "description": "5分間非表示にした後、サーバーへの接続を閉じる必要がありますか？",
+                    "header": "接続を自動的に閉じる"
+                },
                 "themes": {
+                    "accent_color": "アクセントの色",
+                    "dark_mode": {
+                        "auto": "自動",
+                        "dark": "暗い",
+                        "light": "明るい"
+                    },
                     "dropdown_label": "テーマ",
                     "error_no_theme": "利用可能なテーマはありません。",
                     "header": "テーマ",
-                    "link_promo": "テーマの情報をもっと見る。"
+                    "link_promo": "テーマの情報をもっと見る。",
+                    "primary_color": "プライマリーの色",
+                    "reset": "リセット"
                 },
                 "vibrate": {
                     "header": "バイブレーション機能"
@@ -1535,7 +2078,8 @@
             },
             "shopping-list": {
                 "add_item": "アイテムを追加",
-                "clear_completed": "完了したアイテムを削除"
+                "clear_completed": "完了したアイテムを削除",
+                "microphone_tip": "右上のマイクをタップして、「買い物リストにキャンディーを追加」と言うか、入力します"
             }
         },
         "sidebar": {

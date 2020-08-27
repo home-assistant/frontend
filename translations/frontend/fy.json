@@ -195,10 +195,8 @@
                         },
                         "triggers": {
                             "add": "Trigger tafoegje",
-                            "header": "",
                             "type": {
                                 "homeassistant": {
-                                    "label": "",
                                     "shutdown": "Ofslúte",
                                     "start": "Opstarte"
                                 },

@@ -1893,7 +1893,9 @@
                     "section": {
                         "reloading": {
                             "automation": "Reload automations",
+                            "command_line": "Reload command line entities",
                             "core": "Reload location & customizations",
+                            "filter": "Reload filter entities",
                             "group": "Reload groups",
                             "heading": "YAML configuration reloading",
                             "input_boolean": "Reload input booleans",
@@ -1903,8 +1905,10 @@
                             "input_text": "Reload input texts",
                             "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current YAML configuration and load the new one.",
                             "person": "Reload persons",
+                            "rest": "Reload rest entities",
                             "scene": "Reload scenes",
                             "script": "Reload scripts",
+                            "statistics": "Reload statistics entities",
                             "template": "Reload template entities",
                             "universal": "Reload universal media player entities",
                             "zone": "Reload zones"

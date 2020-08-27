@@ -474,7 +474,7 @@
                     "humidity": "Wilgotność powietrza",
                     "precipitation": "Opady",
                     "temperature": "Temperatura",
-                    "visibility": "Widoczność",
+                    "visibility": "Widzialność",
                     "wind_speed": "Prędkość wiatru"
                 },
                 "cardinal_direction": {
@@ -1342,7 +1342,7 @@
                     }
                 },
                 "devices": {
-                    "add_prompt": "Żadne {name} nie zostały jeszcze dodane przy użyciu tego urządzenia. Możesz je dodać, klikając przycisk + powyżej.",
+                    "add_prompt": "{name} używające tego urządzenia nie zostały jeszcze dodane. Możesz je dodać, klikając przycisk + powyżej.",
                     "automation": {
                         "actions": {
                             "caption": "Wykonaj akcje..."
@@ -1525,6 +1525,9 @@
                         "no_device": "Encje bez urządzeń",
                         "no_devices": "Ta integracja nie ma żadnych urządzeń.",
                         "options": "Opcje",
+                        "reload": "Wczytaj ponownie",
+                        "reload_confirm": "Integracja została ponownie wczytana",
+                        "reload_restart_confirm": "Uruchom ponownie Home Assistanta, aby dokończyć ponowne wczytywanie tej integracji",
                         "rename": "Zmień nazwę",
                         "restart_confirm": "Zrestartuj Home Assistanta, aby zakończyć usuwanie tej integracji",
                         "settings_button": "Edytuj ustawienia dla {integration}",
@@ -1903,6 +1906,7 @@
                             "scene": "Sceny",
                             "script": "Skrypty",
                             "template": "Szablony encji",
+                            "universal": "Encje uniwersalnego odtwarzacza mediów",
                             "zone": "Strefy"
                         },
                         "server_management": {
@@ -2551,7 +2555,7 @@
                         "move_right": "Przesuń widok w prawo",
                         "tab_badges": "Odznaki",
                         "tab_settings": "Ustawienia",
-                        "tab_visibility": "Widoczność",
+                        "tab_visibility": "Widzialność",
                         "visibility": {
                             "select_users": "Wybierz, którzy użytkownicy powinni mieć dostęp do tego widoku"
                         }

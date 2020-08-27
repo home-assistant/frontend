@@ -1524,6 +1524,8 @@
                         "no_device": "Entity bez zařízení",
                         "no_devices": "Tato integrace nemá žádná zařízení.",
                         "options": "Možnosti",
+                        "reload_confirm": "Integrace byla obnovena",
+                        "reload_restart_confirm": "Restartujte Home Assistant pro obnovení této integrace",
                         "rename": "Přejmenovat",
                         "restart_confirm": "Restartujte Home Assistant pro odstranění této integrace",
                         "settings_button": "Upravit nastavení pro {integration}",
@@ -1684,6 +1686,7 @@
                 "ozw": {
                     "button": "Konfigurovat",
                     "common": {
+                        "controller": "Ovladač",
                         "instance": "Instance",
                         "network": "Síť",
                         "node_id": "ID uzlu",
@@ -1691,7 +1694,8 @@
                         "zwave": "Z-Wave"
                     },
                     "device_info": {
-                        "node_failed": "Uzel selhal"
+                        "node_failed": "Uzel selhal",
+                        "zwave_info": "Informace o Z-Wave"
                     },
                     "navigation": {
                         "network": "Síť",
@@ -1700,6 +1704,11 @@
                     },
                     "network_status": {
                         "details": {
+                            "driverallnodesqueried": "Všechny uzly byly zkontaktovány",
+                            "driverallnodesqueriedsomedead": "Všechny uzly byly zkontaktovány. Některé uzly byly nalezeny mrtvé",
+                            "driverawakenodesqueries": "Všechny probuzené uzly byly zkontaktovány",
+                            "driverfailed": "Nepodařilo se připojit k ovladači Z-Wave",
+                            "driverready": "Inicializuji ovladač Z-Wave",
                             "driverremoved": "Ovladač byl odstraněn",
                             "driverreset": "Ovladač byl resetován",
                             "offline": "OZWDaemon je offline",
@@ -1710,6 +1719,7 @@
                         },
                         "offline": "Offline",
                         "online": "Online",
+                        "starting": "Spouštění",
                         "unknown": "Nezjištěno"
                     },
                     "network": {
@@ -1719,17 +1729,32 @@
                     "node_query_stages": {
                         "configuration": "Získávám konfiguraci z uzlu",
                         "dynamic": "Získávám často se měnící hodnoty z uzlu",
+                        "instances": "Získávám podrobnosti o tom, jaké instance nebo kanály zařízení podporuje",
+                        "manufacturerspecific1": "Získávám z uzlu kody výrobce a produktů",
+                        "manufacturerspecific2": "Získávám z uzlu další kódy výrobce a produktů",
                         "neighbors": "Získávám seznam sousedů uzlu",
+                        "nodeinfo": "Získávám z uzlu podporované typy příkazů",
                         "nodeplusinfo": "Získávám informace o Z-Wave + z uzlu",
+                        "probe": "Kontroluji, zda je uzel probuzený/živý",
+                        "protocolinfo": "Získávám z ovladače Z-Wave základní schopnosti tohoto uzlu",
                         "session": "Získávám zřídka se měnící hodnoty z uzlu",
-                        "static": "Získávám statické hodnoty ze zařízení"
+                        "static": "Získávám statické hodnoty ze zařízení",
+                        "versions": "Získávám informace o verzích firmwaru a typech příkazů",
+                        "wakeup": "Nastavuji podporu pro probouzecí fronty a zprávy"
                     },
                     "refresh_node": {
+                        "battery_note": "Pokud je uzel napájen z baterie, nezapomeňte jej probudit, než budete pokračovat",
                         "complete": "Obnova uzlu dokončena",
                         "node_status": "Stav uzlu",
                         "refreshing_description": "Aktualizuji informací o uzlu...",
+                        "start_refresh_button": "Spustit Obnovení",
                         "step": "Krok",
-                        "title": "Aktualizovat informace o uzlu"
+                        "title": "Aktualizovat informace o uzlu",
+                        "wakeup_header": "Pokyny pro probuzení pro"
+                    },
+                    "select_instance": {
+                        "header": "Vyberte instanci OpenZWave",
+                        "introduction": "Máte více než jednu instanci OpenZWave. Kterou instanci chcete spravovat?"
                     },
                     "services": {
                         "add_node": "Přidat uzel",
