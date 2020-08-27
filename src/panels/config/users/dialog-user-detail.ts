@@ -6,14 +6,15 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { createCloseHeading } from "../../../components/ha-dialog";
-import "../../../components/ha-switch";
 import "../../../components/ha-formfield";
+import "../../../components/ha-switch";
 import {
   SYSTEM_GROUP_ID_ADMIN,
   SYSTEM_GROUP_ID_USER,
@@ -22,7 +23,6 @@ import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { UserDetailDialogParams } from "./show-dialog-user-detail";
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
 
 @customElement("dialog-user-detail")
 class DialogUserDetail extends LitElement {
@@ -134,7 +134,7 @@ class DialogUserDetail extends LitElement {
           </mwc-button>
           ${user.system_generated
             ? html`
-                <paper-tooltip position="right">
+                <paper-tooltip animation-delay="0" position="right">
                   ${this.hass.localize(
                     "ui.panel.config.users.editor.system_generated_users_not_removable"
                   )}
@@ -153,7 +153,7 @@ class DialogUserDetail extends LitElement {
           </mwc-button>
           ${user.system_generated
             ? html`
-                <paper-tooltip position="left">
+                <paper-tooltip animation-delay="0" position="left">
                   ${this.hass.localize(
                     "ui.panel.config.users.editor.system_generated_users_not_editable"
                   )}

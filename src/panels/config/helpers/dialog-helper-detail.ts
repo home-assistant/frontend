@@ -6,9 +6,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   query,
   TemplateResult,
 } from "lit-element";
@@ -136,7 +136,7 @@ export class DialogHelperDetail extends LitElement {
                     </paper-icon-item>
                     ${!isLoaded
                       ? html`
-                          <paper-tooltip
+                          <paper-tooltip animation-delay="0"
                             >${this.hass.localize(
                               "ui.dialogs.helper_settings.platform_not_loaded",
                               "platform",

@@ -1,11 +1,12 @@
 import "@material/mwc-fab";
+import { mdiPlus } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -18,6 +19,7 @@ import {
 } from "../../../../components/data-table/ha-data-table";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-svg-icon";
 import {
   createDashboard,
   deleteDashboard,
@@ -33,8 +35,6 @@ import "../../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../../types";
 import { lovelaceTabs } from "../ha-config-lovelace";
 import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
-import "../../../../components/ha-svg-icon";
-import { mdiPlus } from "@mdi/js";
 
 @customElement("ha-config-lovelace-dashboards")
 export class HaConfigLovelaceDashboards extends LitElement {
@@ -76,7 +76,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
                       style="padding-left: 10px;"
                       icon="hass:check-circle-outline"
                     ></ha-icon>
-                    <paper-tooltip>
+                    <paper-tooltip animation-delay="0">
                       ${this.hass.localize(
                         `ui.panel.config.lovelace.dashboards.default_dashboard`
                       )}
