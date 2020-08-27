@@ -1419,7 +1419,7 @@
                         "filter": {
                             "filter": "Filtre",
                             "show_disabled": "Afficher les entités désactivées",
-                            "show_readonly": "Afficher les entités désactivées",
+                            "show_readonly": "Afficher les entités en lecture seule",
                             "show_unavailable": "Afficher les entités non disponibles"
                         },
                         "header": "Entités",
