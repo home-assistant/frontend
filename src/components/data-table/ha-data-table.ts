@@ -70,6 +70,7 @@ export interface DataTableColumnData extends DataTableSortColumnData {
   maxWidth?: string;
   grows?: boolean;
   forceLTR?: boolean;
+  hidden?: boolean;
 }
 
 export interface DataTableRowData {
@@ -242,8 +243,10 @@ export class HaDataTable extends LitElement {
                   </div>
                 `
               : ""}
-            ${Object.entries(this.columns).map((columnEntry) => {
-              const [key, column] = columnEntry;
+            ${Object.entries(this.columns).map(([key, column]) => {
+              if (column.hidden) {
+                return "";
+              }
               const sorted = key === this._sortColumn;
               const classes = {
                 "mdc-data-table__header-cell--numeric": Boolean(
@@ -346,41 +349,45 @@ export class HaDataTable extends LitElement {
                                 </div>
                               `
                             : ""}
-                          ${Object.entries(this.columns).map((columnEntry) => {
-                            const [key, column] = columnEntry;
-                            return html`
-                              <div
-                                role="cell"
-                                class="mdc-data-table__cell ${classMap({
-                                  "mdc-data-table__cell--numeric": Boolean(
-                                    column.type === "numeric"
-                                  ),
-                                  "mdc-data-table__cell--icon": Boolean(
-                                    column.type === "icon"
-                                  ),
-                                  "mdc-data-table__cell--icon-button": Boolean(
-                                    column.type === "icon-button"
-                                  ),
-                                  grows: Boolean(column.grows),
-                                  forceLTR: Boolean(column.forceLTR),
-                                })}"
-                                style=${column.width
-                                  ? styleMap({
-                                      [column.grows
-                                        ? "minWidth"
-                                        : "width"]: column.width,
-                                      maxWidth: column.maxWidth
-                                        ? column.maxWidth
-                                        : "",
-                                    })
-                                  : ""}
-                              >
-                                ${column.template
-                                  ? column.template(row[key], row)
-                                  : row[key]}
-                              </div>
-                            `;
-                          })}
+                          ${Object.entries(this.columns).map(
+                            ([key, column]) => {
+                              if (column.hidden) {
+                                return "";
+                              }
+                              return html`
+                                <div
+                                  role="cell"
+                                  class="mdc-data-table__cell ${classMap({
+                                    "mdc-data-table__cell--numeric": Boolean(
+                                      column.type === "numeric"
+                                    ),
+                                    "mdc-data-table__cell--icon": Boolean(
+                                      column.type === "icon"
+                                    ),
+                                    "mdc-data-table__cell--icon-button": Boolean(
+                                      column.type === "icon-button"
+                                    ),
+                                    grows: Boolean(column.grows),
+                                    forceLTR: Boolean(column.forceLTR),
+                                  })}"
+                                  style=${column.width
+                                    ? styleMap({
+                                        [column.grows
+                                          ? "minWidth"
+                                          : "width"]: column.width,
+                                        maxWidth: column.maxWidth
+                                          ? column.maxWidth
+                                          : "",
+                                      })
+                                    : ""}
+                                >
+                                  ${column.template
+                                    ? column.template(row[key], row)
+                                    : row[key]}
+                                </div>
+                              `;
+                            }
+                          )}
                         </div>
                       `;
                     },
