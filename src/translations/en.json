@@ -843,7 +843,15 @@
               "rest": "Reload rest entities",
               "command_line": "Reload command line entities",
               "filter": "Reload filter entities",
-              "statistics": "Reload statistics entities"
+              "statistics": "Reload statistics entities",
+              "generic": "Reload generic IP camera entities",
+              "generic_thermostat": "Reload generic thermostat entities",
+              "homekit": "Reload homekit",
+              "min_max": "Reload min_max entities",
+              "history_stats": "Reload history_stats entities",
+              "trend": "Reload trend entities",
+              "ping": "Reload ping binary sensor entities",
+              "filesize": "Reload filesize entities"
             },
             "server_management": {
               "heading": "Server management",
