@@ -30,6 +30,7 @@ import "../ha-card";
 import "../ha-circular-progress";
 import "../ha-paper-dropdown-menu";
 import "../ha-svg-icon";
+import { classMap } from "lit-html/directives/class-map";
 
 declare global {
   interface HASSDomEvents {
@@ -239,25 +240,40 @@ export class HaMediaPlayerBrowse extends LitElement {
           : html`
               <mwc-list>
                 ${mostRecentItem.children.map(
-                  (child) => html`<mwc-list-item
+                  (child) => html`
+                    <mwc-list-item
                       @click=${this._actionClicked}
                       .item=${child}
-                      .graphic=${showImages ? "avatar" : null}
+                      graphic="avatar"
                       hasMeta
                     >
+                      <div
+                        class="graphic"
+                        style="background-image: url(${showImages &&
+                        child.thumbnail
+                          ? child.thumbnail
+                          : ""})"
+                        slot="graphic"
+                      >
+                        <mwc-icon-button
+                          class="play ${classMap({
+                            show: !showImages || !child.thumbnail,
+                          })}"
+                          .item=${child}
+                          .label=${this.hass.localize(
+                            `ui.components.media-browser.${this.action}-media`
+                          )}
+                          @click=${this._actionClicked}
+                        >
+                          <ha-svg-icon
+                            .path=${this.action === "play" ? mdiPlay : mdiPlus}
+                          ></ha-svg-icon>
+                        </mwc-icon-button>
+                      </div>
                       <span>${child.title}</span>
-                      ${showImages && child.thumbnail
-                        ? html` <img slot="graphic" .src=${child.thumbnail} />`
-                        : ""}
-                      <ha-svg-icon
-                        slot="meta"
-                        .label=${this.hass.localize(
-                          `ui.components.media-browser.${this.action}-media`
-                        )}
-                        .path=${this.action === "play" ? mdiPlay : mdiPlus}
-                      ></ha-svg-icon>
                     </mwc-list-item>
-                    <li divider role="separator"></li>`
+                    <li divider role="separator"></li>
+                  `
                 )}
               </mwc-list>
             `
@@ -431,6 +447,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           font-size: 16px;
           overflow: hidden;
           text-overflow: ellipsis;
+          margin-bottom: 0;
         }
 
         .divider {
@@ -532,6 +549,27 @@ export class HaMediaPlayerBrowse extends LitElement {
         .child .type {
           font-size: 12px;
           color: var(--secondary-text-color);
+        }
+
+        mwc-list-item .graphic {
+          background-size: cover;
+        }
+
+        mwc-list-item .graphic .play {
+          opacity: 0;
+          transition: all 0.5s;
+          background-color: rgba(255, 255, 255, 0.5);
+          border-radius: 50%;
+          --mdc-icon-button-size: 40px;
+        }
+
+        mwc-list-item:hover .graphic .play {
+          opacity: 1;
+          color: var(--primary-color);
+        }
+
+        mwc-list-item .graphic .play.show {
+          opacity: 1;
         }
 
         /* ============= Narrow ============= */
