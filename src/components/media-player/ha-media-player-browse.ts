@@ -36,7 +36,13 @@ import "../ha-svg-icon";
 declare global {
   interface HASSDomEvents {
     "media-picked": MediaPickedEvent;
+    "scroll-to": ScrollToEvent;
   }
+}
+
+export interface ScrollToEvent {
+  x: number;
+  y: number;
 }
 
 @customElement("ha-media-player-browse")

@@ -18,6 +18,7 @@ import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { createCloseHeading, HaDialog } from "../ha-dialog";
 import "./ha-media-player-browse";
+import { ScrollToEvent } from "./ha-media-player-browse";
 import { MediaPlayerBrowseDialogParams } from "./show-media-browser-dialog";
 
 @customElement("dialog-media-player-browse")
@@ -89,7 +90,7 @@ class DialogMediaPlayerBrowse extends LitElement {
     }
   }
 
-  private _scrollTo(ev) {
+  private _scrollTo(ev: HASSDomEvent<ScrollToEvent>) {
     this._dialog!.scrollToPos(ev.detail.x, ev.detail.y);
   }
 
