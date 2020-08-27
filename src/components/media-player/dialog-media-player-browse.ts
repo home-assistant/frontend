@@ -6,6 +6,7 @@ import {
   internalProperty,
   LitElement,
   property,
+  query,
   TemplateResult,
 } from "lit-element";
 import { HASSDomEvent } from "../../common/dom/fire_event";
@@ -15,7 +16,7 @@ import type {
 } from "../../data/media-player";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import { createCloseHeading } from "../ha-dialog";
+import { createCloseHeading, HaDialog } from "../ha-dialog";
 import "./ha-media-player-browse";
 import { MediaPlayerBrowseDialogParams } from "./show-media-browser-dialog";
 
@@ -32,6 +33,8 @@ class DialogMediaPlayerBrowse extends LitElement {
   @internalProperty() private _action?: MediaPlayerBrowseAction;
 
   @internalProperty() private _params?: MediaPlayerBrowseDialogParams;
+
+  @query("ha-dialog") private _dialog?: HaDialog;
 
   public async showDialog(
     params: MediaPlayerBrowseDialogParams
@@ -69,6 +72,7 @@ class DialogMediaPlayerBrowse extends LitElement {
           .mediaContentId=${this._mediaContentId}
           .mediaContentType=${this._mediaContentType}
           @media-picked=${this._mediaPicked}
+          @scroll-to=${this._scrollTo}
         ></ha-media-player-browse>
       </ha-dialog>
     `;
@@ -83,6 +87,10 @@ class DialogMediaPlayerBrowse extends LitElement {
     if (this._action !== "play") {
       this._closeDialog();
     }
+  }
+
+  private _scrollTo(ev) {
+    this._dialog!.scrollToPos(ev.detail.x, ev.detail.y);
   }
 
   static get styles(): CSSResultArray {

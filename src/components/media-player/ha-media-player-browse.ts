@@ -16,6 +16,8 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
+import { ifDefined } from "lit-html/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { debounce } from "../../common/util/debounce";
@@ -30,7 +32,6 @@ import "../ha-card";
 import "../ha-circular-progress";
 import "../ha-paper-dropdown-menu";
 import "../ha-svg-icon";
-import { classMap } from "lit-html/directives/class-map";
 
 declare global {
   interface HASSDomEvents {
@@ -249,10 +250,11 @@ export class HaMediaPlayerBrowse extends LitElement {
                     >
                       <div
                         class="graphic"
-                        style="background-image: url(${showImages &&
-                        child.thumbnail
-                          ? child.thumbnail
-                          : ""})"
+                        style=${ifDefined(
+                          showImages && child.thumbnail
+                            ? `background-image: url(${child.thumbnail})`
+                            : undefined
+                        )}
                         slot="graphic"
                       >
                         <mwc-icon-button
@@ -338,6 +340,7 @@ export class HaMediaPlayerBrowse extends LitElement {
       item.media_content_id,
       item.media_content_type
     );
+    fireEvent(this, "scroll-to", { x: 0, y: 0 });
     this._mediaPlayerItems = [...this._mediaPlayerItems, itemData];
   }
 
