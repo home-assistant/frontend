@@ -1026,7 +1026,7 @@
                 "time": {
                   "label": "Time",
                   "at": "At time",
-                  "at_input_datetime": "At the value of an date/time input"
+                  "at_input_datetime": "At date/time input value"
                 },
                 "time_pattern": {
                   "label": "Time Pattern",
