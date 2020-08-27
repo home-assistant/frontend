@@ -1111,8 +1111,7 @@
                             "manage_entities": "Gerir Entidades",
                             "state_reporting_error": "Indisponível para {enable_disable} reportar estado.",
                             "sync_entities": "Sincronizar Entidades",
-                            "sync_entities_error": "Falha na sincronização das entidades:",
-                            "title": ""
+                            "sync_entities_error": "Falha na sincronização das entidades:"
                         },
                         "connected": "Ligado",
                         "connection_status": "Estado da ligação na cloud",
@@ -1130,8 +1129,7 @@
                             "manage_entities": "Gerir Entidades",
                             "security_devices": "Dispositivos de segurança",
                             "sync_entities": "Sincronizar entidades com o Google",
-                            "sync_entities_404_message": "Falha ao sincronizar suas entidades com o Google, peça ao Google 'Ok Google, sincronize os meus dispositivos' para sincronizar suas entidades.",
-                            "title": ""
+                            "sync_entities_404_message": "Falha ao sincronizar suas entidades com o Google, peça ao Google 'Ok Google, sincronize os meus dispositivos' para sincronizar suas entidades."
                         },
                         "integrations": "Integrações",
                         "integrations_introduction": "As integrações para o Home Assistant Cloud permitem-lhe ligar-se aos serviços na nuvem sem ter de expor publicamente o seu Home Assistant na Internet.",
@@ -1160,8 +1158,7 @@
                             "no_hooks_yet": "Parece que você ainda não tem webhooks. Comece, configurando um",
                             "no_hooks_yet_link_automation": "automação de webhook",
                             "no_hooks_yet_link_integration": "integração baseada em webhook",
-                            "no_hooks_yet2": " ou criando um ",
-                            "title": ""
+                            "no_hooks_yet2": " ou criando um "
                         }
                     },
                     "alexa": {
@@ -1195,7 +1192,6 @@
                     },
                     "forgot_password": {
                         "check_your_email": "Verifique o seu e-mail para obter instruções sobre como redefinir a sua palavra-passe.",
-                        "email": "",
                         "email_error_msg": "E-mail inválido",
                         "instructions": "Introduza o seu endereço de e-mail e nós lhe enviaremos um link para redefinir sua password.",
                         "send_reset_email": "Enviar e-mail de redefinição",
@@ -1215,7 +1211,6 @@
                         "alert_email_confirm_necessary": "É necessário confirmar o seu e-mail antes de fazer login.",
                         "alert_password_change_required": "É necessário alterar a sua password antes de fazer login.",
                         "dismiss": "Fechar",
-                        "email": "",
                         "email_error_msg": "E-mail inválido",
                         "forgot_password": "Esqueceu-se da palavra-passe?",
                         "introduction": "O Home Assistant Cloud fornece uma conexão remota segura à sua instância enquanto estiver fora de casa. Também permite que você se conecte com serviços que apenas utilizam a nuvem: Amazon Alexa e Google Assistant.",
@@ -1451,7 +1446,6 @@
                     "description": "Ver informações sobre a instalação do Home Assistant",
                     "developed_by": "Desenvolvido por um punhado de pessoas incríveis.",
                     "documentation": "Documentação",
-                    "frontend": "",
                     "frontend_version": "Versão frontend: {version} - {type}",
                     "home_assistant_logo": "Logotipo do Home Assistant",
                     "icons_by": "Ícones por",
