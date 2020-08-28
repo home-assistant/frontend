@@ -6,23 +6,28 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { createCloseHeading } from "../../../components/ha-dialog";
-import "../../../components/ha-switch";
 import "../../../components/ha-formfield";
+import "../../../components/ha-switch";
+import { adminChangePassword } from "../../../data/auth";
 import {
   SYSTEM_GROUP_ID_ADMIN,
   SYSTEM_GROUP_ID_USER,
 } from "../../../data/user";
+import {
+  showAlertDialog,
+  showPromptDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { UserDetailDialogParams } from "./show-dialog-user-detail";
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
 
 @customElement("dialog-user-detail")
 class DialogUserDetail extends LitElement {
@@ -141,7 +146,15 @@ class DialogUserDetail extends LitElement {
                 </paper-tooltip>
               `
             : ""}
+          ${!user.system_generated && this.hass.user?.is_owner
+            ? html`<mwc-button @click=${this._changePassword}>
+                ${this.hass.localize(
+                  "ui.panel.config.users.editor.change_password"
+                )}
+              </mwc-button>`
+            : ""}
         </div>
+
         <div slot="primaryAction">
           <mwc-button
             @click=${this._updateEntry}
@@ -200,6 +213,52 @@ class DialogUserDetail extends LitElement {
     } finally {
       this._submitting = false;
     }
+  }
+
+  private async _changePassword() {
+    const credential = this._params?.entry.credentials.find(
+      (cred) => cred.type === "homeassistant"
+    );
+    if (!credential) {
+      showAlertDialog(this, {
+        title: "No Home Assistant credentials found.",
+      });
+      return;
+    }
+    const newPassword = await showPromptDialog(this, {
+      title: this.hass.localize("ui.panel.config.users.editor.change_password"),
+      inputType: "password",
+      inputLabel: this.hass.localize(
+        "ui.panel.config.users.editor.new_password"
+      ),
+    });
+    if (!newPassword) {
+      return;
+    }
+    const confirmPassword = await showPromptDialog(this, {
+      title: this.hass.localize("ui.panel.config.users.editor.change_password"),
+      inputType: "password",
+      inputLabel: this.hass.localize(
+        "ui.panel.config.users.add_user.password_confirm"
+      ),
+    });
+    if (!confirmPassword) {
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.users.add_user.password_not_match"
+        ),
+      });
+      return;
+    }
+    await adminChangePassword(this.hass, this._params!.entry.id, newPassword);
+    showAlertDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.users.add_user.password_changed"
+      ),
+    });
   }
 
   private _close(): void {

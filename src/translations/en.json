@@ -1654,6 +1654,8 @@
             "caption": "View user",
             "name": "Name",
             "change_password": "Change password",
+            "new_password": "New Password",
+            "password_changed": "The password is changed!",
             "activate_user": "Activate user",
             "deactivate_user": "Deactivate user",
             "delete_user": "Delete user",
@@ -1674,6 +1676,8 @@
             "name": "Name",
             "username": "Username",
             "password": "Password",
+            "password_confirm": "Confirm Password",
+            "password_not_match": "Passwords don't match",
             "create": "Create"
           }
         },
