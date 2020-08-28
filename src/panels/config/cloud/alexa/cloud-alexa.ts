@@ -135,7 +135,7 @@ class CloudAlexa extends LitElement {
                 ${entity.interfaces
                   .filter((ifc) => !IGNORE_INTERFACES.includes(ifc))
                   .map((ifc) =>
-                    ifc.replace("Alexa.", "").replace("Controller", "")
+                    ifc.replace(/(Alexa.|Controller)/g, "")
                   )
                   .join(", ")}
               </state-info>
@@ -165,7 +165,7 @@ class CloudAlexa extends LitElement {
                   ></ha-svg-icon>
                 </mwc-icon-button>
                 <mwc-list-item hasMeta>
-                  Expose entity
+                  ${this.hass!.localize("ui.panel.config.cloud.alexa.expose_entity")}
                   <ha-svg-icon
                     class="exposed"
                     slot="meta"
@@ -173,7 +173,7 @@ class CloudAlexa extends LitElement {
                   ></ha-svg-icon>
                 </mwc-list-item>
                 <mwc-list-item hasMeta>
-                  Don't expose entity
+                  ${this.hass!.localize("ui.panel.config.cloud.alexa.dont_expose_entity")}
                   <ha-svg-icon
                     class="not-exposed"
                     slot="meta"
@@ -181,7 +181,7 @@ class CloudAlexa extends LitElement {
                   ></ha-svg-icon>
                 </mwc-list-item>
                 <mwc-list-item hasMeta>
-                  Follow domain
+                  ${this.hass!.localize("ui.panel.config.cloud.alexa.follow_domain")}
                   <ha-svg-icon
                     class=${classMap({
                       exposed: isDomainExposed,
@@ -214,7 +214,7 @@ class CloudAlexa extends LitElement {
                 <mwc-button
                   slot="toolbar-icon"
                   @click=${this._openDomainToggler}
-                  >Manage domains</mwc-button
+                  >${this.hass!.localize("ui.panel.config.cloud.alexa.manage_domains")}</mwc-button
                 >
               `
             : ""
@@ -237,7 +237,7 @@ class CloudAlexa extends LitElement {
                         "ui.panel.config.cloud.alexa.exposed_entities"
                       )}
                     </h3>
-                    ${selected}${!this.narrow ? html` exposed` : ""}
+                    ${selected}${!this.narrow ? html` ${this.hass!.localize("ui.panel.config.cloud.alexa.exposed")}` : ""}
                   </div>
                   <div class="content">${exposedCards}</div>
                 `
@@ -253,7 +253,7 @@ class CloudAlexa extends LitElement {
                       )}
                     </h3>
                     ${this._entities.length - selected}${!this.narrow
-                      ? html` not exposed`
+                      ? html` ${this.hass!.localize("ui.panel.config.cloud.alexa.not_exposed")}`
                       : ""}
                   </div>
                   <div class="content">${notExposedCards}</div>

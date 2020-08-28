@@ -60,7 +60,7 @@ class DomainTogglerDialog extends LitElement implements HassDialog {
                 >
                 </ha-switch>
                 <mwc-button .domain=${domain[1]} @click=${this._handleReset}>
-                  Reset entities
+                  ${this.hass.localize("ui.dialogs.domain_toggler.reset_entities")}
                 </mwc-button>
               `
           )}
