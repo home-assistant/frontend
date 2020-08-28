@@ -36,13 +36,8 @@ import "../ha-svg-icon";
 declare global {
   interface HASSDomEvents {
     "media-picked": MediaPickedEvent;
-    "scroll-to": ScrollToEvent;
+    navigated: undefined;
   }
-}
-
-export interface ScrollToEvent {
-  x: number;
-  y: number;
 }
 
 @customElement("ha-media-player-browse")
@@ -346,7 +341,7 @@ export class HaMediaPlayerBrowse extends LitElement {
       item.media_content_id,
       item.media_content_type
     );
-    fireEvent(this, "scroll-to", { x: 0, y: 0 });
+    fireEvent(this, "navigated");
     this._mediaPlayerItems = [...this._mediaPlayerItems, itemData];
   }
 
