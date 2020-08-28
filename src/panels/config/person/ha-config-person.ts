@@ -11,7 +11,7 @@ import {
 } from "lit-element";
 import { compare } from "../../../common/string/compare";
 import "../../../components/ha-card";
-import "../../../components/ha-user-badge";
+import "../../../components/user/ha-user-badge";
 import "@material/mwc-fab";
 import {
   createPerson,

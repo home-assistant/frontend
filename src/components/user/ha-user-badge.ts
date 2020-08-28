@@ -44,10 +44,7 @@ class StateBadge extends LitElement {
       return html``;
     }
     const user = this.user || this.hass.user;
-    const person = this._persons.find(
-      (person) => person.user_id || person.id == user?.id
-    );
-    console.log(person);
+    const person = this._persons.find((p) => p.user_id || p.id === user?.id);
 
     return html`
       ${person
