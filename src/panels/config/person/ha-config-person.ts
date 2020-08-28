@@ -86,15 +86,11 @@ class HaConfigPerson extends LitElement {
             ${this._storageItems.map((entry) => {
               return html`
                 <paper-icon-item @click=${this._openEditEntry} .entry=${entry}>
-                  ${entry.picture
-                    ? html`<div
-                        style=${styleMap({
-                          backgroundImage: `url(${entry.picture})`,
-                        })}
-                        class="picture"
-                        slot="item-icon"
-                      ></div>`
-                    : ""}
+                  <ha-user-badge
+                    .user=${entry}
+                    .hass=${this.hass}
+                    slot="item-icon"
+                  ></ha-user-badge>
                   <paper-item-body>
                     ${entry.name}
                   </paper-item-body>
@@ -122,15 +118,11 @@ class HaConfigPerson extends LitElement {
                   ${this._configItems.map((entry) => {
                     return html`
                       <paper-icon-item>
-                        ${entry.picture
-                          ? html`<div
-                              style=${styleMap({
-                                backgroundImage: `url(${entry.picture})`,
-                              })}
-                              class="picture"
-                              slot="item-icon"
-                            ></div>`
-                          : ""}
+                        <ha-user-badge
+                          .user=${entry}
+                          .hass=${this.hass}
+                          slot="item-icon"
+                        ></ha-user-badge>
                         <paper-item-body>
                           ${entry.name}
                         </paper-item-body>

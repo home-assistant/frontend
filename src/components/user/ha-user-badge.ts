@@ -6,10 +6,14 @@ import {
   LitElement,
   property,
   TemplateResult,
+  internalProperty,
 } from "lit-element";
 import { toggleAttribute } from "../../common/dom/toggle_attribute";
+import { styleMap } from "lit-html/directives/style-map";
+
+import { HomeAssistant, CurrentUser } from "../../types";
+import { fetchPersons, Person } from "../../data/person";
 import { User } from "../../data/user";
-import { CurrentUser } from "../../types";
 
 const computeInitials = (name: string) => {
   if (!name) {
@@ -29,12 +33,48 @@ const computeInitials = (name: string) => {
 
 @customElement("ha-user-badge")
 class StateBadge extends LitElement {
-  @property() public user?: User | CurrentUser;
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property({ attribute: false }) public user?: User | CurrentUser | Person;
+
+  @internalProperty() private _persons?: Person[];
 
   protected render(): TemplateResult {
-    const user = this.user;
-    const initials = user ? computeInitials(user.name) : "?";
-    return html` ${initials} `;
+    if (!this.hass || !this._persons) {
+      return html``;
+    }
+    const user = this.user || this.hass.user;
+    const person = this._persons.find(
+      (person) => person.user_id || person.id == user?.id
+    );
+    console.log(person);
+
+    return html`
+      ${person
+        ? person.picture
+          ? html`<div
+              style=${styleMap({ backgroundImage: `url(${person.picture})` })}
+              class="picture"
+            ></div>`
+          : html`<div
+              class="initials"
+              ?long=${(user ? computeInitials(user.name) : "?").length > 2}
+            >
+              ${computeInitials(user?.name!)}
+            </div>`
+        : html`<div class="initials">?</div>`}
+    `;
+  }
+
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    this._fetchData();
+  }
+
+  private async _fetchData() {
+    const personData = await fetchPersons(this.hass!);
+
+    this._persons = personData.config.concat(personData.storage);
   }
 
   protected updated(changedProps) {
@@ -42,13 +82,19 @@ class StateBadge extends LitElement {
     toggleAttribute(
       this,
       "long",
-      (this.user ? computeInitials(this.user.name) : "?").length > 2
+      (this.hass?.user ? computeInitials(this.hass.user.name) : "?").length > 2
     );
   }
 
   static get styles(): CSSResult {
     return css`
-      :host {
+      .picture {
+        width: 40px;
+        height: 40px;
+        background-size: cover;
+        border-radius: 50%;
+      }
+      .initials {
         display: inline-block;
         box-sizing: border-box;
         width: 40px;
@@ -60,8 +106,7 @@ class StateBadge extends LitElement {
         color: var(--text-light-primary-color, var(--primary-text-color));
         overflow: hidden;
       }
-
-      :host([long]) {
+      .initials[long] {
         font-size: 80%;
       }
     `;
