@@ -846,7 +846,7 @@
               "statistics": "Reload statistics entities",
               "generic": "Reload generic IP camera entities",
               "generic_thermostat": "Reload generic thermostat entities",
-              "homekit": "Reload homekit",
+              "homekit": "Reload HomeKit",
               "min_max": "Reload min/max entities",
               "history_stats": "Reload history stats entities",
               "trend": "Reload trend entities",
