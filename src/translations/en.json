@@ -2164,7 +2164,6 @@
             "entities": {
               "name": "Entities",
               "show_header_toggle": "Show Header Toggle?",
-              "state_color": "Color icons based on state?",
               "toggle": "Toggle entities.",
               "description": "The Entities card is the most common type of card. It groups items together into lists."
             },
@@ -2193,7 +2192,6 @@
             "glance": {
               "name": "Glance",
               "columns": "Columns",
-              "state_color": "Color icons based on state?",
               "description": "The Glance card is useful to group multiple sensors in a compact overview."
             },
             "history-graph": {
@@ -2246,7 +2244,8 @@
               "url": "Url",
               "state": "State",
               "secondary_info_attribute": "Secondary Info Attribute",
-              "search": "Search"
+              "search": "Search",
+              "state_color": "Color icons based on state?"
             },
             "map": {
               "name": "Map",

@@ -91,7 +91,7 @@ export class HuiGlanceCardEditor extends LitElement
   }
 
   get _state_color(): boolean {
-    return Boolean(this._config!.state_color);
+    return this._config!.state_color ?? true;
   }
 
   protected render(): TemplateResult {
@@ -181,7 +181,7 @@ export class HuiGlanceCardEditor extends LitElement
         </div>
         <ha-formfield
           .label=${this.hass.localize(
-            "ui.panel.lovelace.editor.card.glance.state_color"
+            "ui.panel.lovelace.editor.card.generic.state_color"
           )}
           .dir=${computeRTLDirection(this.hass)}
         >

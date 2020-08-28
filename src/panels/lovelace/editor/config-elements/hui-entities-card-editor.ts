@@ -115,7 +115,7 @@ export class HuiEntitiesCardEditor extends LitElement
           </ha-formfield>
           <ha-formfield
             .label=${this.hass.localize(
-              "ui.panel.lovelace.editor.card.entities.state_color"
+              "ui.panel.lovelace.editor.card.generic.state_color"
             )}
             .dir=${computeRTLDirection(this.hass)}
           >
