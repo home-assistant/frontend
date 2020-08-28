@@ -7,7 +7,6 @@ import {
   LitElement,
   property,
   PropertyValues,
-  query,
   TemplateResult,
 } from "lit-element";
 
@@ -24,23 +23,19 @@ class HaProgressButton extends LitElement {
 
   @property({ type: Boolean }) public progress = false;
 
-  @query("#container") private _buttonContainer!: HTMLDivElement;
-
   public render(): TemplateResult | void {
     return html`
-      <div id="container">
-        <mwc-button
-          .disabled=${this.disabled || this.progress}
-          @click=${this._buttonTapped}
-        >
-          <slot></slot>
-        </mwc-button>
-        ${this.progress
-          ? html`<div class="progress">
-              <ha-circular-progress size="small" active></ha-circular-progress>
-            </div>`
-          : ""}
-      </div>
+      <mwc-button
+        .disabled=${this.disabled || this.progress}
+        @click=${this._buttonTapped}
+      >
+        <slot></slot>
+      </mwc-button>
+      ${this.progress
+        ? html`<div class="progress">
+            <ha-circular-progress size="small" active></ha-circular-progress>
+          </div>`
+        : ""}
     `;
   }
 
@@ -48,7 +43,7 @@ class HaProgressButton extends LitElement {
     this._tempClass("success");
   }
 
-  public actionError() {
+  public actionError(): void {
     this._tempClass("error");
   }
 
@@ -58,9 +53,9 @@ class HaProgressButton extends LitElement {
   }
 
   private _tempClass(className: string): void {
-    this._buttonContainer.classList.add(className);
+    this.classList.add(className);
     setTimeout(() => {
-      this._buttonContainer.classList.remove(className);
+      this.classList.remove(className);
     }, 1000);
   }
 
@@ -74,8 +69,6 @@ class HaProgressButton extends LitElement {
     return css`
       :host {
         outline: none;
-      }
-      #container {
         display: inline-block;
         position: relative;
       }
