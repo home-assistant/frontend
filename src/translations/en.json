@@ -2193,7 +2193,7 @@
             "glance": {
               "name": "Glance",
               "columns": "Columns",
-              "state_color": "Color icons based on state",
+              "state_color": "Color icons based on state?",
               "description": "The Glance card is useful to group multiple sensors in a compact overview."
             },
             "history-graph": {
