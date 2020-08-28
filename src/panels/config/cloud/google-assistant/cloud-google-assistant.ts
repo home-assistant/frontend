@@ -266,11 +266,13 @@ class CloudGoogleAssistant extends LitElement {
                         "ui.panel.config.cloud.google.exposed_entities"
                       )}
                     </h3>
-                    ${selected}${!this.narrow
-                      ? html` ${this.hass!.localize(
-                          "ui.panel.config.cloud.google.exposed"
-                        )}`
-                      : ""}
+                    ${!this.narrow
+                      ? this.hass!.localize(
+                          "ui.panel.config.cloud.alexa.exposed",
+                          "selected",
+                          selected
+                        )
+                      : selected}
                   </div>
                   <div class="content">${exposedCards}</div>
                 `
@@ -285,11 +287,13 @@ class CloudGoogleAssistant extends LitElement {
                         "ui.panel.config.cloud.google.not_exposed_entities"
                       )}
                     </h3>
-                    ${this._entities.length - selected}${!this.narrow
-                      ? html` ${this.hass!.localize(
-                          "ui.panel.config.cloud.google.not_exposed"
-                        )}`
-                      : ""}
+                    ${!this.narrow
+                      ? this.hass!.localize(
+                          "ui.panel.config.cloud.alexa.not_exposed",
+                          "selected",
+                          this._entities.length - selected
+                        )
+                      : this._entities.length - selected}
                   </div>
                   <div class="content">${notExposedCards}</div>
                 `

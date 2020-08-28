@@ -246,7 +246,7 @@ class CloudAlexa extends LitElement {
                     ${!this.narrow
                       ? this.hass!.localize(
                           "ui.panel.config.cloud.alexa.exposed",
-                          "seleted",
+                          "selected",
                           selected
                         )
                       : selected}
@@ -267,7 +267,7 @@ class CloudAlexa extends LitElement {
                     ${!this.narrow
                       ? this.hass!.localize(
                           "ui.panel.config.cloud.alexa.not_exposed",
-                          "seleted",
+                          "selected",
                           this._entities.length - selected
                         )
                       : this._entities.length - selected}
