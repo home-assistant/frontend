@@ -158,7 +158,7 @@ class CloudGoogleAssistant extends LitElement {
                   )}
                 >
                   <ha-svg-icon
-                    path=${config.should_expose !== null
+                    .path=${config.should_expose !== null
                       ? isExposed
                         ? mdiCheckboxMarked
                         : mdiCloseBox
@@ -168,7 +168,9 @@ class CloudGoogleAssistant extends LitElement {
                   ></ha-svg-icon>
                 </mwc-icon-button>
                 <mwc-list-item hasMeta>
-                  Expose entity
+                  ${this.hass!.localize(
+                    "ui.panel.config.cloud.google.expose_entity"
+                  )}
                   <ha-svg-icon
                     class="exposed"
                     slot="meta"
@@ -176,7 +178,9 @@ class CloudGoogleAssistant extends LitElement {
                   ></ha-svg-icon>
                 </mwc-list-item>
                 <mwc-list-item hasMeta>
-                  Don't expose entity
+                  ${this.hass!.localize(
+                    "ui.panel.config.cloud.google.dont_expose_entity"
+                  )}
                   <ha-svg-icon
                     class="not-exposed"
                     slot="meta"
@@ -184,7 +188,9 @@ class CloudGoogleAssistant extends LitElement {
                   ></ha-svg-icon>
                 </mwc-list-item>
                 <mwc-list-item hasMeta>
-                  Follow domain
+                  ${this.hass!.localize(
+                    "ui.panel.config.cloud.google.follow_domain"
+                  )}
                   <ha-svg-icon
                     class=${classMap({
                       exposed: isDomainExposed,
@@ -229,16 +235,15 @@ class CloudGoogleAssistant extends LitElement {
       <hass-subpage header="${this.hass!.localize(
         "ui.panel.config.cloud.google.title"
       )}">
-        <span slot="toolbar-icon">
-          
-        </span>
         ${
           emptyFilter
             ? html`
                 <mwc-button
                   slot="toolbar-icon"
                   @click=${this._openDomainToggler}
-                  >Manage domains</mwc-button
+                  >${this.hass!.localize(
+                    "ui.panel.config.cloud.google.manage_domains"
+                  )}</mwc-button
                 >
               `
             : ""
@@ -261,7 +266,11 @@ class CloudGoogleAssistant extends LitElement {
                         "ui.panel.config.cloud.google.exposed_entities"
                       )}
                     </h3>
-                    ${selected}${!this.narrow ? html` exposed` : ""}
+                    ${selected}${!this.narrow
+                      ? html` ${this.hass!.localize(
+                          "ui.panel.config.cloud.google.exposed"
+                        )}`
+                      : ""}
                   </div>
                   <div class="content">${exposedCards}</div>
                 `
@@ -277,7 +286,9 @@ class CloudGoogleAssistant extends LitElement {
                       )}
                     </h3>
                     ${this._entities.length - selected}${!this.narrow
-                      ? html` not exposed`
+                      ? html` ${this.hass!.localize(
+                          "ui.panel.config.cloud.google.not_exposed"
+                        )}`
                       : ""}
                   </div>
                   <div class="content">${notExposedCards}</div>

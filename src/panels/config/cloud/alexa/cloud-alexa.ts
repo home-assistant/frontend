@@ -134,9 +134,7 @@ class CloudAlexa extends LitElement {
               >
                 ${entity.interfaces
                   .filter((ifc) => !IGNORE_INTERFACES.includes(ifc))
-                  .map((ifc) =>
-                    ifc.replace(/(Alexa.|Controller)/g, "")
-                  )
+                  .map((ifc) => ifc.replace(/(Alexa.|Controller)/g, ""))
                   .join(", ")}
               </state-info>
               <ha-button-menu
@@ -155,7 +153,7 @@ class CloudAlexa extends LitElement {
                   )}
                 >
                   <ha-svg-icon
-                    path=${config.should_expose !== null
+                    .path=${config.should_expose !== null
                       ? isExposed
                         ? mdiCheckboxMarked
                         : mdiCloseBox
@@ -165,7 +163,9 @@ class CloudAlexa extends LitElement {
                   ></ha-svg-icon>
                 </mwc-icon-button>
                 <mwc-list-item hasMeta>
-                  ${this.hass!.localize("ui.panel.config.cloud.alexa.expose_entity")}
+                  ${this.hass!.localize(
+                    "ui.panel.config.cloud.alexa.expose_entity"
+                  )}
                   <ha-svg-icon
                     class="exposed"
                     slot="meta"
@@ -173,7 +173,9 @@ class CloudAlexa extends LitElement {
                   ></ha-svg-icon>
                 </mwc-list-item>
                 <mwc-list-item hasMeta>
-                  ${this.hass!.localize("ui.panel.config.cloud.alexa.dont_expose_entity")}
+                  ${this.hass!.localize(
+                    "ui.panel.config.cloud.alexa.dont_expose_entity"
+                  )}
                   <ha-svg-icon
                     class="not-exposed"
                     slot="meta"
@@ -181,7 +183,9 @@ class CloudAlexa extends LitElement {
                   ></ha-svg-icon>
                 </mwc-list-item>
                 <mwc-list-item hasMeta>
-                  ${this.hass!.localize("ui.panel.config.cloud.alexa.follow_domain")}
+                  ${this.hass!.localize(
+                    "ui.panel.config.cloud.alexa.follow_domain"
+                  )}
                   <ha-svg-icon
                     class=${classMap({
                       exposed: isDomainExposed,
@@ -214,7 +218,9 @@ class CloudAlexa extends LitElement {
                 <mwc-button
                   slot="toolbar-icon"
                   @click=${this._openDomainToggler}
-                  >${this.hass!.localize("ui.panel.config.cloud.alexa.manage_domains")}</mwc-button
+                  >${this.hass!.localize(
+                    "ui.panel.config.cloud.alexa.manage_domains"
+                  )}</mwc-button
                 >
               `
             : ""
@@ -237,7 +243,13 @@ class CloudAlexa extends LitElement {
                         "ui.panel.config.cloud.alexa.exposed_entities"
                       )}
                     </h3>
-                    ${selected}${!this.narrow ? html` ${this.hass!.localize("ui.panel.config.cloud.alexa.exposed")}` : ""}
+                    ${!this.narrow
+                      ? this.hass!.localize(
+                          "ui.panel.config.cloud.alexa.exposed",
+                          "seleted",
+                          selected
+                        )
+                      : selected}
                   </div>
                   <div class="content">${exposedCards}</div>
                 `
@@ -252,9 +264,13 @@ class CloudAlexa extends LitElement {
                         "ui.panel.config.cloud.alexa.not_exposed_entities"
                       )}
                     </h3>
-                    ${this._entities.length - selected}${!this.narrow
-                      ? html` ${this.hass!.localize("ui.panel.config.cloud.alexa.not_exposed")}`
-                      : ""}
+                    ${!this.narrow
+                      ? this.hass!.localize(
+                          "ui.panel.config.cloud.alexa.not_exposed",
+                          "seleted",
+                          this._entities.length - selected
+                        )
+                      : this._entities.length - selected}
                   </div>
                   <div class="content">${notExposedCards}</div>
                 `
