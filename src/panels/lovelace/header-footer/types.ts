@@ -40,7 +40,7 @@ export const buttonsHeaderFooterConfigStruct = object({
 export const graphHeaderFooterConfigStruct = object({
   type: string(),
   entity: string(),
-  detail: optional(string()),
+  detail: optional(number()),
   hours_to_show: optional(number()),
 });
 
