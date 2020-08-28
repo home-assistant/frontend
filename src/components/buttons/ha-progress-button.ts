@@ -6,16 +6,10 @@ import {
   html,
   LitElement,
   property,
-  PropertyValues,
   TemplateResult,
 } from "lit-element";
 
 import "../ha-circular-progress";
-
-export interface HaProgressButtonElement extends HTMLElement {
-  disabled: boolean;
-  progress: boolean;
-}
 
 @customElement("ha-progress-button")
 class HaProgressButton extends LitElement {
