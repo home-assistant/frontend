@@ -104,6 +104,7 @@ class DialogMediaPlayerBrowse extends LitElement {
           .action=${this._action!}
           .mediaContentId=${this._mediaContentId}
           .mediaContentType=${this._mediaContentType}
+          hideBack
           @media-picked=${this._mediaPicked}
           @media-browser-navigated=${this._navigated}
         ></ha-media-player-browse>

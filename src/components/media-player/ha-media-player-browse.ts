@@ -57,6 +57,8 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   @property() public action: "pick" | "play" = "play";
 
+  @property({ type: Boolean }) public hideBack = false;
+
   @property({ type: Boolean, attribute: "narrow", reflect: true })
   private _narrow = false;
 
@@ -144,24 +146,29 @@ export class HaMediaPlayerBrowse extends LitElement {
               `
             : html``}
           <div class="header-info">
-            <div class="breadcrumb-overflow">
-              <div class="breadcrumb">
-                ${previousItem
-                  ? html`
-                      <div class="previous-title" @click=${this.navigateBack}>
-                        <ha-svg-icon .path=${mdiArrowLeft}></ha-svg-icon>
-                        ${previousItem.title}
-                      </div>
-                    `
-                  : ""}
-                <h1 class="title">${mostRecentItem.title}</h1>
-                <h2 class="subtitle">
-                  ${this.hass.localize(
-                    `ui.components.media-browser.content-type.${mostRecentItem.media_content_type}`
-                  )}
-                </h2>
-              </div>
-            </div>
+            ${!this.hideBack || mostRecentItem.thumbnail
+              ? html`<div class="breadcrumb-overflow">
+                  <div class="breadcrumb">
+                    ${!this.hideBack && previousItem
+                      ? html`
+                          <div
+                            class="previous-title"
+                            @click=${this.navigateBack}
+                          >
+                            <ha-svg-icon .path=${mdiArrowLeft}></ha-svg-icon>
+                            ${previousItem.title}
+                          </div>
+                        `
+                      : ""}
+                    <h1 class="title">${mostRecentItem.title}</h1>
+                    <h2 class="subtitle">
+                      ${this.hass.localize(
+                        `ui.components.media-browser.content-type.${mostRecentItem.media_content_type}`
+                      )}
+                    </h2>
+                  </div>
+                </div>`
+              : ""}
             ${mostRecentItem?.can_play &&
             (!this._narrow || (this._narrow && !mostRecentItem.thumbnail))
               ? html`
@@ -188,7 +195,9 @@ export class HaMediaPlayerBrowse extends LitElement {
           </div>
         </div>
       </div>
-      <div class="divider"></div>
+      ${!this.hideBack || mostRecentItem.thumbnail || mostRecentItem.can_play
+        ? html`<div class="divider"></div>`
+        : ""}
       ${mostRecentItem.children?.length
         ? hasExpandableChildren
           ? html`
@@ -537,7 +546,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           bottom: 4px;
           right: 4px;
           transition: all 0.5s;
-          background-color: rgba(255, 255, 255, 0.5);
+          background-color: rgba(var(--rgb-card-background-color), 0.5);
           border-radius: 50%;
         }
 
@@ -570,7 +579,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         mwc-list-item .graphic .play {
           opacity: 0;
           transition: all 0.5s;
-          background-color: rgba(255, 255, 255, 0.5);
+          background-color: rgba(var(--rgb-card-background-color), 0.5);
           border-radius: 50%;
           --mdc-icon-button-size: 40px;
         }
@@ -582,6 +591,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         mwc-list-item .graphic .play.show {
           opacity: 1;
+          background-color: transparent;
         }
 
         /* ============= Narrow ============= */
