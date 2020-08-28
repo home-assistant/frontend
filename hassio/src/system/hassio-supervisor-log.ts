@@ -13,6 +13,7 @@ import {
   TemplateResult,
 } from "lit-element";
 
+import { HaProgressButtonElement } from "../../../src/components/buttons/ha-progress-button";
 import { fetchHassioLogs } from "../../../src/data/hassio/supervisor";
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
@@ -104,10 +105,40 @@ class HassioSupervisorLog extends LitElement {
             : html`<hass-loading-screen no-toolbar></hass-loading-screen>`}
         </div>
         <div class="card-actions">
-          <mwc-button @click=${this._loadData}>Refresh</mwc-button>
+          <ha-progress-button @click=${this._refresh}>
+            Refresh
+          </ha-progress-button>
         </div>
       </ha-card>
     `;
+  }
+
+  private async _setLogProvider(ev): Promise<void> {
+    const provider = ev.detail.item.getAttribute("provider");
+    this._selectedLogProvider = provider;
+    await this._loadData();
+  }
+
+  private async _refresh(ev: CustomEvent): Promise<void> {
+    const button = ev.target as HaProgressButtonElement;
+    button.progress = true;
+    await this._loadData();
+    button.progress = false;
+  }
+
+  private async _loadData(): Promise<void> {
+    this._error = undefined;
+
+    try {
+      this._content = await fetchHassioLogs(
+        this.hass,
+        this._selectedLogProvider
+      );
+    } catch (err) {
+      this._error = `Failed to get supervisor logs, ${
+        typeof err === "object" ? err.body?.message || "Unkown error" : err
+      }`;
+    }
   }
 
   static get styles(): CSSResult[] {
@@ -132,27 +163,6 @@ class HassioSupervisorLog extends LitElement {
         }
       `,
     ];
-  }
-
-  private async _setLogProvider(ev): Promise<void> {
-    const provider = ev.detail.item.getAttribute("provider");
-    this._selectedLogProvider = provider;
-    await this._loadData();
-  }
-
-  private async _loadData(): Promise<void> {
-    this._error = undefined;
-
-    try {
-      this._content = await fetchHassioLogs(
-        this.hass,
-        this._selectedLogProvider
-      );
-    } catch (err) {
-      this._error = `Failed to get supervisor logs, ${
-        typeof err === "object" ? err.body?.message || "Unkown error" : err
-      }`;
-    }
   }
 }
 
