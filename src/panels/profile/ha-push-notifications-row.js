@@ -6,7 +6,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { pushSupported } from "../../components/ha-push-notifications-toggle";
 import LocalizeMixin from "../../mixins/localize-mixin";
-import "./ha-settings-row";
+import "../../components/ha-settings-row";
 
 /*
  * @appliesMixin LocalizeMixin

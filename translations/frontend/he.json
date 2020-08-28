@@ -162,7 +162,7 @@
                 "on": "פתוח"
             },
             "presence": {
-                "off": "לא נוכח",
+                "off": "לא נמצא",
                 "on": "בבית"
             },
             "problem": {
@@ -306,7 +306,7 @@
             "docked": "בעגינה",
             "error": "שגיאה",
             "idle": "ממתין",
-            "off": "מכובה",
+            "off": "כבוי",
             "on": "מופעל",
             "paused": "מושהה",
             "returning": "חזור לעגינה"
@@ -344,7 +344,7 @@
     "ui": {
         "auth_store": {
             "ask": "האם ברצונך לשמור את ההתחברות הזו?",
-            "confirm": "שמור התחברות",
+            "confirm": "כן",
             "decline": "לא תודה"
         },
         "card": {
@@ -359,7 +359,7 @@
             },
             "automation": {
                 "last_triggered": "הפעלה אחרונה",
-                "trigger": "מפעיל"
+                "trigger": "הרץ"
             },
             "camera": {
                 "not_available": "התמונה אינה זמינה"
@@ -554,6 +554,10 @@
                 "loading_history": "טוען היסטוריה...",
                 "no_history_found": "לא נמצאה היסטוריה"
             },
+            "picture-upload": {
+                "label": "תמונה",
+                "unsupported_format": "פורמט לא נתמך, בחר תמונת JPEG, PNG או GIF."
+            },
             "related-items": {
                 "area": "אֵזוֹר",
                 "automation": "חלק מהאוטומציות הבאות",
@@ -656,6 +660,9 @@
                 "required_error_msg": "שדה זה הוא חובה",
                 "yaml_not_editable": "אין אפשרות לערוך את ההגדרות של ישות זו מממשק המשתמש. רק ישויות שהוגדרו מממשק המשתמש ניתנות להגדרה מתוך ממשק המשתמש."
             },
+            "image_cropper": {
+                "crop": "חתוך"
+            },
             "more_info_control": {
                 "dismiss": "סגור",
                 "edit": "ערוך יישות",
@@ -748,7 +755,7 @@
                 "unknown": "לא ידוע",
                 "zha_device_card": {
                     "area_picker_label": "אזור",
-                    "device_name_placeholder": "שם פרטי",
+                    "device_name_placeholder": "שנה שם התקן",
                     "update_name_button": "עדכן שם"
                 }
             }
@@ -833,6 +840,15 @@
                             "name": "פעולה",
                             "type_select": "סוג פעולה",
                             "type": {
+                                "choose": {
+                                    "add_option": "הוסף אפשרות",
+                                    "conditions": "תנאים",
+                                    "default": "פעולות ברירת מחדל",
+                                    "label": "בחר",
+                                    "option": "אפשרות {number}",
+                                    "remove_option": "הסר אפשרות",
+                                    "sequence": "פעולות"
+                                },
                                 "condition": {
                                     "label": "תנאי"
                                 },
@@ -851,6 +867,24 @@
                                     "event": "ארוע",
                                     "label": "ירה אירוע",
                                     "service_data": "נתוני שירות"
+                                },
+                                "repeat": {
+                                    "label": "חזור",
+                                    "sequence": "פעולות",
+                                    "type_select": "סוג חזרה",
+                                    "type": {
+                                        "count": {
+                                            "label": "ספירה"
+                                        },
+                                        "until": {
+                                            "conditions": ")תנאי עד ש (Until",
+                                            "label": "עד ש"
+                                        },
+                                        "while": {
+                                            "conditions": ")תנאי כל עוד (While",
+                                            "label": "כל עוד"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "הפעל סצנה"
@@ -1022,6 +1056,9 @@
                                     "offset": "שקיעה (אופציונלי)",
                                     "sunrise": "זריחה",
                                     "sunset": "שקיעה"
+                                },
+                                "tag": {
+                                    "label": "תג "
                                 },
                                 "template": {
                                     "label": "תבנית",
@@ -1300,6 +1337,7 @@
                     "caption": "התקנים",
                     "confirm_delete": "האם אתה בטוח שברצונך למחוק מכשיר זה?",
                     "confirm_rename_entity_ids": "האם אתה רוצה גם לשנות את המזהים של הישויות שלך?",
+                    "confirm_rename_entity_ids_warning": "שינוי זה לא ישפיע על התצורה (כמו אוטומציות, קבצי Script, סצנות, Lovelace) המשתמשת כעת בישויות אלה, יהיה עליך לעדכן אותן בעצמך.",
                     "data_table": {
                         "area": "אזור",
                         "battery": "סוללה",
@@ -1619,6 +1657,49 @@
                     "title": "MQTT",
                     "topic": "נושא"
                 },
+                "ozw": {
+                    "common": {
+                        "node_id": "מזהה רכיב",
+                        "ozw_instance": "מופע OpenZWave",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "הרכיב נכשל",
+                        "stage": "שלב",
+                        "zwave_info": "מידע Z-Wave"
+                    },
+                    "node_query_stages": {
+                        "associations": "מרענן קבוצות וחברויות",
+                        "cacheload": "טוען מידע מקובץ המטמון של OpenZWave. רכיבי סוללה יישארו בשלב זה עד שהרכיב יתעורר.",
+                        "complete": "תהליך הראיון הושלם",
+                        "configuration": "מקבל ערכי תצורה מהרכיב",
+                        "dynamic": "מקבל ערכים המשתנים לעתים קרובות מהרכיב",
+                        "instances": "מקבל פרטים אודות המופעים או הערוצים שבהם הרכיב תומך",
+                        "manufacturerspecific1": "קבלת קודי יצרן ומזהי מוצר מהרכיב",
+                        "manufacturerspecific2": "מקבל קודי יצרן ומזהי מוצר נוספים מהרכיב",
+                        "neighbors": "קבלת רשימת שכנים מהרכיב",
+                        "nodeinfo": "קבלת מחלקות פקודות נתמכות מהרכיב",
+                        "nodeplusinfo": "קבלת מידע Z-Wave+ מהרכיב",
+                        "probe": "בדיקה האם הרכיב ער/חי",
+                        "protocolinfo": "קבלת יכולות Z-Wave בסיסיות של רכיב זה מהבקר",
+                        "session": "מקבל ערכים המשתנים לעתים רחוקות מהרכיב",
+                        "static": "מקבל ערכים סטטיים מהרכיב",
+                        "versions": "מקבל מידע אודות גירסאות קושחה ומחלקות פקודות",
+                        "wakeup": "הגדרת תמיכה עבור תורי התעוררות והודעות"
+                    },
+                    "refresh_node": {
+                        "battery_note": "אם הרכיב מופעל באמצעות סוללה, הקפד להעיר אותו לפני שתמשיך",
+                        "complete": "רענון הרכיב הושלם",
+                        "description": "זה יגיד ל- OpenZWave לראיין מחדש את הרכיב ולעדכן את הפקודות, היכולות והערכים של הרכיב.",
+                        "node_status": "מצה הרכיב",
+                        "refreshing_description": "מרענן מידע על הרכיב",
+                        "start_refresh_button": "התחל לרענן",
+                        "step": "שלב",
+                        "title": "רענן מידע הרכיב",
+                        "wakeup_header": "הוראות התעוררות עבור",
+                        "wakeup_instructions_source": "הוראות ההתעוררות מקורן במסד הנתונים של קהילת ה OpenZWave."
+                    }
+                },
                 "person": {
                     "add_person": "הוסף אדם",
                     "caption": "אנשים",
@@ -1772,6 +1853,31 @@
                             "valid": "קונפיגורציה תקינה!"
                         }
                     }
+                },
+                "tags": {
+                    "add_tag": "הוסף תג",
+                    "automation_title": "התג {name} נסרק",
+                    "caption": "תגים",
+                    "create_automation": "צור אוטומציה עם תג",
+                    "description": "ניהול תגים",
+                    "detail": {
+                        "create": "צור",
+                        "create_and_write": "צור וכתוב",
+                        "delete": "מחק",
+                        "description": "תיאור",
+                        "name": "שם",
+                        "new_tag": "תג חדש",
+                        "tag_id": "מזהה תג",
+                        "tag_id_placeholder": "מחולל אוטומטית אם ריק",
+                        "update": "עדכן"
+                    },
+                    "edit": "ערוך",
+                    "headers": {
+                        "last_scanned": "נסרק לאחרונה",
+                        "name": "שם"
+                    },
+                    "no_tags": "אין תגים",
+                    "write": "כתוב"
                 },
                 "users": {
                     "add_user": {
@@ -2387,6 +2493,9 @@
                         "para_migrate": "Home Assistant יכול להוסיף מזהה יחודי לכל הכרטיסיות והתצוגות שלך בצורה אוטומטית בכך שתלחץ על לחצן ״הגר הגדרה״.",
                         "para_no_id": "האלמנט הנוכחי לא מכיל מזהה יחודיי. בבקשה הוסף מזהה יחודי לאלמט זה בקובץ 'ui-lovelace.yaml'."
                     },
+                    "move_card": {
+                        "header": "בחר תצוגה שאליה להעביר את הכרטיס"
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "אנו ניצור אוטומטית את תצוגות ממשק המשתמש של Lovelace עם האזורים והמכשירים שלך אם תסיר את קונפיגורציית ממשק המשתמש שלך ב- Lovelace.",
                         "confirm_remove_config_title": "האם אתה בטוח שברצונך להסיר את תצורת ממשק המשתמש של Lovelace? אנו נייצר אוטומטית את תצוגות ממשק המשתמש שלך ב- Lovelace עם האזורים והמכשירים שלך.",
@@ -2413,6 +2522,10 @@
                         "yaml_config": "כדי לעזור לך להתחיל הנה התצורה הנוכחית של לוח מחוונים זה:",
                         "yaml_control": "כדי לקבל שליטה במצב YAML, צור קובץ YAML עם השם שציינת ב-config עבור לוח מחוונים זה, או ברירת המחדל  'ui-lovelace.yaml'.",
                         "yaml_mode": "אתה משתמש במצב YAML עבור לוח מחוונים זה ולכן אין באפשרותך לשנות את קונפיגורצית Lovelace מממשק המשתמש. אם ברצונך לנהל לוח מחוונים זה מממשק המשתמש, הסר 'mode: yaml' מתצורת Loverlace ב 'configuration.yaml.'."
+                    },
+                    "select_view": {
+                        "dashboard_label": "לוח בקרה",
+                        "header": "בחר תצוגה"
                     },
                     "suggest_card": {
                         "add": "הוסף לממשק המשתמש של Lovelace",
@@ -2731,10 +2844,18 @@
                     "header": "סגור חיבור באופן אוטומטי"
                 },
                 "themes": {
+                    "accent_color": "צבע הדגשה",
+                    "dark_mode": {
+                        "auto": "אוטומטי",
+                        "dark": "כהה",
+                        "light": "בהיר"
+                    },
                     "dropdown_label": "ערכת נושא",
                     "error_no_theme": "אין ערכות נושא זמינות.",
                     "header": "ערכת נושא",
-                    "link_promo": "למד אודות ערכות נושא"
+                    "link_promo": "למד אודות ערכות נושא",
+                    "primary_color": "בצע ראשי",
+                    "reset": "איפוס"
                 },
                 "vibrate": {
                     "description": "הפעל או בטל את הרטט במכשיר זה בעת שליטה בהתקנים.",

@@ -3,7 +3,7 @@ import {
   HassEntityBase,
 } from "home-assistant-js-websocket";
 import { navigate } from "../common/navigate";
-import { HomeAssistant } from "../types";
+import { HomeAssistant, Context } from "../types";
 import { DeviceCondition, DeviceTrigger } from "./device_automation";
 import { Action } from "./script";
 
@@ -90,6 +90,12 @@ export interface ZoneTrigger {
   event: "enter" | "leave";
 }
 
+export interface TagTrigger {
+  platform: "tag";
+  tag_id: string;
+  device_id?: string;
+}
+
 export interface TimeTrigger {
   platform: "time";
   at: string;
@@ -116,6 +122,7 @@ export type Trigger =
   | TimePatternTrigger
   | WebhookTrigger
   | ZoneTrigger
+  | TagTrigger
   | TimeTrigger
   | TemplateTrigger
   | EventTrigger
@@ -199,3 +206,31 @@ export const getAutomationEditorInitData = () => {
   inititialAutomationEditorData = undefined;
   return data;
 };
+
+export const subscribeTrigger = (
+  hass: HomeAssistant,
+  onChange: (result: {
+    variables: {
+      trigger: {};
+    };
+    context: Context;
+  }) => void,
+  trigger: Trigger | Trigger[],
+  variables?: {}
+) =>
+  hass.connection.subscribeMessage(onChange, {
+    type: "subscribe_trigger",
+    trigger,
+    variables,
+  });
+
+export const testCondition = (
+  hass: HomeAssistant,
+  condition: Condition | Condition[],
+  variables?: {}
+) =>
+  hass.callWS<{ result: boolean }>({
+    type: "test_condition",
+    condition,
+    variables,
+  });

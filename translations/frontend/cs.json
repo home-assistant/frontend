@@ -419,9 +419,16 @@
                 "unlock": "Odemknout"
             },
             "media_player": {
+                "browse_media": "Procházet média",
+                "media_next_track": "Další",
+                "media_play": "Přehrát",
+                "media_play_pause": "Přehrát/pozastavit",
+                "media_previous_track": "Předchozí",
                 "sound_mode": "Režim zvuku",
                 "source": "Zdroj",
-                "text_to_speak": "Převod textu na řeč"
+                "text_to_speak": "Převod textu na řeč",
+                "turn_off": "Vypnout",
+                "turn_on": "Zapnout"
             },
             "persistent_notification": {
                 "dismiss": "Zavřít"
@@ -554,6 +561,26 @@
                 "loading_history": "Historie stavu se načítá...",
                 "no_history_found": "Historie stavu chybí."
             },
+            "media-browser": {
+                "choose-source": "Zvolte zdroj",
+                "content-type": {
+                    "album": "Album",
+                    "artist": "Umělec",
+                    "library": "Knihovna",
+                    "playlist": "Seznam skladeb",
+                    "server": "Server"
+                },
+                "media-player-browser": "Prohlížeč přehrávače médií",
+                "no_items": "Žádné položky",
+                "pick": "Vybrat",
+                "pick-media": "Vybrat média",
+                "play": "Přehrát",
+                "play-media": "Přehrát média"
+            },
+            "picture-upload": {
+                "label": "Obrázek",
+                "unsupported_format": "Nepodporovaný formát, prosím vyberte obrázek typu JPEG, PNG nebo GIF."
+            },
             "related-items": {
                 "area": "Oblast",
                 "automation": "Část následujících automatizací",
@@ -574,6 +601,7 @@
                     "week": "{count} {count, plural,\none {týden}\nother {týdnů}\n}"
                 },
                 "future": "Za {time}",
+                "just_now": "Právě teď",
                 "never": "Nikdy",
                 "past": "Před {time}"
             },
@@ -655,6 +683,9 @@
                 "platform_not_loaded": "Integrace {platform} není načtena. Přidejte ji do své konfigurace buďto přidáním 'default_config:' nebo ''{platform}:''.",
                 "required_error_msg": "Toto pole je povinné",
                 "yaml_not_editable": "Nastavení této entity nelze upravovat z uživatelského rozhraní. Pouze entity nastavené z uživatelského rozhraní lze konfigurovat v uživatelském rozhraní."
+            },
+            "image_cropper": {
+                "crop": "Oříznout"
             },
             "more_info_control": {
                 "dismiss": "Zavřít dialog",
@@ -837,7 +868,7 @@
                                     "add_option": "Přidat volbu",
                                     "conditions": "Podmínky",
                                     "default": "Výchozí akce",
-                                    "label": "Vybrat",
+                                    "label": "Volby",
                                     "option": "Volba {number}",
                                     "remove_option": "Odebrat volbu",
                                     "sequence": "Akce"
@@ -862,12 +893,20 @@
                                     "service_data": "Data služby"
                                 },
                                 "repeat": {
-                                    "label": "Opakovat",
+                                    "label": "Opakovaní",
                                     "sequence": "Akce",
                                     "type_select": "Typ opakování",
                                     "type": {
                                         "count": {
                                             "label": "Počet"
+                                        },
+                                        "until": {
+                                            "conditions": "Podmínky \"Dokud nenastane\"",
+                                            "label": "Dokud nenastane"
+                                        },
+                                        "while": {
+                                            "conditions": "Podmínky \"Pokud platí\"",
+                                            "label": "Pokud platí"
                                         }
                                     }
                                 },
@@ -1041,6 +1080,9 @@
                                     "offset": "Posun",
                                     "sunrise": "Východ slunce",
                                     "sunset": "Západ slunce"
+                                },
+                                "tag": {
+                                    "label": "Značka"
                                 },
                                 "template": {
                                     "label": "Šablona",
@@ -1319,6 +1361,7 @@
                     "caption": "Zařízení",
                     "confirm_delete": "Opravdu chcete toto zařízení odstranit?",
                     "confirm_rename_entity_ids": "Chcete také přejmenovat ID entit vašich entit?",
+                    "confirm_rename_entity_ids_warning": "Žádná konfigurace (např. automatizace, skripty, scény, Lovelace), která tyto entity aktuálně používá, nebude změněna. Budete je muset aktualizovat sami.",
                     "data_table": {
                         "area": "Oblast",
                         "battery": "Baterie",
@@ -1481,6 +1524,8 @@
                         "no_device": "Entity bez zařízení",
                         "no_devices": "Tato integrace nemá žádná zařízení.",
                         "options": "Možnosti",
+                        "reload_confirm": "Integrace byla obnovena",
+                        "reload_restart_confirm": "Restartujte Home Assistant pro obnovení této integrace",
                         "rename": "Přejmenovat",
                         "restart_confirm": "Restartujte Home Assistant pro odstranění této integrace",
                         "settings_button": "Upravit nastavení pro {integration}",
@@ -1638,6 +1683,84 @@
                     "title": "MQTT",
                     "topic": "téma"
                 },
+                "ozw": {
+                    "button": "Konfigurovat",
+                    "common": {
+                        "controller": "Ovladač",
+                        "instance": "Instance",
+                        "network": "Síť",
+                        "node_id": "ID uzlu",
+                        "ozw_instance": "Instance OpenZWave",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "Uzel selhal",
+                        "zwave_info": "Informace o Z-Wave"
+                    },
+                    "navigation": {
+                        "network": "Síť",
+                        "nodes": "Uzly",
+                        "select_instance": "Vyberte instanci"
+                    },
+                    "network_status": {
+                        "details": {
+                            "driverallnodesqueried": "Všechny uzly byly zkontaktovány",
+                            "driverallnodesqueriedsomedead": "Všechny uzly byly zkontaktovány. Některé uzly byly nalezeny mrtvé",
+                            "driverawakenodesqueries": "Všechny probuzené uzly byly zkontaktovány",
+                            "driverfailed": "Nepodařilo se připojit k ovladači Z-Wave",
+                            "driverready": "Inicializuji ovladač Z-Wave",
+                            "driverremoved": "Ovladač byl odstraněn",
+                            "driverreset": "Ovladač byl resetován",
+                            "offline": "OZWDaemon je offline",
+                            "ready": "Připraveno k připojení",
+                            "started": "Připojeno k MQTT",
+                            "starting": "Připojování k MQTT",
+                            "stopped": "OpenZWave zastaven"
+                        },
+                        "offline": "Offline",
+                        "online": "Online",
+                        "starting": "Spouštění",
+                        "unknown": "Nezjištěno"
+                    },
+                    "network": {
+                        "header": "Správa sítě",
+                        "node_count": "{count} uzlů"
+                    },
+                    "node_query_stages": {
+                        "configuration": "Získávám konfiguraci z uzlu",
+                        "dynamic": "Získávám často se měnící hodnoty z uzlu",
+                        "instances": "Získávám podrobnosti o tom, jaké instance nebo kanály zařízení podporuje",
+                        "manufacturerspecific1": "Získávám z uzlu kody výrobce a produktů",
+                        "manufacturerspecific2": "Získávám z uzlu další kódy výrobce a produktů",
+                        "neighbors": "Získávám seznam sousedů uzlu",
+                        "nodeinfo": "Získávám z uzlu podporované typy příkazů",
+                        "nodeplusinfo": "Získávám informace o Z-Wave + z uzlu",
+                        "probe": "Kontroluji, zda je uzel probuzený/živý",
+                        "protocolinfo": "Získávám z ovladače Z-Wave základní schopnosti tohoto uzlu",
+                        "session": "Získávám zřídka se měnící hodnoty z uzlu",
+                        "static": "Získávám statické hodnoty ze zařízení",
+                        "versions": "Získávám informace o verzích firmwaru a typech příkazů",
+                        "wakeup": "Nastavuji podporu pro probouzecí fronty a zprávy"
+                    },
+                    "refresh_node": {
+                        "battery_note": "Pokud je uzel napájen z baterie, nezapomeňte jej probudit, než budete pokračovat",
+                        "complete": "Obnova uzlu dokončena",
+                        "node_status": "Stav uzlu",
+                        "refreshing_description": "Aktualizuji informací o uzlu...",
+                        "start_refresh_button": "Spustit Obnovení",
+                        "step": "Krok",
+                        "title": "Aktualizovat informace o uzlu",
+                        "wakeup_header": "Pokyny pro probuzení pro"
+                    },
+                    "select_instance": {
+                        "header": "Vyberte instanci OpenZWave",
+                        "introduction": "Máte více než jednu instanci OpenZWave. Kterou instanci chcete spravovat?"
+                    },
+                    "services": {
+                        "add_node": "Přidat uzel",
+                        "remove_node": "Odebrat uzel"
+                    }
+                },
                 "person": {
                     "add_person": "Přidat osobu",
                     "caption": "Osoby",
@@ -1764,15 +1887,16 @@
                             "core": "Znovu načíst umístění a přizpůsobení",
                             "group": "Znovu načíst skupiny",
                             "heading": "Konfigurace se načítá",
-                            "input_boolean": "Znovu načíst pomocníky - čísla",
+                            "input_boolean": "Znovu načíst pomocníky - přepínače",
                             "input_datetime": "Znovu načíst pomocníky - data/časy",
-                            "input_number": "Znovu načíst pomocníky - přepínače",
+                            "input_number": "Znovu načíst pomocníky - čísla",
                             "input_select": "Znovu načíst pomocníky - výběry",
                             "input_text": "Znovu načíst pomocníky - texty",
                             "introduction": "Některé části Home Assistant lze načíst bez nutnosti restartování. Volba načtení zahodí jejich aktuální konfiguraci a načte novou.",
                             "person": "Znovu načíst osoby",
                             "scene": "Znovu načíst scény",
                             "script": "Znovu načíst skripty",
+                            "template": "Znovu načíst entity šablon",
                             "zone": "Znovu načíst zóny"
                         },
                         "server_management": {
@@ -1791,6 +1915,32 @@
                             "valid": "Konfigurace je v pořádku!"
                         }
                     }
+                },
+                "tags": {
+                    "add_tag": "Přidat značku",
+                    "automation_title": "Značka {name} je naskenována",
+                    "caption": "Značky",
+                    "create_automation": "Vytvořit automatizaci se značkou",
+                    "description": "Správa značek",
+                    "detail": {
+                        "create": "Vytvořit",
+                        "create_and_write": "Vytvořit a zapsat",
+                        "delete": "Smazat",
+                        "description": "Popis",
+                        "name": "Název",
+                        "new_tag": "Nová značka",
+                        "tag_id": "ID značky",
+                        "tag_id_placeholder": "Automaticky vygenerováno, pokud zůstane prázdné",
+                        "update": "Aktualizovat"
+                    },
+                    "edit": "Upravit",
+                    "headers": {
+                        "last_scanned": "Naposledy naskenováno",
+                        "name": "Název"
+                    },
+                    "never_scanned": "Nikdy naskenováno",
+                    "no_tags": "Žádné značky",
+                    "write": "Zapsat"
                 },
                 "users": {
                     "add_user": {
@@ -2033,7 +2183,7 @@
                         "heal_network": "Vyléčit síť",
                         "heal_node": "Uzdravit uzel",
                         "node_info": "Informace o uzlu",
-                        "print_node": "Otisk nodu",
+                        "print_node": "Otisk uzlu",
                         "refresh_entity": "Znovu načíst Entitu",
                         "refresh_node": "Obnovit uzel",
                         "remove_failed_node": "Odebrat selhaný uzel",
@@ -2113,6 +2263,7 @@
                         "description": "Šablony jsou vykreslovány pomocí Jinja2 šablonového enginu s některými specifickými rozšířeními pro Home Assistant.",
                         "editor": "Editor šablon",
                         "jinja_documentation": "Dokumentace šablony Jinja2",
+                        "reset": "Obnovit ukázkovou šablonu",
                         "template_extensions": "Rozšíření šablony Home Assistant",
                         "title": "Šablony",
                         "unknown_error_template": "Šablona vykreslování neznámých chyb"
@@ -2193,6 +2344,10 @@
                         "button": {
                             "description": "Karta Tlačítko umožňuje přidat tlačítka k provádění úkolů.",
                             "name": "Tlačítko"
+                        },
+                        "calendar": {
+                            "description": "Karta Kalendář zobrazuje kalendář včetně zobrazení dnů, týdnů a seznamů",
+                            "name": "Kalendář"
                         },
                         "conditional": {
                             "card": "Karta",
@@ -2406,6 +2561,9 @@
                         "para_migrate": "Home Assistant může automaticky přidávat ID ke všem kartám a pohledům stisknutím tlačítka \"Migrovat konfiguraci\".",
                         "para_no_id": "Tento prvek nemá ID. Přidejte k tomuto prvku ID v 'ui-lovelace.yaml'."
                     },
+                    "move_card": {
+                        "header": "Vyberte pohled, do kterého chcete kartu přesunout"
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "Pokud odeberete nastavení Lovelace, automaticky vygenerujeme vaše zobrazení Lovelace s vašimi oblastmi a zařízeními.",
                         "confirm_remove_config_title": "Opravdu chcete odstranit nastavení Lovelace? Automaticky vygenerujeme vaše zobrazení Lovelace s vašimi oblastmi a zařízeními.",
@@ -2432,6 +2590,10 @@
                         "yaml_config": "Abyste mohli snadněji začít, zde aktuální konfigurace tohoto dashboardu:",
                         "yaml_control": "Chcete-li převzít kontrolu v režimu YAML, vytvořte soubor YAML s názvem, který jste uvedli ve své konfiguraci pro tento dashboard nebo výchozí 'ui-lovelace.yaml'.",
                         "yaml_mode": "Používáte režim YAML, což znamená, že nemůžete změnit konfiguraci Lovelace z uživatelského rozhraní. Pokud chcete měnit Lovelace z uživatelského rozhraní, odstraňte 'mode: yaml' z vaší konfigurace Lovelace v 'configuration.yaml.'"
+                    },
+                    "select_view": {
+                        "dashboard_label": "Dashboard",
+                        "header": "Vyberte pohled"
                     },
                     "suggest_card": {
                         "add": "Přidat do Lovelance",
@@ -2641,6 +2803,7 @@
                     "intro": "Dobrý den, {name} , vítejte v Home Assistant. Jak byste chtěli pojmenovat svůj domov?",
                     "intro_location": "Rádi bychom věděli, kde žijete. Tyto informace pomohou při zobrazování informací a určování přesné polohy slunce. Tato data nejsou nikdy sdílena mimo vaši síť.",
                     "intro_location_detect": "Můžeme vám pomoci vyplnit tyto informace jednorázovým požadavkem na externí službu.",
+                    "location_name": "Název vaší instalace Home Assistant",
                     "location_name_default": "Domov"
                 },
                 "integration": {

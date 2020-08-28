@@ -1,11 +1,8 @@
 import { PropertyValues } from "lit-element";
 import { HomeAssistant } from "../../../types";
+import { processConfigEntities } from "./process-config-entities";
 
-// Check if config or Entity changed
-export function hasConfigOrEntityChanged(
-  element: any,
-  changedProps: PropertyValues
-): boolean {
+function hasConfigChanged(element: any, changedProps: PropertyValues): boolean {
   if (changedProps.has("_config")) {
     return true;
   }
@@ -23,9 +20,41 @@ export function hasConfigOrEntityChanged(
   ) {
     return true;
   }
+  return false;
+}
+
+// Check if config or Entity changed
+export function hasConfigOrEntityChanged(
+  element: any,
+  changedProps: PropertyValues
+): boolean {
+  if (hasConfigChanged(element, changedProps)) {
+    return true;
+  }
+
+  const oldHass = changedProps.get("hass") as HomeAssistant;
 
   return (
     oldHass.states[element._config!.entity] !==
     element.hass!.states[element._config!.entity]
+  );
+}
+
+// Check if config or Entities changed
+export function hasConfigOrEntitiesChanged(
+  element: any,
+  changedProps: PropertyValues
+): boolean {
+  if (hasConfigChanged(element, changedProps)) {
+    return true;
+  }
+
+  const oldHass = changedProps.get("hass") as HomeAssistant;
+
+  const entities = processConfigEntities(element._config!.entities);
+
+  return entities.some(
+    (entity) =>
+      oldHass.states[entity.entity] !== element.hass!.states[entity.entity]
   );
 }
