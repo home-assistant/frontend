@@ -419,9 +419,16 @@
                 "unlock": "Ontgrendelen"
             },
             "media_player": {
+                "browse_media": "Door media bladeren",
+                "media_next_track": "Volgende",
+                "media_play": "Speel",
+                "media_play_pause": "Afspelen/pauzeren",
+                "media_previous_track": "Vorige",
                 "sound_mode": "Geluidsmodus",
                 "source": "Bron",
-                "text_to_speak": "Tekst naar spraak"
+                "text_to_speak": "Tekst naar spraak",
+                "turn_off": "Uitschakelen",
+                "turn_on": "Inschakelen"
             },
             "persistent_notification": {
                 "dismiss": "Sluiten"
@@ -554,6 +561,26 @@
                 "loading_history": "Geschiedenis laden ...",
                 "no_history_found": "Geen geschiedenis gevonden"
             },
+            "media-browser": {
+                "choose-source": "Kies bron",
+                "content-type": {
+                    "album": "Album",
+                    "artist": "Artiest",
+                    "library": "Bibliotheek",
+                    "playlist": "Afspeellijst",
+                    "server": "Server"
+                },
+                "media-player-browser": "Mediaspeler-browser",
+                "no_items": "Niets gevonden",
+                "pick": "Kies",
+                "pick-media": "Kies Media",
+                "play": "Speel",
+                "play-media": "Media afspelen"
+            },
+            "picture-upload": {
+                "label": "Afbeelding",
+                "unsupported_format": "Niet-ondersteund formaat. Kies een JPEG-, PNG- of GIF-afbeelding."
+            },
             "related-items": {
                 "area": "Gebied",
                 "automation": "Onderdeel van de volgende automatiseringen",
@@ -574,6 +601,7 @@
                     "week": "{count} {count, plural,\none {week}\nother {weken}\n}"
                 },
                 "future": "Over {time}",
+                "just_now": "Zojuist",
                 "never": "Nooit",
                 "past": "{time} geleden"
             },
@@ -655,6 +683,9 @@
                 "platform_not_loaded": "De {platform} integratie is niet geladen. Voeg het aan je configuratie toe door 'default_config:' of ''{platform}:'' toe te voegen.",
                 "required_error_msg": "Dit veld is verplicht",
                 "yaml_not_editable": "De instellingen van deze entiteit kunnen niet worden bewerkt vanuit de gebruikersinterface. Alleen entiteiten die zijn ingesteld vanuit de gebruikersinterface, kunnen worden geconfigureerd vanuit de gebruikersinterface."
+            },
+            "image_cropper": {
+                "crop": "Snijd bij"
             },
             "more_info_control": {
                 "dismiss": "Dialoogvenster sluiten",
@@ -958,7 +989,7 @@
                                     "zone": "Zone"
                                 }
                             },
-                            "unsupported_condition": "Niet ondersteunde voorwaarde: {condition}"
+                            "unsupported_condition": "Geen UI-ondersteuning voor voorwaarde: {condition}"
                         },
                         "default_name": "Nieuwe automatisering",
                         "description": {
@@ -1048,6 +1079,9 @@
                                     "sunrise": "Zonsopkomst",
                                     "sunset": "Zonsondergang"
                                 },
+                                "tag": {
+                                    "label": "Label"
+                                },
                                 "template": {
                                     "label": "Sjabloon",
                                     "value_template": "Waardesjabloon"
@@ -1075,7 +1109,7 @@
                                     "zone": "Zone"
                                 }
                             },
-                            "unsupported_platform": "Niet ondersteund platform: {platform}"
+                            "unsupported_platform": "Geen UI-ondersteuning voor platform: {platform}"
                         },
                         "unsaved_confirm": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je wilt afsluiten?"
                     },
@@ -1306,6 +1340,7 @@
                     }
                 },
                 "devices": {
+                    "add_prompt": "Er is nog geen {name} toegevoegd met dit apparaat. U kunt er één toevoegen door op de + knop hierboven te klikken.",
                     "automation": {
                         "actions": {
                             "caption": "Wanneer iets wordt getriggerd..."
@@ -1325,6 +1360,7 @@
                     "caption": "Apparaten",
                     "confirm_delete": "Weet je zeker dat je dit apparaat wilt verwijderen?",
                     "confirm_rename_entity_ids": "Wil je ook de entiteits-ID's van je entiteiten hernoemen?",
+                    "confirm_rename_entity_ids_warning": "Dit zal geen enkele configuratie veranderen (zoals automatiseringen, scripts, scènes, Lovelace) die momenteel deze entiteiten gebruikt, je zult ze zelf moeten updaten.",
                     "data_table": {
                         "area": "Gebied",
                         "battery": "Batterij",
@@ -1487,6 +1523,9 @@
                         "no_device": "Entiteiten zonder apparaten",
                         "no_devices": "Deze integratie heeft geen apparaten.",
                         "options": "Opties",
+                        "reload": "Herlaad",
+                        "reload_confirm": "De integratie is opnieuw geladen",
+                        "reload_restart_confirm": "Start Home Assistant opnieuw om het opnieuw laden van deze integratie te voltooien",
                         "rename": "Naam wijzigen",
                         "restart_confirm": "Herstart Home Assistant om het verwijderen van deze integratie te voltooien",
                         "settings_button": "Instellingen bewerken voor {integration}",
@@ -1645,7 +1684,11 @@
                     "topic": "onderwerp"
                 },
                 "ozw": {
+                    "button": "Configureer",
                     "common": {
+                        "controller": "Controller",
+                        "instance": "Instantie",
+                        "network": "Netwerk",
                         "node_id": "Knooppunt-ID",
                         "ozw_instance": "Instantie van OpenZWave",
                         "zwave": "Z-Wave"
@@ -1654,6 +1697,75 @@
                         "node_failed": "Knoop gefaald",
                         "stage": "Stadium",
                         "zwave_info": "Z-Wave informatie"
+                    },
+                    "navigation": {
+                        "network": "Netwerk",
+                        "nodes": "Knooppunten",
+                        "select_instance": "Instantie selecteren"
+                    },
+                    "network_status": {
+                        "details": {
+                            "driverallnodesqueried": "Alle knooppunten zijn opgevraagd",
+                            "driverallnodesqueriedsomedead": "Alle knooppunten zijn opgevraagd. Sommige knooppunten werden dood aangetroffen",
+                            "driverawakenodesqueries": "Alle knooppunten die wakker zijn, zijn opgevraagd",
+                            "driverfailed": "Kan geen verbinding maken met de Z-Wave-controller",
+                            "driverready": "Initialiseren van de Z-Wave-controller",
+                            "driverremoved": "De driver is verwijderd",
+                            "driverreset": "De driver is gereset",
+                            "offline": "OZWDaemon offline",
+                            "ready": "Klaar om te verbinden",
+                            "started": "Verbonden met MQTT",
+                            "starting": "Verbinding maken met MQTT",
+                            "stopped": "OpenZWave is gestopt"
+                        },
+                        "offline": "Offline",
+                        "online": "Online",
+                        "starting": "Aan het starten",
+                        "unknown": "Onbekend"
+                    },
+                    "network": {
+                        "header": "Netwerkbeheer",
+                        "introduction": "Beheer netwerkbrede functies.",
+                        "node_count": "{count} nodes"
+                    },
+                    "node_query_stages": {
+                        "associations": "Associatiegroepen en lidmaatschappen verversen",
+                        "cacheload": "Informatie laden uit het OpenZWave-cachebestand. Knooppunten met batterij blijven in dit stadium totdat het knooppunt ontwaakt.",
+                        "complete": "Het ondervragingsproces is voltooid",
+                        "configuration": "Configuratiewaarden ophalen van het knooppunt",
+                        "dynamic": "Het verkrijgen van frequent veranderende waarden uit het knooppunt",
+                        "instances": "Details verkrijgen over welke instanties of kanalen een apparaat ondersteunt",
+                        "manufacturerspecific1": "Verkrijgen van fabrikant- en productidentificatiecodes van het knooppunt",
+                        "manufacturerspecific2": "Extra fabrikant- en product-ID-codes verkrijgen van het knooppunt",
+                        "neighbors": "Een lijst ophalen met de buren van het knooppunt",
+                        "nodeinfo": "Verkrijgen van ondersteunde commandoklassen van het knooppunt",
+                        "nodeplusinfo": "Z-Wave+ informatie verkrijgen van het knooppunt",
+                        "probe": "Controleren of het knooppunt wakker/levend is",
+                        "protocolinfo": "Het verkrijgen van basis Z-Wave-mogelijkheden van dit knooppunt uit de controller",
+                        "session": "Het verkrijgen van zelden veranderende waarden uit het knooppunt",
+                        "static": "Statische waarden ophalen van het apparaat",
+                        "versions": "Het verkrijgen van informatie over firmware en commandoklasseversies",
+                        "wakeup": "Ondersteuning instellen voor waakwachtrijen en berichten"
+                    },
+                    "refresh_node": {
+                        "battery_note": "Als het knooppunt op batterijen werkt, moet u het uit de sluimerstand halen voordat u verder gaat",
+                        "complete": "Knooppunt vernieuwen voltooid",
+                        "description": "Dit zal OpenZWave vertellen om een knooppunt opnieuw te ondervragen en de opdrachtklassen, mogelijkheden en waarden van het knooppunt bij te werken.",
+                        "node_status": "Knooppuntstatus",
+                        "refreshing_description": "Knooppuntinformatie vernieuwen...",
+                        "start_refresh_button": "Start Vernieuwen",
+                        "step": "Stap",
+                        "title": "Vernieuw knooppuntinformatie",
+                        "wakeup_header": "Wekinstructies voor",
+                        "wakeup_instructions_source": "Wekinstructies zijn afkomstig uit de OpenZWave-gemeenschapsapparaatdatabase."
+                    },
+                    "select_instance": {
+                        "header": "Selecteer een OpenZWave-instantie",
+                        "introduction": "Je hebt meer dan één OpenZWave instantie lopen. Welke instantie wilt u beheren?"
+                    },
+                    "services": {
+                        "add_node": "Node toevoegen",
+                        "remove_node": "Node verwijderen"
                     }
                 },
                 "person": {
@@ -1779,7 +1891,9 @@
                     "section": {
                         "reloading": {
                             "automation": "Herlaad automatiseringen",
+                            "command_line": "Laad opdrachtregelentiteiten opnieuw",
                             "core": "Herlaad locatie en aanpassingen",
+                            "filter": "Laad filterentiteiten opnieuw",
                             "group": "Herlaad groepen",
                             "heading": "Configuratie herladen",
                             "input_boolean": "Herlaad input booleans",
@@ -1789,8 +1903,12 @@
                             "input_text": "Herlaad input texts",
                             "introduction": "Sommige delen van Home Assistant kunnen opnieuw worden geladen zonder dat een herstart vereist is. Als je herladen gebruikt, wordt de huidige configuratie leeggemaakt en wordt de nieuwe geladen.",
                             "person": "Herlaad personen",
+                            "rest": "Laad rustentiteiten opnieuw",
                             "scene": "Herlaad scenes",
                             "script": "Herlaad scripts",
+                            "statistics": "Laad statistische entiteiten opnieuw",
+                            "template": "Laad sjabloonentiteiten opnieuw",
+                            "universal": "Laad de entiteiten van de universele mediaspeler opnieuw",
                             "zone": "Herlaad zones"
                         },
                         "server_management": {
@@ -1809,6 +1927,32 @@
                             "valid": "Geldige configuratie!"
                         }
                     }
+                },
+                "tags": {
+                    "add_tag": "Tag toevoegen",
+                    "automation_title": "Tag {name} is gescand",
+                    "caption": "Tags",
+                    "create_automation": "Creëer automatisering met tag",
+                    "description": "Beheer tags",
+                    "detail": {
+                        "create": "Creëer",
+                        "create_and_write": "Creëer en schrijf",
+                        "delete": "Verwijder",
+                        "description": "Beschrijving",
+                        "name": "Naam",
+                        "new_tag": "Nieuwe tag",
+                        "tag_id": "Tag-ID",
+                        "tag_id_placeholder": "Automatisch gegenereerd wanneer leeg gelaten",
+                        "update": "Werk bij"
+                    },
+                    "edit": "Bewerk",
+                    "headers": {
+                        "last_scanned": "Laatst gescand",
+                        "name": "Naam"
+                    },
+                    "never_scanned": "Nooit gescand",
+                    "no_tags": "Geen tags",
+                    "write": "Schrijf"
                 },
                 "users": {
                     "add_user": {
@@ -2131,6 +2275,7 @@
                         "description": "Sjablonen worden weergegeven met de Jinja2-sjabloonediter samen met enkele extensies van Home Assistant.",
                         "editor": "Sjabloonediter",
                         "jinja_documentation": "Jinja2-sjabloondocumentatie",
+                        "reset": "Resetten naar demosjabloon",
                         "template_extensions": "Home Assistant sjabloon extensiesHome Assistant",
                         "title": "Sjablonen",
                         "unknown_error_template": "Onbekende fout bij weergave sjabloon"
@@ -2211,6 +2356,10 @@
                         "button": {
                             "description": "Met de Button-kaart kun je knoppen toevoegen om taken uit te voeren.",
                             "name": "Knop"
+                        },
+                        "calendar": {
+                            "description": "De kalenderkaart toont een kalender met dag-, week- en lijstweergaven",
+                            "name": "Kalender"
                         },
                         "conditional": {
                             "card": "Kaart",
@@ -2666,6 +2815,7 @@
                     "intro": "Hallo {name}, welkom bij Home Assistant. Welke naam wil je je huis geven?",
                     "intro_location": "We willen graag weten waar je woont. Deze informatie zal helpen bij het weergeven van informatie en het instellen van op de zon gebaseerde automatiseringen. Deze gegevens worden nooit gedeeld buiten je netwerk.",
                     "intro_location_detect": "Wij kunnen u helpen deze informatie in te vullen door eenmalig een verbinding te maken met een externe service.",
+                    "location_name": "Naam van de Home Assistant installatie",
                     "location_name_default": "Huis"
                 },
                 "integration": {

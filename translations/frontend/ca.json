@@ -1893,7 +1893,9 @@
                     "section": {
                         "reloading": {
                             "automation": "Actualitza automatitzacions",
+                            "command_line": "Torna a carregar entitats de comandes",
                             "core": "Actualitza ubicació i personalitzacions",
+                            "filter": "Torna a carregar entitats de filtre",
                             "group": "Actualitza grups",
                             "heading": "Tornant a carregar la configuració",
                             "input_boolean": "Actualitza entrades booleanes",
@@ -1903,8 +1905,10 @@
                             "input_text": "Actualitza entrades de text",
                             "introduction": "Algunes parts de Home Assistant es poden actualitzar sense necessitat reiniciar-lo. Si prems actualitza s'esborrarà la configuració YAML actual i se'n carregarà la nova.",
                             "person": "Actualitza persones",
+                            "rest": "Torna a carregar entitats de repòs",
                             "scene": "Actualitza escenes",
                             "script": "Actualitza programes",
+                            "statistics": "Torna a carregar entitats estadístiques",
                             "template": "Torna a carregar entitats de plantilla",
                             "universal": "Torna a carregar entitats del reproductor universal",
                             "zone": "Actualitza zones"

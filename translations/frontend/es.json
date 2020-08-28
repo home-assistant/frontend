@@ -1893,7 +1893,9 @@
                     "section": {
                         "reloading": {
                             "automation": "Recargar automatizaciones",
+                            "command_line": "Recargar entidades de línea de comandos",
                             "core": "Recargar ubicación y personalizaciones",
+                            "filter": "Recargar entidades de filtro",
                             "group": "Recargar grupos",
                             "heading": "Recargando la configuración YAML",
                             "input_boolean": "Recargar los campos booleanos",
@@ -1903,8 +1905,10 @@
                             "input_text": "Recargar los campos de texto",
                             "introduction": "Algunas partes de Home Assistant pueden recargarse sin necesidad de reiniciar. Al pulsar en recargar se descartará la configuración YAML actual y se cargará la nueva.",
                             "person": "Recargar personas",
+                            "rest": "Recargar entidades rest",
                             "scene": "Recargar escenas",
                             "script": "Recargar scripts",
+                            "statistics": "Recargar entidades de estadísticas",
                             "template": "Recargar entidades de plantilla",
                             "universal": "Recargar entidades de reproductor multimedia universal",
                             "zone": "Recargar zonas"
