@@ -23,7 +23,7 @@ class HaProgressButton extends LitElement {
 
   @property({ type: Boolean }) public progress = false;
 
-  public render(): TemplateResult | void {
+  public render(): TemplateResult {
     return html`
       <mwc-button
         .disabled=${this.disabled || this.progress}
@@ -45,11 +45,6 @@ class HaProgressButton extends LitElement {
 
   public actionError(): void {
     this._tempClass("error");
-  }
-
-  protected firstUpdated(changedProps: PropertyValues) {
-    super.firstUpdated(changedProps);
-    this.addEventListener("click", (ev) => this._buttonTapped(ev));
   }
 
   private _tempClass(className: string): void {
