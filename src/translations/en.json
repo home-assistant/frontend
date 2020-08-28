@@ -851,7 +851,7 @@
               "history_stats": "Reload history stats entities",
               "trend": "Reload trend entities",
               "ping": "Reload ping binary sensor entities",
-              "filesize": "Reload filesize entities"
+              "filesize": "Reload file size entities"
             },
             "server_management": {
               "heading": "Server management",
