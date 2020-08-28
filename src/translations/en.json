@@ -2256,7 +2256,8 @@
               "url": "Url",
               "state": "State",
               "secondary_info_attribute": "Secondary Info Attribute",
-              "search": "Search"
+              "search": "Search",
+              "state_color": "Color icons based on state?"
             },
             "map": {
               "name": "Map",
