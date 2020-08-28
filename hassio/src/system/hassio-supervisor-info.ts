@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import {
   css,
   CSSResult,
@@ -24,6 +23,8 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../src/dialogs/generic/show-dialog-box";
+
+import { HaProgressButtonElement } from "../../../src/components/buttons/ha-progress-button";
 
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-settings-row";
@@ -58,12 +59,12 @@ class HassioSupervisorInfo extends LitElement {
             </span>
             ${this.supervisorInfo.version !== this.supervisorInfo.version_latest
               ? html`
-                  <mwc-button
+                  <ha-progress-button
                     title="Update the supervisor"
-                    label="Update"
                     @click=${this._supervisorUpdate}
                   >
-                  </mwc-button>
+                    Update
+                  </ha-progress-button>
                 `
               : ""}
           </ha-settings-row>
@@ -76,21 +77,21 @@ class HassioSupervisorInfo extends LitElement {
             </span>
             ${this.supervisorInfo.channel === "beta"
               ? html`
-                  <mwc-button
+                  <ha-progress-button
                     @click=${this._toggleBeta}
-                    label="Leave beta channel"
                     title="Get stable updates for Home Assistant, supervisor and host"
                   >
-                  </mwc-button>
+                    Leave beta channel
+                  </ha-progress-button>
                 `
               : this.supervisorInfo.channel === "stable"
               ? html`
-                  <mwc-button
+                  <ha-progress-button
                     @click=${this._toggleBeta}
-                    label="Join beta channel"
                     title="Get beta updates for Home Assistant (RCs), supervisor and host"
                   >
-                  </mwc-button>
+                    Join beta channel
+                  </ha-progress-button>
                 `
               : ""}
           </ha-settings-row>
@@ -133,15 +134,136 @@ class HassioSupervisorInfo extends LitElement {
               </div>`}
         </div>
         <div class="card-actions">
-          <mwc-button
+          <ha-progress-button
             @click=${this._supervisorReload}
             title="Reload parts of the supervisor."
-            label="Reload"
           >
-          </mwc-button>
+            Reload
+          </ha-progress-button>
         </div>
       </ha-card>
     `;
+  }
+
+  private async _toggleBeta(ev: CustomEvent): Promise<void> {
+    const button = ev.target as HaProgressButtonElement;
+    button.progress = true;
+
+    if (this.supervisorInfo.channel === "stable") {
+      const confirmed = await showConfirmationDialog(this, {
+        title: "WARNING",
+        text: html` Beta releases are for testers and early adopters and can
+          contain unstable code changes.
+          <br />
+          <b>
+            Make sure you have backups of your data before you activate this
+            feature.
+          </b>
+          <br /><br />
+          This includes beta releases for:
+          <li>Home Assistant Core</li>
+          <li>Home Assistant Supervisor</li>
+          <li>Home Assistant Operating System</li>
+          <br />
+          Do you want to join the beta channel?`,
+        confirmText: "join beta",
+        dismissText: "no",
+      });
+
+      if (!confirmed) {
+        button.progress = false;
+        return;
+      }
+    }
+
+    try {
+      const data: Partial<SupervisorOptions> = {
+        channel: this.supervisorInfo.channel !== "stable" ? "beta" : "stable",
+      };
+      await setSupervisorOption(this.hass, data);
+      await reloadSupervisor(this.hass);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Failed to set supervisor option",
+        text:
+          typeof err === "object" ? err.body?.message || "Unkown error" : err,
+      });
+    }
+    button.progress = false;
+  }
+
+  private async _supervisorReload(ev: CustomEvent): Promise<void> {
+    const button = ev.target as HaProgressButtonElement;
+    button.progress = true;
+
+    try {
+      await reloadSupervisor(this.hass);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Failed to reload the supervisor",
+        text:
+          typeof err === "object" ? err.body?.message || "Unkown error" : err,
+      });
+    }
+    button.progress = false;
+  }
+
+  private async _supervisorUpdate(ev: CustomEvent): Promise<void> {
+    const button = ev.target as HaProgressButtonElement;
+    button.progress = true;
+
+    const confirmed = await showConfirmationDialog(this, {
+      title: "Update supervisor",
+      text: `Are you sure you want to upgrade supervisor to version ${this.supervisorInfo.version_latest}?`,
+      confirmText: "update",
+      dismissText: "cancel",
+    });
+
+    if (!confirmed) {
+      button.progress = false;
+      return;
+    }
+
+    try {
+      await updateSupervisor(this.hass);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Failed to update the supervisor",
+        text:
+          typeof err === "object" ? err.body.message || "Unkown error" : err,
+      });
+    }
+    button.progress = false;
+  }
+
+  private async _diagnosticsInformationDialog(): Promise<void> {
+    await showAlertDialog(this, {
+      title: "Help Improve Home Assistant",
+      text: html`Would you want to automatically share crash reports and
+        diagnostic information when the supervisor encounters unexpected errors?
+        <br /><br />
+        This will allow us to fix the problems, the information is only
+        accessible to the Home Assistant Core team and will not be shared with
+        others.
+        <br /><br />
+        The data does not include any private/sensitive information and you can
+        disable this in settings at any time you want.`,
+    });
+  }
+
+  private async _toggleDiagnostics(): Promise<void> {
+    try {
+      const data: SupervisorOptions = {
+        diagnostics: !this.supervisorInfo?.diagnostics,
+      };
+      await setSupervisorOption(this.hass, data);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Failed to set supervisor option",
+        text:
+          typeof err === "object" ? err.body.message || "Unkown error" : err,
+      });
+    }
   }
 
   static get styles(): CSSResult[] {
@@ -173,108 +295,12 @@ class HassioSupervisorInfo extends LitElement {
         ha-settings-row[three-line] {
           height: 74px;
         }
-        ha-settings-row > span[slot="description"] {
+        ha-settings-row > div[slot="description"] {
           white-space: normal;
           color: var(--secondary-text-color);
         }
       `,
     ];
-  }
-
-  private async _toggleBeta(): Promise<void> {
-    if (this.supervisorInfo.channel === "stable") {
-      const confirmed = await showConfirmationDialog(this, {
-        title: "WARNING",
-        text: html` Beta releases are for testers and early adopters and can
-          contain unstable code changes.
-          <br />
-          <b>
-            Make sure you have backups of your data before you activate this
-            feature.
-          </b>
-          <br /><br />
-          This includes beta releases for:
-          <li>Home Assistant Core</li>
-          <li>Home Assistant Supervisor</li>
-          <li>Home Assistant Operating System</li>
-          <br />
-          Do you want to join the beta channel?`,
-        confirmText: "join beta",
-        dismissText: "no",
-      });
-
-      if (!confirmed) {
-        return;
-      }
-    }
-
-    try {
-      const data: Partial<SupervisorOptions> = {
-        channel: this.supervisorInfo.channel !== "stable" ? "beta" : "stable",
-      };
-      await setSupervisorOption(this.hass, data);
-      await reloadSupervisor(this.hass);
-    } catch (err) {
-      showAlertDialog(this, {
-        title: "Failed to set supervisor option",
-        text:
-          typeof err === "object" ? err.body?.message || "Unkown error" : err,
-      });
-    }
-  }
-
-  private async _supervisorReload(): Promise<void> {
-    try {
-      await reloadSupervisor(this.hass);
-    } catch (err) {
-      showAlertDialog(this, {
-        title: "Failed to reload the supervisor",
-        text:
-          typeof err === "object" ? err.body?.message || "Unkown error" : err,
-      });
-    }
-  }
-
-  private async _supervisorUpdate(): Promise<void> {
-    try {
-      await updateSupervisor(this.hass);
-    } catch (err) {
-      showAlertDialog(this, {
-        title: "Failed to update the supervisor",
-        text:
-          typeof err === "object" ? err.body.message || "Unkown error" : err,
-      });
-    }
-  }
-
-  private async _diagnosticsInformationDialog(): Promise<void> {
-    await showAlertDialog(this, {
-      title: "Help Improve Home Assistant",
-      text: html`Would you want to automatically share crash reports and
-        diagnostic information when the supervisor encounters unexpected errors?
-        <br /><br />
-        This will allow us to fix the problems, the information is only
-        accessible to the Home Assistant Core team and will not be shared with
-        others.
-        <br /><br />
-        The data does not include any private/sensitive information and you can
-        disable this in settings at any time you want.`,
-    });
-  }
-
-  private async _toggleDiagnostics(): Promise<void> {
-    try {
-      const data: SupervisorOptions = {
-        diagnostics: !this.supervisorInfo?.diagnostics,
-      };
-      await setSupervisorOption(this.hass, data);
-    } catch (err) {
-      showAlertDialog(this, {
-        title: "Failed to set supervisor option",
-        text:
-          typeof err === "object" ? err.body.message || "Unkown error" : err,
-      });
-    }
   }
 }
 
