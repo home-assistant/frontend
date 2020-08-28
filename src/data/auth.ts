@@ -14,7 +14,6 @@ export interface AuthProvider {
 
 export interface Credential {
   type: string;
-  username?: string;
 }
 
 export interface SignedPath {
