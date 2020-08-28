@@ -1893,7 +1893,9 @@
                     "section": {
                         "reloading": {
                             "automation": "重新載入自動化",
+                            "command_line": "重新載入命令列物件",
                             "core": "重新載入座標與自訂化",
+                            "filter": "重新載入過濾器物件",
                             "group": "重新載入群組",
                             "heading": "YAML 設定新載入中",
                             "input_boolean": "重新載入輸入 boolean",
@@ -1903,8 +1905,10 @@
                             "input_text": "重新載入輸入文字",
                             "introduction": "Home Assistant 中部分設定無須重啟即可重新載入生效。點選重新載入按鈕，即可解除目前 YAML 設定，並重新載入最新設定。",
                             "person": "重新載入人員",
+                            "rest": "重新載入剩餘物件",
                             "scene": "重新載入場景",
                             "script": "重新載入腳本",
+                            "statistics": "重新載入統計資訊物件",
                             "template": "重新載入範例物件",
                             "universal": "重新載入通用媒體播放器物件",
                             "zone": "重新載入區域"

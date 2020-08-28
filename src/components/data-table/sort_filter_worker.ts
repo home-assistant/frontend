@@ -1,11 +1,11 @@
 // To use comlink under ES5
-import "proxy-polyfill";
 import { expose } from "comlink";
+import "proxy-polyfill";
 import type {
-  DataTableSortColumnData,
   DataTableRowData,
-  SortingDirection,
+  DataTableSortColumnData,
   SortableColumnContainer,
+  SortingDirection,
 } from "./ha-data-table";
 
 const filterData = (
@@ -19,7 +19,7 @@ const filterData = (
       const [key, column] = columnEntry;
       if (column.filterable) {
         if (
-          (column.filterKey ? row[key][column.filterKey] : row[key])
+          String(column.filterKey ? row[key][column.filterKey] : row[key])
             .toUpperCase()
             .includes(filter)
         ) {

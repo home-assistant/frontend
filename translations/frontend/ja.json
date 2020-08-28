@@ -1,8 +1,15 @@
 {
     "config_entry": {
         "disabled_by": {
-            "integration": "インテグレーション"
+            "config_entry": "構成エントリ",
+            "integration": "インテグレーション",
+            "user": "ユーザー"
         }
+    },
+    "groups": {
+        "system-admin": "管理者",
+        "system-read-only": "読み取り専用ユーザー",
+        "system-users": "ユーザー"
     },
     "panel": {
         "calendar": "カレンダー",
@@ -12,6 +19,7 @@
         "logbook": "ログブック",
         "mailbox": "メールボックス",
         "map": "地図",
+        "profile": "プロファイル",
         "shopping_list": "買い物リスト",
         "states": "状態"
     },
@@ -22,9 +30,23 @@
                 "off": "オフ",
                 "on": "オン"
             },
+            "hvac_action": {
+                "cooling": "冷房",
+                "drying": "乾燥",
+                "fan": "ファン",
+                "heating": "暖房",
+                "idle": "アイドル",
+                "off": "オフ"
+            },
             "preset_mode": {
+                "activity": "アクティビティ",
                 "away": "外出",
-                "home": "在宅"
+                "boost": "ブースト",
+                "comfort": "快適さ",
+                "eco": "エコ",
+                "home": "在宅",
+                "none": "なし",
+                "sleep": "スリープ"
             }
         },
         "humidifier": {
@@ -43,9 +65,13 @@
     },
     "state_badge": {
         "alarm_control_panel": {
-            "armed_home": "アームしました"
+            "armed_home": "アームしました",
+            "disarming": "解除",
+            "triggered": "トリガー"
         },
         "default": {
+            "entity_not_found": "エンティティが見つかりません",
+            "error": "エラー",
             "unknown": "不明"
         },
         "device_tracker": {
@@ -59,6 +85,7 @@
     },
     "state": {
         "alarm_control_panel": {
+            "pending": "保留中",
             "triggered": "トリガー"
         },
         "automation": {
@@ -123,7 +150,8 @@
                 "on": "在宅"
             },
             "problem": {
-                "off": "OK"
+                "off": "OK",
+                "on": "問題"
             },
             "safety": {
                 "off": "安全",
@@ -151,13 +179,16 @@
             "on": "オン"
         },
         "camera": {
-            "idle": "アイドル"
+            "idle": "アイドル",
+            "recording": "録音",
+            "streaming": "ストリーミング"
         },
         "climate": {
             "cool": "冷房",
             "dry": "ドライ",
             "fan_only": "ファンのみ",
             "heat": "暖房",
+            "heat_cool": "暖/冷",
             "off": "オフ"
         },
         "configurator": {
@@ -166,7 +197,10 @@
         },
         "cover": {
             "closed": "閉鎖",
-            "opening": "扉"
+            "closing": "終了",
+            "open": "開く",
+            "opening": "扉",
+            "stopped": "停止"
         },
         "default": {
             "off": "オフ",
@@ -183,13 +217,18 @@
         },
         "group": {
             "closed": "閉鎖",
+            "closing": "終了",
             "home": "在宅",
             "locked": "ロックされました",
             "not_home": "外出",
             "off": "オフ",
             "ok": "OK",
             "on": "オン",
-            "opening": "扉"
+            "open": "開く",
+            "opening": "扉",
+            "problem": "問題",
+            "stopped": "停止",
+            "unlocked": "ロック 解除"
         },
         "input_boolean": {
             "off": "オフ",
@@ -199,22 +238,31 @@
             "off": "オフ",
             "on": "オン"
         },
+        "lock": {
+            "locked": "ロック",
+            "unlocked": "ロック 解除"
+        },
         "media_player": {
             "idle": "アイドル",
             "off": "オフ",
             "on": "オン",
             "paused": "一時停止",
-            "playing": "再生中"
+            "playing": "再生中",
+            "standby": "スタンバイ"
         },
         "person": {
             "home": "在宅"
         },
         "plant": {
-            "ok": "OK"
+            "ok": "OK",
+            "problem": "問題"
         },
         "remote": {
             "off": "オフ",
             "on": "オン"
+        },
+        "scene": {
+            "scening": "硬化"
         },
         "script": {
             "off": "オフ",
@@ -232,13 +280,25 @@
             "off": "オフ",
             "on": "オン"
         },
+        "timer": {
+            "active": "アクティブ",
+            "idle": "アイドル",
+            "paused": "一時停止"
+        },
         "vacuum": {
+            "cleaning": "クリーニング",
+            "docked": "ドッキング",
+            "error": "エラー",
+            "idle": "アイドル",
             "off": "オフ",
-            "on": "オン"
+            "on": "オン",
+            "paused": "一時停止",
+            "returning": "ドックに戻る"
         },
         "weather": {
             "clear-night": "晴れた夜",
             "cloudy": "曇り",
+            "exceptional": "半端じゃない",
             "fog": "霧",
             "hail": "雹",
             "lightning": "雷",
@@ -249,16 +309,18 @@
             "snowy": "雪",
             "snowy-rainy": "みぞれ",
             "sunny": "晴れ",
-            "windy": "強風"
+            "windy": "強風",
+            "windy-variant": "風が強い"
         },
         "zwave": {
             "default": {
+                "dead": "死んで",
                 "initializing": "初期化中",
                 "ready": "準備完了",
                 "sleeping": "スリープ"
             },
             "query_stage": {
-                "dead": " ({query_stage})",
+                "dead": "死んで ({query_stage})",
                 "initializing": "初期化中 ( {query_stage} )"
             }
         }
@@ -271,22 +333,37 @@
         },
         "card": {
             "alarm_control_panel": {
+                "arm_custom_bypass": "カスタム バイパス",
+                "arm_night": "夜",
                 "clear_code": "削除",
-                "code": "パスワード"
+                "code": "パスワード",
+                "disarm": "解除"
             },
             "automation": {
+                "last_triggered": "最後にトリガーされた",
                 "trigger": "トリガー"
             },
             "camera": {
                 "not_available": "画像がありません。"
             },
             "climate": {
+                "aux_heat": "暖める",
                 "away_mode": "外出モード",
+                "cooling": "{name} 冷房",
+                "current_temperature": "{name}現在の温度",
                 "currently": "現在",
+                "fan_mode": "ファンモード",
+                "heating": "{name}暖房",
+                "high": "高",
+                "low": "低",
                 "on_off": "オン／オフ",
                 "operation": "運転切替",
+                "preset_mode": "プリセット",
+                "swing_mode": "スイングモード",
                 "target_humidity": "目標湿度",
-                "target_temperature": "目標温度"
+                "target_temperature": "目標温度",
+                "target_temperature_entity": "{name}目標温度",
+                "target_temperature_mode": "{name}目標温度{mode}"
             },
             "counter": {
                 "actions": {
@@ -295,7 +372,15 @@
                     "reset": "リセット"
                 }
             },
+            "cover": {
+                "position": "位置",
+                "tilt_position": "傾斜位置"
+            },
             "fan": {
+                "direction": "方向",
+                "forward": "進む",
+                "oscillate": "振動",
+                "reverse": "戻す",
                 "speed": "風速"
             },
             "humidifier": {
@@ -306,9 +391,12 @@
             },
             "light": {
                 "brightness": "明るさ",
-                "color_temperature": "色温度"
+                "color_temperature": "色温度",
+                "effect": "効果",
+                "white_value": "白さの値"
             },
             "lock": {
+                "code": "コード",
                 "lock": "ロック",
                 "unlock": "ロック解除"
             },
@@ -318,6 +406,8 @@
                 "media_play": "再生",
                 "media_play_pause": "再生/一時停止",
                 "media_previous_track": "前",
+                "sound_mode": "サウンドモード",
+                "source": "ソース：",
                 "text_to_speak": "音声合成",
                 "turn_off": "終了する",
                 "turn_on": "オンにする"
@@ -336,8 +426,28 @@
             "service": {
                 "run": "実行"
             },
+            "timer": {
+                "actions": {
+                    "cancel": "キャンセル",
+                    "finish": "完了",
+                    "pause": "一時停止",
+                    "start": "開始"
+                }
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "クリーニングを再開する",
+                    "return_to_base": "ドックに戻る",
+                    "start_cleaning": "クリーニングを開始",
+                    "turn_off": "終了する",
+                    "turn_on": "終了する"
+                }
+            },
             "water_heater": {
                 "away_mode": "外出モード",
+                "currently": "現在",
+                "on_off": "オン／オフ",
+                "operation": "操作",
                 "target_temperature": "目標温度"
             },
             "weather": {
@@ -346,6 +456,7 @@
                     "humidity": "湿度",
                     "precipitation": "降水量",
                     "temperature": "温度",
+                    "visibility": "可視性",
                     "wind_speed": "風速"
                 },
                 "cardinal_direction": {
@@ -375,6 +486,7 @@
             "and": "そして",
             "back": "戻る",
             "cancel": "キャンセル",
+            "close": "閉じる",
             "delete": "削除",
             "error_required": "必須",
             "loading": "読込中",
@@ -384,7 +496,9 @@
             "overflow_menu": "オーバーフローメニュー",
             "previous": "前",
             "refresh": "更新",
+            "save": "保存",
             "successfully_deleted": "正常に削除されました",
+            "successfully_saved": "正常に保存されました",
             "undo": "元に戻す",
             "yes": "はい"
         },
@@ -450,15 +564,27 @@
                 "unsupported_format": "サポートされていない形式です。JPEG、PNG、またはGIF画像を選択してください。"
             },
             "related-items": {
+                "area": "エリア",
+                "automation": "次の自動化の一部",
+                "device": "デバイス",
+                "entity": "関連エンティティ",
+                "group": "次のグループの一部",
                 "integration": "インテグレーション",
-                "no_related_found": "関連するアイテムが見つかりませんでした。"
+                "no_related_found": "関連するアイテムが見つかりませんでした。",
+                "scene": "次のシーンの一部",
+                "script": "次のスクリプトの一部"
             },
             "relative_time": {
                 "duration": {
-                    "hour": "{count} {count, plural,\n  one {時間}\n  other {時間}\n}"
+                    "day": "{count} {count, plural,\n  one {日}\n  other {日間}\n}",
+                    "hour": "{count} {count, plural,\n  one {時間}\n  other {時間}\n}",
+                    "minute": "{count} {count, plural,\n  one {分}\n  other {分}\n}",
+                    "second": "{count} {count, plural,\n  one {秒}\n  other {秒}\n}",
+                    "week": "{count} {count, plural,\n  one {週間}\n  other {週間}\n}"
                 },
                 "future": "{time}以内",
                 "just_now": "ちょうど今",
+                "never": "いつでも",
                 "past": "{time}前"
             },
             "service-picker": {
@@ -468,6 +594,7 @@
         "dialogs": {
             "config_entry_system_options": {
                 "enable_new_entities_description": "無効にするには、 {integration} から検出された新しいエンティティは Home Assistant に自動的に追加されません。",
+                "enable_new_entities_label": "新しく追加されたエンティティを有効にします。",
                 "title": "{integration} のシステムオプション",
                 "update": "更新"
             },
@@ -475,6 +602,7 @@
                 "title": "ドメインを切り替え"
             },
             "entity_registry": {
+                "control": "コントロール",
                 "dismiss": "消去",
                 "editor": {
                     "confirm_delete": "このエントリを削除してもよろしいですか？",
@@ -486,10 +614,13 @@
                     "icon": "アイコンの上書き",
                     "icon_error": "アイコンは「prefix：iconname」の形式にする必要があります（例：「mdi：home」）。",
                     "name": "名前の上書き",
+                    "note": "注: これは、まだすべてのインテグレーションで動作しない場合があります。",
                     "unavailable": "このエンティティは現在利用できません。",
                     "update": "更新"
                 },
-                "no_unique_id": "このエンティティには一意のIDがないため、その設定はUIから管理できません。"
+                "no_unique_id": "このエンティティには一意のIDがないため、その設定はUIから管理できません。",
+                "related": "関連",
+                "settings": "設定"
             },
             "generic": {
                 "cancel": "キャンセル",
@@ -544,11 +675,25 @@
                 "person": {
                     "create_zone": "現在地からゾーンを作成"
                 },
+                "restored": {
+                    "confirm_remove_text": "このエンティティを削除しますか?",
+                    "confirm_remove_title": "エンティティを削除しますか?",
+                    "not_provided": "このエンティティは現在利用できず、削除、変更、または機能不全の統合または孤立したデバイスです。",
+                    "remove_action": "エンティティの削除",
+                    "remove_intro": "エンティティが使用されなくなった場合は、削除することでクリーンアップできます。"
+                },
+                "script": {
+                    "last_action": "最後のアクション",
+                    "last_triggered": "最後にトリガーされた"
+                },
                 "settings": "エンティティ設定",
                 "sun": {
                     "elevation": "高度",
                     "rising": "日の出ます",
                     "setting": "日の入っています"
+                },
+                "updater": {
+                    "title": "更新手順"
                 },
                 "vacuum": {
                     "clean_spot": "クリーンスポット",
@@ -574,6 +719,14 @@
                 "title": "{device}デバッグ情報",
                 "triggers": "トリガー"
             },
+            "options_flow": {
+                "form": {
+                    "header": "オプション"
+                },
+                "success": {
+                    "description": "オプションを保存しました。"
+                }
+            },
             "voice_command": {
                 "did_not_hear": "Home Assistant は何も聞きませんでした",
                 "error": "エラーが発生しました",
@@ -586,15 +739,30 @@
                 "buttons": {
                     "add": "このデバイス経由でデバイスを追加",
                     "clusters": "クラスタの管理",
+                    "reconfigure": "デバイスを再設定",
+                    "remove": "デバイスを削除",
                     "zigbee_information": "Zigbee 情報"
                 },
+                "confirmations": {
+                    "remove": "デバイスを削除してもよろしいですか？"
+                },
                 "device_signature": "Zigbee デバイス署名",
+                "last_seen": "最後に見た",
+                "manuf": "{manufacturer}",
+                "no_area": "エリアなし",
+                "power_source": "電源",
+                "quirk": "癖",
                 "services": {
+                    "reconfigure": "ZHAデバイスを再構成します（デバイスの修復）。デバイスに問題がある場合に使用します。問題のデバイスがバッテリー駆動のデバイスである場合は、このサービスを使用するときに、デバイスが起動し、コマンドを受け入れていることを確認してください。",
                     "remove": "Zigbee ネットワークからデバイスを削除します。",
+                    "updateDeviceName": "デバイス レジストリでこのデバイスのカスタム名を設定します。",
                     "zigbee_information": "デバイスのZigbee情報を表示します。"
                 },
+                "unknown": "不明",
                 "zha_device_card": {
-                    "device_name_placeholder": "デバイス名の変更"
+                    "area_picker_label": "エリア",
+                    "device_name_placeholder": "デバイス名の変更",
+                    "update_name_button": "名前の更新"
                 }
             }
         },
@@ -611,6 +779,7 @@
             "remember": "覚えて"
         },
         "notification_drawer": {
+            "click_to_configure": "ボタンをクリックして{entity}を設定します",
             "close": "閉じる",
             "empty": "通知はありません",
             "title": "通知"
@@ -619,6 +788,7 @@
             "connection_lost": "切断されました。再接続中...",
             "service_call_failed": "サービス{service}の呼び出しに失敗しました。",
             "started": "ホームアシスタントが開始されました！",
+            "starting": "Home Assistantが起動中です。終了するまですべてが利用できるわけではありません。",
             "triggered": "トリガーしました {name}"
         },
         "panel": {
@@ -655,6 +825,9 @@
                     "picker": {
                         "create_area": "エリアの作成",
                         "header": "エリア",
+                        "integrations_page": "インテグレーションページ",
+                        "introduction": "エリアは、デバイスの場所を整理するために使用されます。この情報は、ホームアシスタント全体で、インターフェイス、アクセス権、他のシステムとの統合を整理するために使用されます。",
+                        "introduction2": "デバイスをエリアに配置するには、次のリンクを使用して統合ページに移動し、構成済みの統合をクリックしてデバイス カードにアクセスします。",
                         "no_areas": "まだエリアがないようです！"
                     }
                 },
@@ -669,6 +842,7 @@
                             "duplicate": "デュプリケート",
                             "header": "アクション",
                             "introduction": "アクションは、オートメーションがトリガーされたときにHome Assistantが実行するものです。\n\n [アクションの詳細]（https://home-assistant.io/docs/automation/action/）",
+                            "learn_more": "アクションの詳細",
                             "name": "アクション",
                             "type_select": "アクションの種類",
                             "type": {
@@ -685,10 +859,15 @@
                                     "label": "条件"
                                 },
                                 "delay": {
-                                    "delay": "遅延"
+                                    "delay": "遅延",
+                                    "label": "遅延"
                                 },
                                 "device_id": {
-                                    "action": "アクション"
+                                    "action": "アクション",
+                                    "extra_fields": {
+                                        "code": "コード"
+                                    },
+                                    "label": "デバイス"
                                 },
                                 "event": {
                                     "event": "イベント：",
@@ -713,11 +892,17 @@
                                         }
                                     }
                                 },
+                                "scene": {
+                                    "label": "シーンをアクティブにする"
+                                },
                                 "service": {
+                                    "label": "通話サービス",
                                     "service_data": "サービスのデータ"
                                 },
                                 "wait_template": {
-                                    "timeout": "タイムアウト（オプション）"
+                                    "label": "待つ",
+                                    "timeout": "タイムアウト（オプション）",
+                                    "wait_template": "待機テンプレート"
                                 }
                             },
                             "unsupported_action": "未サポートのアクション：{action}"
@@ -730,11 +915,21 @@
                             "duplicate": "デュプリケート",
                             "header": "条件",
                             "introduction": "条件はオプションであり、すべての条件が満たされない限り、それ以上の実行を防ぎます。",
+                            "learn_more": "条件の詳細",
                             "name": "条件",
                             "type_select": "条件の種類",
                             "type": {
+                                "and": {
+                                    "label": "そして"
+                                },
                                 "device": {
-                                    "condition": "条件"
+                                    "condition": "条件",
+                                    "extra_fields": {
+                                        "above": "上",
+                                        "below": "以下に",
+                                        "for": "期間"
+                                    },
+                                    "label": "デバイス"
                                 },
                                 "not": {
                                     "label": "ない"
@@ -745,11 +940,18 @@
                                     "label": "数的な状態",
                                     "value_template": "バリューテンプレート（オプショナル）"
                                 },
+                                "or": {
+                                    "label": "または"
+                                },
                                 "state": {
                                     "label": "状態",
                                     "state": "状態"
                                 },
                                 "sun": {
+                                    "after": "後：",
+                                    "after_offset": "オフセット後（オプション）",
+                                    "before": "前：",
+                                    "before_offset": "オフセット前（オプション）",
                                     "label": "太陽",
                                     "sunrise": "日の出",
                                     "sunset": "日の入"
@@ -759,9 +961,12 @@
                                     "value_template": "バリューテンプレート"
                                 },
                                 "time": {
+                                    "after": "後",
+                                    "before": "前",
                                     "label": "時間"
                                 },
                                 "zone": {
+                                    "entity": "場所に対応するエンティティ",
                                     "label": "ゾーン",
                                     "zone": "ゾーン"
                                 }
@@ -769,10 +974,16 @@
                             "unsupported_condition": "未サポートの条件：{condition}"
                         },
                         "default_name": "新しいオートメーション",
+                        "description": {
+                            "label": "説明",
+                            "placeholder": "オプションの説明"
+                        },
                         "edit_ui": "UI で編集",
                         "edit_yaml": "YAML で編集",
                         "enable_disable": "オートメーションの有効化/無効化",
                         "introduction": "オートメーションを使用して、あなたの家を生き生きとさせましょう。",
+                        "load_error_not_editable": "編集できるのは、automations.yamlのオートメーションのみです。",
+                        "load_error_unknown": "オートメーションの読み込み中にエラーが発生しました ({err_no})。",
                         "max": {
                             "parallel": "並列実行の最大数",
                             "queued": "キューの長さ"
@@ -796,10 +1007,17 @@
                             "duplicate": "複製",
                             "header": "トリガー",
                             "introduction": "トリガーはオートメーションルールの処理を開始させます。同じルールに対して複数のトリガーを指定することが可能です。トリガーが開始されると、Home Assistantは条件があれば確認し、アクションを呼び出します。\n\n[トリガーについて](https://home-assistant.io/docs/automation/trigger/)",
+                            "learn_more": "トリガーの詳細",
                             "name": "トリガー",
                             "type_select": "トリガーの種類",
                             "type": {
                                 "device": {
+                                    "extra_fields": {
+                                        "above": "上",
+                                        "below": "以下に",
+                                        "for": "期間"
+                                    },
+                                    "label": "デバイス",
                                     "trigger": "トリガー"
                                 },
                                 "event": {
@@ -808,20 +1026,32 @@
                                     "label": "イベント"
                                 },
                                 "geo_location": {
+                                    "enter": "入力",
+                                    "event": "イベント：",
+                                    "label": "ジオロケーション",
+                                    "leave": "去る",
+                                    "source": "ソース：",
                                     "zone": "ゾーン"
                                 },
                                 "homeassistant": {
+                                    "event": "イベント：",
                                     "label": "Home Assistant",
                                     "shutdown": "停止",
                                     "start": "起動"
                                 },
                                 "mqtt": {
-                                    "label": "MQTT"
+                                    "label": "MQTT",
+                                    "payload": "ペイロード（オプション）",
+                                    "topic": "トピック"
                                 },
                                 "numeric_state": {
+                                    "above": "上",
+                                    "below": "以下に",
+                                    "label": "数値の状態",
                                     "value_template": "バリューテンプレート（オプショナル）"
                                 },
                                 "state": {
+                                    "for": "のために",
                                     "from": "変化前",
                                     "label": "状態",
                                     "to": "変化後"
@@ -840,16 +1070,32 @@
                                     "label": "テンプレート",
                                     "value_template": "バリューテンプレート"
                                 },
+                                "time_pattern": {
+                                    "hours": "時間",
+                                    "label": "タイムパターン",
+                                    "minutes": "分",
+                                    "seconds": "秒"
+                                },
                                 "time": {
+                                    "at": "時期",
                                     "label": "時刻"
                                 },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook ID"
+                                },
                                 "zone": {
+                                    "enter": "いる",
+                                    "entity": "場所に対応するエンティティ",
                                     "event": "イベント：",
+                                    "label": "ゾーン",
+                                    "leave": "去る",
                                     "zone": "ゾーン"
                                 }
                             },
                             "unsupported_platform": "サポートされていないプラットフォーム： {platform}"
-                        }
+                        },
+                        "unsaved_confirm": "未保存の変更があります。本当に出て行きますか？"
                     },
                     "picker": {
                         "add_automation": "オートメーションの追加",
@@ -861,60 +1107,172 @@
                             "name": "名前"
                         },
                         "introduction": "オートメーションエディタを使用すると、オートメーションを作成および編集できます。以下のリンクをクリックして、ホーム アシスタントを正しく設定したことを確認する手順を確認してください。",
+                        "learn_more": "自動化の詳細",
                         "no_automations": "編集可能なオートメーションが見つかりません。",
                         "only_editable": "automations.yaml で定義されたオートメーションのみが編集可能です。",
+                        "pick_automation": "編集するオートメーションを選択",
                         "show_info_automation": "オートメーションに関する情報を表示"
                     }
                 },
                 "cloud": {
                     "account": {
                         "alexa": {
-                            "config_documentation": "設定に関するドキュメント"
+                            "config_documentation": "設定に関するドキュメント",
+                            "disable": "無効",
+                            "enable": "有効",
+                            "enable_ha_skill": "AlexaのHome Assistantスキルを有効にする",
+                            "enable_state_reporting": "状態レポートを有効にする",
+                            "info": "AlexaとHome Assistant Cloudの統合により、すべてのAlexa対応デバイスを介してすべてのHome Assistantデバイスを制御できます。",
+                            "info_state_reporting": "状態レポートを有効にすると、ホームアシスタントは公開されたエンティティのすべての状態変更を Amazon に送信します。これにより、常にAlexaアプリで最新の状態を表示し、状態の変更を使用してルーチンを作成できます。",
+                            "manage_entities": "エンティティの管理",
+                            "state_reporting_error": "状態を{enable_disable}報告できません。",
+                            "sync_entities": "エンティティの同期",
+                            "sync_entities_error": "エンティティの同期に失敗しました:",
+                            "title": "Alexa"
                         },
+                        "connected": "接続",
+                        "connection_status": "クラウド接続の状態",
+                        "fetching_subscription": "サブスクリプションを取得しています。",
                         "google": {
                             "config_documentation": "設定に関するドキュメント",
                             "devices_pin": "セキュリティデバイス PIN",
+                            "enable_ha_skill": "GoogleアシスタントのHome Assistantスキルを有効にする",
+                            "enable_state_reporting": "状態レポートを有効にする",
+                            "enter_pin_error": "ピンを保存できません：",
                             "enter_pin_hint": "セキュリティデバイスを使用するには PIN を入力してください",
-                            "security_devices": "セキュリティデバイス"
+                            "enter_pin_info": "セキュリティ デバイスと通信するには、ピンを入力してください。セキュリティデバイスは、ドア、ガレージドア、ロックです。Google アシスタント経由でこのようなデバイスとやり取りする際に、このピンを入力する必要があります。",
+                            "info": "ホーム アシスタント クラウド向けの Google アシスタント統合機能を使用すると、Google アシスタント対応のデバイスを介してすべてのホーム アシスタント デバイスを制御できます。",
+                            "info_state_reporting": "状態レポートを有効にすると、ホーム アシスタントは公開されたエンティティのすべての状態変更を Google に送信します。これにより、Google アプリで最新の状態を常に確認できます。",
+                            "manage_entities": "エンティティの管理",
+                            "security_devices": "セキュリティデバイス",
+                            "sync_entities": "エンティティをGoogleに同期",
+                            "sync_entities_404_message": "エンティティをGoogleに同期できませんでした。Googleに「OK Google、デバイスを同期して」と尋ねてエンティティを同期してください。",
+                            "title": "Googleアシスタント"
                         },
                         "integrations": "インテグレーション",
+                        "integrations_introduction": "ホームアシスタントクラウドの統合により、ホームアシスタントインスタンスをインターネット上で公開することなく、クラウド内のサービスに接続できます。",
+                        "integrations_introduction2": "ウェブサイトを確認してください",
+                        "integrations_link_all_features": "利用可能なすべての機能",
+                        "manage_account": "アカウントの管理",
+                        "nabu_casa_account": "Nabu Casa アカウント",
+                        "not_connected": "接続されていません",
                         "remote": {
-                            "info": "Home Assistant Cloud は、自宅の外からインスタンスへの安全なリモート接続を提供します。"
+                            "access_is_being_prepared": "リモート アクセスの準備中です。準備ができたらお知らせします。",
+                            "certificate_info": "証明書情報",
+                            "info": "Home Assistant Cloud は、自宅の外からインスタンスへの安全なリモート接続を提供します。",
+                            "instance_is_available": "インスタンスは次の場所にあります",
+                            "instance_will_be_available": "インスタンスは次の時点で利用可能になります。",
+                            "link_learn_how_it_works": "仕組みを学ぶ",
+                            "title": "リモートコントロール"
                         },
+                        "sign_out": "サインアウト",
+                        "thank_you_note": "Home Assistant Cloudにご参加いただきありがとうございます。私たちは皆のために優れたホームオートメーション体験を作ることができるのはあなたのような人々のおかげです。ありがとうございました！",
                         "webhooks": {
                             "disable_hook_error_msg": "ウェブホックを無効にできませんでした：",
+                            "info": "webhook によってトリガーされるように構成された URL を公開可能な URL を与えることができ、インスタンスをインターネットに公開することなく、どこからでもホームアシスタントにデータを送信できます。",
+                            "link_learn_more": "Webhookを利用した自動化の作成について詳しく学んでください。",
+                            "loading": "読み込み中...",
                             "manage": "管理",
-                            "no_hooks_yet_link_integration": "Webhook ベースのインテグレーション"
+                            "no_hooks_yet": "まだwebhookがないようです。はじめに",
+                            "no_hooks_yet_link_automation": "Webhookオートメーション",
+                            "no_hooks_yet_link_integration": "Webhook ベースのインテグレーション",
+                            "no_hooks_yet2": "または作成することによって",
+                            "title": "ウェブフック"
                         }
                     },
                     "alexa": {
+                        "banner": "この UI を介して公開されるエンティティの編集は、configuration.yaml でエンティティ フィルターを構成しているため無効になります。",
                         "expose": "Alexa に公開",
+                        "exposed_entities": "公開されたエンティティ",
+                        "not_exposed_entities": "公開されていないエンティティ",
                         "title": "Alexa"
                     },
                     "caption": "Home Assistant Cloud",
                     "description_features": "自宅の外からコントロールするために、AlexaとGoogleアシスタントに統合します。",
+                    "description_login": "{email}としてログインしました",
+                    "description_not_login": "ログインしていない",
                     "dialog_certificate": {
-                        "close": "閉じる"
+                        "certificate_expiration_date": "証明書の有効期限",
+                        "certificate_information": "証明書情報",
+                        "close": "閉じる",
+                        "fingerprint": "証明書のフィンガープリント:",
+                        "will_be_auto_renewed": "自動的に更新されます"
                     },
                     "dialog_cloudhook": {
+                        "available_at": "Webhookは次のURLで入手できます。",
                         "close": "閉じる",
                         "confirm_disable": "このウェブホックを無効化してもよろしいですか？",
                         "copied_to_clipboard": "クリップボードにコピーしました",
+                        "info_disable_webhook": "このウェブフックを使用したくない場合は、次の手順を実行します。",
                         "link_disable_webhook": "無効にする",
-                        "view_documentation": "ドキュメントを見る"
+                        "managed_by_integration": "この webhook は統合によって管理され、無効にすることはできません。",
+                        "view_documentation": "ドキュメントを見る",
+                        "webhook_for": "{name} Webhook"
+                    },
+                    "forgot_password": {
+                        "check_your_email": "パスワードをリセットする方法については、メールを確認してください。",
+                        "email": "Eメール",
+                        "email_error_msg": "無効な電子メール",
+                        "instructions": "メールアドレスを入力してください。パスワードをリセットするためのリンクが送信されます。",
+                        "send_reset_email": "リセットメールを送信",
+                        "subtitle": "パスワードをお忘れですか",
+                        "title": "パスワードを忘れた場合"
                     },
                     "google": {
+                        "banner": "この UI を介して公開されるエンティティの編集は、configuration.yaml でエンティティ フィルターを構成しているため無効になります。",
                         "disable_2FA": "多要素認証を無効にする",
                         "expose": "Google Assistant に公開",
+                        "exposed_entities": "公開されたエンティティ",
+                        "not_exposed_entities": "公開されていないエンティティ",
+                        "sync_to_google": "変更をGoogleに同期しています。",
                         "title": "Google Assistant"
                     },
                     "login": {
-                        "learn_more_link": "Home Assistant Cloud の情報をもっと見る。"
+                        "alert_email_confirm_necessary": "ログインする前にメールアドレスを確認する必要があります。",
+                        "alert_password_change_required": "ログインする前にパスワードを変更する必要があります。",
+                        "dismiss": "退出させる",
+                        "email": "Eメール",
+                        "email_error_msg": "無効な電子メール",
+                        "forgot_password": "パスワードをお忘れですか？",
+                        "introduction": "Home Assistant Cloudは、外出中のインスタンスへの安全なリモート接続を提供します。また、AmazonのAlexaやGoogleアシスタントなどのクラウド専用サービスに接続することもできます。",
+                        "introduction2": "このサービスはパートナーによって運営されています",
+                        "introduction2a": "、Home AssistantとHass.ioの創設者によって設立された会社。",
+                        "introduction3": "Home Assistant Cloudは、1か月間の無料トライアル付きのサブスクリプションサービスです。支払い情報は必要ありません。",
+                        "learn_more_link": "Home Assistant Cloud の情報をもっと見る。",
+                        "password": "パスワード",
+                        "password_error_msg": "パスワードは8文字以上です",
+                        "sign_in": "サインイン",
+                        "start_trial": "1か月無料トライアルを開始",
+                        "title": "クラウドログイン",
+                        "trial_info": "支払い情報は必要ありません"
                     },
                     "register": {
+                        "account_created": "アカウントが作成されました!アカウントを有効にする方法については、メールを確認してください。",
+                        "create_account": "アカウントの作成",
+                        "email_address": "メールアドレス",
+                        "email_error_msg": "無効な電子メール",
                         "feature_amazon_alexa": "Amazon Alexa との統合",
                         "feature_google_home": "Google Assistant との統合",
-                        "information2": "試用版では、Home Assistant Cloud すべての特典にアクセスできます、例えば："
+                        "feature_remote_control": "家の外でのHome Assistantの制御",
+                        "feature_webhook_apps": "OwnTracksなどのWebhookベースのアプリとの簡単な統合",
+                        "headline": "無料試用を開始",
+                        "information": "アカウントを作成して、Home Assistant Cloudで1か月間の無料トライアルを開始してください。支払い情報は必要ありません。",
+                        "information2": "試用版では、Home Assistant Cloud すべての特典にアクセスできます、例えば：",
+                        "information3": "このサービスはパートナーが運営しています。",
+                        "information3a": "ホームアシスタントとHass.ioの創業者によって設立された会社。",
+                        "information4": "アカウントを登録することにより、以下の条件に同意するものとします。",
+                        "link_privacy_policy": "プライバシーポリシー",
+                        "link_terms_conditions": "利用規約",
+                        "password": "パスワード",
+                        "password_error_msg": "パスワードは 8 文字以上です",
+                        "resend_confirm_email": "確認メールを再送信",
+                        "start_trial": "試用を開始",
+                        "title": "アカウントの登録"
+                    }
+                },
+                "common": {
+                    "editor": {
+                        "confirm_unsaved": "未保存の変更があります。本当に出て行きますか？"
                     }
                 },
                 "core": {
@@ -923,38 +1281,67 @@
                     "section": {
                         "core": {
                             "core_config": {
+                                "edit_requires_storage": "設定がconfiguration.yamlに保存されているため、エディターが無効になっています。",
+                                "elevation": "高度",
+                                "elevation_meters": "メートル",
                                 "external_url": "外部 URL",
+                                "imperial_example": "華氏、ポンド",
                                 "internal_url": "内部 URL",
-                                "time_zone": "タイムゾーン"
+                                "latitude": "緯度",
+                                "location_name": "Home Assistantインストールの名前",
+                                "longitude": "経度",
+                                "metric_example": "摂氏、キログラム",
+                                "save_button": "保存",
+                                "time_zone": "タイムゾーン",
+                                "unit_system": "単位システム",
+                                "unit_system_imperial": "インペリアル",
+                                "unit_system_metric": "メトリック"
                             },
-                            "header": "一般的な設定"
+                            "header": "一般的な設定",
+                            "introduction": "構成の変更は、面倒なプロセスになる可能性があります。私たちは知っています。このセクションでは、あなたの人生を少しでも楽にしようとしています。"
                         }
                     }
                 },
                 "customize": {
+                    "attributes_customize": "次の属性は既にcustomize.yamlに設定されています。",
                     "attributes_not_set": "次の属性は設定されていません。必要に応じて設定してください。",
+                    "attributes_outside": "次の属性は、customize.yamlの外部からカスタマイズされます。",
                     "attributes_override": "必要に応じてオーバーライドできます。",
                     "attributes_set": "次の属性はプログラム的に設定されています。",
                     "caption": "カスタマイズ",
                     "description": "エンティティのカスタマイズ",
+                    "different_include": "おそらくドメインを介して、globまたは別のものを含む。",
                     "pick_attribute": "オーバーライドする属性を選択してください",
                     "picker": {
                         "entity": "エンティティ",
-                        "header": "カスタマイズ"
+                        "header": "カスタマイズ",
+                        "introduction": "エンティティごとの属性を微調整します。追加/編集されたカスタマイズは、すぐに有効になります。削除されたカスタマイズは、エンティティが更新されたときに有効になります。"
                     },
                     "warning": {
-                        "include_link": "customize.yaml を含めます"
+                        "include_link": "customize.yaml を含めます",
+                        "include_sentence": "あなたのconfiguration.yamlが正しくないようです",
+                        "not_applied": "ここで行った変更は、その中に書き込まれますが、インクルードが適切に行われなければ、コンフィギュレーションの再読み込み後には適用されません。"
                     }
                 },
                 "devices": {
                     "add_prompt": "このデバイスを使用した{name}はまだ追加されていません。上の[+]ボタンをクリックして追加できます。",
                     "automation": {
+                        "actions": {
+                            "caption": "何かがトリガーされたとき..."
+                        },
                         "automations": "オートメーション",
+                        "conditions": {
+                            "caption": "次の場合にのみ何かしてください..."
+                        },
                         "create": "デバイスからオートメーションを作成",
                         "no_automations": "オートメーションなし",
-                        "no_device_automations": "このデバイスで利用可能なオートメーションはありません。"
+                        "no_device_automations": "このデバイスで利用可能なオートメーションはありません。",
+                        "triggers": {
+                            "caption": "いつ何かをする."
+                        }
                     },
                     "cant_edit": "編集できるのは、UI で作成された項目のみです。",
+                    "caption": "デバイス",
                     "confirm_delete": "このデバイスを削除してもよろしいですか？",
                     "confirm_rename_entity_ids": "エンティティの ID も変更しますか？",
                     "confirm_rename_entity_ids_warning": "この場合、これらのエンティティを現在使用している構成 (オートメーション、スクリプト、シーン、Lovelace など) は変更されません。",
@@ -975,7 +1362,9 @@
                     "entities": {
                         "add_entities_lovelace": "Lovelaceに追加",
                         "disabled_entities": "{count} {count, plural,\n  one {無効なエンティティ}\n  other {無効なエンティティ}\n}",
-                        "hide_disabled": "無効を非表示"
+                        "entities": "エンティティ",
+                        "hide_disabled": "無効を非表示",
+                        "none": "このデバイスにはエンティティがありません"
                     },
                     "name": "名前",
                     "no_devices": "デバイスなし",
@@ -999,22 +1388,46 @@
                     "caption": "エンティティ",
                     "description": "すべて既知のエンティティの一覧",
                     "picker": {
+                        "disable_selected": {
+                            "button": "選択を無効にする",
+                            "confirm_text": "無効化されたエンティティはHome Assistantに追加されません。",
+                            "confirm_title": "{number}エンティティを無効にしますか？"
+                        },
+                        "enable_selected": {
+                            "button": "選択を有効にする",
+                            "confirm_text": "これにより、ホーム アシスタントが無効になった場合に、再びホーム アシスタントで使用できるようになります。",
+                            "confirm_title": "{number}エンティティを有効にしますか？"
+                        },
                         "filter": {
-                            "show_readonly": "読み取り専用のエンティティを表示"
+                            "filter": "フィルター",
+                            "show_disabled": "無効なエンティティを表示",
+                            "show_readonly": "読み取り専用のエンティティを表示",
+                            "show_unavailable": "利用できないエンティティの表示"
                         },
                         "header": "エンティティ",
                         "headers": {
                             "entity_id": "エンティティ ID",
                             "integration": "インテグレーション",
-                            "name": "名前"
+                            "name": "名前",
+                            "status": "ステータス"
                         },
+                        "introduction": "Home Assistantは、一意に識別できる、これまでに見たすべてのエンティティのレジストリを保持します。これらの各エンティティには、エンティティIDが割り当てられ、このエンティティだけに予約されます。",
                         "introduction2": "エンティティ レジストリを使用して、名前を上書きするか、エンティティ ID を変更するか、またはホーム アシスタントからエントリを削除します。",
                         "remove_selected": {
-                            "confirm_text": "これらのエンティティが含まれている場合は、Lovelace の構成および自動化からそれらを削除する必要があります。"
+                            "button": "選択したものを削除",
+                            "confirm_partly_text": "選択した{selected}エンティティの{selected}削除{removable}のみを削除できます。エンティティが削除できるのは、統合によってエンティティが提供されなくなった場合のみです。削除された統合のエンティティを削除する前に、Home Assistantを再起動する必要がある場合があります。削除可能なエンティティを削除してもよろしいですか？",
+                            "confirm_partly_title": "削除できるのは、選択された{number}エンティティのみです。",
+                            "confirm_text": "これらのエンティティが含まれている場合は、Lovelace の構成および自動化からそれらを削除する必要があります。",
+                            "confirm_title": "{number}エンティティを削除しますか？"
                         },
                         "search": "エンティティを検索",
+                        "selected": "{number}選択されました",
                         "status": {
-                            "readonly": "読み取り専用"
+                            "disabled": "無効",
+                            "ok": "OK",
+                            "readonly": "読み取り専用",
+                            "restored": "復元",
+                            "unavailable": "利用できません"
                         }
                     }
                 },
@@ -1050,14 +1463,22 @@
                     }
                 },
                 "info": {
+                    "built_using": "を使用して構築",
                     "caption": "情報",
+                    "custom_uis": "カスタムの UIs:",
                     "description": "ホーム アシスタントのインストールに関する情報を表示する",
+                    "developed_by": "素晴らしい人々の集まりによって開発されました。",
                     "documentation": "ドキュメント",
+                    "frontend": "フロントエンド ui",
                     "frontend_version": "フロントエンドバージョン: {version} - {type}",
+                    "home_assistant_logo": "ホームアシスタントのロゴ",
+                    "icons_by": "アイコン",
                     "integrations": "インテグレーション",
                     "issues": "問題",
+                    "license": "Apache 2.0ライセンスの下で公開",
                     "path_configuration": "ディスク上に configuration.yaml へのパス: {path}",
                     "server": "サーバー",
+                    "source": "ソース：",
                     "system_health_error": "「システムの正常性」コンポーネントが有効されていません、configuration.yaml に 'system_health:' を追加してください。",
                     "title": "情報"
                 },
@@ -1068,18 +1489,29 @@
                 },
                 "integrations": {
                     "add_integration": "インテグレーションを追加",
+                    "caption": "インテグレーション",
                     "config_entry": {
+                        "area": "{area}",
                         "delete": "削除",
                         "delete_button": "{integration} を削除",
+                        "delete_confirm": "この統合を削除しますか?",
+                        "device_unavailable": "デバイスを利用できません",
                         "devices": "{count} {count, plural,\n  one {デバイス}\n  other {デバイス}\n}",
                         "documentation": "ドキュメント",
                         "entities": "{count} {count, plural,\n  one {エンティティ}\n  other {エントリー}\n}",
+                        "entity_unavailable": "エンティティは利用できません",
+                        "firmware": "ファームウェア： {version}",
+                        "hub": "経由で接続",
+                        "manuf": "{manufacturer}",
                         "no_area": "エリアなし",
+                        "no_device": "デバイスのないエンティティ",
+                        "no_devices": "この統合にはデバイスがありません。",
                         "options": "オプション",
                         "reload": "再読込",
                         "reload_confirm": "インテグレーションが再読み込みされました",
                         "reload_restart_confirm": "ホームアシスタントを再起動してこのインテグレーションの再読み込みを完了してください。\n",
                         "rename": "名前を変更",
+                        "restart_confirm": "ホーム アシスタントを再起動して、この統合の削除を完了します。",
                         "settings_button": "{integration} の設定を編集",
                         "system_options": "システムオプション",
                         "system_options_button": "{integration} のシステムオプション",
@@ -1092,16 +1524,22 @@
                         "dismiss": "ダイアログを閉じる",
                         "error_saving_area": "エリアを保存できません: {error}",
                         "external_step": {
-                            "description": "この手順を完了するには、外部のウエブサイトにアクセスする必要があります。"
+                            "description": "この手順を完了するには、外部のウエブサイトにアクセスする必要があります。",
+                            "open_site": "ウェブサイトを開く"
                         },
                         "finish": "完了",
                         "loading_first_time": "インテグレーションのインストールを完了するまでお待ちください",
+                        "not_all_required_fields": "必須フィールドの一覧に入力するわけではありません。",
                         "submit": "送信"
                     },
+                    "configure": "構成",
+                    "configured": "設定済み",
                     "description": "インテグレーションの管理とセットアップ",
                     "details": "インテグレーションの詳細",
+                    "discovered": "発見",
                     "home_assistant_website": "Home Assistant のウェブサイト",
                     "ignore": {
+                        "confirm_delete_ignore": "これにより、検出された統合が検出されると、統合が再び表示されます。再起動が必要な場合や、しばらく時間がかかる場合があります。",
                         "confirm_delete_ignore_title": "{name} の無視を停止しますか？",
                         "confirm_ignore": "この統合を設定しないでよろしいですか？右上のオーバーフローメニューで[無視された統合を表示]をクリックすると、これを元に戻すことができます。",
                         "confirm_ignore_title": "{name} の検出を無視しますか？",
@@ -1113,9 +1551,13 @@
                     },
                     "integration": "インテグレーション",
                     "integration_not_found": "インテグレーションが見つかりません。",
+                    "new": "新しい統合の設定",
                     "no_integrations": "まだ設定されていないようです。あなたの最初の統合を追加するには、下のボタンをクリックしてください!",
+                    "none": "まだ設定されていません",
                     "none_found": "インテグレーションが見つかりません。",
                     "none_found_detail": "別の検索基準をためしてみます。",
+                    "note_about_integrations": "まだすべての統合をUI経由で設定できるわけではありません。",
+                    "note_about_website_reference": "より多くが利用可能です",
                     "rename_dialog": "このコンフィグレーションエントリーの名前を変更",
                     "rename_input_label": "エントリー名",
                     "search": "インテグレーションを検索"
@@ -1125,8 +1567,10 @@
                     "caption": "ログ",
                     "clear": "消去",
                     "description": "Home Assistantログを表示する",
+                    "details": "ログの詳細（ {level} ）",
                     "load_full_log": "完全な Home Assistant ログを読み込む",
                     "loading_log": "エラーログを読み込んでいます…",
+                    "multiple_messages": "メッセージは最初に{time}発生し、 {counter}回表示されます",
                     "no_errors": "エラーは報告されていません。",
                     "no_issues": "新しい問題はありません！",
                     "refresh": "更新",
@@ -1151,7 +1595,9 @@
                             "edit_dashboard": "ダッシュボードを編集",
                             "icon": "アイコン",
                             "new_dashboard": "新しいダッシュボードを追加",
+                            "remove_default": "このデバイスのデフォルトとして削除",
                             "require_admin": "管理者のみ",
+                            "set_default": "このデバイスでデフォルトとして設定",
                             "show_sidebar": "サイドバーに表示",
                             "title": "タイトル",
                             "title_required": "タイトルが必要です。",
@@ -1212,6 +1658,7 @@
                     "description_listen": "トピックをリッスン",
                     "description_publish": "パケットをパブリッシュ",
                     "listening_to": "リッスンします",
+                    "message_received": "{time}に{topic}で受信したメッセージ{id} {time} ：",
                     "payload": "ペイロード (テンプレート可)",
                     "publish": "パブリッシュ",
                     "start_listening": "リッスンを開始",
@@ -1306,15 +1753,28 @@
                     }
                 },
                 "person": {
+                    "add_person": "人を追加",
                     "caption": "人",
+                    "confirm_delete": "このユーザーを削除しますか?",
+                    "confirm_delete2": "このユーザーに属するすべてのデバイスは割り当て解除されます。",
+                    "create_person": "人を作成",
                     "description": "Home Assistant を追跡している人の管理。",
                     "detail": {
                         "create": "作成",
                         "delete": "削除",
+                        "device_tracker_intro": "このユーザーに属するデバイスを選択します。",
+                        "device_tracker_pick": "追跡するデバイスを選択",
+                        "device_tracker_picked": "デバイスの追跡",
                         "link_integrations_page": "インテグレーションページ",
                         "link_presence_detection_integrations": "プレゼンス検出のインテグレーション",
+                        "linked_user": "リンクされたユーザー",
+                        "name": "名前",
+                        "name_error_msg": "名前は必須です",
+                        "new_person": "新しい人",
+                        "no_device_tracker_available_intro": "人の存在を示すデバイスがある場合は、ここでその人をその人に割り当てることができます。統合ページからプレゼンス検出統合を追加することで、最初のデバイスを追加できます。",
                         "update": "更新"
                     },
+                    "introduction": "ここでは、Home Assistantで関心のある各人を定義できます。",
                     "no_persons_created_yet": "まだ人を作成していませんですね。",
                     "note_about_persons_configured_in_yaml": "注：configuration.yaml で設定された人は、UI で編集できません。"
                 },
@@ -1327,7 +1787,8 @@
                         "devices": {
                             "add": "デバイスを追加",
                             "delete": "デバイスを削除",
-                            "header": "デバイス"
+                            "header": "デバイス",
+                            "introduction": "シーンに含めるデバイスを追加します。すべてのデバイスをこのシーンに対して必要な状態に設定します。"
                         },
                         "entities": {
                             "add": "エンティティを追加",
@@ -1354,6 +1815,7 @@
                         "headers": {
                             "name": "名前"
                         },
+                        "introduction": "シーン エディタを使用すると、シーンを作成および編集できます。以下のリンクをクリックして、ホーム アシスタントを正しく設定したことを確認する手順を確認してください。",
                         "learn_more": "シーンの情報をもっと見る。",
                         "no_scenes": "編集可能なシーンが見つかりません。",
                         "only_editable": "scenes.yaml で定義されたシーンのみが編集可能です。",
@@ -1365,12 +1827,18 @@
                     "caption": "スクリプト",
                     "description": "スクリプトの作成と編集",
                     "editor": {
+                        "alias": "名前",
+                        "default_name": "新しいスクリプト",
+                        "delete_confirm": "このスクリプトを削除しますか?",
                         "delete_script": "スクリプトを削除",
+                        "header": "スクリプト： {name}",
                         "icon": "アイコン",
                         "id": "エンティティ ID",
                         "id_already_exists": "このIDはすでに存在します",
                         "id_already_exists_save_error": "IDが一意ではないため、このスクリプトを保存できません。別のIDを選択するか、空白のままにして自動的に生成します。",
+                        "introduction": "スクリプトを使用して一連のアクションを実行する。",
                         "link_available_actions": "使用可能なアクションに関する情報をもっと見る。",
+                        "load_error_not_editable": "scripts.yaml内のスクリプトのみが編集可能です。",
                         "max": {
                             "parallel": "並列実行の最大数",
                             "queued": "キューの長さ"
@@ -1384,13 +1852,19 @@
                             "restart": "再起動",
                             "single": "シングル（デフォルト）"
                         },
-                        "sequence": "シーケンス"
+                        "sequence": "シーケンス",
+                        "sequence_sentence": "このスクリプトのアクションのシーケンス。"
                     },
                     "picker": {
+                        "add_script": "スクリプトを追加",
                         "edit_script": "スクリプトを編集",
+                        "header": "スクリプト エディタ",
                         "headers": {
                             "name": "名前"
                         },
+                        "introduction": "スクリプトエディタを使用すると、スクリプトを作成および編集できます。以下のリンクに従って手順を読み、Home Assistantが正しく設定されていることを確認してください。",
+                        "learn_more": "スクリプトの詳細",
+                        "no_scripts": "編集可能なスクリプトが見つかりませんでした",
                         "show_info": "スクリプトに関する情報を表示",
                         "trigger_script": "トリガースクリプト"
                     }
@@ -1401,7 +1875,9 @@
                     "section": {
                         "reloading": {
                             "automation": "オートメーションの再読込",
+                            "command_line": "コマンド ライン エンティティの再読み込み",
                             "core": "ロケーションとカスタマイズの再読込",
+                            "filter": "フィルターエンティティの再読み込み",
                             "group": "グループの再読込",
                             "heading": "設定の再読込",
                             "input_boolean": "入力ブール値を再読み込み",
@@ -1411,14 +1887,17 @@
                             "input_text": "入力テキストを再読み込み",
                             "introduction": "Home Assistant の一部は、再起動を必要とせずに再読込できます。再読込を押すと、現在の設定をアンロードし、新しい設定を読み込みます。",
                             "person": "人の再読込",
+                            "rest": "残りのエンティティの再読み込み",
                             "scene": "シーンの再読込",
                             "script": "スクリプトの再読込",
+                            "statistics": "静的エンティティの再読み込み",
                             "template": "テンプレート エンティティの再読み込み",
                             "universal": "ユニバーサル メディア プレーヤー エンティティの再読み込み",
                             "zone": "ゾーンの再読込"
                         },
                         "server_management": {
                             "confirm_restart": "Home Assistant を再起動してもよろしいですか？",
+                            "confirm_stop": "Home Assistantを停止してもよろしいですか？",
                             "heading": "サーバー管理",
                             "introduction": "Home Assistant から Home Assistant サーバーを操作します。",
                             "restart": "再起動",
@@ -1427,6 +1906,8 @@
                         "validation": {
                             "check_config": "設定を確認",
                             "heading": "設定の検証",
+                            "introduction": "構成に変更を加えた後、すべてが有効であることを確認する場合は、構成を検証します。",
+                            "invalid": "設定は無効です",
                             "valid": "設定は有効です！"
                         }
                     }
@@ -1458,13 +1939,22 @@
                     "write": "書き込み"
                 },
                 "users": {
+                    "add_user": {
+                        "caption": "ユーザーの追加",
+                        "create": "作成する",
+                        "name": "名前",
+                        "password": "パスワード",
+                        "username": "ユーザー名"
+                    },
                     "caption": "ユーザー",
                     "description": "ユーザーの管理",
                     "editor": {
                         "activate_user": "ユーザーを有効化",
                         "active": "アクティブ",
                         "admin": "管理者",
+                        "caption": "ユーザーを表示",
                         "change_password": "パスワードの変更",
+                        "confirm_user_deletion": "{name}を削除してもよろしいですか？",
                         "deactivate_user": "ユーザーを無効化",
                         "delete_user": "ユーザーを削除",
                         "group": "グループ",
@@ -1473,6 +1963,8 @@
                         "owner": "所有者",
                         "system_generated": "システムジェネレート",
                         "system_generated_users_not_editable": "システムが生成されたユーザーを変更できません。",
+                        "system_generated_users_not_removable": "システムで生成されたユーザーを削除できません。",
+                        "unnamed_user": "名前のないユーザー",
                         "update_user": "更新"
                     },
                     "picker": {
@@ -1487,34 +1979,112 @@
                 "zha": {
                     "add_device_page": {
                         "discovered_text": "検出されると、デバイスがここに表示されます。",
+                        "discovery_text": "検出されたデバイスがここに表示されます。デバイスの指示に従い、ペアリングモードにします。",
+                        "header": "Zigbeeホームオートメーション-デバイスの追加",
                         "no_devices_found": "デバイスが見つかりませんでした。デバイスがペアリングモードであることを確認し、検出の実行中はデバイスをウェイクアップしてください。",
                         "pairing_mode": "デバイスがペアリングモードになっていることを確認します。これを行う方法については、デバイスの手順を確認してください。",
-                        "search_again": "もう一度検索"
+                        "search_again": "もう一度検索",
+                        "spinner": "ZHA Zigbeeデバイスを検索しています..."
+                    },
+                    "add": {
+                        "caption": "デバイスを追加",
+                        "description": "Zigbeeネットワークにデバイスを追加する"
                     },
                     "button": "構成",
+                    "caption": "ZHA",
+                    "cluster_attributes": {
+                        "attributes_of_cluster": "選択したクラスターの属性",
+                        "get_zigbee_attribute": "Zigbee属性を取得",
+                        "header": "クラスター属性",
+                        "help_attribute_dropdown": "属性を選択して、その値を表示または設定します。",
+                        "help_get_zigbee_attribute": "選択した属性の値を取得します。",
+                        "help_set_zigbee_attribute": "指定したエンティティ上の指定したクラスターの属性値を設定します。",
+                        "introduction": "クラスター属性の表示と編集",
+                        "set_zigbee_attribute": "Zigbee属性を設定"
+                    },
+                    "cluster_commands": {
+                        "commands_of_cluster": "選択したクラスタのコマンド",
+                        "header": "クラスタコマンド",
+                        "help_command_dropdown": "対話するコマンドを選択します。",
+                        "introduction": "クラスターコマンドを表示して発行します。",
+                        "issue_zigbee_command": "Zigbeeコマンドを発行する"
+                    },
+                    "clusters": {
+                        "header": "クラスター",
+                        "help_cluster_dropdown": "クラスターを選択して、属性とコマンドを表示します。",
+                        "introduction": "クラスタは Zigbee 機能の構成要素です。機能を論理単位に分割します。クライアントとサーバーの種類があり、属性とコマンドで構成されています。"
+                    },
                     "common": {
                         "add_devices": "デバイスを追加",
+                        "clusters": "クラスター",
                         "devices": "デバイス",
+                        "manufacturer_code_override": "製造元コードの上書き",
                         "value": "バリュー"
                     },
-                    "groups": {
-                        "create_group": "Zigbeeホームオートメーション-グループの作成",
-                        "description": "Zigbeeグループを管理する",
-                        "header": "Zigbeeホームオートメーション-グループ管理"
+                    "description": "Zigbee Home Automationネットワーク管理",
+                    "devices": {
+                        "header": "Zigbeeホームオートメーション-デバイス"
                     },
+                    "group_binding": {
+                        "bind_button_help": "選択したグループを選択したデバイス クラスタにバインドします。",
+                        "bind_button_label": "バインド グループ",
+                        "cluster_selection_help": "選択したグループにバインドするクラスターを選択します。",
+                        "group_picker_help": "bindコマンドを発行するグループを選択します。",
+                        "group_picker_label": "バインド可能なグループ",
+                        "header": "グループバインディング",
+                        "introduction": "グループのバインドとバインド解除。",
+                        "unbind_button_help": "選択したデバイス クラスタから選択したグループのバインドを解除します。",
+                        "unbind_button_label": "グループのバインド解除"
+                    },
+                    "groups": {
+                        "add_members": "メンバーの追加",
+                        "adding_members": "メンバーの追加",
+                        "caption": "グループ",
+                        "create": "グループの作成",
+                        "create_group": "Zigbeeホームオートメーション-グループの作成",
+                        "create_group_details": "必要な詳細を入力して、新しいzigbeeグループを作成します",
+                        "creating_group": "グループを作成しています",
+                        "description": "Zigbeeグループを管理する",
+                        "group_details": "選択した Zigbee グループの詳細をすべて次に示します。",
+                        "group_id": "グループ ID",
+                        "group_info": "グループ情報",
+                        "group_name_placeholder": "グループ名",
+                        "group_not_found": "グループが見つかりません!",
+                        "group-header": "Zigbeeホームオートメーション-グループの詳細",
+                        "groups": "グループ",
+                        "groups-header": "Zigbeeホームオートメーション-グループ管理",
+                        "header": "Zigbeeホームオートメーション-グループ管理",
+                        "introduction": "zigbeeグループを作成および変更する",
+                        "manage_groups": "Zigbeeグループの管理",
+                        "members": "メンバー",
+                        "remove_groups": "グループの削除",
+                        "remove_members": "メンバーを削除",
+                        "removing_groups": "グループの削除",
+                        "removing_members": "メンバーの削除",
+                        "zha_zigbee_groups": "ZHA Zigbeeグループ"
+                    },
+                    "header": "Zigbee ホーム オートメーションの設定",
+                    "introduction": "ここでは、ZHAコンポーネントを構成できます。まだすべてをUIから構成できるわけではありませんが、現在取り組んでいます。",
                     "network_management": {
-                        "header": "ネットワーク管理"
+                        "header": "ネットワーク管理",
+                        "introduction": "ネットワーク全体に影響を与えるコマンド"
                     },
                     "network": {
                         "caption": "ネットワーク"
                     },
                     "node_management": {
-                        "header": "デバイス管理"
-                    }
+                        "header": "デバイス管理",
+                        "help_node_dropdown": "デバイスを選択して、デバイスごとのオプションを表示します。",
+                        "hint_battery_devices": "注：スリープ状態の（バッテリー駆動の）デバイスに対してコマンドを実行するときは、スリープ状態から復帰する必要があります。通常、スリープ状態のデバイスは、トリガーすることでスリープ解除できます。",
+                        "hint_wakeup": "Xiaomiセンサーなどの一部のデバイスには、約5秒間隔で押すことができるウェイクアップボタンがあり、デバイスを操作している間、デバイスをウェイクアップしたままにできます。",
+                        "introduction": "単一のデバイスに影響する ZHA コマンドを実行します。デバイスを選択して、使用可能なコマンドの一覧を表示します。"
+                    },
+                    "title": "Zigbeeホームオートメーション"
                 },
                 "zone": {
                     "add_zone": "ゾーンを追加",
                     "caption": "ゾーン",
+                    "configured_in_yaml": "configuration.yamlで構成されたゾーンは、UIで編集できません。",
                     "confirm_delete": "このゾーンを削除してもよろしいですか？",
                     "create_zone": "ゾーンを作成",
                     "description": "ユーザーを追跡するゾーンを管理する",
@@ -1522,6 +2092,7 @@
                         "create": "作成",
                         "delete": "削除",
                         "icon": "アイコン",
+                        "icon_error_msg": "アイコンは、prefix：iconnameの形式にする必要があります。例：mdi：home",
                         "latitude": "緯度",
                         "longitude": "経度",
                         "name": "名前",
@@ -1535,20 +2106,43 @@
                     "edit_home_zone": "ホームゾーンの半径は、フロントエンドからはまだ編集できません。マップ上のマーカーをドラッグして、ホームゾーンを移動します。",
                     "edit_home_zone_narrow": "ホームゾーンの半径は、フロントエンドからはまだ編集できません。場所は、一般設定から変更できます。",
                     "go_to_core_config": "一般的な構成に移動しますか？",
-                    "home_zone_core_config": "ホームゾーンの場所は、一般構成ページから編集できます。ホームゾーンの半径は、フロントエンドからはまだ編集できません。一般構成に移動しますか？"
+                    "home_zone_core_config": "ホームゾーンの場所は、一般構成ページから編集できます。ホームゾーンの半径は、フロントエンドからはまだ編集できません。一般構成に移動しますか？",
+                    "introduction": "ゾーンを使用すると、地球上の特定の地域を指定できます。人がゾーン内にいるとき、州はゾーンから名前を取ります。ゾーンは、オートメーション設定内のトリガーまたは条件として使用することもできます。",
+                    "no_zones_created_yet": "まだゾーンを作成していないようです。"
                 },
                 "zwave": {
                     "button": "設定",
                     "caption": "Z-Wave",
                     "common": {
-                        "value": "バリュー"
+                        "index": "インデックス",
+                        "instance": "インスタンス",
+                        "unknown": "不明",
+                        "value": "バリュー",
+                        "wakeup_interval": "ウェイクアップ間隔"
                     },
                     "description": "Z-waveネットワークを管理します",
+                    "learn_more": "Z-Wave の詳細",
+                    "network_management": {
+                        "header": "Z-Waveネットワーク管理",
+                        "introduction": "Z-Wave ネットワークに影響するコマンドを実行します。ほとんどのコマンドが成功したかどうかについてのフィードバックは得られませんが、OZWログをチェックして調べることもできます。"
+                    },
+                    "network_status": {
+                        "network_started": "Z-Waveネットワークが開始されました",
+                        "network_started_note_all_queried": "すべてのノードが照会されました。",
+                        "network_started_note_some_queried": "ウェイク ノードが照会されました。スリープノードは、スリープ解除時に照会されます。",
+                        "network_starting": "Z-Waveネットワークを開始しています...",
+                        "network_starting_note": "ネットワークのサイズによっては、この処理に時間がかかる場合があります。",
+                        "network_stopped": "Z-Waveネットワークが停止しました"
+                    },
                     "node_config": {
                         "config_parameter": "構成パラメーターの設定",
                         "config_value": "バリューを設定",
+                        "false": "偽",
                         "header": "ノード構成オプション",
-                        "set_config_parameter": "構成パラメーターの設定"
+                        "seconds": "秒",
+                        "set_config_parameter": "構成パラメーターの設定",
+                        "set_wakeup": "ウェイクアップ間隔を設定",
+                        "true": "真"
                     },
                     "node_management": {
                         "add_to_group": "グループに追加",
@@ -1556,6 +2150,7 @@
                         "entity_info": "エンティティ情報",
                         "exclude_entity": "このエンティティをHome Assistantから除外する",
                         "group": "グループ",
+                        "header": "Z-Waveノード管理",
                         "introduction": "単一ノードに影響するZ-Waveコマンドを実行します。ノードを選択すると、使用可能なコマンドのリストが表示されます。",
                         "max_associations": "最大関連付け：",
                         "node_group_associations": "ノードグループの関連付け",
@@ -1571,20 +2166,34 @@
                         "set_protection": "保護を設定する"
                     },
                     "ozw_log": {
+                        "header": "OZWログ",
+                        "introduction": "ログを表示します。0 は最小 (ログ全体をロード) 、最大 1000 が指定されます。ロードは静的なログを表示し、末尾はログの最後に指定された行数で自動更新されます。",
                         "last_log_lines": "最後のログ行数",
                         "load": "読み込み",
                         "tail": "最終行"
                     },
                     "services": {
+                        "add_node": "ノードを追加",
+                        "add_node_secure": "ノードのセキュアな追加",
+                        "cancel_command": "コマンドのキャンセル",
+                        "heal_network": "ネットワークの修復",
                         "heal_node": "ノードの修復",
                         "node_info": "ノード情報",
                         "print_node": "ノードの印刷",
                         "refresh_entity": "エンティティの更新",
                         "refresh_node": "ノードを更新",
                         "remove_failed_node": "失敗したノードを削除",
+                        "remove_node": "ノードを削除",
                         "replace_failed_node": "失敗したノードの置換",
                         "save_config": "設定を保存",
+                        "soft_reset": "ソフトリセット",
+                        "start_network": "ネットワークの開始",
+                        "stop_network": "ネットワークの停止",
+                        "test_network": "テストネットワーク",
                         "test_node": "テストノード"
+                    },
+                    "values": {
+                        "header": "ノード値"
                     }
                 }
             },
@@ -1598,7 +2207,15 @@
             "developer-tools": {
                 "tabs": {
                     "events": {
+                        "alert_event_type": "イベントタイプは必須フィールドです",
+                        "available_events": "利用可能なイベント",
+                        "count_listeners": "（ {count}人のリスナー）",
+                        "data": "イベントデータ（YAML、オプション）",
+                        "description": "イベントバスでイベントを起動します。",
+                        "documentation": "イベントのドキュメント。",
+                        "event_fired": "イベント{name}が発生しました",
                         "fire_event": "イベントを実行",
+                        "listen_to_events": "イベントを聞く",
                         "listening_to": "リッスンします",
                         "notification_event_fired": "{type} のイベント が正常に実行されました！",
                         "start_listening": "リッスンを開始",
@@ -1613,25 +2230,37 @@
                         "column_description": "説明",
                         "column_example": "例",
                         "column_parameter": "パラメータ",
+                        "data": "サービスデータ（YAML、オプション）",
+                        "description": "サービス開発ツールを使用すると、ホームアシスタントで利用可能なサービスを呼び出すことができます。",
+                        "fill_example_data": "データ記入例",
+                        "no_description": "説明はありません",
+                        "no_parameters": "このサービスはパラメータを受け取りません",
+                        "select_service": "説明を表示するサービスを選択してください",
                         "title": "サービス"
                     },
                     "states": {
                         "alert_entity_field": "エンティティは必須フィールドです",
                         "attributes": "属性",
                         "current_entities": "現在のエンティティ",
+                        "description1": "Home Assistant内でデバイスの表現を設定します。",
                         "description2": "実際のデバイスと通信しません。",
                         "entity": "エンティティ",
+                        "filter_attributes": "フィルター属性",
                         "filter_entities": "エンティティのフィルター処理",
                         "filter_states": "状態のフィルター処理",
                         "more_info": "もっと見る",
                         "no_entities": "エンティティなし",
                         "set_state": "状態を設定",
                         "state": "状態",
+                        "state_attributes": "状態属性（YAML、オプション）",
                         "title": "状態"
                     },
                     "templates": {
+                        "description": "テンプレートは、いくつかのホームアシスタント固有の拡張機能を持つJinja2テンプレートエンジンを使用してレンダリングされます。",
                         "editor": "テンプレートエディター",
+                        "jinja_documentation": "Jinja2テンプレートのドキュメント",
                         "reset": "デモ テンプレートにリセット",
+                        "template_extensions": "ホーム アシスタント テンプレートの拡張機能",
                         "title": "テンプレート",
                         "unknown_error_template": "不明なテンプレートレンダリングエラー"
                     }
@@ -1644,7 +2273,8 @@
                     "this_week": "今週",
                     "today": "今日",
                     "yesterday": "昨日"
-                }
+                },
+                "showing_entries": "のエントリを表示する"
             },
             "logbook": {
                 "entries_not_found": "ログブックエントリが見つかりません。",
@@ -1664,12 +2294,31 @@
                     "yaml_unsupported": "YAMLモードでLovelace UIを使用している場合、この関数は使用できません。"
                 },
                 "cards": {
+                    "confirm_delete": "このカードを削除しますか?",
+                    "empty_state": {
+                        "go_to_integrations_page": "インテグレーションページに移動します。",
+                        "no_devices": "このページではデバイスを制御できますが、デバイスがまだ設定されていないように見えます。開始するには、インテグレーションページに移動します。",
+                        "title": "お帰りなさい"
+                    },
+                    "entities": {
+                        "never_triggered": "トリガーされたことがない"
+                    },
+                    "picture-elements": {
+                        "call_service": "サービス{name}電話",
+                        "hold": "保持：",
+                        "more_info": "詳細を表示： {name}",
+                        "navigate_to": "{location}に移動",
+                        "tap": "タップ：",
+                        "toggle": "{name}切り替え",
+                        "url": "{url_path}へのウィンドウを開く"
+                    },
                     "safe-mode": {
                         "description": "Home Assistant は、構成の読み込み中に問題が発生し、セーフモードで実行されています。エラーログを見て、何が問題だったかを確認してください。",
                         "header": "セーフモードがアクティブになりました"
                     },
                     "shopping-list": {
                         "add_item": "アイテムを追加",
+                        "checked_items": "チェックアイテム",
                         "clear_items": "チェックされたアイテムを削除"
                     },
                     "starting": {
@@ -1678,11 +2327,18 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "このダッシュボードのLovelace UI設定が更新されました。更新して変更を確認しますか？"
+                    "message": "このダッシュボードのLovelace UI設定が更新されました。更新して変更を確認しますか？",
+                    "refresh": "更新"
                 },
                 "editor": {
                     "card": {
+                        "alarm-panel": {
+                            "available_states": "利用可能な状態",
+                            "description": "アラームパネルカードを使用すると、アラームコントロールパネルの統合を強制解除することができます。",
+                            "name": "アラームパネル"
+                        },
                         "button": {
+                            "description": "ボタン カードを使用すると、タスクを実行するためのボタンを追加できます。",
                             "name": "ボタン"
                         },
                         "calendar": {
@@ -1692,12 +2348,22 @@
                         "conditional": {
                             "card": "カード",
                             "change_type": "タイプの変更",
+                            "condition_explanation": "カードは、以下の条件がすべて満たされたときに表示されます。",
                             "conditions": "条件",
                             "current_state": "現在",
-                            "name": "条件付き"
+                            "description": "条件付きカードには、エンティティの状態に基づいて別のカードが表示されます。",
+                            "name": "条件付き",
+                            "state_equal": "状態は等しい",
+                            "state_not_equal": "状態が等しくない"
+                        },
+                        "config": {
+                            "optional": "オプション",
+                            "required": "必須"
                         },
                         "entities": {
+                            "description": "エンティティ カードは、最も一般的な種類のカードです。アイテムをリストにまとめます。",
                             "name": "エンティティ",
+                            "show_header_toggle": "ヘッダー切り替えを表示しますか？",
                             "toggle": "エンティテを切り替え"
                         },
                         "entity-filter": {
@@ -1709,21 +2375,51 @@
                             "name": "エンティティ"
                         },
                         "gauge": {
-                            "name": "ゲージ"
+                            "description": "ゲージカードは、センサーデータを視覚的に見ることができる基本カードです。",
+                            "name": "ゲージ",
+                            "severity": {
+                                "define": "重大度を定義しますか?",
+                                "green": "緑",
+                                "red": "赤",
+                                "yellow": "黄色"
+                            }
                         },
                         "generic": {
+                            "aspect_ratio": "アスペクト比",
                             "attribute": "属性",
+                            "camera_image": "カメラエンティティ",
+                            "camera_view": "カメラビュー",
                             "double_tap_action": "ダブルタップアクション",
+                            "entities": "エンティティ",
+                            "entity": "エンティティ",
+                            "hold_action": "ホールドアクション",
+                            "hours_to_show": "表示する時間",
+                            "icon": "アイコン",
+                            "icon_height": "アイコンの高さ",
+                            "image": "画像パス",
                             "manual": "マニュアル",
                             "manual_description": "カスタムカードを追加する必要があるか、手動でyamlを記述したいだけですか？",
+                            "maximum": "最大",
+                            "minimum": "最小",
+                            "name": "名前",
                             "no_theme": "テーマなし",
+                            "refresh_interval": "更新間隔",
                             "search": "検索",
                             "secondary_info_attribute": "セカンダリ情報属性",
+                            "show_icon": "アイコンを表示しますか？",
+                            "show_name": "名前を表示しますか？",
+                            "show_state": "状態を表示しますか?",
                             "state": "状態",
-                            "theme": "テーマ"
+                            "tap_action": "アクションをタップ",
+                            "theme": "テーマ",
+                            "title": "タイトル",
+                            "unit": "ユニット",
+                            "url": "Url"
                         },
                         "glance": {
-                            "description": "Glance カードは、複数のセンサーをコンパクトな概要でグループ化するのに便利です。"
+                            "columns": "カラム",
+                            "description": "Glance カードは、複数のセンサーをコンパクトな概要でグループ化するのに便利です。",
+                            "name": "一覧"
                         },
                         "history-graph": {
                             "description": "履歴グラフ カードを使用すると、一覧表示された各エンティティのグラフを表示できます。",
@@ -1746,11 +2442,16 @@
                             "name": "照明"
                         },
                         "map": {
+                            "dark_mode": "ダークモード？",
+                            "default_zoom": "デフォルトのズーム",
                             "description": "マップ上にエンティティを表示できるマップカード。",
+                            "geo_location_sources": "位置情報ソース",
                             "hours_to_show": "表示する時間",
-                            "name": "地図"
+                            "name": "地図",
+                            "source": "ソース："
                         },
                         "markdown": {
+                            "content": "コンテンツ",
                             "description": "マークダウン カードは、マークダウンのレンダリングに使用されます。",
                             "name": "マークダウン"
                         },
@@ -1759,23 +2460,29 @@
                             "name": "メディアコントロール"
                         },
                         "picture-elements": {
-                            "description": "ピクチャー・エレメント・カードは、最も汎用性の高いタイプのカードの1つです。カードは、アイコンやテキスト、さらにはサービスを配置することができます!座標に基づくイメージ上。"
+                            "description": "ピクチャー・エレメント・カードは、最も汎用性の高いタイプのカードの1つです。カードは、アイコンやテキスト、さらにはサービスを配置することができます!座標に基づくイメージ上。",
+                            "name": "ピクチャーエレメント"
                         },
                         "picture-entity": {
+                            "description": "ピクチャー エンティティ カードには、イメージの形式でエンティティが表示されます。URL からの画像の代わりに、カメラエンティティの画像を表示することもできます。",
                             "name": "画像エンティティ"
                         },
                         "picture-glance": {
-                            "description": "画像の一覧カードは、イメージと対応するエンティティの状態をアイコンで示します。右側のエンティティは切り替えアクションを許可し、他のエンティティは詳細ダイアログを表示します。"
+                            "description": "画像の一覧カードは、イメージと対応するエンティティの状態をアイコンで示します。右側のエンティティは切り替えアクションを許可し、他のエンティティは詳細ダイアログを表示します。",
+                            "name": "画像一覧"
                         },
                         "picture": {
                             "description": "ピクチャーカードを使用すると、インターフェイスのさまざまなパスへのナビゲーションに使用する画像を設定したり、サービスを呼び出したりできます。",
                             "name": "画像"
                         },
                         "plant-status": {
-                            "description": "植物ステータスカードは、そこにすべての素敵な植物学者のためのものです。"
+                            "description": "植物ステータスカードは、そこにすべての素敵な植物学者のためのものです。",
+                            "name": "プラントステータス"
                         },
                         "sensor": {
                             "description": "センサーカードは、時間の経過に伴う変化を視覚化するオプションのグラフを使用して、センサーの状態をすばやく提供します。",
+                            "graph_detail": "グラフの詳細",
+                            "graph_type": "グラフの種類",
                             "name": "センサー"
                         },
                         "shopping-list": {
@@ -1793,6 +2500,7 @@
                         },
                         "weather-forecast": {
                             "description": "天気予報カードは天気を表示します。表示するインターフェースに含めると非常に便利です。",
+                            "name": "天気予報",
                             "show_forecast": "予測を表示"
                         }
                     },
@@ -1801,21 +2509,34 @@
                         "no_description": "説明がありません。"
                     },
                     "edit_card": {
+                        "add": "カードを追加",
                         "confirm_cancel": "キャンセルしてもよいですか?",
                         "delete": "カードを削除",
                         "duplicate": "重複するカード",
+                        "edit": "編集",
+                        "header": "カード設定",
                         "move": "ビューに移動",
                         "options": "その他のオプション",
                         "pick_card": "どのカードを追加しますか？",
+                        "pick_card_view_title": "{name}ビューにどのカードを追加しますか？",
+                        "show_code_editor": "コードエディタを表示",
+                        "show_visual_editor": "ビジュアルエディターを表示",
+                        "toggle_editor": "エディターの切り替え",
                         "typed_header": "{type}カードの構成",
                         "unsaved_changes": "変更が保存されていません"
                     },
                     "edit_lovelace": {
                         "edit_title": "タイトルを編集",
                         "explanation": "このタイトルは、Lovelace UIのすべてのビューの上に表示されます。",
+                        "header": "Lovelace UIのタイトル",
                         "title": "タイトル"
                     },
                     "edit_view": {
+                        "add": "ビューの追加",
+                        "delete": "ビューの削除",
+                        "edit": "ビューの編集",
+                        "header": "構成を表示",
+                        "header_name": "{name}構成の表示",
                         "move_left": "ビューを左に移動",
                         "move_right": "ビューを右に移動",
                         "tab_badges": "バッジ",
@@ -1825,13 +2546,16 @@
                             "select_users": "ナビゲーションでこのビューを表示するユーザーを選択します。"
                         }
                     },
+                    "header": "UIを編集",
                     "menu": {
                         "open": "Lovelace メニューを開く",
                         "raw_editor": "詳細設定エディター"
                     },
                     "migrate": {
+                        "header": "設定に互換性がありません",
                         "migrate": "構成を移行する",
-                        "para_migrate": "Home Assistantは、「設定の移行」ボタンを押すことで、すべてのカードとビューにIDを自動的に追加できます。"
+                        "para_migrate": "Home Assistantは、「設定の移行」ボタンを押すことで、すべてのカードとビューにIDを自動的に追加できます。",
+                        "para_no_id": "この要素には ID がありません。'ui-lovelace.yaml' のこの要素に ID を追加してください。"
                     },
                     "move_card": {
                         "header": "カードを移動するビューを選択してください"
@@ -1846,12 +2570,21 @@
                         "error_remove": "構成を削除できません： {error}",
                         "error_save_yaml": "YAMLを保存できません: {error}",
                         "header": "設定を編集",
-                        "resources_moved": "リソースはLovelace構成に追加されなくなりましたが、Lovelace構成パネルで追加できます。"
+                        "resources_moved": "リソースはLovelace構成に追加されなくなりましたが、Lovelace構成パネルで追加できます。",
+                        "save": "保存",
+                        "saved": "保存しました",
+                        "unsaved_changes": "保存されていない変更"
                     },
                     "save_config": {
+                        "cancel": "気にしないで",
                         "close": "閉じる",
                         "empty_config": "新しいダッシュボードから開始する",
+                        "header": "Lovelace UIを制御する",
                         "para": "このダッシュボードは現在、Home Assistantによって管理されています。新しいエンティティまたはLovelace UIコンポーネントが利用可能になると、自動的に更新されます。制御すると、このダッシュボードは自動的に更新されなくなります。いつでも構成で新しいダッシュボードを作成して、変更することができます。",
+                        "para_sure": "ユーザー インターフェイスを制御しますか?",
+                        "save": "制御する",
+                        "yaml_config": "ここで開始するには、このダッシュボードの現在の構成です。",
+                        "yaml_control": "YAML モードで制御するには、このダッシュボードの構成で指定した名前、またはデフォルトの 'ui-lovelace.yaml' を使用して YAML ファイルを作成します。",
                         "yaml_mode": "このダッシュボードで YAML モードを使用している場合は、UI から Lovelace 設定を変更することはできません。UI からこのダッシュボードを管理する場合は、'configuration.yaml' の Lovelace 設定から 'mode: yaml' を削除します。"
                     },
                     "select_view": {
@@ -1860,10 +2593,13 @@
                     },
                     "suggest_card": {
                         "add": "Lovelace UIに追加",
-                        "create_own": "別のカードを選択する"
+                        "create_own": "別のカードを選択する",
+                        "header": "私たちはあなたのために提案を作成しました"
                     },
                     "view": {
                         "panel_mode": {
+                            "description": "これにより、最初のカードが全幅でレンダリングされます。このビューの他のカードはレンダリングされません。",
+                            "title": "パネルモード？",
                             "warning_multiple_cards": "このビューには複数のカードが含まれていますが、パネルビューでは 1 枚のカードしか表示できません。"
                         }
                     }
@@ -1872,10 +2608,13 @@
                     "close": "閉じる",
                     "configure_ui": "ダッシュボードを編集",
                     "exit_edit_mode": "UI 編集モードを終了",
+                    "help": "ヘルプ",
+                    "refresh": "更新",
                     "reload_resources": "リソースの再読込"
                 },
                 "reload_lovelace": "Lovelace の再読込",
                 "reload_resources": {
+                    "refresh_body": "再読み込みを完了するには、ページを更新する必要があります。",
                     "refresh_header": "更新しますか？"
                 },
                 "unused_entities": {
@@ -1886,15 +2625,19 @@
                     "last_changed": "最終変更",
                     "no_data": "未使用のエンティティが見つかりません",
                     "search": "エンティティを検索",
+                    "select_to_add": "カードに追加するエンティティを選択し、[カードの追加] ボタンをクリックします。",
                     "title": "未使用のエンティティ"
                 },
                 "views": {
                     "confirm_delete": "ビューを削除しますか？",
+                    "confirm_delete_existing_cards": "このビューを削除すると、カードも削除されます",
                     "confirm_delete_existing_cards_text": "'' {name} ''ビューを削除してもよろしいですか？ビューには、削除される{number}枚のカードが含まれています。この操作は元に戻せません。",
                     "confirm_delete_text": "'' {name} ''ビューを削除してもよろしいですか？"
                 },
                 "warning": {
                     "attribute_not_found": "属性{attribute}は次の場所では使用できません： {entity}",
+                    "entity_non_numeric": "エンティティが数値ではありません： {entity}",
+                    "entity_not_found": "エンティティが使用できません： {entity}",
                     "entity_unavailable": "{entity}は現在利用できません",
                     "starting": "ホームアシスタントが起動していますが、まだすべてが利用可能なわけではありません"
                 }
@@ -1907,6 +2650,7 @@
             },
             "page-authorize": {
                 "abort_intro": "ログインが中止されました",
+                "authorizing_client": "{clientId} Home Assistantインスタンスへのアクセスを許可しようとしています。",
                 "form": {
                     "error": "エラー： {error}",
                     "next": "次",
@@ -1929,7 +2673,8 @@
                                 "mfa": {
                                     "data": {
                                         "code": "多要素認証コード"
-                                    }
+                                    },
+                                    "description": "デバイスで** {mfa_module_name} **を開き、2段階認証コードを表示して、本人確認を行います。"
                                 }
                             }
                         },
@@ -1951,13 +2696,15 @@
                                 "mfa": {
                                     "data": {
                                         "code": "多要素認証コード"
-                                    }
+                                    },
+                                    "description": "デバイスで** {mfa_module_name} **を開き、2段階認証コードを表示して、本人確認を行います。"
                                 }
                             }
                         },
                         "legacy_api_password": {
                             "abort": {
-                                "login_expired": "セッションがタイムアウトしました、再度ログインしてください。"
+                                "login_expired": "セッションがタイムアウトしました、再度ログインしてください。",
+                                "no_api_password_set": "API パスワードが設定されていません。"
                             },
                             "error": {
                                 "invalid_auth": "無効な API パスワード",
@@ -1973,19 +2720,22 @@
                                 "mfa": {
                                     "data": {
                                         "code": "多要素認証コード"
-                                    }
+                                    },
+                                    "description": "デバイスで** {mfa_module_name} **を開き、2段階認証コードを表示して、本人確認を行います。"
                                 }
                             }
                         },
                         "trusted_networks": {
                             "abort": {
-                                "not_allowed": "お使いのコンピューターは許可されていません。"
+                                "not_allowed": "お使いのコンピューターは許可されていません。",
+                                "not_whitelisted": "コンピュータがホワイトリストに登録されていません。"
                             },
                             "step": {
                                 "init": {
                                     "data": {
                                         "user": "ユーザー"
-                                    }
+                                    },
+                                    "description": "ログインするユーザーを選択してください："
                                 }
                             }
                         }
@@ -1994,25 +2744,84 @@
                     "unknown_error": "エラーが発生しました",
                     "working": "お待ちください"
                 },
-                "initializing": "初期化中"
+                "initializing": "初期化中",
+                "logging_in_with": "** {authProviderName} **でログインしています。",
+                "pick_auth_provider": "またはログイン"
             },
             "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "{name}",
+                        "introduction": "おかえりなさい！ホームアシスタントのデモに到達しました。デモでは、コミュニティによって作成された最高のUIを紹介します。",
+                        "learn_more": "Home Assistantの詳細",
+                        "next_demo": "次のデモ"
+                    }
+                },
                 "config": {
                     "arsaboo": {
                         "labels": {
-                            "hdmi_switcher": "HDMIスイッチ"
+                            "activity": "アクティビティ",
+                            "air": "空気",
+                            "commute_home": "自宅までの通勤",
+                            "entertainment": "エンターテイメント",
+                            "hdmi_input": "HDMI入力",
+                            "hdmi_switcher": "HDMIスイッチ",
+                            "information": "情報",
+                            "lights": "ライト",
+                            "morning_commute": "朝の通勤",
+                            "total_tv_time": "総テレビ時間",
+                            "turn_tv_off": "テレビをオフにする",
+                            "volume": "ボリューム"
+                        },
+                        "names": {
+                            "family_room": "ファミリールーム",
+                            "hallway": "廊下",
+                            "kitchen": "キッチン",
+                            "left": "左",
+                            "master_bedroom": "マスターベッドルーム",
+                            "mirror": "ミラー",
+                            "patio": "パティオ",
+                            "right": "右",
+                            "temperature_study": "温度調査",
+                            "upstairs": "2階"
+                        },
+                        "unit": {
+                            "minutes_abbr": "分",
+                            "watching": "見て"
                         }
                     }
                 }
             },
             "page-onboarding": {
                 "core-config": {
+                    "button_detect": "検出",
+                    "finish": "次",
+                    "intro": "こんにちは {名前}, ホーム アシスタントへようこそ.あなたの家に名前を付けますか?",
                     "intro_location": "どこに住んでいるか知りたいです。 この情報は、他の情報の表示および太陽の位置に関する自動化の設定に役立ちます。 これらの情報がインターネットで外部と共有されることがありません。",
+                    "intro_location_detect": "外部サービスに対してワンタイムリクエストを行うことで、この情報を入力することができます。",
                     "location_name": "ホーム アシスタントの名前",
                     "location_name_default": "自宅"
                 },
                 "integration": {
-                    "finish": "完了"
+                    "finish": "完了",
+                    "intro": "デバイスとサービスは、統合としてHome Assistantに表示されます。今すぐ設定することも、後で設定画面から設定することもできます。",
+                    "more_integrations": "もっと見る"
+                },
+                "intro": "あなたはあなたの家を目覚めさせ、あなたのプライバシーを取り戻し、ティンカーの世界的なコミュニティに参加する準備ができていますか?",
+                "user": {
+                    "create_account": "アカウントの作成",
+                    "data": {
+                        "name": "名前",
+                        "password": "パスワード",
+                        "password_confirm": "パスワードの確認",
+                        "username": "ユーザー名"
+                    },
+                    "error": {
+                        "password_not_match": "パスワードが一致しません",
+                        "required_fields": "すべての必須フィールドに入力してください"
+                    },
+                    "intro": "ユーザー アカウントを作成します。",
+                    "required_field": "必須"
                 }
             },
             "profile": {
@@ -2022,37 +2831,78 @@
                     "title": "高度モード"
                 },
                 "change_password": {
+                    "confirm_new_password": "新しいパスワードの確認",
                     "current_password": "現在のパスワード",
-                    "header": "パスワードの変更"
+                    "error_required": "必須",
+                    "header": "パスワードの変更",
+                    "new_password": "新しいパスワード",
+                    "submit": "送信"
                 },
+                "current_user": "現在、 {fullName}としてログインしています。",
                 "dashboard": {
                     "description": "このデバイスのデフォルトのダッシュボードを選択してください。",
                     "dropdown_label": "ダッシュボード",
                     "header": "ダッシュボード"
                 },
                 "force_narrow": {
+                    "description": "これにより、モバイルエクスペリエンスと同様に、サイドバーがデフォルトで非表示になります。",
                     "header": "サイドバーを常に非表示にする"
                 },
+                "is_owner": "あなたは所有者です。",
                 "language": {
                     "dropdown_label": "言語",
                     "header": "言語",
                     "link_promo": "翻訳を助ける"
                 },
+                "logout": "ログアウト",
+                "logout_text": "ログアウトしてもよろしいですか？",
+                "logout_title": "ログアウトしますか?",
+                "long_lived_access_tokens": {
+                    "confirm_delete": "{name} のアクセス トークンを削除しますか?",
+                    "create": "トークンの作成",
+                    "create_failed": "アクセス トークンを作成できませんでした。",
+                    "created_at": "{日付} に作成されました",
+                    "delete_failed": "アクセス トークンを削除できませんでした。",
+                    "description": "スクリプトがホーム アシスタント インスタンスと対話できるように、長期間使用できるアクセス トークンを作成します。各トークンは作成から10年間有効です。次の長期アクセス トークンは現在アクティブです。",
+                    "empty_state": "長期間使用されるアクセス トークンはまだありません。",
+                    "header": "長期間有効なアクセストークン",
+                    "last_used": "{location} から {date} で最後に使用されました",
+                    "learn_auth_requests": "認証された要求を作成する方法について説明します。",
+                    "not_used": "一度も使用されていない",
+                    "prompt_copy_token": "アクセス トークンをコピーします。再び表示されません。",
+                    "prompt_name": "名前？"
+                },
                 "mfa_setup": {
-                    "close": "閉じる"
+                    "close": "閉じる",
+                    "step_done": "{step}セットアップが完了しました",
+                    "submit": "送信",
+                    "title_aborted": "中止されました",
+                    "title_success": "成功！"
                 },
                 "mfa": {
+                    "confirm_disable": "{name}を無効にしてもよろしいですか？",
+                    "disable": "無効",
+                    "enable": "有効",
                     "header": "多要素認証モジュール"
                 },
                 "push_notifications": {
                     "description": "このデバイスに通知を送信します。",
+                    "error_load_platform": "notify.html5を設定",
                     "error_use_https": "Frontend で SSL を有効になっている必要があります。",
                     "header": "プッシュ通知",
                     "link_promo": "もっと見る",
                     "push_notifications": "プッシュ通知"
                 },
                 "refresh_tokens": {
-                    "description": "各更新トークンはログインセッションを表します。ログアウトをクリックすると、更新トークンが自動的に削除されます。現在、次の更新トークンがアカウントでアクティブになっています。"
+                    "confirm_delete": "{name} の更新トークンを削除しますか?",
+                    "created_at": "{日付} に作成されました",
+                    "current_token_tooltip": "現在の更新トークンを削除できません",
+                    "delete_failed": "更新トークンを削除できませんでした。",
+                    "description": "各更新トークンはログインセッションを表します。ログアウトをクリックすると、更新トークンが自動的に削除されます。現在、次の更新トークンがアカウントでアクティブになっています。",
+                    "header": "トークンを更新",
+                    "last_used": "最後に{location}から{date}使用",
+                    "not_used": "一度も使用されていない",
+                    "token_title": "{clientId}トークンを更新"
                 },
                 "suspend": {
                     "description": "5分間非表示にした後、サーバーへの接続を閉じる必要がありますか？",
@@ -2073,6 +2923,7 @@
                     "reset": "リセット"
                 },
                 "vibrate": {
+                    "description": "デバイスを制御するときに、このデバイスのバイブレーションを有効または無効にします。",
                     "header": "バイブレーション機能"
                 }
             },

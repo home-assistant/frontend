@@ -1419,7 +1419,7 @@
                         "filter": {
                             "filter": "Filtre",
                             "show_disabled": "Afficher les entités désactivées",
-                            "show_readonly": "Afficher les entités désactivées",
+                            "show_readonly": "Afficher les entités en lecture seule",
                             "show_unavailable": "Afficher les entités non disponibles"
                         },
                         "header": "Entités",
@@ -1525,6 +1525,9 @@
                         "no_device": "Entités sans appareils",
                         "no_devices": "Cette intégration n'a pas d'appareils.",
                         "options": "Options",
+                        "reload": "Recharger",
+                        "reload_confirm": "L'intégration a été rechargée",
+                        "reload_restart_confirm": "Redémarrer Home Assistant pour finaliser le rechargement de cette intégration",
                         "rename": "Renommer",
                         "restart_confirm": "Redémarrer Home Assistant pour terminer la suppression de cette intégration",
                         "settings_button": "Modifier les paramètres pour {integration}",
@@ -1890,7 +1893,9 @@
                     "section": {
                         "reloading": {
                             "automation": "Recharger les automatisations",
+                            "command_line": "Recharger les entités de ligne de commande",
                             "core": "Recharger les emplacements et personnalisations",
+                            "filter": "Recharger les entités de filtre",
                             "group": "Recharger les groupes",
                             "heading": "Rechargement de la configuration",
                             "input_boolean": "Recharger les booléens d'entrée",
@@ -1900,8 +1905,10 @@
                             "input_text": "Recharger les textes d'entrée",
                             "introduction": "Certaines parties de Home Assistant peuvent être rechargées sans nécessiter de redémarrage. Le fait de cliquer sur recharger déchargera leur configuration actuelle et chargera la nouvelle.",
                             "person": "Recharger les personnes",
+                            "rest": "Recharger les entités REST",
                             "scene": "Recharger les scènes",
                             "script": "Recharger les scripts",
+                            "statistics": "Recharger les entités de statistiques",
                             "template": "Recharger les entités modèles",
                             "zone": "Recharger les zones"
                         },
