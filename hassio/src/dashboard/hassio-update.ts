@@ -10,7 +10,7 @@ import {
   internalProperty,
   TemplateResult,
 } from "lit-element";
-import "../../../src/components/buttons/ha-call-api-button";
+import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-svg-icon";
 import { HassioHassOSInfo } from "../../../src/data/hassio/host";
@@ -131,13 +131,14 @@ export class HassioUpdate extends LitElement {
           <a href="${releaseNotesUrl}" target="_blank" rel="noreferrer">
             <mwc-button>Release notes</mwc-button>
           </a>
-          <mwc-button
-            label="Update"
+          <ha-progress-button
             .apiPath=${apiPath}
             .name=${name}
             .version=${lastVersion}
             @click=${this._confirmUpdate}
-          ></mwc-button>
+          >
+            Update
+          </ha-progress-button>
         </div>
       </ha-card>
     `;
@@ -145,6 +146,7 @@ export class HassioUpdate extends LitElement {
 
   private async _confirmUpdate(ev): Promise<void> {
     const item = ev.target;
+    item.progress = true;
     const confirmed = await showConfirmationDialog(this, {
       title: `Update ${item.name}`,
       text: `Are you sure you want to upgrade ${item.name} to version ${item.version}?`,
@@ -153,6 +155,7 @@ export class HassioUpdate extends LitElement {
     });
 
     if (!confirmed) {
+      item.progress = false;
       return;
     }
     try {
@@ -164,6 +167,7 @@ export class HassioUpdate extends LitElement {
           typeof err === "object" ? err.body?.message || "Unkown error" : err,
       });
     }
+    item.progress = false;
   }
 
   static get styles(): CSSResult[] {
