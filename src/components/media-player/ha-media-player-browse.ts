@@ -59,6 +59,8 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   @property({ type: Boolean }) public hideBack = false;
 
+  @property({ type: Boolean }) public hideTitle = false;
+
   @property({ type: Boolean, attribute: "narrow", reflect: true })
   private _narrow = false;
 
@@ -146,8 +148,9 @@ export class HaMediaPlayerBrowse extends LitElement {
               `
             : html``}
           <div class="header-info">
-            ${!this.hideBack || mostRecentItem.thumbnail
-              ? html`<div class="breadcrumb-overflow">
+            ${this.hideTitle && (this._narrow || !mostRecentItem.thumbnail)
+              ? ""
+              : html`<div class="breadcrumb-overflow">
                   <div class="breadcrumb">
                     ${!this.hideBack && previousItem
                       ? html`
@@ -167,10 +170,9 @@ export class HaMediaPlayerBrowse extends LitElement {
                       )}
                     </h2>
                   </div>
-                </div>`
-              : ""}
+                </div>`}
             ${mostRecentItem?.can_play &&
-            (!this._narrow || (this._narrow && !mostRecentItem.thumbnail))
+            (!mostRecentItem.thumbnail || !this._narrow)
               ? html`
                   <div>
                     <mwc-button
@@ -195,9 +197,10 @@ export class HaMediaPlayerBrowse extends LitElement {
           </div>
         </div>
       </div>
-      ${!this.hideBack || mostRecentItem.thumbnail || mostRecentItem.can_play
-        ? html`<div class="divider"></div>`
-        : ""}
+      ${this.hideTitle &&
+      (this._narrow || (!mostRecentItem.thumbnail && !mostRecentItem.can_play))
+        ? ""
+        : html`<div class="divider"></div>`}
       ${mostRecentItem.children?.length
         ? hasExpandableChildren
           ? html`
@@ -434,6 +437,11 @@ export class HaMediaPlayerBrowse extends LitElement {
           align-self: stretch;
           min-width: 0;
           flex: 1;
+        }
+
+        :host([narrow]) .header-info mwc-button {
+          margin-top: 16px;
+          margin-bottom: 8px;
         }
 
         .breadcrumb {
