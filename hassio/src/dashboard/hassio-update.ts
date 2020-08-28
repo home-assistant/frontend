@@ -166,8 +166,8 @@ export class HassioUpdate extends LitElement {
         text:
           typeof err === "object" ? err.body?.message || "Unkown error" : err,
       });
-      item.progress = false;
     }
+    item.progress = false;
   }
 
   static get styles(): CSSResult[] {
