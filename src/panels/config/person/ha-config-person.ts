@@ -11,6 +11,7 @@ import {
 } from "lit-element";
 import { compare } from "../../../common/string/compare";
 import "../../../components/ha-card";
+import "../../../components/ha-user-badge";
 import "@material/mwc-fab";
 import {
   createPerson,
@@ -32,7 +33,6 @@ import {
 } from "./show-dialog-person-detail";
 import "../../../components/ha-svg-icon";
 import { mdiPlus } from "@mdi/js";
-import { styleMap } from "lit-html/directives/style-map";
 
 class HaConfigPerson extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
