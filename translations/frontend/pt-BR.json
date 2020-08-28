@@ -419,6 +419,10 @@
                 "unlock": "Destrancar"
             },
             "media_player": {
+                "media_next_track": "Próximo",
+                "media_play": "Tocar",
+                "media_play_pause": "Tocar/pausar",
+                "media_previous_track": "Anterior",
                 "sound_mode": "Modo de som",
                 "source": "Fonte",
                 "text_to_speak": "Texto para falar"
@@ -553,6 +557,19 @@
             "history_charts": {
                 "loading_history": "Carregando histórico do estado ...",
                 "no_history_found": "Histórico de estado não encontrado."
+            },
+            "media-browser": {
+                "content-type": {
+                    "album": "Álbum",
+                    "artist": "Artista",
+                    "library": "Biblioteca",
+                    "playlist": "Lista de reprodução",
+                    "server": "Servidor"
+                },
+                "play": "Tocar"
+            },
+            "picture-upload": {
+                "label": "Imagem"
             },
             "related-items": {
                 "area": "Área",
@@ -1049,6 +1066,9 @@
                                     "sunrise": "Nascer do sol",
                                     "sunset": "Pôr do Sol"
                                 },
+                                "tag": {
+                                    "label": "Etiqueta"
+                                },
                                 "template": {
                                     "label": "Modelo",
                                     "value_template": "Valor modelo"
@@ -1488,6 +1508,8 @@
                         "no_device": "Entidades sem dispositivos",
                         "no_devices": "Esta integração não possui dispositivos.",
                         "options": "Opções",
+                        "reload": "Recarregar",
+                        "reload_confirm": "A integração foi recarregada",
                         "rename": "Renomear",
                         "restart_confirm": "Reinicie o Home Assistant para concluir a remoção dessa integração",
                         "settings_button": "Editar configurações para {integration}",
@@ -1646,6 +1668,8 @@
                 },
                 "ozw": {
                     "common": {
+                        "instance": "Instância",
+                        "network": "Rede",
                         "node_id": "ID do Nó",
                         "ozw_instance": "Instância OpenZWave",
                         "zwave": "Z-Wave"
@@ -1654,6 +1678,25 @@
                         "node_failed": "Falha no nó",
                         "stage": "Estágio",
                         "zwave_info": "Informações de Z-Wave"
+                    },
+                    "navigation": {
+                        "network": "Rede",
+                        "nodes": "Nós",
+                        "select_instance": "Selecione a instância"
+                    },
+                    "network_status": {
+                        "details": {
+                            "driverreset": "O driver foi reiniciado",
+                            "ready": "Pronto para conectar",
+                            "started": "Conectado ao MQTT",
+                            "starting": "Conectando-se ao MQTT",
+                            "stopped": "OpenZWave parado"
+                        },
+                        "starting": "Iniciando",
+                        "unknown": "Desconhecido"
+                    },
+                    "network": {
+                        "header": "Gerenciamento de Rede"
                     }
                 },
                 "person": {
@@ -1780,6 +1823,7 @@
                         "reloading": {
                             "automation": "Recarregar as automações",
                             "core": "Recarregar localização & customizações",
+                            "filter": "Recarregar entidades de filtro",
                             "group": "Recarregar os grupos",
                             "heading": "Recarregando a configuração YAML",
                             "input_boolean": "Recarregar entradas de booleano",
@@ -1791,6 +1835,7 @@
                             "person": "Recarregar pessoas",
                             "scene": "Recarregar cenas",
                             "script": "Recarregar os scripts",
+                            "template": "Recarregar entidades de modelo",
                             "zone": "Recarregar zonas"
                         },
                         "server_management": {
@@ -1808,6 +1853,17 @@
                             "invalid": "Configuração inválida",
                             "valid": "Configuração válida!"
                         }
+                    }
+                },
+                "tags": {
+                    "caption": "Etiquetas",
+                    "detail": {
+                        "create": "Criar",
+                        "name": "Nome"
+                    },
+                    "edit": "Editar",
+                    "headers": {
+                        "name": "Nome"
                     }
                 },
                 "users": {
@@ -2210,6 +2266,9 @@
                         "button": {
                             "description": "O cartão Botão permite adicionar botões para executar tarefas.",
                             "name": "Botão"
+                        },
+                        "calendar": {
+                            "name": "Calendário"
                         },
                         "conditional": {
                             "card": "Cartão",
@@ -2665,6 +2724,7 @@
                     "intro": "Olá {name}, seja bem-vindo ao Home Assistant. Como você gostaria de nomear sua casa?",
                     "intro_location": "Nós gostaríamos de saber onde você mora. Essa informação ajudará na exibição de informações e na configuração de automações baseadas no sol. Esses dados nunca são compartilhados fora da sua rede.",
                     "intro_location_detect": "Podemos ajudá-lo a preencher essas informações fazendo uma solicitação única para um serviço externo.",
+                    "location_name": "Nome da instalação do Home Assistant",
                     "location_name_default": "Casa"
                 },
                 "integration": {

@@ -419,9 +419,16 @@
                 "unlock": "잠금 해제"
             },
             "media_player": {
+                "browse_media": "미디어 찾아보기",
+                "media_next_track": "다음",
+                "media_play": "재생",
+                "media_play_pause": "재생 / 일시정지",
+                "media_previous_track": "이전",
                 "sound_mode": "사운드 모드",
                 "source": "입력 소스",
-                "text_to_speak": "음성합성 내용 입력 (TTS)"
+                "text_to_speak": "음성합성 내용 입력 (TTS)",
+                "turn_off": "끄기",
+                "turn_on": "켜기"
             },
             "persistent_notification": {
                 "dismiss": "해제"
@@ -554,6 +561,22 @@
                 "loading_history": "상태 기록 내용 읽는 중...",
                 "no_history_found": "상태 기록 내용이 없습니다."
             },
+            "media-browser": {
+                "choose-source": "소스 선택",
+                "content-type": {
+                    "album": "앨범",
+                    "artist": "아티스트",
+                    "library": "라이브러리",
+                    "playlist": "재생 목록",
+                    "server": "서버"
+                },
+                "media-player-browser": "미디어 플레이어 브라우저",
+                "no_items": "항목 없음",
+                "pick": "선택",
+                "pick-media": "미디어 선택",
+                "play": "재생",
+                "play-media": "미디어 재생"
+            },
             "picture-upload": {
                 "label": "그림",
                 "unsupported_format": "지원되지 않는 형식입니다. JPEG, PNG 또는 GIF 이미지를 선택해주세요."
@@ -578,6 +601,7 @@
                     "week": "{count} {count, plural,\none {주}\nother {주}\n}"
                 },
                 "future": "{time} 후",
+                "just_now": "방금",
                 "never": "해당없음",
                 "past": "{time} 전"
             },
@@ -899,7 +923,7 @@
                                     "wait_template": "대기 템플릿"
                                 }
                             },
-                            "unsupported_action": "미지원 동작: {action}"
+                            "unsupported_action": "UI 미지원 동작: {action}"
                         },
                         "alias": "이름",
                         "conditions": {
@@ -965,7 +989,7 @@
                                     "zone": "지역"
                                 }
                             },
-                            "unsupported_condition": "미지원 조건: {condition}"
+                            "unsupported_condition": "UI 미지원 조건: {condition}"
                         },
                         "default_name": "새로운 자동화",
                         "description": {
@@ -1057,6 +1081,9 @@
                                     "sunrise": "해돋이",
                                     "sunset": "해넘이"
                                 },
+                                "tag": {
+                                    "label": "태그"
+                                },
                                 "template": {
                                     "label": "템플릿",
                                     "value_template": "값 템플릿"
@@ -1084,7 +1111,7 @@
                                     "zone": "지역"
                                 }
                             },
-                            "unsupported_platform": "미지원 플랫폼: {platform}"
+                            "unsupported_platform": "UI 미지원 플랫폼: {platform}"
                         },
                         "unsaved_confirm": "변경된 내용을 저장하지 않았습니다. 정말 이 페이지를 떠나시겠습니까?"
                     },
@@ -1279,7 +1306,7 @@
                                 "imperial_example": "화씨, 파운드",
                                 "internal_url": "내부 URL",
                                 "latitude": "위도",
-                                "location_name": "Home Assistant 이름",
+                                "location_name": "설치된 Home Assistant 이름",
                                 "longitude": "경도",
                                 "metric_example": "섭씨, 킬로그램",
                                 "save_button": "저장",
@@ -1315,6 +1342,7 @@
                     }
                 },
                 "devices": {
+                    "add_prompt": "아직 이 기기로 추가 된 {name} 이(가) 없습니다. 위의 + 단추를 클릭하여 추가할 수 있습니다.",
                     "automation": {
                         "actions": {
                             "caption": "뭔가 트리거 되었을 때...."
@@ -1334,6 +1362,7 @@
                     "caption": "기기",
                     "confirm_delete": "이 기기를 삭제하시겠습니까?",
                     "confirm_rename_entity_ids": "구성요소의 ID 이름 또한 바꾸시겠습니까?",
+                    "confirm_rename_entity_ids_warning": "현재 이러한 구성요소를 사용하고 있는 구성 (자동화, 스크립트, 씬, Lovelace 등)은 변경되지 않으므로 직접 업데이트해야 합니다.",
                     "data_table": {
                         "area": "영역",
                         "battery": "배터리",
@@ -1496,6 +1525,9 @@
                         "no_device": "기기가 없는 구성요소",
                         "no_devices": "이 통합 구성요소는 설정해야 할 기기가 없습니다.",
                         "options": "옵션",
+                        "reload": "새로고침",
+                        "reload_confirm": "통합 구성요소를 다시 읽어 들였습니다",
+                        "reload_restart_confirm": "이 통합 구성요소를 다시 읽어 들일려면 Home Assistant 를 다시 시작해주세요",
                         "rename": "이름 변경",
                         "restart_confirm": "통합 구성요소 제거 완료를 위해 Home Assistant 웹 페이지를 다시 불러옵니다",
                         "settings_button": "{integration} 설정 편집",
@@ -1654,7 +1686,11 @@
                     "topic": "토픽"
                 },
                 "ozw": {
+                    "button": "설정",
                     "common": {
+                        "controller": "컨트롤러",
+                        "instance": "인스턴스",
+                        "network": "네트워크",
                         "node_id": "노드 ID",
                         "ozw_instance": "OpenZWave 인스턴스",
                         "zwave": "Z-Wave"
@@ -1663,6 +1699,36 @@
                         "node_failed": "노드 실패",
                         "stage": "단계",
                         "zwave_info": "Z-Wave 정보"
+                    },
+                    "navigation": {
+                        "network": "네트워크",
+                        "nodes": "노드",
+                        "select_instance": "인스턴스 선택"
+                    },
+                    "network_status": {
+                        "details": {
+                            "driverallnodesqueried": "모든 노드가 쿼리되었습니다",
+                            "driverallnodesqueriedsomedead": "모든 노드가 쿼리되었습니다. 일부 노드는 죽은 것으로 발견되었습니다.",
+                            "driverawakenodesqueries": "모든 절전모드 해제 노드가 쿼리되었습니다.",
+                            "driverfailed": "Z-Wave 컨트롤러에 연결하지 못했습니다",
+                            "driverready": "Z-Wave 컨트롤러 초기화 중",
+                            "driverremoved": "드라이버가 제거되었습니다",
+                            "driverreset": "드라이버가 재설정되었습니다",
+                            "offline": "OZWDaemon 오프라인",
+                            "ready": "연결할 준비가 되었습니다",
+                            "started": "MQTT 에 연결됨",
+                            "starting": "MQTT 에 연결 중",
+                            "stopped": "OpenZWave 가 중지되었습니다"
+                        },
+                        "offline": "오프라인",
+                        "online": "온라인",
+                        "starting": "시작 중",
+                        "unknown": "알 수 없음"
+                    },
+                    "network": {
+                        "header": "네트워크 관리",
+                        "introduction": "네트워크 전체 기능을 관리합니다.",
+                        "node_count": "{count} 개 노드"
                     },
                     "node_query_stages": {
                         "associations": "연결 그룹 및 구성원 자격 새로고침",
@@ -1694,6 +1760,14 @@
                         "title": "노드 정보 새로고침",
                         "wakeup_header": "절전 해제 지침",
                         "wakeup_instructions_source": "절전 해제 지침은 OpenZWave 커뮤니티 기기 데이터베이스에서 제공됩니다."
+                    },
+                    "select_instance": {
+                        "header": "OpenZWave 인스턴스 선택",
+                        "introduction": "둘 이상의 OpenZWave 인스턴스가 실행 중입니다. 어떤 인스턴스를 관리하시겠습니까?"
+                    },
+                    "services": {
+                        "add_node": "노드 추가",
+                        "remove_node": "노드 제거"
                     }
                 },
                 "person": {
@@ -1819,7 +1893,9 @@
                     "section": {
                         "reloading": {
                             "automation": "자동화 다시 읽어오기",
+                            "command_line": "명령줄 구성요소 다시 읽어오기",
                             "core": "위치 및 사용자화 다시 읽어오기",
+                            "filter": "필터 구성요소 다시로드",
                             "group": "그룹 다시 읽어오기",
                             "heading": "YAML 구성 다시 읽어오기",
                             "input_boolean": "논리입력 다시 읽어오기",
@@ -1829,8 +1905,12 @@
                             "input_text": "문자입력 다시 읽어오기",
                             "introduction": "Home Assistant 의 일부 구성 내용은 재시작 없이 다시 읽어 들일 수 있습니다. 다시 읽어오기를 누르면 현재 사용 중인 YAML 구성 내용을 내리고 새로운 구성 내용을 읽어 들입니다.",
                             "person": "구성원 다시 읽어오기",
+                            "rest": "REST 구성요소 다시 읽어오기",
                             "scene": "씬 다시 읽어오기",
                             "script": "스크립트 다시 읽어오기",
+                            "statistics": "통계 구성요소 다시 읽어오기",
+                            "template": "템플릿 구성요소 다시 읽어오기",
+                            "universal": "범용 미디어 플레이어 구성요소 다시 읽어오기",
                             "zone": "지역 다시 읽어오기"
                         },
                         "server_management": {
@@ -1849,6 +1929,32 @@
                             "valid": "구성 내용이 모두 올바릅니다!"
                         }
                     }
+                },
+                "tags": {
+                    "add_tag": "태그 추가",
+                    "automation_title": "{name} 태그가 검색되었습니다",
+                    "caption": "태그",
+                    "create_automation": "태그로 자동화 구성하기",
+                    "description": "태그 관리",
+                    "detail": {
+                        "create": "만들기",
+                        "create_and_write": "만들고 쓰기",
+                        "delete": "삭제",
+                        "description": "상세정보",
+                        "name": "이름",
+                        "new_tag": "새로운 태그",
+                        "tag_id": "태그 ID",
+                        "tag_id_placeholder": "비워두면 자동으로 생성됩니다",
+                        "update": "업데이트"
+                    },
+                    "edit": "편집",
+                    "headers": {
+                        "last_scanned": "최근 검색 됨",
+                        "name": "이름"
+                    },
+                    "never_scanned": "검색 된 적 없음",
+                    "no_tags": "태그 없음",
+                    "write": "쓰기"
                 },
                 "users": {
                     "add_user": {
@@ -2171,6 +2277,7 @@
                         "description": "템플릿은 Home Assistant 의 특정 확장기능의 일부로써, Jinja2 템플릿 엔진을 사용하여 구성됩니다.",
                         "editor": "템플릿 편집기",
                         "jinja_documentation": "Jinja2 템플릿 문서 보기",
+                        "reset": "데모 템플릿으로 재설정",
                         "template_extensions": "Home Assistant 템플릿 확장기능 문서 보기",
                         "title": "템플릿",
                         "unknown_error_template": "템플릿 구성 중 알 수 없는 오류가 발생했습니다"
@@ -2251,6 +2358,10 @@
                         "button": {
                             "description": "버튼 카드를 사용하면 작업을 수행할 수 있는 버튼을 추가할 수 있습니다.",
                             "name": "버튼"
+                        },
+                        "calendar": {
+                            "description": "캘린더 카드는 일, 주 및 목록 보기를 포함한 캘린더가 표시됩니다",
+                            "name": "캘린더"
                         },
                         "conditional": {
                             "card": "카드",
@@ -2706,6 +2817,7 @@
                     "intro": "{name} 님, 안녕하세요! Home Assistant 에 오신 것을 환영합니다. 집에 어떤 이름을 지어주시겠어요?",
                     "intro_location": "현재 살고 계시는 위치를 알려주세요. 이는 태양 위치를 기반으로 하는 자동화를 설정하는데 도움이 됩니다. 위치 정보는 외부 네트워크와 절대 공유되지 않습니다.",
                     "intro_location_detect": "외부 서비스에 일회성 요청을 해서 위치 정보를 넣는데 도움을 드릴 수 있습니다.",
+                    "location_name": "설치된 Home Assistant 이름",
                     "location_name_default": "집"
                 },
                 "integration": {

@@ -46,15 +46,15 @@
     "state_badge": {
         "alarm_control_panel": {
             "armed": "Gewapen",
-            "armed_away": "Gewapen",
+            "armed_away": "Aktief",
             "armed_custom_bypass": "Gewapen",
             "armed_home": "Gewapen",
-            "armed_night": "Gewapen",
+            "armed_night": "Aktief",
             "arming": "Bewapen Tans",
             "disarmed": "Ontwapen",
             "disarming": "Ontwapen",
             "pending": "Hangend",
-            "triggered": "Aktief"
+            "triggered": "Lui"
         },
         "default": {
             "entity_not_found": "Entiteit nie gevind nie",

@@ -1525,6 +1525,9 @@
                         "no_device": "Entità senza dispositivi",
                         "no_devices": "Questa integrazione non ha dispositivi.",
                         "options": "Opzioni",
+                        "reload": "Ricarica",
+                        "reload_confirm": "L'integrazione è stata ricaricata",
+                        "reload_restart_confirm": "Riavvia Home Assistant per completare il ricaricamento di questa integrazione",
                         "rename": "Rinomina",
                         "restart_confirm": "Riavvia Home Assistant per completare la rimozione di questa integrazione",
                         "settings_button": "Modificare le impostazioni per {integration}.",
@@ -1890,7 +1893,9 @@
                     "section": {
                         "reloading": {
                             "automation": "Ricarica le Automazioni",
+                            "command_line": "Ricarica le entità della riga di comando",
                             "core": "Ricarica la Posizione e le Personalizzazioni",
+                            "filter": "Ricaricare le entità filtro",
                             "group": "Ricarica i Gruppi",
                             "heading": "Ricarica Configurazione YAML",
                             "input_boolean": "Ricarica input booleani",
@@ -1900,9 +1905,12 @@
                             "input_text": "Ricarica input testuali",
                             "introduction": "Alcune parti di Home Assistant possono essere ricaricate senza richiedere un riavvio. Premendo su Ricarica si rimuoverà la loro Configurazione YAML  attuale e si caricherà la versione aggiornata.",
                             "person": "Ricarica le persone",
+                            "rest": "Ricarica le entità della piattaforma rest",
                             "scene": "Ricarica le Scene",
                             "script": "Ricarica gli Script",
+                            "statistics": "Ricaricare le entità statistiche",
                             "template": "Ricaricare le entità modello",
+                            "universal": "Ricarica le entità del lettore multimediale universale",
                             "zone": "Ricarica le zone"
                         },
                         "server_management": {

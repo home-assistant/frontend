@@ -833,6 +833,15 @@
                             "name": "Akcija",
                             "type_select": "Vrsta ukrepa",
                             "type": {
+                                "choose": {
+                                    "add_option": "Dodaj možnost",
+                                    "conditions": "Pogoji",
+                                    "default": "Privzeta dejanja",
+                                    "label": "Izberite",
+                                    "option": "Možnost {number}",
+                                    "remove_option": "Odstranite možnost",
+                                    "sequence": "Akcije"
+                                },
                                 "condition": {
                                     "label": "Stanje"
                                 },
@@ -851,6 +860,24 @@
                                     "event": "Dogodek:",
                                     "label": "Požarni dogodek",
                                     "service_data": "Podatki storitve"
+                                },
+                                "repeat": {
+                                    "label": "Ponovite",
+                                    "sequence": "Akcije",
+                                    "type_select": "Vrsta ponovite",
+                                    "type": {
+                                        "count": {
+                                            "label": "Števec"
+                                        },
+                                        "until": {
+                                            "conditions": "Dokler pogoji",
+                                            "label": "Dokler"
+                                        },
+                                        "while": {
+                                            "conditions": "Medtem pogoji",
+                                            "label": "Medtem"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "Aktivirajte sceno"
@@ -1618,6 +1645,33 @@
                     "subscribe_to": "Tema, na katero se lahko naročite",
                     "title": "MQTT",
                     "topic": "tema"
+                },
+                "ozw": {
+                    "common": {
+                        "node_id": "ID vozlišča",
+                        "ozw_instance": "OpenZWave primerek",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "Vozlišče ni uspelo",
+                        "stage": "Stopnja",
+                        "zwave_info": "Z-Wave Informacije"
+                    },
+                    "node_query_stages": {
+                        "complete": "Postopek intervjuja je končan",
+                        "configuration": "Pridobitev konfiguracijskih vrednosti iz vozlišča",
+                        "dynamic": "Pridobivanje pogosto spreminjajočih se vrednosti iz vozlišča",
+                        "session": "Pridobitev redko spreminjajočih se vrednosti iz vozlišča"
+                    },
+                    "refresh_node": {
+                        "battery_note": "Če vozlišče napaja baterijo, se pred nadaljevanjem prepričajte, da ga zbudite",
+                        "complete": "Osveževanje vozlišča je končano",
+                        "refreshing_description": "Osveževanje informacij o vozlišču ...",
+                        "start_refresh_button": "Začni osveževanje",
+                        "title": "Osveži podatke o vozlišču",
+                        "wakeup_header": "Navodila za bujenje za",
+                        "wakeup_instructions_source": "Navodila za prebujanje so pridobljena iz podatkovne zbirke naprav OpenZWave."
+                    }
                 },
                 "person": {
                     "add_person": "Dodaj osebo",
@@ -2387,6 +2441,9 @@
                         "para_migrate": "Home Assistant lahko za vas samodejno doda ID na vse vaše kartice in poglede s pritiskom na gumb »Preseli konfiguracijo«.",
                         "para_no_id": "Ta element nima ID-ja. Prosimo, dodajte ID tega elementa v 'ui-lovelace.yaml'."
                     },
+                    "move_card": {
+                        "header": "Izberite pogled, na katerega želite premakniti kartico"
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "Samodejno bomo ustvarili vaše poglede uporabniškega vmesnika Lovelace z vašimi območji in napravami, če odstranite konfiguracijo uporabniškega vmesnika Lovelace.",
                         "confirm_remove_config_title": "Ali ste prepričani, da želite odstraniti konfiguracijo uporabniškega vmesnika Lovelace? Samodejno bomo ustvarili vaše poglede uporabniškega vmesnika Lovelace z vašimi območji in napravami.",
@@ -2413,6 +2470,10 @@
                         "yaml_config": "Za pomoč pri zagonu je tukaj trenutna konfiguracija te nadzorne plošče:",
                         "yaml_control": "Če želite prevzeti nadzor v načinu YAML, ustvarite datoteko YAML z imenom, ki ste ga določili v konfiguraciji za to nadzorno ploščo, ali privzeto 'ui-lovelace.yaml'.",
                         "yaml_mode": "Za to nadzorno ploščo uporabljate način YAML, kar pomeni, da ne morete spremeniti konfiguracije Lovelace iz uporabniškega vmesnika. Če želite upravljati to nadzorno ploščo iz uporabniškega vmesnika, iz konfiguracije Lovelace v 'config.yaml.' Odstranite 'mode: yaml'."
+                    },
+                    "select_view": {
+                        "dashboard_label": "Nadzorna plošča",
+                        "header": "Izberite pogled"
                     },
                     "suggest_card": {
                         "add": "Dodaj v uporabniški vmesnik Lovelace",
@@ -2731,10 +2792,18 @@
                     "header": "Samodejno zapri povezavo"
                 },
                 "themes": {
+                    "accent_color": "Barva poudarkov",
+                    "dark_mode": {
+                        "auto": "Samodejno",
+                        "dark": "Temni način",
+                        "light": "Svetli način"
+                    },
                     "dropdown_label": "Tema",
                     "error_no_theme": "Teme niso na voljo.",
                     "header": "Tema",
-                    "link_promo": "Preberite več o temah"
+                    "link_promo": "Preberite več o temah",
+                    "primary_color": "Primarna barva",
+                    "reset": "Ponastavi"
                 },
                 "vibrate": {
                     "description": "V tej napravi omogočite ali onemogočite vibracije pri krmiljenju naprav.",

@@ -1847,7 +1847,9 @@
                     "section": {
                         "reloading": {
                             "automation": "Last inn automasjoner på nytt",
+                            "command_line": "Last inn kommandolinjeenheter på nytt",
                             "core": "Last inn lokasjon og spesialtilpassinger på nytt",
+                            "filter": "Last inn filterenheter på nytt",
                             "group": "Last inn grupper på nytt",
                             "heading": "YAML -Konfigurasjon lastes på nytt",
                             "input_boolean": "Last inn bolsk inndata på nytt",
@@ -1857,8 +1859,10 @@
                             "input_text": "Last inn tekst inndata på nytt",
                             "introduction": "Noen deler av Home Assistant kan laste inn uten å kreve omstart. Hvis du trykker last på nytt, vil du bytte den nåværende konfigurasjonen med den nye.",
                             "person": "Last inn personer på nytt",
+                            "rest": "Last hvileenhetene på nytt",
                             "scene": "Last inn scener på nytt",
                             "script": "Last inn skript på nytt",
+                            "statistics": "Last inn statistiske enheter på nytt",
                             "template": "Laste inn malenheter på nytt",
                             "universal": "Laste inn universelle mediespillerenheter på nytt",
                             "zone": "Last inn soner på nytt"

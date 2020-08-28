@@ -308,6 +308,7 @@
                     "rename_dialog": "इस कॉन्फ़िगरेशन प्रविष्टि का नाम संपादित करें",
                     "rename_input_label": "प्रवेश का नाम"
                 },
+                "introduction": "In questa schermata è possibile configurare Home Assistant e i suoi componenti. Non è ancora possibile configurare tutto tramite l'interfaccia, ma ci stiamo lavorando.",
                 "logs": {
                     "title": "लॉग्स"
                 },
@@ -363,12 +364,18 @@
                     }
                 }
             },
+            "logbook": {
+                "showing_entries": "Visualizza gli inserimenti per"
+            },
             "lovelace": {
                 "cards": {
                     "starting": {
                         "description": "होम असिस्टेंट शुरू हो रहा है, कृपया प्रतीक्षा करें ...",
                         "header": "होम असिस्टेंट शुरू हो रहा है ..."
                     }
+                },
+                "changed_toast": {
+                    "message": "La configurazione della interfaccia di Lovelaceper questa dashboard è stata aggiornata, vuoi ricaricare la pagina per vedere i cambiamenti?"
                 },
                 "editor": {
                     "card": {

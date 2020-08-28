@@ -1616,12 +1616,32 @@
                         "button": {
                             "name": "Poga"
                         },
+                        "calendar": {
+                            "description": "Kalendāra kartītē tiek attēlots kalendārs ar dienas, nedēļas un saraksta skatiem",
+                            "name": "Kalendārs"
+                        },
+                        "config": {
+                            "optional": "Neobligāti",
+                            "required": "Nepieciešams"
+                        },
                         "entities": {
                             "toggle": "Pārslēgt vienības."
                         },
+                        "entity": {
+                            "description": "Vienības kartīte sniedz īsu pārskatu par jūsu vienības stāvokli.",
+                            "name": "Vienība"
+                        },
                         "generic": {
+                            "attribute": "Atribūts",
+                            "double_tap_action": "Dubultpieskāriena darbība",
                             "icon": "Ikona",
+                            "search": "Meklēt",
+                            "tap_action": "Pieskariena darbība",
                             "url": "URL"
+                        },
+                        "humidifier": {
+                            "description": "Mitrinātāja kartīte ļauj kontrolēt jūsu mitrinātāja vienību, sniedzot iespēju pielāgot vienības mitrumu un režīmu.",
+                            "name": "Mitrinātājs"
                         },
                         "iframe": {
                             "name": "iFrame"
@@ -1630,7 +1650,11 @@
                             "name": "Gaisma"
                         },
                         "map": {
+                            "dark_mode": "Tumšais izskats?",
                             "default_zoom": "Noklusējuma mērogs",
+                            "description": "Kartes kartīte ļauj attēlot vienības kartē.",
+                            "geo_location_sources": "Ģeogrāfiskās atrašanās vietas avoti",
+                            "hours_to_show": "Parādāmās stundas",
                             "name": "Karte",
                             "source": "Avots"
                         },
@@ -1641,9 +1665,26 @@
                         "picture": {
                             "name": "Attēls"
                         },
+                        "plant-status": {
+                            "name": "Auga statuss"
+                        },
                         "sensor": {
                             "name": "Sensors"
+                        },
+                        "shopping-list": {
+                            "name": "Iepirkumu saraksts"
+                        },
+                        "thermostat": {
+                            "name": "Termostats"
+                        },
+                        "weather-forecast": {
+                            "name": "Laikapstākļu prognoze",
+                            "show_forecast": "Rādīt laikapstākļu prognozi"
                         }
+                    },
+                    "cardpicker": {
+                        "custom_card": "Pielāgota",
+                        "no_description": "Apraksts nav pieejams."
                     },
                     "edit_card": {
                         "add": "Pievienot kartīti",
