@@ -36,8 +36,13 @@ import "../ha-svg-icon";
 declare global {
   interface HASSDomEvents {
     "media-picked": MediaPickedEvent;
-    navigated: undefined;
+    "media-browser-navigated": MediaBrowserNavigatedEvent;
   }
+}
+
+export interface MediaBrowserNavigatedEvent {
+  root: boolean;
+  title?: string;
 }
 
 @customElement("ha-media-player-browse")
@@ -70,6 +75,15 @@ export class HaMediaPlayerBrowse extends LitElement {
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
     }
+  }
+
+  public navigateBack() {
+    this._mediaPlayerItems!.pop();
+    const item = this._mediaPlayerItems!.pop();
+    if (!item) {
+      return;
+    }
+    this._navigate(item);
   }
 
   protected render(): TemplateResult {
@@ -134,12 +148,7 @@ export class HaMediaPlayerBrowse extends LitElement {
               <div class="breadcrumb">
                 ${previousItem
                   ? html`
-                      <div
-                        class="previous-title"
-                        .previous=${true}
-                        .item=${previousItem}
-                        @click=${this._navigate}
-                      >
+                      <div class="previous-title" @click=${this.navigateBack}>
                         <ha-svg-icon .path=${mdiArrowLeft}></ha-svg-icon>
                         ${previousItem.title}
                       </div>
@@ -191,7 +200,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                           <div
                             class="child"
                             .item=${child}
-                            @click=${this._navigate}
+                            @click=${this._navigateForward}
                           >
                             <div class="ha-card-parent">
                               <ha-card
@@ -322,26 +331,25 @@ export class HaMediaPlayerBrowse extends LitElement {
     });
   }
 
-  private async _navigate(ev: MouseEvent): Promise<void> {
+  private async _navigateForward(ev: MouseEvent): Promise<void> {
     const target = ev.currentTarget as any;
-    let item: MediaPlayerItem | undefined;
-
-    if (target.previous) {
-      this._mediaPlayerItems!.pop();
-      item = this._mediaPlayerItems!.pop();
-    }
-
-    item = target.item;
+    const item: MediaPlayerItem = target.item;
 
     if (!item) {
       return;
     }
+    this._navigate(item);
+  }
 
+  private async _navigate(item: MediaPlayerItem) {
     const itemData = await this._fetchData(
       item.media_content_id,
       item.media_content_type
     );
-    fireEvent(this, "navigated");
+    fireEvent(this, "media-browser-navigated", {
+      root: this._mediaPlayerItems.length === 0,
+      title: itemData.title,
+    });
     this._mediaPlayerItems = [...this._mediaPlayerItems, itemData];
   }
 
