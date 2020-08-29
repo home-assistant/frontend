@@ -1,126 +1,79 @@
-import "@material/mwc-button";
-import "@polymer/paper-input/paper-input";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
-/* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import "../../../components/buttons/ha-call-service-button";
-import "../../../components/ha-card";
-import LocalizeMixin from "../../../mixins/localize-mixin";
-import "../../../styles/polymer-ha-style";
+import {
+  LitElement,
+  CSSResult,
+  css,
+  html,
+  property,
+  TemplateResult,
+  customElement,
+} from "lit-element";
+
+import type { HomeAssistant } from "../../../types";
+
 import "../ha-config-section";
-import "./ha-config-core-form";
 import "./ha-config-name-form";
+import "./ha-config-core-form";
 import "./ha-config-url-form";
 
-/*
- * @appliesMixin LocalizeMixin
- */
-class HaConfigSectionCore extends LocalizeMixin(PolymerElement) {
-  static get template() {
+@customElement("ha-config-section-core")
+export class HaConfigSectionCore extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ type: Boolean }) public isWide!: boolean;
+
+  @property({ type: Boolean, attribute: "narrow", reflect: true })
+  public narrow!: boolean;
+
+  protected render(): TemplateResult {
     return html`
-      <style include="iron-flex ha-style">
-        .validate-container {
-          @apply --layout-vertical;
-          @apply --layout-center-center;
-          height: 140px;
-        }
-
-        .validate-result {
-          color: var(--success-color);
-          font-weight: 500;
-          margin-bottom: 1em;
-        }
-
-        .config-invalid {
-          margin: 1em 0;
-        }
-
-        .config-invalid .text {
-          color: var(--error-color);
-          font-weight: 500;
-        }
-
-        .config-invalid mwc-button {
-          float: right;
-        }
-
-        .validate-log {
-          white-space: pre-wrap;
-          direction: ltr;
-        }
-      </style>
-      <ha-config-section is-wide="[[isWide]]">
+      <ha-config-section .isWide=${this.isWide}>
         <span slot="header"
-          >[[localize('ui.panel.config.core.section.core.header')]]</span
+          >${this.hass.localize(
+            "ui.panel.config.core.section.core.header"
+          )}</span
         >
         <span slot="introduction"
-          >[[localize('ui.panel.config.core.section.core.introduction')]]</span
+          >${this.hass.localize(
+            "ui.panel.config.core.section.core.introduction"
+          )}</span
         >
-
-        <ha-config-name-form hass="[[hass]]"></ha-config-name-form>
-        <ha-config-core-form hass="[[hass]]"></ha-config-core-form>
-        <ha-config-url-form hass="[[hass]]"></ha-config-url-form>
+        <div class="content">
+          <ha-config-name-form .hass=${this.hass}></ha-config-name-form>
+          <ha-config-url-form .hass=${this.hass}></ha-config-url-form>
+          <ha-config-core-form .hass=${this.hass}></ha-config-core-form>
+        </div>
       </ha-config-section>
     `;
   }
 
-  static get properties() {
-    return {
-      hass: {
-        type: Object,
-      },
-
-      isWide: {
-        type: Boolean,
-        value: false,
-      },
-
-      validating: {
-        type: Boolean,
-        value: false,
-      },
-
-      isValid: {
-        type: Boolean,
-        value: null,
-      },
-
-      validateLog: {
-        type: String,
-        value: "",
-      },
-
-      showAdvanced: Boolean,
-    };
-  }
-
-  groupLoaded(hass) {
-    return isComponentLoaded(hass, "group");
-  }
-
-  automationLoaded(hass) {
-    return isComponentLoaded(hass, "automation");
-  }
-
-  scriptLoaded(hass) {
-    return isComponentLoaded(hass, "script");
-  }
-
-  validateConfig() {
-    this.validating = true;
-    this.validateLog = "";
-    this.isValid = null;
-
-    this.hass.callApi("POST", "config/core/check_config").then((result) => {
-      this.validating = false;
-      this.isValid = result.result === "valid";
-
-      if (!this.isValid) {
-        this.validateLog = result.errors;
+  static get styles(): CSSResult {
+    return css`
+      .content {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
       }
-    });
+
+      ha-config-name-form,
+      ha-config-url-form {
+        width: calc(50% - 12px);
+      }
+
+      :host([narrow]) ha-config-url-form,
+      ha-config-core-form {
+        margin-top: 24px;
+        width: 100%;
+      }
+
+      :host([narrow]) ha-config-name-form {
+        width: 100%;
+      }
+    `;
   }
 }
 
-customElements.define("ha-config-section-core", HaConfigSectionCore);
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-config-section-core": HaConfigSectionCore;
+  }
+}

@@ -1,73 +1,66 @@
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "../../../components/ha-icon-button";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
-/* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
-import "../../../layouts/hass-tabs-subpage";
-import LocalizeMixin from "../../../mixins/localize-mixin";
-import "../../../styles/polymer-ha-style";
+import {
+  LitElement,
+  CSSResult,
+  css,
+  TemplateResult,
+  html,
+  property,
+  customElement,
+} from "lit-element";
+import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
+
+import "../../../layouts/hass-tabs-subpage";
 import "./ha-config-section-core";
 
-/*
- * @appliesMixin LocalizeMixin
- */
-class HaConfigCore extends LocalizeMixin(PolymerElement) {
-  static get template() {
+@customElement("ha-config-core")
+export class HaConfigCore extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ type: Boolean }) public narrow!: boolean;
+
+  @property({ type: Boolean }) public isWide!: boolean;
+
+  @property({ attribute: false }) public route!: Route;
+
+  @property({ type: Boolean }) public showAdvanced!: boolean;
+
+  protected render(): TemplateResult {
     return html`
-      <style include="iron-flex ha-style">
-        .content {
-          padding-bottom: 32px;
-        }
-
-        .border {
-          margin: 32px auto 0;
-          border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-          max-width: 1040px;
-        }
-
-        .narrow .border {
-          max-width: 640px;
-        }
-      </style>
-
       <hass-tabs-subpage
-        hass="[[hass]]"
-        narrow="[[narrow]]"
-        route="[[route]]"
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .route=${this.route}
         back-path="/config"
-        tabs="[[_computeTabs()]]"
-        show-advanced="[[showAdvanced]]"
+        .tabs=${configSections.general}
+        show-advanced=${this.showAdvanced}
       >
-        <div class$="[[computeClasses(isWide)]]">
-          <ha-config-section-core
-            is-wide="[[isWide]]"
-            show-advanced="[[showAdvanced]]"
-            hass="[[hass]]"
-          ></ha-config-section-core>
-        </div>
+        <ha-config-section-core
+          .isWide=${this.isWide}
+          .narrow=${this.narrow}
+          .showAdvanced=${this.showAdvanced}
+          .hass=${this.hass}
+        ></ha-config-section-core>
       </hass-tabs-subpage>
     `;
-  }
-
-  static get properties() {
-    return {
-      hass: Object,
-      isWide: Boolean,
-      narrow: Boolean,
-      showAdvanced: Boolean,
-      route: Object,
-    };
-  }
-
-  _computeTabs() {
-    return configSections.general;
   }
 
   computeClasses(isWide) {
     return isWide ? "content" : "content narrow";
   }
+
+  static get styles(): CSSResult {
+    return css`
+      ha-config-section-core {
+        display: block;
+        padding-bottom: 32px;
+      }
+    `;
+  }
 }
 
-customElements.define("ha-config-core", HaConfigCore);
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-config-core": HaConfigCore;
+  }
+}

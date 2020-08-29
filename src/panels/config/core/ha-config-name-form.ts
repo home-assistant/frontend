@@ -10,6 +10,8 @@ import {
   property,
   internalProperty,
   TemplateResult,
+  CSSResult,
+  css,
 } from "lit-element";
 import "../../../components/ha-card";
 import { ConfigUpdateValues, saveCoreConfig } from "../../../data/core";
@@ -86,6 +88,21 @@ class ConfigNameForm extends LitElement {
     } finally {
       this._working = false;
     }
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      :host {
+        display: flex;
+      }
+
+      ha-card {
+        justify-content: space-between;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+      }
+    `;
   }
 }
 

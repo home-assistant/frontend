@@ -10,6 +10,7 @@ class HaProgressButton extends PolymerElement {
       <style>
         :host {
           outline: none;
+          display: inline-block;
         }
         .container {
           position: relative;
@@ -20,15 +21,25 @@ class HaProgressButton extends PolymerElement {
           transition: all 1s;
         }
 
-        .success mwc-button {
+        .success:not(.raised) mwc-button {
           --mdc-theme-primary: white;
           background-color: var(--success-color);
           transition: none;
         }
 
-        .error mwc-button {
+        .success.raised mwc-button {
+          --mdc-theme-primary: var(--success-color);
+          transition: none;
+        }
+
+        .error:not(.raised) mwc-button {
           --mdc-theme-primary: white;
           background-color: var(--error-color);
+          transition: none;
+        }
+
+        .error.raised mwc-button {
+          --mdc-theme-primary: var(--error-color);
           transition: none;
         }
 
@@ -42,11 +53,12 @@ class HaProgressButton extends PolymerElement {
           bottom: 0;
         }
       </style>
-      <div class="container" id="container">
+      <div class$="container [[computeClasses(raised)]]" id="container">
         <mwc-button
           id="button"
           disabled="[[computeDisabled(disabled, progress)]]"
           on-click="buttonTapped"
+          raised="[[raised]]"
         >
           <slot></slot>
         </mwc-button>
@@ -71,6 +83,11 @@ class HaProgressButton extends PolymerElement {
       },
 
       disabled: {
+        type: Boolean,
+        value: false,
+      },
+
+      raised: {
         type: Boolean,
         value: false,
       },
@@ -104,6 +121,10 @@ class HaProgressButton extends PolymerElement {
 
   computeDisabled(disabled, progress) {
     return disabled || progress;
+  }
+
+  computeClasses(raised) {
+    return raised ? "raised" : "";
   }
 }
 

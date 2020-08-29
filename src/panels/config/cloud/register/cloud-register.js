@@ -48,7 +48,7 @@ class CloudRegister extends LocalizeMixin(EventsMixin(PolymerElement)) {
     </style>
     <hass-subpage header="[[localize('ui.panel.config.cloud.register.title')]]">
       <div class="content">
-        <ha-config-section is-wide="[[isWide]]">
+        <ha-config-section side-by-side is-wide="[[isWide]]">
           <span slot="header">[[localize('ui.panel.config.cloud.register.headline')]]</span>
           <div slot="introduction">
             <p>
