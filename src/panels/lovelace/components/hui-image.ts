@@ -161,13 +161,14 @@ export class HuiImage extends LitElement {
   protected updated(changedProps: PropertyValues): void {
     if (changedProps.has("hass")) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (oldHass && oldHass.connected !== this.hass!.connected) {
+      if (!oldHass || oldHass.connected !== this.hass!.connected) {
         if (this.hass!.connected && this.cameraView !== "live") {
           this._updateCameraImageSrc();
           this._startUpdateCameraInterval();
         } else {
           this._stopUpdateCameraInterval();
-          this._cameraImageSrc = "/static/images/image-broken.svg";
+          this._cameraImageSrc = undefined;
+          this._loadError = true;
         }
       }
     } else if (changedProps.has("cameraImage") && this.cameraView !== "live") {
