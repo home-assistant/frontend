@@ -13,12 +13,12 @@ import {
   TemplateResult,
 } from "lit-element";
 
-import { HaProgressButtonElement } from "../../../src/components/buttons/ha-progress-button";
 import { fetchHassioLogs } from "../../../src/data/hassio/supervisor";
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 
+import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-card";
 import "../../../src/layouts/hass-loading-screen";
 import "../components/hassio-ansi-to-html";
@@ -120,7 +120,7 @@ class HassioSupervisorLog extends LitElement {
   }
 
   private async _refresh(ev: CustomEvent): Promise<void> {
-    const button = ev.target as HaProgressButtonElement;
+    const button = ev.target as any;
     button.progress = true;
     await this._loadData();
     button.progress = false;

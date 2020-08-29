@@ -24,8 +24,7 @@ import {
   showConfirmationDialog,
 } from "../../../src/dialogs/generic/show-dialog-box";
 
-import { HaProgressButtonElement } from "../../../src/components/buttons/ha-progress-button";
-
+import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-settings-row";
 import "../../../src/components/ha-switch";
@@ -146,7 +145,7 @@ class HassioSupervisorInfo extends LitElement {
   }
 
   private async _toggleBeta(ev: CustomEvent): Promise<void> {
-    const button = ev.target as HaProgressButtonElement;
+    const button = ev.target as any;
     button.progress = true;
 
     if (this.supervisorInfo.channel === "stable") {
@@ -193,11 +192,11 @@ class HassioSupervisorInfo extends LitElement {
   }
 
   private async _supervisorReload(ev: CustomEvent): Promise<void> {
-    const button = ev.target as HaProgressButtonElement;
+    const button = ev.target as any;
     button.progress = true;
 
     try {
-      await reloadSupervisor(this.hass);
+      //await reloadSupervisor(this.hass);
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to reload the supervisor",
@@ -209,7 +208,7 @@ class HassioSupervisorInfo extends LitElement {
   }
 
   private async _supervisorUpdate(ev: CustomEvent): Promise<void> {
-    const button = ev.target as HaProgressButtonElement;
+    const button = ev.target as any;
     button.progress = true;
 
     const confirmed = await showConfirmationDialog(this, {

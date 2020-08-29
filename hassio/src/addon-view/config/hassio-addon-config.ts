@@ -21,7 +21,7 @@ import {
   HassioAddonSetOptionParams,
   setHassioAddonOption,
 } from "../../../../src/data/hassio/addon";
-import { HaProgressButtonElement } from "../../../../src/components/buttons/ha-progress-button";
+import "../../../../src/components/buttons/ha-progress-button";
 
 import { showConfirmationDialog } from "../../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../src/resources/styles";
@@ -84,7 +84,7 @@ class HassioAddonConfig extends LitElement {
   }
 
   private async _resetTapped(ev: CustomEvent): Promise<void> {
-    const button = ev.target as HaProgressButtonElement;
+    const button = ev.target as any;
     button.progress = true;
 
     const confirmed = await showConfirmationDialog(this, {
@@ -121,7 +121,7 @@ class HassioAddonConfig extends LitElement {
   }
 
   private async _saveTapped(ev: CustomEvent): Promise<void> {
-    const button = ev.target as HaProgressButtonElement;
+    const button = ev.target as any;
     button.progress = true;
 
     let data: HassioAddonSetOptionParams;

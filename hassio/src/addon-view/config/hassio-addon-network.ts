@@ -21,7 +21,7 @@ import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import { suggestAddonRestart } from "../../dialogs/suggestAddonRestart";
 import { hassioStyle } from "../../resources/hassio-style";
-import { HaProgressButtonElement } from "../../../../src/components/buttons/ha-progress-button";
+import "../../../../src/components/buttons/ha-progress-button";
 
 interface NetworkItem {
   description: string;
@@ -130,7 +130,7 @@ class HassioAddonNetwork extends LitElement {
   }
 
   private async _resetTapped(ev: CustomEvent): Promise<void> {
-    const button = ev.target as HaProgressButtonElement;
+    const button = ev.target as any;
     button.progress = true;
 
     const data: HassioAddonSetOptionParams = {
@@ -158,7 +158,7 @@ class HassioAddonNetwork extends LitElement {
   }
 
   private async _saveTapped(ev: CustomEvent): Promise<void> {
-    const button = ev.target as HaProgressButtonElement;
+    const button = ev.target as any;
     button.progress = true;
 
     this._error = undefined;

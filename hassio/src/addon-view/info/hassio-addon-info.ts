@@ -39,7 +39,7 @@ import {
 } from "../../../../src/data/hassio/addon";
 import { atLeastVersion } from "../../../../src/common/config/version";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
-import { HaProgressButtonElement } from "../../../../src/components/buttons/ha-progress-button";
+import "../../../../src/components/buttons/ha-progress-button";
 import { hassioStyle } from "../../resources/hassio-style";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
@@ -764,7 +764,7 @@ class HassioAddonInfo extends LitElement {
   }
 
   private async _installClicked(ev: CustomEvent): Promise<void> {
-    const button = ev.target as HaProgressButtonElement;
+    const button = ev.target as any;
     button.progress = true;
 
     try {
@@ -786,7 +786,7 @@ class HassioAddonInfo extends LitElement {
   }
 
   private async _uninstallClicked(ev: CustomEvent): Promise<void> {
-    const button = ev.target as HaProgressButtonElement;
+    const button = ev.target as any;
     button.progress = true;
 
     const confirmed = await showConfirmationDialog(this, {

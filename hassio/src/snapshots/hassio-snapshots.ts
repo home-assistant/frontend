@@ -31,7 +31,7 @@ import {
   HassioSnapshot,
   reloadHassioSnapshots,
 } from "../../../src/data/hassio/snapshot";
-import { HaProgressButtonElement } from "../../../src/components/buttons/ha-progress-button";
+import "../../../src/components/buttons/ha-progress-button";
 import { hassioStyle } from "../resources/hassio-style";
 import { HassioSupervisorInfo } from "../../../src/data/hassio/supervisor";
 import { haStyle } from "../../../src/resources/styles";
@@ -297,7 +297,7 @@ class HassioSnapshots extends LitElement {
   }
 
   private async _createSnapshot(ev: CustomEvent): Promise<void> {
-    const button = ev.target as HaProgressButtonElement;
+    const button = ev.target as any;
     button.progress = true;
 
     this._error = "";

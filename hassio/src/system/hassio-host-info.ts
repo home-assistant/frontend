@@ -42,7 +42,7 @@ import {
 import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
 import { showNetworkDialog } from "../dialogs/network/show-dialog-network";
 
-import { HaProgressButtonElement } from "../../../src/components/buttons/ha-progress-button";
+import "../../../src/components/buttons/ha-progress-button";
 
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
@@ -228,7 +228,7 @@ class HassioHostInfo extends LitElement {
   }
 
   private async _hostReboot(ev: CustomEvent): Promise<void> {
-    const button = ev.target as HaProgressButtonElement;
+    const button = ev.target as any;
     button.progress = true;
 
     const confirmed = await showConfirmationDialog(this, {
@@ -256,7 +256,7 @@ class HassioHostInfo extends LitElement {
   }
 
   private async _hostShutdown(ev: CustomEvent): Promise<void> {
-    const button = ev.target as HaProgressButtonElement;
+    const button = ev.target as any;
     button.progress = true;
 
     const confirmed = await showConfirmationDialog(this, {
@@ -284,7 +284,7 @@ class HassioHostInfo extends LitElement {
   }
 
   private async _osUpdate(ev: CustomEvent): Promise<void> {
-    const button = ev.target as HaProgressButtonElement;
+    const button = ev.target as any;
     button.progress = true;
 
     const confirmed = await showConfirmationDialog(this, {
