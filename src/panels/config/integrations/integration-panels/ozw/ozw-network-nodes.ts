@@ -2,7 +2,7 @@ import "@material/mwc-button/mwc-button";
 import "@material/mwc-fab";
 import { mdiAlert, mdiCheck } from "@mdi/js";
 import {
-  CSSResultArray,
+  CSSResult,
   customElement,
   html,
   internalProperty,
@@ -120,8 +120,8 @@ class OZWNetworkNodes extends LitElement {
     this._nodes = await fetchOZWNodes(this.hass!, this.ozwInstance!);
   }
 
-  static get styles(): CSSResultArray {
-    return [haStyle];
+  static get styles(): CSSResult {
+    return haStyle;
   }
 }
 

@@ -1,6 +1,6 @@
 import { mdiNetwork, mdiServerNetwork } from "@mdi/js";
 import {
-  CSSResultArray,
+  CSSResult,
   customElement,
   html,
   LitElement,
@@ -83,8 +83,8 @@ class OZWConfigNetwork extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultArray {
-    return [haStyle];
+  static get styles(): CSSResult {
+    return haStyle;
   }
 }
 

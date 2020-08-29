@@ -1,5 +1,5 @@
 import {
-  CSSResultArray,
+  CSSResult,
   customElement,
   html,
   LitElement,
@@ -42,8 +42,8 @@ class OZWConfigNode extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultArray {
-    return [haStyle];
+  static get styles(): CSSResult {
+    return haStyle;
   }
 }
 

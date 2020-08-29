@@ -129,10 +129,10 @@ class OZWNetworkDashboard extends LitElement {
   }
 
   private async _fetchData() {
-    this._network = await fetchOZWNetworkStatus(this.hass!, this.ozw_instance);
+    this._network = await fetchOZWNetworkStatus(this.hass!, this.ozwInstance);
     this._statistics = await fetchOZWNetworkStatistics(
       this.hass!,
-      this.ozw_instance
+      this.ozwInstance
     );
     if (networkOnlineStatuses.includes(this._network.Status)) {
       this._status = "online";
