@@ -158,6 +158,10 @@ export const setHassioAddonOption = async (
   );
 };
 
+export const startHassioAddon = async (hass: HomeAssistant, slug: string) => {
+  return hass.callApi<string>("POST", `hassio/addons/${slug}/start`);
+};
+
 export const setHassioAddonSecurity = async (
   hass: HomeAssistant,
   slug: string,

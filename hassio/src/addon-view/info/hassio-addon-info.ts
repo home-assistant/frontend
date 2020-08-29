@@ -36,6 +36,7 @@ import {
   setHassioAddonOption,
   setHassioAddonSecurity,
   uninstallHassioAddon,
+  startHassioAddon,
 } from "../../../../src/data/hassio/addon";
 import { atLeastVersion } from "../../../../src/common/config/version";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
@@ -502,12 +503,9 @@ class HassioAddonInfo extends LitElement {
                       </ha-call-api-button>
                     `
                   : html`
-                      <ha-call-api-button
-                        .hass=${this.hass}
-                        .path="hassio/addons/${this.addon.slug}/start"
-                      >
+                      <ha-progress-button @click=${this._startClicked}>
                         Start
-                      </ha-call-api-button>
+                      </ha-progress-button>
                     `}
                 ${this._computeShowWebUI
                   ? html`
@@ -777,6 +775,36 @@ class HassioAddonInfo extends LitElement {
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to install addon",
+        text:
+          typeof err === "object" ? err.body?.message || "Unkown error" : err,
+      });
+    }
+    button.progress = false;
+  }
+
+  private async _startClicked(ev: CustomEvent): Promise<void> {
+    const button = ev.target as any;
+    button.progress = true;
+    try {
+      await setHassioAddonOption(this.hass, this.addon.slug, {
+        options: this.addon.options,
+      });
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Configruation validation faled!",
+        text:
+          typeof err === "object" ? err.body.message || "Unkown error" : err,
+        confirm: () => console.log("confirm"),
+      });
+      button.progress = false;
+      return;
+    }
+
+    try {
+      await startHassioAddon(this.hass, this.addon.slug);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Failed to start addon",
         text:
           typeof err === "object" ? err.body?.message || "Unkown error" : err,
       });
