@@ -39,7 +39,6 @@ import {
 } from "../../../../src/data/hassio/addon";
 import { atLeastVersion } from "../../../../src/common/config/version";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
-import "../../../../src/components/buttons/ha-progress-button";
 import { hassioStyle } from "../../resources/hassio-style";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
