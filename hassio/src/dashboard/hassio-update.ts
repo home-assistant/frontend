@@ -161,11 +161,18 @@ export class HassioUpdate extends LitElement {
     try {
       await this.hass.callApi<HassioResponse<void>>("POST", item.apiPath);
     } catch (err) {
-      showAlertDialog(this, {
-        title: "Update failed",
-        text:
-          typeof err === "object" ? err.body?.message || "Unkown error" : err,
-      });
+      // Only show an error if the status code was not 504 (timeout reported by proxies)
+      if (err.status_code !== 504) {
+        showAlertDialog(this, {
+          title: "Update failed",
+          text:
+            typeof err === "object"
+              ? typeof err.body === "object"
+                ? err.body.message
+                : err.body || "Unkown error"
+              : err,
+        });
+      }
     }
     item.progress = false;
   }
