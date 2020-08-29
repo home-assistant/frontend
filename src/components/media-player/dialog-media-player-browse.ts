@@ -72,33 +72,9 @@ class DialogMediaPlayerBrowse extends LitElement {
         escapeKeyAction
         hideActions
         flexContent
-        .heading=${true}
+        .heading=${false}
         @closed=${this._closeDialog}
       >
-        <ha-header-bar slot="heading">
-          ${!this._root
-            ? html`<mwc-icon-button
-                slot="navigationIcon"
-                label="Back"
-                @click=${this._navigateBack}
-              >
-                <ha-svg-icon .path=${mdiArrowLeft}></ha-svg-icon>
-              </mwc-icon-button>`
-            : ""}
-          <div slot="title" class="main-title">
-            ${this._title ||
-            this.hass.localize(
-              "ui.components.media-browser.media-player-browser"
-            )}
-          </div>
-          <mwc-icon-button
-            slot="actionItems"
-            .label=${this.hass.localize("ui.dialogs.more_info_control.dismiss")}
-            dialogAction="cancel"
-          >
-            <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-          </mwc-icon-button>
-        </ha-header-bar>
         <ha-media-player-browse
           .hass=${this.hass}
           .entityId=${this._entityId}
@@ -156,7 +132,6 @@ class DialogMediaPlayerBrowse extends LitElement {
           }
           ha-media-player-browse {
             width: 700px;
-            margin: 20px 24px;
           }
         }
       `,

@@ -116,7 +116,11 @@ export class HaMediaPlayerBrowse extends LitElement {
     );
 
     return html`
-      <div class="header">
+      <div
+        class="header  ${classMap({
+          "no-img": !mostRecentItem.thumbnail,
+        })}"
+      >
         <div class="header-content">
           ${mostRecentItem.thumbnail
             ? html`
@@ -147,11 +151,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                 </div>
               `
             : html``}
-          <div
-            class="header-info ${classMap({
-              "no-img": !mostRecentItem.thumbnail,
-            })}"
-          >
+          <div class="header-info">
             ${this.hideTitle && (this._narrow || !mostRecentItem.thumbnail)
               ? ""
               : html`<div class="breadcrumb-overflow">
@@ -199,10 +199,6 @@ export class HaMediaPlayerBrowse extends LitElement {
           </div>
         </div>
       </div>
-      ${this.hideTitle &&
-      (this._narrow || (!mostRecentItem.thumbnail && !mostRecentItem.can_play))
-        ? ""
-        : html`<div class="divider"></div>`}
       ${mostRecentItem.children?.length
         ? hasExpandableChildren
           ? html`
@@ -420,11 +416,29 @@ export class HaMediaPlayerBrowse extends LitElement {
           overflow-y: auto;
           display: flex;
           flex-direction: column;
+          scrollbar-color: var(--scrollbar-thumb-color) transparent;
+          scrollbar-width: thin;
+        }
+
+        :host(:not([narrow])) {
+          padding: 0px 24px 20px;
+        }
+
+        :host::-webkit-scrollbar {
+          width: 0.4rem;
+          height: 0.4rem;
+        }
+
+        :host::-webkit-scrollbar-thumb {
+          -webkit-border-radius: 4px;
+          border-radius: 4px;
+          background: var(--scrollbar-thumb-color);
         }
 
         .header {
           display: flex;
           justify-content: space-between;
+          border-bottom: 1px solid var(--divider-color);
         }
 
         :host(:not([narrow])) .header {
@@ -432,11 +446,11 @@ export class HaMediaPlayerBrowse extends LitElement {
           position: sticky;
           top: 0;
           z-index: 5;
+          padding-top: 20px;
         }
 
-        .breadcrumb-overflow {
-          display: flex;
-          justify-content: space-between;
+        .header:not(.no-img) {
+          padding-bottom: 10px;
         }
 
         .header-content {
@@ -465,6 +479,11 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         .header-info mwc-button {
           display: block;
+        }
+
+        .breadcrumb-overflow {
+          display: flex;
+          justify-content: space-between;
         }
 
         .breadcrumb {
@@ -503,22 +522,12 @@ export class HaMediaPlayerBrowse extends LitElement {
           transition: height 0.5s, margin 0.5s;
         }
 
-        .divider {
-          padding: 10px 0;
-        }
-
-        .divider::before {
-          height: 1px;
-          display: block;
-          background-color: var(--divider-color);
-          content: " ";
-        }
-
         /* ============= CHILDREN ============= */
 
         mwc-list {
           --mdc-list-vertical-padding: 0;
           --mdc-theme-text-icon-on-background: var(--secondary-text-color);
+          margin-top: 10px;
           border: 1px solid var(--divider-color);
           border-radius: 4px;
         }
@@ -693,7 +702,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         }
 
         :host([scroll]) .header-info mwc-button,
-        .header-info.no-img mwc-button {
+        .no-img .header-info mwc-button {
           padding-right: 4px;
         }
 
@@ -702,7 +711,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         }
 
         :host([scroll]) .header-info,
-        .header-info.no-img {
+        .no-img .header-info {
           flex-direction: row;
           align-items: flex-end;
         }
@@ -712,8 +721,8 @@ export class HaMediaPlayerBrowse extends LitElement {
         }
 
         :host([scroll]) .header-content .img {
-          height: 50px;
-          width: 50px;
+          height: 75px;
+          width: 75px;
         }
       `,
     ];
