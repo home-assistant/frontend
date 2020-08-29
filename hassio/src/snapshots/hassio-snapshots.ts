@@ -1,27 +1,27 @@
 import "@material/mwc-button";
 import "@material/mwc-icon-button";
-import { mdiPackageVariant, mdiPackageVariantClosed, mdiReload } from "@mdi/js";
 import "@polymer/paper-checkbox/paper-checkbox";
-import type { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-radio-button/paper-radio-button";
 import "@polymer/paper-radio-group/paper-radio-group";
+
+import type { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import type { PaperRadioGroupElement } from "@polymer/paper-radio-group/paper-radio-group";
+import { mdiPackageVariant, mdiPackageVariantClosed, mdiReload } from "@mdi/js";
+import { fireEvent } from "../../../src/common/dom/fire_event";
 import {
   css,
   CSSResultArray,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-import { fireEvent } from "../../../src/common/dom/fire_event";
-import "../../../src/components/ha-card";
-import "../../../src/components/ha-svg-icon";
+
 import {
   createHassioFullSnapshot,
   createHassioPartialSnapshot,
@@ -31,15 +31,19 @@ import {
   HassioSnapshot,
   reloadHassioSnapshots,
 } from "../../../src/data/hassio/snapshot";
+import "../../../src/components/buttons/ha-progress-button";
+import { hassioStyle } from "../resources/hassio-style";
 import { HassioSupervisorInfo } from "../../../src/data/hassio/supervisor";
-import "../../../src/layouts/hass-tabs-subpage";
-import { PolymerChangedEvent } from "../../../src/polymer-types";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant, Route } from "../../../src/types";
-import "../components/hassio-card-content";
+import { PolymerChangedEvent } from "../../../src/polymer-types";
 import { showHassioSnapshotDialog } from "../dialogs/snapshot/show-dialog-hassio-snapshot";
 import { supervisorTabs } from "../hassio-tabs";
-import { hassioStyle } from "../resources/hassio-style";
+
+import "../../../src/components/ha-card";
+import "../../../src/components/ha-svg-icon";
+import "../../../src/layouts/hass-tabs-subpage";
+import "../components/hassio-card-content";
 
 interface CheckboxItem {
   slug: string;
@@ -79,8 +83,6 @@ class HassioSnapshots extends LitElement {
     { slug: "share", name: "Share", checked: true },
     { slug: "addons/local", name: "Local add-ons", checked: true },
   ];
-
-  @internalProperty() private _creatingSnapshot = false;
 
   @internalProperty() private _error = "";
 
@@ -192,12 +194,9 @@ class HassioSnapshots extends LitElement {
                   : undefined}
               </div>
               <div class="card-actions">
-                <mwc-button
-                  .disabled=${this._creatingSnapshot}
-                  @click=${this._createSnapshot}
-                >
+                <ha-progress-button @click=${this._createSnapshot}>
                   Create
-                </mwc-button>
+                </ha-progress-button>
               </div>
             </ha-card>
           </div>
@@ -230,7 +229,7 @@ class HassioSnapshots extends LitElement {
                           .icon=${snapshot.type === "full"
                             ? mdiPackageVariantClosed
                             : mdiPackageVariant}
-                          .icon-class="snapshot"
+                          icon-class="snapshot"
                         ></hassio-card-content>
                       </div>
                     </ha-card>
@@ -297,13 +296,16 @@ class HassioSnapshots extends LitElement {
     }
   }
 
-  private async _createSnapshot() {
+  private async _createSnapshot(ev: CustomEvent): Promise<void> {
+    const button = ev.target as any;
+    button.progress = true;
+
     this._error = "";
     if (this._snapshotHasPassword && !this._snapshotPassword.length) {
       this._error = "Please enter a password.";
+      button.progress = false;
       return;
     }
-    this._creatingSnapshot = true;
     await this.updateComplete;
 
     const name =
@@ -344,9 +346,8 @@ class HassioSnapshots extends LitElement {
       fireEvent(this, "hass-api-called", { success: true, response: null });
     } catch (err) {
       this._error = err.message;
-    } finally {
-      this._creatingSnapshot = false;
     }
+    button.progress = false;
   }
 
   private _computeDetails(snapshot: HassioSnapshot) {
