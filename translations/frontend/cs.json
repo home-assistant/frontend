@@ -1338,7 +1338,7 @@
                     "warning": {
                         "include_link": "zahrnout customize.yaml",
                         "include_sentence": "Zdá se, že configuration.yaml správně nefunguje",
-                        "not_applied": "Změny zde provedené jsou zapsány, ale nebudou použity po opětovném načtení konfigurace, pokud není zahrnut do umístění."
+                        "not_applied": "Změny zde provedené jsou zapsány, ale nebudou použity při novém načtení konfigurace, pokud není \"customize\" konfigurace nastavena v globální konfiguraci."
                     }
                 },
                 "devices": {
@@ -1524,8 +1524,9 @@
                         "no_device": "Entity bez zařízení",
                         "no_devices": "Tato integrace nemá žádná zařízení.",
                         "options": "Možnosti",
-                        "reload_confirm": "Integrace byla obnovena",
-                        "reload_restart_confirm": "Restartujte Home Assistant pro obnovení této integrace",
+                        "reload": "Nově načíst",
+                        "reload_confirm": "Integrace byla nově načtena",
+                        "reload_restart_confirm": "Restartujte Home Assistant pro nové načtení této integrace",
                         "rename": "Přejmenovat",
                         "restart_confirm": "Restartujte Home Assistant pro odstranění této integrace",
                         "settings_button": "Upravit nastavení pro {integration}",
@@ -1883,21 +1884,26 @@
                     "description": "Restart a zastavení serveru Home Asistent",
                     "section": {
                         "reloading": {
-                            "automation": "Znovu načíst automatizace",
-                            "core": "Znovu načíst umístění a přizpůsobení",
-                            "group": "Znovu načíst skupiny",
+                            "automation": "Nově načíst automatizace",
+                            "command_line": "Nově načíst entity integrace \"command line\"",
+                            "core": "Nově načíst umístění a přizpůsobení",
+                            "filter": "Nově načíst entity integrace \"filter\"",
+                            "group": "Nově načíst skupiny",
                             "heading": "Konfigurace se načítá",
-                            "input_boolean": "Znovu načíst pomocníky - přepínače",
-                            "input_datetime": "Znovu načíst pomocníky - data/časy",
-                            "input_number": "Znovu načíst pomocníky - čísla",
-                            "input_select": "Znovu načíst pomocníky - výběry",
-                            "input_text": "Znovu načíst pomocníky - texty",
-                            "introduction": "Některé části Home Assistant lze načíst bez nutnosti restartování. Volba načtení zahodí jejich aktuální konfiguraci a načte novou.",
-                            "person": "Znovu načíst osoby",
-                            "scene": "Znovu načíst scény",
-                            "script": "Znovu načíst skripty",
-                            "template": "Znovu načíst entity šablon",
-                            "zone": "Znovu načíst zóny"
+                            "input_boolean": "Nově načíst pomocníky - přepínače",
+                            "input_datetime": "Nově načíst pomocníky - data/časy",
+                            "input_number": "Nově načíst pomocníky - čísla",
+                            "input_select": "Nově načíst pomocníky - výběry",
+                            "input_text": "Nově načíst pomocníky - texty",
+                            "introduction": "Některé části Home Assistant lze nově načíst bez nutnosti restartování. Nové načtení zahodí jejich aktuální konfiguraci a načte novou.",
+                            "person": "Nově načíst osoby",
+                            "rest": "Nově načíst entity integrace \"rest\"",
+                            "scene": "Nově načíst scény",
+                            "script": "Nově načíst skripty",
+                            "statistics": "Nově načíst entity integrace \"statistics\"",
+                            "template": "Nově načíst entity integrace \"template\"",
+                            "universal": "Nově načíst entity integrace \"universal media player\"",
+                            "zone": "Nově načíst zóny"
                         },
                         "server_management": {
                             "confirm_restart": "Opravdu chcete restartovat Home Assistant?",
@@ -2614,11 +2620,11 @@
                     "exit_edit_mode": "Ukončit režim úprav uživatelského rozhraní",
                     "help": "Pomoc",
                     "refresh": "Obnovit",
-                    "reload_resources": "Opětovné načtení prostředků"
+                    "reload_resources": "Nově načíst zdroje"
                 },
-                "reload_lovelace": "Znovu načíst Lovelace",
+                "reload_lovelace": "Nově načíst Lovelace",
                 "reload_resources": {
-                    "refresh_body": "Chcete-li dokončit opětovné načtení, musíte stránku aktualizovat, chcete ji nyní aktualizovat?",
+                    "refresh_body": "Chcete-li dokončit nové načtení, musíte stránku aktualizovat. Chcete ji nyní aktualizovat?",
                     "refresh_header": "Chcete aktualizovat stránku?"
                 },
                 "unused_entities": {
