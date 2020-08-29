@@ -165,7 +165,7 @@ export class HuiImage extends LitElement {
         if (this.hass!.connected && this.cameraView !== "live") {
           this._updateCameraImageSrc();
           this._startUpdateCameraInterval();
-        } else {
+        } else if (!this.hass!.connected) {
           this._stopUpdateCameraInterval();
           this._cameraImageSrc = undefined;
           this._loadError = true;
