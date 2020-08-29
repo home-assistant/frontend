@@ -71,6 +71,7 @@ class DialogMediaPlayerBrowse extends LitElement {
         scrimClickAction
         escapeKeyAction
         hideActions
+        flexContent
         .heading=${true}
         @closed=${this._closeDialog}
       >
@@ -104,8 +105,6 @@ class DialogMediaPlayerBrowse extends LitElement {
           .action=${this._action!}
           .mediaContentId=${this._mediaContentId}
           .mediaContentType=${this._mediaContentType}
-          hideBack
-          hideTitle
           @media-picked=${this._mediaPicked}
           @media-browser-navigated=${this._navigated}
         ></ha-media-player-browse>
@@ -129,8 +128,8 @@ class DialogMediaPlayerBrowse extends LitElement {
   }
 
   private _navigated(ev: HASSDomEvent<MediaBrowserNavigatedEvent>) {
-    this._root = ev.detail.root;
-    this._title = ev.detail.title;
+    // this._root = ev.detail.root;
+    // this._title = ev.detail.title;
     this._dialog!.scrollToPos(0, 0);
   }
 
@@ -157,7 +156,7 @@ class DialogMediaPlayerBrowse extends LitElement {
           }
           ha-media-player-browse {
             width: 700px;
-            padding: 20px 24px;
+            margin: 20px 24px;
           }
         }
       `,

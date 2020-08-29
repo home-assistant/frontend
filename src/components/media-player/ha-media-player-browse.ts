@@ -147,7 +147,11 @@ export class HaMediaPlayerBrowse extends LitElement {
                 </div>
               `
             : html``}
-          <div class="header-info">
+          <div
+            class="header-info ${classMap({
+              "no-img": !mostRecentItem.thumbnail,
+            })}"
+          >
             ${this.hideTitle && (this._narrow || !mostRecentItem.thumbnail)
               ? ""
               : html`<div class="breadcrumb-overflow">
@@ -174,24 +178,22 @@ export class HaMediaPlayerBrowse extends LitElement {
             ${mostRecentItem?.can_play &&
             (!mostRecentItem.thumbnail || !this._narrow)
               ? html`
-                  <div>
-                    <mwc-button
-                      raised
-                      .item=${mostRecentItem}
-                      @click=${this._actionClicked}
-                    >
-                      <ha-svg-icon
-                        slot="icon"
-                        .label=${this.hass.localize(
-                          `ui.components.media-browser.${this.action}-media`
-                        )}
-                        .path=${this.action === "play" ? mdiPlay : mdiPlus}
-                      ></ha-svg-icon>
-                      ${this.hass.localize(
-                        `ui.components.media-browser.${this.action}`
+                  <mwc-button
+                    raised
+                    .item=${mostRecentItem}
+                    @click=${this._actionClicked}
+                  >
+                    <ha-svg-icon
+                      slot="icon"
+                      .label=${this.hass.localize(
+                        `ui.components.media-browser.${this.action}-media`
                       )}
-                    </mwc-button>
-                  </div>
+                      .path=${this.action === "play" ? mdiPlay : mdiPlus}
+                    ></ha-svg-icon>
+                    ${this.hass.localize(
+                      `ui.components.media-browser.${this.action}`
+                    )}
+                  </mwc-button>
                 `
               : ""}
           </div>
@@ -308,6 +310,9 @@ export class HaMediaPlayerBrowse extends LitElement {
   protected firstUpdated(): void {
     this._measureCard();
     this._attachObserver();
+
+    this.onscroll = this._scroll;
+    this.ontouchmove = this._scroll;
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -383,6 +388,14 @@ export class HaMediaPlayerBrowse extends LitElement {
     this._narrow = this.offsetWidth < 500;
   }
 
+  private _scroll(): void {
+    if (this.scrollTop > 100 && !this._narrow) {
+      this.setAttribute("scroll", "");
+    } else if (this.scrollTop === 0) {
+      this.removeAttribute("scroll");
+    }
+  }
+
   private async _attachObserver(): Promise<void> {
     if (!this._resizeObserver) {
       await installResizeObserver();
@@ -404,11 +417,21 @@ export class HaMediaPlayerBrowse extends LitElement {
       css`
         :host {
           display: block;
+          overflow-y: auto;
+          display: flex;
+          flex-direction: column;
         }
 
         .header {
           display: flex;
           justify-content: space-between;
+        }
+
+        :host(:not([narrow])) .header {
+          background-color: var(--card-background-color);
+          position: sticky;
+          top: 0;
+          z-index: 5;
         }
 
         .breadcrumb-overflow {
@@ -428,6 +451,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           width: 200px;
           margin-right: 16px;
           background-size: cover;
+          transition: width 0.5s, height 0.5s;
         }
 
         .header-info {
@@ -439,9 +463,8 @@ export class HaMediaPlayerBrowse extends LitElement {
           flex: 1;
         }
 
-        :host([narrow]) .header-info mwc-button {
-          margin-top: 16px;
-          margin-bottom: 8px;
+        .header-info mwc-button {
+          display: block;
         }
 
         .breadcrumb {
@@ -477,6 +500,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           overflow: hidden;
           text-overflow: ellipsis;
           margin-bottom: 0;
+          transition: height 0.5s, margin 0.5s;
         }
 
         .divider {
@@ -623,6 +647,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         :host([narrow]) .header-content {
           flex-direction: column;
           flex-wrap: nowrap;
+          padding-top: 8px;
         }
 
         :host([narrow]) .header-content .img {
@@ -641,6 +666,11 @@ export class HaMediaPlayerBrowse extends LitElement {
           right: 20px;
         }
 
+        :host([narrow]) .header-info mwc-button {
+          margin-top: 16px;
+          margin-bottom: 8px;
+        }
+
         :host([narrow]) .header-info,
         :host([narrow]) .media-source,
         :host([narrow]) .children {
@@ -648,7 +678,42 @@ export class HaMediaPlayerBrowse extends LitElement {
         }
 
         :host([narrow]) .children {
-          grid-template-columns: 1fr 1fr !important;
+          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+        }
+
+        /* ============= Scroll ============= */
+
+        :host([scroll]) .breadcrumb .subtitle {
+          height: 0;
+          margin: 0;
+        }
+
+        :host([scroll]) .breadcrumb .title {
+          -webkit-line-clamp: 1;
+        }
+
+        :host([scroll]) .header-info mwc-button,
+        .header-info.no-img mwc-button {
+          padding-right: 4px;
+        }
+
+        :host([scroll]) .header {
+          padding-bottom: 10px;
+        }
+
+        :host([scroll]) .header-info,
+        .header-info.no-img {
+          flex-direction: row;
+          align-items: flex-end;
+        }
+
+        :host([scroll]) .header-content {
+          align-items: flex-end;
+        }
+
+        :host([scroll]) .header-content .img {
+          height: 50px;
+          width: 50px;
         }
       `,
     ];
