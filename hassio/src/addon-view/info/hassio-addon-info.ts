@@ -20,22 +20,13 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
-import { atLeastVersion } from "../../../../src/common/config/version";
-import { fireEvent } from "../../../../src/common/dom/fire_event";
-import { navigate } from "../../../../src/common/navigate";
-import "../../../../src/components/buttons/ha-call-api-button";
-import "../../../../src/components/buttons/ha-progress-button";
-import "../../../../src/components/ha-card";
-import "../../../../src/components/ha-label-badge";
-import "../../../../src/components/ha-markdown";
-import "../../../../src/components/ha-svg-icon";
-import "../../../../src/components/ha-switch";
+
 import {
   fetchHassioAddonChangelog,
   HassioAddonDetails,
@@ -46,13 +37,28 @@ import {
   setHassioAddonSecurity,
   uninstallHassioAddon,
 } from "../../../../src/data/hassio/addon";
-import { showConfirmationDialog } from "../../../../src/dialogs/generic/show-dialog-box";
+import { atLeastVersion } from "../../../../src/common/config/version";
+import { fireEvent } from "../../../../src/common/dom/fire_event";
+import "../../../../src/components/buttons/ha-progress-button";
+import { hassioStyle } from "../../resources/hassio-style";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
-import "../../components/hassio-card-content";
+import { navigate } from "../../../../src/common/navigate";
+import {
+  showConfirmationDialog,
+  showAlertDialog,
+} from "../../../../src/dialogs/generic/show-dialog-box";
 import { showHassioMarkdownDialog } from "../../dialogs/markdown/show-dialog-hassio-markdown";
-import { hassioStyle } from "../../resources/hassio-style";
+
+import "../../../../src/components/buttons/ha-call-api-button";
+import "../../../../src/components/buttons/ha-progress-button";
+import "../../../../src/components/ha-card";
+import "../../../../src/components/ha-label-badge";
+import "../../../../src/components/ha-markdown";
 import "../../../../src/components/ha-settings-row";
+import "../../../../src/components/ha-svg-icon";
+import "../../../../src/components/ha-switch";
+import "../../components/hassio-card-content";
 
 const STAGE_ICON = {
   stable: mdiCheckCircle,
@@ -126,8 +132,6 @@ class HassioAddonInfo extends LitElement {
   @property({ attribute: false }) public addon!: HassioAddonDetails;
 
   @internalProperty() private _error?: string;
-
-  @property({ type: Boolean }) private _installing = false;
 
   protected render(): TemplateResult {
     return html`
@@ -528,12 +532,12 @@ class HassioAddonInfo extends LitElement {
                       </mwc-button>
                     `
                   : ""}
-                <mwc-button
+                <ha-progress-button
                   class=" right warning"
                   @click=${this._uninstallClicked}
                 >
                   Uninstall
-                </mwc-button>
+                </ha-progress-button>
                 ${this.addon.build
                   ? html`
                       <ha-call-api-button
@@ -555,8 +559,7 @@ class HassioAddonInfo extends LitElement {
                     `
                   : ""}
                 <ha-progress-button
-                  .disabled=${!this.addon.available || this._installing}
-                  .progress=${this._installing}
+                  .disabled=${!this.addon.available}
                   @click=${this._installClicked}
                 >
                   Install
@@ -742,7 +745,6 @@ class HassioAddonInfo extends LitElement {
   }
 
   private async _openChangelog(): Promise<void> {
-    this._error = undefined;
     try {
       const content = await fetchHassioAddonChangelog(
         this.hass,
@@ -753,15 +755,18 @@ class HassioAddonInfo extends LitElement {
         content,
       });
     } catch (err) {
-      this._error = `Failed to get addon changelog, ${
-        err.body?.message || err
-      }`;
+      showAlertDialog(this, {
+        title: "Failed to get addon changelog",
+        text:
+          typeof err === "object" ? err.body?.message || "Unkown error" : err,
+      });
     }
   }
 
-  private async _installClicked(): Promise<void> {
-    this._error = undefined;
-    this._installing = true;
+  private async _installClicked(ev: CustomEvent): Promise<void> {
+    const button = ev.target as any;
+    button.progress = true;
+
     try {
       await installHassioAddon(this.hass, this.addon.slug);
       const eventdata = {
@@ -771,12 +776,19 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this._error = `Failed to install addon, ${err.body?.message || err}`;
+      showAlertDialog(this, {
+        title: "Failed to install addon",
+        text:
+          typeof err === "object" ? err.body?.message || "Unkown error" : err,
+      });
     }
-    this._installing = false;
+    button.progress = false;
   }
 
-  private async _uninstallClicked(): Promise<void> {
+  private async _uninstallClicked(ev: CustomEvent): Promise<void> {
+    const button = ev.target as any;
+    button.progress = true;
+
     const confirmed = await showConfirmationDialog(this, {
       title: this.addon.name,
       text: "Are you sure you want to uninstall this add-on?",
@@ -785,6 +797,7 @@ class HassioAddonInfo extends LitElement {
     });
 
     if (!confirmed) {
+      button.progress = false;
       return;
     }
 
@@ -798,8 +811,13 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this._error = `Failed to uninstall addon, ${err.body?.message || err}`;
+      showAlertDialog(this, {
+        title: "Failed to uninstall addon",
+        text:
+          typeof err === "object" ? err.body?.message || "Unkown error" : err,
+      });
     }
+    button.progress = false;
   }
 
   static get styles(): CSSResult[] {
