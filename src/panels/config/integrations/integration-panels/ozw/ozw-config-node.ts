@@ -6,13 +6,11 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import memoizeOne from "memoize-one";
-import { navigate } from "../../../../../common/navigate";
+import "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
-import "../../../../../layouts/hass-tabs-subpage";
-import "./ozw-node-router";
 import { computeTail } from "./ozw-config-router";
+import "./ozw-node-router";
 
 @customElement("ozw-config-node")
 class OZWConfigNode extends LitElement {
@@ -26,23 +24,16 @@ class OZWConfigNode extends LitElement {
 
   @property() public configEntryId?: string;
 
-  @property() public ozw_instance = 0;
+  @property() public ozwInstance?: number;
 
-  @property() public node_id = 0;
-
-  public connectedCallback(): void {
-    super.connectedCallback();
-    if (this.ozw_instance <= 0) {
-      navigate(this, "/config/ozw/dashboard", true);
-    }
-  }
+  @property() public nodeId?: number;
 
   protected render(): TemplateResult {
     const route = computeTail(this.route);
     return html`
       <ozw-node-router
-        .ozw_instance=${this.ozw_instance}
-        .node_id=${this.node_id}
+        .ozwInstance=${this.ozwInstance}
+        .nodeId=${this.nodeId}
         .route=${route}
         .hass=${this.hass}
         .narrow=${this.narrow}

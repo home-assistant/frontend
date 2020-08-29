@@ -60,7 +60,7 @@ class OZWConfigRouter extends HassRouterPage {
     el.configEntryId = this._configEntry;
     if (this._currentPage === "network") {
       const path = this.routeTail.path.split("/");
-      el.ozw_instance = path[1];
+      el.ozwInstance = path[1];
     }
   }
 }

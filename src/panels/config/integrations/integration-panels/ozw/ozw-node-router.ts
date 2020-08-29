@@ -1,10 +1,10 @@
 import { customElement, property } from "lit-element";
+import { navigate } from "../../../../../common/navigate";
 import {
   HassRouterPage,
   RouterOptions,
 } from "../../../../../layouts/hass-router-page";
 import { HomeAssistant } from "../../../../../types";
-import { navigate } from "../../../../../common/navigate";
 
 @customElement("ozw-node-router")
 class OZWNodeRouter extends HassRouterPage {
@@ -14,9 +14,9 @@ class OZWNodeRouter extends HassRouterPage {
 
   @property() public narrow!: boolean;
 
-  @property() public ozw_instance!: number;
+  @property() public ozwInstance!: number;
 
-  @property() public node_id!: number;
+  @property() public nodeId!: number;
 
   private _configEntry = new URLSearchParams(window.location.search).get(
     "config_entry"
@@ -42,8 +42,8 @@ class OZWNodeRouter extends HassRouterPage {
     el.isWide = this.isWide;
     el.narrow = this.narrow;
     el.configEntryId = this._configEntry;
-    el.ozw_instance = this.ozw_instance;
-    el.node_id = this.node_id;
+    el.ozwInstance = this.ozwInstance;
+    el.nodeId = this.nodeId;
 
     const searchParams = new URLSearchParams(window.location.search);
     if (this._configEntry && !searchParams.has("config_entry")) {

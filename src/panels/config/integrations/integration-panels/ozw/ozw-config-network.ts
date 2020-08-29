@@ -1,3 +1,4 @@
+import { mdiNetwork, mdiServerNetwork } from "@mdi/js";
 import {
   CSSResultArray,
   customElement,
@@ -6,14 +7,26 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { mdiNetwork, mdiServerNetwork } from "@mdi/js";
 import { navigate } from "../../../../../common/navigate";
-import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../../../layouts/hass-tabs-subpage";
 import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
-import "./ozw-network-router";
+import { haStyle } from "../../../../../resources/styles";
+import type { HomeAssistant, Route } from "../../../../../types";
 import { computeTail } from "./ozw-config-router";
+import "./ozw-network-router";
+
+export const ozwNetworkTabs: PageNavigation[] = [
+  {
+    translationKey: "ui.panel.config.ozw.navigation.network",
+    path: `/config/ozw/network/${this.ozwInstance}/dashboard`,
+    iconPath: mdiServerNetwork,
+  },
+  {
+    translationKey: "ui.panel.config.ozw.navigation.nodes",
+    path: `/config/ozw/network/${this.ozwInstance}/nodes`,
+    iconPath: mdiNetwork,
+  },
+];
 
 @customElement("ozw-config-network")
 class OZWConfigNetwork extends LitElement {
@@ -27,11 +40,10 @@ class OZWConfigNetwork extends LitElement {
 
   @property() public configEntryId?: string;
 
-  @property() public ozw_instance = 0;
+  @property({ type: Number }) public ozwInstance?;
 
-  public connectedCallback(): void {
-    super.connectedCallback();
-    if (this.ozw_instance <= 0) {
+  protected firstUpdated() {
+    if (!this.ozwInstance) {
       navigate(this, "/config/ozw/dashboard", true);
     }
   }
@@ -39,29 +51,16 @@ class OZWConfigNetwork extends LitElement {
   protected render(): TemplateResult {
     const route = computeTail(this.route);
 
-    const ozwTabs: PageNavigation[] = [
-      {
-        translationKey: "ui.panel.config.ozw.navigation.network",
-        path: `/config/ozw/network/${this.ozw_instance}/dashboard`,
-        iconPath: mdiServerNetwork,
-      },
-      {
-        translationKey: "ui.panel.config.ozw.navigation.nodes",
-        path: `/config/ozw/network/${this.ozw_instance}/nodes`,
-        iconPath: mdiNetwork,
-      },
-    ];
-
     if (route.path !== "/nodes") {
       return html`
         <hass-tabs-subpage
           .hass=${this.hass}
           .narrow=${this.narrow}
           .route=${route}
-          .tabs=${ozwTabs}
+          .tabs=${ozwNetworkTabs}
         >
           <ozw-network-router
-            .ozw_instance=${this.ozw_instance}
+            .ozwInstance=${this.ozwInstance}
             .route=${route}
             .hass=${this.hass}
             .narrow=${this.narrow}
@@ -73,7 +72,7 @@ class OZWConfigNetwork extends LitElement {
 
     return html`
       <ozw-network-router
-        .ozw_instance=${this.ozw_instance}
+        .ozwInstance=${this.ozwInstance}
         .route=${route}
         .hass=${this.hass}
         .narrow=${this.narrow}

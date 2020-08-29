@@ -1,3 +1,4 @@
+import "@material/mwc-button/mwc-button";
 import "@material/mwc-fab";
 import {
   css,
@@ -8,17 +9,13 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
-import "../../../../../components/buttons/ha-call-service-button";
+import "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
-import "../../../../../layouts/hass-tabs-subpage";
-import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
-import "@material/mwc-button/mwc-button";
-
-export const ozwTabs: PageNavigation[] = [];
 
 @customElement("ozw-node-dashboard")
 class OZWNodeDashboard extends LitElement {
@@ -32,9 +29,9 @@ class OZWNodeDashboard extends LitElement {
 
   @property() public configEntryId?: string;
 
-  @property() public ozw_instance = 0;
+  @property() public ozwInstance?: number;
 
-  @property() public node_id = 0;
+  @property() public nodeId?: number;
 
   protected render(): TemplateResult {
     return html`

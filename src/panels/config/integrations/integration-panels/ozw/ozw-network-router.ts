@@ -13,7 +13,7 @@ class OZWNetworkRouter extends HassRouterPage {
 
   @property() public narrow!: boolean;
 
-  @property() public ozw_instance!: number;
+  @property() public ozwInstance!: number;
 
   private _configEntry = new URLSearchParams(window.location.search).get(
     "config_entry"
@@ -51,7 +51,7 @@ class OZWNetworkRouter extends HassRouterPage {
     el.isWide = this.isWide;
     el.narrow = this.narrow;
     el.configEntryId = this._configEntry;
-    el.ozw_instance = this.ozw_instance;
+    el.ozwInstance = this.ozwInstance;
     if (this._currentPage === "node") {
       const path = this.routeTail.path.split("/");
       el.node_id = path[1];
