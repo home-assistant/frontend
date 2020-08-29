@@ -51,6 +51,12 @@ class HaInitPage extends LitElement {
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        background-color: var(--primary-background-color);
+      }
+      @media (prefers-color-scheme: dark) {
+        div {
+          background-color: #111111;
+        }
       }
       ha-circular-progress {
         margin-top: 9px;

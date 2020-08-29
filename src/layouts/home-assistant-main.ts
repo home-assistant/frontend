@@ -57,6 +57,13 @@ class HomeAssistantMain extends LitElement {
             background-color: var(--primary-background-color, #fff);
           }
         }
+        @media (prefers-color-scheme: dark) {
+          app-drawer {
+            --app-drawer-content-container: {
+              background-color: #111111;
+            }
+          }
+        }
       </style>
       <app-drawer-layout
         fullbleed
