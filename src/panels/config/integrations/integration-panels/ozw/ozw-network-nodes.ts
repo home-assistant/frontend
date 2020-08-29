@@ -42,7 +42,7 @@ class OZWNetworkNodes extends LitElement {
 
   @property() public configEntryId?: string;
 
-  @property() public ozwInstance?: number;
+  @property() public ozwInstance = 0;
 
   @internalProperty() private _nodes: OZWDevice[] = [];
 
@@ -106,7 +106,7 @@ class OZWNetworkNodes extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${route}
-        .tabs=${ozwNetworkTabs}
+        .tabs=${ozwNetworkTabs(this.ozwInstance)}
         .columns=${this._columns(this.narrow)}
         .data=${this._nodes}
         id="node_id"

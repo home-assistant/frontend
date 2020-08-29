@@ -42,7 +42,7 @@ class OZWNetworkDashboard extends LitElement {
 
   @property() public configEntryId?: string;
 
-  @property() public ozw_instance = 0;
+  @property() public ozwInstance = 0;
 
   @internalProperty() private _network?: OZWInstance;
 
@@ -53,7 +53,7 @@ class OZWNetworkDashboard extends LitElement {
   @internalProperty() private _icon = mdiCircle;
 
   protected firstUpdated() {
-    if (this.ozw_instance <= 0) {
+    if (this.ozwInstance <= 0) {
       navigate(this, "/config/ozw/dashboard", true);
     } else if (this.hass) {
       this._fetchData();
