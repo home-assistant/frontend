@@ -49,8 +49,6 @@ export class HuiImage extends LitElement {
 
   @internalProperty() private _cameraImageSrc?: string;
 
-  @internalProperty() private _hassConnected = true;
-
   @query("img") private _image!: HTMLImageElement;
 
   private _lastImageHeight?: number;
@@ -130,7 +128,7 @@ export class HuiImage extends LitElement {
           ratio: Boolean(ratio && ratio.w > 0 && ratio.h > 0),
         })}
       >
-        ${this._hassConnected && this.cameraImage && this.cameraView === "live"
+        ${this.cameraImage && this.cameraView === "live"
           ? html`
               <ha-camera-stream
                 .hass=${this.hass}
@@ -161,23 +159,21 @@ export class HuiImage extends LitElement {
   }
 
   protected updated(changedProps: PropertyValues): void {
-    this._checkConnection();
-
-    if (changedProps.has("cameraImage") && this.cameraView !== "live") {
+    if (changedProps.has("hass")) {
+      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+      if (oldHass && oldHass.connected !== this.hass!.connected) {
+        if (this.hass!.connected) {
+          this._updateCameraImageSrc();
+          this._startUpdateCameraInterval();
+        } else {
+          this._stopUpdateCameraInterval();
+          this._cameraImageSrc = "/static/images/image-broken.svg";
+        }
+      }
+    } else if (changedProps.has("cameraImage") && this.cameraView !== "live") {
       this._updateCameraImageSrc();
       this._startUpdateCameraInterval();
     }
-  }
-
-  private async _checkConnection(): Promise<void> {
-    if (this.hass!.connected) {
-      await this._updateCameraImageSrc();
-      this._startUpdateCameraInterval();
-    } else {
-      this._stopUpdateCameraInterval();
-      this._cameraImageSrc = undefined;
-    }
-    this._hassConnected = this.hass!.connected;
   }
 
   private _startUpdateCameraInterval(): void {
