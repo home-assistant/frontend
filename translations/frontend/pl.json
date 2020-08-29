@@ -1893,20 +1893,24 @@
                     "section": {
                         "reloading": {
                             "automation": "Automatyzacje",
+                            "command_line": "Encje komponentu linia komend",
                             "core": "Lokalizacja i dostosowywanie",
+                            "filter": "Encje komponentu filtr",
                             "group": "Grupy",
-                            "heading": "Ponowne wczytanie konfiguracji",
+                            "heading": "Ponowne wczytanie konfiguracji YAML",
                             "input_boolean": "Pomocnicy typu przełącznik",
                             "input_datetime": "Pomocnicy typu data i czas",
                             "input_number": "Pomocnicy typu numer",
                             "input_select": "Pomocnicy typu pole wyboru",
                             "input_text": "Pomocnicy typu tekst",
-                            "introduction": "Niektóre fragmenty konfiguracji można przeładować bez ponownego uruchamiania. Poniższe przyciski pozwalają na ponowne wczytanie konfiguracji.",
+                            "introduction": "Niektóre fragmenty konfiguracji można przeładować bez ponownego uruchamiania. Poniższe przyciski pozwalają na ponowne wczytanie danej części konfiguracji YAML.",
                             "person": "Osoby",
+                            "rest": "Encje komponentu rest",
                             "scene": "Sceny",
                             "script": "Skrypty",
+                            "statistics": "Encje komponentu statystyka",
                             "template": "Szablony encji",
-                            "universal": "Encje uniwersalnego odtwarzacza mediów",
+                            "universal": "Encje komponentu uniwersalny odtwarzacz mediów",
                             "zone": "Strefy"
                         },
                         "server_management": {
