@@ -790,11 +790,13 @@ class HassioAddonInfo extends LitElement {
         options: this.addon.options,
       });
     } catch (err) {
-      showAlertDialog(this, {
-        title: "Configruation validation faled!",
+      showConfirmationDialog(this, {
+        title: "Failed to start addon - configruation validation faled!",
         text:
           typeof err === "object" ? err.body.message || "Unkown error" : err,
         confirm: () => console.log("confirm"),
+        confirmText: "Go to configruation",
+        dismissText: "Cancel",
       });
       button.progress = false;
       return;
