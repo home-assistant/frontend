@@ -55,9 +55,7 @@ class DialogBox extends LitElement {
     return html`
       <ha-dialog
         open
-        scrimClickAction
-        escapeKeyAction
-        @close=${this._close}
+        @closed=${this._dismiss}
         .heading=${this._params.title
           ? this._params.title
           : this._params.confirmation &&
