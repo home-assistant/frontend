@@ -162,7 +162,7 @@ export class HuiImage extends LitElement {
     if (changedProps.has("hass")) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
       if (oldHass && oldHass.connected !== this.hass!.connected) {
-        if (this.hass!.connected) {
+        if (this.hass!.connected && this.cameraView !== "live") {
           this._updateCameraImageSrc();
           this._startUpdateCameraInterval();
         } else {
