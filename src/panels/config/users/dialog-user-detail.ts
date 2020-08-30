@@ -139,7 +139,7 @@ class DialogUserDetail extends LitElement {
           </mwc-button>
           ${user.system_generated
             ? html`
-                <paper-tooltip position="right">
+                <paper-tooltip animation-delay="0" position="right">
                   ${this.hass.localize(
                     "ui.panel.config.users.editor.system_generated_users_not_removable"
                   )}
@@ -166,7 +166,7 @@ class DialogUserDetail extends LitElement {
           </mwc-button>
           ${user.system_generated
             ? html`
-                <paper-tooltip position="left">
+                <paper-tooltip animation-delay="0" position="left">
                   ${this.hass.localize(
                     "ui.panel.config.users.editor.system_generated_users_not_editable"
                   )}

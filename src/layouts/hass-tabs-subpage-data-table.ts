@@ -11,6 +11,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { navigate } from "../common/navigate";
+import { computeRTLDirection } from "../common/util/compute_rtl";
 import "../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
@@ -20,7 +21,6 @@ import type {
 import type { HomeAssistant, Route } from "../types";
 import "./hass-tabs-subpage";
 import type { PageNavigation } from "./hass-tabs-subpage";
-import { computeRTLDirection } from "../common/util/compute_rtl";
 
 @customElement("hass-tabs-subpage-data-table")
 export class HaTabsSubpageDataTable extends LitElement {
@@ -136,7 +136,7 @@ export class HaTabsSubpageDataTable extends LitElement {
                       ? html`<div class="active-filters">
                           <div>
                             <ha-icon icon="hass:filter-variant"></ha-icon>
-                            <paper-tooltip position="left">
+                            <paper-tooltip animation-delay="0" position="left">
                               ${this.hass.localize(
                                 "ui.panel.config.filtering.filtering_by"
                               )}
