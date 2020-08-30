@@ -26,15 +26,19 @@
     "state_attributes": {
         "climate": {
             "fan_mode": {
-                "auto": "Auto",
+                "auto": "Automatico",
                 "off": "Spento",
                 "on": "Acceso"
             },
             "hvac_action": {
+                "auto": "Automatico",
                 "cooling": "Raffreddamento",
-                "drying": "Asciugatura",
+                "cool": "Freddo",
+                "drying": "Deumidificazione",
+                "dry": "Deumidifica",
                 "fan": "Ventilatore",
                 "heating": "Riscaldamento",
+                "heat": "Caldo",
                 "idle": "Inattivo",
                 "off": "Spento"
             },
@@ -2749,7 +2753,7 @@
                 },
                 "mfa": {
                     "confirm_disable": "Sei sicuro di voler disabilitare {name} ?",
-                    "disable": "Disattivare",
+                    "disable": "Disabilitare",
                     "enable": "Abilita",
                     "header": "Codice di autenticazione a più fattori"
                 },
