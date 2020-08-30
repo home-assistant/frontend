@@ -2,9 +2,9 @@ import "@material/mwc-button/mwc-button";
 import "@material/mwc-fab/mwc-fab";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
-import { mdiArrowLeft, mdiFolder, mdiPlay, mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
+import { mdiArrowLeft, mdiFolder, mdiPlay, mdiPlus, mdiClose } from "@mdi/js";
 import {
   css,
   CSSResultArray,
@@ -21,10 +21,11 @@ import { ifDefined } from "lit-html/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { debounce } from "../../common/util/debounce";
+import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { browseMediaPlayer, MediaPickedEvent } from "../../data/media-player";
-import type { MediaPlayerItem } from "../../data/media-player";
 import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
 import { haStyle } from "../../resources/styles";
+import type { MediaPlayerItem } from "../../data/media-player";
 import type { HomeAssistant } from "../../types";
 import "../entity/ha-entity-picker";
 import "../ha-button-menu";
@@ -60,6 +61,8 @@ export class HaMediaPlayerBrowse extends LitElement {
   @property({ type: Boolean }) public hideBack = false;
 
   @property({ type: Boolean }) public hideTitle = false;
+
+  @property({ type: Boolean }) public dialog = false;
 
   @property({ type: Boolean, attribute: "narrow", reflect: true })
   private _narrow = false;
@@ -198,6 +201,18 @@ export class HaMediaPlayerBrowse extends LitElement {
               : ""}
           </div>
         </div>
+        ${this.dialog
+          ? html`
+              <mwc-icon-button
+                aria-label=${this.hass.localize("ui.dialogs.generic.close")}
+                @click=${this._closeDialogAction}
+                class="header_button"
+                dir=${computeRTLDirection(this.hass)}
+              >
+                <ha-svg-icon path=${mdiClose}></ha-svg-icon>
+              </mwc-icon-button>
+            `
+          : ""}
       </div>
       ${mostRecentItem.children?.length
         ? hasExpandableChildren
@@ -359,6 +374,8 @@ export class HaMediaPlayerBrowse extends LitElement {
       item.media_content_id,
       item.media_content_type
     );
+
+    this.scrollTo(0, 0);
     fireEvent(this, "media-browser-navigated", {
       root: this._mediaPlayerItems.length === 0,
       title: itemData.title,
@@ -406,6 +423,10 @@ export class HaMediaPlayerBrowse extends LitElement {
   private _hasExpandableChildren = memoizeOne((children) =>
     children.find((item: MediaPlayerItem) => item.can_expand)
   );
+
+  private _closeDialogAction(): void {
+    fireEvent(this, "close-dialog");
+  }
 
   static get styles(): CSSResultArray {
     return [

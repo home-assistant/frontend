@@ -1,4 +1,3 @@
-import { mdiArrowLeft, mdiClose } from "@mdi/js";
 import {
   css,
   CSSResultArray,
@@ -7,7 +6,6 @@ import {
   internalProperty,
   LitElement,
   property,
-  query,
   TemplateResult,
 } from "lit-element";
 import { HASSDomEvent } from "../../common/dom/fire_event";
@@ -17,13 +15,8 @@ import type {
 } from "../../data/media-player";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import { HaDialog } from "../ha-dialog";
 import "../ha-header-bar";
 import "./ha-media-player-browse";
-import type {
-  HaMediaPlayerBrowse,
-  MediaBrowserNavigatedEvent,
-} from "./ha-media-player-browse";
 import { MediaPlayerBrowseDialogParams } from "./show-media-browser-dialog";
 
 @customElement("dialog-media-player-browse")
@@ -39,14 +32,6 @@ class DialogMediaPlayerBrowse extends LitElement {
   @internalProperty() private _action?: MediaPlayerBrowseAction;
 
   @internalProperty() private _params?: MediaPlayerBrowseDialogParams;
-
-  @internalProperty() private _root = true;
-
-  @internalProperty() private _title?: string;
-
-  @query("ha-dialog") private _dialog?: HaDialog;
-
-  @query("ha-media-player-browse") private _mediaBrowser?: HaMediaPlayerBrowse;
 
   public async showDialog(
     params: MediaPlayerBrowseDialogParams
@@ -76,13 +61,14 @@ class DialogMediaPlayerBrowse extends LitElement {
         @closed=${this._closeDialog}
       >
         <ha-media-player-browse
+          dialog
           .hass=${this.hass}
           .entityId=${this._entityId}
           .action=${this._action!}
           .mediaContentId=${this._mediaContentId}
           .mediaContentType=${this._mediaContentType}
+          @close-dialog=${this._closeDialog}
           @media-picked=${this._mediaPicked}
-          @media-browser-navigated=${this._navigated}
         ></ha-media-player-browse>
       </ha-dialog>
     `;
@@ -97,16 +83,6 @@ class DialogMediaPlayerBrowse extends LitElement {
     if (this._action !== "play") {
       this._closeDialog();
     }
-  }
-
-  private _navigateBack() {
-    this._mediaBrowser?.navigateBack();
-  }
-
-  private _navigated(ev: HASSDomEvent<MediaBrowserNavigatedEvent>) {
-    // this._root = ev.detail.root;
-    // this._title = ev.detail.title;
-    this._dialog!.scrollToPos(0, 0);
   }
 
   static get styles(): CSSResultArray {
