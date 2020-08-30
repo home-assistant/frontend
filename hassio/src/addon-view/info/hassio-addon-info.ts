@@ -26,32 +26,9 @@ import {
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
-
-import {
-  fetchHassioAddonChangelog,
-  HassioAddonDetails,
-  HassioAddonSetOptionParams,
-  HassioAddonSetSecurityParams,
-  installHassioAddon,
-  setHassioAddonOption,
-  setHassioAddonSecurity,
-  uninstallHassioAddon,
-  startHassioAddon,
-  validateHassioAddonOption,
-  fetchHassioAddonInfo,
-} from "../../../../src/data/hassio/addon";
 import { atLeastVersion } from "../../../../src/common/config/version";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
-import { hassioStyle } from "../../resources/hassio-style";
-import { haStyle } from "../../../../src/resources/styles";
-import { HomeAssistant } from "../../../../src/types";
 import { navigate } from "../../../../src/common/navigate";
-import {
-  showConfirmationDialog,
-  showAlertDialog,
-} from "../../../../src/dialogs/generic/show-dialog-box";
-import { showHassioMarkdownDialog } from "../../dialogs/markdown/show-dialog-hassio-markdown";
-
 import "../../../../src/components/buttons/ha-call-api-button";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-card";
@@ -60,8 +37,29 @@ import "../../../../src/components/ha-markdown";
 import "../../../../src/components/ha-settings-row";
 import "../../../../src/components/ha-svg-icon";
 import "../../../../src/components/ha-switch";
-import "../../components/hassio-card-content";
+import {
+  fetchHassioAddonChangelog,
+  fetchHassioAddonInfo,
+  HassioAddonDetails,
+  HassioAddonSetOptionParams,
+  HassioAddonSetSecurityParams,
+  installHassioAddon,
+  setHassioAddonOption,
+  setHassioAddonSecurity,
+  startHassioAddon,
+  uninstallHassioAddon,
+  validateHassioAddonOption,
+} from "../../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../../src/dialogs/generic/show-dialog-box";
+import { haStyle } from "../../../../src/resources/styles";
+import { HomeAssistant } from "../../../../src/types";
+import "../../components/hassio-card-content";
+import { showHassioMarkdownDialog } from "../../dialogs/markdown/show-dialog-hassio-markdown";
+import { hassioStyle } from "../../resources/hassio-style";
 
 const STAGE_ICON = {
   stable: mdiCheckCircle,
