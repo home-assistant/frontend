@@ -275,7 +275,7 @@ export class HuiEntitiesCardEditor extends LitElement
     this[`_${type}Element`].configValue = type;
     this[`_${type}Element`].setConfig(headerFooterEditor!.config);
     this[`_${type}Element`].addEventListener("config-changed", (ev) =>
-      this._valueChanged(ev as EntitiesEditorEvent)
+      this._valueChanged(ev as HASSDomEvent<EntitiesEditorEvent>)
     );
   }
 }
