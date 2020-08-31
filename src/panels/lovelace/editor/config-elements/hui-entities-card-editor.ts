@@ -153,6 +153,11 @@ export class HuiEntitiesCardEditor extends LitElement
           ></hui-entity-editor>
         </div>
         <div slot="advanced">
+          <h3 class="header-footer-heading">
+            ${this.hass.localize(
+              `ui.panel.lovelace.editor.header-footer.header`
+            )}
+          </h3>
           <hui-header-footer-dropdown
             .hass=${this.hass}
             .value=${this._config.header?.type}
@@ -166,6 +171,11 @@ export class HuiEntitiesCardEditor extends LitElement
                 </div>
               `
             : ""}
+          <h3 class="header-footer-heading">
+            ${this.hass.localize(
+              `ui.panel.lovelace.editor.header-footer.footer`
+            )}
+          </h3>
           <hui-header-footer-dropdown
             .hass=${this.hass}
             .value=${this._config.footer?.type}

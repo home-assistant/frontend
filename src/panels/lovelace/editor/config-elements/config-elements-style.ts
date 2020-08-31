@@ -20,5 +20,9 @@ export const configElementStyle = html`
       border: 1px solid var(--divider-color);
       padding: 12px;
     }
+
+    .header-footer-heading {
+      margin-bottom: 0;
+    }
   </style>
 `;
