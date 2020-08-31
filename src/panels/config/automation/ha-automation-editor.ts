@@ -146,7 +146,7 @@ export class HaAutomationEditor extends LitElement {
                           "ui.panel.config.automation.editor.modes.description",
                           "documentation_link",
                           html`<a
-                            href="https://www.home-assistant.io/docs/automation/#automation-modes"
+                            href="https://www.home-assistant.io/integrations/automation/#automation-modes"
                             target="_blank"
                             rel="noreferrer"
                             >${this.hass.localize(
