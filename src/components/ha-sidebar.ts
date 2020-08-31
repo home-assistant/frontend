@@ -541,7 +541,7 @@ class HaSidebar extends LitElement {
     }
     this._hiddenPanels.splice(index, 1);
     // Make a copy for Memoize
-    this._hiddenPanels = { ...this._hiddenPanels };
+    this._hiddenPanels = [...this._hiddenPanels];
     this._renderEmptySortable = true;
     await this.updateComplete;
     this._renderEmptySortable = false;
