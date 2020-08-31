@@ -707,11 +707,6 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         /* ============= Scroll ============= */
 
-        :host([scroll]) .header_button {
-          align-self: center;
-          top: initial;
-        }
-
         :host([scroll]) .breadcrumb .subtitle {
           height: 0;
           margin: 0;
