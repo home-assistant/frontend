@@ -8,11 +8,10 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-
+import "../../../src/components/ha-card";
+import "../../../src/components/ha-settings-row";
+import "../../../src/components/ha-switch";
 import { HassioHostInfo as HassioHostInfoType } from "../../../src/data/hassio/host";
-import { hassioStyle } from "../resources/hassio-style";
-import { haStyle } from "../../../src/resources/styles";
-import { HomeAssistant } from "../../../src/types";
 import {
   HassioSupervisorInfo as HassioSupervisorInfoType,
   reloadSupervisor,
@@ -24,10 +23,9 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../src/dialogs/generic/show-dialog-box";
-
-import "../../../src/components/ha-card";
-import "../../../src/components/ha-settings-row";
-import "../../../src/components/ha-switch";
+import { haStyle } from "../../../src/resources/styles";
+import { HomeAssistant } from "../../../src/types";
+import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-supervisor-info")
 class HassioSupervisorInfo extends LitElement {
@@ -37,7 +35,7 @@ class HassioSupervisorInfo extends LitElement {
 
   @property() public hostInfo!: HassioHostInfoType;
 
-  public render(): TemplateResult | void {
+  protected render(): TemplateResult | void {
     return html`
       <ha-card header="Supervisor">
         <div class="card-content">
