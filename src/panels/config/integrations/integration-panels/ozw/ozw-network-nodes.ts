@@ -13,7 +13,11 @@ import {
 import memoizeOne from "memoize-one";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/buttons/ha-call-service-button";
-import { DataTableColumnContainer } from "../../../../../components/data-table/ha-data-table";
+import { HASSDomEvent } from "../../../../../common/dom/fire_event";
+import {
+  DataTableColumnContainer,
+  RowClickedEvent,
+} from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
 import { fetchOZWNodes, OZWDevice } from "../../../../../data/ozw";
@@ -115,6 +119,7 @@ class OZWNetworkNodes extends LitElement {
         .columns=${this._columns(this.narrow)}
         .data=${this._nodes}
         id="node_id"
+        @row-click=${this._handleRowClicked}
         back-path="/config/ozw/network/${this.ozwInstance}/dashboard"
       >
       </hass-tabs-subpage-data-table>
@@ -123,6 +128,11 @@ class OZWNetworkNodes extends LitElement {
 
   private async _fetchData() {
     this._nodes = await fetchOZWNodes(this.hass!, this.ozwInstance!);
+  }
+
+  private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
+    const nodeId = ev.detail.id;
+    navigate(this, `/config/ozw/network/${this.ozwInstance}/node/${nodeId}`);
   }
 
   static get styles(): CSSResult {
