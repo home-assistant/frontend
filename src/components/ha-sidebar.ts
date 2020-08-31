@@ -23,6 +23,7 @@ import {
   LitElement,
   property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { guard } from "lit-html/directives/guard";
@@ -158,6 +159,8 @@ const computePanels = memoizeOne(
 
 let Sortable;
 
+let sortStyles: TemplateResult;
+
 @customElement("ha-sidebar")
 class HaSidebar extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -220,6 +223,7 @@ class HaSidebar extends LitElement {
     }
 
     return html`
+      ${this._editMode ? sortStyles : ""}
       <div class="menu">
         ${!this.narrow
           ? html`
@@ -462,9 +466,13 @@ class HaSidebar extends LitElement {
     }
 
     if (!Sortable) {
-      const sortableImport = await import(
-        "sortablejs/modular/sortable.core.esm"
-      );
+      const [sortableImport, sortStylesImport] = await Promise.all([
+        import("sortablejs/modular/sortable.core.esm"),
+        import("./ha-sidebar-sort-styles"),
+      ]);
+
+      sortStyles = sortStylesImport.sortStyles;
+
       Sortable = sortableImport.Sortable;
       Sortable.mount(sortableImport.OnSpill);
       Sortable.mount(sortableImport.AutoScroll());
@@ -719,78 +727,6 @@ class HaSidebar extends LitElement {
       :host([expanded][rtl]) .menu mwc-icon-button {
         margin-right: 0px;
         margin-left: 23px;
-      }
-
-      #sortable a:nth-of-type(2n) paper-icon-item {
-        animation-name: keyframes1;
-        animation-iteration-count: infinite;
-        transform-origin: 50% 10%;
-        animation-delay: -0.75s;
-        animation-duration: 0.25s;
-      }
-
-      #sortable a:nth-of-type(2n-1) paper-icon-item {
-        animation-name: keyframes2;
-        animation-iteration-count: infinite;
-        animation-direction: alternate;
-        transform-origin: 30% 5%;
-        animation-delay: -0.5s;
-        animation-duration: 0.33s;
-      }
-
-      #sortable {
-        outline: none;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .sortable-ghost {
-        opacity: 0.4;
-      }
-
-      .sortable-fallback {
-        opacity: 0;
-      }
-
-      @keyframes keyframes1 {
-        0% {
-          transform: rotate(-1deg);
-          animation-timing-function: ease-in;
-        }
-
-        50% {
-          transform: rotate(1.5deg);
-          animation-timing-function: ease-out;
-        }
-      }
-
-      @keyframes keyframes2 {
-        0% {
-          transform: rotate(1deg);
-          animation-timing-function: ease-in;
-        }
-
-        50% {
-          transform: rotate(-1.5deg);
-          animation-timing-function: ease-out;
-        }
-      }
-
-      .hide-panel {
-        display: none;
-        position: absolute;
-        right: 8px;
-      }
-
-      :host([expanded]) .hide-panel {
-        display: inline-flex;
-      }
-
-      paper-icon-item.hidden-panel,
-      paper-icon-item.hidden-panel span,
-      paper-icon-item.hidden-panel ha-icon[slot="item-icon"] {
-        color: var(--secondary-text-color);
-        cursor: pointer;
       }
 
       .title {
