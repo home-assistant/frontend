@@ -321,7 +321,9 @@ export class HaMediaPlayerBrowse extends LitElement {
     this._attachObserver();
 
     this.addEventListener("scroll", this._scroll, { passive: true });
-    this.addEventListener("touchmove", this._scroll, { passive: true });
+    this.addEventListener("touchmove", this._scroll, {
+      passive: true,
+    });
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -396,7 +398,7 @@ export class HaMediaPlayerBrowse extends LitElement {
   }
 
   private _scroll(): void {
-    if (this.scrollTop > 100 && !this._narrow) {
+    if (this.scrollTop > (this._narrow ? 224 : 125)) {
       this.setAttribute("scroll", "");
     } else if (this.scrollTop === 0) {
       this.removeAttribute("scroll");
@@ -446,7 +448,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           right: -8px;
         }
 
-        :host(:not([narrow])) .header {
+        .header {
           background-color: var(--card-background-color);
           position: sticky;
           top: 0;
@@ -466,6 +468,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           width: 200px;
           margin-right: 16px;
           background-size: cover;
+          border-radius: 4px;
           transition: width 0.4s, height 0.4s;
         }
 
@@ -644,12 +647,12 @@ export class HaMediaPlayerBrowse extends LitElement {
           padding: 0;
         }
 
-        :host([narrow]) .breadcrumb .title {
-          font-size: 38px;
-        }
-
         :host([narrow]) .breadcrumb-overflow {
           align-items: flex-end;
+        }
+
+        :host([narrow]) .header {
+          padding: 0;
         }
 
         :host([narrow]) .header_button {
@@ -667,12 +670,15 @@ export class HaMediaPlayerBrowse extends LitElement {
           height: auto;
           width: 100%;
           margin-right: 0;
-          padding-bottom: 100%;
+          padding-bottom: 50%;
           margin-bottom: 8px;
           position: relative;
+          background-position: center;
+          border-radius: 0;
+          transition: width 0.4s, height 0.4s, padding-bottom 0.4s;
         }
 
-        :host([narrow]) .header-content .img mwc-fab {
+        mwc-fab {
           position: absolute;
           --mdc-theme-secondary: var(--primary-color);
           bottom: -20px;
@@ -725,11 +731,30 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         :host([scroll]) .header-content {
           align-items: flex-end;
+          flex-direction: row;
+        }
+
+        :host([scroll][narrow]) .header-info {
+          height: 100px;
+          padding: 0px 24px;
+          align-items: center;
         }
 
         :host([scroll]) .header-content .img {
           height: 75px;
           width: 75px;
+        }
+
+        :host([scroll][narrow]) .header-content .img {
+          height: 100px;
+          width: 100px;
+          padding-bottom: initial;
+          margin-bottom: 0;
+        }
+
+        :host([scroll]) mwc-fab {
+          bottom: 4px;
+          right: 4px;
         }
       `,
     ];
