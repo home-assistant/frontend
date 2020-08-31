@@ -394,7 +394,7 @@ export class HaMediaPlayerBrowse extends LitElement {
   }
 
   private _measureCard(): void {
-    this._narrow = window.innerWidth < 500;
+    this._narrow = (this.dialog ? window.innerWidth : this.offsetWidth) < 450;
   }
 
   private _scroll(): void {
