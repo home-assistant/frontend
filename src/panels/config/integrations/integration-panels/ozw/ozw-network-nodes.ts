@@ -50,7 +50,7 @@ class OZWNetworkNodes extends LitElement {
     (narrow: boolean): DataTableColumnContainer => {
       return {
         node_id: {
-          title: "ID",
+          title: this.hass.localize("ui.panel.config.ozw.nodes_table.id"),
           sortable: true,
           type: "numeric",
           width: "72px",
@@ -58,31 +58,36 @@ class OZWNetworkNodes extends LitElement {
           direction: "asc",
         },
         node_product_name: {
-          title: "Model",
+          title: this.hass.localize("ui.panel.config.ozw.nodes_table.model"),
           sortable: true,
-          grows: true,
+          width: narrow ? "75%" : "25%",
         },
         node_manufacturer_name: {
-          title: "Manufacturer",
+          title: this.hass.localize(
+            "ui.panel.config.ozw.nodes_table.manufacturer"
+          ),
           sortable: true,
-          hide: narrow,
+          hidden: narrow,
           width: "25%",
         },
         node_query_stage: {
-          title: "Query Stage",
+          title: this.hass.localize(
+            "ui.panel.config.ozw.nodes_table.query_stage"
+          ),
           sortable: true,
-          hide: narrow,
-          width: "25%",
+          width: narrow ? "25%" : "15%",
         },
         is_zwave_plus: {
-          title: "Z-Wave Plus",
-          hide: narrow,
+          title: this.hass.localize(
+            "ui.panel.config.ozw.nodes_table.zwave_plus"
+          ),
+          hidden: narrow,
           template: (value: boolean) =>
             value ? html` <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>` : "",
         },
         is_failed: {
-          title: "Failed",
-          hide: narrow,
+          title: this.hass.localize("ui.panel.config.ozw.nodes_table.failed"),
+          hidden: narrow,
           template: (value: boolean) =>
             value ? html` <ha-svg-icon .path=${mdiAlert}></ha-svg-icon>` : "",
         },
