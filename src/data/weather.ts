@@ -2,6 +2,7 @@ import { SVGTemplateResult, svg, html, TemplateResult, css } from "lit-element";
 import { styleMap } from "lit-html/directives/style-map";
 
 import type { HomeAssistant, WeatherEntity } from "../types";
+import { roundWithOneDecimal } from "../util/calculate";
 
 export const weatherSVGs = new Set<string>([
   "clear-night",
@@ -135,7 +136,7 @@ export const getSecondaryWeatherAttribute = (
   return `
     ${hass!.localize(
       `ui.card.weather.attributes.${attribute}`
-    )} ${value} ${getWeatherUnit(hass!, attribute)}
+    )} ${roundWithOneDecimal(value)} ${getWeatherUnit(hass!, attribute)}
   `;
 };
 

@@ -419,9 +419,12 @@
                 "unlock": "Entriegeln"
             },
             "media_player": {
+                "media_play": "Abspielen",
                 "sound_mode": "Sound-Modus",
                 "source": "Quelle",
-                "text_to_speak": "Text zum Sprechen"
+                "text_to_speak": "Text zum Sprechen",
+                "turn_off": "Ausschalten",
+                "turn_on": "Einschalten"
             },
             "persistent_notification": {
                 "dismiss": "Ausblenden"
@@ -554,6 +557,17 @@
                 "loading_history": "Lade Zustandsverlauf...",
                 "no_history_found": "Kein Zustandsverlauf gefunden."
             },
+            "media-browser": {
+                "choose-source": "Quelle wählen",
+                "content-type": {
+                    "album": "Album",
+                    "artist": "Künstler",
+                    "library": "Bibliothek",
+                    "playlist": "Playlist",
+                    "server": "Server"
+                },
+                "play": "Abspielen"
+            },
             "related-items": {
                 "area": "Bereich",
                 "automation": "Teil der folgenden Automatisierungen",
@@ -574,6 +588,7 @@
                     "week": "{count} {count, plural,\none {Woche}\nother {Wochen}\n}"
                 },
                 "future": "In {time}",
+                "just_now": "Gerade jetzt",
                 "never": "Noch nie",
                 "past": "Vor {time}"
             },
@@ -833,6 +848,9 @@
                             "name": "Aktion",
                             "type_select": "Aktionstyp",
                             "type": {
+                                "choose": {
+                                    "label": "Auswählen"
+                                },
                                 "condition": {
                                     "label": "Bedingung"
                                 },
@@ -851,6 +869,21 @@
                                     "event": "Ereignis:",
                                     "label": "Ereignis auslösen",
                                     "service_data": "Dienstdaten"
+                                },
+                                "repeat": {
+                                    "label": "Wiederholen",
+                                    "type_select": "Wiederholungstyp",
+                                    "type": {
+                                        "count": {
+                                            "label": "Anzahl"
+                                        },
+                                        "until": {
+                                            "label": "Bis"
+                                        },
+                                        "while": {
+                                            "label": "Während"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "Szene aktivieren"
@@ -1298,7 +1331,7 @@
                     },
                     "cant_edit": "Du kannst nur Elemente bearbeiten, die in der Benutzeroberfläche erstellt wurden.",
                     "caption": "Geräte",
-                    "confirm_delete": "Möchtest Du dieses Gerät wirklich löschen?",
+                    "confirm_delete": "Möchtest du dieses Gerät wirklich löschen?",
                     "confirm_rename_entity_ids": "Möchten Sie auch die Entitäts-IDs Ihrer Entitäten umbenennen?",
                     "data_table": {
                         "area": "Bereich",
@@ -1370,7 +1403,7 @@
                         "introduction2": "Verwenden Sie die Entitätsregistrierung, um den Namen zu überschreiben, die Entität-ID zu ändern oder den Eintrag aus Home Assistant zu entfernen. Beachten Sie, dass das Entfernen des Entitätsregistrierungs-Eintrags die Entität nicht löscht. Folgen Sie dazu dem Link unten und entfernen Sie ihn in der Integrationsseite.",
                         "remove_selected": {
                             "button": "Ausgewählte entfernen",
-                            "confirm_partly_text": "Du kannst nur {removable} der ausgewählten {selected} Entitäten entfernen. Entitäten können nur entfernt werden, wenn die Integration die Entitäten nicht mehr bereitstellt. Manchmal musst du Home Assistant neu starten, bevor du die Entitäten einer entfernten Integration entfernen kannst. Möchtest Du die entfernbaren Entitäten wirklich entfernen?",
+                            "confirm_partly_text": "Du kannst nur {removable} der ausgewählten {selected} Entitäten entfernen. Entitäten können nur entfernt werden, wenn die Integration die Entitäten nicht mehr bereitstellt. Manchmal musst du Home Assistant neu starten, bevor du die Entitäten einer entfernten Integration entfernen kannst. Möchtest du die entfernbaren Entitäten wirklich entfernen?",
                             "confirm_partly_title": "Es können nur {number} ausgewählte Objekte entfernt werden.",
                             "confirm_text": "Du solltest sie aus deiner Lovelace-Konfiguration und deinen Automatisierungen entfernen, wenn sie diese Entitäten enthalten.",
                             "confirm_title": "Möchtest du {number} Entitäten entfernen?"
@@ -1507,9 +1540,9 @@
                     "no_integrations": "Du hast anscheinend noch keine Integrationen konfiguriert. Klicke auf die Schaltfläche unten, um Deine erste Integration hinzuzufügen!",
                     "none": "Noch nichts konfiguriert",
                     "none_found": "Keine Integrationen gefunden",
-                    "none_found_detail": "Passe Deine Suchkriterien an.",
+                    "none_found_detail": "Passe deine Suchkriterien an.",
                     "note_about_integrations": "Nicht alle Integrationen können über die Benutzeroberfläche konfiguriert werden.",
-                    "note_about_website_reference": "Weitere Informationen findest Du auf der ",
+                    "note_about_website_reference": "Weitere Informationen findest du auf der ",
                     "rename_dialog": "Bearbeite den Namen dieses Konfigurationseintrags",
                     "rename_input_label": "Eintragsname",
                     "search": "Such-Integrationen"
@@ -1595,7 +1628,7 @@
                             },
                             "no_resources": "keine Ressourcen"
                         },
-                        "refresh_body": "Die Seite muss aktualisiert werden, um das Entfernen abzuschließen. Möchtest Du sie jetzt aktualisieren?",
+                        "refresh_body": "Die Seite muss aktualisiert werden, um das Entfernen abzuschließen. Möchtest du sie jetzt aktualisieren?",
                         "refresh_header": "Möchtest du aktualisieren?",
                         "types": {
                             "css": "Stylesheet",
@@ -1620,8 +1653,23 @@
                     "topic": "Topic"
                 },
                 "ozw": {
+                    "common": {
+                        "instance": "Instanz"
+                    },
                     "device_info": {
                         "zwave_info": "Z-Wave Infos"
+                    },
+                    "navigation": {
+                        "network": "Netzwerk",
+                        "select_instance": "Instanz auswählen"
+                    },
+                    "network_status": {
+                        "offline": "Offline",
+                        "online": "Online",
+                        "unknown": "Unbekannt"
+                    },
+                    "network": {
+                        "header": "Netzwerkverwaltung"
                     }
                 },
                 "person": {
@@ -1777,6 +1825,15 @@
                             "valid": "Konfiguration in Ordnung"
                         }
                     }
+                },
+                "tags": {
+                    "detail": {
+                        "name": "Name"
+                    },
+                    "headers": {
+                        "name": "Name"
+                    },
+                    "never_scanned": "Nie gescannt"
                 },
                 "users": {
                     "add_user": {
@@ -1938,7 +1995,7 @@
                         "name": "Name",
                         "new_zone": "Neue Zone",
                         "passive": "Passiv",
-                        "passive_note": "Passive Zonen sind im Frontend versteckt und werden nicht als Ort für Device Tracker verwendet. Dies ist nützlich, wenn Du sie nur für Automatisierungen verwenden möchtest.",
+                        "passive_note": "Passive Zonen sind im Frontend versteckt und werden nicht als Ort für Device Tracker verwendet. Dies ist nützlich, wenn du sie nur für Automatisierungen verwenden möchtest.",
                         "radius": "Radius",
                         "required_error_msg": "Dieses Feld ist erforderlich",
                         "update": "Aktualisieren"
@@ -1948,7 +2005,7 @@
                     "go_to_core_config": "Zur allgemeinen Konfiguration gehen?",
                     "home_zone_core_config": "Der Standort deiner Homezone kann auf der allgemeinen Konfigurationsseite bearbeitet werden. Der Radius der Homezone kann vom Frontend aus noch nicht bearbeitet werden. Möchtest du zur allgemeinen Konfiguration gehen?",
                     "introduction": "Mit Zonen kannst du bestimmte Regionen auf der Erde angeben. Befindet sich eine Person in einer Zone, übernimmt der Zustand den Namen aus der Zone. Zonen können auch als Auslöser oder Bedingung in Automatisierungs-Setups verwendet werden.",
-                    "no_zones_created_yet": "Es sieht so aus, als hättest Du noch keine Zonen erstellt."
+                    "no_zones_created_yet": "Es sieht so aus, als hättest du noch keine Zonen erstellt."
                 },
                 "zwave": {
                     "button": "Konfigurieren",
@@ -2099,6 +2156,7 @@
                         "description": "Vorlagen werden durch die Jinja2-Template-Engine mit einigen für Home Assistant spezifischen Erweiterungen gerendert.",
                         "editor": "Vorlageneditor",
                         "jinja_documentation": "Jinja2 Template Dokumentation",
+                        "reset": "Zurücksetzen auf Demo-Vorlage",
                         "template_extensions": "Home Assistant-Vorlagenerweiterungen",
                         "title": "Vorlage",
                         "unknown_error_template": "Unbekannter Fehler beim Rendern der Vorlage"
@@ -2180,6 +2238,9 @@
                             "description": "Mit der Schaltflächen-Karte kannst du Schaltflächen hinzufügen, um Aufgaben auszuführen.",
                             "name": "Schaltfläche"
                         },
+                        "calendar": {
+                            "name": "Kalender"
+                        },
                         "conditional": {
                             "card": "Karte",
                             "change_type": "Typ ändern",
@@ -2206,7 +2267,7 @@
                             "name": "Entität Filter"
                         },
                         "entity": {
-                            "description": "Mit der Entitätskarte erhältst Du einen schnellen Überblick über den Status Ihrer Entität.",
+                            "description": "Mit der Entitätskarte erhältst du einen schnellen Überblick über den Status Ihrer Entität.",
                             "name": "Entität"
                         },
                         "gauge": {
@@ -2233,7 +2294,7 @@
                             "icon_height": "Symbol Höhe",
                             "image": "Bildpfad",
                             "manual": "Manuell",
-                            "manual_description": "Möchtest du eine benutzerdefinierte Karte hinzufügen, oder den Yaml-Code von Hand bearbeiten?",
+                            "manual_description": "Möchtest du eine benutzerdefinierte Karte hinzufügen oder den YAML-Code von Hand bearbeiten?",
                             "maximum": "Maximum",
                             "minimum": "Minimum",
                             "name": "Name",
@@ -2416,8 +2477,8 @@
                         "para_sure": "Bist du dir sicher, dass du die Benutzeroberfläche selbst verwalten möchtest?",
                         "save": "Kontrolle übernehmen",
                         "yaml_config": "Um dir den Einstieg zu erleichtern, findest du hier die aktuelle Konfiguration dieses Dashboards:",
-                        "yaml_control": "Um die Kontrolle im YAML-Modus zu übernehmen, erstelle eine YAML-Datei mit dem Namen, den Du in Deiner Konfiguration für dieses Dashboard angegeben hast, oder mit der Standardeinstellung 'ui-lovelace.yaml'.",
-                        "yaml_mode": "Du verwendest den YAML-Modus für dieses Dashboard. Dies bedeutet, dass Du Deine Lovelace-Konfiguration nicht über die Benutzeroberfläche ändern kannst. Wenn Du dieses Dashboard über die Benutzeroberfläche verwalten möchtest, entferne \"mode: yaml\" aus Deiner Lovelace-Konfiguration in \"configuration.yaml\"."
+                        "yaml_control": "Um die Kontrolle im YAML-Modus zu übernehmen, erstelle eine YAML-Datei mit dem Namen, den du in Deiner Konfiguration für dieses Dashboard angegeben hast, oder mit der Standardeinstellung 'ui-lovelace.yaml'.",
+                        "yaml_mode": "Du verwendest den YAML-Modus für dieses Dashboard. Dies bedeutet, dass Du Deine Lovelace-Konfiguration nicht über die Benutzeroberfläche ändern kannst. Wenn du dieses Dashboard über die Benutzeroberfläche verwalten möchtest, entferne \"mode: yaml\" aus Deiner Lovelace-Konfiguration in \"configuration.yaml\"."
                     },
                     "suggest_card": {
                         "add": "Zu Lovelace hinzufügen",
@@ -2442,8 +2503,8 @@
                 },
                 "reload_lovelace": "Benutzeroberfläche neu laden",
                 "reload_resources": {
-                    "refresh_body": "Du musst die Seite aktualisieren, um das Neuladen abzuschließen. Möchtest Du sie jetzt aktualisieren?",
-                    "refresh_header": "Möchtest Du aktualisieren?"
+                    "refresh_body": "Du musst die Seite aktualisieren, um das Neuladen abzuschließen. Möchtest du sie jetzt aktualisieren?",
+                    "refresh_header": "Möchtest du aktualisieren?"
                 },
                 "unused_entities": {
                     "available_entities": "Dies sind die Entitäten, die du zur Verfügung hast, die aber noch nicht in deiner Lovelace-Benutzeroberfläche enthalten sind.",
@@ -2627,6 +2688,7 @@
                     "intro": "Hallo {name}, willkommen bei Home Assistant. Wie möchten Sie Ihre Haus benennen?",
                     "intro_location": "Wir würden gerne wissen, wo Sie wohnen. Diese Daten helfen bei der Anzeige von Informationen und der Einrichtung von Sonnenstands-basierten Automatisierungen. Diese Daten werden niemals außerhalb Ihres Netzwerks weitergegeben.",
                     "intro_location_detect": "Wir können helfen, diese Informationen auszufüllen, indem wir eine einmalige Anfrage an einen externen Dienstleister richten.",
+                    "location_name": "Name deiner Home Assistant Installation",
                     "location_name_default": "Home"
                 },
                 "integration": {
@@ -2738,6 +2800,7 @@
                 "themes": {
                     "accent_color": "Akzentfarbe",
                     "dark_mode": {
+                        "auto": "Automatisch",
                         "dark": "Dunkel",
                         "light": "Hell"
                     },

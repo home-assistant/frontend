@@ -37,6 +37,18 @@ const reloadableDomains = [
   "input_select",
   "template",
   "universal",
+  "rest",
+  "command_line",
+  "filter",
+  "statistics",
+  "generic",
+  "generic_thermostat",
+  "homekit",
+  "min_max",
+  "history_stats",
+  "trend",
+  "ping",
+  "filesize",
 ];
 
 @customElement("ha-config-server-control")

@@ -1,10 +1,13 @@
 import {
+  css,
+  CSSResult,
   customElement,
   html,
-  LitElement,
   internalProperty,
+  LitElement,
   TemplateResult,
 } from "lit-element";
+import { styleMap } from "lit-html/directives/style-map";
 import { HomeAssistant } from "../../../types";
 import { DividerConfig, LovelaceRow } from "../entity-rows/types";
 
@@ -19,13 +22,7 @@ class HuiDividerRow extends LitElement implements LovelaceRow {
       throw new Error("Error in card configuration.");
     }
 
-    this._config = {
-      style: {
-        height: "1px",
-        "background-color": "var(--divider-color)",
-      },
-      ...config,
-    };
+    this._config = config;
   }
 
   protected render(): TemplateResult {
@@ -33,13 +30,16 @@ class HuiDividerRow extends LitElement implements LovelaceRow {
       return html``;
     }
 
-    const el = document.createElement("div");
+    return html`<div style=${styleMap(this._config.style)}></div>`;
+  }
 
-    Object.keys(this._config.style).forEach((prop) => {
-      el.style.setProperty(prop, this._config!.style[prop]);
-    });
-
-    return html` ${el} `;
+  static get styles(): CSSResult {
+    return css`
+      div {
+        height: 1px;
+        background-color: var(--entities-divider-color, var(--divider-color));
+      }
+    `;
   }
 }
 

@@ -10,7 +10,7 @@ import {
   internalProperty,
   TemplateResult,
 } from "lit-element";
-import "../../../src/components/buttons/ha-call-api-button";
+import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-svg-icon";
 import { HassioHassOSInfo } from "../../../src/data/hassio/host";
@@ -21,6 +21,11 @@ import {
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import { hassioStyle } from "../resources/hassio-style";
+import {
+  showConfirmationDialog,
+  showAlertDialog,
+} from "../../../src/dialogs/generic/show-dialog-box";
+import { HassioResponse } from "../../../src/data/hassio/common";
 
 @customElement("hassio-update")
 export class HassioUpdate extends LitElement {
@@ -126,31 +131,50 @@ export class HassioUpdate extends LitElement {
           <a href="${releaseNotesUrl}" target="_blank" rel="noreferrer">
             <mwc-button>Release notes</mwc-button>
           </a>
-          <ha-call-api-button
-            .hass=${this.hass}
-            .path=${apiPath}
-            @hass-api-called=${this._apiCalled}
+          <ha-progress-button
+            .apiPath=${apiPath}
+            .name=${name}
+            .version=${lastVersion}
+            @click=${this._confirmUpdate}
           >
             Update
-          </ha-call-api-button>
+          </ha-progress-button>
         </div>
       </ha-card>
     `;
   }
 
-  private _apiCalled(ev): void {
-    if (ev.detail.success) {
-      this._error = "";
+  private async _confirmUpdate(ev): Promise<void> {
+    const item = ev.target;
+    item.progress = true;
+    const confirmed = await showConfirmationDialog(this, {
+      title: `Update ${item.name}`,
+      text: `Are you sure you want to upgrade ${item.name} to version ${item.version}?`,
+      confirmText: "update",
+      dismissText: "cancel",
+    });
+
+    if (!confirmed) {
+      item.progress = false;
       return;
     }
-
-    const response = ev.detail.response;
-
-    if (typeof response.body === "object") {
-      this._error = response.body.message || "Unknown error";
-    } else {
-      this._error = response.body;
+    try {
+      await this.hass.callApi<HassioResponse<void>>("POST", item.apiPath);
+    } catch (err) {
+      // Only show an error if the status code was not 504 (timeout reported by proxies)
+      if (err.status_code !== 504) {
+        showAlertDialog(this, {
+          title: "Update failed",
+          text:
+            typeof err === "object"
+              ? typeof err.body === "object"
+                ? err.body.message
+                : err.body || "Unkown error"
+              : err,
+        });
+      }
     }
+    item.progress = false;
   }
 
   static get styles(): CSSResult[] {

@@ -11,21 +11,11 @@ import { styleMap } from "lit-html/directives/style-map";
 import { afterNextRender } from "../common/util/render-status";
 import { ifDefined } from "lit-html/directives/if-defined";
 
+import { getValueInPercentage, normalize } from "../util/calculate";
+
 const getAngle = (value: number, min: number, max: number) => {
   const percentage = getValueInPercentage(normalize(value, min, max), min, max);
   return (percentage * 180) / 100;
-};
-
-const normalize = (value: number, min: number, max: number) => {
-  if (value > max) return max;
-  if (value < min) return min;
-  return value;
-};
-
-const getValueInPercentage = (value: number, min: number, max: number) => {
-  const newMax = max - min;
-  const newVal = value - min;
-  return (100 * newVal) / newMax;
 };
 
 // Workaround for https://github.com/home-assistant/frontend/issues/6467

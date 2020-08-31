@@ -613,7 +613,7 @@
             "generic": {
                 "cancel": "İptal",
                 "close": "kapat",
-                "default_confirmation_title": "Emin misin?",
+                "default_confirmation_title": "Emin misiniz?",
                 "ok": "Tamam"
             },
             "helper_settings": {
@@ -1069,7 +1069,7 @@
                     "picker": {
                         "add_automation": "Otomasyon ekle",
                         "delete_automation": "Otomasyonu sil",
-                        "delete_confirm": "Bu otomasyonu silmek istediğinizden emin misin?",
+                        "delete_confirm": "Bu otomasyonu silmek istediğinizden emin misiniz?",
                         "edit_automation": "Otomasyonu düzenle",
                         "header": "Otomasyon Düzenleyici",
                         "headers": {
@@ -1736,7 +1736,7 @@
                             "zone": "Bölgeleri yeniden yükle"
                         },
                         "server_management": {
-                            "confirm_restart": "Home Assistant'ı yeniden başlatmak istediğinizden emin misin?",
+                            "confirm_restart": "Home Assistant'ı yeniden başlatmak istediğinizden emin misiniz?",
                             "confirm_stop": "Home Assistant'ı durdurmak istediğinizden emin misin?",
                             "heading": "Sunucu yönetimi",
                             "introduction": "Home Assistant sunucunuzu kontrol edin.. Home Assistant üzerinden",

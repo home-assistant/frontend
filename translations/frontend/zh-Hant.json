@@ -419,9 +419,16 @@
                 "unlock": "解鎖"
             },
             "media_player": {
+                "browse_media": "瀏覽媒體",
+                "media_next_track": "下一首",
+                "media_play": "播放",
+                "media_play_pause": "播放/暫停",
+                "media_previous_track": "上一首",
                 "sound_mode": "音效模式",
                 "source": "來源",
-                "text_to_speak": "所要閱讀的文字"
+                "text_to_speak": "所要閱讀的文字",
+                "turn_off": "關閉",
+                "turn_on": "開啟"
             },
             "persistent_notification": {
                 "dismiss": "關閉"
@@ -554,6 +561,22 @@
                 "loading_history": "正在載入狀態歷史...",
                 "no_history_found": "找不到狀態歷史。"
             },
+            "media-browser": {
+                "choose-source": "選擇來源",
+                "content-type": {
+                    "album": "專輯",
+                    "artist": "演唱者",
+                    "library": "媒體庫",
+                    "playlist": "播放列表",
+                    "server": "伺服器"
+                },
+                "media-player-browser": "媒體播放器瀏覽器",
+                "no_items": "沒有項目",
+                "pick": "選擇",
+                "pick-media": "選擇媒體",
+                "play": "播放",
+                "play-media": "播放媒體"
+            },
             "picture-upload": {
                 "label": "照片",
                 "unsupported_format": "不支援的格式，請選擇 JPEG、PNG 或 GIF 圖檔。"
@@ -578,6 +601,7 @@
                     "week": "{count} {count, plural,\n  one {週}\n  other {週}\n}"
                 },
                 "future": "{time}後",
+                "just_now": "現在",
                 "never": "未執行",
                 "past": "{time}前"
             },
@@ -1318,6 +1342,7 @@
                     }
                 },
                 "devices": {
+                    "add_prompt": "此設備尚未添加任何 {name}。可點選上方的 + 按鈕進行新增。",
                     "automation": {
                         "actions": {
                             "caption": "當某物件被觸發時..."
@@ -1500,6 +1525,9 @@
                         "no_device": "物件沒有設備",
                         "no_devices": "此整合沒有任何設備。",
                         "options": "選項",
+                        "reload": "重新載入",
+                        "reload_confirm": "整合已重新載入",
+                        "reload_restart_confirm": "重啟 Home Assistant 以為重整合重新載入",
                         "rename": "重新命名",
                         "restart_confirm": "重啟 Home Assistant 以完成此整合移動",
                         "settings_button": "編輯 {integration} 設定",
@@ -1658,7 +1686,11 @@
                     "topic": "主題"
                 },
                 "ozw": {
+                    "button": "設定",
                     "common": {
+                        "controller": "控制器",
+                        "instance": "設備",
+                        "network": "網路",
                         "node_id": "節點 ID",
                         "ozw_instance": "OpenZWave 設備",
                         "zwave": "Z-Wave"
@@ -1667,6 +1699,36 @@
                         "node_failed": "節點失敗",
                         "stage": "階段",
                         "zwave_info": "Z-Wave 資訊"
+                    },
+                    "navigation": {
+                        "network": "網路",
+                        "nodes": "節點",
+                        "select_instance": "選擇設備"
+                    },
+                    "network_status": {
+                        "details": {
+                            "driverallnodesqueried": "已查詢所有節點。",
+                            "driverallnodesqueriedsomedead": "所有節點已進行查詢，部分節點已失效",
+                            "driverawakenodesqueries": "所有喚醒節點已進行查詢。",
+                            "driverfailed": "連線至 Z-Wave 控制器失敗",
+                            "driverready": "初始化 Z-Wave 控制器",
+                            "driverremoved": "驅動器已移除",
+                            "driverreset": "驅動器已重置",
+                            "offline": "OZWDaemon 離線",
+                            "ready": "準備連線",
+                            "started": "已連線至 MQTT",
+                            "starting": "連線至 MQTT",
+                            "stopped": "OpenZWave 已停止"
+                        },
+                        "offline": "離線",
+                        "online": "線上",
+                        "starting": "開始",
+                        "unknown": "未知"
+                    },
+                    "network": {
+                        "header": "網路管理",
+                        "introduction": "管理網路方面功能。",
+                        "node_count": "{count} 個節點"
                     },
                     "node_query_stages": {
                         "associations": "更新相關群組與成員",
@@ -1698,6 +1760,14 @@
                         "title": "更新節點資訊",
                         "wakeup_header": "喚醒說明",
                         "wakeup_instructions_source": "喚醒說明為來自 OpenZWave 社群的設備資料庫。"
+                    },
+                    "select_instance": {
+                        "header": "選擇 OpenZWave 設備",
+                        "introduction": "超過一個以上的 OpenZWave 設備執行中，要管理哪個設備？"
+                    },
+                    "services": {
+                        "add_node": "新增節點",
+                        "remove_node": "移除節點"
                     }
                 },
                 "person": {
@@ -1823,18 +1893,32 @@
                     "section": {
                         "reloading": {
                             "automation": "重新載入自動化",
+                            "command_line": "重新載入命令列物件",
                             "core": "重新載入座標與自訂化",
+                            "filesize": "重新載入檔案大小物件",
+                            "filter": "重新載入過濾器物件",
+                            "generic": "重新載入通用 IP 攝影機物件",
+                            "generic_thermostat": "重新載入通用溫控器物件",
                             "group": "重新載入群組",
                             "heading": "YAML 設定新載入中",
+                            "history_stats": "重新載入歷史狀態物件",
+                            "homekit": "重新載入 Homekit",
                             "input_boolean": "重新載入輸入 boolean",
                             "input_datetime": "重新載入輸入日期時間",
                             "input_number": "重新載入輸入數字",
                             "input_select": "重新載入輸入選擇",
                             "input_text": "重新載入輸入文字",
                             "introduction": "Home Assistant 中部分設定無須重啟即可重新載入生效。點選重新載入按鈕，即可解除目前 YAML 設定，並重新載入最新設定。",
+                            "min_max": "重新載入最低/最高物件",
                             "person": "重新載入人員",
+                            "ping": "重新載入 Pung 二進位傳感器物件",
+                            "rest": "重新載入剩餘物件",
                             "scene": "重新載入場景",
                             "script": "重新載入腳本",
+                            "statistics": "重新載入統計資訊物件",
+                            "template": "重新載入範例物件",
+                            "trend": "重新載入趨勢物件",
+                            "universal": "重新載入通用媒體播放器物件",
                             "zone": "重新載入區域"
                         },
                         "server_management": {
@@ -1876,6 +1960,7 @@
                         "last_scanned": "最後掃描時間",
                         "name": "名稱"
                     },
+                    "never_scanned": "從未掃描",
                     "no_tags": "無標籤",
                     "write": "編寫"
                 },
@@ -1885,6 +1970,8 @@
                         "create": "新增",
                         "name": "名稱",
                         "password": "密碼",
+                        "password_confirm": "確認密碼",
+                        "password_not_match": "密碼不相符",
                         "username": "使用者名稱"
                     },
                     "caption": "用戶",
@@ -1901,7 +1988,9 @@
                         "group": "群組",
                         "id": "ID",
                         "name": "名稱",
+                        "new_password": "新密碼",
                         "owner": "擁有者",
+                        "password_changed": "密碼已變更！",
                         "system_generated": "系統產生",
                         "system_generated_users_not_editable": "無法更新系統產生用戶",
                         "system_generated_users_not_removable": "無法移除系統產生用戶",
@@ -2200,6 +2289,7 @@
                         "description": "模版使用 Jinja2 模板引擎及 Home Assistant 特殊擴充進行模板渲染。",
                         "editor": "模板編輯器",
                         "jinja_documentation": "Jinja2 模版文件",
+                        "reset": "重置示範範模板",
                         "template_extensions": "Home Assistant 模板擴充",
                         "title": "模板",
                         "unknown_error_template": "未知渲染模版錯誤"
@@ -2281,6 +2371,10 @@
                             "description": "按鈕面板可供新增按鈕以執行任務。",
                             "name": "按鈕面板"
                         },
+                        "calendar": {
+                            "description": "行事曆面板可顯示包含日、週及列表的行事曆",
+                            "name": "行事曆"
+                        },
                         "conditional": {
                             "card": "面板",
                             "change_type": "變更類別",
@@ -2346,6 +2440,7 @@
                             "show_name": "顯示名稱？",
                             "show_state": "顯示狀態？",
                             "state": "狀態",
+                            "state_color": "以色彩顯示狀態？",
                             "tap_action": "點選觸發",
                             "theme": "主題",
                             "title": "標題",
@@ -2735,6 +2830,7 @@
                     "intro": "{name}你好，歡迎使用 Home Assistant。為您的家庭取個名字吧？",
                     "intro_location": "希望能夠提供您所居住的區域，資料將協助所顯示的資訊內容、設定以日出日落為基礎的自動化。此資料將絕不會與外部網路進行分享。",
                     "intro_location_detect": "設定可以藉由一次性請求外部服務、以協助您填寫此項資料。",
+                    "location_name": "Home Assistant 安裝名稱",
                     "location_name_default": "首頁"
                 },
                 "integration": {
