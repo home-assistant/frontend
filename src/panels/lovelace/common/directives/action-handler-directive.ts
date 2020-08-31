@@ -117,11 +117,11 @@ class ActionHandler extends HTMLElement implements ActionHandler {
       });
     }
 
+    element.actionHandler = { options };
+
     if (options.disabled) {
       return;
     }
-
-    element.actionHandler = { options };
 
     element.actionHandler.start = (ev: Event) => {
       this.held = false;
