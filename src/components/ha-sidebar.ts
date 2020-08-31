@@ -522,7 +522,12 @@ class HaSidebar extends LitElement {
 
   private async _hidePanel(ev: Event) {
     ev.preventDefault();
-    this._hiddenPanels = [...this._hiddenPanels, (ev.target as any).panel];
+    const panel = (ev.target as any).panel;
+    if (this._hiddenPanels.includes(panel)) {
+      return;
+    }
+    // Make a copy for Memoize
+    this._hiddenPanels = [...this._hiddenPanels, panel];
     this._renderEmptySortable = true;
     await this.updateComplete;
     this._renderEmptySortable = false;
@@ -530,9 +535,13 @@ class HaSidebar extends LitElement {
 
   private async _unhidePanel(ev: Event) {
     ev.preventDefault();
-    const hiddenPanels = [...this._hiddenPanels];
-    hiddenPanels.splice(hiddenPanels.indexOf((ev.target as any).panel), 1);
-    this._hiddenPanels = hiddenPanels;
+    const index = this._hiddenPanels.indexOf((ev.target as any).panel);
+    if (index < 0) {
+      return;
+    }
+    this._hiddenPanels.splice(index, 1);
+    // Make a copy for Memoize
+    this._hiddenPanels = { ...this._hiddenPanels };
     this._renderEmptySortable = true;
     await this.updateComplete;
     this._renderEmptySortable = false;
