@@ -59,6 +59,7 @@ const cardConfigStruct = object({
   title: optional(union([string(), boolean()])),
   theme: optional(string()),
   show_header_toggle: optional(boolean()),
+  state_color: optional(boolean()),
   entities: array(entitiesConfigStruct),
   header: optional(headerFooterConfigStructs),
   footer: optional(headerFooterConfigStructs),
@@ -133,6 +134,18 @@ export class HuiEntitiesCardEditor extends LitElement
               <ha-switch
                 .checked=${this._config!.show_header_toggle !== false}
                 .configValue=${"show_header_toggle"}
+                @change=${this._valueChanged}
+              ></ha-switch>
+            </ha-formfield>
+            <ha-formfield
+              .label=${this.hass.localize(
+                "ui.panel.lovelace.editor.card.generic.state_color"
+              )}
+              .dir=${computeRTLDirection(this.hass)}
+            >
+              <ha-switch
+                .checked=${this._config!.state_color}
+                .configValue=${"state_color"}
                 @change=${this._valueChanged}
               ></ha-switch>
             </ha-formfield>

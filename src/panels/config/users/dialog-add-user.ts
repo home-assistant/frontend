@@ -1,20 +1,21 @@
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
-import "../../../components/ha-circular-progress";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
+import "../../../components/ha-circular-progress";
 import "../../../components/ha-dialog";
-import "../../../components/ha-switch";
 import "../../../components/ha-formfield";
+import "../../../components/ha-switch";
 import { createAuthForUser } from "../../../data/auth";
 import {
   createUser,
@@ -27,7 +28,6 @@ import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { AddUserDialogParams } from "./show-dialog-add-user";
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
 
 @customElement("dialog-add-user")
 export class DialogAddUser extends LitElement {
@@ -46,6 +46,8 @@ export class DialogAddUser extends LitElement {
 
   @internalProperty() private _password?: string;
 
+  @internalProperty() private _passwordConfirm?: string;
+
   @internalProperty() private _isAdmin?: boolean;
 
   public showDialog(params: AddUserDialogParams) {
@@ -53,6 +55,7 @@ export class DialogAddUser extends LitElement {
     this._name = "";
     this._username = "";
     this._password = "";
+    this._passwordConfirm = "";
     this._isAdmin = false;
     this._error = undefined;
     this._loading = false;
@@ -83,17 +86,20 @@ export class DialogAddUser extends LitElement {
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           <paper-input
             class="name"
+            name="name"
             .label=${this.hass.localize("ui.panel.config.users.add_user.name")}
             .value=${this._name}
             required
             auto-validate
             autocapitalize="on"
             .errorMessage=${this.hass.localize("ui.common.error_required")}
-            @value-changed=${this._nameChanged}
+            @value-changed=${this._handleValueChanged}
             @blur=${this._maybePopulateUsername}
           ></paper-input>
+
           <paper-input
             class="username"
+            name="username"
             .label=${this.hass.localize(
               "ui.panel.config.users.add_user.username"
             )}
@@ -101,20 +107,40 @@ export class DialogAddUser extends LitElement {
             required
             auto-validate
             autocapitalize="none"
-            @value-changed=${this._usernameChanged}
+            @value-changed=${this._handleValueChanged}
             .errorMessage=${this.hass.localize("ui.common.error_required")}
           ></paper-input>
+
           <paper-input
             .label=${this.hass.localize(
               "ui.panel.config.users.add_user.password"
             )}
             type="password"
+            name="password"
             .value=${this._password}
             required
             auto-validate
-            @value-changed=${this._passwordChanged}
+            @value-changed=${this._handleValueChanged}
             .errorMessage=${this.hass.localize("ui.common.error_required")}
           ></paper-input>
+
+          <paper-input
+            label="${this.hass.localize(
+              "ui.panel.config.users.add_user.password_confirm"
+            )}"
+            name="passwordConfirm"
+            .value=${this._passwordConfirm}
+            @value-changed=${this._handleValueChanged}
+            required
+            type="password"
+            .invalid=${this._password !== "" &&
+            this._passwordConfirm !== "" &&
+            this._passwordConfirm !== this._password}
+            .errorMessage="${this.hass.localize(
+              "ui.panel.config.users.add_user.password_not_match"
+            )}"
+          ></paper-input>
+
           <ha-formfield
             .label=${this.hass.localize("ui.panel.config.users.editor.admin")}
             .dir=${computeRTLDirection(this.hass)}
@@ -147,7 +173,10 @@ export class DialogAddUser extends LitElement {
           : html`
               <mwc-button
                 slot="primaryAction"
-                .disabled=${!this._name || !this._username || !this._password}
+                .disabled=${!this._name ||
+                !this._username ||
+                !this._password ||
+                this._password !== this._passwordConfirm}
                 @click=${this._createUser}
               >
                 ${this.hass.localize("ui.panel.config.users.add_user.create")}
@@ -173,19 +202,10 @@ export class DialogAddUser extends LitElement {
     }
   }
 
-  private _nameChanged(ev: PolymerChangedEvent<string>) {
+  private _handleValueChanged(ev: PolymerChangedEvent<string>): void {
     this._error = undefined;
-    this._name = ev.detail.value;
-  }
-
-  private _usernameChanged(ev: PolymerChangedEvent<string>) {
-    this._error = undefined;
-    this._username = ev.detail.value;
-  }
-
-  private _passwordChanged(ev: PolymerChangedEvent<string>) {
-    this._error = undefined;
-    this._password = ev.detail.value;
+    const name = (ev.target as any).name;
+    this[`_${name}`] = ev.detail.value;
   }
 
   private async _adminChanged(ev): Promise<void> {

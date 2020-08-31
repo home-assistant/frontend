@@ -1113,7 +1113,7 @@
                             "enable_ha_skill": "Aktivere Home Assistant-ferdigheten for Alexa",
                             "enable_state_reporting": "Aktiver tilstandsrapportering",
                             "info": "Med Alexa-integrasjonen for Home Assistant Cloud vil du kunne kontrollere alle dine Home Assistant-enheter via hvilken som helst Alexa-aktivert enhet.",
-                            "info_state_reporting": "Hvis du aktiverer tilstandsrapportering, vil Home Assistant sende alle tilstandsendringer av utsatte enheter til Amazon. Dette lar deg alltid se de siste tilstandene i Alexa-appen og bruke tilstandsendringene til å lage rutiner.",
+                            "info_state_reporting": "Hvis du aktiverer tilstandsrapportering, vil Home Assistant sende alle tilstandsendringer av eksponerte entiteter til Amazon. Dette lar deg alltid se de siste tilstandene i Alexa-appen og bruke tilstandsendringene til å lage rutiner.",
                             "manage_entities": "Håndtér entiteter",
                             "state_reporting_error": "Kan ikke {enable_disable} rapportere status.",
                             "sync_entities": "Synkronisér entiteter",
@@ -1131,7 +1131,7 @@
                             "enter_pin_hint": "Angi en PIN-kode for å bruke sikkerhetsenheter",
                             "enter_pin_info": "Angi en PIN-kode for å samhandle med sikkerhetsenheter. Sikkerhetsanordninger er dører, garasjeporter og låser. Du vil bli bedt om å si/angi denne PIN-koden når du samhandler med slike enheter via Google Assistant.",
                             "info": "Med Google Assistant-integrasjonen for Home Assistant Cloud vil du kunne kontrollere alle dine Home Assistant-enheter via hvilken som helst Google Assistant-aktivert enhet.",
-                            "info_state_reporting": "Hvis du aktiverer tilstandsrapportering, vil Home Assistant sende alle tilstandsendringer av utsatte enheter til Google. Dette lar deg alltid se de nyeste delene av Google-appen.",
+                            "info_state_reporting": "Hvis du aktiverer tilstandsrapportering, vil Home Assistant sende alle tilstandsendringer av eksponerte entiteter til Google. Dette lar deg alltid se de siste tilstandene i Google-appen.",
                             "manage_entities": "Håndtér entiteter",
                             "security_devices": "Sikkerhetsenheter",
                             "sync_entities": "Synkronisér entiteter til Google",
@@ -1168,7 +1168,7 @@
                         }
                     },
                     "alexa": {
-                        "banner": "Redigere hvilke entiteter som vises via dette grensesnittet er deaktivert fordi du har konfigurert entitetsfiltre i configuration.yaml.",
+                        "banner": "Redigere hvilke entiteter som vises via dette grensesnittet er deaktivert fordi du har konfigurert entitetsfilter i configuration.yaml.",
                         "expose": "Eksponer til Alexa",
                         "exposed_entities": "Eksponerte entiteter",
                         "not_exposed_entities": "Ikke-eksponerte entiteter"
@@ -1204,7 +1204,7 @@
                         "title": "Glemt passord"
                     },
                     "google": {
-                        "banner": "Redigere hvilke entiteter som vises via dette grensesnittet er deaktivert fordi du har konfigurert entitetsfiltre i configuration.yaml.",
+                        "banner": "Redigere hvilke entiteter som vises via dette grensesnittet er deaktivert fordi du har konfigurert entitetsfilter i configuration.yaml.",
                         "disable_2FA": "Deaktiver totrinnsbekreftelse",
                         "expose": "Eksponer til Google Assistant",
                         "exposed_entities": "Eksponerte entiteter",
@@ -1847,24 +1847,32 @@
                     "section": {
                         "reloading": {
                             "automation": "Last inn automasjoner på nytt",
-                            "command_line": "Last inn kommandolinjeenheter på nytt",
+                            "command_line": "Last inn kommandolinje entiteter på nytt",
                             "core": "Last inn lokasjon og spesialtilpassinger på nytt",
-                            "filter": "Last inn filterenheter på nytt",
+                            "filesize": "Last inn filstørrelse entiteter på nytt",
+                            "filter": "Last inn filter entiteter på nytt",
+                            "generic": "Last inn generiske IP-kamera entiteter på nytt",
+                            "generic_thermostat": "Last inn generiske termostat entiteter på nytt",
                             "group": "Last inn grupper på nytt",
                             "heading": "YAML -Konfigurasjon lastes på nytt",
-                            "input_boolean": "Last inn bolsk inndata på nytt",
-                            "input_datetime": "Last inn dato inndata på nytt",
-                            "input_number": "Last inn nummer inndata på nytt",
-                            "input_select": "Last inn valg inndata på nytt ",
-                            "input_text": "Last inn tekst inndata på nytt",
+                            "history_stats": "Last inn historiske tilstander på nytt",
+                            "homekit": "Last inn HomeKit på nytt",
+                            "input_boolean": "Last inn inndata bolsk på nytt",
+                            "input_datetime": "Last inn inndata datotid på nytt",
+                            "input_number": "Last inn numerisk inndata på nytt",
+                            "input_select": "Last inn inndata valg på nytt",
+                            "input_text": "Last inn inndata tekst på nytt",
                             "introduction": "Noen deler av Home Assistant kan laste inn uten å kreve omstart. Hvis du trykker last på nytt, vil du bytte den nåværende konfigurasjonen med den nye.",
+                            "min_max": "Last inn min/maks entiteter på nytt",
                             "person": "Last inn personer på nytt",
-                            "rest": "Last hvileenhetene på nytt",
+                            "ping": "Last inn ping binære sensor entiteter på nytt",
+                            "rest": "Last inn REST entiteter på nytt",
                             "scene": "Last inn scener på nytt",
                             "script": "Last inn skript på nytt",
-                            "statistics": "Last inn statistiske enheter på nytt",
-                            "template": "Laste inn malenheter på nytt",
-                            "universal": "Laste inn universelle mediespillerenheter på nytt",
+                            "statistics": "Last inn statistiske entiteter på nytt",
+                            "template": "Laste inn mal entiteter på nytt",
+                            "trend": "Laste inn trend entiteter på nytt",
+                            "universal": "Laste inn universelle mediespiller entiteter på nytt",
                             "zone": "Last inn soner på nytt"
                         },
                         "server_management": {
@@ -1916,6 +1924,8 @@
                         "create": "Opprett",
                         "name": "Navn",
                         "password": "Passord",
+                        "password_confirm": "Bekreft passord",
+                        "password_not_match": "Passord samsvarer ikke",
                         "username": "Brukernavn"
                     },
                     "caption": "Brukere",
@@ -1931,7 +1941,9 @@
                         "group": "Gruppe",
                         "id": "Id",
                         "name": "Navn",
+                        "new_password": "Nytt passord",
                         "owner": "Eier",
+                        "password_changed": "Passordet er endret!",
                         "system_generated": "System opprettet",
                         "system_generated_users_not_editable": "Kan ikke oppdatere systemopprettede brukere.",
                         "system_generated_users_not_removable": "Kan ikke fjerne systemopprettede brukere.",
@@ -2181,11 +2193,11 @@
                         "data": "Hendelsesdata (YAML, valgfritt)",
                         "description": "Send ut en hendelse på hendelsesbussen",
                         "documentation": "Hendelsesdokumentasjon.",
-                        "event_fired": "Hendelse {name} avfyrt",
+                        "event_fired": "Hendelse {name} utført",
                         "fire_event": "Utfør hendelse",
                         "listen_to_events": "Lytt til hendelser",
                         "listening_to": "Lytte til",
-                        "notification_event_fired": "Hendelse {type} vellykket avfyrt!",
+                        "notification_event_fired": "Hendelsen {type} vellykket utløst!",
                         "start_listening": "Begynn å lytte",
                         "stop_listening": "Stopp lytting",
                         "subscribe_to": "Hendelse for å abonnere på",
@@ -2212,15 +2224,15 @@
                         "description1": "Angi representasjonen av en enhet i Home Assistant.",
                         "description2": "Dette vil ikke kommunisere med den faktiske enheten.",
                         "entity": "Entitet",
-                        "filter_attributes": "Filtrer attributter",
-                        "filter_entities": "Filtrér entiteter",
-                        "filter_states": "Filtrer tilstander",
+                        "filter_attributes": "Filtrere attributter",
+                        "filter_entities": "Filtrere entiteter",
+                        "filter_states": "Filtrere tilstander",
                         "more_info": "Mer info",
                         "no_entities": "Ingen entiteter",
                         "set_state": "Sett tilstand",
                         "state": "Tilstand",
                         "state_attributes": "Tilstandsattributter (YAML, valgfritt)",
-                        "title": "Statuser"
+                        "title": "Tilstander"
                     },
                     "templates": {
                         "description": "Maler blir rendret ved hjelp av Jinja2-malmotoren med noen spesifikke utvidelser for Home Assistant.",
@@ -2333,7 +2345,7 @@
                             "toggle": "Aktivér/deaktivér entiteter."
                         },
                         "entity-filter": {
-                            "description": "Entity Filter-kortet lar deg definere en liste over entiteter du bare vil spore når de er i en viss tilstand.",
+                            "description": "Entitetsfilter kortet lar deg definere en liste over entiteter du bare vil spore når de er i en viss tilstand.",
                             "name": "Entitetsfilter"
                         },
                         "entity": {
@@ -2375,6 +2387,7 @@
                             "show_name": "Vis navn?",
                             "show_state": "Vis tilstand?",
                             "state": "Tilstand",
+                            "state_color": "Fargeikoner basert på tilstand?",
                             "tap_action": "Trykk handling",
                             "theme": "Tema",
                             "title": "Tittel",
@@ -2427,7 +2440,7 @@
                             "name": "Bildeelementer"
                         },
                         "picture-entity": {
-                            "description": "Picture Entity-kortet viser en entitet i form av et bilde. I stedet for bilder fra URL, kan det også vise bilde av kameraentiteter.",
+                            "description": "Bilde entitet kortet viser en entitet i form av et bilde. I stedet for bilder fra URL, kan det også vise bilde av kameraentiteter.",
                             "name": "Bildeoppføring"
                         },
                         "picture-glance": {

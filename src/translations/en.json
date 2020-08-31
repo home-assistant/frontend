@@ -843,7 +843,15 @@
               "rest": "Reload rest entities",
               "command_line": "Reload command line entities",
               "filter": "Reload filter entities",
-              "statistics": "Reload statistics entities"
+              "statistics": "Reload statistics entities",
+              "generic": "Reload generic IP camera entities",
+              "generic_thermostat": "Reload generic thermostat entities",
+              "homekit": "Reload HomeKit",
+              "min_max": "Reload min/max entities",
+              "history_stats": "Reload history stats entities",
+              "trend": "Reload trend entities",
+              "ping": "Reload ping binary sensor entities",
+              "filesize": "Reload file size entities"
             },
             "server_management": {
               "heading": "Server management",
@@ -1654,6 +1662,8 @@
             "caption": "View user",
             "name": "Name",
             "change_password": "Change password",
+            "new_password": "New Password",
+            "password_changed": "The password is changed!",
             "activate_user": "Activate user",
             "deactivate_user": "Deactivate user",
             "delete_user": "Delete user",
@@ -1674,6 +1684,8 @@
             "name": "Name",
             "username": "Username",
             "password": "Password",
+            "password_confirm": "Confirm Password",
+            "password_not_match": "Passwords don't match",
             "create": "Create"
           }
         },
@@ -2246,7 +2258,8 @@
               "url": "Url",
               "state": "State",
               "secondary_info_attribute": "Secondary Info Attribute",
-              "search": "Search"
+              "search": "Search",
+              "state_color": "Color icons based on state?"
             },
             "map": {
               "name": "Map",
