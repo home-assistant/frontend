@@ -487,6 +487,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         .breadcrumb-overflow {
           display: flex;
+          flex-grow: 1;
           justify-content: space-between;
         }
 
@@ -648,8 +649,8 @@ export class HaMediaPlayerBrowse extends LitElement {
           padding: 0;
         }
 
-        :host([narrow]) .breadcrumb-overflow {
-          align-items: flex-end;
+        :host([narrow]) .breadcrumb .title {
+          font-size: 24px;
         }
 
         :host([narrow]) .header {
@@ -735,15 +736,16 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         :host([scroll]) .header-info mwc-button {
           align-self: center;
+          margin-top: 0;
+          margin-bottom: 0;
         }
 
         :host([scroll][narrow]) .no-img .header-info {
           flex-direction: row-reverse;
         }
 
-        :host([scroll][narrow]).header-info {
-          height: 100px;
-          padding: 0px 24px;
+        :host([scroll][narrow]) .header-info {
+          padding: 20px 24px 10px 24px;
           align-items: center;
         }
 
@@ -767,6 +769,8 @@ export class HaMediaPlayerBrowse extends LitElement {
         :host([scroll]) mwc-fab {
           bottom: 4px;
           right: 4px;
+          --mdc-fab-box-shadow: none;
+          --mdc-theme-secondary: rgba(var(--rgb-primary-color), 0.5);
         }
       `,
     ];
