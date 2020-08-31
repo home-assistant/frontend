@@ -261,31 +261,10 @@ class HaSidebar extends LitElement {
               ${guard([this._hiddenPanels, this._renderEmptySortable], () =>
                 this._renderEmptySortable
                   ? ""
-                  : beforeSpacer.map((panel) =>
-                      this._renderPanel(
-                        panel.url_path,
-                        panel.url_path === "lovelace"
-                          ? hass.localize("panel.states")
-                          : hass.localize(`panel.${panel.title}`) ||
-                              panel.title,
-                        panel.url_path === "lovelace" ? undefined : panel.icon,
-                        panel.url_path === "lovelace"
-                          ? mdiViewDashboard
-                          : undefined
-                      )
-                    )
+                  : this._renderPanels(beforeSpacer)
               )}
             </div>`
-          : html`${beforeSpacer.map((panel) =>
-              this._renderPanel(
-                panel.url_path,
-                panel.url_path === "lovelace"
-                  ? hass.localize("panel.states")
-                  : hass.localize(`panel.${panel.title}`) || panel.title,
-                panel.url_path === "lovelace" ? undefined : panel.icon,
-                panel.url_path === "lovelace" ? mdiViewDashboard : undefined
-              )
-            )}`}
+          : this._renderPanels(beforeSpacer)}
         <div class="spacer" disabled></div>
         ${this._editMode && this._hiddenPanels.length
           ? html`
@@ -317,14 +296,7 @@ class HaSidebar extends LitElement {
               <div class="spacer" disabled></div>
             `
           : ""}
-        ${afterSpacer.map((panel) =>
-          this._renderPanel(
-            panel.url_path,
-            hass.localize(`panel.${panel.title}`) || panel.title,
-            panel.icon,
-            undefined
-          )
-        )}
+        ${this._renderPanels(afterSpacer)}
         ${this._externalConfig && this._externalConfig.hasSettingsScreen
           ? html`
               <a
@@ -642,6 +614,19 @@ class HaSidebar extends LitElement {
 
   private _toggleSidebar() {
     fireEvent(this, "hass-toggle-menu");
+  }
+
+  private _renderPanels(panels: PanelInfo[]) {
+    return panels.map((panel) =>
+      this._renderPanel(
+        panel.url_path,
+        panel.url_path === "lovelace"
+          ? this.hass.localize("panel.states")
+          : this.hass.localize(`panel.${panel.title}`) || panel.title,
+        panel.url_path === "lovelace" ? undefined : panel.icon,
+        panel.url_path === "lovelace" ? mdiViewDashboard : undefined
+      )
+    );
   }
 
   private _renderPanel(
