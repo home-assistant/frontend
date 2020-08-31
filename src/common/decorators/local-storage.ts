@@ -22,7 +22,11 @@ class Storage {
 
   public setValue(storageKey: string, value: any): any {
     this._storage[storageKey] = value;
-    window.localStorage.setItem(storageKey, JSON.stringify(value));
+    try {
+      window.localStorage.setItem(storageKey, JSON.stringify(value));
+    } catch (err) {
+      // Safari in private mode doesn't allow localstorage
+    }
   }
 }
 
