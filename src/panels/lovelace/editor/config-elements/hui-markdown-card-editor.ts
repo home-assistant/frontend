@@ -8,7 +8,7 @@ import {
   internalProperty,
   TemplateResult,
 } from "lit-element";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../types";
 import { MarkdownCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
@@ -94,7 +94,7 @@ export class HuiMarkdownCardEditor extends LitElement
     ev.stopPropagation();
   }
 
-  private _valueChanged(ev: EntitiesEditorEvent): void {
+  private _valueChanged(ev: HASSDomEvent<EntitiesEditorEvent>): void {
     if (!this._config || !this.hass) {
       return;
     }

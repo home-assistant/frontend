@@ -8,7 +8,7 @@ import {
   internalProperty,
   TemplateResult,
 } from "lit-element";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/state-badge";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
@@ -184,7 +184,7 @@ export class HuiEntitiesCardEditor extends LitElement
     `;
   }
 
-  private _valueChanged(ev: EntitiesEditorEvent): void {
+  private _valueChanged(ev: HASSDomEvent<EntitiesEditorEvent>): void {
     if (!this._config || !this.hass) {
       return;
     }

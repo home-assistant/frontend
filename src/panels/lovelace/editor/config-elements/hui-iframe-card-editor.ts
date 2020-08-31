@@ -7,7 +7,7 @@ import {
   internalProperty,
   TemplateResult,
 } from "lit-element";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../types";
 import { IframeCardConfig } from "../../cards/types";
 import { LovelaceCardEditor } from "../../types";
@@ -90,7 +90,7 @@ export class HuiIframeCardEditor extends LitElement
     `;
   }
 
-  private _valueChanged(ev: EntitiesEditorEvent): void {
+  private _valueChanged(ev: HASSDomEvent<EntitiesEditorEvent>): void {
     if (!this._config || !this.hass) {
       return;
     }

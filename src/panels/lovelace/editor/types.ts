@@ -42,11 +42,8 @@ export interface ConfigError {
 }
 
 export interface EntitiesEditorEvent {
-  detail?: {
-    entities?: EntityConfig[];
-    config?: LovelaceHeaderFooterConfig;
-  };
-  target?: EventTarget;
+  entities?: EntityConfig[];
+  config?: LovelaceHeaderFooterConfig;
 }
 
 export interface EditorTarget extends EventTarget {

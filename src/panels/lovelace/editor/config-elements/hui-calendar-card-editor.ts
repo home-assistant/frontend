@@ -6,7 +6,7 @@ import {
   TemplateResult,
   internalProperty,
 } from "lit-element";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import type { HomeAssistant } from "../../../../types";
 import type { CalendarCardConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
@@ -98,7 +98,9 @@ export class HuiCalendarCardEditor extends LitElement
     `;
   }
 
-  private _valueChanged(ev: EntitiesEditorEvent | CustomEvent): void {
+  private _valueChanged(
+    ev: HASSDomEvent<EntitiesEditorEvent> | CustomEvent
+  ): void {
     if (!this._config || !this.hass) {
       return;
     }

@@ -8,7 +8,7 @@ import {
   internalProperty,
   TemplateResult,
 } from "lit-element";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { configElementStyle } from "./config-elements-style";
 import { assert } from "superstruct";
 
@@ -97,7 +97,7 @@ export class HuiGraphFooterEditor extends LitElement
     `;
   }
 
-  private _valueChanged(ev: EntitiesEditorEvent): void {
+  private _valueChanged(ev: HASSDomEvent<EntitiesEditorEvent>): void {
     if (!this._config || !this.hass) {
       return;
     }

@@ -10,7 +10,7 @@ import {
   internalProperty,
   TemplateResult,
 } from "lit-element";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-switch";
 import "../../../../components/ha-formfield";
 import { ActionConfig } from "../../../../data/lovelace";
@@ -256,7 +256,7 @@ export class HuiPictureEntityCardEditor extends LitElement
     `;
   }
 
-  private _valueChanged(ev: EntitiesEditorEvent): void {
+  private _valueChanged(ev: HASSDomEvent<EntitiesEditorEvent>): void {
     if (!this._config || !this.hass) {
       return;
     }

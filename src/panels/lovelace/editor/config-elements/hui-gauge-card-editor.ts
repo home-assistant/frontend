@@ -9,7 +9,7 @@ import {
   internalProperty,
   TemplateResult,
 } from "lit-element";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-switch";
 import "../../../../components/ha-formfield";
 import { HomeAssistant } from "../../../../types";
@@ -216,7 +216,7 @@ export class HuiGaugeCardEditor extends LitElement
     `;
   }
 
-  private _toggleSeverity(ev: EntitiesEditorEvent): void {
+  private _toggleSeverity(ev: HASSDomEvent<EntitiesEditorEvent>): void {
     if (!this._config || !this.hass) {
       return;
     }
@@ -233,7 +233,7 @@ export class HuiGaugeCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _severityChanged(ev: EntitiesEditorEvent): void {
+  private _severityChanged(ev: HASSDomEvent<EntitiesEditorEvent>): void {
     if (!this._config || !this.hass) {
       return;
     }
@@ -249,7 +249,7 @@ export class HuiGaugeCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _valueChanged(ev: EntitiesEditorEvent): void {
+  private _valueChanged(ev: HASSDomEvent<EntitiesEditorEvent>): void {
     if (!this._config || !this.hass) {
       return;
     }

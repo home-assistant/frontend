@@ -9,7 +9,7 @@ import {
   internalProperty,
   TemplateResult,
 } from "lit-element";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { PolymerChangedEvent } from "../../../../polymer-types";
 import { HomeAssistant } from "../../../../types";
 import { MapCardConfig } from "../../cards/types";
@@ -179,7 +179,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     `;
   }
 
-  private _entitiesValueChanged(ev: EntitiesEditorEvent): void {
+  private _entitiesValueChanged(ev: HASSDomEvent<EntitiesEditorEvent>): void {
     if (!this._config || !this.hass) {
       return;
     }
