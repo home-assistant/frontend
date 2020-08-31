@@ -1,9 +1,8 @@
 import "@material/mwc-button";
-import "@material/mwc-list/mwc-list-item";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import { safeDump } from "js-yaml";
-import memoizeOne from "memoize-one";
 import {
   css,
   CSSResult,
@@ -14,7 +13,11 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-
+import memoizeOne from "memoize-one";
+import "../../../src/components/ha-button-menu";
+import "../../../src/components/ha-card";
+import "../../../src/components/ha-settings-row";
+import { fetchHassioHardwareInfo } from "../../../src/data/hassio/hardware";
 import {
   changeHostOptions,
   configSyncOS,
@@ -25,26 +28,21 @@ import {
   shutdownHost,
   updateOS,
 } from "../../../src/data/hassio/host";
-import { fetchHassioHardwareInfo } from "../../../src/data/hassio/hardware";
 import {
   fetchNetworkInfo,
   NetworkInfo,
 } from "../../../src/data/hassio/network";
 import { HassioInfo } from "../../../src/data/hassio/supervisor";
-import { hassioStyle } from "../resources/hassio-style";
-import { haStyle } from "../../../src/resources/styles";
-import { HomeAssistant } from "../../../src/types";
 import {
   showAlertDialog,
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../src/dialogs/generic/show-dialog-box";
+import { haStyle } from "../../../src/resources/styles";
+import { HomeAssistant } from "../../../src/types";
 import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
 import { showNetworkDialog } from "../dialogs/network/show-dialog-network";
-
-import "../../../src/components/ha-button-menu";
-import "../../../src/components/ha-card";
-import "../../../src/components/ha-settings-row";
+import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-host-info")
 class HassioHostInfo extends LitElement {
@@ -58,7 +56,7 @@ class HassioHostInfo extends LitElement {
 
   @internalProperty() public _networkInfo?: NetworkInfo;
 
-  public render(): TemplateResult | void {
+  protected render(): TemplateResult | void {
     const primaryIpAddress = this.hostInfo.features.includes("network")
       ? this._primaryIpAddress(this._networkInfo!)
       : "";

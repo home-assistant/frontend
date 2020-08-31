@@ -1,34 +1,34 @@
 import "@material/mwc-button";
-import "../../layouts/ha-app-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "../../components/ha-icon-button";
-import "../../components/ha-circular-progress";
 import { safeDump, safeLoad } from "js-yaml";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
+import { array, assert, object, optional, string, type } from "superstruct";
 import { computeRTL } from "../../common/util/compute_rtl";
+import "../../components/ha-circular-progress";
 import "../../components/ha-code-editor";
 import type { HaCodeEditor } from "../../components/ha-code-editor";
 import "../../components/ha-icon";
+import "../../components/ha-icon-button";
 import type { LovelaceConfig } from "../../data/lovelace";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
+import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import type { Lovelace } from "./types";
-import { optional, array, string, object, type, assert } from "superstruct";
 
 const lovelaceStruct = type({
   title: optional(string()),
@@ -49,7 +49,7 @@ class LovelaceFullConfigEditor extends LitElement {
 
   private _generation = 1;
 
-  public render(): TemplateResult | void {
+  protected render(): TemplateResult | void {
     return html`
       <ha-app-layout>
         <app-header slot="header">
