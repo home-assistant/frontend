@@ -6,9 +6,11 @@ import {
   customElement,
   html,
   LitElement,
+  internalProperty,
   property,
   TemplateResult,
 } from "lit-element";
+import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
@@ -16,6 +18,13 @@ import "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
+import {
+  fetchOZWNodeStatus,
+  fetchOZWNodeMetadata,
+  OZWDevice,
+  OZWDeviceMetaDataResponse,
+} from "../../../../../data/ozw";
+import { showOZWRefreshNodeDialog } from "./show-dialog-ozw-refresh-node";
 
 @customElement("ozw-node-dashboard")
 class OZWNodeDashboard extends LitElement {
@@ -29,22 +38,112 @@ class OZWNodeDashboard extends LitElement {
 
   @property() public configEntryId?: string;
 
-  @property() public ozwInstance?: number;
+  @property() public ozwInstance = 0;
 
-  @property() public nodeId?: number;
+  @property() public nodeId = 0;
+
+  @internalProperty() private _node?: OZWDevice;
+
+  @internalProperty() private _metadata?: OZWDeviceMetaDataResponse;
+
+  protected firstUpdated() {
+    if (this.ozwInstance <= 0) {
+      navigate(this, "/config/ozw/dashboard", true);
+    } else if (this.nodeId <= 0) {
+      navigate(this, `/config/ozw/network/${this.ozwInstance}/nodes`, true);
+    } else if (this.hass) {
+      this._fetchData();
+    }
+  }
 
   protected render(): TemplateResult {
     return html`
       <ha-config-section .narrow=${this.narrow} .isWide=${this.isWide}>
         <div slot="header">
-          Node Details
+          Node Management
         </div>
 
         <div slot="introduction">
-          Soon you will be able to view and manage a specific OZW node...
+          View the status of a node and manage its configuration.
         </div>
+
+        ${this._node
+          ? html`
+              <ha-card class="content">
+                <div class="card-content">
+                  <b
+                    >${this._node.node_manufacturer_name}
+                    ${this._node.node_product_name}</b
+                  ><br />
+                  Node ID: ${this._node.node_id}<br />
+                  Query Stage: ${this._node.node_query_stage}
+                  ${this._metadata?.metadata.ProductManualURL
+                    ? html` <a
+                        href="${this._metadata.metadata.ProductManualURL}"
+                      >
+                        <p>Product Manual</p>
+                      </a>`
+                    : ``}
+                </div>
+                <div class="card-actions">
+                  <mwc-button @click=${this._refreshNodeClicked}>
+                    Refresh Node
+                  </mwc-button>
+                </div>
+              </ha-card>
+            `
+          : ``}
+        ${this._metadata
+          ? html`
+              <ha-card class="content" header="Description">
+                <div class="card-content">
+                  ${this._metadata.metadata.Description}
+                </div>
+              </ha-card>
+              <ha-card class="content" header="Inclusion">
+                <div class="card-content">
+                  ${this._metadata.metadata.InclusionHelp}
+                </div>
+              </ha-card>
+              <ha-card class="content" header="Exclusion">
+                <div class="card-content">
+                  ${this._metadata.metadata.ExclusionHelp}
+                </div>
+              </ha-card>
+              <ha-card class="content" header="Reset">
+                <div class="card-content">
+                  ${this._metadata.metadata.ResetHelp}
+                </div>
+              </ha-card>
+              <ha-card class="content" header="WakeUp">
+                <div class="card-content">
+                  ${this._metadata.metadata.WakeupHelp}
+                </div>
+              </ha-card>
+            `
+          : ``}
       </ha-config-section>
     `;
+  }
+
+  private async _fetchData() {
+    this._node = await fetchOZWNodeStatus(
+      this.hass!,
+      this.ozwInstance,
+      this.nodeId
+    );
+    this._metadata = await fetchOZWNodeMetadata(
+      this.hass!,
+      this.ozwInstance,
+      this.nodeId
+    );
+  }
+
+  private async _refreshNodeClicked() {
+    showOZWRefreshNodeDialog(this, {
+      node_id: this.nodeId,
+      ozw_instance: this.ozwInstance,
+    });
   }
 
   static get styles(): CSSResultArray {
@@ -54,15 +153,7 @@ class OZWNodeDashboard extends LitElement {
         .secondary {
           color: var(--secondary-text-color);
         }
-        .online {
-          color: green;
-        }
-        .starting {
-          color: orange;
-        }
-        .offline {
-          color: red;
-        }
+
         .content {
           margin-top: 24px;
         }
@@ -70,26 +161,6 @@ class OZWNodeDashboard extends LitElement {
         .sectionHeader {
           position: relative;
           padding-right: 40px;
-        }
-
-        .network-status {
-          text-align: center;
-        }
-
-        .network-status div.details {
-          font-size: 1.5rem;
-          margin-bottom: 16px;
-        }
-
-        .network-status ha-svg-icon {
-          display: block;
-          margin: 0px auto 16px;
-          width: 48px;
-          height: 48px;
-        }
-
-        .network-status small {
-          font-size: 1rem;
         }
 
         ha-card {

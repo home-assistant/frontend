@@ -54,7 +54,7 @@ class OZWNetworkRouter extends HassRouterPage {
     el.ozwInstance = this.ozwInstance;
     if (this._currentPage === "node") {
       const path = this.routeTail.path.split("/");
-      el.node_id = path[1];
+      el.nodeId = path[1];
     }
   }
 }

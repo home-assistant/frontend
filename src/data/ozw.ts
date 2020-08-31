@@ -14,6 +14,8 @@ export interface OZWDevice {
   is_zwave_plus: boolean;
   ozw_instance: number;
   event: string;
+  node_manufacturer_name: string;
+  node_product_name: string;
 }
 
 export interface OZWDeviceMetaDataResponse {
