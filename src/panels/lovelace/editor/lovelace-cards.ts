@@ -1,4 +1,4 @@
-import { Card } from "./types";
+import { Card, HeaderFooter } from "./types";
 
 export const coreCards: Card[] = [
   {
@@ -103,4 +103,8 @@ export const coreCards: Card[] = [
   {
     type: "shopping-list",
   },
+];
+
+export const headerFooters: HeaderFooter[] = [
+  { type: "graph", isFooter: true, isHeader: true },
 ];

@@ -13,6 +13,7 @@ import {
   LovelaceCard,
   LovelaceCardConstructor,
   LovelaceHeaderFooter,
+  LovelaceHeaderFooterConstructor,
 } from "../types";
 import type { ErrorCardConfig } from "../cards/types";
 
@@ -42,7 +43,7 @@ interface CreateElementConfigTypes {
   "header-footer": {
     config: LovelaceHeaderFooterConfig;
     element: LovelaceHeaderFooter;
-    constructor: unknown;
+    constructor: LovelaceHeaderFooterConstructor;
   };
 }
 

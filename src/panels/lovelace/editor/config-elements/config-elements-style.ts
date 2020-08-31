@@ -15,5 +15,10 @@ export const configElementStyle = html`
     .suffix {
       margin: 0 8px;
     }
+
+    .header-footer {
+      border: 1px solid var(--divider-color);
+      padding: 12px;
+    }
   </style>
 `;

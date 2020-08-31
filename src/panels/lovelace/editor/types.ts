@@ -8,6 +8,7 @@ import { EntityConfig } from "../entity-rows/types";
 import { optional, string, object, union } from "superstruct";
 import { EntityId } from "../common/structs/is-entity-id";
 import { Icon } from "../common/structs/is-icon";
+import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 
 export interface YamlChangedEvent extends Event {
   detail: {
@@ -43,6 +44,7 @@ export interface ConfigError {
 export interface EntitiesEditorEvent {
   detail?: {
     entities?: EntityConfig[];
+    config?: LovelaceHeaderFooterConfig;
   };
   target?: EventTarget;
 }
@@ -62,6 +64,12 @@ export interface Card {
   description?: string;
   showElement?: boolean;
   isCustom?: boolean;
+}
+
+export interface HeaderFooter {
+  type: string;
+  isHeader?: boolean;
+  isFooter?: boolean;
 }
 
 export interface CardPickTarget extends EventTarget {

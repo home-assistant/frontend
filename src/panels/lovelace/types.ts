@@ -48,6 +48,16 @@ export interface LovelaceCardConstructor extends Constructor<LovelaceCard> {
   getConfigElement?: () => LovelaceCardEditor;
 }
 
+export interface LovelaceHeaderFooterConstructor
+  extends Constructor<LovelaceHeaderFooter> {
+  getStubConfig?: (
+    hass: HomeAssistant,
+    entities: string[],
+    entitiesFallback: string[]
+  ) => LovelaceCardConfig;
+  getConfigElement?: () => LovelaceHeaderFooterEditor;
+}
+
 export interface LovelaceHeaderFooter extends HTMLElement {
   hass?: HomeAssistant;
   getCardSize(): number | Promise<number>;
@@ -59,4 +69,10 @@ export interface LovelaceCardEditor extends HTMLElement {
   lovelace?: LovelaceConfig;
   setConfig(config: LovelaceCardConfig): void;
   refreshYamlEditor?: (focus: boolean) => void;
+}
+
+export interface LovelaceHeaderFooterEditor extends HTMLElement {
+  hass?: HomeAssistant;
+  lovelace?: LovelaceConfig;
+  setConfig(config: LovelaceCardConfig): void;
 }

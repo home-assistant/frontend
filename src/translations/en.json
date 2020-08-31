@@ -2104,7 +2104,9 @@
             "delete": "Delete Card",
             "duplicate": "Duplicate Card",
             "move": "Move to View",
-            "options": "More options"
+            "options": "More options",
+            "editor": "Editor",
+            "advanced": "Advanced"
           },
           "move_card": {
             "header": "Choose a view to move the card to"
@@ -2319,6 +2321,13 @@
           "cardpicker": {
             "no_description": "No description available.",
             "custom_card": "Custom"
+          },
+          "header-footer": {
+            "header": "Header",
+            "footer": "Footer",
+            "graph": {
+              "name": "Graph"
+            }
           }
         },
         "warning": {
