@@ -506,6 +506,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           display: -webkit-box;
           -webkit-box-orient: vertical;
           -webkit-line-clamp: 2;
+          padding-right: 8px;
         }
 
         .breadcrumb .previous-title {
@@ -705,6 +706,11 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         /* ============= Scroll ============= */
 
+        :host([scroll]) .header_button {
+          align-self: center;
+          top: initial;
+        }
+
         :host([scroll]) .breadcrumb .subtitle {
           height: 0;
           margin: 0;
@@ -719,25 +725,31 @@ export class HaMediaPlayerBrowse extends LitElement {
           padding-right: 4px;
         }
 
-        :host([scroll]) .header-info,
-        .no-img .header-info {
+        :host([scroll][narrow]) .no-img .header-info mwc-button {
+          padding-right: 16px;
+        }
+
+        :host([scroll]) .header-info {
           flex-direction: row;
-          align-items: flex-end;
         }
 
         :host([scroll]) .header-info mwc-button {
           align-self: center;
         }
 
-        :host([scroll]) .header-content {
-          align-items: flex-end;
-          flex-direction: row;
+        :host([scroll][narrow]) .no-img .header-info {
+          flex-direction: row-reverse;
         }
 
-        :host([scroll][narrow]) .header-info {
+        :host([scroll][narrow]).header-info {
           height: 100px;
           padding: 0px 24px;
           align-items: center;
+        }
+
+        :host([scroll]) .header-content {
+          align-items: flex-end;
+          flex-direction: row;
         }
 
         :host([scroll]) .header-content .img {
