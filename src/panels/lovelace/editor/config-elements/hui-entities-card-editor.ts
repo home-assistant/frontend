@@ -83,11 +83,11 @@ export class HuiEntitiesCardEditor extends LitElement
     this._config = config;
     this._configEntities = processEditorEntities(config.entities);
 
-    if (this._config.footer?.type) {
-      this._updateHeaderFooterElement(this._config.footer);
-    }
     if (this._config.header?.type) {
-      this._updateHeaderFooterElement(this._config.header);
+      this._updateHeaderFooterElement("header", this._config.header);
+    }
+    if (this._config.footer?.type) {
+      this._updateHeaderFooterElement("footer", this._config.footer);
     }
   }
 
@@ -106,7 +106,7 @@ export class HuiEntitiesCardEditor extends LitElement
 
     return html`
       ${configElementStyle}
-      <hui-advanced-element-editor>
+      <hui-advanced-element-editor .hass=${this.hass}>
         <div slot="editor">
           <div class="card-config">
             <paper-input
@@ -238,12 +238,13 @@ export class HuiEntitiesCardEditor extends LitElement
       return;
     }
 
-    this._updateHeaderFooterElement({
+    this._updateHeaderFooterElement(target.configValue!, {
       type: target.value,
     });
   }
 
   private async _updateHeaderFooterElement(
+    type: "header" | "footer",
     config: LovelaceHeaderFooterConfig | { type: string }
   ): Promise<void> {
     if (!this._config || !this.hass) {
@@ -256,24 +257,20 @@ export class HuiEntitiesCardEditor extends LitElement
       this._configEntities?.map((confEntity) => confEntity.entity) || []
     );
 
-    this[`_${config.type}Element`] = headerFooterEditor?.configElement;
+    this[`_${type}Element`] = headerFooterEditor?.configElement;
 
-    if (!this[`_${config.type}Element`]) {
+    if (!this[`_${type}Element`]) {
       return;
     }
-
     this._config = {
       ...this._config,
-      [config.type]: { ...headerFooterEditor!.config },
+      [type]: { ...headerFooterEditor!.config },
     };
 
-    this[`_${config.type}Element`].hass = this.hass;
-    this[`_${config.type}Element`].setConfig(headerFooterEditor!.config);
-    this[`_${config.type}Element`].addEventListener("config-changed", (ev) =>
-      this._handleHeaderFooterConfigChanged(
-        ev as UIConfigChangedEvent,
-        config.type
-      )
+    this[`_${type}Element`].hass = this.hass;
+    this[`_${type}Element`].setConfig(headerFooterEditor!.config);
+    this[`_${type}Element`].addEventListener("config-changed", (ev) =>
+      this._handleHeaderFooterConfigChanged(ev as UIConfigChangedEvent, type)
     );
   }
 
