@@ -15,7 +15,7 @@ import type {
 } from "../../data/media-player";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import "../ha-header-bar";
+import "../ha-dialog";
 import "./ha-media-player-browse";
 import { MediaPlayerBrowseDialogParams } from "./show-media-browser-dialog";
 
@@ -57,7 +57,6 @@ class DialogMediaPlayerBrowse extends LitElement {
         escapeKeyAction
         hideActions
         flexContent
-        .heading=${false}
         @closed=${this._closeDialog}
       >
         <ha-media-player-browse
