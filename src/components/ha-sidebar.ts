@@ -253,6 +253,7 @@ class HaSidebar extends LitElement {
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: !this._editMode,
+          disabled: this._editMode,
         })}
       >
         ${this._editMode
