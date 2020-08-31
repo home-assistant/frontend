@@ -2,9 +2,9 @@ import "@material/mwc-button/mwc-button";
 import "@material/mwc-fab/mwc-fab";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
+import { mdiArrowLeft, mdiClose, mdiFolder, mdiPlay, mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import { mdiArrowLeft, mdiFolder, mdiPlay, mdiPlus, mdiClose } from "@mdi/js";
 import {
   css,
   CSSResultArray,
@@ -20,12 +20,12 @@ import { classMap } from "lit-html/directives/class-map";
 import { ifDefined } from "lit-html/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
-import { debounce } from "../../common/util/debounce";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
+import { debounce } from "../../common/util/debounce";
 import { browseMediaPlayer, MediaPickedEvent } from "../../data/media-player";
+import type { MediaPlayerItem } from "../../data/media-player";
 import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
 import { haStyle } from "../../resources/styles";
-import type { MediaPlayerItem } from "../../data/media-player";
 import type { HomeAssistant } from "../../types";
 import "../entity/ha-entity-picker";
 import "../ha-button-menu";
@@ -118,6 +118,10 @@ export class HaMediaPlayerBrowse extends LitElement {
       (child) => child.thumbnail && child.thumbnail !== mostRecentItem.thumbnail
     );
 
+    const mediaType = this.hass.localize(
+      `ui.components.media-browser.content-type.${mostRecentItem.media_content_type}`
+    );
+
     return html`
       <div
         class="header  ${classMap({
@@ -171,11 +175,11 @@ export class HaMediaPlayerBrowse extends LitElement {
                         `
                       : ""}
                     <h1 class="title">${mostRecentItem.title}</h1>
-                    <h2 class="subtitle">
-                      ${this.hass.localize(
-                        `ui.components.media-browser.content-type.${mostRecentItem.media_content_type}`
-                      )}
-                    </h2>
+                    ${mediaType
+                      ? html`<h2 class="subtitle">
+                          ${mediaType}
+                        </h2>`
+                      : ""}
                   </div>
                 </div>`}
             ${mostRecentItem?.can_play &&
@@ -322,8 +326,8 @@ export class HaMediaPlayerBrowse extends LitElement {
     this._measureCard();
     this._attachObserver();
 
-    this.onscroll = this._scroll;
-    this.ontouchmove = this._scroll;
+    this.addEventListener("scroll", this._scroll, { passive: true });
+    this.addEventListener("touchmove", this._scroll, { passive: true });
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -436,24 +440,8 @@ export class HaMediaPlayerBrowse extends LitElement {
           display: block;
           overflow-y: auto;
           display: flex;
+          padding: 0px 0px 20px;
           flex-direction: column;
-          scrollbar-color: var(--scrollbar-thumb-color) transparent;
-          scrollbar-width: thin;
-        }
-
-        :host(:not([narrow])) {
-          padding: 0px 24px 20px;
-        }
-
-        :host::-webkit-scrollbar {
-          width: 0.4rem;
-          height: 0.4rem;
-        }
-
-        :host::-webkit-scrollbar-thumb {
-          -webkit-border-radius: 4px;
-          border-radius: 4px;
-          background: var(--scrollbar-thumb-color);
         }
 
         .header {
@@ -462,16 +450,18 @@ export class HaMediaPlayerBrowse extends LitElement {
           border-bottom: 1px solid var(--divider-color);
         }
 
+        .header_button {
+          position: relative;
+          top: 14px;
+          right: -8px;
+        }
+
         :host(:not([narrow])) .header {
           background-color: var(--card-background-color);
           position: sticky;
           top: 0;
           z-index: 5;
-          padding-top: 20px;
-        }
-
-        .header:not(.no-img) {
-          padding-bottom: 10px;
+          padding: 20px 24px 10px;
         }
 
         .header-content {
@@ -486,7 +476,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           width: 200px;
           margin-right: 16px;
           background-size: cover;
-          transition: width 0.5s, height 0.5s;
+          transition: width 0.4s, height 0.4s;
         }
 
         .header-info {
@@ -549,8 +539,6 @@ export class HaMediaPlayerBrowse extends LitElement {
           --mdc-list-vertical-padding: 0;
           --mdc-theme-text-icon-on-background: var(--secondary-text-color);
           margin-top: 10px;
-          border: 1px solid var(--divider-color);
-          border-radius: 4px;
         }
 
         mwc-list li:last-child {
@@ -569,6 +557,10 @@ export class HaMediaPlayerBrowse extends LitElement {
           );
           grid-gap: 16px;
           margin: 8px 0px;
+        }
+
+        :host(:not([narrow])) .children {
+          padding: 0px 24px;
         }
 
         .child {
@@ -662,10 +654,6 @@ export class HaMediaPlayerBrowse extends LitElement {
           padding: 0;
         }
 
-        :host([narrow]) mwc-list {
-          border: 0;
-        }
-
         :host([narrow]) .breadcrumb .title {
           font-size: 38px;
         }
@@ -727,14 +715,14 @@ export class HaMediaPlayerBrowse extends LitElement {
           padding-right: 4px;
         }
 
-        :host([scroll]) .header {
-          padding-bottom: 10px;
-        }
-
         :host([scroll]) .header-info,
         .no-img .header-info {
           flex-direction: row;
           align-items: flex-end;
+        }
+
+        :host([scroll]) .header-info mwc-button {
+          align-self: center;
         }
 
         :host([scroll]) .header-content {
