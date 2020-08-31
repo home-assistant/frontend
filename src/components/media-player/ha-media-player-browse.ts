@@ -37,13 +37,7 @@ import "../ha-svg-icon";
 declare global {
   interface HASSDomEvents {
     "media-picked": MediaPickedEvent;
-    "media-browser-navigated": MediaBrowserNavigatedEvent;
   }
-}
-
-export interface MediaBrowserNavigatedEvent {
-  root: boolean;
-  title?: string;
 }
 
 @customElement("ha-media-player-browse")
@@ -380,10 +374,6 @@ export class HaMediaPlayerBrowse extends LitElement {
     );
 
     this.scrollTo(0, 0);
-    fireEvent(this, "media-browser-navigated", {
-      root: this._mediaPlayerItems.length === 0,
-      title: itemData.title,
-    });
     this._mediaPlayerItems = [...this._mediaPlayerItems, itemData];
   }
 
@@ -662,10 +652,15 @@ export class HaMediaPlayerBrowse extends LitElement {
           align-items: flex-end;
         }
 
+        :host([narrow]) .header_button {
+          position: absolute;
+          top: 14px;
+          right: 8px;
+        }
+
         :host([narrow]) .header-content {
           flex-direction: column;
           flex-wrap: nowrap;
-          padding-top: 8px;
         }
 
         :host([narrow]) .header-content .img {
@@ -689,7 +684,10 @@ export class HaMediaPlayerBrowse extends LitElement {
           margin-bottom: 8px;
         }
 
-        :host([narrow]) .header-info,
+        :host([narrow]) .header-info {
+          padding: 20px 24px 10px;
+        }
+
         :host([narrow]) .media-source,
         :host([narrow]) .children {
           padding: 0 24px;
