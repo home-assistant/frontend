@@ -69,7 +69,7 @@ class HassioSupervisorLog extends LitElement {
     await this._loadData();
   }
 
-  public render(): TemplateResult | void {
+  protected render(): TemplateResult | void {
     return html`
       <ha-card>
         ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
