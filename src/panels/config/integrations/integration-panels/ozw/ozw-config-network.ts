@@ -15,7 +15,7 @@ import type { HomeAssistant, Route } from "../../../../../types";
 import { computeTail } from "./ozw-config-router";
 import "./ozw-network-router";
 
-export function ozwNetworkTabs(instance: number): PageNavigation[] {
+export const ozwNetworkTabs = (instance: number): PageNavigation[] => {
   return [
     {
       translationKey: "ui.panel.config.ozw.navigation.network",
@@ -28,7 +28,7 @@ export function ozwNetworkTabs(instance: number): PageNavigation[] {
       iconPath: mdiNetwork,
     },
   ];
-}
+};
 
 @customElement("ozw-config-network")
 class OZWConfigNetwork extends LitElement {
