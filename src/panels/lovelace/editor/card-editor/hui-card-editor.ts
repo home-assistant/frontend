@@ -28,7 +28,6 @@ import "../../../../components/ha-circular-progress";
 import { deepEqual } from "../../../../common/util/deep-equal";
 import { handleStructError } from "../../common/structs/handle-errors";
 import { GUISupportError } from "../gui-support-error";
-import type { LovelaceHeaderFooterConfig } from "../../header-footer/types";
 
 export interface ConfigChangedEvent {
   config: LovelaceCardConfig;
@@ -49,12 +48,6 @@ declare global {
 export interface UIConfigChangedEvent extends Event {
   detail: {
     config: LovelaceCardConfig;
-  };
-}
-
-export interface UIHeaderFooterConfigChangedEvent extends Event {
-  detail: {
-    config: LovelaceHeaderFooterConfig;
   };
 }
 

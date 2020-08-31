@@ -46,10 +46,6 @@ import {
   union,
   assert,
 } from "superstruct";
-import {
-  UIConfigChangedEvent,
-  UIHeaderFooterConfigChangedEvent,
-} from "../card-editor/hui-card-editor";
 import { getHeaderFooterEditor } from "../get-header-footer-editor";
 import "../hui-header-footer-dropdown";
 import "../hui-advanced-element-editor";
@@ -193,6 +189,8 @@ export class HuiEntitiesCardEditor extends LitElement
       return;
     }
 
+    ev.stopPropagation();
+
     const target = ev.target! as EditorTarget;
 
     if (
@@ -206,6 +204,11 @@ export class HuiEntitiesCardEditor extends LitElement
       this._config = { ...this._config, entities: ev.detail.entities };
 
       this._configEntities = processEditorEntities(this._config.entities);
+    } else if (ev.detail && target.configValue) {
+      this._config = {
+        ...this._config,
+        [target.configValue]: ev.detail.config,
+      };
     } else if (target.configValue) {
       if (target.value === "") {
         this._config = { ...this._config };
@@ -262,31 +265,18 @@ export class HuiEntitiesCardEditor extends LitElement
     if (!this[`_${type}Element`]) {
       return;
     }
+
     this._config = {
       ...this._config,
       [type]: { ...headerFooterEditor!.config },
     };
 
     this[`_${type}Element`].hass = this.hass;
+    this[`_${type}Element`].configValue = type;
     this[`_${type}Element`].setConfig(headerFooterEditor!.config);
     this[`_${type}Element`].addEventListener("config-changed", (ev) =>
-      this._handleHeaderFooterConfigChanged(ev as UIConfigChangedEvent, type)
+      this._valueChanged(ev as EntitiesEditorEvent)
     );
-  }
-
-  private _handleHeaderFooterConfigChanged(
-    ev: UIHeaderFooterConfigChangedEvent,
-    configValue: string
-  ) {
-    if (!this._config || !this.hass) {
-      return;
-    }
-
-    ev.stopPropagation();
-    const config = ev.detail.config;
-    this._config = { ...this._config, [configValue]: config };
-
-    fireEvent(this, "config-changed", { config: this._config });
   }
 }
 
