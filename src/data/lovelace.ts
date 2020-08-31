@@ -321,7 +321,7 @@ export interface ActionHandlerOptions {
 }
 
 export interface ActionHandlerDetail {
-  action: string;
+  action: "hold" | "tap" | "double_tap";
 }
 
 export type ActionHandlerEvent = HASSDomEvent<ActionHandlerDetail>;
