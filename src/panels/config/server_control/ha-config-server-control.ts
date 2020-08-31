@@ -216,6 +216,7 @@ export class HaConfigServerControl extends LitElement {
                   </div>
                   <div class="actions">
                     <ha-call-service-button
+                      outlined
                       domain="homeassistant"
                       service="reload_core_config"
                       .hass=${this.hass}
@@ -228,6 +229,7 @@ export class HaConfigServerControl extends LitElement {
                       isServiceLoaded(this.hass, domain, "reload")
                         ? html`
                             <ha-call-service-button
+                              outlined
                               service="reload"
                               .hass=${this.hass}
                               .domain=${domain}
@@ -346,12 +348,12 @@ export class HaConfigServerControl extends LitElement {
           width: 100%;
           display: flex;
           flex-wrap: wrap;
+          padding-bottom: 8px;
         }
 
         .reload ha-call-service-button {
-          padding: 8px;
+          padding: 0 8px;
           display: inline-block;
-          border: 1px solid var(--divider-color, #e8e8e8);
           width: calc(33% - 24px);
           margin: 4px;
         }

@@ -21,12 +21,15 @@ class HaProgressButton extends LitElement {
 
   @property({ type: Boolean }) public raised = false;
 
+  @property({ type: Boolean }) public outlined = false;
+
   @query("mwc-button") private _button?: Button;
 
   public render(): TemplateResult {
     return html`
       <mwc-button
         ?raised=${this.raised}
+        ?outlined=${this.outlined}
         .disabled=${this.disabled || this.progress}
         @click=${this._buttonTapped}
       >
@@ -71,6 +74,7 @@ class HaProgressButton extends LitElement {
 
       mwc-button {
         transition: all 1s;
+        width: 100%;
       }
 
       mwc-button.success {

@@ -32,17 +32,17 @@ export class CloudAlexaPref extends LitElement {
 
     return html`
       <ha-card
-        header=${this.hass!.localize(
+        .header=${this.hass!.localize(
           "ui.panel.config.cloud.account.alexa.title"
         )}
       >
-        <div class="switch">
-          <ha-switch
-            .checked=${alexa_enabled}
-            @change=${this._enabledToggleChanged}
-          ></ha-switch>
-        </div>
         <div class="card-content">
+          <div class="switch">
+            <ha-switch
+              .checked=${alexa_enabled}
+              @change=${this._enabledToggleChanged}
+            ></ha-switch>
+          </div>
           ${this.hass!.localize("ui.panel.config.cloud.account.alexa.info")}
           <ul>
             <li>
@@ -196,6 +196,15 @@ export class CloudAlexaPref extends LitElement {
         margin-top: 0.25em;
         margin-right: 7px;
         margin-left: 0.5em;
+      }
+      ha-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+      }
+      .card-content {
+        flex: 1;
       }
     `;
   }

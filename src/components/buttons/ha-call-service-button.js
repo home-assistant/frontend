@@ -11,12 +11,18 @@ import "./ha-progress-button";
 class HaCallServiceButton extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
+      <style>
+        ha-progress-button {
+          width: 100%;
+        }
+      </style>
       <ha-progress-button
         id="progress"
         progress="[[progress]]"
         on-click="buttonTapped"
         tabindex="0"
         raised="[[raised]]"
+        outlined="[[outlined]]"
         ><slot></slot
       ></ha-progress-button>
     `;
@@ -51,6 +57,11 @@ class HaCallServiceButton extends EventsMixin(PolymerElement) {
       },
 
       raised: {
+        type: Boolean,
+        value: false,
+      },
+
+      outlined: {
         type: Boolean,
         value: false,
       },

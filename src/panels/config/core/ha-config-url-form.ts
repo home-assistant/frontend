@@ -51,46 +51,31 @@ class ConfigUrlForm extends LitElement {
               `
             : ""}
           ${this._error ? html`<div class="error">${this._error}</div>` : ""}
-          <div class="row">
-            <div class="flex">
-              ${this.hass.localize(
-                "ui.panel.config.core.section.core.core_config.external_url"
-              )}
-            </div>
 
-            <paper-input
-              class="flex"
-              .label=${this.hass.localize(
-                "ui.panel.config.core.section.core.core_config.external_url"
-              )}
-              name="external_url"
-              type="url"
-              .disabled=${disabled}
-              .value=${this._externalUrlValue}
-              @value-changed=${this._handleChange}
-            >
-            </paper-input>
-          </div>
-
-          <div class="row">
-            <div class="flex">
-              ${this.hass.localize(
-                "ui.panel.config.core.section.core.core_config.internal_url"
-              )}
-            </div>
-            <paper-input
-              class="flex"
-              .label=${this.hass.localize(
-                "ui.panel.config.core.section.core.core_config.internal_url"
-              )}
-              name="internal_url"
-              type="url"
-              .disabled=${disabled}
-              .value=${this._internalUrlValue}
-              @value-changed=${this._handleChange}
-            >
-            </paper-input>
-          </div>
+          <paper-input
+            class="flex"
+            .label=${this.hass.localize(
+              "ui.panel.config.core.section.core.core_config.external_url"
+            )}
+            name="external_url"
+            type="url"
+            .disabled=${disabled}
+            .value=${this._externalUrlValue}
+            @value-changed=${this._handleChange}
+          >
+          </paper-input>
+          <paper-input
+            class="flex"
+            .label=${this.hass.localize(
+              "ui.panel.config.core.section.core.core_config.internal_url"
+            )}
+            name="internal_url"
+            type="url"
+            .disabled=${disabled}
+            .value=${this._internalUrlValue}
+            @value-changed=${this._handleChange}
+          >
+          </paper-input>
         </div>
         <div class="card-actions">
           <mwc-button @click=${this._save} .disabled=${disabled}>
