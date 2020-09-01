@@ -67,7 +67,7 @@ const getLogbookDataFromServer = async (
 ) => {
   const url = `logbook/${startDate}?end_time=${endDate}${
     entityId ? `&entity=${entityId}` : ""
-  }${entity_matches_only ? `&entity_matches_only=true` : ""}`;
+  }${entity_matches_only ? `&entity_matches_only` : ""}`;
 
   return hass.callApi<LogbookEntry[]>("GET", url);
 };
