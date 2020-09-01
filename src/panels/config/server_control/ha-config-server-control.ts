@@ -1,27 +1,26 @@
+import "@material/mwc-button";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "../../../layouts/hass-tabs-subpage";
-import { configSections } from "../ha-panel-config";
+import "@polymer/paper-input/paper-input";
 import {
-  LitElement,
-  property,
-  internalProperty,
-  customElement,
-  html,
   css,
   CSSResult,
+  customElement,
+  html,
+  internalProperty,
+  LitElement,
+  property,
   TemplateResult,
 } from "lit-element";
-import { HomeAssistant, Route } from "../../../types";
-
-import "@material/mwc-button";
-import "@polymer/paper-input/paper-input";
 import { isServiceLoaded } from "../../../common/config/is_service_loaded";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-card";
-import "../ha-config-section";
-import { haStyle } from "../../../resources/styles";
 import { checkCoreConfig } from "../../../data/core";
+import "../../../layouts/hass-tabs-subpage";
+import { haStyle } from "../../../resources/styles";
+import { HomeAssistant, Route } from "../../../types";
+import "../ha-config-section";
+import { configSections } from "../ha-panel-config";
 
 const reloadableDomains = [
   "group",
@@ -49,19 +48,20 @@ const reloadableDomains = [
   "trend",
   "ping",
   "filesize",
+  "rpi_gpio",
 ];
 
 @customElement("ha-config-server-control")
 export class HaConfigServerControl extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide!: boolean;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow!: boolean;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
-  @property() public showAdvanced!: boolean;
+  @property({ type: Boolean }) public showAdvanced!: boolean;
 
   @internalProperty() private _validating = false;
 
