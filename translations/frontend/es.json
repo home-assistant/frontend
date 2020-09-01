@@ -419,9 +419,16 @@
                 "unlock": "Desbloquear"
             },
             "media_player": {
+                "browse_media": "Explorar medios",
+                "media_next_track": "Siguiente",
+                "media_play": "Reproducir",
+                "media_play_pause": "Reproducir/pausa",
+                "media_previous_track": "Anterior",
                 "sound_mode": "Modo de sonido",
                 "source": "Fuente",
-                "text_to_speak": "Texto para hablar"
+                "text_to_speak": "Texto para hablar",
+                "turn_off": "Apagar",
+                "turn_on": "Encender"
             },
             "persistent_notification": {
                 "dismiss": "Descartar"
@@ -554,6 +561,22 @@
                 "loading_history": "Cargando historial de estado...",
                 "no_history_found": "No se encontró historial de estado."
             },
+            "media-browser": {
+                "choose-source": "Elige la fuente",
+                "content-type": {
+                    "album": "Álbum",
+                    "artist": "Artista",
+                    "library": "Biblioteca",
+                    "playlist": "Lista de reproducción",
+                    "server": "Servidor"
+                },
+                "media-player-browser": "Navegador del Reproductor Multimedia",
+                "no_items": "No hay elementos",
+                "pick": "Elegir",
+                "pick-media": "Elegir medio",
+                "play": "Reproducir",
+                "play-media": "Reproducir medio"
+            },
             "picture-upload": {
                 "label": "Imagen",
                 "unsupported_format": "Formato no soportado, por favor, selecciona una imagen JPEG, PNG o GIF."
@@ -578,6 +601,7 @@
                     "week": "{count} {count, plural,\none {semana}\nother {semanas}\n}"
                 },
                 "future": "En {time}",
+                "just_now": "Ahora mismo",
                 "never": "Nunca",
                 "past": "Hace {time}"
             },
@@ -1318,6 +1342,7 @@
                     }
                 },
                 "devices": {
+                    "add_prompt": "Todavía no se ha añadido ningún {name} usando este dispositivo. Puedes añadir uno pulsando en el botón + de arriba.",
                     "automation": {
                         "actions": {
                             "caption": "Cuando algo se activa...."
@@ -1337,7 +1362,7 @@
                     "caption": "Dispositivos",
                     "confirm_delete": "¿Estás seguro de que quieres eliminar este dispositivo?",
                     "confirm_rename_entity_ids": "¿También quieres cambiar el nombre de los identificadores de entidad de tus entidades?",
-                    "confirm_rename_entity_ids_warning": "Esto no cambiará ninguna configuración (como automatizaciones, scripts, escenas, Lovelace) que estén utilizando actualmente estas entidades, tendrá que actualizarlas usted mismo.",
+                    "confirm_rename_entity_ids_warning": "Esto no cambiará ninguna configuración (como automatizaciones, scripts, escenas, Lovelace) que estén utilizando actualmente estas entidades, tendrás que actualizarlas tú mismo.",
                     "data_table": {
                         "area": "Área",
                         "battery": "Batería",
@@ -1500,6 +1525,9 @@
                         "no_device": "Entidades sin dispositivos",
                         "no_devices": "Esta integración no tiene dispositivos.",
                         "options": "Opciones",
+                        "reload": "Recargar",
+                        "reload_confirm": "La integración se ha recargado",
+                        "reload_restart_confirm": "Reinicia Home Assistant para terminar de recargar esta integración",
                         "rename": "Renombrar",
                         "restart_confirm": "Reinicia Home Assistant para terminar de eliminar esta integración.",
                         "settings_button": "Editar configuración para {integration}",
@@ -1658,7 +1686,11 @@
                     "topic": "tema"
                 },
                 "ozw": {
+                    "button": "Configurar",
                     "common": {
+                        "controller": "Controlador",
+                        "instance": "Instancia",
+                        "network": "Red",
                         "node_id": "ID del Nodo",
                         "ozw_instance": "Instancia OpenZWave",
                         "zwave": "Z-Wave"
@@ -1667,6 +1699,36 @@
                         "node_failed": "Error en el Nodo",
                         "stage": "Etapa",
                         "zwave_info": "Información Z-Wave"
+                    },
+                    "navigation": {
+                        "network": "Red",
+                        "nodes": "Nodos",
+                        "select_instance": "Seleccionar Instancia"
+                    },
+                    "network_status": {
+                        "details": {
+                            "driverallnodesqueried": "Se han consultado todos los nodos.",
+                            "driverallnodesqueriedsomedead": "Se han consultado todos los nodos. Se encontraron algunos nodos muertos",
+                            "driverawakenodesqueries": "Se han consultado todos los nodos despiertos",
+                            "driverfailed": "No se pudo conectar con el controlador Z-Wave",
+                            "driverready": "Iniciando el controlador Z-Wave",
+                            "driverremoved": "El controlador ha sido eliminado",
+                            "driverreset": "El controlador se ha reiniciado",
+                            "offline": "OZWDaemon desconectado",
+                            "ready": "Listo para conectar",
+                            "started": "Conectado a MQTT",
+                            "starting": "Conectando con MQTT",
+                            "stopped": "OpenZWave detenido"
+                        },
+                        "offline": "Desconectado",
+                        "online": "En línea",
+                        "starting": "Iniciando",
+                        "unknown": "Desconocido"
+                    },
+                    "network": {
+                        "header": "Administración de la Red",
+                        "introduction": "Gestionar las funciones de toda la red.",
+                        "node_count": "{count} nodos"
                     },
                     "node_query_stages": {
                         "associations": "Refrescando grupos de asociaciones y miembros",
@@ -1698,6 +1760,14 @@
                         "title": "Refrescar Información del Nodo",
                         "wakeup_header": "Instrucciones para despertar a",
                         "wakeup_instructions_source": "Las instrucciones para despertarlo se obtienen de la base de datos de dispositivos de la comunidad OpenZWave."
+                    },
+                    "select_instance": {
+                        "header": "Selecciona una instancia de OpenZWave",
+                        "introduction": "Tienes más de una instancia de OpenZWave en ejecución. ¿Qué instancia te gustaría gestionar?"
+                    },
+                    "services": {
+                        "add_node": "Añadir Nodo",
+                        "remove_node": "Eliminar Nodo"
                     }
                 },
                 "person": {
@@ -1823,18 +1893,32 @@
                     "section": {
                         "reloading": {
                             "automation": "Recargar automatizaciones",
+                            "command_line": "Recargar entidades de línea de comandos",
                             "core": "Recargar ubicación y personalizaciones",
+                            "filesize": "Recargar entidades de tamaño de archivo",
+                            "filter": "Recargar entidades de filtro",
+                            "generic": "Recargar entidades de cámara IP genéricas",
+                            "generic_thermostat": "Recargar entidades de termostato genéricas",
                             "group": "Recargar grupos",
                             "heading": "Recargando la configuración YAML",
+                            "history_stats": "Recargar entidades de estadísticas del historial",
+                            "homekit": "Recargar HomeKit",
                             "input_boolean": "Recargar los campos booleanos",
                             "input_datetime": "Recargar los campos de fecha y hora",
                             "input_number": "Recargar los campos numéricos",
                             "input_select": "Recargar los campos desplegables",
                             "input_text": "Recargar los campos de texto",
                             "introduction": "Algunas partes de Home Assistant pueden recargarse sin necesidad de reiniciar. Al pulsar en recargar se descartará la configuración YAML actual y se cargará la nueva.",
+                            "min_max": "Recargar entidades min/max",
                             "person": "Recargar personas",
+                            "ping": "Recargar entidades de sensor binario de ping",
+                            "rest": "Recargar entidades rest",
                             "scene": "Recargar escenas",
                             "script": "Recargar scripts",
+                            "statistics": "Recargar entidades de estadísticas",
+                            "template": "Recargar entidades de plantilla",
+                            "trend": "Recargar entidades de tendencia",
+                            "universal": "Recargar entidades de reproductor multimedia universal",
                             "zone": "Recargar zonas"
                         },
                         "server_management": {
@@ -1876,6 +1960,7 @@
                         "last_scanned": "Última vez escaneada",
                         "name": "Nombre"
                     },
+                    "never_scanned": "Nunca escaneado",
                     "no_tags": "Sin etiquetas",
                     "write": "Escribir"
                 },
@@ -1885,6 +1970,8 @@
                         "create": "Crear",
                         "name": "Nombre",
                         "password": "Contraseña",
+                        "password_confirm": "Confirmar contraseña",
+                        "password_not_match": "Las contraseñas no coinciden",
                         "username": "Nombre de usuario"
                     },
                     "caption": "Usuarios",
@@ -1901,7 +1988,9 @@
                         "group": "Grupo",
                         "id": "ID",
                         "name": "Nombre",
+                        "new_password": "Nueva contraseña",
                         "owner": "Propietario",
+                        "password_changed": "¡La contraseña ha cambiado!",
                         "system_generated": "Generado por el sistema",
                         "system_generated_users_not_editable": "No se pueden actualizar los usuarios generados por el sistema.",
                         "system_generated_users_not_removable": "No se pueden eliminar los usuarios generados por el sistema.",
@@ -2200,6 +2289,7 @@
                         "description": "Las plantillas se muestran utilizando el motor de plantillas Jinja2 con algunas extensiones específicas de Home Assistant.",
                         "editor": "Editor de plantillas",
                         "jinja_documentation": "Documentación de plantilla Jinja2",
+                        "reset": "Reiniciar a la plantilla de demostración",
                         "template_extensions": "Extensiones de plantilla de Home Assistant",
                         "title": "Plantillas",
                         "unknown_error_template": "Error desconocido al mostrar la plantilla"
@@ -2281,6 +2371,10 @@
                             "description": "La tarjeta Botón te permite agregar botones para realizar tareas.",
                             "name": "Botón"
                         },
+                        "calendar": {
+                            "description": "La tarjeta Calendario muestra un calendario que incluye vistas de día, semana y lista",
+                            "name": "Calendario"
+                        },
                         "conditional": {
                             "card": "Tarjeta",
                             "change_type": "Cambiar el tipo",
@@ -2346,6 +2440,7 @@
                             "show_name": "¿Mostrar nombre?",
                             "show_state": "¿Mostrar estado?",
                             "state": "Estado",
+                            "state_color": "¿Iconos de colores según el estado?",
                             "tap_action": "Acción de toque",
                             "theme": "Tema",
                             "title": "Título",
@@ -2735,6 +2830,7 @@
                     "intro": "Hola {name}, bienvenido a Home Assistant. ¿Cómo te gustaría llamar a tu casa?",
                     "intro_location": "Nos gustaría saber dónde vives. Esta información ayudará a mostrar información y a configurar automatizaciones basadas en el sol. Estos datos nunca se comparten fuera de tu red.",
                     "intro_location_detect": "Podemos ayudarte a completar esta información haciendo una solicitud única a un servicio externo.",
+                    "location_name": "Nombre de tu instalación de Home Assistant",
                     "location_name_default": "Casa"
                 },
                 "integration": {

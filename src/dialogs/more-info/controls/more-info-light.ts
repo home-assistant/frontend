@@ -5,29 +5,27 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  TemplateResult,
-  internalProperty,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
-
-import {
-  SUPPORT_BRIGHTNESS,
-  SUPPORT_COLOR_TEMP,
-  SUPPORT_WHITE_VALUE,
-  SUPPORT_COLOR,
-  SUPPORT_EFFECT,
-} from "../../../data/light";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import type { HomeAssistant, LightEntity } from "../../../types";
-
 import "../../../components/ha-attributes";
 import "../../../components/ha-color-picker";
-import "../../../components/ha-labeled-slider";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-labeled-slider";
 import "../../../components/ha-paper-dropdown-menu";
+import {
+  SUPPORT_BRIGHTNESS,
+  SUPPORT_COLOR,
+  SUPPORT_COLOR_TEMP,
+  SUPPORT_EFFECT,
+  SUPPORT_WHITE_VALUE,
+} from "../../../data/light";
+import type { HomeAssistant, LightEntity } from "../../../types";
 
 interface HueSatColor {
   h: number;
@@ -149,7 +147,7 @@ class MoreInfoLight extends LitElement {
           : ""}
         <ha-attributes
           .stateObj=${this.stateObj}
-          extraFilters="brightness,color_temp,white_value,effect_list,effect,hs_color,rgb_color,xy_color,min_mireds,max_mireds,entity_id"
+          extra-filters="brightness,color_temp,white_value,effect_list,effect,hs_color,rgb_color,xy_color,min_mireds,max_mireds,entity_id"
         ></ha-attributes>
       </div>
     `;

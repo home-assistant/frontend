@@ -15,7 +15,7 @@ import type {
 } from "../../data/media-player";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import { createCloseHeading } from "../ha-dialog";
+import "../ha-dialog";
 import "./ha-media-player-browse";
 import { MediaPlayerBrowseDialogParams } from "./show-media-browser-dialog";
 
@@ -56,18 +56,17 @@ class DialogMediaPlayerBrowse extends LitElement {
         scrimClickAction
         escapeKeyAction
         hideActions
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize("ui.components.media-browser.media-player-browser")
-        )}
+        flexContent
         @closed=${this._closeDialog}
       >
         <ha-media-player-browse
+          dialog
           .hass=${this.hass}
           .entityId=${this._entityId}
           .action=${this._action!}
           .mediaContentId=${this._mediaContentId}
           .mediaContentType=${this._mediaContentType}
+          @close-dialog=${this._closeDialog}
           @media-picked=${this._mediaPicked}
         ></ha-media-player-browse>
       </ha-dialog>
@@ -94,13 +93,20 @@ class DialogMediaPlayerBrowse extends LitElement {
           --dialog-content-padding: 0;
         }
 
+        ha-header-bar {
+          --mdc-theme-on-primary: var(--primary-text-color);
+          --mdc-theme-primary: var(--mdc-theme-surface);
+          flex-shrink: 0;
+          border-bottom: 1px solid
+            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
+        }
+
         @media (min-width: 800px) {
           ha-dialog {
             --mdc-dialog-max-width: 800px;
           }
           ha-media-player-browse {
             width: 700px;
-            padding: 20px 24px;
           }
         }
       `,

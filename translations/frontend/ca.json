@@ -419,9 +419,16 @@
                 "unlock": "Desbloquejar"
             },
             "media_player": {
+                "browse_media": "Navega pels mitjans",
+                "media_next_track": "Següent",
+                "media_play": "Reprodueix",
+                "media_play_pause": "Reprodueix/pausa",
+                "media_previous_track": "Anterior",
                 "sound_mode": "Mode de so",
                 "source": "Entrada",
-                "text_to_speak": "Text a veu"
+                "text_to_speak": "Text a veu",
+                "turn_off": "Apaga",
+                "turn_on": "Engega"
             },
             "persistent_notification": {
                 "dismiss": "Desestimar"
@@ -554,6 +561,26 @@
                 "loading_history": "Carregant historial d'estats...",
                 "no_history_found": "No s'ha trobat cap historial d'estats."
             },
+            "media-browser": {
+                "choose-source": "Tria la font",
+                "content-type": {
+                    "album": "Àlbum",
+                    "artist": "Artista",
+                    "library": "Biblioteca",
+                    "playlist": "Llista de reproducció",
+                    "server": "Servidor"
+                },
+                "media-player-browser": "Navegador del reproductor multimèdia",
+                "no_items": "Sense elements",
+                "pick": "Escull",
+                "pick-media": "Tria mitjans",
+                "play": "Reprodueix",
+                "play-media": "Reprodueix mitjans"
+            },
+            "picture-upload": {
+                "label": "Imatge",
+                "unsupported_format": "Format no compatible, tria una imatge JPEG, PNG o GIF."
+            },
             "related-items": {
                 "area": "Àrea",
                 "automation": "Part de les següents automatitzacions",
@@ -574,6 +601,7 @@
                     "week": "{count} {count, plural,\n  one {setmana}\n  other {setmanes}\n}"
                 },
                 "future": "D'aquí a {time}",
+                "just_now": "Ara mateix",
                 "never": "Mai",
                 "past": "Fa {time}"
             },
@@ -655,6 +683,9 @@
                 "platform_not_loaded": "La integració {platform} no està carregada. Afegeix-la a la teva configuració afegint 'default_config:' o bé ''{platform}:''.",
                 "required_error_msg": "Aquest camp és obligatori",
                 "yaml_not_editable": "La configuració d'aquesta entitat no es pot editar des de la interfície d'usuari. Només es poden editar des de la interfície aquelles entitats que s'han configurat des d'ella."
+            },
+            "image_cropper": {
+                "crop": "Retalla"
             },
             "more_info_control": {
                 "dismiss": "Desestimar el diàleg",
@@ -892,7 +923,7 @@
                                     "wait_template": "Plantilla d'espera"
                                 }
                             },
-                            "unsupported_action": "Acció {action} no suportada."
+                            "unsupported_action": "Acció no suportada per la UI: {action}"
                         },
                         "alias": "Nom",
                         "conditions": {
@@ -958,7 +989,7 @@
                                     "zone": "Zona"
                                 }
                             },
-                            "unsupported_condition": "Condició {condition} no suportada."
+                            "unsupported_condition": "Condició no suportada per la UI: {condition}"
                         },
                         "default_name": "Nova automatització",
                         "description": {
@@ -993,7 +1024,7 @@
                             "delete_confirm": "Segur que vols eliminar-ho?",
                             "duplicate": "Duplica",
                             "header": "Disparadors",
-                            "introduction": "Els activadors són les regles que fan que es dispari una automatització. Pots definir més d'un activador per a cada automatització. Una vegada s'iniciï un activador, el Home Assistant validarà les condicions (si n'hi ha) i finalment cridarà l'acció.",
+                            "introduction": "Els activadors són les regles que fan que es dispari una automatització. Pots definir més d'un activador per a cada automatització. Una vegada s'iniciï un activador, Home Assistant validarà les condicions (si n'hi ha) i finalment cridarà l'acció.",
                             "learn_more": "Més informació sobre els activadors",
                             "name": "Disparador",
                             "type_select": "Tipus de disparador",
@@ -1050,6 +1081,9 @@
                                     "sunrise": "a l'Alba",
                                     "sunset": "al Capvespre"
                                 },
+                                "tag": {
+                                    "label": "Etiqueta"
+                                },
                                 "template": {
                                     "label": "Plantilla",
                                     "value_template": "Plantilla de valor"
@@ -1077,7 +1111,7 @@
                                     "zone": "Zona"
                                 }
                             },
-                            "unsupported_platform": "Plataforma {platform} no suportada."
+                            "unsupported_platform": "Plataforma no suportada per la UI: {platform}"
                         },
                         "unsaved_confirm": "Hi ha canvis no desats. Segur que vols sortir?"
                     },
@@ -1090,7 +1124,7 @@
                         "headers": {
                             "name": "Nom"
                         },
-                        "introduction": "L'editor d'automatitzacions et permet crear i editar automatitzacions. Vés a l'enllaç de sota per veure'n les instruccions i assegurar-te que has configurat el Home Assistant correctament.",
+                        "introduction": "L'editor d'automatitzacions et permet crear i editar automatitzacions. Vés a l'enllaç de sota per veure'n les instruccions i assegurar-te que has configurat Home Assistant correctament.",
                         "learn_more": "Més informació sobre les automatitzacions",
                         "no_automations": "No s'ha pogut trobar cap automatització editable",
                         "only_editable": "Només es poden editar les automatitzacions definides dins l'arxiu automations.yaml.",
@@ -1308,6 +1342,7 @@
                     }
                 },
                 "devices": {
+                    "add_prompt": "Encara no s'han afegit {name} mitjançant aquest dispositiu. Pots afegir-ne fent clic al botó + a sobre.",
                     "automation": {
                         "actions": {
                             "caption": "Quan es dispara alguna cosa..."
@@ -1327,6 +1362,7 @@
                     "caption": "Dispositius",
                     "confirm_delete": "Estàs segur que vols eliminar aquest dispositiu?",
                     "confirm_rename_entity_ids": "Vols, també, canviar el nom dels ID's d'entitat de les entitats?",
+                    "confirm_rename_entity_ids_warning": "Això no canviarà cap configuració (com automatitzacions, scripts, escenes, Lovelace) que estigui utilitzant aquestes entitats, les hauràs d'actualitzar tu mateix.",
                     "data_table": {
                         "area": "Àrea",
                         "battery": "Bateria",
@@ -1489,8 +1525,11 @@
                         "no_device": "Entitats sense dispositius",
                         "no_devices": "Aquesta integració no té dispositius.",
                         "options": "Opcions",
+                        "reload": "Torna a carregar",
+                        "reload_confirm": "La integració s'ha tornar a carregar",
+                        "reload_restart_confirm": "Reinicia Home Assistant per acabar de carregar aquesta integració",
                         "rename": "Canvia el nom",
-                        "restart_confirm": "Reinicia el Home Assistant per acabar d'eliminar aquesta integració",
+                        "restart_confirm": "Reinicia Home Assistant per acabar d'eliminar aquesta integració",
                         "settings_button": "Edita la configuració de {integration}",
                         "system_options": "Opcions de sistema",
                         "system_options_button": "Opcions de sistema de {integration}",
@@ -1647,7 +1686,11 @@
                     "topic": "tòpic"
                 },
                 "ozw": {
+                    "button": "Configura",
                     "common": {
+                        "controller": "Controlador",
+                        "instance": "Instància",
+                        "network": "Xarxa",
                         "node_id": "ID del node",
                         "ozw_instance": "Instància OpenZWave",
                         "zwave": "Z-Wave"
@@ -1657,9 +1700,74 @@
                         "stage": "Etapa",
                         "zwave_info": "Informació Z-Wave"
                     },
+                    "navigation": {
+                        "network": "Xarxa",
+                        "nodes": "Nodes",
+                        "select_instance": "Selecciona instància"
+                    },
+                    "network_status": {
+                        "details": {
+                            "driverallnodesqueried": "S'han cosultat tots els nodes",
+                            "driverallnodesqueriedsomedead": "S'han consultat tots els nodes. Se n'han trobat alguns morts",
+                            "driverawakenodesqueries": "S'han cosultat tots els nodes desperts",
+                            "driverfailed": "No s'ha pogut connectar amb el controlador Z-Wave",
+                            "driverready": "Iniciant el controlador Z-Wave",
+                            "driverremoved": "El controlador s'ha eliminat",
+                            "driverreset": "El controlador s'ha restablert",
+                            "offline": "OZWDaemon fora de línia",
+                            "ready": "A punt per connectar-se",
+                            "started": "Connectat a MQTT",
+                            "starting": "Connectant a MQTT",
+                            "stopped": "OpenZWave aturat"
+                        },
+                        "offline": "Fora de línia",
+                        "online": "En línia",
+                        "starting": "Iniciant",
+                        "unknown": "Desconegut"
+                    },
+                    "network": {
+                        "header": "Gestió de la xarxa",
+                        "introduction": "Gestiona les funcions de tota la xarxa.",
+                        "node_count": "{count} nodes"
+                    },
+                    "node_query_stages": {
+                        "associations": "Actualitzant de grups d'associacions i membres",
+                        "cacheload": "Carregant informació del fitxer de memòria cau d'OpenZWave. Els nodes amb bateria romandran en aquesta fase fins que es despertin.",
+                        "complete": "Procés de consulta completat",
+                        "configuration": "Obtenint valors de configuració del node",
+                        "dynamic": "Obtenint valors usualment canviants del node",
+                        "instances": "Obtenint detalls sobre instàncies i canals compatibles amb el dispositiu",
+                        "manufacturerspecific1": "Obtenint fabricant i codis ID de producte del node",
+                        "manufacturerspecific2": "Obtenint fabricant i codis ID de producte addicionals del node",
+                        "neighbors": "Obtenint llista de nodes veïns",
+                        "nodeinfo": "Obtenint classes de comandes compatibles del node",
+                        "nodeplusinfo": "Obtenint informació Z-Wave+ del node",
+                        "probe": "Comprovant si el node està despert",
+                        "protocolinfo": "Obtenint funcions Z-Wave bàsiques del controlador d'aquest node",
+                        "session": "Obtenint valors inusualment canviants del node",
+                        "static": "Obtenint valors estàtics del dispositiu",
+                        "versions": "Obtenint informació de programari i versions de classes de comandes",
+                        "wakeup": "Configurant el suport per a cues i missatges"
+                    },
                     "refresh_node": {
+                        "battery_note": "Si el node funciona amb bateria, assegura't de que estigui actiu abans de continuar",
+                        "complete": "Actualització del node completa",
+                        "description": "Això farà que OpenZWave torni a consultar el node i n'actualitzi les classes de comandes, funcions i valors.",
                         "node_status": "Estat del node",
-                        "step": "Pas"
+                        "refreshing_description": "Actualitzant la informació del node...",
+                        "start_refresh_button": "Inicia l'actualització",
+                        "step": "Pas",
+                        "title": "Informació d'actualització del node",
+                        "wakeup_header": "Instruccions en despertar de",
+                        "wakeup_instructions_source": "Les instruccions en despertar provenen de la base de dades de dispositius de la comunitat OpenZWave."
+                    },
+                    "select_instance": {
+                        "header": "Selecciona una instància d'OpenZWave",
+                        "introduction": "Tens més d'una instància d'OpenZWave en funcionament. Quina instància vols gestionar?"
+                    },
+                    "services": {
+                        "add_node": "Afegeix node",
+                        "remove_node": "Elimina node"
                     }
                 },
                 "person": {
@@ -1725,7 +1833,7 @@
                         "headers": {
                             "name": "Nom"
                         },
-                        "introduction": "L'editor d'escenes et permet crear i editar escenes. Vés a l'enllaç de sota per veure'n les instruccions i assegurar-te que has configurat el Home Assistant correctament.",
+                        "introduction": "L'editor d'escenes et permet crear i editar escenes. Vés a l'enllaç de sota per veure'n les instruccions i assegurar-te que has configurat Home Assistant correctament.",
                         "learn_more": "Més informació sobre les escenes",
                         "no_scenes": "No s'ha pogut trobar cap escena editable",
                         "only_editable": "Només es poden editar les escenes definides dins l'arxiu scenes.yaml.",
@@ -1772,7 +1880,7 @@
                         "headers": {
                             "name": "Nom"
                         },
-                        "introduction": "L'editor de scripts et permet crear i editar scripts. Vés a l'enllaç de sota per veure'n les instruccions i assegurar-te que has configurat el Home Assistant correctament.",
+                        "introduction": "L'editor de scripts et permet crear i editar scripts. Vés a l'enllaç de sota per veure'n les instruccions i assegurar-te que has configurat Home Assistant correctament.",
                         "learn_more": "Més informació sobre els scripts",
                         "no_scripts": "No hem trobat cap script editable",
                         "show_info": "Mostra informació sobre l'script",
@@ -1785,18 +1893,32 @@
                     "section": {
                         "reloading": {
                             "automation": "Actualitza automatitzacions",
+                            "command_line": "Torna a carregar entitats de comandes",
                             "core": "Actualitza ubicació i personalitzacions",
+                            "filesize": "Torna a carregar entitats de mida de fitxer",
+                            "filter": "Torna a carregar entitats de filtre",
+                            "generic": "Torna a carregar entitats genèriques de càmera IP",
+                            "generic_thermostat": "Torna a carregar entitats genèriques de termòstat",
                             "group": "Actualitza grups",
                             "heading": "Tornant a carregar la configuració",
+                            "history_stats": "Torna a carregar entitats d'estadístiques històriques",
+                            "homekit": "Torna a carregar HomeKit",
                             "input_boolean": "Actualitza entrades booleanes",
                             "input_datetime": "Actualitza entrades de data i hora",
                             "input_number": "Actualitza entrades numèriques",
                             "input_select": "Actualitza entrades de selecció",
                             "input_text": "Actualitza entrades de text",
                             "introduction": "Algunes parts de Home Assistant es poden actualitzar sense necessitat reiniciar-lo. Si prems actualitza s'esborrarà la configuració YAML actual i se'n carregarà la nova.",
+                            "min_max": "Torna a carregar entitats min/max",
                             "person": "Actualitza persones",
+                            "ping": "Torna a carregar entitats de sensors binaris de ping",
+                            "rest": "Torna a carregar entitats de repòs",
                             "scene": "Actualitza escenes",
                             "script": "Actualitza programes",
+                            "statistics": "Torna a carregar entitats estadístiques",
+                            "template": "Torna a carregar entitats de plantilla",
+                            "trend": "Torna a carregar entitats de tendència",
+                            "universal": "Torna a carregar entitats del reproductor universal",
                             "zone": "Actualitza zones"
                         },
                         "server_management": {
@@ -1816,12 +1938,40 @@
                         }
                     }
                 },
+                "tags": {
+                    "add_tag": "Afegeix etiqueta",
+                    "automation_title": "S'escanegi l'etiqueta {name}",
+                    "caption": "Etiquetes",
+                    "create_automation": "Crea una automatització amb una etiqueta",
+                    "description": "Gestiona les etiquetes",
+                    "detail": {
+                        "create": "Crea",
+                        "create_and_write": "Crea i escriu",
+                        "delete": "Elimina",
+                        "description": "Descripció",
+                        "name": "Nom",
+                        "new_tag": "Nova etiqueta",
+                        "tag_id": "ID de l'etiqueta",
+                        "tag_id_placeholder": "Autogenerat si es deixa buit",
+                        "update": "Actualitza"
+                    },
+                    "edit": "Edita",
+                    "headers": {
+                        "last_scanned": "Últim escaneig",
+                        "name": "Nom"
+                    },
+                    "never_scanned": "Mai escanejat",
+                    "no_tags": "Sense etiquetes",
+                    "write": "Escriu"
+                },
                 "users": {
                     "add_user": {
                         "caption": "Afegir usuari",
                         "create": "Crear",
                         "name": "Nom",
                         "password": "Contrasenya",
+                        "password_confirm": "Confirma la contrasenya",
+                        "password_not_match": "Les contrasenyes no coincideixen",
                         "username": "Nom d'usuari"
                     },
                     "caption": "Usuaris",
@@ -1838,7 +1988,9 @@
                         "group": "Grup",
                         "id": "ID",
                         "name": "Nom",
+                        "new_password": "Nova contrasenya",
                         "owner": "Propietari",
+                        "password_changed": "La contrasenya s'ha canviat!",
                         "system_generated": "Generat pel sistema",
                         "system_generated_users_not_editable": "No es poden actualitzar usuaris generats pel sistema.",
                         "system_generated_users_not_removable": "No es poden eliminar usuaris generats pel sistema.",
@@ -2137,6 +2289,7 @@
                         "description": "Les plantilles es renderitzen mitjançant el motor Jinja2 amb algunes extensions específiques de Home Assistant.",
                         "editor": "Editor de plantilles",
                         "jinja_documentation": "Documentació sobre plantilles amb Jinja2",
+                        "reset": "Restableix a la plantilla de demostració",
                         "template_extensions": "Extensions de plantilla de Home Assistant",
                         "title": "Plantilla",
                         "unknown_error_template": "Error desconegut renderitzant plantilla"
@@ -2218,6 +2371,10 @@
                             "description": "La targeta botó et permet afegir botons per realitzar diferents tasques.",
                             "name": "Botó"
                         },
+                        "calendar": {
+                            "description": "La targeta Calendari mostra un calendari que inclou visualitzacions de dia, setmana i llista",
+                            "name": "Calendari"
+                        },
                         "conditional": {
                             "card": "Targeta",
                             "change_type": "Canvia el tipus",
@@ -2283,6 +2440,7 @@
                             "show_name": "Mostra nom?",
                             "show_state": "Mostra estat?",
                             "state": "Estat",
+                            "state_color": "Color de les icones basat en l'estat?",
                             "tap_action": "Acció en tocar",
                             "theme": "Tema",
                             "title": "Títol",
@@ -2672,6 +2830,7 @@
                     "intro": "Hola {name}, benvingut/uda a Home Assistant. Quin nom t'agradaria posar a la teva casa?",
                     "intro_location": "Voldirem saber la zona on vius. Aquesta informació servirà per poder mostrar certa informació i configurar automatitzacions relatives a la posició del sol. Aquestes dades mai es compartiran fora de la teva xarxa personal.",
                     "intro_location_detect": "Et podem ajudar a completar aquesta informació fent una única sol·licitud a un servei extern.",
+                    "location_name": "Nom de la instal·lació de Home Assistant",
                     "location_name_default": "Casa"
                 },
                 "integration": {

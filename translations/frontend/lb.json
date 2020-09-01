@@ -419,9 +419,16 @@
                 "unlock": "Entspären"
             },
             "media_player": {
+                "browse_media": "Medien duerchgoen",
+                "media_next_track": "Nächst",
+                "media_play": "Spill",
+                "media_play_pause": "Spill/Pause",
+                "media_previous_track": "Viregt",
                 "sound_mode": "Toun Modus",
                 "source": "Quell",
-                "text_to_speak": "Text zu Sprooch"
+                "text_to_speak": "Text zu Sprooch",
+                "turn_off": "Ausschalten",
+                "turn_on": "Uschalten"
             },
             "persistent_notification": {
                 "dismiss": "Verwerfen"
@@ -554,6 +561,22 @@
                 "loading_history": "Lued Status Verlaaf",
                 "no_history_found": "Keen Status Verlaaf fonnt"
             },
+            "media-browser": {
+                "choose-source": "Quell auswielen",
+                "content-type": {
+                    "album": "Album",
+                    "artist": "Artist",
+                    "library": "Bibliothéik",
+                    "playlist": "Ofspilllëscht",
+                    "server": "Server"
+                },
+                "media-player-browser": "Media Player Browser",
+                "no_items": "Keng Elementer",
+                "pick": "Auswielen",
+                "pick-media": "Media auswielen",
+                "play": "Spill",
+                "play-media": "Media ofspillen"
+            },
             "picture-upload": {
                 "label": "Bild",
                 "unsupported_format": "Net ënnerstëtzte Format, wiel e JPEG, PNG oder GIF Bild."
@@ -578,6 +601,7 @@
                     "week": "{count} {count, plural,\none {Woch}\nother {Wochen}\n}"
                 },
                 "future": "An {time}",
+                "just_now": "Grad eben",
                 "never": "Nie",
                 "past": "virun {time}"
             },
@@ -1056,6 +1080,9 @@
                                     "offset": "Versat (optional)",
                                     "sunrise": "Sonnenopgank",
                                     "sunset": "Sonnenënnergank"
+                                },
+                                "tag": {
+                                    "label": "Tag"
                                 },
                                 "template": {
                                     "label": "Modell",
@@ -1654,7 +1681,11 @@
                     "topic": "Sujet"
                 },
                 "ozw": {
+                    "button": "Astellen",
                     "common": {
+                        "controller": "Kontroller",
+                        "instance": "Instanz",
+                        "network": "Netzwierk",
                         "node_id": "Node ID",
                         "ozw_instance": "OpenZWave Instanz",
                         "zwave": "Z-Wave"
@@ -1663,6 +1694,35 @@
                         "node_failed": "Feeler am Node",
                         "stage": "Stage",
                         "zwave_info": "Z-Wave Info"
+                    },
+                    "navigation": {
+                        "network": "Netzwierk",
+                        "nodes": "Nodes",
+                        "select_instance": "Instanz auswielen"
+                    },
+                    "network_status": {
+                        "details": {
+                            "driverallnodesqueried": "All Nodes goufen ofgefrot",
+                            "driverallnodesqueriedsomedead": "All Nodes goufen ofgefrot. Verschidde Nodes sin net méi ereechbar.",
+                            "driverawakenodesqueries": "All waakreg Nodes goufen ofgefrot",
+                            "driverfailed": "Feeler beim verbannen mam Z-Wave Kontroller",
+                            "driverready": "Z-Wave Kontroller initialiséieren",
+                            "driverremoved": "Den Driver gouf geläscht",
+                            "driverreset": "Den Driver gouf zeréckgesat",
+                            "offline": "OZWDaemon net ereechbar",
+                            "ready": "Prett fir sech ze verbannen",
+                            "started": "Mam MQTT verbonnen",
+                            "starting": "Mam MQTT verbannen",
+                            "stopped": "OpenZWave gestoppt"
+                        },
+                        "offline": "Offline",
+                        "online": "Online",
+                        "starting": "Start",
+                        "unknown": "Onbekannt"
+                    },
+                    "network": {
+                        "header": "Verwaltung vum Netzwierk",
+                        "node_count": "{count} nodes"
                     },
                     "node_query_stages": {
                         "associations": "Associatiounsgruppen a Memberen aktualiséieren",
@@ -1692,6 +1752,14 @@
                         "title": "Node Informatiounen aktualiséieren",
                         "wakeup_header": "Instruktioune fir d'erwäche vun",
                         "wakeup_instructions_source": "D'Instruktioune fir d'erwäche si vun der OpenZwave Communautéit Datebank."
+                    },
+                    "select_instance": {
+                        "header": "Eng OpenZWave Instanz auswielen",
+                        "introduction": "Du hues méi wéi eng OpenZWave Instanz laafen. Wéieng Instanz wëlls du verwalten?"
+                    },
+                    "services": {
+                        "add_node": "Node dobäisetzen",
+                        "remove_node": "Node läschen"
                     }
                 },
                 "person": {
@@ -1845,6 +1913,25 @@
                             "valid": "Konfiguratioun gëlteg!"
                         }
                     }
+                },
+                "tags": {
+                    "add_tag": "Tag dobäisetzen",
+                    "caption": "Tags",
+                    "description": "Tags verwalten",
+                    "detail": {
+                        "create": "Erstellen",
+                        "create_and_write": "Erstellen a schréiwen",
+                        "delete": "Läschen",
+                        "description": "Beschreiwung",
+                        "name": "Numm",
+                        "new_tag": "Neien tag",
+                        "tag_id": "Tag id",
+                        "update": "Aktualiséieren"
+                    },
+                    "headers": {
+                        "last_scanned": "Läscht duerchsicht"
+                    },
+                    "no_tags": "Keng Tags"
                 },
                 "users": {
                     "add_user": {
@@ -2167,6 +2254,7 @@
                         "description": "Modeller ginn mëttels Jinja2 template engine duergestallt mat e puer Home Assistant spezifesch Erweiderungen.",
                         "editor": "Modell Editeur",
                         "jinja_documentation": "Jinja2 Modell Dokumentatioun",
+                        "reset": "Op Demo Modell zeréck setzen",
                         "template_extensions": "Home Assistant Modell Erweiderungen",
                         "title": "Modeller",
                         "unknown_error_template": "Onbekannte Feeler beim duerstelle vum Modell"
@@ -2247,6 +2335,10 @@
                         "button": {
                             "description": "Knäppchen Kaart erlaabt et Knäppchen mat Aktioune unzeweisen.",
                             "name": "Knäppchen"
+                        },
+                        "calendar": {
+                            "description": "Kalenner Kaart weist ee Kalenner mat Deeg, Wochen an Lëschten un",
+                            "name": "Kalenner"
                         },
                         "conditional": {
                             "card": "Kaart",
@@ -2702,6 +2794,7 @@
                     "intro": "Hallo {name}, wëllkomm zu Home Assistant. Wéi wëllt dir äert Doheem benennen?",
                     "intro_location": "Mir wëlle wësse wou dir wunnt. Dës Informatioun hëlleft fir Informatiounen unzeweisen an Automatiounen anzeriichten déi op d'Sonne baséieren. Dës Donnéeë ginn nimools ausserhalb vun ärem Netzwierk gedeelt.",
                     "intro_location_detect": "Mir kënne beim Ausfëlle vun dësen Informatiounen hëllefen andeems eng eemoleg Demande bei engem externe Service ugefrot gëtt.",
+                    "location_name": "Numm vun denger Home Assistant Installatioun",
                     "location_name_default": "Doheem"
                 },
                 "integration": {
