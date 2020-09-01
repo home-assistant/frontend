@@ -1667,7 +1667,7 @@
                             "css": "Arkusz stylów",
                             "html": "HTML (przestarzałe)",
                             "js": "Plik JavaScript (przestarzałe)",
-                            "module": "Moduł JavaScript (przestarzałe)"
+                            "module": "Moduł JavaScript"
                         }
                     }
                 },
