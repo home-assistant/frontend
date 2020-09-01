@@ -526,7 +526,8 @@
         }
       },
       "domain_toggler": {
-        "title": "Toggle Domains"
+        "title": "Toggle Domains",
+        "reset_entities": "Reset Entities"
       },
       "mqtt_device_debug_info": {
         "title": "{device} debug info",
@@ -1383,7 +1384,13 @@
             "title": "Alexa",
             "banner": "Editing which entities are exposed via this UI is disabled because you have configured entity filters in configuration.yaml.",
             "exposed_entities": "Exposed entities",
-            "not_exposed_entities": "Not Exposed entities",
+            "not_exposed_entities": "Not exposed entities",
+            "manage_domains": "Manage domains",
+            "expose_entity": "Expose entity",
+            "dont_expose_entity": "Don't expose entity",
+            "follow_domain": "Follow domain",
+            "exposed": "{selected} exposed",
+            "not_exposed": "{selected} not exposed",
             "expose": "Expose to Alexa"
           },
           "dialog_certificate": {
@@ -1399,7 +1406,13 @@
             "disable_2FA": "Disable two factor authentication",
             "banner": "Editing which entities are exposed via this UI is disabled because you have configured entity filters in configuration.yaml.",
             "exposed_entities": "Exposed entities",
-            "not_exposed_entities": "Not Exposed entities",
+            "not_exposed_entities": "Not exposed entities",
+            "manage_domains": "Manage domains",
+            "expose_entity": "Expose entity",
+            "dont_expose_entity": "Don't expose entity",
+            "follow_domain": "Follow domain",
+            "exposed": "{selected} exposed",
+            "not_exposed": "{selected} not exposed",
             "sync_to_google": "Synchronizing changes to Google."
           },
           "dialog_cloudhook": {
