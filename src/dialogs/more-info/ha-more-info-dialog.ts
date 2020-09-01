@@ -286,6 +286,7 @@ export class MoreInfoDialog extends LitElement {
       this._fetchUserDone,
     ]);
 
+    // @ts-ignore
     this._entries = entries.slice(0, 5);
     this._isLoading = false;
   }
