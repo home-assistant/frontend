@@ -389,6 +389,8 @@
         "dismiss": "Dismiss dialog",
         "settings": "Entity settings",
         "edit": "Edit entity",
+        "controls": "Controls",
+        "history": "History",
         "script": {
           "last_action": "Last Action",
           "last_triggered": "Last Triggered"
