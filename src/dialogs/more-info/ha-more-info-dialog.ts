@@ -11,7 +11,6 @@ import {
   LitElement,
   property,
 } from "lit-element";
-import { styleMap } from "lit-html/directives/style-map";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { DOMAINS_MORE_INFO_NO_HISTORY } from "../../common/const";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -22,12 +21,7 @@ import "../../components/ha-dialog";
 import "../../components/ha-header-bar";
 import "../../components/ha-svg-icon";
 import "../../components/state-history-charts";
-import { getRecentWithCache } from "../../data/cached-history";
 import { removeEntityRegistryEntry } from "../../data/entity_registry";
-import { HistoryResult } from "../../data/history";
-import { getLogbookData, LogbookEntry } from "../../data/logbook";
-import { fetchPersons } from "../../data/person";
-import { fetchUsers } from "../../data/user";
 import { showEntityEditorDialog } from "../../panels/config/entities/show-dialog-entity-editor";
 import "../../panels/logbook/ha-logbook";
 import { haStyleDialog } from "../../resources/styles";
@@ -50,21 +44,11 @@ export class MoreInfoDialog extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public large = false;
 
-  @internalProperty() private _stateHistory?: HistoryResult;
-
   @internalProperty() private _entityId?: string | null;
 
   @internalProperty() private _currTabIndex = 0;
 
-  @internalProperty() private _entries: LogbookEntry[] = [];
-
-  @internalProperty() private _userIdToName = {};
-
-  @internalProperty() private _isLoading = false;
-
-  private _fetchUserDone?: Promise<unknown>;
-
-  private _historyRefreshInterval?: number;
+  private _historyImported = false;
 
   public showDialog(params: MoreInfoDialogParams) {
     this._entityId = params.entityId;
@@ -72,26 +56,11 @@ export class MoreInfoDialog extends LitElement {
       this.closeDialog();
     }
     this.large = false;
-    this._stateHistory = undefined;
-    if (this._computeShowHistoryComponent(this._entityId)) {
-      this._fetchUserDone = this._fetchUserNames();
-      this._getStateHistory();
-      this._getLogBookData();
-      clearInterval(this._historyRefreshInterval);
-      this._historyRefreshInterval = window.setInterval(() => {
-        this._getStateHistory();
-      }, 60 * 1000);
-    }
   }
 
   public closeDialog() {
     this._entityId = undefined;
-    this._stateHistory = undefined;
     this._currTabIndex = 0;
-    this._entries = [];
-    this._userIdToName = {};
-    clearInterval(this._historyRefreshInterval);
-    this._historyRefreshInterval = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -159,21 +128,25 @@ export class MoreInfoDialog extends LitElement {
                 `
               : ""}
           </ha-header-bar>
-          <mwc-tab-bar
-            .activeIndex=${this._currTabIndex}
-            @MDCTabBar:activated=${this._handleTabChanged}
-          >
-            <mwc-tab
-              .label=${this.hass.localize(
-                "ui.dialogs.more_info_control.controls"
-              )}
-            ></mwc-tab>
-            <mwc-tab
-              .label=${this.hass.localize(
-                "ui.dialogs.more_info_control.history"
-              )}
-            ></mwc-tab>
-          </mwc-tab-bar>
+          ${this._computeShowHistoryComponent(entityId)
+            ? html`
+                <mwc-tab-bar
+                  .activeIndex=${this._currTabIndex}
+                  @MDCTabBar:activated=${this._handleTabChanged}
+                >
+                  <mwc-tab
+                    .label=${this.hass.localize(
+                      "ui.dialogs.more_info_control.controls"
+                    )}
+                  ></mwc-tab>
+                  <mwc-tab
+                    .label=${this.hass.localize(
+                      "ui.dialogs.more_info_control.history"
+                    )}
+                  ></mwc-tab>
+                </mwc-tab-bar>
+              `
+            : ""}
         </div>
         <div class="content">
           ${this._currTabIndex === 0
@@ -212,35 +185,10 @@ export class MoreInfoDialog extends LitElement {
                   : ""}
               `
             : html`
-                ${this._computeShowHistoryComponent(entityId)
-                  ? html`
-                      <state-history-charts
-                        up-to-now
-                        .hass=${this.hass}
-                        .historyData=${this._stateHistory}
-                        .isLoadingData=${!this._stateHistory}
-                      ></state-history-charts>
-                      ${this._isLoading
-                        ? html`
-                            <div class="progress-wrapper">
-                              <ha-circular-progress
-                                active
-                                alt=${this.hass.localize("ui.common.loading")}
-                              ></ha-circular-progress>
-                            </div>
-                          `
-                        : html`
-                            <ha-logbook
-                              style=${styleMap({
-                                height: `${this._entries.length * 72}px`,
-                              })}
-                              .hass=${this.hass}
-                              .entries=${this._entries}
-                              .userIdToName=${this._userIdToName}
-                            ></ha-logbook>
-                          `}
-                    `
-                  : ""}
+                <ha-more-info-tab-history
+                  .hass=${this.hass}
+                  .entityId=${this._entityId}
+                ></ha-more-info-tab-history>
               `}
         </div>
       </ha-dialog>
@@ -249,80 +197,6 @@ export class MoreInfoDialog extends LitElement {
 
   private _enlarge() {
     this.large = !this.large;
-  }
-
-  private async _getStateHistory(): Promise<void> {
-    if (!this._entityId) {
-      return;
-    }
-    this._stateHistory = await getRecentWithCache(
-      this.hass!,
-      this._entityId,
-      {
-        refresh: 60,
-        cacheKey: `more_info.${this._entityId}`,
-        hoursToShow: 24,
-      },
-      this.hass!.localize,
-      this.hass!.language
-    );
-  }
-
-  private async _getLogBookData() {
-    if (!this._entityId) {
-      return;
-    }
-    this._isLoading = true;
-
-    const yesterday = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
-    const now = new Date();
-    const [entries] = await Promise.all([
-      getLogbookData(
-        this.hass,
-        yesterday.toISOString(),
-        now.toISOString(),
-        this._entityId
-      ),
-      this._fetchUserDone,
-    ]);
-
-    // @ts-ignore
-    this._entries = entries.slice(0, 5);
-    this._isLoading = false;
-  }
-
-  private async _fetchUserNames() {
-    const userIdToName = {};
-
-    // Start loading all the data
-    const personProm = fetchPersons(this.hass);
-    const userProm = this.hass.user!.is_admin && fetchUsers(this.hass);
-
-    // Process persons
-    const persons = await personProm;
-
-    for (const person of persons.storage) {
-      if (person.user_id) {
-        userIdToName[person.user_id] = person.name;
-      }
-    }
-    for (const person of persons.config) {
-      if (person.user_id) {
-        userIdToName[person.user_id] = person.name;
-      }
-    }
-
-    // Process users
-    if (userProm) {
-      const users = await userProm;
-      for (const user of users) {
-        if (!(user.id in userIdToName)) {
-          userIdToName[user.id] = user.name;
-        }
-      }
-    }
-
-    this._userIdToName = userIdToName;
   }
 
   private _computeShowHistoryComponent(entityId) {
@@ -377,6 +251,10 @@ export class MoreInfoDialog extends LitElement {
     }
 
     this._currTabIndex = ev.detail.index;
+    if (!this._historyImported) {
+      import("./ha-more-info-tab-history");
+      this._historyImported = true;
+    }
   }
 
   static get styles() {
@@ -449,8 +327,7 @@ export class MoreInfoDialog extends LitElement {
           --dialog-content-padding: 0;
         }
 
-        state-card-content,
-        state-history-charts {
+        state-card-content {
           display: block;
           margin-bottom: 16px;
         }

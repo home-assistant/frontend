@@ -1,16 +1,17 @@
 import {
   css,
   CSSResult,
+  eventOptions,
   html,
   LitElement,
   property,
   PropertyValues,
   TemplateResult,
-  eventOptions,
 } from "lit-element";
 import { scroll } from "lit-virtualizer";
 import { formatDate } from "../../common/datetime/format_date";
 import { formatTimeWithSeconds } from "../../common/datetime/format_time";
+import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { stateIcon } from "../../common/entity/state_icon";
@@ -18,14 +19,16 @@ import { computeRTL, emitRTLDirection } from "../../common/util/compute_rtl";
 import "../../components/ha-icon";
 import { LogbookEntry } from "../../data/logbook";
 import { HomeAssistant } from "../../types";
-import { restoreScroll } from "../../common/decorators/restore-scroll";
 
 class HaLogbook extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public userIdToName = {};
+  @property({ attribute: false }) public userIdToName = {};
 
-  @property() public entries: LogbookEntry[] = [];
+  @property({ attribute: false }) public entries: LogbookEntry[] = [];
+
+  @property({ type: Boolean, attribute: "narrow", reflect: true })
+  public narrow = false;
 
   @property({ attribute: "rtl", type: Boolean, reflect: true })
   private _rtl = false;
@@ -98,46 +101,49 @@ class HaLogbook extends LitElement {
           <div class="time">
             ${formatTimeWithSeconds(new Date(item.when), this.hass.language)}
           </div>
-          <ha-icon
-            .icon=${state ? stateIcon(state) : domainIcon(item.domain)}
-          ></ha-icon>
-          <div class="message">
-            ${!item.entity_id
-              ? html` <span class="name">${item.name}</span> `
-              : html`
-                  <a
-                    href="#"
-                    @click=${this._entityClicked}
-                    .entityId=${item.entity_id}
-                    class="name"
-                    >${item.name}</a
-                  >
-                `}
-            <span
-              >${item.message}${item_username
-                ? ` (${item_username})`
-                : ``}</span
-            >
-            ${!item.context_event_type
-              ? ""
-              : item.context_event_type === "call_service"
-              ? // Service Call
-                html` by service ${item.context_domain}.${item.context_service}`
-              : item.context_entity_id === item.entity_id
-              ? // HomeKit or something that self references
-                html` by
-                ${item.context_name
-                  ? item.context_name
-                  : item.context_event_type}`
-              : // Another entity such as an automation or script
-                html` by
-                  <a
-                    href="#"
-                    @click=${this._entityClicked}
-                    .entityId=${item.context_entity_id}
-                    class="name"
-                    >${item.context_entity_id_name}</a
-                  >`}
+          <div class="icon-message">
+            <ha-icon
+              .icon=${state ? stateIcon(state) : domainIcon(item.domain)}
+            ></ha-icon>
+            <div class="message">
+              ${!item.entity_id
+                ? html` <span class="name">${item.name}</span> `
+                : html`
+                    <a
+                      href="#"
+                      @click=${this._entityClicked}
+                      .entityId=${item.entity_id}
+                      class="name"
+                      >${item.name}</a
+                    >
+                  `}
+              <span
+                >${item.message}${item_username
+                  ? ` (${item_username})`
+                  : ``}</span
+              >
+              ${!item.context_event_type
+                ? ""
+                : item.context_event_type === "call_service"
+                ? // Service Call
+                  html` by service
+                  ${item.context_domain}.${item.context_service}`
+                : item.context_entity_id === item.entity_id
+                ? // HomeKit or something that self references
+                  html` by
+                  ${item.context_name
+                    ? item.context_name
+                    : item.context_event_type}`
+                : // Another entity such as an automation or script
+                  html` by
+                    <a
+                      href="#"
+                      @click=${this._entityClicked}
+                      .entityId=${item.context_entity_id}
+                      class="name"
+                      >${item.context_entity_id_name}</a
+                    >`}
+            </div>
           </div>
         </div>
       </div>
@@ -212,8 +218,27 @@ class HaLogbook extends LitElement {
       .uni-virtualizer-host > * {
         box-sizing: border-box;
       }
+
+      :host([narrow]) .entry {
+        flex-direction: column;
+      }
+
+      :host([narrow]) .icon-message {
+        display: flex;
+        align-items: center;
+      }
+
+      :host([narrow]) .icon-message ha-icon {
+        margin-left: 0;
+      }
     `;
   }
 }
 
 customElements.define("ha-logbook", HaLogbook);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-logbook": HaLogbook;
+  }
+}
