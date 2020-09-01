@@ -1962,6 +1962,8 @@
                         "create": "Utwórz",
                         "name": "Imię",
                         "password": "Hasło",
+                        "password_confirm": "Potwierdź hasło",
+                        "password_not_match": "Hasła nie są takie same",
                         "username": "Nazwa użytkownika"
                     },
                     "caption": "Użytkownicy",
@@ -1978,6 +1980,7 @@
                         "group": "Grupa",
                         "id": "Identyfikator",
                         "name": "Nazwa",
+                        "new_password": "Nowe hasło",
                         "owner": "Właściciel",
                         "system_generated": "Wygenerowany przez system",
                         "system_generated_users_not_editable": "Nie można zaktualizować użytkowników generowanych przez system.",
