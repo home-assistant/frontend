@@ -526,7 +526,8 @@
         }
       },
       "domain_toggler": {
-        "title": "Toggle Domains"
+        "title": "Toggle Domains",
+        "reset_entities": "Reset Entities"
       },
       "mqtt_device_debug_info": {
         "title": "{device} debug info",
@@ -838,7 +839,20 @@
               "input_number": "Reload input numbers",
               "input_datetime": "Reload input date times",
               "input_select": "Reload input selects",
-              "template": "Reload template entities"
+              "template": "Reload template entities",
+              "universal": "Reload universal media player entities",
+              "rest": "Reload rest entities",
+              "command_line": "Reload command line entities",
+              "filter": "Reload filter entities",
+              "statistics": "Reload statistics entities",
+              "generic": "Reload generic IP camera entities",
+              "generic_thermostat": "Reload generic thermostat entities",
+              "homekit": "Reload HomeKit",
+              "min_max": "Reload min/max entities",
+              "history_stats": "Reload history stats entities",
+              "trend": "Reload trend entities",
+              "ping": "Reload ping binary sensor entities",
+              "filesize": "Reload file size entities"
             },
             "server_management": {
               "heading": "Server management",
@@ -1370,7 +1384,13 @@
             "title": "Alexa",
             "banner": "Editing which entities are exposed via this UI is disabled because you have configured entity filters in configuration.yaml.",
             "exposed_entities": "Exposed entities",
-            "not_exposed_entities": "Not Exposed entities",
+            "not_exposed_entities": "Not exposed entities",
+            "manage_domains": "Manage domains",
+            "expose_entity": "Expose entity",
+            "dont_expose_entity": "Don't expose entity",
+            "follow_domain": "Follow domain",
+            "exposed": "{selected} exposed",
+            "not_exposed": "{selected} not exposed",
             "expose": "Expose to Alexa"
           },
           "dialog_certificate": {
@@ -1386,7 +1406,13 @@
             "disable_2FA": "Disable two factor authentication",
             "banner": "Editing which entities are exposed via this UI is disabled because you have configured entity filters in configuration.yaml.",
             "exposed_entities": "Exposed entities",
-            "not_exposed_entities": "Not Exposed entities",
+            "not_exposed_entities": "Not exposed entities",
+            "manage_domains": "Manage domains",
+            "expose_entity": "Expose entity",
+            "dont_expose_entity": "Don't expose entity",
+            "follow_domain": "Follow domain",
+            "exposed": "{selected} exposed",
+            "not_exposed": "{selected} not exposed",
             "sync_to_google": "Synchronizing changes to Google."
           },
           "dialog_cloudhook": {
@@ -1605,7 +1631,10 @@
             "documentation": "Documentation",
             "delete": "Delete",
             "delete_confirm": "Are you sure you want to delete this integration?",
+            "reload": "Reload",
             "restart_confirm": "Restart Home Assistant to finish removing this integration",
+            "reload_confirm": "The integration was reloaded",
+            "reload_restart_confirm": "Restart Home Assistant to finish reloading this integration",
             "manuf": "by {manufacturer}",
             "hub": "Connected via",
             "firmware": "Firmware: {version}",
@@ -1646,6 +1675,8 @@
             "caption": "View user",
             "name": "Name",
             "change_password": "Change password",
+            "new_password": "New Password",
+            "password_changed": "The password is changed!",
             "activate_user": "Activate user",
             "deactivate_user": "Deactivate user",
             "delete_user": "Delete user",
@@ -1666,6 +1697,8 @@
             "name": "Name",
             "username": "Username",
             "password": "Password",
+            "password_confirm": "Confirm Password",
+            "password_not_match": "Passwords don't match",
             "create": "Create"
           }
         },
@@ -2236,7 +2269,8 @@
               "url": "Url",
               "state": "State",
               "secondary_info_attribute": "Secondary Info Attribute",
-              "search": "Search"
+              "search": "Search",
+              "state_color": "Color icons based on state?"
             },
             "map": {
               "name": "Map",

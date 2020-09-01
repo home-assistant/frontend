@@ -419,9 +419,16 @@
                 "unlock": "Sbloccato"
             },
             "media_player": {
+                "browse_media": "Sfoglia i file multimediali",
+                "media_next_track": "Avanti",
+                "media_play": "Riproduci",
+                "media_play_pause": "Riproduci/pausa",
+                "media_previous_track": "Indietro",
                 "sound_mode": "Modalità audio",
                 "source": "Fonte",
-                "text_to_speak": "Testo da leggere"
+                "text_to_speak": "Testo da leggere",
+                "turn_off": "Spegni",
+                "turn_on": "Accendi"
             },
             "persistent_notification": {
                 "dismiss": "Rimuovi"
@@ -554,6 +561,26 @@
                 "loading_history": "Caricamento storico...",
                 "no_history_found": "Nessuno storico trovato."
             },
+            "media-browser": {
+                "choose-source": "Scegli origine",
+                "content-type": {
+                    "album": "Album",
+                    "artist": "Artista",
+                    "library": "Libreria",
+                    "playlist": "Elenco di riproduzione",
+                    "server": "Server"
+                },
+                "media-player-browser": "Lettore multimediale",
+                "no_items": "Nessun elemento",
+                "pick": "Scegli",
+                "pick-media": "Seleziona file multimediali",
+                "play": "Riproduci",
+                "play-media": "Riproduci file multimediali"
+            },
+            "picture-upload": {
+                "label": "Immagine",
+                "unsupported_format": "Formato non supportato, scegliere un'immagine JPEG, PNG o GIF."
+            },
             "related-items": {
                 "area": "Area",
                 "automation": "Parte delle seguenti automazioni",
@@ -574,6 +601,7 @@
                     "week": "{count} {count, plural,\none {settimana}\nother {settimane}\n}"
                 },
                 "future": "tra {time}",
+                "just_now": "Proprio ora",
                 "never": "Mai",
                 "past": "{time} fa"
             },
@@ -655,6 +683,9 @@
                 "platform_not_loaded": "L'integrazione {platform} non è stata caricata. Si prega di aggiungerla alla propria configurazione, aggiungendo 'default_config:' o ''{platform}:''.",
                 "required_error_msg": "Questo campo è obbligatorio",
                 "yaml_not_editable": "Le impostazioni di questa entità non possono essere modificate dall'Interfaccia Utente. Solo le entità impostate dall'Interfaccia Utente sono configurabili dall'Interfaccia Utente."
+            },
+            "image_cropper": {
+                "crop": "Ritaglia"
             },
             "more_info_control": {
                 "dismiss": "Chiudi finestra di dialogo",
@@ -892,7 +923,7 @@
                                     "wait_template": "Modello di attesa"
                                 }
                             },
-                            "unsupported_action": "Azione non supportata: {action}"
+                            "unsupported_action": "Nessun supporto dell'Interfaccia Utente per l'azione: {action}"
                         },
                         "alias": "Nome",
                         "conditions": {
@@ -958,7 +989,7 @@
                                     "zone": "Zona"
                                 }
                             },
-                            "unsupported_condition": "Condizione non supportata: {condition}"
+                            "unsupported_condition": "Nessun supporto dell'Interfaccia Utente per la condizione: {condition}"
                         },
                         "default_name": "Nuova Automazione",
                         "description": {
@@ -1050,6 +1081,9 @@
                                     "sunrise": "Alba",
                                     "sunset": "Tramonto"
                                 },
+                                "tag": {
+                                    "label": "Etichetta"
+                                },
                                 "template": {
                                     "label": "Modello",
                                     "value_template": "Valore modello"
@@ -1077,7 +1111,7 @@
                                     "zone": "Zona"
                                 }
                             },
-                            "unsupported_platform": "Piattaforma non supportata: {platform}"
+                            "unsupported_platform": "Nessun supporto dell'Interfaccia Utente per la piattaforma: {platform}"
                         },
                         "unsaved_confirm": "Hai delle modifiche non salvate. Sei sicuro di voler uscire?"
                     },
@@ -1308,6 +1342,7 @@
                     }
                 },
                 "devices": {
+                    "add_prompt": "Nessun {name} è stato ancora aggiunto utilizzando questo dispositivo. Puoi aggiungerne uno facendo clic sul pulsante + sopra.",
                     "automation": {
                         "actions": {
                             "caption": "Quando qualcosa si attiva..."
@@ -1327,6 +1362,7 @@
                     "caption": "Dispositivi",
                     "confirm_delete": "Sei sicuro di voler eliminare questo dispositivo?",
                     "confirm_rename_entity_ids": "Vuoi anche rinominare gli ID entità delle tue entità?",
+                    "confirm_rename_entity_ids_warning": "Questo non cambierà alcuna configurazione (come automazioni, script, scene, Lovelace) che attualmente utilizza queste entità, dovrai aggiornarle tu stesso.",
                     "data_table": {
                         "area": "Area",
                         "battery": "Batteria",
@@ -1489,6 +1525,9 @@
                         "no_device": "Entità senza dispositivi",
                         "no_devices": "Questa integrazione non ha dispositivi.",
                         "options": "Opzioni",
+                        "reload": "Ricarica",
+                        "reload_confirm": "L'integrazione è stata ricaricata",
+                        "reload_restart_confirm": "Riavvia Home Assistant per completare il ricaricamento di questa integrazione",
                         "rename": "Rinomina",
                         "restart_confirm": "Riavvia Home Assistant per completare la rimozione di questa integrazione",
                         "settings_button": "Modificare le impostazioni per {integration}.",
@@ -1647,7 +1686,11 @@
                     "topic": "argomento"
                 },
                 "ozw": {
+                    "button": "Configura",
                     "common": {
+                        "controller": "Controllore",
+                        "instance": "Istanza",
+                        "network": "Rete",
                         "node_id": "ID del nodo",
                         "ozw_instance": "Istanza OpenZWave",
                         "zwave": "Z-Wave"
@@ -1656,6 +1699,75 @@
                         "node_failed": "Nodo non riuscito",
                         "stage": "Fase",
                         "zwave_info": "Informazioni Z-Wave"
+                    },
+                    "navigation": {
+                        "network": "Rete",
+                        "nodes": "Nodi",
+                        "select_instance": "Seleziona istanza"
+                    },
+                    "network_status": {
+                        "details": {
+                            "driverallnodesqueried": "Tutti i nodi sono stati interrogati.",
+                            "driverallnodesqueriedsomedead": "Tutti i nodi sono stati interrogati. Alcuni nodi sono stati trovati morti",
+                            "driverawakenodesqueries": "Tutti i nodi svegli sono stati interrogati",
+                            "driverfailed": "Impossibile connettersi al controller Z-Wave",
+                            "driverready": "Inizializzazione del controller Z-Wave",
+                            "driverremoved": "Il driver è stato rimosso",
+                            "driverreset": "Il driver è stato reimpostato",
+                            "offline": "OZWDaemon non in linea",
+                            "ready": "Pronto per la connessione",
+                            "started": "Collegato a MQTT",
+                            "starting": "In collegamento a MQTT",
+                            "stopped": "OpenZWave si è fermato"
+                        },
+                        "offline": "Disconnesso",
+                        "online": "In linea",
+                        "starting": "In avvio",
+                        "unknown": "Sconosciuto"
+                    },
+                    "network": {
+                        "header": "Gestione della rete",
+                        "introduction": "Gestisci le funzioni a livello di rete.",
+                        "node_count": "{count} nodi"
+                    },
+                    "node_query_stages": {
+                        "associations": "Aggiornamento dell'associazione gruppi e appartenenze",
+                        "cacheload": "Caricamento delle informazioni dal file di cache di OpenZWave. I nodi a batteria rimarranno in questa fase fino a quando il nodo non si riattiva.",
+                        "complete": "Il processo di interrogazione è completo",
+                        "configuration": "Recupero dei valori di configurazione dal nodo",
+                        "dynamic": "Recupero di valori che cambiano di frequente dal nodo",
+                        "instances": "Recupero dei dettagli sulle istanze o sui canali supportati da un dispositivo",
+                        "manufacturerspecific1": "Recupero dei codici ID produttore e prodotto dal nodo",
+                        "manufacturerspecific2": "Recupero di ulteriori codici ID prodotto e produttore dal nodo",
+                        "neighbors": "Ottenere un elenco dei vicini del nodo",
+                        "nodeinfo": "Recupero delle classi di comando supportate dal nodo",
+                        "nodeplusinfo": "Recupero delle informazioni Z-Wave+ dal nodo",
+                        "probe": "Controllo se il nodo è sveglio/attivo",
+                        "protocolinfo": "Recupero delle funzionalità di base Z-Wave di questo nodo dal controller",
+                        "session": "Recupero di valori che cambiano di rado dal nodo",
+                        "static": "Recupero di valori statici dal dispositivo",
+                        "versions": "Recupero di informazioni sulle versioni del firmware e della classe di comando",
+                        "wakeup": "Configurazione del supporto per code di riattivazione e messaggi "
+                    },
+                    "refresh_node": {
+                        "battery_note": "Se il nodo è alimentato a batteria, assicurarsi di riattivarlo prima di procedere",
+                        "complete": "Aggiornamento del nodo completato",
+                        "description": "In questo modo si dirà a OpenZWave di re-interrogare un nodo e aggiornare le classi di comando, le funzionalità e i valori del nodo.",
+                        "node_status": "Stato del nodo",
+                        "refreshing_description": "Aggiornamento delle informazioni sul nodo in corso ...",
+                        "start_refresh_button": "Avvia aggiornamento",
+                        "step": "Passo",
+                        "title": "Aggiorna le informazioni sul nodo",
+                        "wakeup_header": "Istruzioni di riattivazione per",
+                        "wakeup_instructions_source": "Le istruzioni di riattivazione provengono dal database dei dispositivi della comunità di OpenZWave."
+                    },
+                    "select_instance": {
+                        "header": "Seleziona un'istanza OpenZWave",
+                        "introduction": "Hai più di un'istanza OpenZWave in esecuzione. Quale istanza vorresti gestire?"
+                    },
+                    "services": {
+                        "add_node": "Aggiungi Nodo",
+                        "remove_node": "Rimuovi nodo"
                     }
                 },
                 "person": {
@@ -1781,18 +1893,32 @@
                     "section": {
                         "reloading": {
                             "automation": "Ricarica le Automazioni",
+                            "command_line": "Ricarica le entità della riga di comando",
                             "core": "Ricarica la Posizione e le Personalizzazioni",
+                            "filesize": "Ricarica entità dimensione file",
+                            "filter": "Ricaricare le entità filtro",
+                            "generic": "Ricaricare le entità delle generiche telecamere IP",
+                            "generic_thermostat": "Ricaricare le entità termostati generiche",
                             "group": "Ricarica i Gruppi",
                             "heading": "Ricarica Configurazione YAML",
+                            "history_stats": "Ricarica le entità delle statistiche della cronologia",
+                            "homekit": "Ricarica HomeKit",
                             "input_boolean": "Ricarica input booleani",
                             "input_datetime": "Ricarica input data e/o tempo",
                             "input_number": "Ricarica input numerici",
                             "input_select": "Ricarica input a discesa",
                             "input_text": "Ricarica input testuali",
                             "introduction": "Alcune parti di Home Assistant possono essere ricaricate senza richiedere un riavvio. Premendo su Ricarica si rimuoverà la loro Configurazione YAML  attuale e si caricherà la versione aggiornata.",
+                            "min_max": "Ricaricare le entità min/max",
                             "person": "Ricarica le persone",
+                            "ping": "Ricarica le entità del sensore binario ping",
+                            "rest": "Ricarica le entità della piattaforma rest",
                             "scene": "Ricarica le Scene",
                             "script": "Ricarica gli Script",
+                            "statistics": "Ricaricare le entità statistiche",
+                            "template": "Ricaricare le entità modello",
+                            "trend": "Ricaricare le entità di tendenza",
+                            "universal": "Ricarica le entità del lettore multimediale universale",
                             "zone": "Ricarica le zone"
                         },
                         "server_management": {
@@ -1812,12 +1938,40 @@
                         }
                     }
                 },
+                "tags": {
+                    "add_tag": "Aggiungi Etichetta",
+                    "automation_title": "L'etichetta {name} è scansionata",
+                    "caption": "Etichette",
+                    "create_automation": "Creare un'automazione con l'etichetta",
+                    "description": "Gestisci le etichette",
+                    "detail": {
+                        "create": "Crea",
+                        "create_and_write": "Crea e Scrivi",
+                        "delete": "Cancella",
+                        "description": "Descrizione",
+                        "name": "Nome",
+                        "new_tag": "Nuova Etichetta",
+                        "tag_id": "Id Etichetta",
+                        "tag_id_placeholder": "Autogenerato quando lasciato vuoto",
+                        "update": "Aggiorna"
+                    },
+                    "edit": "Modifica",
+                    "headers": {
+                        "last_scanned": "Ultima scansione",
+                        "name": "Nome"
+                    },
+                    "never_scanned": "Mai scansionato",
+                    "no_tags": "Nessuna etichetta",
+                    "write": "Scrivi"
+                },
                 "users": {
                     "add_user": {
                         "caption": "Aggiungi utente",
                         "create": "Crea",
                         "name": "Nome",
                         "password": "Password",
+                        "password_confirm": "Conferma la password",
+                        "password_not_match": "Le password non corrispondono",
                         "username": "Nome utente"
                     },
                     "caption": "Utenti",
@@ -1834,7 +1988,9 @@
                         "group": "Gruppo",
                         "id": "ID",
                         "name": "Nome",
+                        "new_password": "Nuova password",
                         "owner": "Proprietario",
+                        "password_changed": "La password è stata cambiata!",
                         "system_generated": "Generato dal sistema",
                         "system_generated_users_not_editable": "Impossibile aggiornare gli utenti generati dal sistema.",
                         "system_generated_users_not_removable": "Impossibile rimuovere gli utenti generati dal sistema.",
@@ -2133,6 +2289,7 @@
                         "description": "Il rendering dei modelli viene eseguito utilizzando il motore di modelli Jinja2 con alcune estensioni specifiche di Home Assistant.",
                         "editor": "Editor di modelli",
                         "jinja_documentation": "Documentazione del modello Jinja2",
+                        "reset": "Ripristina il modello di esempio",
                         "template_extensions": "Estensioni del modello Home Assistant",
                         "title": "Modelli",
                         "unknown_error_template": "Errore sconosciuto nel rendering del modello"
@@ -2214,6 +2371,10 @@
                             "description": "La scheda Pulsante consente di aggiungere pulsanti per eseguire attività.",
                             "name": "Pulsante"
                         },
+                        "calendar": {
+                            "description": "La scheda Calendario mostra un calendario che include le visualizzazioni per giorno, settimana ed elenco",
+                            "name": "Calendario"
+                        },
                         "conditional": {
                             "card": "Scheda",
                             "change_type": "Cambia tipo",
@@ -2279,6 +2440,7 @@
                             "show_name": "Mostrare il nome?",
                             "show_state": "Mostrare lo stato?",
                             "state": "Stato",
+                            "state_color": "Colorare le icone in base allo stato?",
                             "tap_action": "Tocca Azione",
                             "theme": "Tema",
                             "title": "Titolo",
@@ -2668,6 +2830,7 @@
                     "intro": "Salve {name}, benvenuto su Home Assistant. Come vorresti nominare la tua casa?",
                     "intro_location": "Vorremmo sapere dove vivete. Queste informazioni aiuteranno a visualizzare informazioni e automazioni basate sul sole. Questi dati non vengono mai condivisi al di fuori della vostra rete.",
                     "intro_location_detect": "Possiamo aiutarti a compilare queste informazioni effettuando una richiesta una volta a un servizio esterno.",
+                    "location_name": "Nome della tua installazione di Home Assistant",
                     "location_name_default": "Casa"
                 },
                 "integration": {

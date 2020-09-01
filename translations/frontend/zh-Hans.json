@@ -419,9 +419,16 @@
                 "unlock": "解锁"
             },
             "media_player": {
+                "browse_media": "浏览媒体",
+                "media_next_track": "下一曲",
+                "media_play": "播放",
+                "media_play_pause": "播放/暂停",
+                "media_previous_track": "上一曲",
                 "sound_mode": "声音模式",
                 "source": "信号源",
-                "text_to_speak": "要朗读的文本"
+                "text_to_speak": "要朗读的文本",
+                "turn_off": "关闭",
+                "turn_on": "打开"
             },
             "persistent_notification": {
                 "dismiss": "忽略"
@@ -554,6 +561,22 @@
                 "loading_history": "正在加载历史状态...",
                 "no_history_found": "没有找到历史状态。"
             },
+            "media-browser": {
+                "choose-source": "选择媒体源",
+                "content-type": {
+                    "album": "专辑",
+                    "artist": "艺术家",
+                    "library": "媒体库",
+                    "playlist": "播放列表",
+                    "server": "服务器"
+                },
+                "media-player-browser": "媒体播放浏览器",
+                "no_items": "没有项目",
+                "pick": "选定",
+                "pick-media": "选定媒体",
+                "play": "播放",
+                "play-media": "播放媒体"
+            },
             "picture-upload": {
                 "label": "图片",
                 "unsupported_format": "格式不受支持，请选择 JPEG、PNG 或 GIF 图像。"
@@ -578,6 +601,7 @@
                     "week": "{count} {count, plural,\n  one {周}\n  other {周}\n}"
                 },
                 "future": "{time}后",
+                "just_now": "刚刚",
                 "never": "从未",
                 "past": "{time}前"
             },
@@ -899,7 +923,7 @@
                                     "wait_template": "等待模板"
                                 }
                             },
-                            "unsupported_action": "不支持的操作: {action}"
+                            "unsupported_action": "图形界面暂不支持操作：{action}"
                         },
                         "alias": "名称",
                         "conditions": {
@@ -965,7 +989,7 @@
                                     "zone": "地点"
                                 }
                             },
-                            "unsupported_condition": "不支持的环境条件：{condition}"
+                            "unsupported_condition": "图形界面暂不支持环境条件：{condition}"
                         },
                         "default_name": "新建自动化",
                         "description": {
@@ -1057,6 +1081,9 @@
                                     "sunrise": "日出",
                                     "sunset": "日落"
                                 },
+                                "tag": {
+                                    "label": "标签"
+                                },
                                 "template": {
                                     "label": "自定义模板",
                                     "value_template": "自定义值"
@@ -1084,7 +1111,7 @@
                                     "zone": "地点"
                                 }
                             },
-                            "unsupported_platform": "不支持的平台：{platform}"
+                            "unsupported_platform": "图形界面暂不支持平台：{platform}"
                         },
                         "unsaved_confirm": "有更改尚未保存，确定离开页面吗？"
                     },
@@ -1315,6 +1342,7 @@
                     }
                 },
                 "devices": {
+                    "add_prompt": "尚未使用此设备添加任何{name}。您可以点击上方的 + 按钮来添加。",
                     "automation": {
                         "actions": {
                             "caption": "满足条件时执行："
@@ -1334,6 +1362,7 @@
                     "caption": "设备",
                     "confirm_delete": "您确定要删除此设备吗？",
                     "confirm_rename_entity_ids": "是否要重命名实体的实体 ID？",
+                    "confirm_rename_entity_ids_warning": "此操作不会改变正在使用这些实体的配置（如自动化、脚本、场景、Lovelace），您必须手动更新它们。",
                     "data_table": {
                         "area": "区域",
                         "battery": "电量",
@@ -1496,6 +1525,9 @@
                         "no_device": "无设备关联的实体",
                         "no_devices": "此集成没有设备。",
                         "options": "选项",
+                        "reload": "重载",
+                        "reload_confirm": "集成已重新加载",
+                        "reload_restart_confirm": "重启 Home Assistant 以完成此集成的重载",
                         "rename": "重命名",
                         "restart_confirm": "重启 Home Assistant 以完成此集成的删除",
                         "settings_button": "编辑{integration}设置",
@@ -1654,7 +1686,11 @@
                     "topic": "主题(Topic)"
                 },
                 "ozw": {
+                    "button": "配置",
                     "common": {
+                        "controller": "控制器",
+                        "instance": "实例",
+                        "network": "网络",
                         "node_id": "节点 ID",
                         "ozw_instance": "OpenZWave 实例",
                         "zwave": "Z-Wave"
@@ -1663,6 +1699,36 @@
                         "node_failed": "节点故障",
                         "stage": "阶段",
                         "zwave_info": "Z-Wave 信息"
+                    },
+                    "navigation": {
+                        "network": "网络",
+                        "nodes": "节点",
+                        "select_instance": "选择实例"
+                    },
+                    "network_status": {
+                        "details": {
+                            "driverallnodesqueried": "已查询所有节点",
+                            "driverallnodesqueriedsomedead": "已查询所有节点。发现部分节点断开",
+                            "driverawakenodesqueries": "已查询所有唤醒节点",
+                            "driverfailed": "无法连接到 Z-Wave 控制器",
+                            "driverready": "正在初始化 Z-Wave 控制器",
+                            "driverremoved": "驱动程序已被删除",
+                            "driverreset": "驱动程序已重置",
+                            "offline": "OZWDaemon 离线",
+                            "ready": "准备就绪，可以连接",
+                            "started": "已连接到 MQTT",
+                            "starting": "正在连接 MQTT",
+                            "stopped": "OpenZWave 已停止"
+                        },
+                        "offline": "离线",
+                        "online": "在线",
+                        "starting": "正在启动",
+                        "unknown": "未知"
+                    },
+                    "network": {
+                        "header": "网络管理",
+                        "introduction": "管理网络功能。",
+                        "node_count": "{count} 个节点"
                     },
                     "node_query_stages": {
                         "associations": "正在刷新关联组和成员",
@@ -1694,6 +1760,14 @@
                         "title": "刷新节点信息",
                         "wakeup_header": "唤醒方法：",
                         "wakeup_instructions_source": "唤醒方法来自 OpenZWave 社区设备数据库。"
+                    },
+                    "select_instance": {
+                        "header": "选择一个 OpenZWave 实例",
+                        "introduction": "您正在运行多个 OpenZWave 实例。您要管理哪个实例？"
+                    },
+                    "services": {
+                        "add_node": "添加节点",
+                        "remove_node": "删除节点"
                     }
                 },
                 "person": {
@@ -1819,18 +1893,32 @@
                     "section": {
                         "reloading": {
                             "automation": "重载自动化",
+                            "command_line": "重载命令行实体",
                             "core": "重载位置和自定义",
+                            "filesize": "重载文件大小实体",
+                            "filter": "重载 filter 实体",
+                            "generic": "重载通用 IP 摄像机实体",
+                            "generic_thermostat": "重载通用恒温器实体",
                             "group": "重载分组",
                             "heading": "配置重载",
+                            "history_stats": "重载历史记录统计实体",
+                            "homekit": "重载 HomeKit",
                             "input_boolean": "重载二元选择器",
                             "input_datetime": "重载日期选择器",
                             "input_number": "重载数值选择器",
                             "input_select": "重载多项选择器",
                             "input_text": "重载文字输入",
                             "introduction": "Home Assistant 中的部分配置可以直接重载，而无需重启服务。点击重载按钮将重新载入新的配置。",
+                            "min_max": "重载最小值/最大值实体",
                             "person": "重载人员",
+                            "ping": "重载 ping 二元传感器实体",
+                            "rest": "重载 REST 实体",
                             "scene": "重载场景",
                             "script": "重载脚本",
+                            "statistics": "重载 statistics 实体",
+                            "template": "重载模板实体",
+                            "trend": "重载 trend 实体",
+                            "universal": "重载通用媒体播放器实体",
                             "zone": "重载地点"
                         },
                         "server_management": {
@@ -1850,12 +1938,40 @@
                         }
                     }
                 },
+                "tags": {
+                    "add_tag": "添加标签",
+                    "automation_title": "扫描到标签 {name}",
+                    "caption": "标签",
+                    "create_automation": "通过标签创建自动化",
+                    "description": "管理标签",
+                    "detail": {
+                        "create": "创建",
+                        "create_and_write": "创建并写入",
+                        "delete": "删除",
+                        "description": "描述",
+                        "name": "名称",
+                        "new_tag": "新建标签",
+                        "tag_id": "标签 ID",
+                        "tag_id_placeholder": "留空则自动生成",
+                        "update": "更新"
+                    },
+                    "edit": "编辑",
+                    "headers": {
+                        "last_scanned": "上次扫描",
+                        "name": "名称"
+                    },
+                    "never_scanned": "从未扫描",
+                    "no_tags": "没有标签",
+                    "write": "写入"
+                },
                 "users": {
                     "add_user": {
                         "caption": "添加用户",
                         "create": "创建",
                         "name": "名字",
                         "password": "密码",
+                        "password_confirm": "确认密码",
+                        "password_not_match": "密码不匹配",
                         "username": "用户名"
                     },
                     "caption": "用户",
@@ -1872,7 +1988,9 @@
                         "group": "群组",
                         "id": "ID",
                         "name": "名称",
+                        "new_password": "新密码",
                         "owner": "所有者",
+                        "password_changed": "密码已更改！",
                         "system_generated": "系统生成",
                         "system_generated_users_not_editable": "无法更新系统生成的用户。",
                         "system_generated_users_not_removable": "无法删除系统生成的用户。",
@@ -2171,6 +2289,7 @@
                         "description": "模板使用 jinja2 模板引擎和一些 Home Assistant 特定的插件进行渲染。",
                         "editor": "模板编辑器",
                         "jinja_documentation": "Jinja2 模板文档",
+                        "reset": "重置为演示模板",
                         "template_extensions": "Home Assistant 模板插件",
                         "title": "模板",
                         "unknown_error_template": "渲染模板时发生了未知错误"
@@ -2252,6 +2371,10 @@
                             "description": "“按钮”卡片用于添加按钮来执行任务。",
                             "name": "按钮"
                         },
+                        "calendar": {
+                            "description": "“日历”卡片显示一个日历，其包括日视图、周视图和列表视图。",
+                            "name": "日历"
+                        },
                         "conditional": {
                             "card": "卡片",
                             "change_type": "更改类型",
@@ -2317,6 +2440,7 @@
                             "show_name": "显示名称？",
                             "show_state": "显示状态？",
                             "state": "状态",
+                            "state_color": "使图标根据状态变色？",
                             "tap_action": "点击动作",
                             "theme": "主题",
                             "title": "标题",
@@ -2706,6 +2830,7 @@
                     "intro": "{name}，您好！欢迎来到 Home Assistant。您想怎样命名您的家呢？",
                     "intro_location": "我们想知道您住在哪里。这将用于显示资讯以及设置基于太阳的自动化。此数据永远不会在您的网络以外共享。",
                     "intro_location_detect": "我们可以通过向外部服务发出一个一次性请求来帮助您填写此信息。",
+                    "location_name": "Home Assistant 安装的名称",
                     "location_name_default": "我的家"
                 },
                 "integration": {

@@ -1,4 +1,6 @@
 import "@material/mwc-list/mwc-list-item";
+import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
+import { mdiFilterVariant } from "@mdi/js";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-icon-item";
@@ -10,9 +12,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   query,
   TemplateResult,
 } from "lit-element";
@@ -56,8 +58,6 @@ import {
   loadEntityEditorDialog,
   showEntityEditorDialog,
 } from "./show-dialog-entity-editor";
-import { mdiFilterVariant } from "@mdi/js";
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 
 export interface StateEntity extends EntityRegistryEntry {
   readonly?: boolean;
@@ -192,7 +192,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                       ? "hass:cancel"
                       : "hass:pencil-off"}
                   ></ha-icon>
-                  <paper-tooltip position="left">
+                  <paper-tooltip animation-delay="0" position="left">
                     ${entity.restored
                       ? this.hass.localize(
                           "ui.panel.config.entities.picker.status.restored"
@@ -390,7 +390,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                     icon="hass:undo"
                     @click=${this._enableSelected}
                   ></ha-icon-button>
-                  <paper-tooltip for="enable-btn">
+                  <paper-tooltip animation-delay="0" for="enable-btn">
                     ${this.hass.localize(
                       "ui.panel.config.entities.picker.enable_selected.button"
                     )}
@@ -400,7 +400,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                     icon="hass:cancel"
                     @click=${this._disableSelected}
                   ></ha-icon-button>
-                  <paper-tooltip for="disable-btn">
+                  <paper-tooltip animation-delay="0" for="disable-btn">
                     ${this.hass.localize(
                       "ui.panel.config.entities.picker.disable_selected.button"
                     )}
@@ -410,7 +410,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                     icon="hass:delete"
                     @click=${this._removeSelected}
                   ></ha-icon-button>
-                  <paper-tooltip for="remove-btn">
+                  <paper-tooltip animation-delay="0" for="remove-btn">
                     ${this.hass.localize(
                       "ui.panel.config.entities.picker.remove_selected.button"
                     )}
@@ -433,7 +433,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                 ${this.narrow
                   ? html` <div>
                       <ha-icon icon="hass:filter-variant"></ha-icon>
-                      <paper-tooltip position="left">
+                      <paper-tooltip animation-delay="0" position="left">
                         ${this.hass.localize(
                           "ui.panel.config.filtering.filtering_by"
                         )}

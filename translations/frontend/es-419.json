@@ -13,15 +13,9 @@
     },
     "panel": {
         "calendar": "Calendario",
-        "config": "",
         "developer_tools": "Herramientas para desarrolladores",
-        "history": "",
-        "logbook": "",
-        "mailbox": "",
-        "map": "",
         "profile": "Perfil",
-        "shopping_list": "Lista de compras",
-        "states": ""
+        "shopping_list": "Lista de compras"
     },
     "state_attributes": {
         "climate": {
@@ -1000,7 +994,6 @@
                                     "start": "Inicio"
                                 },
                                 "mqtt": {
-                                    "label": "",
                                     "payload": "Payload (opcional)",
                                     "topic": "Topic"
                                 },
@@ -1616,7 +1609,6 @@
                     "start_listening": "Comenzar a escuchar",
                     "stop_listening": "Deja de escuchar",
                     "subscribe_to": "Tema para suscribirse",
-                    "title": "",
                     "topic": "tema"
                 },
                 "person": {
@@ -1947,7 +1939,6 @@
                 },
                 "zwave": {
                     "button": "Configurar",
-                    "caption": "",
                     "common": {
                         "index": "Índice",
                         "instance": "Instancia",

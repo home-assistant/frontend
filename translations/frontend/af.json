@@ -46,15 +46,15 @@
     "state_badge": {
         "alarm_control_panel": {
             "armed": "Gewapen",
-            "armed_away": "Gewapen",
+            "armed_away": "Aktief",
             "armed_custom_bypass": "Gewapen",
             "armed_home": "Gewapen",
-            "armed_night": "Gewapen",
+            "armed_night": "Aktief",
             "arming": "Bewapen Tans",
             "disarmed": "Ontwapen",
             "disarming": "Ontwapen",
             "pending": "Hangend",
-            "triggered": "Aktief"
+            "triggered": "Lui"
         },
         "default": {
             "entity_not_found": "Entiteit nie gevind nie",
@@ -646,7 +646,7 @@
                         "create": "SKEP",
                         "default_name": "Nuwe Gebied",
                         "delete": "SKRAP",
-                        "update": "OPDATEER"
+                        "update": "Opdateer"
                     },
                     "picker": {
                         "create_area": "SKEP GEBIED",
@@ -694,7 +694,7 @@
                                     "wait_template": "Wag Templaat"
                                 }
                             },
-                            "unsupported_action": "Ongesteunde aksie: {action}"
+                            "unsupported_action": "Geen UI-ondersteuning vir aksie nie: {action}"
                         },
                         "alias": "Naam",
                         "conditions": {
@@ -1350,6 +1350,8 @@
                         "network_stopped": "Z-Wave Netwerk het Gestop"
                     },
                     "node_config": {
+                        "config_value": "Konfigurasiewaarde",
+                        "header": "Knooppuntkonfigurasieopsies",
                         "set_config_parameter": "Stel Config-parameter in"
                     },
                     "services": {
@@ -1449,13 +1451,16 @@
                         "humidifier": {
                             "description": "Die Luchtbevochtigerkaart verleen beheer oor u lugbevochtiger-entiteit. Hiermee kan u die humiditeit en modus van die entiteit verander."
                         },
+                        "iframe": {
+                            "name": "Webblad"
+                        },
                         "shopping-list": {
                             "integration_not_loaded": "Hierdie kaart vereis die ' shopping_list ' integrasie wat opgestel moet word."
                         }
                     },
                     "edit_card": {
                         "add": "Voeg Kaart by",
-                        "delete": "Skrap",
+                        "delete": "Skrap kaart",
                         "edit": "Wysig",
                         "header": "Kaart opstelling",
                         "move": "Skuif",
