@@ -8,6 +8,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import "../../components/ha-circular-progress";
 import "../../components/state-history-charts";
 import { getRecentWithCache } from "../../data/cached-history";
@@ -62,6 +63,9 @@ export class MoreInfoTabHistoryDialog extends LitElement {
             ></state-history-charts>
             <ha-logbook
               narrow
+              no-click
+              no-icon
+              class=${classMap({ "no-entries": !this._entries.length })}
               .hass=${this.hass}
               .entries=${this._entries}
               .userIdToName=${this._userIdToName}
@@ -71,6 +75,7 @@ export class MoreInfoTabHistoryDialog extends LitElement {
   }
 
   protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
     if (!this.entityId) {
       clearInterval(this._historyRefreshInterval);
     }
@@ -172,7 +177,7 @@ export class MoreInfoTabHistoryDialog extends LitElement {
           margin-bottom: 16px;
         }
 
-        ha-logbook {
+        ha-logbook:not(.no-entries) {
           height: 360px;
         }
       `,

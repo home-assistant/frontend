@@ -33,6 +33,12 @@ class HaLogbook extends LitElement {
   @property({ attribute: "rtl", type: Boolean, reflect: true })
   private _rtl = false;
 
+  @property({ type: Boolean, attribute: "no-click", reflect: true })
+  public noClick = false;
+
+  @property({ type: Boolean, attribute: "no-icon", reflect: true })
+  public noIcon = false;
+
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
 
@@ -55,7 +61,7 @@ class HaLogbook extends LitElement {
   protected render(): TemplateResult {
     if (!this.entries?.length) {
       return html`
-        <div class="container" .dir=${emitRTLDirection(this._rtl)}>
+        <div class="container no-entries" .dir=${emitRTLDirection(this._rtl)}>
           ${this.hass.localize("ui.panel.logbook.entries_not_found")}
         </div>
       `;
@@ -102,9 +108,13 @@ class HaLogbook extends LitElement {
             ${formatTimeWithSeconds(new Date(item.when), this.hass.language)}
           </div>
           <div class="icon-message">
-            <ha-icon
-              .icon=${state ? stateIcon(state) : domainIcon(item.domain)}
-            ></ha-icon>
+            ${!this.noIcon
+              ? html`
+                  <ha-icon
+                    .icon=${state ? stateIcon(state) : domainIcon(item.domain)}
+                  ></ha-icon>
+                `
+              : ""}
             <div class="message">
               ${!item.entity_id
                 ? html` <span class="name">${item.name}</span> `
@@ -156,6 +166,9 @@ class HaLogbook extends LitElement {
   }
 
   private _entityClicked(ev: Event) {
+    if (this.noClick) {
+      return;
+    }
     ev.preventDefault();
     fireEvent(this, "hass-more-info", {
       entityId: (ev.target as any).entityId,
@@ -189,6 +202,15 @@ class HaLogbook extends LitElement {
         direction: rtl;
       }
 
+      .icon-message {
+        display: flex;
+        align-items: center;
+      }
+
+      .no-entries {
+        text-align: center;
+      }
+
       ha-icon {
         margin: 0 8px 0 16px;
         flex-shrink: 0;
@@ -201,6 +223,12 @@ class HaLogbook extends LitElement {
 
       a {
         color: var(--primary-color);
+      }
+
+      :host([no-click]) a {
+        color: inherit;
+        text-decoration: none;
+        cursor: auto;
       }
 
       .container {
@@ -221,11 +249,6 @@ class HaLogbook extends LitElement {
 
       :host([narrow]) .entry {
         flex-direction: column;
-      }
-
-      :host([narrow]) .icon-message {
-        display: flex;
-        align-items: center;
       }
 
       :host([narrow]) .icon-message ha-icon {

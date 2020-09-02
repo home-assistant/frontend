@@ -48,8 +48,6 @@ export class MoreInfoDialog extends LitElement {
 
   @internalProperty() private _currTabIndex = 0;
 
-  private _historyImported = false;
-
   public showDialog(params: MoreInfoDialogParams) {
     this._entityId = params.entityId;
     if (!this._entityId) {
@@ -195,6 +193,10 @@ export class MoreInfoDialog extends LitElement {
     `;
   }
 
+  protected firstUpdated(): void {
+    import("./ha-more-info-tab-history");
+  }
+
   private _enlarge() {
     this.large = !this.large;
   }
@@ -251,10 +253,6 @@ export class MoreInfoDialog extends LitElement {
     }
 
     this._currTabIndex = ev.detail.index;
-    if (!this._historyImported) {
-      import("./ha-more-info-tab-history");
-      this._historyImported = true;
-    }
   }
 
   static get styles() {
