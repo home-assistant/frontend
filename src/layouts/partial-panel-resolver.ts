@@ -94,8 +94,6 @@ const getRoutes = (panels: Panels): RouterOptions => {
     routes[panel.url_path] = data;
   });
 
-  console.log(routes);
-
   return {
     showLoading: true,
     routes,
