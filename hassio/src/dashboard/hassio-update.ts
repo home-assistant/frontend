@@ -167,11 +167,8 @@ export class HassioUpdate extends LitElement {
 
       await this.hass.callApi<HassioResponse<void>>("POST", item.apiPath);
     } catch (err) {
-      // Only show an error if the status code was not 504 (timeout reported by proxies) and if the WS is connected
-      if (
-        err.status_code !== 504 &&
-        this.hass.connection.socket.readyState === 1
-      ) {
+      // Only show an error if the status code was not 504, or no status at all (connection terminated)
+      if (err.status_code && err.status_code !== 504) {
         showAlertDialog(this, {
           title: "Update failed",
           text:
