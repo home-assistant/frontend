@@ -701,6 +701,10 @@ export class HaMediaPlayerBrowse extends LitElement {
           -webkit-line-clamp: 1;
         }
 
+        :host(:not([narrow])[scroll]) .header-info {
+          height: 75px;
+        }
+
         :host([scroll]) .header-info mwc-button,
         .no-img .header-info mwc-button {
           padding-right: 4px;

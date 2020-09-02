@@ -147,6 +147,14 @@ const computePanels = memoizeOne(
         : beforeSpacer
       ).push(panel);
     });
+    beforeSpacer.push({
+      component_name: "media-browser",
+      config: null,
+      icon: "mdi:play",
+      require_admin: false,
+      title: "Media Browser",
+      url_path: "media-browser",
+    });
 
     const reverseSort = [...panelsOrder].reverse();
 

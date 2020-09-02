@@ -6,7 +6,6 @@ import {
   CSSResultArray,
   customElement,
   html,
-  internalProperty,
   LitElement,
   property,
   TemplateResult,
@@ -37,7 +36,6 @@ class PanelMediaBrowser extends LitElement {
 
   // @ts-ignore
   @LocalStorage("mediaBrowseEntityId")
-  @internalProperty()
   private _entityId?: string;
 
   protected render(): TemplateResult {
@@ -108,6 +106,7 @@ class PanelMediaBrowser extends LitElement {
       mediaSources: this._browseMediaSources(this.hass),
       sourceSelectedCallback: (entityId) => {
         this._entityId = entityId;
+        this.requestUpdate();
       },
     });
   }
@@ -133,7 +132,7 @@ class PanelMediaBrowser extends LitElement {
     this.hass!.callService("media_player", "play_media", {
       entity_id: this._entityId,
       media_content_id: item.media_content_id,
-      media_content_type: item.media_content_id,
+      media_content_type: item.media_content_type,
     });
   }
 

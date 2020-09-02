@@ -60,8 +60,8 @@ export const browseMediaPlayer = (
 export const browseLocalMediaPlayer = (
   hass: HomeAssistant,
   mediaContentId?: string
-): Promise<any> =>
-  hass.callWS<any>({
+): Promise<MediaPlayerItem> =>
+  hass.callWS<MediaPlayerItem>({
     type: "media_source/browse_media",
     media_content_id: mediaContentId,
   });
