@@ -14,8 +14,6 @@ import "../../components/state-history-charts";
 import { getRecentWithCache } from "../../data/cached-history";
 import { HistoryResult } from "../../data/history";
 import { getLogbookData, LogbookEntry } from "../../data/logbook";
-import { fetchPersons } from "../../data/person";
-import { fetchUsers } from "../../data/user";
 import "../../panels/logbook/ha-logbook";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
@@ -32,7 +30,7 @@ export class MoreInfoTabHistoryDialog extends LitElement {
 
   private _entries: LogbookEntry[] = [];
 
-  private _userIdToName = {};
+  private _persons = {};
 
   private _historyRefreshInterval?: number;
 
@@ -68,7 +66,7 @@ export class MoreInfoTabHistoryDialog extends LitElement {
               class=${classMap({ "no-entries": !this._entries.length })}
               .hass=${this.hass}
               .entries=${this._entries}
-              .userIdToName=${this._userIdToName}
+              .userIdToName=${this._persons}
             ></ha-logbook>
           `}
     `;
@@ -87,11 +85,11 @@ export class MoreInfoTabHistoryDialog extends LitElement {
 
   private async _refreshData(): Promise<void> {
     this._isLoading = true;
-    const fetchUserDone = this._fetchUserNames();
+    this._fetchPersonNames();
     const fetchHistoryDone = this._getStateHistory();
     const fetchLogBookDone = this._getLogBookData();
 
-    await Promise.all([fetchHistoryDone, fetchLogBookDone, fetchUserDone]);
+    await Promise.all([fetchHistoryDone, fetchLogBookDone]);
 
     this._isLoading = false;
 
@@ -130,38 +128,18 @@ export class MoreInfoTabHistoryDialog extends LitElement {
     this._entries = entries;
   }
 
-  private async _fetchUserNames() {
-    const userIdToName = {};
+  private _fetchPersonNames() {
+    const personEntities = Object.keys(this.hass.states).filter((entityId) =>
+      entityId.startsWith("person")
+    );
 
-    // Start loading all the data
-    const personProm = fetchPersons(this.hass);
-    const userProm = this.hass.user!.is_admin && fetchUsers(this.hass);
-
-    // Process persons
-    const persons = await personProm;
-
-    for (const person of persons.storage) {
-      if (person.user_id) {
-        userIdToName[person.user_id] = person.name;
+    for (const personEntityId of personEntities) {
+      const person = this.hass.states[personEntityId];
+      if (person.attributes.user_id) {
+        this._persons[person.attributes.user_id] =
+          person.attributes.friendly_name;
       }
     }
-    for (const person of persons.config) {
-      if (person.user_id) {
-        userIdToName[person.user_id] = person.name;
-      }
-    }
-
-    // Process users
-    if (userProm) {
-      const users = await userProm;
-      for (const user of users) {
-        if (!(user.id in userIdToName)) {
-          userIdToName[user.id] = user.name;
-        }
-      }
-    }
-
-    this._userIdToName = userIdToName;
   }
 
   static get styles() {
