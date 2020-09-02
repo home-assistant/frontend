@@ -18,6 +18,7 @@ import { supportsFeature } from "../../common/entity/supports-feature";
 import "../../components/ha-menu-button";
 import "../../components/media-player/ha-media-player-browse";
 import {
+  BROWSER_SOURCE,
   MediaPickedEvent,
   SUPPORT_BROWSE_MEDIA,
 } from "../../data/media-player";
@@ -115,7 +116,7 @@ class PanelMediaBrowser extends LitElement {
     ev: HASSDomEvent<MediaPickedEvent>
   ): Promise<void> {
     const item = ev.detail.item;
-    if (this._entityId === "browser") {
+    if (this._entityId === BROWSER_SOURCE) {
       const resolvedUrl: any = await this.hass.callWS({
         type: "media_source/resolve_media",
         media_content_id: item.media_content_id,

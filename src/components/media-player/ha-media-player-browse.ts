@@ -25,6 +25,7 @@ import { debounce } from "../../common/util/debounce";
 import {
   browseLocalMediaPlayer,
   browseMediaPlayer,
+  BROWSER_SOURCE,
   MediaPickedEvent,
 } from "../../data/media-player";
 import type { MediaPlayerItem } from "../../data/media-player";
@@ -372,7 +373,7 @@ export class HaMediaPlayerBrowse extends LitElement {
     mediaContentType?: string
   ): Promise<MediaPlayerItem> {
     const itemData =
-      this.entityId !== "browser"
+      this.entityId !== BROWSER_SOURCE
         ? await browseMediaPlayer(
             this.hass,
             this.entityId,

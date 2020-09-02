@@ -12,6 +12,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { createCloseHeading } from "../../components/ha-dialog";
+import { BROWSER_SOURCE } from "../../data/media-player";
 import type { HomeAssistant } from "../../types";
 import type { SelectMediaSourceDialogParams } from "./show-select-media-source-dialog";
 
@@ -53,7 +54,7 @@ export class HuiDialogSelectMediaSource extends LitElement {
         <paper-listbox
           attr-for-selected="itemName"
           @iron-select=${this._selectSource}
-          ><paper-item .itemName=${"browser"}
+          ><paper-item .itemName=${BROWSER_SOURCE}
             >${this.hass.localize(
               "ui.components.media-browser.web-browser"
             )}</paper-item

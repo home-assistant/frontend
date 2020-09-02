@@ -20,6 +20,8 @@ export const CONTRAST_RATIO = 4.5;
 
 export type MediaPlayerBrowseAction = "pick" | "play";
 
+export const BROWSER_SOURCE = "browser";
+
 export interface MediaPickedEvent {
   item: MediaPlayerItem;
 }
