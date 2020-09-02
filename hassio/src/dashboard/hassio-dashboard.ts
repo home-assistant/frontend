@@ -12,7 +12,6 @@ import {
   HassioHomeAssistantInfo,
   HassioSupervisorInfo,
 } from "../../../src/data/hassio/supervisor";
-import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import "../../../src/layouts/hass-tabs-subpage";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant, Route } from "../../../src/types";
@@ -33,11 +32,6 @@ class HassioDashboard extends LitElement {
   @property({ attribute: false }) public hassInfo!: HassioHomeAssistantInfo;
 
   @property({ attribute: false }) public hassOsInfo!: HassioHassOSInfo;
-
-  protected firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
-    this._postUpdateDialog();
-  }
 
   protected render(): TemplateResult {
     return html`
@@ -64,33 +58,6 @@ class HassioDashboard extends LitElement {
         </div>
       </hass-tabs-subpage>
     `;
-  }
-
-  private async _postUpdateDialog() {
-    const storage = window.localStorage || {};
-    const previousVersion = storage.PendingCoreUpgrade;
-
-    if (!previousVersion) {
-      return;
-    }
-
-    // Clear key in localStorage
-    storage.removeItem("PendingCoreUpgrade");
-
-    if (previousVersion && previousVersion !== this.hass.config.version) {
-      showAlertDialog(this, {
-        title: "Update sucessfull",
-        text: "Home Assistant was updated successfully",
-      });
-    } else if (
-      previousVersion &&
-      previousVersion === this.hass.config.version
-    ) {
-      showAlertDialog(this, {
-        title: "Update failed",
-        text: "The update failed, check supervisor logs for more details",
-      });
-    }
   }
 
   static get styles(): CSSResult[] {

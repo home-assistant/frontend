@@ -146,7 +146,6 @@ export class HassioUpdate extends LitElement {
 
   private async _confirmUpdate(ev): Promise<void> {
     const item = ev.target;
-    const storage = window.localStorage || {};
     item.progress = true;
     const confirmed = await showConfirmationDialog(this, {
       title: `Update ${item.name}`,
@@ -160,11 +159,6 @@ export class HassioUpdate extends LitElement {
       return;
     }
     try {
-      // Store the current version in local storage
-      if (item.name === "Home Assistant Core") {
-        storage.PendingCoreUpgrade = this.hass.config.version;
-      }
-
       await this.hass.callApi<HassioResponse<void>>("POST", item.apiPath);
     } catch (err) {
       // Only show an error if the status code was not 504, or no status at all (connection terminated)
