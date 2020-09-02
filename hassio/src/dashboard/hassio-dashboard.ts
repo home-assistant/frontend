@@ -69,12 +69,12 @@ class HassioDashboard extends LitElement {
   private async _postUpdateDialog() {
     const previousVersion = localStorage.PendingCoreUpgrade;
 
-    // Clear key in localStorage
-    localStorage.removeItem("PendingCoreUpgrade");
-
     if (!previousVersion) {
       return;
     }
+
+    // Clear key in localStorage
+    localStorage.removeItem("PendingCoreUpgrade");
 
     if (previousVersion && previousVersion !== this.hass.config.version) {
       showAlertDialog(this, {
