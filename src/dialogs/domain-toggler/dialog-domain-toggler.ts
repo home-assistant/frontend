@@ -4,25 +4,33 @@ import {
   CSSResultArray,
   customElement,
   html,
-  LitElement,
   internalProperty,
+  LitElement,
   TemplateResult,
 } from "lit-element";
-import "../../components/dialog/ha-paper-dialog";
+import { fireEvent } from "../../common/dom/fire_event";
+import { createCloseHeading } from "../../components/ha-dialog";
+import "../../components/ha-switch";
+import "../../components/ha-formfield";
 import { domainToName } from "../../data/integration";
-import { PolymerChangedEvent } from "../../polymer-types";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
+import { HassDialog } from "../make-dialog-manager";
 import { HaDomainTogglerDialogParams } from "./show-dialog-domain-toggler";
 
 @customElement("dialog-domain-toggler")
-class DomainTogglerDialog extends LitElement {
+class DomainTogglerDialog extends LitElement implements HassDialog {
   public hass!: HomeAssistant;
 
   @internalProperty() private _params?: HaDomainTogglerDialogParams;
 
-  public async showDialog(params: HaDomainTogglerDialogParams): Promise<void> {
+  public showDialog(params: HaDomainTogglerDialogParams): void {
     this._params = params;
+  }
+
+  public closeDialog() {
+    this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render(): TemplateResult {
@@ -35,46 +43,47 @@ class DomainTogglerDialog extends LitElement {
       .sort();
 
     return html`
-      <ha-paper-dialog
-        with-backdrop
-        opened
-        @opened-changed=${this._openedChanged}
+      <ha-dialog
+        open
+        @closed=${this.closeDialog}
+        scrimClickAction
+        escapeKeyAction
+        hideActions
+        .heading=${createCloseHeading(
+          this.hass,
+          this.hass.localize("ui.dialogs.domain_toggler.title")
+        )}
       >
-        <h2>
-          ${this.hass.localize("ui.dialogs.domain_toggler.title")}
-        </h2>
         <div>
           ${domains.map(
             (domain) =>
               html`
-                <div>${domain[0]}</div>
-                <mwc-button .domain=${domain[1]} @click=${this._handleOff}>
-                  ${this.hass.localize("state.default.off")}
-                </mwc-button>
-                <mwc-button .domain=${domain[1]} @click=${this._handleOn}>
-                  ${this.hass.localize("state.default.on")}
+                <ha-formfield .label=${domain[0]}>
+                <ha-switch
+                  .domain=${domain[1]}
+                  .checked=${!this._params!.exposedDomains ||
+                  this._params!.exposedDomains.includes(domain[1])}
+                  @change=${this._handleSwitch}
+                >
+                </ha-switch>
+              </ha-formfield>
+                <mwc-button .domain=${domain[1]} @click=${this._handleReset}>
+                  ${this.hass.localize("ui.dialogs.domain_toggler.reset_entities")}
                 </mwc-button>
               `
           )}
         </div>
-      </ha-paper-dialog>
+      </ha-dialog>
     `;
   }
 
-  private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
-    // Closed dialog by clicking on the overlay
-    if (!ev.detail.value) {
-      this._params = undefined;
-    }
-  }
-
-  private _handleOff(ev) {
-    this._params!.toggleDomain(ev.currentTarget.domain, false);
+  private _handleSwitch(ev) {
+    this._params!.toggleDomain(ev.currentTarget.domain, ev.target.checked);
     ev.currentTarget.blur();
   }
 
-  private _handleOn(ev) {
-    this._params!.toggleDomain(ev.currentTarget.domain, true);
+  private _handleReset(ev) {
+    this._params!.resetDomain(ev.currentTarget.domain);
     ev.currentTarget.blur();
   }
 
@@ -82,8 +91,8 @@ class DomainTogglerDialog extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-paper-dialog {
-          max-width: 500px;
+        ha-dialog {
+          --mdc-dialog-max-width: 500px;
         }
         div {
           display: grid;

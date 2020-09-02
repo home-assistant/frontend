@@ -14,15 +14,14 @@ import {
   mdiPound,
   mdiShield,
 } from "@mdi/js";
-import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
@@ -34,6 +33,7 @@ import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-label-badge";
 import "../../../../src/components/ha-markdown";
+import "../../../../src/components/ha-settings-row";
 import "../../../../src/components/ha-svg-icon";
 import "../../../../src/components/ha-switch";
 import {
@@ -52,7 +52,6 @@ import { HomeAssistant } from "../../../../src/types";
 import "../../components/hassio-card-content";
 import { showHassioMarkdownDialog } from "../../dialogs/markdown/show-dialog-hassio-markdown";
 import { hassioStyle } from "../../resources/hassio-style";
-import "../../../../src/components/ha-settings-row";
 
 const STAGE_ICON = {
   stable: mdiCheckCircle,

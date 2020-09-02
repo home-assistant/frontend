@@ -1,12 +1,13 @@
-import "../../../components/ha-icon-button";
+import "@material/mwc-fab";
+import { mdiPlus } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
+  CSSResult,
   customElement,
   html,
   LitElement,
   property,
   TemplateResult,
-  CSSResult,
 } from "lit-element";
 import { ifDefined } from "lit-html/directives/if-defined";
 import memoizeOne from "memoize-one";
@@ -16,7 +17,8 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import "../../../components/entity/ha-entity-toggle";
-import "@material/mwc-fab";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-svg-icon";
 import {
   AutomationConfig,
   AutomationEntity,
@@ -28,8 +30,6 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { showThingtalkDialog } from "./show-dialog-thingtalk";
-import "../../../components/ha-svg-icon";
-import { mdiPlus } from "@mdi/js";
 
 @customElement("ha-automation-picker")
 class HaAutomationPicker extends LitElement {
@@ -138,7 +138,7 @@ class HaAutomationPicker extends LitElement {
           </a>
           ${!automation.attributes.id
             ? html`
-                <paper-tooltip position="left">
+                <paper-tooltip animation-delay="0" position="left">
                   ${this.hass.localize(
                     "ui.panel.config.automation.picker.only_editable"
                   )}

@@ -105,7 +105,7 @@
             "triggered": "Spuštěno"
         },
         "automation": {
-            "off": "Neaktivní",
+            "off": "Vypnuto",
             "on": "Aktivní"
         },
         "binary_sensor": {
@@ -115,7 +115,7 @@
             },
             "cold": {
                 "off": "Normální",
-                "on": "Chladné"
+                "on": "Studený"
             },
             "connectivity": {
                 "off": "Odpojeno",
@@ -139,7 +139,7 @@
             },
             "heat": {
                 "off": "Normální",
-                "on": "Horké"
+                "on": "Horký"
             },
             "lock": {
                 "off": "Zamčeno",
@@ -191,8 +191,8 @@
             }
         },
         "calendar": {
-            "off": "Neaktivní",
-            "on": "Aktivní"
+            "off": "Vypnuto",
+            "on": "Zapnuto"
         },
         "camera": {
             "idle": "Nečinný",
@@ -205,7 +205,7 @@
             "fan_only": "Pouze ventilátor",
             "heat": "Topení",
             "heat_cool": "Vytápění/Chlazení",
-            "off": "Neaktivní"
+            "off": "Vypnuto"
         },
         "configurator": {
             "configure": "Konfigurovat",
@@ -213,9 +213,9 @@
         },
         "cover": {
             "closed": "Zavřeno",
-            "closing": "Zavírání",
+            "closing": "Zavírá se",
             "open": "Otevřeno",
-            "opening": "Otevírání",
+            "opening": "Otvírá se",
             "stopped": "Zastaveno"
         },
         "default": {
@@ -228,30 +228,30 @@
             "not_home": "Pryč"
         },
         "fan": {
-            "off": "Neaktivní",
-            "on": "Aktivní"
+            "off": "Vypnuto",
+            "on": "Zapnuto"
         },
         "group": {
             "closed": "Zavřeno",
-            "closing": "Zavírání",
+            "closing": "Zavírá se",
             "home": "Doma",
             "locked": "Zamčeno",
             "not_home": "Pryč",
-            "off": "Neaktivní",
+            "off": "Vypnuto",
             "ok": "V pořádku",
-            "on": "Aktivní",
+            "on": "Zapnuto",
             "open": "Otevřeno",
-            "opening": "Otevírání",
+            "opening": "Otvírá se",
             "problem": "Problém",
             "stopped": "Zastaveno",
             "unlocked": "Odemčeno"
         },
         "input_boolean": {
             "off": "Neaktivní",
-            "on": "Aktivní"
+            "on": "Zapnuto"
         },
         "light": {
-            "off": "Neaktivní",
+            "off": "Vypnuto",
             "on": "Aktivní"
         },
         "lock": {
@@ -260,8 +260,8 @@
         },
         "media_player": {
             "idle": "Nečinný",
-            "off": "Neaktivní",
-            "on": "Aktivní",
+            "off": "Vypnuto",
+            "on": "Zapnuto",
             "paused": "Pozastaveno",
             "playing": "Přehrávání",
             "standby": "Pohotovostní režim"
@@ -274,27 +274,27 @@
             "problem": "Problém"
         },
         "remote": {
-            "off": "Neaktivní",
-            "on": "Aktivní"
+            "off": "Vypnuto",
+            "on": "Zapnuto"
         },
         "scene": {
             "scening": "Scenérie"
         },
         "script": {
-            "off": "Neaktivní",
-            "on": "Aktivní"
+            "off": "Vypnuto",
+            "on": "Zapnuto"
         },
         "sensor": {
-            "off": "Neaktivní",
-            "on": "Aktivní"
+            "off": "Vypnuto",
+            "on": "Zapnuto"
         },
         "sun": {
             "above_horizon": "Nad horizontem",
             "below_horizon": "Za horizontem"
         },
         "switch": {
-            "off": "Neaktivní",
-            "on": "Aktivní"
+            "off": "Vypnuto",
+            "on": "Zapnuto"
         },
         "timer": {
             "active": "aktivní",
@@ -306,8 +306,8 @@
             "docked": "Ve stanici",
             "error": "Chyba",
             "idle": "Nečinný",
-            "off": "Off",
-            "on": "On",
+            "off": "Vypnuto",
+            "on": "Zapnuto",
             "paused": "Pozastaveno",
             "returning": "Návrat do stanice"
         },
@@ -786,8 +786,8 @@
         },
         "duration": {
             "day": "{count} {count, plural,\none {den}\nfew {dny}\nother {dnů}\n}",
-            "hour": "{count} {count, plural,\n  one {hodinou}\n  other {hodiny}\n}",
-            "minute": "{count} {count, plural,\none {minutou}\nother {minuty}\n}",
+            "hour": "{count} {count, plural,\n  one {hodina}\n  few {hodiny}\n  other {hodin}\n}",
+            "minute": "{count} {count, plural,\none {minuta}\nfew {minuty}\nother {minut}\n}",
             "second": "{count} {count, plural,\none {sekunda}\nfew {sekundy}\nother {sekund}\n}",
             "week": "{count} {count, plural,\none {týden}\nfew {týdny}\nother {týdnů}\n}"
         },
@@ -820,7 +820,7 @@
                     "link_profile_page": "stránka vašeho profilu"
                 },
                 "areas": {
-                    "caption": "Registr oblastí",
+                    "caption": "Oblasti",
                     "data_table": {
                         "area": "Oblast",
                         "devices": "Zařízení"
@@ -829,7 +829,7 @@
                         "confirmation_text": "Všechna zařízení v této oblasti budou nastavena jako nepřiřazena.",
                         "confirmation_title": "Opravdu chcete tuto oblast smazat?"
                     },
-                    "description": "Přehled všech oblastí ve vaší domácnosti.",
+                    "description": "Správa oblastí ve vaší domácnosti",
                     "editor": {
                         "area_id": "ID oblasti",
                         "create": "VYTVOŘIT",
@@ -838,11 +838,11 @@
                         "name": "Název",
                         "name_required": "Název je povinný",
                         "unknown_error": "Neznámá chyba",
-                        "update": "UPRAVIT"
+                        "update": "Aktualizovat"
                     },
                     "picker": {
                         "create_area": "Vytvořit oblast",
-                        "header": "Registr oblastí",
+                        "header": "Oblasti",
                         "integrations_page": "Stránka integrací",
                         "introduction": "Oblasti se používají k uspořádání zařízení podle místa kde jsou. Tato informace bude použita k organizaci rozhraní, k nastavení oprávnění a v integraci s ostatnímy systémy.",
                         "introduction2": "Pro přídání zařízení do oblasti přejděte na stránku integrací pomocí odkazu níže tam klikněte na nakonfigurovanou integraci abyste se dostali na kartu zažízení.",
@@ -851,7 +851,7 @@
                 },
                 "automation": {
                     "caption": "Automatizace",
-                    "description": "Vytvářejte a upravujte automatizace",
+                    "description": "Správa automatizací",
                     "editor": {
                         "actions": {
                             "add": "Přidat akci",
@@ -923,7 +923,7 @@
                                     "wait_template": "Šablona pro čekání"
                                 }
                             },
-                            "unsupported_action": "Nepodporovaná akce: {action}"
+                            "unsupported_action": "Akce {action} není podporována v uživatelském rozhraní"
                         },
                         "alias": "Název",
                         "conditions": {
@@ -989,7 +989,7 @@
                                     "zone": "Zóna"
                                 }
                             },
-                            "unsupported_condition": "Nepodporovaná podmínka: {condition}"
+                            "unsupported_condition": "Podmínka {condition} není podporována v uživatelském rozhraní"
                         },
                         "default_name": "Nová automatizace",
                         "description": {
@@ -1111,7 +1111,7 @@
                                     "zone": "Zóna"
                                 }
                             },
-                            "unsupported_platform": "Nepodporovaná platforma: {platform}"
+                            "unsupported_platform": "Platforma {platform} není podporována v uživatelském rozhraní"
                         },
                         "unsaved_confirm": "Máte neuložené změny. Opravdu chcete odejít?"
                     },
@@ -1124,7 +1124,7 @@
                         "headers": {
                             "name": "Název"
                         },
-                        "introduction": "Editor automatizací umožňuje vytvářet a upravovat automatizace. Přečtěte si prosím [pokyny] (https://home-assistant.io/docs/automation/editor/), abyste se ujistili, že jste aplikaci Home Assistant nakonfigurovali správně.",
+                        "introduction": "Editor automatizací umožňuje vytvářet a upravovat automatizace. Přečtěte si prosím [pokyny] (https://home-assistant.io/docs/automation/editor/), abyste se ujistili, že jste Home Assistant nakonfigurovali správně.",
                         "learn_more": "Další informace o automatizacích",
                         "no_automations": "Nemohli jsme najít žádné upravitelné automatizace",
                         "only_editable": "Upravitelné mohou být pouze automatizace definované v automations.yaml.",
@@ -1295,7 +1295,7 @@
                 },
                 "core": {
                     "caption": "Obecné",
-                    "description": "Ověřte konfigurační soubor a spravujte server",
+                    "description": "Změny obecné konfigurace Home Assistant",
                     "section": {
                         "core": {
                             "core_config": {
@@ -1315,7 +1315,7 @@
                                 "unit_system_imperial": "Imperiální",
                                 "unit_system_metric": "Metrický"
                             },
-                            "header": "Konfigurace a správa serveru",
+                            "header": "Obecná konfigurace",
                             "introduction": "Moc dobře víme, že změna konfigurace může být velmi únavným procesem. Tato sekce se proto pokusí udělat váš život alespoň trochu jednodušší."
                         }
                     }
@@ -1342,6 +1342,7 @@
                     }
                 },
                 "devices": {
+                    "add_prompt": "Pomocí tohoto zařízení dosud nebyl přidán žádný {name}. Můžete ho přidat kliknutím na tlačítko + výše.",
                     "automation": {
                         "actions": {
                             "caption": "Když je něco spuštěno ..."
@@ -1377,7 +1378,7 @@
                     "device_info": "Informace o zařízení",
                     "device_not_found": "Zařízení nebylo nalezeno.",
                     "entities": {
-                        "add_entities_lovelace": "Přidat všechny entity zařízení do Lovelace",
+                        "add_entities_lovelace": "Přidat do Lovelace",
                         "disabled_entities": "+{count} {count, plural,\n  one {zakázaná entita}\n  other {zakázaných entit}\n}",
                         "entities": "Entity",
                         "hide_disabled": "Skrýt zakázané",
@@ -1402,8 +1403,8 @@
                     "update": "Aktualizovat"
                 },
                 "entities": {
-                    "caption": "Registr entit",
-                    "description": "Přehled všech známých entit",
+                    "caption": "Entity",
+                    "description": "Správa známých entit",
                     "picker": {
                         "disable_selected": {
                             "button": "Zakázat vybrané",
@@ -1421,7 +1422,7 @@
                             "show_readonly": "Zobrazit entity jen pro čtení",
                             "show_unavailable": "Zobrazit nedostupné entity"
                         },
-                        "header": "Registr entit",
+                        "header": "Entity",
                         "headers": {
                             "entity_id": "ID entity",
                             "integration": "Integrace",
@@ -1429,7 +1430,7 @@
                             "status": "Stav"
                         },
                         "introduction": "Homa Assistant uchovává registr všech entit, které kdy viděl a mohou být jednoznačně identifikovány. Každá z těchto entit bude mít přiděleno ID, které bude rezervováno pouze pro tuto entitu.",
-                        "introduction2": "Pomocí registru entit můžete přepsat název, změnit identifikátor entity nebo odebrat entitu. Poznámka: odebrání entity z registru entit nesmaže entitu. Pro smazání přejděte na stránku integrací pomocí odkazu níže.",
+                        "introduction2": "Pomocí registru entit můžete přepsat název, změnit identifikátor entity nebo odebrat entitu.",
                         "remove_selected": {
                             "button": "Odstranit vybrané",
                             "confirm_partly_text": "Můžete odebrat pouze {removable} z vybraných {selected} entit. Entity lze odebrat pouze v případě, že integrace již entity neposkytuje. Občas je třeba restartovat Home Assistant před tím, než je možné odstranit entity ze smazané integrace. Opravdu chcete odebrat odstranitelné entity?",
@@ -1551,14 +1552,14 @@
                     },
                     "configure": "Konfigurovat",
                     "configured": "Zkonfigurováno",
-                    "description": "Spravovat připojená zařízení a služby",
+                    "description": "Správa integrací",
                     "details": "Podrobnosti o integraci",
                     "discovered": "Objeveno",
                     "home_assistant_website": "stránky Home Assistant",
                     "ignore": {
                         "confirm_delete_ignore": "To způsobí, že se integrace znovu objeví ve vašich zjištěných integracích. Může to vyžadovat restartování nebo to může nějakou dobu trvat.",
                         "confirm_delete_ignore_title": "Přestat ignorovat {name}?",
-                        "confirm_ignore": "Opravdu nechcete tuto integraci nastavit? Tuto akci můžete vrátit zpět klepnutím na 'Zobrazit ignorované integrace' v nabídce vpravo nahoře.",
+                        "confirm_ignore": "Opravdu nechcete tuto integraci nastavit? Tuto akci můžete vrátit zpět klepnutím na \"Zobrazit ignorované integrace\" v nabídce vpravo nahoře.",
                         "confirm_ignore_title": "Ignorovat objevený {name}?",
                         "hide_ignored": "Skrýt ignorované integrace",
                         "ignore": "Ignorovat",
@@ -1579,7 +1580,7 @@
                     "rename_input_label": "Název položky",
                     "search": "Hledat integraci"
                 },
-                "introduction": "Zde je možné konfigurovat vaše komponenty a Home Assistant.\nZ uživatelského rozhraní sice zatím není možné konfigurovat vše, ale pracujeme na tom.",
+                "introduction": "Zde je možné konfigurovat vaše komponenty a Home Assistant.\nZatím není možné vše konfigurovat přímo z uživatelského rozhraní, ale pracujeme na tom.",
                 "logs": {
                     "caption": "Logy",
                     "clear": "Zrušit",
@@ -1600,7 +1601,7 @@
                         "cant_edit_yaml": "Dashboardy definované v YAML nelze upravovat z uživatelského rozhraní. Změňte je v configuration.yaml.",
                         "caption": "Dashboardy",
                         "conf_mode": {
-                            "storage": "Řízeno UI",
+                            "storage": "Řízeno uživatelským rozhraním",
                             "yaml": "Soubor YAML"
                         },
                         "confirm_delete": "Opravdu chcete odstranit tento dashboard?",
@@ -1635,7 +1636,7 @@
                             "open": "Otevřít"
                         }
                     },
-                    "description": "Nakonfigurujte své Lovelace Dashboardy",
+                    "description": "Správa Lovelace Dashboardů",
                     "resources": {
                         "cant_edit_yaml": "Používáte Lovelace v režimu YAML, proto nemůžete spravovat své zdroje prostřednictvím uživatelského rozhraní. Spravujte je v souboru configuration.yaml.",
                         "caption": "Zdroje",
@@ -1696,6 +1697,7 @@
                     },
                     "device_info": {
                         "node_failed": "Uzel selhal",
+                        "stage": "Fáze",
                         "zwave_info": "Informace o Z-Wave"
                     },
                     "navigation": {
@@ -1725,9 +1727,13 @@
                     },
                     "network": {
                         "header": "Správa sítě",
+                        "introduction": "Správa funkcí pro celou síť",
                         "node_count": "{count} uzlů"
                     },
                     "node_query_stages": {
+                        "associations": "Obnovuji přidružené skupiny a členství",
+                        "cacheload": "Načítám informace ze souboru mezipaměti OpenZWave. Uzly baterií zůstanou v této fázi, dokud se uzel neprobudí.",
+                        "complete": "Proces komunikace je dokončen",
                         "configuration": "Získávám konfiguraci z uzlu",
                         "dynamic": "Získávám často se měnící hodnoty z uzlu",
                         "instances": "Získávám podrobnosti o tom, jaké instance nebo kanály zařízení podporuje",
@@ -1746,12 +1752,14 @@
                     "refresh_node": {
                         "battery_note": "Pokud je uzel napájen z baterie, nezapomeňte jej probudit, než budete pokračovat",
                         "complete": "Obnova uzlu dokončena",
+                        "description": "Toto řekne OpenZWave, aby znovu provedl komunikaci s uzlem a aktualizoval typy příkazů, schopnosti a hodnoty uzlu.",
                         "node_status": "Stav uzlu",
                         "refreshing_description": "Aktualizuji informací o uzlu...",
                         "start_refresh_button": "Spustit Obnovení",
                         "step": "Krok",
                         "title": "Aktualizovat informace o uzlu",
-                        "wakeup_header": "Pokyny pro probuzení pro"
+                        "wakeup_header": "Pokyny pro probuzení pro",
+                        "wakeup_instructions_source": "Pokyny k probuzení pocházejí z komunitní databáze zařízení OpenZWave."
                     },
                     "select_instance": {
                         "header": "Vyberte instanci OpenZWave",
@@ -1768,7 +1776,7 @@
                     "confirm_delete": "Opravdu chcete odstranit tuto osobu?",
                     "confirm_delete2": "Všechna zařízení patřící této osobě budou nastavena jako nepřiřazena.",
                     "create_person": "Vytvořit osobu",
-                    "description": "Spravujte osoby, které Home Assistant sleduje.",
+                    "description": "Správa osob, které Home Assistant sleduje",
                     "detail": {
                         "create": "Vytvořit",
                         "delete": "Smazat",
@@ -1791,7 +1799,7 @@
                 "scene": {
                     "activated": "Aktivovaná scéna {name}.",
                     "caption": "Scény",
-                    "description": "Vytváření a úpravy scén",
+                    "description": "Správa scén",
                     "editor": {
                         "default_name": "Nová scéna",
                         "devices": {
@@ -1834,8 +1842,8 @@
                     }
                 },
                 "script": {
-                    "caption": "Skript",
-                    "description": "Vytvářejte a upravujte skripty",
+                    "caption": "Skripty",
+                    "description": "Správa skriptů",
                     "editor": {
                         "alias": "Název",
                         "default_name": "Nový skript",
@@ -1885,24 +1893,32 @@
                     "section": {
                         "reloading": {
                             "automation": "Nově načíst automatizace",
-                            "command_line": "Nově načíst entity integrace \"command line\"",
+                            "command_line": "Nově načíst entity integrace Command line",
                             "core": "Nově načíst umístění a přizpůsobení",
-                            "filter": "Nově načíst entity integrace \"filter\"",
+                            "filesize": "Nově načíst entity integrace File size",
+                            "filter": "Nově načíst entity integrace Filter",
+                            "generic": "Nově načíst entity integrace Generic IP camera",
+                            "generic_thermostat": "Nově načíst entity integrace Generic thermostat",
                             "group": "Nově načíst skupiny",
                             "heading": "Konfigurace se načítá",
+                            "history_stats": "Nově načíst entity integrace History stats",
+                            "homekit": "Nově načíst entity integrace HomeKit",
                             "input_boolean": "Nově načíst pomocníky - přepínače",
                             "input_datetime": "Nově načíst pomocníky - data/časy",
                             "input_number": "Nově načíst pomocníky - čísla",
                             "input_select": "Nově načíst pomocníky - výběry",
                             "input_text": "Nově načíst pomocníky - texty",
                             "introduction": "Některé části Home Assistant lze nově načíst bez nutnosti restartování. Nové načtení zahodí jejich aktuální konfiguraci a načte novou.",
+                            "min_max": "Nově načíst entity integrace Min/Max",
                             "person": "Nově načíst osoby",
-                            "rest": "Nově načíst entity integrace \"rest\"",
+                            "ping": "Nově načíst entity integrace Ping",
+                            "rest": "Nově načíst entity integrace Rest",
                             "scene": "Nově načíst scény",
                             "script": "Nově načíst skripty",
-                            "statistics": "Nově načíst entity integrace \"statistics\"",
-                            "template": "Nově načíst entity integrace \"template\"",
-                            "universal": "Nově načíst entity integrace \"universal media player\"",
+                            "statistics": "Nově načíst entity integrace Statistics",
+                            "template": "Nově načíst entity integrace Template",
+                            "trend": "Nově načíst entity integrace Trend",
+                            "universal": "Nově načíst entity integrace Universal media player",
                             "zone": "Nově načíst zóny"
                         },
                         "server_management": {
@@ -1954,6 +1970,8 @@
                         "create": "Vytvořit",
                         "name": "Jméno",
                         "password": "Heslo",
+                        "password_confirm": "Potvrzení hesla",
+                        "password_not_match": "Hesla se neshodují",
                         "username": "Uživatelské jméno"
                     },
                     "caption": "Uživatelé",
@@ -1970,7 +1988,9 @@
                         "group": "Skupina",
                         "id": "ID",
                         "name": "Jméno",
+                        "new_password": "Nové heslo",
                         "owner": "Vlastník",
+                        "password_changed": "Heslo změněno!",
                         "system_generated": "Generovaný systémem",
                         "system_generated_users_not_editable": "Nelze aktualizovat uživatele generované systémem.",
                         "system_generated_users_not_removable": "Nelze odebrat uživatele generované systémem.",
@@ -2054,7 +2074,7 @@
                         "create_group": "Zigbee Home Automation - Vytvoření skupiny",
                         "create_group_details": "Zadejte požadované podrobnosti pro vytvoření nové zigbee skupiny",
                         "creating_group": "Vytváření skupiny",
-                        "description": "Vytvoření a úprava Zigbee skupin",
+                        "description": "Správa skupin Zigbee",
                         "group_details": "Zde jsou všechny podrobnosti o vybrané skupině Zigbee.",
                         "group_id": "ID skupiny",
                         "group_info": "Informace o skupině",
@@ -2420,6 +2440,7 @@
                             "show_name": "Zobrazit název?",
                             "show_state": "Zobrazit stav?",
                             "state": "Stav",
+                            "state_color": "Barevné ikony dle stavu?",
                             "tap_action": "Akce při stisknutí",
                             "theme": "Motiv",
                             "title": "Název",
@@ -2445,7 +2466,7 @@
                         },
                         "iframe": {
                             "description": "Karta Webová stránka umožňuje vložit oblíbenou webovou stránku přímo do Home Assistanta.",
-                            "name": "iFrame"
+                            "name": "Webová stránka"
                         },
                         "light": {
                             "description": "Karta Světlo umožňuje změnit jas světla.",
@@ -2521,13 +2542,13 @@
                     "edit_card": {
                         "add": "Přidat kartu",
                         "confirm_cancel": "Opravdu chcete zahodit změny?",
-                        "delete": "Odstranit",
+                        "delete": "Smazat kartu",
                         "duplicate": "Duplikovat Kartu",
                         "edit": "Upravit",
                         "header": "Konfigurace karty",
                         "move": "Přesunout",
                         "options": "Více možností",
-                        "pick_card": "Vyberte kartu, kterou chcete přidat.",
+                        "pick_card": "Kterou kartu chcete přidat?",
                         "pick_card_view_title": "Kterou kartu byste chtěli přidat do svého {name} pohledu?",
                         "show_code_editor": "Zobrazit editor kódu",
                         "show_visual_editor": "Zobrazit vizuální editor",
@@ -2559,19 +2580,19 @@
                     "header": "Upravit UI",
                     "menu": {
                         "open": "Otevřít Lovelace menu",
-                        "raw_editor": "Editor zdrojového kódu"
+                        "raw_editor": "Editor kódu konfigurace"
                     },
                     "migrate": {
                         "header": "Konfigurace není kompatibilní",
                         "migrate": "Migrovat konfiguraci",
-                        "para_migrate": "Home Assistant může automaticky přidávat ID ke všem kartám a pohledům stisknutím tlačítka \"Migrovat konfiguraci\".",
+                        "para_migrate": "Home Assistant může automaticky přidat ID ke všem vašim kartám a pohledům stisknutím tlačítka \"Migrovat konfiguraci\".",
                         "para_no_id": "Tento prvek nemá ID. Přidejte k tomuto prvku ID v 'ui-lovelace.yaml'."
                     },
                     "move_card": {
                         "header": "Vyberte pohled, do kterého chcete kartu přesunout"
                     },
                     "raw_editor": {
-                        "confirm_remove_config_text": "Pokud odeberete nastavení Lovelace, automaticky vygenerujeme vaše zobrazení Lovelace s vašimi oblastmi a zařízeními.",
+                        "confirm_remove_config_text": "Pokud odeberete konfiguraci uživatelského rozhraní Lovelace, automaticky vygenerujeme pohledy Lovelace s vašimi oblastmi a zařízeními.",
                         "confirm_remove_config_title": "Opravdu chcete odstranit nastavení Lovelace? Automaticky vygenerujeme vaše zobrazení Lovelace s vašimi oblastmi a zařízeními.",
                         "confirm_unsaved_changes": "Máte neuložené změny. Opravdu chcete odejít?",
                         "confirm_unsaved_comments": "Vaše konfigurace obsahuje komentáře, které se neuloží. Chcete pokračovat?",
@@ -2590,7 +2611,7 @@
                         "close": "Zavřít",
                         "empty_config": "Začít s prázdným dashboardem",
                         "header": "Převzít kontrolu nad vaší Lovelace UI",
-                        "para": "Ve výchozím nastavení bude Home Assistant spravovat vaše uživatelské rozhraní – aktualizovat jej při přidání nové entity nebo Lovelace komponenty. Pokud převezmete kontrolu, nebudeme již provádět změny automaticky za vás.",
+                        "para": "Tento dashboard momentálně spravuje Home Assistant. Je automaticky aktualizován při přidání nové entity nebo Lovelace komponenty. Pokud převezmete kontrolu, nebudeme již provádět změny automaticky za vás. Vždy si můžete vytvořit nový dashboard na hraní.",
                         "para_sure": "Opravdu chcete převzít kontrolu nad uživalským rozhraním ?",
                         "save": "Převzít kontrolu",
                         "yaml_config": "Abyste mohli snadněji začít, zde aktuální konfigurace tohoto dashboardu:",
@@ -2616,7 +2637,7 @@
                 },
                 "menu": {
                     "close": "Zavřít",
-                    "configure_ui": "Konfigurovat UI",
+                    "configure_ui": "Upravit Dashboard",
                     "exit_edit_mode": "Ukončit režim úprav uživatelského rozhraní",
                     "help": "Pomoc",
                     "refresh": "Obnovit",
@@ -2725,7 +2746,7 @@
                                     "data": {
                                         "password": "Heslo API"
                                     },
-                                    "description": "Zadejte API heslo v http config"
+                                    "description": "Zadejte heslo pro API ve své HTTP konfiguraci"
                                 },
                                 "mfa": {
                                     "data": {
@@ -2940,7 +2961,7 @@
             "shopping-list": {
                 "add_item": "Přidat položku",
                 "clear_completed": "Vymazat nakoupené",
-                "microphone_tip": "Klepněte na mikrofon vpravo nahoře a řekněte \"Add candy to my shopping list\""
+                "microphone_tip": "Klepněte na mikrofon vpravo nahoře a řekněte nebo napište \"Add candy to my shopping list\""
             }
         },
         "sidebar": {
