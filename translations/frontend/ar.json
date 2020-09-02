@@ -548,7 +548,7 @@
                 "buttons": {
                     "add": "أضف أجهزة عبر هذا الجهاز",
                     "clusters": "إدارة العناقيد",
-                    "zigbee_information": "معلومات Zigbee"
+                    "zigbee_information": "معلومات جهاز Zigbee"
                 },
                 "device_signature": "توقيع جهاز Zigbee",
                 "services": {
@@ -577,7 +577,7 @@
         "notification_toast": {
             "connection_lost": "انقطع الاتصال. جارٍ إعادة الاتصال ...",
             "started": "Home Assistant بدأ!",
-            "starting": "يبدأ برنامج Home Assistant ، ولن يكون كل شيء متاحًا حتى الانتهاء."
+            "starting": "يبدأ برنامج Home Assistant حاليا ، ولن يكون كل شيء متاحًا حتى الانتهاء."
         },
         "panel": {
             "calendar": {
@@ -1152,7 +1152,8 @@
                 },
                 "zha": {
                     "add_device_page": {
-                        "discovered_text": "ستظهر الأجهزة هنا عند إكتشافها."
+                        "discovered_text": "ستظهر الأجهزة هنا عند إكتشافها.",
+                        "no_devices_found": "لم يتم العثور على أجهزة ، تأكد من أنها في وضع الاقتران(pairing) واجعلها مستيقظة أثناء اكتشافها قيد التشغيل."
                     },
                     "button": "كوِن",
                     "clusters": {
@@ -1574,7 +1575,7 @@
                     "not_used": "لم يتم استخدامها ابدأ"
                 },
                 "suspend": {
-                    "description": "هل يغلق الاتصال بالخادم بعد إخفاؤه لمدة 5 دقائق؟",
+                    "description": "هل نغلق الاتصال بالخادم بعد ان يكون مخفي لمدة 5 دقائق؟",
                     "header": "إغلق الاتصال تلقائيًا"
                 },
                 "themes": {

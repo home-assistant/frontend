@@ -2,6 +2,7 @@ import "@material/mwc-ripple";
 import type { Ripple } from "@material/mwc-ripple";
 import { directive, PropertyPart } from "lit-html";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { deepEqual } from "../../../../common/util/deep-equal";
 import {
   ActionHandlerDetail,
   ActionHandlerOptions,
@@ -17,10 +18,18 @@ interface ActionHandler extends HTMLElement {
   bind(element: Element, options): void;
 }
 interface ActionHandlerElement extends HTMLElement {
-  actionHandler?: boolean;
+  actionHandler?: {
+    options: ActionHandlerOptions;
+    start?: (ev: Event) => void;
+    end?: (ev: Event) => void;
+    handleEnter?: (ev: KeyboardEvent) => void;
+  };
 }
 
 declare global {
+  interface HTMLElementTagNameMap {
+    "action-handler": ActionHandler;
+  }
   interface HASSDomEvents {
     action: ActionHandlerDetail;
   }
@@ -76,26 +85,45 @@ class ActionHandler extends HTMLElement implements ActionHandler {
     });
   }
 
-  public bind(element: ActionHandlerElement, options) {
-    if (element.actionHandler) {
+  public bind(element: ActionHandlerElement, options: ActionHandlerOptions) {
+    if (
+      element.actionHandler &&
+      deepEqual(options, element.actionHandler.options)
+    ) {
       return;
     }
-    element.actionHandler = true;
 
-    element.addEventListener("contextmenu", (ev: Event) => {
-      const e = ev || window.event;
-      if (e.preventDefault) {
-        e.preventDefault();
-      }
-      if (e.stopPropagation) {
-        e.stopPropagation();
-      }
-      e.cancelBubble = true;
-      e.returnValue = false;
-      return false;
-    });
+    if (element.actionHandler) {
+      element.removeEventListener("touchstart", element.actionHandler.start!);
+      element.removeEventListener("touchend", element.actionHandler.end!);
+      element.removeEventListener("touchcancel", element.actionHandler.end!);
 
-    const start = (ev: Event) => {
+      element.removeEventListener("mousedown", element.actionHandler.start!);
+      element.removeEventListener("click", element.actionHandler.end!);
+
+      element.removeEventListener("keyup", element.actionHandler.handleEnter!);
+    } else {
+      element.addEventListener("contextmenu", (ev: Event) => {
+        const e = ev || window.event;
+        if (e.preventDefault) {
+          e.preventDefault();
+        }
+        if (e.stopPropagation) {
+          e.stopPropagation();
+        }
+        e.cancelBubble = true;
+        e.returnValue = false;
+        return false;
+      });
+    }
+
+    element.actionHandler = { options };
+
+    if (options.disabled) {
+      return;
+    }
+
+    element.actionHandler.start = (ev: Event) => {
       this.held = false;
       let x;
       let y;
@@ -107,13 +135,19 @@ class ActionHandler extends HTMLElement implements ActionHandler {
         y = (ev as MouseEvent).pageY;
       }
 
-      this.timer = window.setTimeout(() => {
-        this.startAnimation(x, y);
-        this.held = true;
-      }, this.holdTime);
+      if (options.hasHold) {
+        this.timer = window.setTimeout(() => {
+          this.startAnimation(x, y);
+          this.held = true;
+        }, this.holdTime);
+      }
     };
 
-    const end = (ev: Event) => {
+    element.actionHandler.end = (ev: Event) => {
+      // Don't respond on our own generated click
+      if (!ev.isTrusted) {
+        return;
+      }
       // Prevent mouse event if touch event
       ev.preventDefault();
       if (
@@ -122,9 +156,11 @@ class ActionHandler extends HTMLElement implements ActionHandler {
       ) {
         return;
       }
-      clearTimeout(this.timer);
-      this.stopAnimation();
-      this.timer = undefined;
+      if (options.hasHold) {
+        clearTimeout(this.timer);
+        this.stopAnimation();
+        this.timer = undefined;
+      }
       if (this.held) {
         fireEvent(element, "action", { action: "hold" });
       } else if (options.hasDoubleClick) {
@@ -143,24 +179,30 @@ class ActionHandler extends HTMLElement implements ActionHandler {
         }
       } else {
         fireEvent(element, "action", { action: "tap" });
+        // Fire the click we prevented the action for
+        (ev.target as HTMLElement)?.click();
       }
     };
 
-    const handleEnter = (ev: KeyboardEvent) => {
+    element.actionHandler.handleEnter = (ev: KeyboardEvent) => {
       if (ev.keyCode !== 13) {
         return;
       }
-      end(ev);
+      (ev.currentTarget as ActionHandlerElement).actionHandler!.end!(ev);
     };
 
-    element.addEventListener("touchstart", start, { passive: true });
-    element.addEventListener("touchend", end);
-    element.addEventListener("touchcancel", end);
+    element.addEventListener("touchstart", element.actionHandler.start, {
+      passive: true,
+    });
+    element.addEventListener("touchend", element.actionHandler.end);
+    element.addEventListener("touchcancel", element.actionHandler.end);
 
-    element.addEventListener("mousedown", start, { passive: true });
-    element.addEventListener("click", end);
+    element.addEventListener("mousedown", element.actionHandler.start, {
+      passive: true,
+    });
+    element.addEventListener("click", element.actionHandler.end);
 
-    element.addEventListener("keyup", handleEnter);
+    element.addEventListener("keyup", element.actionHandler.handleEnter);
   }
 
   private startAnimation(x: number, y: number) {

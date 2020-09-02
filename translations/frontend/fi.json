@@ -419,9 +419,16 @@
                 "unlock": "Avaa lukitus"
             },
             "media_player": {
+                "browse_media": "Selaa mediaa",
+                "media_next_track": "Seuraava",
+                "media_play": "Toista",
+                "media_play_pause": "Toista/pysäytä",
+                "media_previous_track": "Edellinen",
                 "sound_mode": "Äänitila",
                 "source": "Äänilähde",
-                "text_to_speak": "Tekstistä puheeksi"
+                "text_to_speak": "Tekstistä puheeksi",
+                "turn_off": "Sammuta",
+                "turn_on": "Päälle"
             },
             "persistent_notification": {
                 "dismiss": "Hylkää"
@@ -554,6 +561,22 @@
                 "loading_history": "Ladataan tilahistoriaa...",
                 "no_history_found": "Tilahistoriaa ei löydetty"
             },
+            "media-browser": {
+                "choose-source": "Valitse lähde",
+                "content-type": {
+                    "album": "Albumi",
+                    "artist": "Artisti",
+                    "library": "Kirjasto",
+                    "playlist": "Soittolista",
+                    "server": "Palvelin"
+                },
+                "media-player-browser": "Media Player -selain",
+                "no_items": "Ei kohteita",
+                "pick": "Valitse",
+                "pick-media": "Valitse media",
+                "play": "Toista",
+                "play-media": "Toista media"
+            },
             "related-items": {
                 "area": "Alue",
                 "automation": "Osa seuraavia automaatioita",
@@ -574,6 +597,7 @@
                     "week": "{count} {count, plural,\n  one {viikko}\n  other {viikkoa}\n}"
                 },
                 "future": "{time} kuluttua",
+                "just_now": "Juuri nyt",
                 "never": "Ei koskaan",
                 "past": "{time} sitten"
             },
@@ -1489,6 +1513,8 @@
                         "no_device": "Kohteet ilman laitteita",
                         "no_devices": "Tällä integraatiolla ei ole laitteita.",
                         "options": "Asetukset",
+                        "reload": "Lataa uudelleen",
+                        "reload_confirm": "Integraatio ladattiin uudelleen",
                         "rename": "Nimeä uudelleen",
                         "restart_confirm": "Käynnistä Home Assistant uudellen viimeistelläksesi tämän integraation poistamisen",
                         "settings_button": "Muokkaa {integration}-asetuksia",
@@ -1647,7 +1673,9 @@
                     "topic": "aihe"
                 },
                 "ozw": {
+                    "button": "Määrittele",
                     "common": {
+                        "controller": "Ohjain",
                         "node_id": "Solmun tunnus",
                         "ozw_instance": "OpenZWave-instanssi",
                         "zwave": "Z-Wave"
@@ -1656,6 +1684,30 @@
                         "node_failed": "Solmu epäonnistui",
                         "stage": "Vaihe",
                         "zwave_info": "Z-Wave-tiedot"
+                    },
+                    "navigation": {
+                        "nodes": "Solmut"
+                    },
+                    "network_status": {
+                        "details": {
+                            "started": "Yhdistetty MQTT:hen",
+                            "starting": "Yhdistetään MQTT:hen",
+                            "stopped": "OpenZWave pysähtyi"
+                        },
+                        "offline": "Offline",
+                        "online": "Online",
+                        "starting": "Käynnistetään",
+                        "unknown": "Tuntematon"
+                    },
+                    "network": {
+                        "header": "Verkon hallinta"
+                    },
+                    "select_instance": {
+                        "header": "Valitse OpenZWave"
+                    },
+                    "services": {
+                        "add_node": "Lisää solmu",
+                        "remove_node": "Poista solmu"
                     }
                 },
                 "person": {
@@ -1782,14 +1834,18 @@
                         "reloading": {
                             "automation": "Lataa automaatiot uudelleen",
                             "core": "Lataa ydin uudelleen",
+                            "filesize": "Lataa tiedostokokokohteet uudelleen",
+                            "generic_thermostat": "Lataa yleiset termostaatit uudelleen",
                             "group": "Lataa ryhmät uudelleen",
                             "heading": "Asetusten uudelleenlataus",
+                            "homekit": "Lataa HomeKit uudelleen",
                             "input_boolean": "Lataa booleanit uudelleen",
                             "input_datetime": "Lataa syöttöpäivämäärät uudelleen",
                             "input_number": "Lataa syöttönumerot uudelleen",
                             "input_select": "Lataa valinnat uudelleen",
                             "input_text": "Lataa syöttötekstit uudelleen",
                             "introduction": "Jotkut Home Assistantin osat voidaan ladata uudelleen ilman, että tarvitaan uudelleenkäynnistystä. Painamalla uudelleenlatausta yaml-tiedosto luetaan uudelleen.",
+                            "min_max": "Lataa min/max-kohteet uudelleen",
                             "person": "Lataa henkilöt uudelleen",
                             "scene": "Lataa tilanteet uudelleen",
                             "script": "Lataa skriptit uudelleen",
@@ -1812,12 +1868,24 @@
                         }
                     }
                 },
+                "tags": {
+                    "detail": {
+                        "description": "Kuvaus",
+                        "name": "Nimi"
+                    },
+                    "edit": "Muokkaa",
+                    "headers": {
+                        "name": "Nimi"
+                    }
+                },
                 "users": {
                     "add_user": {
                         "caption": "Lisää käyttäjä",
                         "create": "Luo",
                         "name": "Nimi",
                         "password": "Salasana",
+                        "password_confirm": "Vahvista salasana",
+                        "password_not_match": "Salasanat eivät täsmää",
                         "username": "Käyttäjätunnus"
                     },
                     "caption": "Käyttäjät",
@@ -1834,7 +1902,9 @@
                         "group": "Ryhmä",
                         "id": "ID",
                         "name": "Nimi",
+                        "new_password": "Uusi salasana",
                         "owner": "Omistaja",
+                        "password_changed": "Salasana on vaihdettu!",
                         "system_generated": "Järjestelmän luoma",
                         "system_generated_users_not_editable": "Järjestelmän luomia käyttäjiä ei voi päivittää.",
                         "system_generated_users_not_removable": "Järjestelmän luomia käyttäjiä ei voi poistaa.",
@@ -2214,6 +2284,9 @@
                             "description": "Painikekortti antaa sinun lisätä painikkeita tehtävien suorittamiseen.",
                             "name": "Painike"
                         },
+                        "calendar": {
+                            "name": "Kalenteri"
+                        },
                         "conditional": {
                             "card": "Kortti",
                             "change_type": "Muuta tyyppiä",
@@ -2279,6 +2352,7 @@
                             "show_name": "Näytä nimi?",
                             "show_state": "Näytä tila?",
                             "state": "Tila",
+                            "state_color": "Värikuvakkeet tilan perusteella?",
                             "tap_action": "Napautus toiminto",
                             "theme": "Teema",
                             "title": "Otsikko",

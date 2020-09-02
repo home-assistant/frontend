@@ -14,6 +14,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
+import { atLeastVersion } from "../../../src/common/config/version";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-settings-row";
@@ -79,7 +80,8 @@ class HassioHostInfo extends LitElement {
                 </mwc-button>
               </ha-settings-row>`
             : ""}
-          ${this.hostInfo.features.includes("network")
+          ${this.hostInfo.features.includes("network") &&
+          atLeastVersion(this.hass.config.version, 0, 115)
             ? html` <ha-settings-row>
                 <span slot="heading">
                   IP address
