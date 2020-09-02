@@ -10,8 +10,8 @@ import {
 } from "lit-element";
 import { fireEvent } from "../../common/dom/fire_event";
 import { createCloseHeading } from "../../components/ha-dialog";
-import "../../components/ha-switch";
 import "../../components/ha-formfield";
+import "../../components/ha-switch";
 import { domainToName } from "../../data/integration";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
@@ -59,16 +59,18 @@ class DomainTogglerDialog extends LitElement implements HassDialog {
             (domain) =>
               html`
                 <ha-formfield .label=${domain[0]}>
-                <ha-switch
-                  .domain=${domain[1]}
-                  .checked=${!this._params!.exposedDomains ||
-                  this._params!.exposedDomains.includes(domain[1])}
-                  @change=${this._handleSwitch}
-                >
-                </ha-switch>
-              </ha-formfield>
+                  <ha-switch
+                    .domain=${domain[1]}
+                    .checked=${!this._params!.exposedDomains ||
+                    this._params!.exposedDomains.includes(domain[1])}
+                    @change=${this._handleSwitch}
+                  >
+                  </ha-switch>
+                </ha-formfield>
                 <mwc-button .domain=${domain[1]} @click=${this._handleReset}>
-                  ${this.hass.localize("ui.dialogs.domain_toggler.reset_entities")}
+                  ${this.hass.localize(
+                    "ui.dialogs.domain_toggler.reset_entities"
+                  )}
                 </mwc-button>
               `
           )}
@@ -96,7 +98,8 @@ class DomainTogglerDialog extends LitElement implements HassDialog {
         }
         div {
           display: grid;
-          grid-template-columns: auto auto auto;
+          grid-template-columns: auto auto;
+          grid-row-gap: 8px;
           align-items: center;
         }
       `,
