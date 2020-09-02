@@ -357,7 +357,12 @@
         "pick-media": "Pick Media",
         "no_items": "No items",
         "choose-source": "Choose Source",
+        "choose_media_source": "Please choose a Media Source",
         "media-player-browser": "Media Player Browser",
+        "web-browser": "Web Browser",
+        "media-player": "Media Player",
+        "audio_not_supported": "Your browser does not support the audio element.",
+        "video_not_supported": "Your browser does not support the video element.",
         "content-type": {
           "server": "Server",
           "library": "Library",
