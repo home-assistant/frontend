@@ -159,10 +159,15 @@ export class HassioUpdate extends LitElement {
       return;
     }
     try {
+      // Store the current version in local storage
+      if (item.name === "Home Assistant Core") {
+        localStorage.PendingCoreUpgrade = this.hass.config.version;
+      }
+
       await this.hass.callApi<HassioResponse<void>>("POST", item.apiPath);
     } catch (err) {
       // Only show an error if the status code was not 504 (timeout reported by proxies)
-      if (err.status_code !== 504) {
+      if (err.status_code !== 504 && this.hass.connected) {
         showAlertDialog(this, {
           title: "Update failed",
           text:
