@@ -39,6 +39,9 @@ class HaLogbook extends LitElement {
   @property({ type: Boolean, attribute: "no-icon", reflect: true })
   public noIcon = false;
 
+  @property({ type: Boolean, attribute: "no-name", reflect: true })
+  public noName = false;
+
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
 
@@ -116,22 +119,21 @@ class HaLogbook extends LitElement {
                 `
               : ""}
             <div class="message">
-              ${!item.entity_id
-                ? html` <span class="name">${item.name}</span> `
-                : html`
-                    <a
-                      href="#"
-                      @click=${this._entityClicked}
-                      .entityId=${item.entity_id}
-                      class="name"
-                      >${item.name}</a
-                    >
-                  `}
-              <span
-                >${item.message}${item_username
-                  ? ` (${item_username})`
-                  : ``}</span
-              >
+              ${!this.noName
+                ? !item.entity_id
+                  ? html`<span class="name">${item.name}</span>`
+                  : html`
+                      <a
+                        href="#"
+                        @click=${this._entityClicked}
+                        .entityId=${item.entity_id}
+                        class="name"
+                        >${item.name}</a
+                      >
+                    `
+                : ""}
+              <span class="item-message">${item.message}</span>
+              <span>${item_username ? ` (${item_username})` : ``}</span>
               ${!item.context_event_type
                 ? ""
                 : item.context_event_type === "call_service"
@@ -219,6 +221,10 @@ class HaLogbook extends LitElement {
 
       .message {
         color: var(--primary-text-color);
+      }
+
+      :host([no-name]) .item-message {
+        text-transform: capitalize;
       }
 
       a {

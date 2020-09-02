@@ -9,6 +9,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
+import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import "../../components/ha-circular-progress";
 import "../../components/state-history-charts";
 import { getRecentWithCache } from "../../data/cached-history";
@@ -63,6 +64,7 @@ export class MoreInfoTabHistoryDialog extends LitElement {
               narrow
               no-click
               no-icon
+              no-name
               class=${classMap({ "no-entries": !this._entries.length })}
               .hass=${this.hass}
               .entries=${this._entries}
@@ -129,17 +131,15 @@ export class MoreInfoTabHistoryDialog extends LitElement {
   }
 
   private _fetchPersonNames() {
-    const personEntities = Object.keys(this.hass.states).filter((entityId) =>
-      entityId.startsWith("person")
-    );
-
-    for (const personEntityId of personEntities) {
-      const person = this.hass.states[personEntityId];
-      if (person.attributes.user_id) {
-        this._persons[person.attributes.user_id] =
-          person.attributes.friendly_name;
+    Object.values(this.hass.states).forEach((entity) => {
+      if (
+        entity.attributes.user_id &&
+        computeStateDomain(entity) === "person"
+      ) {
+        this._persons[entity.attributes.user_id] =
+          entity.attributes.friendly_name;
       }
-    }
+    });
   }
 
   static get styles() {
