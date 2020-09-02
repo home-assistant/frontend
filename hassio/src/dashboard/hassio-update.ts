@@ -146,6 +146,7 @@ export class HassioUpdate extends LitElement {
 
   private async _confirmUpdate(ev): Promise<void> {
     const item = ev.target;
+    const storage = window.localStorage || {};
     item.progress = true;
     const confirmed = await showConfirmationDialog(this, {
       title: `Update ${item.name}`,
@@ -161,7 +162,7 @@ export class HassioUpdate extends LitElement {
     try {
       // Store the current version in local storage
       if (item.name === "Home Assistant Core") {
-        localStorage.PendingCoreUpgrade = this.hass.config.version;
+        storage.PendingCoreUpgrade = this.hass.config.version;
       }
 
       await this.hass.callApi<HassioResponse<void>>("POST", item.apiPath);
