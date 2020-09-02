@@ -93,14 +93,6 @@ class DialogMediaPlayerBrowse extends LitElement {
           --dialog-content-padding: 0;
         }
 
-        ha-header-bar {
-          --mdc-theme-on-primary: var(--primary-text-color);
-          --mdc-theme-primary: var(--mdc-theme-surface);
-          flex-shrink: 0;
-          border-bottom: 1px solid
-            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
-        }
-
         @media (min-width: 800px) {
           ha-dialog {
             --mdc-dialog-max-width: 800px;
