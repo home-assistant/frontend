@@ -771,7 +771,7 @@
                             "delete_confirm": "Bạn chắc chắn muốn xoá?",
                             "duplicate": "Nhân đôi",
                             "header": "Hành động",
-                            "introduction": "Hành động là những gì Home Assistant sẽ làm khi tự động hóa được kích hoạt. \n\n [Tìm hiểu thêm về các hành động.] (https://home-assistant.io/docs/automation/action/)",
+                            "introduction": "Hành động là những gì Home Assistant sẽ làm khi tự động hóa được kích hoạt.",
                             "learn_more": "Tìm hiểu thêm về Hành động",
                             "name": "Hành động",
                             "type_select": "Loại hành động",
@@ -813,7 +813,7 @@
                             "delete_confirm": "Bạn chắc chắn muốn xoá?",
                             "duplicate": "Nhân đôi",
                             "header": "Điều kiện",
-                            "introduction": "Điều kiện là một phần tùy chọn của quy tắc tự động hóa và có thể được sử dụng để ngăn chặn một hành động xảy ra khi kích hoạt. Các điều kiện trông rất giống với kích hoạt nhưng rất khác nhau. Trình kích hoạt sẽ xem xét các sự kiện xảy ra trong hệ thống trong khi điều kiện chỉ nhìn vào hệ thống hiện tại. Một bộ kích hoạt có thể quan sát thấy rằng một công tắc đang được bật. Một điều kiện chỉ có thể xem nếu một công tắc hiện đang được bật hoặc tắt. \n\n [Tìm hiểu thêm về điều kiện] (https://home-assistant.io/docs/scripts/conditions/)",
+                            "introduction": "Điều kiện là tùy chọn và sẽ ngăn chặn việc thực hiện các hành động tiếp theo trừ phi tất cả các điều kiện đều được thoả mãn.",
                             "learn_more": "Tìm hiểu thêm về Điều kiện",
                             "name": "Điều kiện",
                             "type_select": "Loại điều kiện",
@@ -858,7 +858,7 @@
                                     "zone": "Vùng"
                                 }
                             },
-                            "unsupported_condition": "Điều kiện không được hỗ trợ: {condition}"
+                            "unsupported_condition": "Điều kiện không được hỗ trợ bởi Giao diện đồ hoạ: {condition}"
                         },
                         "default_name": "Thêm Tự động hóa",
                         "edit_ui": "Chỉnh sửa với UI",
@@ -889,7 +889,7 @@
                             "delete_confirm": "Có chắc bạn muốn xóa cái này?",
                             "duplicate": "Nhân bản",
                             "header": "Bộ khởi động",
-                            "introduction": "Bộ khởi động là bắt đầu quá trình xử lý quy tắc tự động hóa. Có thể chỉ định nhiều Bộ khởi động cho cùng một quy tắc. Khi kích hoạt một bộ khởi động, Home Assistant  sẽ xác nhận các điều kiện, nếu có, và gọi hành động. \n\n [Tìm hiểu thêm về Bộ khởi động] (https://home-assistant.io/docs/automation/trigger/)",
+                            "introduction": "Bộ khởi động là bất cứ điều gì kích hoạt quá trình xử lý một quy tắc tự động hoá. Có thể chỉ định nhiều Bộ khởi động cho cùng một quy tắc. Khi kích hoạt một bộ khởi động, Home Assistant  sẽ xác nhận các điều kiện, nếu có, và gọi hành động.",
                             "learn_more": "Tìm hiểu thêm về Kích hoạt",
                             "name": "Kích hoạt",
                             "type_select": "Loại Bộ khởi động",
@@ -967,7 +967,7 @@
                                     "zone": "Vùng"
                                 }
                             },
-                            "unsupported_platform": "Nền tảng không được hỗ trợ: {platform}"
+                            "unsupported_platform": "Nền tảng không được hỗ trợ bởi Giao diện đồ hoạ: {platform}"
                         },
                         "unsaved_confirm": "Bạn đang có thay đổi chưa được lưu. Bạn có chắc muốn huỷ bỏ?"
                     },
@@ -980,7 +980,7 @@
                         "headers": {
                             "name": "Tên"
                         },
-                        "introduction": "Trình soạn thảo tự động hóa cho phép bạn tạo và chỉnh sửa tự động. Vui lòng đọc [hướng dẫn] (https://home-assistant.io/docs/automation/editor/) để đảm bảo rằng bạn đã cấu hình chính xác Home Assistant.",
+                        "introduction": "Trình soạn thảo tự động hóa cho phép bạn tạo và chỉnh sửa tự động. Vui lòng xem thêm thông tin ở liên kết bên dưới để đảm bảo rằng bạn đã cấu hình chính xác Home Assistant.",
                         "learn_more": "Tìm hiểu thêm về Tự động hóa",
                         "no_automations": "Chúng tôi không thể tìm thấy tự động hóa nào có thể chỉnh sửa",
                         "only_editable": "Chỉ các tự động hóa trong automations.yaml là có thể chỉnh sửa.",
@@ -994,9 +994,25 @@
                             "sync_entities_404_message": "Thất bị khi đồng bộ các thực thể của bạn với Google, yêu cầu Google 'Hey Google, sync my devices' để thực hiện đồng bộ hoá."
                         }
                     },
+                    "alexa": {
+                        "dont_expose_entity": "Không hiển thị thực thể",
+                        "expose_entity": "Hiển thị thực thể",
+                        "exposed": "{selected} được hiển thị",
+                        "follow_domain": "Theo tên miền",
+                        "manage_domains": "Quản lý các tên miền",
+                        "not_exposed": "{selected} không hiển thị"
+                    },
                     "caption": "Home Assistant Cloud",
                     "description_login": "Đã đăng nhập với tên {email}",
-                    "description_not_login": "Chưa đăng nhập"
+                    "description_not_login": "Chưa đăng nhập",
+                    "google": {
+                        "dont_expose_entity": "Không hiển thị thực thể",
+                        "expose_entity": "Hiển thị thực thể",
+                        "exposed": "{selected} được hiển thị",
+                        "follow_domain": "Theo tên miền",
+                        "manage_domains": "Quản lý các tên miền",
+                        "not_exposed": "{selected} không hiển thị"
+                    }
                 },
                 "core": {
                     "caption": "Tổng quát",
@@ -1210,6 +1226,7 @@
                         "no_device": "Các mục không có thiết bị",
                         "no_devices": "Bộ tích hợp này chưa có thiết bị nào",
                         "options": "Tùy Chọn",
+                        "reload": "Tải lại",
                         "rename": "Đổi tên",
                         "restart_confirm": "Khởi động lại Home Assistant để hoàn tất xóa bộ tích hợp này",
                         "system_options": "Tùy chọn hệ thống",
@@ -1358,6 +1375,12 @@
                     "subscribe_to": "Đăng ký vào chủ đề",
                     "title": "MQTT",
                     "topic": "chủ đề"
+                },
+                "ozw": {
+                    "services": {
+                        "add_node": "Thêm Nút",
+                        "remove_node": "Xoá Nút"
+                    }
                 },
                 "person": {
                     "caption": "Người",
@@ -1788,6 +1811,10 @@
                         "button": {
                             "description": "Thẻ Nút cho phép bạn thêm các nút để thực hiện các tác vụ.",
                             "name": "Nút"
+                        },
+                        "calendar": {
+                            "description": "Thẻ Lịch dùng hiển thị lịch bao gồm ngày, tuần và xem dạng danh sách",
+                            "name": "Lịch"
                         },
                         "conditional": {
                             "card": "Thẻ",

@@ -617,6 +617,7 @@
                 "update": "Actualizar"
             },
             "domain_toggler": {
+                "reset_entities": "Restablecer entidades",
                 "title": "Alternar dominios"
             },
             "entity_registry": {
@@ -1200,8 +1201,14 @@
                     },
                     "alexa": {
                         "banner": "La edición de las entidades expuestas a través de esta IU está deshabilitada porque ha configurado filtros de entidad en configuration.yaml.",
+                        "dont_expose_entity": "No exponer entidad",
                         "expose": "Exponer a Alexa",
+                        "expose_entity": "Exponer entidad",
+                        "exposed": "{selected} expuesto",
                         "exposed_entities": "Entidades expuestas",
+                        "follow_domain": "Seguir dominio",
+                        "manage_domains": "Administrar dominios",
+                        "not_exposed": "{selected} no expuesto",
                         "not_exposed_entities": "Entidades no expuestas",
                         "title": "Alexa"
                     },
@@ -1239,8 +1246,14 @@
                     "google": {
                         "banner": "La edición de las entidades expuestas a través de esta IU está deshabilitada porque ha configurado filtros de entidad en configuration.yaml.",
                         "disable_2FA": "Deshabilitar la autenticación de dos factores",
+                        "dont_expose_entity": "No exponer entidad",
                         "expose": "Exponer al Asistente de Google",
+                        "expose_entity": "Exponer entidad",
+                        "exposed": "{selected} expuesto",
                         "exposed_entities": "Entidades expuestas",
+                        "follow_domain": "Seguir dominio",
+                        "manage_domains": "Administrar dominios",
+                        "not_exposed": "{selected} no expuesto",
                         "not_exposed_entities": "Entidades no expuestas",
                         "sync_to_google": "Sincronización de cambios a Google.",
                         "title": "Asistente de Google"

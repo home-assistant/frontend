@@ -26,13 +26,13 @@
     "state_attributes": {
         "climate": {
             "fan_mode": {
-                "auto": "Auto",
+                "auto": "Automatico",
                 "off": "Spento",
                 "on": "Acceso"
             },
             "hvac_action": {
                 "cooling": "Raffreddamento",
-                "drying": "Asciugatura",
+                "drying": "Deumidificazione",
                 "fan": "Ventilatore",
                 "heating": "Riscaldamento",
                 "idle": "Inattivo",
@@ -617,6 +617,7 @@
                 "update": "Aggiornamento"
             },
             "domain_toggler": {
+                "reset_entities": "Reimpostare le Entità",
                 "title": "Attiva/disattiva domini"
             },
             "entity_registry": {
@@ -1200,8 +1201,14 @@
                     },
                     "alexa": {
                         "banner": "La modifica delle entità esposte tramite questa interfaccia utente è disabilitata perché sono stati configurati filtri di entità in configuration.yaml.",
+                        "dont_expose_entity": "Non esporre l'entità",
                         "expose": "Esporre ad Alexa",
+                        "expose_entity": "Esporre l'entità",
+                        "exposed": "{selected} esposto",
                         "exposed_entities": "Entità esposte",
+                        "follow_domain": "Segui il dominio",
+                        "manage_domains": "Gestire i domini",
+                        "not_exposed": "{selected} non esposto",
                         "not_exposed_entities": "Entità non esposte",
                         "title": "Alexa"
                     },
@@ -1239,8 +1246,14 @@
                     "google": {
                         "banner": "La modifica delle entità esposte tramite questa interfaccia utente è disabilitata perché sono stati configurati filtri di entità in configuration.yaml.",
                         "disable_2FA": "Disattivare l'autenticazione a due fattori",
+                        "dont_expose_entity": "Non esporre l'entità",
                         "expose": "Esporre a Google Assistant",
+                        "expose_entity": "Esporre l'entità",
+                        "exposed": "{selected} esposto",
                         "exposed_entities": "Entità esposte",
+                        "follow_domain": "Segui il dominio",
+                        "manage_domains": "Gestire i domini",
+                        "not_exposed": "{selected} non esposto",
                         "not_exposed_entities": "Entità non esposte",
                         "sync_to_google": "Sincronizzazione delle modifiche a Google.",
                         "title": "Google Assistant"
