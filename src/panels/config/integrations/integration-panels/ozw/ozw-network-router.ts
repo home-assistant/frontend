@@ -4,6 +4,7 @@ import {
   RouterOptions,
 } from "../../../../../layouts/hass-router-page";
 import { HomeAssistant } from "../../../../../types";
+import { computeTail } from "./ozw-config-router";
 
 @customElement("ozw-network-router")
 class OZWNetworkRouter extends HassRouterPage {
@@ -38,9 +39,9 @@ class OZWNetworkRouter extends HassRouterPage {
           ),
       },
       node: {
-        tag: "ozw-config-node",
+        tag: "ozw-node-router",
         load: () =>
-          import(/* webpackChunkName: "ozw-config-node" */ "./ozw-config-node"),
+          import(/* webpackChunkName: "ozw-node-router" */ "./ozw-node-router"),
       },
     },
   };
@@ -55,6 +56,11 @@ class OZWNetworkRouter extends HassRouterPage {
     if (this._currentPage === "node") {
       const path = this.routeTail.path.split("/");
       el.nodeId = path[1];
+      if (path[2]) {
+        el.route.path = `/${path[2]}`;
+      } else {
+        el.route.path = "/dashboard";
+      }
     }
   }
 }
