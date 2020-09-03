@@ -24,6 +24,11 @@ import "../../../../../components/ha-paper-dropdown-menu";
 import "../../../../../components/ha-switch";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
+import {
+  getEntry,
+  GetEntryData,
+  updateEntry,
+} from "../../../../../data/dynalite";
 
 const _activeOptions = ["on", "init", "off"];
 
@@ -191,11 +196,8 @@ class HaPanelConfigDynalite extends LitElement {
     if (!configEntryId) {
       return;
     }
-    const response = await this.hass.callWS({
-      type: "dynalite/get_entry",
-      entry_id: configEntryId,
-    });
-    this._entryData = (response as any).data;
+    const response = await getEntry(this.hass, configEntryId);
+    this._entryData = (response as GetEntryData).data;
     this._name = this._entryData.name;
     this._host = this._entryData.host;
     this._port = this._entryData.port;
@@ -256,11 +258,7 @@ class HaPanelConfigDynalite extends LitElement {
     if (!configEntryId) {
       return;
     }
-    await this.hass.callWS({
-      type: "dynalite/update_entry",
-      entry_id: configEntryId,
-      entry_data: JSON.stringify(this._entryData),
-    });
+    await updateEntry(this.hass, configEntryId, this._entryData);
   }
 
   static get styles(): CSSResultArray {
