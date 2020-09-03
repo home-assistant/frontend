@@ -9,6 +9,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { createCloseHeading } from "../../components/ha-dialog";
+import "../../components/ha-hls-player";
 import type { HomeAssistant } from "../../types";
 import { MediaPlayerDialogParams } from "./show-media-player-dialog";
 
@@ -63,15 +64,24 @@ export class HuiDialogMediaPlayer extends LitElement {
                 )}
               </audio>
             `
-          : this._sourceType.startsWith("video") ||
-            this._sourceType.startsWith("application/x-mpegURL")
+          : this._sourceType.startsWith("video")
           ? html`
-              <video controls autoplay>
+              <video controls autoplay playsinline>
                 <source src=${this._sourceUrl} type=${this._sourceType} />
                 ${this.hass.localize(
                   "ui.components.media-browser.video_not_supported"
                 )}
               </video>
+            `
+          : this._sourceType.startsWith("application/x-mpegURL")
+          ? html`
+              <ha-hls-player
+                controls
+                autoplay
+                playsinline
+                .hass=${this.hass}
+                .url=${this._sourceUrl}
+              ></ha-hls-player>
             `
           : this._sourceType.startsWith("image")
           ? html`<img src=${this._sourceUrl} />`
