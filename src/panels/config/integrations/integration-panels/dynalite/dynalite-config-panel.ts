@@ -228,7 +228,7 @@ class HaPanelConfigDynalite extends LitElement {
   }
 
   private _handleActiveSelection(ev: CustomEvent) {
-    this._active = ev.detail.item.active_config;
+    this._active = ev.detail.item.activeConfig;
   }
 
   private _handleAutoDiscoverChange(ev: CustomEvent) {
