@@ -51,6 +51,8 @@ class HaPanelConfigDynalite extends LitElement {
 
   private _activeIndex = 0;
 
+  private _configEntry?: string;
+
   protected render(): TemplateResult {
     return html`
       <ha-app-layout>
@@ -218,8 +220,12 @@ class HaPanelConfigDynalite extends LitElement {
   }
 
   private _getConfigEntry() {
-    const searchParams = new URLSearchParams(window.location.search);
-    return searchParams.get("config_entry");
+    if (!this._configEntry) {
+      const searchParams = new URLSearchParams(window.location.search);
+      const configEntry = searchParams.get("config_entry");
+      if (configEntry) this._configEntry = configEntry;
+    }
+    return this._configEntry;
   }
 
   private _handleChange(ev: PolymerChangedEvent<string>) {
