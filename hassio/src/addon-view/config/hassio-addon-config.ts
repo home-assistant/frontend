@@ -121,7 +121,7 @@ class HassioAddonConfig extends LitElement {
   }
 
   private async _saveTapped(ev: CustomEvent): Promise<void> {
-    const button = ev.target as any;
+    const button = ev.currentTarget as any;
     button.progress = true;
 
     let data: HassioAddonSetOptionParams;
