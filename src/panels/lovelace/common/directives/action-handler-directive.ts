@@ -145,7 +145,6 @@ class ActionHandler extends HTMLElement implements ActionHandler {
 
     element.actionHandler.end = (ev: Event) => {
       // Don't respond on our own generated click
-      console.log(ev);
       if (!ev.isTrusted) {
         return;
       }
