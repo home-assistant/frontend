@@ -601,6 +601,7 @@
                 "update": "Oppdater"
             },
             "domain_toggler": {
+                "reset_entities": "Tilbakestill enheter",
                 "title": "Veksle domener"
             },
             "entity_registry": {
@@ -1169,9 +1170,15 @@
                     },
                     "alexa": {
                         "banner": "Redigere hvilke entiteter som vises via dette grensesnittet er deaktivert fordi du har konfigurert entitetsfilter i configuration.yaml.",
+                        "dont_expose_entity": "Ikke eksponer enheten",
                         "expose": "Eksponer til Alexa",
+                        "expose_entity": "Vis enhet",
+                        "exposed": "{selected} eksponert",
                         "exposed_entities": "Eksponerte entiteter",
-                        "not_exposed_entities": "Ikke-eksponerte entiteter"
+                        "follow_domain": "Følg domenet",
+                        "manage_domains": "Administrer domener",
+                        "not_exposed": "{selected} ikke eksponert",
+                        "not_exposed_entities": "Ikke eksponerte enheter"
                     },
                     "description_features": "Kontroller borte fra hjemmet, integrer med Alexa og Google Assistant.",
                     "description_login": "Logget inn som {email}",
@@ -1206,9 +1213,15 @@
                     "google": {
                         "banner": "Redigere hvilke entiteter som vises via dette grensesnittet er deaktivert fordi du har konfigurert entitetsfilter i configuration.yaml.",
                         "disable_2FA": "Deaktiver totrinnsbekreftelse",
+                        "dont_expose_entity": "Ikke eksponer enheten",
                         "expose": "Eksponer til Google Assistant",
+                        "expose_entity": "Vis enhet",
+                        "exposed": "{selected} eksponert",
                         "exposed_entities": "Eksponerte entiteter",
-                        "not_exposed_entities": "Ikke-eksponerte entiteter",
+                        "follow_domain": "Følg domenet",
+                        "manage_domains": "Administrer domener",
+                        "not_exposed": "{selected} ikke eksponert",
+                        "not_exposed_entities": "Ikke eksponerte enheter",
                         "sync_to_google": "Synkroniserer endringer til Google."
                     },
                     "login": {
@@ -1486,8 +1499,8 @@
                         "no_devices": "Denne integrasjonen har ingen enheter.",
                         "options": "Alternativer",
                         "reload": "Last inn på nytt",
-                        "reload_confirm": "Integreringen ble lastet på nytt",
-                        "reload_restart_confirm": "Start Home Assistant på nytt for å fullføre omlastingen av denne integreringen",
+                        "reload_confirm": "integrasjonen ble lastet på nytt",
+                        "reload_restart_confirm": "Start Home Assistant på nytt for å fullføre omlastingen av denne integrasjonen",
                         "rename": "Gi nytt navn",
                         "restart_confirm": "Start Home Assistant på nytt for å fullføre fjerningen av denne integrasjonen",
                         "settings_button": "Rediger innstillinger for {integration}",
@@ -2403,8 +2416,8 @@
                             "name": "Historikk graf"
                         },
                         "horizontal-stack": {
-                            "description": "Horizontal Stack-kortet lar deg stable sammen flere kort, slik at de alltid sitter ved siden av hverandre i løpet av en kolonne.",
-                            "name": "Horisontal Stack"
+                            "description": "Horisontal Stabel kortet lar deg stable sammen flere kort, slik at de alltid sitter ved siden av hverandre i løpet av en kolonne.",
+                            "name": "Horisontal Stabel"
                         },
                         "humidifier": {
                             "description": "Luftfukter kortet gir kontroll over luftfukter enheten din. Lar deg endre fuktigheten og modusen til enheten.",
@@ -2432,7 +2445,7 @@
                             "description": "Markdown-kortet brukes til å gjengi Markdown."
                         },
                         "media-control": {
-                            "description": "Media Control-kortet brukes til å vise mediespillerenheter på et grensesnitt med brukervennlige kontroller.",
+                            "description": "Mediekontroll kortet brukes til å vise mediespillerenheter på et grensesnitt med brukervennlige kontroller.",
                             "name": "Mediekontroll"
                         },
                         "picture-elements": {
@@ -2452,7 +2465,7 @@
                             "name": "Bilde"
                         },
                         "plant-status": {
-                            "description": "Plant Status-kortet er for alle de flotte botanikerne der ute.",
+                            "description": "Plante Status kortet er for alle de flotte botanikerne der ute.",
                             "name": "Plante status"
                         },
                         "sensor": {
@@ -2461,7 +2474,7 @@
                             "graph_type": "Graf type"
                         },
                         "shopping-list": {
-                            "description": "På Shopping List-kortet kan du legge til, redigere, sjekke av og fjerne gjenstander fra handlelisten din.",
+                            "description": "På handlelistekortet kan du legge til, redigere, sjekke av og fjerne gjenstander fra handlelisten din.",
                             "integration_not_loaded": "Dette kortet krever at `shopping_list` integrasjonen er satt opp.",
                             "name": "Handleliste"
                         },
@@ -2470,7 +2483,7 @@
                             "name": "Termostat"
                         },
                         "vertical-stack": {
-                            "description": "Vertical Stack-kortet lar deg gruppere flere kort slik at de alltid sitter i samme kolonne.",
+                            "description": "Vertical Stabel kortet lar deg gruppere flere kort slik at de alltid sitter i samme kolonne.",
                             "name": "Vertikal stabel"
                         },
                         "weather-forecast": {

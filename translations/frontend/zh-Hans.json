@@ -617,6 +617,7 @@
                 "update": "更新"
             },
             "domain_toggler": {
+                "reset_entities": "重置实体",
                 "title": "切换域"
             },
             "entity_registry": {
@@ -1200,9 +1201,15 @@
                     },
                     "alexa": {
                         "banner": "由于已在configuration.yaml中配置了实体过滤器，因此无法编辑通过此UI公开哪些实体。",
+                        "dont_expose_entity": "使实体不可发现",
                         "expose": "向Alexa发送你的位置",
+                        "expose_entity": "使实体可发现",
+                        "exposed": "{selected} 个可发现",
                         "exposed_entities": "公开的实体",
-                        "not_exposed_entities": "未公开的实体",
+                        "follow_domain": "关注域",
+                        "manage_domains": "管理域",
+                        "not_exposed": "{selected} 个不可发现",
+                        "not_exposed_entities": "不可发现的实体",
                         "title": "Alexa"
                     },
                     "caption": "Home Assistant Cloud",
@@ -1239,9 +1246,15 @@
                     "google": {
                         "banner": "编辑器已禁用，因为配置存储于 configuration.yaml。",
                         "disable_2FA": "禁用双因素身份验证",
+                        "dont_expose_entity": "使实体不可发现",
                         "expose": "向HomeAsssiant发送你的位置",
+                        "expose_entity": "使实体可发现",
+                        "exposed": "{selected} 个可发现",
                         "exposed_entities": "公开的实体",
-                        "not_exposed_entities": "未公开的实体",
+                        "follow_domain": "关注域",
+                        "manage_domains": "管理域",
+                        "not_exposed": "{selected} 个不可发现",
+                        "not_exposed_entities": "不可发现的实体",
                         "sync_to_google": "正在将更改同步到Google。",
                         "title": "谷歌助手"
                     },
