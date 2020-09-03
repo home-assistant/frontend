@@ -219,10 +219,7 @@ class HaPanelConfigDynalite extends LitElement {
 
   private _getConfigEntry() {
     const searchParams = new URLSearchParams(window.location.search);
-    if (!searchParams.has("config_entry")) {
-      return false;
-    }
-    return searchParams.get("config_entry") as string;
+    return searchParams.get("config_entry");
   }
 
   private _handleChange(ev: PolymerChangedEvent<string>) {
