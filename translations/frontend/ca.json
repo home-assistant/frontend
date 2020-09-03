@@ -617,6 +617,7 @@
                 "update": "Actualitza"
             },
             "domain_toggler": {
+                "reset_entities": "Restableix entitats",
                 "title": "Commutació de dominis"
             },
             "entity_registry": {
@@ -1200,9 +1201,15 @@
                     },
                     "alexa": {
                         "banner": "L'edició de quines entitats estan exposades a través de la UI està desactivada perquè hi ha filtres d'entitats configurats a configuration.yaml.",
+                        "dont_expose_entity": "No exposis l'entitat",
                         "expose": "Exposa a Alexa",
+                        "expose_entity": "Exposa l'entitat",
+                        "exposed": "{selected} exposat",
                         "exposed_entities": "Entitats exposades",
-                        "not_exposed_entities": "Entitats No exposades",
+                        "follow_domain": "Segueix domini",
+                        "manage_domains": "Gestiona dominis",
+                        "not_exposed": "{selected} no exposat",
+                        "not_exposed_entities": "Entitats no exposades",
                         "title": "Alexa"
                     },
                     "caption": "Home Assistant Cloud",
@@ -1239,9 +1246,15 @@
                     "google": {
                         "banner": "L'edició de quines entitats estan exposades a través de la UI està desactivada perquè hi ha filtres d'entitats configurats a configuration.yaml.",
                         "disable_2FA": "Desactiva l'autenticació en dos passos",
+                        "dont_expose_entity": "No exposis l'entitat",
                         "expose": "Exposa a Google Assistant",
+                        "expose_entity": "Exposa l'entitat",
+                        "exposed": "{selected} exposat",
                         "exposed_entities": "Entitats exposades",
-                        "not_exposed_entities": "Entitats No exposades",
+                        "follow_domain": "Segueix domini",
+                        "manage_domains": "Gestiona dominis",
+                        "not_exposed": "{selected} no exposat",
+                        "not_exposed_entities": "Entitats no exposades",
                         "sync_to_google": "Sincronitzant els canvis amb Google.",
                         "title": "Google Assistant"
                     },

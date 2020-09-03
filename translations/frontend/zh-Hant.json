@@ -1,7 +1,7 @@
 {
     "config_entry": {
         "disabled_by": {
-            "config_entry": "設定物件",
+            "config_entry": "設定實體",
             "integration": "整合",
             "user": "使用者"
         }
@@ -77,7 +77,7 @@
             "triggered": "觸發"
         },
         "default": {
-            "entity_not_found": "找不到物件",
+            "entity_not_found": "找不到實體",
             "error": "錯誤",
             "unavailable": "不可用",
             "unknown": "未知"
@@ -553,8 +553,8 @@
             "entity": {
                 "entity-picker": {
                     "clear": "清除",
-                    "entity": "物件",
-                    "show_entities": "顯示物件"
+                    "entity": "實體",
+                    "show_entities": "顯示實體"
                 }
             },
             "history_charts": {
@@ -585,10 +585,10 @@
                 "area": "分區",
                 "automation": "以下自動化部分",
                 "device": "設備",
-                "entity": "相關物件",
+                "entity": "相關實體",
                 "group": "以下群組部分",
                 "integration": "整合",
-                "no_related_found": "找不到相關物件。",
+                "no_related_found": "找不到相關實體。",
                 "scene": "以下場景部分",
                 "script": "以下腳本部分"
             },
@@ -611,32 +611,33 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "關閉後，{integration} 新發現的物件將不會自動新增至 Home Assistant。",
-                "enable_new_entities_label": "啟用新增物件",
+                "enable_new_entities_description": "關閉後，{integration} 新發現的實體將不會自動新增至 Home Assistant。",
+                "enable_new_entities_label": "啟用新增實體",
                 "title": "{integration} 系統選項",
                 "update": "更新"
             },
             "domain_toggler": {
+                "reset_entities": "重置實體",
                 "title": "切換區域"
             },
             "entity_registry": {
                 "control": "控制",
                 "dismiss": "關閉",
                 "editor": {
-                    "confirm_delete": "確定要刪除此物件？",
+                    "confirm_delete": "確定要刪除此實體？",
                     "delete": "刪除",
                     "enabled_cause": "由 {cause} 關閉。",
-                    "enabled_description": "關閉的物件將不會新增至 Home Assistant。",
-                    "enabled_label": "啟用物件",
-                    "entity_id": "物件 ID",
+                    "enabled_description": "關閉的實體將不會新增至 Home Assistant。",
+                    "enabled_label": "啟用實體",
+                    "entity_id": "實體 ID",
                     "icon": "圖示覆寫",
                     "icon_error": "圖示必須按照格式「prefix:iconname」設定，例如「mdi:home」",
                     "name": "名稱覆寫",
                     "note": "注意：可能無法適用所有整合。",
-                    "unavailable": "該物件目前不可用。",
+                    "unavailable": "該實體目前不可用。",
                     "update": "更新"
                 },
-                "no_unique_id": "此物件不包含唯一 ID、因此無法由 UI 進行管理設定。",
+                "no_unique_id": "此實體不包含唯一 ID、因此無法由 UI 進行管理設定。",
                 "related": "相關",
                 "settings": "設定"
             },
@@ -682,29 +683,29 @@
                 },
                 "platform_not_loaded": "整合 {platform} 未載入。請於設定檔進行添加、新增 'default_config:' 或 ''{platform}:''。",
                 "required_error_msg": "必填欄位",
-                "yaml_not_editable": "此物件的設定無法藉由 UI 編輯、僅有透過 UI 設定的物件可於 UI 進行設定。"
+                "yaml_not_editable": "此實體的設定無法藉由 UI 編輯、僅有透過 UI 設定的實體可於 UI 進行設定。"
             },
             "image_cropper": {
                 "crop": "裁切"
             },
             "more_info_control": {
                 "dismiss": "忽略對話",
-                "edit": "編輯物件",
+                "edit": "編輯實體",
                 "person": {
                     "create_zone": "使用目前位置新增區域"
                 },
                 "restored": {
-                    "confirm_remove_text": "確定要移除此物件？",
-                    "confirm_remove_title": "移除物件？",
-                    "not_provided": "此物件目前不可用，屬於獨立可移除、變更或失常的整合或設備。",
-                    "remove_action": "移除物件",
-                    "remove_intro": "假如物件不再使用，可以藉由移除進行清除。"
+                    "confirm_remove_text": "確定要移除此實體？",
+                    "confirm_remove_title": "移除實體？",
+                    "not_provided": "此實體目前不可用，屬於獨立可移除、變更或失常的整合或設備。",
+                    "remove_action": "移除實體",
+                    "remove_intro": "假如實體不再使用，可以藉由移除進行清除。"
                 },
                 "script": {
                     "last_action": "上次觸發",
                     "last_triggered": "上次觸發"
                 },
-                "settings": "物件設定",
+                "settings": "實體設定",
                 "sun": {
                     "elevation": "海拔",
                     "rising": "日升",
@@ -728,8 +729,8 @@
             },
             "mqtt_device_debug_info": {
                 "deserialize": "嘗試將 MQTT 訊息解析為 JSON",
-                "entities": "物件",
-                "no_entities": "無物件",
+                "entities": "實體",
+                "no_entities": "無實體",
                 "no_triggers": "無觸發",
                 "payload_display": "負載顯示",
                 "recent_messages": "{n} 個最近接收的訊息",
@@ -773,7 +774,7 @@
                 "services": {
                     "reconfigure": "重新設定 ZHA Zibgee 設備（健康設備）。假如遇到設備問題，請使用此選項。假如有問題的設備為使用電池的設備，請先確定設備已喚醒並處於接受命令狀態。",
                     "remove": "從 Zigbee 網路移除設備。",
-                    "updateDeviceName": "於物件 ID 中自訂此設備名稱。",
+                    "updateDeviceName": "於實體 ID 中自訂此設備名稱。",
                     "zigbee_information": "檢視設備 Zigbee 資訊。"
                 },
                 "unknown": "未知",
@@ -984,7 +985,7 @@
                                     "label": "時間"
                                 },
                                 "zone": {
-                                    "entity": "區域物件",
+                                    "entity": "區域實體",
                                     "label": "區域",
                                     "zone": "區域"
                                 }
@@ -1104,7 +1105,7 @@
                                 },
                                 "zone": {
                                     "enter": "進入區域",
-                                    "entity": "區域物件",
+                                    "entity": "區域實體",
                                     "event": "事件：",
                                     "label": "區域",
                                     "leave": "離開區域",
@@ -1141,11 +1142,11 @@
                             "enable_ha_skill": "開啟 Home Assistant skill for Alexa",
                             "enable_state_reporting": "開啟狀態回報",
                             "info": "藉由 Home Assistant Cloud 雲服務  Alexa 整合，將能透過 Alexa 支援設備以控制所有 Home Assistant 設備。",
-                            "info_state_reporting": "假如開啟狀態回報，Home Assistant 將會持續傳送所有連結物件的狀態改變至 Amazon。以確保於 Alexa app 中設備永遠保持最新狀態、並藉以創建例行自動化。",
-                            "manage_entities": "管理物件",
+                            "info_state_reporting": "假如開啟狀態回報，Home Assistant 將會持續傳送所有連結實體的狀態改變至 Amazon。以確保於 Alexa app 中設備永遠保持最新狀態、並藉以創建例行自動化。",
+                            "manage_entities": "管理實體",
                             "state_reporting_error": "無法 {enable_disable} 回報狀態。",
-                            "sync_entities": "同步物件",
-                            "sync_entities_error": "同步物件失敗：",
+                            "sync_entities": "同步實體",
+                            "sync_entities_error": "同步實體失敗：",
                             "title": "Alexa"
                         },
                         "connected": "已連接",
@@ -1160,11 +1161,11 @@
                             "enter_pin_hint": "請輸入安全碼以使用加密設備",
                             "enter_pin_info": "請輸入加密設備 Pin 碼、加密設備為如門、車庫與門鎖。當透過 Google Assistant 與此類設備進行互動時，將需要語音說出/輸入密碼。",
                             "info": "藉由 Home Assistant Cloud 雲服務  Google Assistant 整合，將能透過 Google Assistant 支援設備以控制所有 Home Assistant 設備。",
-                            "info_state_reporting": "假如開啟狀態回報，Home Assistant 將會持續傳送所有連結物件的狀態改變至 Google。以確保於 Google app 中設備永遠保持最新狀態、並藉以創建例行自動化。",
-                            "manage_entities": "管理物件",
+                            "info_state_reporting": "假如開啟狀態回報，Home Assistant 將會持續傳送所有連結實體的狀態改變至 Google。以確保於 Google app 中設備永遠保持最新狀態、並藉以創建例行自動化。",
+                            "manage_entities": "管理實體",
                             "security_devices": "加密設備",
-                            "sync_entities": "與 Google 同步物件",
-                            "sync_entities_404_message": "與 Google 同步物件失敗，使用「Hey Google, sync my devices」以要求 Google 同步物件。",
+                            "sync_entities": "與 Google 同步實體",
+                            "sync_entities_404_message": "與 Google 同步實體失敗，使用「Hey Google, sync my devices」以要求 Google 同步實體。",
                             "title": "Google Assistant"
                         },
                         "integrations": "整合",
@@ -1199,10 +1200,16 @@
                         }
                     },
                     "alexa": {
-                        "banner": "由於您已經透過 configuration.yaml 設定物件過濾器、 因此編輯連結物件的介面將無法使用。",
+                        "banner": "由於您已經透過 configuration.yaml 設定實體過濾器、 因此編輯連結實體的介面將無法使用。",
+                        "dont_expose_entity": "不公開實體",
                         "expose": "與 Alexa 連結",
-                        "exposed_entities": "已連結物件",
-                        "not_exposed_entities": "未連結物件",
+                        "expose_entity": "公開實體",
+                        "exposed": "{selected} 已公開",
+                        "exposed_entities": "已公開實體",
+                        "follow_domain": "跟隨區域",
+                        "manage_domains": "管理區域",
+                        "not_exposed": "{selected} 未公開",
+                        "not_exposed_entities": "未公開實體",
                         "title": "Alexa"
                     },
                     "caption": "Home Assistant Cloud",
@@ -1237,11 +1244,17 @@
                         "title": "忘記密碼？"
                     },
                     "google": {
-                        "banner": "由於您已經透過 configuration.yaml 設定物件過濾器、 因此編輯連結物件的介面將無法使用。",
+                        "banner": "由於您已經透過 configuration.yaml 設定實體過濾器、 因此編輯連結實體的介面將無法使用。",
                         "disable_2FA": "關閉雙重驗證",
+                        "dont_expose_entity": "不公開實體",
                         "expose": "與 Google Assistant 連結",
-                        "exposed_entities": "已連結物件",
-                        "not_exposed_entities": "未連結物件",
+                        "expose_entity": "公開實體",
+                        "exposed": "{selected} 已公開",
+                        "exposed_entities": "已公開實體",
+                        "follow_domain": "跟隨區域",
+                        "manage_domains": "管理區域",
+                        "not_exposed": "{selected} 未公開",
+                        "not_exposed_entities": "未公開實體",
                         "sync_to_google": "正與 Google 同步變更。",
                         "title": "Google Assistant"
                     },
@@ -1325,15 +1338,15 @@
                     "attributes_not_set": "以下屬性尚未設定，如果需要請進行設定。",
                     "attributes_outside": "以下屬性為 customize.yaml 外自訂化。",
                     "attributes_override": "假如願意，可以進行覆寫。",
-                    "attributes_set": "以下物件屬性為可程式化設定。",
+                    "attributes_set": "以下實體屬性為可程式化設定。",
                     "caption": "自訂化",
                     "description": "自訂化元件內容與中文化",
                     "different_include": "可能透過區域、全局或不同的包含。",
                     "pick_attribute": "選擇欲覆寫屬性",
                     "picker": {
-                        "entity": "物件",
+                        "entity": "實體",
                         "header": "自訂化",
-                        "introduction": "調整每個物件屬性。新增/編輯自訂化將可以立即生效，移除自訂化則必須等到物件更新時、方能生效。"
+                        "introduction": "調整每個實體屬性。新增/編輯自訂化將可以立即生效，移除自訂化則必須等到實體更新時、方能生效。"
                     },
                     "warning": {
                         "include_link": "包含 customize.yaml",
@@ -1345,7 +1358,7 @@
                     "add_prompt": "此設備尚未添加任何 {name}。可點選上方的 + 按鈕進行新增。",
                     "automation": {
                         "actions": {
-                            "caption": "當某物件被觸發時..."
+                            "caption": "當某實體被觸發時..."
                         },
                         "automations": "自動化",
                         "conditions": {
@@ -1358,11 +1371,11 @@
                             "caption": "執行動作、當..."
                         }
                     },
-                    "cant_edit": "只能編輯於 UI 中新增的物件。",
+                    "cant_edit": "只能編輯於 UI 中新增的實體。",
                     "caption": "設備",
                     "confirm_delete": "確定要刪除此設備？",
-                    "confirm_rename_entity_ids": "是否也要變更物件的物件 ID？",
-                    "confirm_rename_entity_ids_warning": "將不會變更任何物件正在使用的設定（例如自動化、腳本、場景與 Lovelace），必須自行更新。",
+                    "confirm_rename_entity_ids": "是否也要變更實體的實體 ID？",
+                    "confirm_rename_entity_ids_warning": "將不會變更任何實體正在使用的設定（例如自動化、腳本、場景與 Lovelace），必須自行更新。",
                     "data_table": {
                         "area": "分區",
                         "battery": "電量",
@@ -1379,10 +1392,10 @@
                     "device_not_found": "未找到設備。",
                     "entities": {
                         "add_entities_lovelace": "新增至 Lovelace UI",
-                        "disabled_entities": "{count} {count, plural,\n  one {個已關閉物件}\n  other {個已關閉物件}\n}",
-                        "entities": "物件列表面板",
-                        "hide_disabled": "隱藏已關閉物件",
-                        "none": "此設備沒有物件。"
+                        "disabled_entities": "{count} {count, plural,\n  one {個已關閉實體}\n  other {個已關閉實體}\n}",
+                        "entities": "實體列表面板",
+                        "hide_disabled": "隱藏已關閉實體",
+                        "none": "此設備沒有實體。"
                     },
                     "name": "名稱",
                     "no_devices": "沒有設備",
@@ -1403,42 +1416,42 @@
                     "update": "更新"
                 },
                 "entities": {
-                    "caption": "物件",
-                    "description": "管理已知物件",
+                    "caption": "實體",
+                    "description": "管理已知實體",
                     "picker": {
                         "disable_selected": {
                             "button": "關閉已選擇",
-                            "confirm_text": "關閉的物件將不會新增至 Home Assistant。",
-                            "confirm_title": "是否要關閉 {number} 個物件？"
+                            "confirm_text": "關閉的實體將不會新增至 Home Assistant。",
+                            "confirm_title": "是否要關閉 {number} 個實體？"
                         },
                         "enable_selected": {
                             "button": "開啟已選擇",
                             "confirm_text": "假如目前為關閉狀態，將再次於 Home Assistant 中開啟。",
-                            "confirm_title": "是否要開啟 {number} 個物件？"
+                            "confirm_title": "是否要開啟 {number} 個實體？"
                         },
                         "filter": {
                             "filter": "過濾器",
-                            "show_disabled": "顯示關閉物件",
-                            "show_readonly": "顯示唯讀物件",
-                            "show_unavailable": "顯示無法使用物件"
+                            "show_disabled": "顯示關閉實體",
+                            "show_readonly": "顯示唯讀實體",
+                            "show_unavailable": "顯示無法使用實體"
                         },
-                        "header": "物件",
+                        "header": "實體",
                         "headers": {
-                            "entity_id": "物件 ID",
+                            "entity_id": "實體 ID",
                             "integration": "整合",
                             "name": "名稱",
                             "status": "狀態"
                         },
-                        "introduction": "Home Assistant 保持每個物件 ID 的獨特辨識性，此些物件將會指定一組專用的 物件 ID。",
-                        "introduction2": "使用物件 ID 以覆寫名稱、變更物件 ID 或由 Home Assistant 移除物件。",
+                        "introduction": "Home Assistant 保持每個實體 ID 的獨特辨識性，此些實體將會指定一組專用的 實體 ID。",
+                        "introduction2": "使用實體 ID 以覆寫名稱、變更實體 ID 或由 Home Assistant 移除實體。",
                         "remove_selected": {
                             "button": "移除已選擇",
-                            "confirm_partly_text": "已選擇的 {selected} 個物件中、僅有 {removable} 個可移除。僅有當整合不再提供物件時、物件方能進行移除。有時候，於移除整合之後、需重啟 Home Assistant 後、方能進行移除的動作。確定要移除可移除之物件？",
-                            "confirm_partly_title": "僅 {number} 個已選擇之物件可移除。",
-                            "confirm_text": "假如包含此些物件，應該從 Lovelace 設定與自動化中進行移除。",
-                            "confirm_title": "是否要移除 {number} 個物件？"
+                            "confirm_partly_text": "已選擇的 {selected} 個實體中、僅有 {removable} 個可移除。僅有當整合不再提供實體時、實體方能進行移除。有時候，於移除整合之後、需重啟 Home Assistant 後、方能進行移除的動作。確定要移除可移除之實體？",
+                            "confirm_partly_title": "僅 {number} 個已選擇之實體可移除。",
+                            "confirm_text": "假如包含此些實體，應該從 Lovelace 設定與自動化中進行移除。",
+                            "confirm_title": "是否要移除 {number} 個實體？"
                         },
-                        "search": "搜尋物件",
+                        "search": "搜尋實體",
                         "selected": "已選擇 {number} 個",
                         "status": {
                             "disabled": "已關閉",
@@ -1466,7 +1479,7 @@
                         "add_helper": "新增助手",
                         "headers": {
                             "editable": "可編輯",
-                            "entity_id": "物件 ID",
+                            "entity_id": "實體 ID",
                             "name": "名稱",
                             "type": "類別"
                         },
@@ -1502,8 +1515,8 @@
                 },
                 "integration_panel_move": {
                     "link_integration_page": "整合頁面",
-                    "missing_zha": "找不到 ZHA 設定頁面嗎？目前已經移至 {integrations_page}  中的 ZHA 物件。",
-                    "missing_zwave": "找不到 Z-Wave 設定頁面嗎？目前已經移至 {integrations_page}  中的 Z-Wave 物件。"
+                    "missing_zha": "找不到 ZHA 設定頁面嗎？目前已經移至 {integrations_page}  中的 ZHA 實體。",
+                    "missing_zwave": "找不到 Z-Wave 設定頁面嗎？目前已經移至 {integrations_page}  中的 Z-Wave 實體。"
                 },
                 "integrations": {
                     "add_integration": "新增整合",
@@ -1516,13 +1529,13 @@
                         "device_unavailable": "設備不可用",
                         "devices": "{count} {count, plural,\n  one {個設備}\n  other {個設備}\n}",
                         "documentation": "相關文件",
-                        "entities": "{count} {count, plural,\n  one {個物件}\n  other {個物件}\n}",
-                        "entity_unavailable": "物件不可用",
+                        "entities": "{count} {count, plural,\n  one {個實體}\n  other {個實體}\n}",
+                        "entity_unavailable": "實體不可用",
                         "firmware": "韌體：{version}",
                         "hub": "連線：",
                         "manuf": "廠牌：{manufacturer}",
                         "no_area": "無分區",
-                        "no_device": "物件沒有設備",
+                        "no_device": "實體沒有設備",
                         "no_devices": "此整合沒有任何設備。",
                         "options": "選項",
                         "reload": "重新載入",
@@ -1533,7 +1546,7 @@
                         "settings_button": "編輯 {integration} 設定",
                         "system_options": "系統選項",
                         "system_options_button": "{integration} 系統選項",
-                        "unnamed_entry": "未命名物件"
+                        "unnamed_entry": "未命名實體"
                     },
                     "config_flow": {
                         "aborted": "已中止",
@@ -1576,8 +1589,8 @@
                     "none_found_detail": "調整搜尋條件。",
                     "note_about_integrations": "目前並非所有整合皆可以透過 UI 進行設定。",
                     "note_about_website_reference": "更多資訊請參閱",
-                    "rename_dialog": "編輯設定物件名稱",
-                    "rename_input_label": "物件名稱",
+                    "rename_dialog": "編輯設定實體名稱",
+                    "rename_input_label": "實體名稱",
                     "search": "搜尋整合"
                 },
                 "introduction": "此面板為 Home Assistant 和元件相關配置區，目前尚未支援透過 UI 進行所有設定，我們正在努力改進中。",
@@ -1809,12 +1822,12 @@
                             "introduction": "新增所要包含於場景中的設備，設定所有設備成此場景中所希望的狀態。"
                         },
                         "entities": {
-                            "add": "新增物件",
-                            "delete": "刪除物件",
-                            "device_entities": "假如新增一項屬於設備的物件，設備也將被新增。",
-                            "header": "物件",
-                            "introduction": "不屬於設備的物件可以於此設置。",
-                            "without_device": "無設備物件"
+                            "add": "新增實體",
+                            "delete": "刪除實體",
+                            "device_entities": "假如新增一項屬於設備的實體，設備也將被新增。",
+                            "header": "實體",
+                            "introduction": "不屬於設備的實體可以於此設置。",
+                            "without_device": "無設備實體"
                         },
                         "icon": "圖示",
                         "introduction": "使用場景來讓你的智能家居更有魅力吧。",
@@ -1851,7 +1864,7 @@
                         "delete_script": "刪除腳本",
                         "header": "腳本：{name}",
                         "icon": "圖示",
-                        "id": "物件 ID",
+                        "id": "實體 ID",
                         "id_already_exists": "該 ID 已存在",
                         "id_already_exists_save_error": "由於該 ID 非獨一 ID，因此無法儲存此腳本。請選擇其他 ID 或者保留空白以自動產生。",
                         "introduction": "使用腳本以執行一連串的動作。",
@@ -1893,15 +1906,15 @@
                     "section": {
                         "reloading": {
                             "automation": "重新載入自動化",
-                            "command_line": "重新載入命令列物件",
+                            "command_line": "重新載入命令列實體",
                             "core": "重新載入座標與自訂化",
-                            "filesize": "重新載入檔案大小物件",
-                            "filter": "重新載入過濾器物件",
-                            "generic": "重新載入通用 IP 攝影機物件",
-                            "generic_thermostat": "重新載入通用溫控器物件",
+                            "filesize": "重新載入檔案大小實體",
+                            "filter": "重新載入過濾器實體",
+                            "generic": "重新載入通用 IP 攝影機實體",
+                            "generic_thermostat": "重新載入通用溫控器實體",
                             "group": "重新載入群組",
                             "heading": "YAML 設定新載入中",
-                            "history_stats": "重新載入歷史狀態物件",
+                            "history_stats": "重新載入歷史狀態實體",
                             "homekit": "重新載入 Homekit",
                             "input_boolean": "重新載入輸入 boolean",
                             "input_datetime": "重新載入輸入日期時間",
@@ -1909,16 +1922,16 @@
                             "input_select": "重新載入輸入選擇",
                             "input_text": "重新載入輸入文字",
                             "introduction": "Home Assistant 中部分設定無須重啟即可重新載入生效。點選重新載入按鈕，即可解除目前 YAML 設定，並重新載入最新設定。",
-                            "min_max": "重新載入最低/最高物件",
+                            "min_max": "重新載入最低/最高實體",
                             "person": "重新載入人員",
-                            "ping": "重新載入 Pung 二進位傳感器物件",
-                            "rest": "重新載入剩餘物件",
+                            "ping": "重新載入 Pung 二進位傳感器實體",
+                            "rest": "重新載入剩餘實體",
                             "scene": "重新載入場景",
                             "script": "重新載入腳本",
-                            "statistics": "重新載入統計資訊物件",
-                            "template": "重新載入範例物件",
-                            "trend": "重新載入趨勢物件",
-                            "universal": "重新載入通用媒體播放器物件",
+                            "statistics": "重新載入統計資訊實體",
+                            "template": "重新載入範例實體",
+                            "trend": "重新載入趨勢實體",
+                            "universal": "重新載入通用媒體播放器實體",
                             "zone": "重新載入區域"
                         },
                         "server_management": {
@@ -2028,7 +2041,7 @@
                         "header": "叢集屬性",
                         "help_attribute_dropdown": "選擇屬性以檢視或設定該數值。",
                         "help_get_zigbee_attribute": "獲取所選屬性數值。",
-                        "help_set_zigbee_attribute": "設定特定物件之特定叢集屬性數值。",
+                        "help_set_zigbee_attribute": "設定特定實體之特定叢集屬性數值。",
                         "introduction": "檢視或編輯叢集屬性。",
                         "set_zigbee_attribute": "設定 Zigbee 屬性"
                     },
@@ -2145,7 +2158,7 @@
                     "caption": "Z-Wave",
                     "common": {
                         "index": "指數",
-                        "instance": "物件",
+                        "instance": "設備",
                         "unknown": "未知",
                         "value": "數值",
                         "wakeup_interval": "喚醒間隔"
@@ -2176,9 +2189,9 @@
                     },
                     "node_management": {
                         "add_to_group": "新增至群組",
-                        "entities": "此節點之物件",
-                        "entity_info": "物件資訊",
-                        "exclude_entity": "從 Home Assistant 排除此物件",
+                        "entities": "此節點之實體",
+                        "entity_info": "實體資訊",
+                        "exclude_entity": "從 Home Assistant 排除此實體",
                         "group": "群組",
                         "header": "Z-Wave 節點管理",
                         "introduction": "執行 Z-Wave 命令將影響單一節點。選擇節點以檢視該節點可使用之命令。",
@@ -2210,7 +2223,7 @@
                         "heal_node": "修復節點",
                         "node_info": "節點資訊",
                         "print_node": "列印節點",
-                        "refresh_entity": "更新物件",
+                        "refresh_entity": "更新實體",
                         "refresh_node": "更新節點",
                         "remove_failed_node": "移除失效節點",
                         "remove_node": "移除節點",
@@ -2269,17 +2282,17 @@
                         "title": "服務"
                     },
                     "states": {
-                        "alert_entity_field": "物件為必填欄位",
+                        "alert_entity_field": "實體為必填欄位",
                         "attributes": "屬性",
-                        "current_entities": "目前物件",
+                        "current_entities": "目前實體",
                         "description1": "設定 Home Assistant 裝置代表。",
                         "description2": "將不會與實際設備進行通訊。",
-                        "entity": "物件",
+                        "entity": "實體",
                         "filter_attributes": "屬性過濾器",
-                        "filter_entities": "物件過濾器",
+                        "filter_entities": "實體過濾器",
                         "filter_states": "狀態過濾器",
                         "more_info": "更多資訊",
-                        "no_entities": "無物件",
+                        "no_entities": "無實體",
                         "set_state": "設定狀態",
                         "state": "狀態",
                         "state_attributes": "狀態屬性（YAML，選項）",
@@ -2307,7 +2320,7 @@
                 "showing_entries": "選擇要查看的時間"
             },
             "logbook": {
-                "entries_not_found": "找不到物件日誌。",
+                "entries_not_found": "找不到實體日誌。",
                 "period": "選擇週期",
                 "ranges": {
                     "last_week": "上週",
@@ -2381,7 +2394,7 @@
                             "condition_explanation": "當以下所有條件都滿足時將會顯示面板。",
                             "conditions": "觸發面板",
                             "current_state": "目前狀態",
-                            "description": "觸發面板可基於物件狀態進而顯示其他面板。",
+                            "description": "觸發面板可基於實體狀態進而顯示其他面板。",
                             "name": "條件式面板",
                             "state_equal": "狀態等於",
                             "state_not_equal": "狀態不等於"
@@ -2391,18 +2404,18 @@
                             "required": "必填"
                         },
                         "entities": {
-                            "description": "物件列表面板為最常用的面板。將物件分組為列表使用。",
-                            "name": "物件",
+                            "description": "實體列表面板為最常用的面板。將實體分組為列表使用。",
+                            "name": "實體",
                             "show_header_toggle": "於頁首顯示開關？",
-                            "toggle": "切換物件。"
+                            "toggle": "切換實體。"
                         },
                         "entity-filter": {
-                            "description": "物件過濾式面板可供定義於特定狀態下、所要進行追蹤的物件列表。",
-                            "name": "物件過濾式面板"
+                            "description": "實體過濾式面板可供定義於特定狀態下、所要進行追蹤的實體列表。",
+                            "name": "實體過濾式面板"
                         },
                         "entity": {
-                            "description": "物件面板、可快速獲得物件狀態概況。",
-                            "name": "物件"
+                            "description": "實體面板、可快速獲得實體狀態概況。",
+                            "name": "實體"
                         },
                         "gauge": {
                             "description": "量表式面板可供視覺化檢視傳感器資料。",
@@ -2417,11 +2430,11 @@
                         "generic": {
                             "aspect_ratio": "長寬比",
                             "attribute": "屬性",
-                            "camera_image": "攝影機物件",
+                            "camera_image": "攝影機實體",
                             "camera_view": "攝影機視角",
                             "double_tap_action": "雙點擊觸發",
-                            "entities": "物件",
-                            "entity": "物件",
+                            "entities": "實體",
+                            "entity": "實體",
                             "hold_action": "保持觸發",
                             "hours_to_show": "顯示小時",
                             "icon": "圖示",
@@ -2453,7 +2466,7 @@
                             "name": "簡略式面板"
                         },
                         "history-graph": {
-                            "description": "歷史圖表式面板可供顯示每個列表物件圖表。",
+                            "description": "歷史圖表式面板可供顯示每個列表實體圖表。",
                             "name": "歷史圖表式面板"
                         },
                         "horizontal-stack": {
@@ -2461,7 +2474,7 @@
                             "name": "水平排列面板"
                         },
                         "humidifier": {
-                            "description": "加濕器面板可供控制加濕物件、可允許變更濕度與模式。",
+                            "description": "加濕器面板可供控制加濕實體、可允許變更濕度與模式。",
                             "name": "加濕器"
                         },
                         "iframe": {
@@ -2475,7 +2488,7 @@
                         "map": {
                             "dark_mode": "深色模式？",
                             "default_zoom": "預設大小",
-                            "description": "地圖面板可供顯示地圖物件。",
+                            "description": "地圖面板可供顯示地圖實體。",
                             "geo_location_sources": "地理位置來源",
                             "hours_to_show": "顯示小時",
                             "name": "地圖面板",
@@ -2487,7 +2500,7 @@
                             "name": "Markdown 面板"
                         },
                         "media-control": {
-                            "description": "媒體控制面板用以易於使用的介面、顯示媒體播放器物件。",
+                            "description": "媒體控制面板用以易於使用的介面、顯示媒體播放器實體。",
                             "name": "媒體控制面板"
                         },
                         "picture-elements": {
@@ -2495,11 +2508,11 @@
                             "name": "圖片要素面板"
                         },
                         "picture-entity": {
-                            "description": "圖片物件面板可以圖像方式顯示物件。除了使用 URL 圖片之外、也能夠顯示攝影機物件的圖像。",
-                            "name": "圖片物件面板"
+                            "description": "圖片實體面板可以圖像方式顯示實體。除了使用 URL 圖片之外、也能夠顯示攝影機實體的圖像。",
+                            "name": "圖片實體面板"
                         },
                         "picture-glance": {
-                            "description": "圖片簡略式面板顯示圖像與以圖示顯示的物件狀態。於右側的物件可切換動作、其他則為顯示更詳細資訊。",
+                            "description": "圖片簡略式面板顯示圖像與以圖示顯示的實體狀態。於右側的實體可切換動作、其他則為顯示更詳細資訊。",
                             "name": "圖片簡略式面板"
                         },
                         "picture": {
@@ -2522,7 +2535,7 @@
                             "name": "購物清單面板"
                         },
                         "thermostat": {
-                            "description": "溫控器面板可供控制溫控物件、可允許變更溫度與模式。",
+                            "description": "溫控器面板可供控制溫控實體、可允許變更溫度與模式。",
                             "name": "溫控器面板"
                         },
                         "vertical-stack": {
@@ -2611,7 +2624,7 @@
                         "close": "關閉",
                         "empty_config": "以空白主面板開始",
                         "header": "自行編輯 Lovelace UI",
-                        "para": "主面板目前正由 Home Assistant 維護、於新物件或 Lovelace UI 元件可使用時自動進行更新。假如選擇自行編輯，系統將不再為您自動更新主面板，亦可隨時於設定中新增主面板。",
+                        "para": "主面板目前正由 Home Assistant 維護、於新實體或 Lovelace UI 元件可使用時自動進行更新。假如選擇自行編輯，系統將不再為您自動更新主面板，亦可隨時於設定中新增主面板。",
                         "para_sure": "確定要自行編輯使用者介面？",
                         "save": "自行編輯",
                         "yaml_config": "目前此主面板設定：",
@@ -2649,15 +2662,15 @@
                     "refresh_header": "是否要更新？"
                 },
                 "unused_entities": {
-                    "available_entities": "此些為尚未於 Lovelace 介面中、可供使用的物件。",
+                    "available_entities": "此些為尚未於 Lovelace 介面中、可供使用的實體。",
                     "domain": "區域",
-                    "entity": "物件",
-                    "entity_id": "物件 ID",
+                    "entity": "實體",
+                    "entity_id": "實體 ID",
                     "last_changed": "上次變更",
-                    "no_data": "找不到未使用物件",
-                    "search": "搜尋物件",
-                    "select_to_add": "選擇所要新增至面板的物件、並點選新增至面板按鈕。",
-                    "title": "未使用物件"
+                    "no_data": "找不到未使用實體",
+                    "search": "搜尋實體",
+                    "select_to_add": "選擇所要新增至面板的實體、並點選新增至面板按鈕。",
+                    "title": "未使用實體"
                 },
                 "views": {
                     "confirm_delete": "刪除視圖？",
@@ -2666,9 +2679,9 @@
                     "confirm_delete_text": "確定要刪除 \"{name}\"視圖？"
                 },
                 "warning": {
-                    "attribute_not_found": "無法使用屬性 {attribute} 之物件：{entity}",
-                    "entity_non_numeric": "物件為非數字：{entity}",
-                    "entity_not_found": "物件不可用：{entity}",
+                    "attribute_not_found": "無法使用屬性 {attribute} 之實體：{entity}",
+                    "entity_non_numeric": "實體為非數字：{entity}",
+                    "entity_not_found": "實體不可用：{entity}",
                     "entity_unavailable": "{entity} 目前不可用",
                     "starting": "Home Assistant 正在啟動，可能無法顯示所有功能。"
                 }
@@ -2894,7 +2907,7 @@
                     "create_failed": "創建存取密鑰失敗。",
                     "created_at": "於{date}創建",
                     "delete_failed": "刪除存取密鑰失敗。",
-                    "description": "創建長效存取密鑰，可供運用腳本與 Home Assistant 物件進行互動。每個密鑰於創建後，有效期為十年。目前已啟用之永久有效密鑰如下。",
+                    "description": "創建長效存取密鑰，可供運用腳本與 Home Assistant 實體進行互動。每個密鑰於創建後，有效期為十年。目前已啟用之永久有效密鑰如下。",
                     "empty_state": "尚未創建永久有效存取密鑰。",
                     "header": "永久有效存取密鑰",
                     "last_used": "上次使用：於{date}、位置{location}",
