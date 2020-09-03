@@ -247,7 +247,9 @@ class HaPanelConfigDynalite extends LitElement {
     this._entryData.autodiscover = this._auto_discover;
     this._entryData.polltimer = this._poll_timer;
     const configEntryId = this._getConfigEntry();
-    if (!configEntryId) return;
+    if (!configEntryId) {
+      return;
+    }
     await this.hass.callWS({
       type: "dynalite/update_entry",
       entry_id: configEntryId,
