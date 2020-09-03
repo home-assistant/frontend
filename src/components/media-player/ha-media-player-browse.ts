@@ -27,6 +27,7 @@ import {
   browseMediaPlayer,
   BROWSER_SOURCE,
   MediaPickedEvent,
+  MediaPlayerBrowseAction,
 } from "../../data/media-player";
 import type { MediaPlayerItem } from "../../data/media-player";
 import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
@@ -55,7 +56,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   @property() public mediaContentType?: string;
 
-  @property() public action: "pick" | "play" = "play";
+  @property() public action: MediaPlayerBrowseAction = "play";
 
   @property({ type: Boolean }) public dialog = false;
 

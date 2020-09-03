@@ -11,27 +11,29 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { fireEvent } from "../../common/dom/fire_event";
 import { createCloseHeading } from "../../components/ha-dialog";
 import { BROWSER_SOURCE } from "../../data/media-player";
 import type { HomeAssistant } from "../../types";
-import type { SelectMediaSourceDialogParams } from "./show-select-media-source-dialog";
+import type { SelectMediaPlayereDialogParams } from "./show-select-media-source-dialog";
 
-@customElement("hui-dialog-select-media-source")
-export class HuiDialogSelectMediaSource extends LitElement {
+@customElement("hui-dialog-select-media-player")
+export class HuiDialogSelectMediaPlayer extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false })
-  private _params?: SelectMediaSourceDialogParams;
+  private _params?: SelectMediaPlayereDialogParams;
 
   @internalProperty() private _mediaSources: HassEntity[] = [];
 
-  public async showDialog(
-    params: SelectMediaSourceDialogParams
-  ): Promise<void> {
+  public showDialog(params: SelectMediaPlayereDialogParams): void {
     this._params = params;
     this._mediaSources = [...this._params.mediaSources];
+  }
 
-    await this.updateComplete;
+  public closeDialog() {
+    this._params = undefined;
+    fireEvent(this, "close-dialog");
   }
 
   protected render(): TemplateResult {
@@ -47,9 +49,9 @@ export class HuiDialogSelectMediaSource extends LitElement {
         hideActions
         .heading=${createCloseHeading(
           this.hass,
-          this.hass.localize(`ui.components.media-browser.choose-source`)
+          this.hass.localize(`ui.components.media-browser.choose_player`)
         )}
-        @closed=${this._closeDialog}
+        @closed=${this.closeDialog}
       >
         <paper-listbox
           attr-for-selected="itemName"
@@ -71,14 +73,10 @@ export class HuiDialogSelectMediaSource extends LitElement {
     `;
   }
 
-  private _closeDialog() {
-    this._params = undefined;
-  }
-
   private _selectSource(ev: CustomEvent): void {
     const entityId = ev.detail.item.itemName;
     this._params!.sourceSelectedCallback(entityId);
-    this._closeDialog();
+    this.closeDialog();
   }
 
   static get styles(): CSSResult {
@@ -95,6 +93,6 @@ export class HuiDialogSelectMediaSource extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-dialog-select-media-source": HuiDialogSelectMediaSource;
+    "hui-dialog-select-media-player": HuiDialogSelectMediaPlayer;
   }
 }

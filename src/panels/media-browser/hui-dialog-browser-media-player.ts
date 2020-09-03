@@ -8,17 +8,18 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { fireEvent } from "../../common/dom/fire_event";
 import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-hls-player";
 import type { HomeAssistant } from "../../types";
-import { MediaPlayerDialogParams } from "./show-media-player-dialog";
+import { MediaPlayerBrowserDialogParams } from "./show-media-player-dialog";
 
-@customElement("hui-dialog-media-player")
-export class HuiDialogMediaPlayer extends LitElement {
+@customElement("hui-dialog-browser-media-player")
+export class HuiDialogBrowserMediaPlayer extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false })
-  private _params?: MediaPlayerDialogParams;
+  private _params?: MediaPlayerBrowserDialogParams;
 
   @internalProperty() _sourceUrl?: string;
 
@@ -26,19 +27,24 @@ export class HuiDialogMediaPlayer extends LitElement {
 
   @internalProperty() _title?: string;
 
-  public async showDialog(params: MediaPlayerDialogParams): Promise<void> {
+  public showDialog(params: MediaPlayerBrowserDialogParams): void {
     this._params = params;
     this._sourceUrl = this._params.sourceUrl;
     this._sourceType = this._params.sourceType;
     this._title = this._params.title;
+  }
 
-    await this.updateComplete;
+  public closeDialog() {
+    this._params = undefined;
+    fireEvent(this, "close-dialog");
   }
 
   protected render(): TemplateResult {
     if (!this._params || !this._sourceType || !this._sourceUrl) {
       return html``;
     }
+
+    const mediaType = this._sourceType.split("/", 1)[0];
 
     return html`
       <ha-dialog
@@ -49,13 +55,11 @@ export class HuiDialogMediaPlayer extends LitElement {
         .heading=${createCloseHeading(
           this.hass,
           this._title ||
-            this.hass.localize(
-              "ui.components.media-browser.audio_not_supported"
-            )
+            this.hass.localize("ui.components.media-browser.media_player")
         )}
-        @closed=${this._closeDialog}
+        @closed=${this.closeDialog}
       >
-        ${this._sourceType.startsWith("audio")
+        ${mediaType === "audio"
           ? html`
               <audio controls autoplay>
                 <source src=${this._sourceUrl} type=${this._sourceType} />
@@ -64,7 +68,7 @@ export class HuiDialogMediaPlayer extends LitElement {
                 )}
               </audio>
             `
-          : this._sourceType.startsWith("video")
+          : mediaType === "video"
           ? html`
               <video controls autoplay playsinline>
                 <source src=${this._sourceUrl} type=${this._sourceType} />
@@ -73,7 +77,7 @@ export class HuiDialogMediaPlayer extends LitElement {
                 )}
               </video>
             `
-          : this._sourceType.startsWith("application/x-mpegURL")
+          : this._sourceType === "application/x-mpegURL"
           ? html`
               <ha-hls-player
                 controls
@@ -83,15 +87,13 @@ export class HuiDialogMediaPlayer extends LitElement {
                 .url=${this._sourceUrl}
               ></ha-hls-player>
             `
-          : this._sourceType.startsWith("image")
+          : mediaType === "image"
           ? html`<img src=${this._sourceUrl} />`
-          : ""}
+          : html`${this.hass.localize(
+              "ui.components.media-browser.media_not_supported"
+            )}`}
       </ha-dialog>
     `;
-  }
-
-  private _closeDialog() {
-    this._params = undefined;
   }
 
   static get styles(): CSSResult {
@@ -119,6 +121,6 @@ export class HuiDialogMediaPlayer extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-dialog-media-player": HuiDialogMediaPlayer;
+    "hui-dialog-browser-media-player": HuiDialogBrowserMediaPlayer;
   }
 }

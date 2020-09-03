@@ -1,6 +1,7 @@
-import { mdiLoginVariant } from "@mdi/js";
+import { mdiPlayNetwork } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
+import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultArray,
@@ -13,7 +14,7 @@ import {
 import memoize from "memoize-one";
 import { LocalStorage } from "../../common/decorators/local-storage";
 import { HASSDomEvent } from "../../common/dom/fire_event";
-import { computeDomain } from "../../common/entity/compute_domain";
+import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import "../../components/ha-menu-button";
 import "../../components/media-player/ha-media-player-browse";
@@ -37,7 +38,7 @@ class PanelMediaBrowser extends LitElement {
 
   // @ts-ignore
   @LocalStorage("mediaBrowseEntityId")
-  private _entityId?: string;
+  private _entityId = BROWSER_SOURCE;
 
   protected render(): TemplateResult {
     const stateObj = this._entityId
@@ -45,7 +46,7 @@ class PanelMediaBrowser extends LitElement {
       : undefined;
 
     const title =
-      this._entityId === "browser"
+      this._entityId === BROWSER_SOURCE
         ? `${this.hass.localize("ui.components.media-browser.web-browser")} - `
         : stateObj?.attributes.friendly_name
         ? `${stateObj?.attributes.friendly_name} - `
@@ -66,11 +67,11 @@ class PanelMediaBrowser extends LitElement {
             </div>
             <mwc-icon-button
               .label=${this.hass.localize(
-                "ui.components.media-browser.choose-source"
+                "ui.components.media-browser.choose-player"
               )}
               @click=${this._showMediaSouceDialog}
             >
-              <ha-svg-icon .path=${mdiLoginVariant}></ha-svg-icon>
+              <ha-svg-icon .path=${mdiPlayNetwork}></ha-svg-icon>
             </mwc-icon-button>
           </app-toolbar>
         </app-header>
@@ -87,12 +88,12 @@ class PanelMediaBrowser extends LitElement {
                 <div class="no-source">
                   <h2>
                     ${this.hass.localize(
-                      "ui.components.media-browser.choose_media_source"
+                      "ui.components.media-browser.choose_media_player"
                     )}
                   </h2>
                   <mwc-button raised @click=${this._showMediaSouceDialog}
                     >${this.hass.localize(
-                      "ui.components.media-browser.choose-source"
+                      "ui.components.media-browser.choose-player"
                     )}</mwc-button
                   >
                 </div>
@@ -142,17 +143,18 @@ class PanelMediaBrowser extends LitElement {
       return [];
     }
 
-    let entityIds = Object.keys(hass.states);
+    const entities: HassEntity[] = [];
 
-    entityIds = entityIds.filter((eid) =>
-      ["media_player"].includes(computeDomain(eid))
-    );
+    Object.values(hass.states).forEach((entity) => {
+      if (
+        computeStateDomain(entity) === "media_player" &&
+        supportsFeature(entity, SUPPORT_BROWSE_MEDIA)
+      ) {
+        entities.push(entity);
+      }
+    });
 
-    entityIds = entityIds.filter((eid) =>
-      supportsFeature(hass.states[eid], SUPPORT_BROWSE_MEDIA)
-    );
-
-    return entityIds.map((key) => hass.states[key]);
+    return entities;
   });
 
   static get styles(): CSSResultArray {

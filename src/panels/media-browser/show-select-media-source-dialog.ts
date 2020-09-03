@@ -1,21 +1,21 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { fireEvent } from "../../common/dom/fire_event";
 
-export interface SelectMediaSourceDialogParams {
+export interface SelectMediaPlayereDialogParams {
   mediaSources: HassEntity[];
   sourceSelectedCallback: (entityId: string) => void;
 }
 
 export const showSelectMediaSourceDialog = (
   element: HTMLElement,
-  selectMediaSourceDialogParams: SelectMediaSourceDialogParams
+  selectMediaPlayereDialogParams: SelectMediaPlayereDialogParams
 ): void => {
   fireEvent(element, "show-dialog", {
-    dialogTag: "hui-dialog-select-media-source",
+    dialogTag: "hui-dialog-select-media-player",
     dialogImport: () =>
       import(
-        /* webpackChunkName: "hui-dialog-select-media-source" */ "./hui-dialog-select-media-source"
+        /* webpackChunkName: "hui-dialog-select-media-player" */ "./hui-dialog-select-media-player"
       ),
-    dialogParams: selectMediaSourceDialogParams,
+    dialogParams: selectMediaPlayereDialogParams,
   });
 };

@@ -1,6 +1,6 @@
 import { fireEvent } from "../../common/dom/fire_event";
 
-export interface MediaPlayerDialogParams {
+export interface MediaPlayerBrowserDialogParams {
   sourceUrl: string;
   sourceType: string;
   title?: string;
@@ -8,14 +8,14 @@ export interface MediaPlayerDialogParams {
 
 export const showMediaPlayerDialog = (
   element: HTMLElement,
-  mediaPlayerDialogParams: MediaPlayerDialogParams
+  mediaPlayerBrowserDialogParams: MediaPlayerBrowserDialogParams
 ): void => {
   fireEvent(element, "show-dialog", {
-    dialogTag: "hui-dialog-media-player",
+    dialogTag: "hui-dialog-browser-media-player",
     dialogImport: () =>
       import(
-        /* webpackChunkName: "hui-dialog-media-player" */ "./hui-dialog-media-player"
+        /* webpackChunkName: "hui-dialog-media-player" */ "./hui-dialog-browser-media-player"
       ),
-    dialogParams: mediaPlayerDialogParams,
+    dialogParams: mediaPlayerBrowserDialogParams,
   });
 };

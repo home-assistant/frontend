@@ -86,6 +86,7 @@ export class HaDialog extends MwcDialog {
         }
         [dir="rtl"].header_title {
           margin-left: 40px;
+          margin-right: 0px;
         }
       `,
     ];
