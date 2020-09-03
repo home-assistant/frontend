@@ -1,3 +1,4 @@
+import { PropertyDeclaration, UpdatingElement } from "lit-element";
 import type { ClassElement } from "../../types";
 
 class Storage {
@@ -32,9 +33,13 @@ class Storage {
 
 const storage = new Storage();
 
-export const LocalStorage = (key?: string) => {
-  return (element: ClassElement, propName: string) => {
-    const storageKey = key || propName;
+export const LocalStorage = (
+  key?: string,
+  property?: boolean,
+  propertyOptions?: PropertyDeclaration
+): any => {
+  return (element: ClassElement) => {
+    const storageKey = key || (element.key as string);
     const initVal = element.initializer ? element.initializer() : undefined;
 
     storage.addFromStorage(storageKey);
@@ -45,23 +50,38 @@ export const LocalStorage = (key?: string) => {
         : initVal;
     };
 
-    const setValue = (val: any) => {
-      storage.setValue(storageKey, val);
+    const setValue = (el: UpdatingElement, value: any) => {
+      let oldValue: unknown | undefined;
+      if (property) {
+        oldValue = getValue();
+      }
+      storage.setValue(storageKey, value);
+      if (property) {
+        el.requestUpdate(element.key, oldValue);
+      }
     };
 
     return {
       kind: "method",
-      placement: "own",
+      placement: "prototype",
       key: element.key,
       descriptor: {
-        set(value) {
-          setValue(value);
+        set(this: UpdatingElement, value: unknown) {
+          setValue(this, value);
         },
         get() {
           return getValue();
         },
         enumerable: true,
         configurable: true,
+      },
+      finisher(cls: typeof UpdatingElement) {
+        if (property) {
+          cls.createProperty(element.key, {
+            noAccessor: true,
+            ...propertyOptions,
+          });
+        }
       },
     };
   };
