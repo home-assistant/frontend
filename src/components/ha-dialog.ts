@@ -1,11 +1,11 @@
 import "@material/mwc-dialog";
 import type { Dialog } from "@material/mwc-dialog";
 import { style } from "@material/mwc-dialog/mwc-dialog-css";
-import "./ha-icon-button";
-import { css, CSSResult, customElement, html } from "lit-element";
-import type { Constructor, HomeAssistant } from "../types";
 import { mdiClose } from "@mdi/js";
+import { css, CSSResult, customElement, html } from "lit-element";
 import { computeRTLDirection } from "../common/util/compute_rtl";
+import type { Constructor, HomeAssistant } from "../types";
+import "./ha-icon-button";
 
 const MwcDialog = customElements.get("mwc-dialog") as Constructor<Dialog>;
 
@@ -23,6 +23,10 @@ export const createCloseHeading = (hass: HomeAssistant, title: string) => html`
 
 @customElement("ha-dialog")
 export class HaDialog extends MwcDialog {
+  public scrollToPos(x: number, y: number) {
+    this.contentElement.scrollTo(x, y);
+  }
+
   protected renderHeading() {
     return html`<slot name="heading">
       ${super.renderHeading()}
@@ -61,6 +65,10 @@ export class HaDialog extends MwcDialog {
         .mdc-dialog .mdc-dialog__surface {
           position: var(--dialog-surface-position, relative);
           min-height: var(--mdc-dialog-min-height, auto);
+        }
+        :host([flexContent]) .mdc-dialog .mdc-dialog__content {
+          display: flex;
+          flex-direction: column;
         }
         .header_button {
           position: absolute;

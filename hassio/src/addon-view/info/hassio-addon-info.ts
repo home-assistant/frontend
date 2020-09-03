@@ -38,15 +38,22 @@ import "../../../../src/components/ha-svg-icon";
 import "../../../../src/components/ha-switch";
 import {
   fetchHassioAddonChangelog,
+  fetchHassioAddonInfo,
   HassioAddonDetails,
   HassioAddonSetOptionParams,
   HassioAddonSetSecurityParams,
   installHassioAddon,
   setHassioAddonOption,
   setHassioAddonSecurity,
+  startHassioAddon,
   uninstallHassioAddon,
+  validateHassioAddonOption,
 } from "../../../../src/data/hassio/addon";
-import { showConfirmationDialog } from "../../../../src/dialogs/generic/show-dialog-box";
+import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import "../../components/hassio-card-content";
@@ -125,8 +132,6 @@ class HassioAddonInfo extends LitElement {
   @property({ attribute: false }) public addon!: HassioAddonDetails;
 
   @internalProperty() private _error?: string;
-
-  @property({ type: Boolean }) private _installing = false;
 
   protected render(): TemplateResult {
     return html`
@@ -400,7 +405,7 @@ class HassioAddonInfo extends LitElement {
                     ></ha-switch>
                   </ha-settings-row>
 
-                  ${this.hass.userData?.showAdvanced
+                  ${this.addon.startup !== "once"
                     ? html`
                         <ha-settings-row ?three-line=${this.narrow}>
                           <span slot="heading">
@@ -498,12 +503,9 @@ class HassioAddonInfo extends LitElement {
                       </ha-call-api-button>
                     `
                   : html`
-                      <ha-call-api-button
-                        .hass=${this.hass}
-                        .path="hassio/addons/${this.addon.slug}/start"
-                      >
+                      <ha-progress-button @click=${this._startClicked}>
                         Start
-                      </ha-call-api-button>
+                      </ha-progress-button>
                     `}
                 ${this._computeShowWebUI
                   ? html`
@@ -527,12 +529,12 @@ class HassioAddonInfo extends LitElement {
                       </mwc-button>
                     `
                   : ""}
-                <mwc-button
+                <ha-progress-button
                   class=" right warning"
                   @click=${this._uninstallClicked}
                 >
                   Uninstall
-                </mwc-button>
+                </ha-progress-button>
                 ${this.addon.build
                   ? html`
                       <ha-call-api-button
@@ -554,8 +556,7 @@ class HassioAddonInfo extends LitElement {
                     `
                   : ""}
                 <ha-progress-button
-                  .disabled=${!this.addon.available || this._installing}
-                  .progress=${this._installing}
+                  .disabled=${!this.addon.available}
                   @click=${this._installClicked}
                 >
                   Install
@@ -662,7 +663,9 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this._error = `Failed to set addon option, ${err.body?.message || err}`;
+      this._error = `Failed to set addon option, ${extractApiErrorMessage(
+        err
+      )}`;
     }
   }
 
@@ -680,7 +683,9 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this._error = `Failed to set addon option, ${err.body?.message || err}`;
+      this._error = `Failed to set addon option, ${extractApiErrorMessage(
+        err
+      )}`;
     }
   }
 
@@ -698,7 +703,9 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this._error = `Failed to set addon option, ${err.body?.message || err}`;
+      this._error = `Failed to set addon option, ${extractApiErrorMessage(
+        err
+      )}`;
     }
   }
 
@@ -716,9 +723,9 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this._error = `Failed to set addon security option, ${
-        err.body?.message || err
-      }`;
+      this._error = `Failed to set addon security option, ${extractApiErrorMessage(
+        err
+      )}`;
     }
   }
 
@@ -736,12 +743,13 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this._error = `Failed to set addon option, ${err.body?.message || err}`;
+      this._error = `Failed to set addon option, ${extractApiErrorMessage(
+        err
+      )}`;
     }
   }
 
   private async _openChangelog(): Promise<void> {
-    this._error = undefined;
     try {
       const content = await fetchHassioAddonChangelog(
         this.hass,
@@ -752,15 +760,17 @@ class HassioAddonInfo extends LitElement {
         content,
       });
     } catch (err) {
-      this._error = `Failed to get addon changelog, ${
-        err.body?.message || err
-      }`;
+      showAlertDialog(this, {
+        title: "Failed to get addon changelog",
+        text: extractApiErrorMessage(err),
+      });
     }
   }
 
-  private async _installClicked(): Promise<void> {
-    this._error = undefined;
-    this._installing = true;
+  private async _installClicked(ev: CustomEvent): Promise<void> {
+    const button = ev.target as any;
+    button.progress = true;
+
     try {
       await installHassioAddon(this.hass, this.addon.slug);
       const eventdata = {
@@ -770,12 +780,62 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this._error = `Failed to install addon, ${err.body?.message || err}`;
+      showAlertDialog(this, {
+        title: "Failed to install addon",
+        text: extractApiErrorMessage(err),
+      });
     }
-    this._installing = false;
+    button.progress = false;
   }
 
-  private async _uninstallClicked(): Promise<void> {
+  private async _startClicked(ev: CustomEvent): Promise<void> {
+    const button = ev.currentTarget as any;
+    button.progress = true;
+    try {
+      const validate = await validateHassioAddonOption(
+        this.hass,
+        this.addon.slug
+      );
+      if (!validate.data.valid) {
+        await showConfirmationDialog(this, {
+          title: "Failed to start addon - configruation validation faled!",
+          text: validate.data.message.split(" Got ")[0],
+          confirm: () => this._openConfiguration(),
+          confirmText: "Go to configruation",
+          dismissText: "Cancel",
+        });
+        button.progress = false;
+        return;
+      }
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Failed to validate addon configuration",
+        text: extractApiErrorMessage(err),
+      });
+      button.progress = false;
+      return;
+    }
+
+    try {
+      await startHassioAddon(this.hass, this.addon.slug);
+      this.addon = await fetchHassioAddonInfo(this.hass, this.addon.slug);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Failed to start addon",
+        text: extractApiErrorMessage(err),
+      });
+    }
+    button.progress = false;
+  }
+
+  private _openConfiguration(): void {
+    navigate(this, `/hassio/addon/${this.addon.slug}/config`);
+  }
+
+  private async _uninstallClicked(ev: CustomEvent): Promise<void> {
+    const button = ev.target as any;
+    button.progress = true;
+
     const confirmed = await showConfirmationDialog(this, {
       title: this.addon.name,
       text: "Are you sure you want to uninstall this add-on?",
@@ -784,6 +844,7 @@ class HassioAddonInfo extends LitElement {
     });
 
     if (!confirmed) {
+      button.progress = false;
       return;
     }
 
@@ -797,8 +858,12 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this._error = `Failed to uninstall addon, ${err.body?.message || err}`;
+      showAlertDialog(this, {
+        title: "Failed to uninstall addon",
+        text: extractApiErrorMessage(err),
+      });
     }
+    button.progress = false;
   }
 
   static get styles(): CSSResult[] {

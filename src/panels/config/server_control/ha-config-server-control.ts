@@ -1,55 +1,27 @@
+import "@material/mwc-button";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "../../../layouts/hass-tabs-subpage";
-import { configSections } from "../ha-panel-config";
+import "@polymer/paper-input/paper-input";
 import {
-  LitElement,
-  property,
-  internalProperty,
-  customElement,
-  html,
   css,
   CSSResult,
+  customElement,
+  html,
+  internalProperty,
+  LitElement,
+  property,
   TemplateResult,
 } from "lit-element";
-import { HomeAssistant, Route } from "../../../types";
-
-import "@material/mwc-button";
-import "@polymer/paper-input/paper-input";
 import { isServiceLoaded } from "../../../common/config/is_service_loaded";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-card";
-import "../ha-config-section";
-import { haStyle } from "../../../resources/styles";
 import { checkCoreConfig } from "../../../data/core";
-
-const reloadableDomains = [
-  "group",
-  "automation",
-  "script",
-  "scene",
-  "person",
-  "zone",
-  "input_boolean",
-  "input_text",
-  "input_number",
-  "input_datetime",
-  "input_select",
-  "template",
-  "universal",
-  "rest",
-  "command_line",
-  "filter",
-  "statistics",
-  "generic",
-  "generic_thermostat",
-  "homekit",
-  "min_max",
-  "history_stats",
-  "trend",
-  "ping",
-  "filesize",
-];
+import { domainToName } from "../../../data/integration";
+import "../../../layouts/hass-tabs-subpage";
+import { haStyle } from "../../../resources/styles";
+import { HomeAssistant, Route } from "../../../types";
+import "../ha-config-section";
+import { configSections } from "../ha-panel-config";
 
 @customElement("ha-config-server-control")
 export class HaConfigServerControl extends LitElement {
@@ -66,9 +38,25 @@ export class HaConfigServerControl extends LitElement {
 
   @internalProperty() private _validating = false;
 
+  @internalProperty() private _reloadableDomains: string[] = [];
+
   private _validateLog = "";
 
   private _isValid: boolean | null = null;
+
+  protected updated(changedProperties) {
+    const oldHass = changedProperties.get("hass");
+    if (
+      changedProperties.has("hass") &&
+      (!oldHass || oldHass.config.components !== this.hass.config.components)
+    ) {
+      this._reloadableDomains = this.hass.config.components.filter(
+        (component) =>
+          !component.includes(".") &&
+          isServiceLoaded(this.hass, component, "reload")
+      );
+    }
+  }
 
   protected render(): TemplateResult {
     return html`
@@ -225,7 +213,7 @@ export class HaConfigServerControl extends LitElement {
                         "ui.panel.config.server_control.section.reloading.core"
                       )}
                     </ha-call-service-button>
-                    ${reloadableDomains.map((domain) =>
+                    ${this._reloadableDomains.map((domain) =>
                       isServiceLoaded(this.hass, domain, "reload")
                         ? html`
                             <ha-call-service-button
@@ -234,9 +222,14 @@ export class HaConfigServerControl extends LitElement {
                               .hass=${this.hass}
                               .domain=${domain}
                             >
-                              ${this.hass.localize(
-                                `ui.panel.config.server_control.section.reloading.${domain}`
-                              )}
+                             ${this.hass.localize(
+                              `ui.panel.config.server_control.section.reloading.${domain}`
+                            ) ||
+                            this.hass.localize(
+                              "ui.panel.config.server_control.section.reloading.reload",
+                              "domain",
+                              domainToName(this.hass.localize, domain)
+                            )}
                             </ha-call-service-button>
                           `
                         : ""
