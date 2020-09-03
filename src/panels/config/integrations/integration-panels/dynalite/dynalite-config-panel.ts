@@ -45,7 +45,7 @@ class HaPanelConfigDynalite extends LitElement {
 
   @internalProperty() private _poll_timer?: string;
 
-  private _entryData;
+  private _entryData?: any;
 
   private _activeOptions = ["on", "init", "off"];
 
