@@ -29,6 +29,7 @@ import "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
+import { ozwNetworkTabs } from "./ozw-network-router";
 
 @customElement("ozw-network-dashboard")
 class OZWNetworkDashboard extends LitElement {
@@ -62,69 +63,78 @@ class OZWNetworkDashboard extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-config-section .narrow=${this.narrow} .isWide=${this.isWide}>
-        <div slot="header">
-          ${this.hass.localize("ui.panel.config.ozw.network.header")}
-        </div>
+      <hass-tabs-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .route=${this.route}
+        .tabs=${ozwNetworkTabs(this.ozwInstance)}
+      >
+        <ha-config-section .narrow=${this.narrow} .isWide=${this.isWide}>
+          <div slot="header">
+            ${this.hass.localize("ui.panel.config.ozw.network.header")}
+          </div>
 
-        <div slot="introduction">
-          ${this.hass.localize("ui.panel.config.ozw.network.introduction")}
-        </div>
-        ${this._network
-          ? html`
-              <ha-card class="content network-status">
-                <div class="card-content">
-                  <div class="details">
-                    <ha-svg-icon
-                      .path=${this._icon}
-                      class="network-status-icon ${classMap({
-                        [this._status]: true,
-                      })}"
-                      slot="item-icon"
-                    ></ha-svg-icon>
-                    ${this.hass.localize("ui.panel.config.ozw.common.network")}
-                    ${this.hass.localize(
-                      `ui.panel.config.ozw.network_status.${this._status}`
-                    )}
-                    <br />
-                    <small>
+          <div slot="introduction">
+            ${this.hass.localize("ui.panel.config.ozw.network.introduction")}
+          </div>
+          ${this._network
+            ? html`
+                <ha-card class="content network-status">
+                  <div class="card-content">
+                    <div class="details">
+                      <ha-svg-icon
+                        .path=${this._icon}
+                        class="network-status-icon ${classMap({
+                          [this._status]: true,
+                        })}"
+                        slot="item-icon"
+                      ></ha-svg-icon>
                       ${this.hass.localize(
-                        `ui.panel.config.ozw.network_status.details.${this._network.Status.toLowerCase()}`
+                        "ui.panel.config.ozw.common.network"
                       )}
-                    </small>
+                      ${this.hass.localize(
+                        `ui.panel.config.ozw.network_status.${this._status}`
+                      )}
+                      <br />
+                      <small>
+                        ${this.hass.localize(
+                          `ui.panel.config.ozw.network_status.details.${this._network.Status.toLowerCase()}`
+                        )}
+                      </small>
+                    </div>
+                    <div class="secondary">
+                      ${this.hass.localize(
+                        "ui.panel.config.ozw.common.ozw_instance"
+                      )}
+                      ${this._network.ozw_instance}
+                      ${this._statistics
+                        ? html`
+                            &bull;
+                            ${this.hass.localize(
+                              "ui.panel.config.ozw.network.node_count",
+                              "count",
+                              this._statistics.node_count
+                            )}
+                          `
+                        : ``}
+                      <br />
+                      ${this.hass.localize(
+                        "ui.panel.config.ozw.common.controller"
+                      )}:
+                      ${this._network.getControllerPath}<br />
+                      OZWDaemon ${this._network.OZWDaemon_Version} (OpenZWave
+                      ${this._network.OpenZWave_Version})
+                    </div>
                   </div>
-                  <div class="secondary">
-                    ${this.hass.localize(
-                      "ui.panel.config.ozw.common.ozw_instance"
-                    )}
-                    ${this._network.ozw_instance}
-                    ${this._statistics
-                      ? html`
-                          &bull;
-                          ${this.hass.localize(
-                            "ui.panel.config.ozw.network.node_count",
-                            "count",
-                            this._statistics.node_count
-                          )}
-                        `
-                      : ``}
-                    <br />
-                    ${this.hass.localize(
-                      "ui.panel.config.ozw.common.controller"
-                    )}:
-                    ${this._network.getControllerPath}<br />
-                    OZWDaemon ${this._network.OZWDaemon_Version} (OpenZWave
-                    ${this._network.OpenZWave_Version})
+                  <div class="card-actions">
+                    ${this._generateServiceButton("add_node")}
+                    ${this._generateServiceButton("remove_node")}
                   </div>
-                </div>
-                <div class="card-actions">
-                  ${this._generateServiceButton("add_node")}
-                  ${this._generateServiceButton("remove_node")}
-                </div>
-              </ha-card>
-            `
-          : ``}
-      </ha-config-section>
+                </ha-card>
+              `
+            : ``}
+        </ha-config-section>
+      </hass-tabs-subpage>
     `;
   }
 

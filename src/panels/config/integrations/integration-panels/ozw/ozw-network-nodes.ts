@@ -26,8 +26,7 @@ import "../../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
-import { ozwNetworkTabs } from "./ozw-config-network";
-import { computeTail } from "./ozw-config-router";
+import { ozwNetworkTabs } from "./ozw-network-router";
 
 export interface NodeRowData extends OZWDevice {
   node?: NodeRowData;
@@ -108,13 +107,11 @@ class OZWNetworkNodes extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const route = computeTail(this.route);
-
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .route=${route}
+        .route=${this.route}
         .tabs=${ozwNetworkTabs(this.ozwInstance)}
         .columns=${this._columns(this.narrow)}
         .data=${this._nodes}

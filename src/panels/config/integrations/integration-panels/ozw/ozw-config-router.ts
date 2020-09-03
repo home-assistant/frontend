@@ -43,10 +43,10 @@ class OZWConfigRouter extends HassRouterPage {
           ),
       },
       network: {
-        tag: "ozw-config-network",
+        tag: "ozw-network-router",
         load: () =>
           import(
-            /* webpackChunkName: "ozw-config-network" */ "./ozw-config-network"
+            /* webpackChunkName: "ozw-network-router" */ "./ozw-network-router"
           ),
       },
     },
@@ -61,6 +61,7 @@ class OZWConfigRouter extends HassRouterPage {
     if (this._currentPage === "network") {
       const path = this.routeTail.path.split("/");
       el.ozwInstance = path[1];
+      el.route = computeTail(this.routeTail);
     }
   }
 }

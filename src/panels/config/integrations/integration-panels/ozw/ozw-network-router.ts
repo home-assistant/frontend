@@ -5,6 +5,23 @@ import {
 } from "../../../../../layouts/hass-router-page";
 import { HomeAssistant } from "../../../../../types";
 import { computeTail } from "./ozw-config-router";
+import { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
+import { mdiServerNetwork, mdiNetwork } from "@mdi/js";
+
+export const ozwNetworkTabs = (instance: number): PageNavigation[] => {
+  return [
+    {
+      translationKey: "ui.panel.config.ozw.navigation.network",
+      path: `/config/ozw/network/${instance}/dashboard`,
+      iconPath: mdiServerNetwork,
+    },
+    {
+      translationKey: "ui.panel.config.ozw.navigation.nodes",
+      path: `/config/ozw/network/${instance}/nodes`,
+      iconPath: mdiNetwork,
+    },
+  ];
+};
 
 @customElement("ozw-network-router")
 class OZWNetworkRouter extends HassRouterPage {
@@ -56,11 +73,7 @@ class OZWNetworkRouter extends HassRouterPage {
     if (this._currentPage === "node") {
       const path = this.routeTail.path.split("/");
       el.nodeId = path[1];
-      if (path[2]) {
-        el.route.path = `/${path[2]}`;
-      } else {
-        el.route.path = "/dashboard";
-      }
+      el.route = computeTail(this.routeTail);
     }
   }
 }
