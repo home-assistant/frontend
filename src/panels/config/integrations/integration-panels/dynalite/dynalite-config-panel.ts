@@ -252,7 +252,7 @@ class HaPanelConfigDynalite extends LitElement {
     await this.hass.callWS({
       type: "dynalite/update_entry",
       entry_id: configEntryId,
-      entry_data: JSON.stringify(this._entryData),
+      entry_data: this._entryData,
     });
   }
 
