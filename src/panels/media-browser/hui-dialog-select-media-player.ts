@@ -33,7 +33,7 @@ export class HuiDialogSelectMediaPlayer extends LitElement {
 
   public closeDialog() {
     this._params = undefined;
-    fireEvent(this, "close-dialog");
+    fireEvent(this, "dialog-closed", {dialog: this.localName});
   }
 
   protected render(): TemplateResult {
