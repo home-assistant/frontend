@@ -212,7 +212,7 @@ class HaPanelConfigDynalite extends LitElement {
   }
 
   private localStr(item) {
-    return this.hass.localize("ui.panel.config.dynalite." + item);
+    return this.hass.localize(`ui.panel.config.dynalite.${item}`);
   }
 
   private _getConfigEntry() {
