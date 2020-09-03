@@ -244,7 +244,8 @@ class HaPanelConfigDynalite extends LitElement {
     this._entryData.name = this._name;
     this._entryData.host = this._host;
     this._entryData.port = this._port;
-    this._entryData.default.fade = this._fade;
+    if (!("default" in this._entryData)) this._entryData.default = {};
+    this._entryData.default.fade = this._fade || 0;
     this._entryData.active = this._active;
     this._entryData.autodiscover = this._autoDiscover;
     this._entryData.polltimer = this._pollTimer;
