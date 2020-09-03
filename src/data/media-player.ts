@@ -51,7 +51,7 @@ export const MediaTypeBrowserSettings: {
   app: { icon: mdiFolder },
   artist: { icon: mdiAccountMusic },
   contributing_artist: { icon: mdiFolder },
-  podcast: { icon: mdiFolder },
+  podcast: { icon: mdiPodcast },
   season: { icon: mdiFolder },
   genre: { icon: mdiFolder },
   composer: { icon: mdiFolder },
