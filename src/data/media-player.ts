@@ -42,7 +42,7 @@ export const MediaTypeBrowserSettings: {
   music: { icon: mdiMusic },
   tvshow: { icon: mdiFolder },
   movie: { icon: mdiFolder },
-  video: { icon: mdiFolder },
+  video: { icon: mdiVideo },
   episode: { icon: mdiFolder },
   channel: { icon: mdiFolder },
   image: { icon: mdiImage },
