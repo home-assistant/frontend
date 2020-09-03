@@ -116,7 +116,7 @@ class HassioSupervisorLog extends LitElement {
   private async _setLogProvider(ev): Promise<void> {
     const provider = ev.detail.item.getAttribute("provider");
     this._selectedLogProvider = provider;
-    await this._loadData();
+   this._loadData();
   }
 
   private async _refresh(ev: CustomEvent): Promise<void> {
