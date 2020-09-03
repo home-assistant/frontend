@@ -59,6 +59,7 @@ export class HuiCreateDialogCard extends LitElement implements HassDialog {
 
   public closeDialog(): boolean {
     this._params = undefined;
+    this._currTabIndex = 0;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
     return true;
   }
