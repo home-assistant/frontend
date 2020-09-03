@@ -41,9 +41,9 @@ class HaPanelConfigDynalite extends LitElement {
 
   @internalProperty() private _active?: string;
 
-  @internalProperty() private _auto_discover?: string;
+  @internalProperty() private _autoDiscover?: string;
 
-  @internalProperty() private _poll_timer?: string;
+  @internalProperty() private _pollTimer?: string;
 
   private _entryData?: any;
 
@@ -152,7 +152,7 @@ class HaPanelConfigDynalite extends LitElement {
                   >${this.localStr("auto_discover_long")}</span
                 >
                 <ha-switch
-                  .checked=${this._auto_discover}
+                  .checked=${this._autoDiscover}
                   @change=${this._handleAutoDiscoverChange}
                 ></ha-switch>
               </ha-settings-row>
@@ -166,9 +166,9 @@ class HaPanelConfigDynalite extends LitElement {
                 <paper-input
                   class="flex"
                   .label=${this.localStr("poll_timer")}
-                  name="poll_timer"
+                  name="pollTimer"
                   type="number"
-                  .value=${this._poll_timer}
+                  .value=${this._pollTimer}
                   @value-changed=${this._handleChange}
                 ></paper-input>
               </ha-settings-row>
@@ -209,8 +209,8 @@ class HaPanelConfigDynalite extends LitElement {
     };
     this._activeIndex = activeMap[this._entryData.active];
     this._active = this._activeOptions[this._activeIndex];
-    this._auto_discover = this._entryData.autodiscover;
-    this._poll_timer = this._entryData.polltimer;
+    this._autoDiscover = this._entryData.autodiscover;
+    this._pollTimer = this._entryData.polltimer;
   }
 
   private localStr(item) {
@@ -232,7 +232,7 @@ class HaPanelConfigDynalite extends LitElement {
   }
 
   private _handleAutoDiscoverChange(ev: CustomEvent) {
-    this._auto_discover = (ev.currentTarget as any).checked;
+    this._autoDiscover = (ev.currentTarget as any).checked;
   }
 
   private async _publish(): Promise<void> {
@@ -244,8 +244,8 @@ class HaPanelConfigDynalite extends LitElement {
     this._entryData.port = this._port;
     this._entryData.default.fade = this._fade;
     this._entryData.active = this._active;
-    this._entryData.autodiscover = this._auto_discover;
-    this._entryData.polltimer = this._poll_timer;
+    this._entryData.autodiscover = this._autoDiscover;
+    this._entryData.polltimer = this._pollTimer;
     const configEntryId = this._getConfigEntry();
     if (!configEntryId) {
       return;
