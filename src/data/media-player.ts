@@ -39,7 +39,7 @@ export const MediaTypeBrowserSettings: {
   playlist: { icon: mdiPlaylistMusic },
   track: { icon: mdiFileMusic },
   album: { icon: mdiAlbum },
-  music: { icon: mdiFolder },
+  music: { icon: mdiMusic },
   tvshow: { icon: mdiFolder },
   movie: { icon: mdiFolder },
   video: { icon: mdiFolder },
