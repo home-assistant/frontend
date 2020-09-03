@@ -51,6 +51,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   changelog: boolean;
   hassio_api: boolean;
   hassio_role: "default" | "homeassistant" | "manager" | "admin";
+  startup: "initialize" | "system" | "services" | "application" | "once";
   homeassistant_api: boolean;
   auth_api: boolean;
   full_access: boolean;

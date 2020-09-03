@@ -406,7 +406,7 @@ class HassioAddonInfo extends LitElement {
                     ></ha-switch>
                   </ha-settings-row>
 
-                  ${this.hass.userData?.showAdvanced
+                  ${this.addon.startup !== "once"
                     ? html`
                         <ha-settings-row ?three-line=${this.narrow}>
                           <span slot="heading">
