@@ -617,6 +617,7 @@
                 "update": "Mise à jour"
             },
             "domain_toggler": {
+                "reset_entities": "Réinitialiser les entités",
                 "title": "Changer de domaine"
             },
             "entity_registry": {
@@ -1200,8 +1201,14 @@
                     },
                     "alexa": {
                         "banner": "La modification des entités exposées via cette interface utilisateur est désactivée, car vous avez configuré les filtres d'entité dans configuration.yaml.",
+                        "dont_expose_entity": "Ne pas exposer l'entité",
                         "expose": "Exposer à Alexa",
+                        "expose_entity": "Exposer l'entité",
+                        "exposed": "{selected} exposé",
                         "exposed_entities": "Entités exposées",
+                        "follow_domain": "Suivre le domaine",
+                        "manage_domains": "Gérer les domaines",
+                        "not_exposed": "{selected} non exposé",
                         "not_exposed_entities": "Entités non exposées",
                         "title": "Alexa"
                     },
@@ -1239,8 +1246,14 @@
                     "google": {
                         "banner": "La modification des entités exposées via cette interface utilisateur est désactivée, car vous avez configuré les filtres d'entité dans configuration.yaml.",
                         "disable_2FA": "Désactiver l'authentification à deux facteurs",
+                        "dont_expose_entity": "Ne pas exposer l'entité",
                         "expose": "Exposer à Google Assistant",
+                        "expose_entity": "Exposer l'entité",
+                        "exposed": "{selected} exposé",
                         "exposed_entities": "Entités exposées",
+                        "follow_domain": "Suivre le domaine",
+                        "manage_domains": "Gérer les domaines",
+                        "not_exposed": "{selected} non exposé",
                         "not_exposed_entities": "Entités non exposées",
                         "sync_to_google": "Synchroniser les modifications sur Google.",
                         "title": "Google Assistant"
@@ -2417,9 +2430,9 @@
                         "generic": {
                             "aspect_ratio": "Ratio d'aspect",
                             "attribute": "Attribut",
-                            "camera_image": "Caméra entité",
+                            "camera_image": "Entité caméra",
                             "camera_view": "Vue de la caméra",
-                            "double_tap_action": "Double appui court",
+                            "double_tap_action": "Double appui",
                             "entities": "Entités",
                             "entity": "Entité",
                             "hold_action": "Appui long",
@@ -2440,7 +2453,7 @@
                             "show_name": "Afficher le nom ?",
                             "show_state": "Afficher l'état ?",
                             "state": "État",
-                            "state_color": "Icônes de couleur basées sur l'état?",
+                            "state_color": "Icônes de couleur basées sur l'état ?",
                             "tap_action": "Appui court",
                             "theme": "Thème",
                             "title": "Titre",
@@ -2483,11 +2496,11 @@
                         },
                         "markdown": {
                             "content": "Contenu",
-                            "description": "La carte Markdown est utilisée pour rendre Markdown.",
+                            "description": "La carte Markdown est utilisée pour afficher du Markdown.",
                             "name": "Markdown"
                         },
                         "media-control": {
-                            "description": "La carte Contrôle des médias est utilisée pour afficher les entités du lecteur multimédia sur une interface avec des commandes faciles à utiliser.",
+                            "description": "La carte Contrôle des médias est utilisée pour afficher les entités de lecteur multimédia sur une interface avec des commandes faciles à utiliser.",
                             "name": "Contrôle des médias"
                         },
                         "picture-elements": {
@@ -2609,7 +2622,7 @@
                     "save_config": {
                         "cancel": "Oublie ce que j'ai dit, c'est pas grave.",
                         "close": "Fermer",
-                        "empty_config": "Commencer avec un tableau de bord vide",
+                        "empty_config": "Commencer par un tableau de bord vide",
                         "header": "Prenez le contrôle de votre Interface Lovelace",
                         "para": "Par défaut, Home Assistant maintient votre interface utilisateur et la met à jour lorsque de nouvelles entités ou de nouveaux composants Lovelace UI sont disponibles. Si vous prenez le contrôle, nous ne ferons plus les changements automatiquement pour vous.",
                         "para_sure": "Êtes-vous sûr de vouloir prendre le contrôle de l'interface utilisateur?",
