@@ -47,7 +47,6 @@ class Storage {
     } else {
       this._listeners[storageKey] = [callback];
     }
-    console.log(this._listeners);
     return () => {
       this.unsubscribeChanges(storageKey, callback);
     };
@@ -61,7 +60,6 @@ class Storage {
     if (index !== -1) {
       this._listeners[storageKey].splice(index, 1);
     }
-    console.log(this._listeners);
   }
 
   public hasKey(storageKey: string): any {
