@@ -190,7 +190,9 @@ class HaSidebar extends LitElement {
   private _recentKeydownActiveUntil = 0;
 
   // @ts-ignore
-  @LocalStorage("sidebarPanelOrder")
+  @LocalStorage("sidebarPanelOrder", true, {
+    attribute: false,
+  })
   private _panelOrder: string[] = [];
 
   // @ts-ignore
@@ -397,7 +399,8 @@ class HaSidebar extends LitElement {
       changedProps.has("_notifications") ||
       changedProps.has("_editMode") ||
       changedProps.has("_renderEmptySortable") ||
-      changedProps.has("_hiddenPanels")
+      changedProps.has("_hiddenPanels") ||
+      (changedProps.has("_panelOrder") && !this._editMode)
     ) {
       return true;
     }
