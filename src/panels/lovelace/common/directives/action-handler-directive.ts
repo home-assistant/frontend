@@ -145,18 +145,19 @@ class ActionHandler extends HTMLElement implements ActionHandler {
 
     element.actionHandler.end = (ev: Event) => {
       // Don't respond on our own generated click
+      console.log(ev);
       if (!ev.isTrusted) {
         return;
       }
       // Prevent mouse event if touch event
       ev.preventDefault();
-      if (
-        ["touchend", "touchcancel"].includes(ev.type) &&
-        this.timer === undefined
-      ) {
-        return;
-      }
       if (options.hasHold) {
+        if (
+          ["touchend", "touchcancel"].includes(ev.type) &&
+          this.timer === undefined
+        ) {
+          return;
+        }
         clearTimeout(this.timer);
         this.stopAnimation();
         this.timer = undefined;
