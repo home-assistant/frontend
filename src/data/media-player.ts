@@ -1,9 +1,18 @@
 import {
+  mdiAccountMusic,
   mdiAlbum,
   mdiFile,
   mdiFileMusic,
   mdiFolder,
+  mdiGamepadVariant,
+  mdiImage,
+  mdiMovie,
+  mdiMusic,
   mdiPlaylistMusic,
+  mdiPodcast,
+  mdiTelevisionClassic,
+  mdiVideo,
+  mdiWeb,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../types";
