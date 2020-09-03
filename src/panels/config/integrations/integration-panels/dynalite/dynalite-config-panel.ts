@@ -138,7 +138,7 @@ class HaPanelConfigDynalite extends LitElement {
                     ${this._activeOptions.map(
                       (option) =>
                         html`<paper-item .active_config=${option}
-                          >${this.localStr("active_" + option)}</paper-item
+                          >${this.localStr(`active_${option}`)}</paper-item
                         >`
                     )}
                   </paper-listbox>
