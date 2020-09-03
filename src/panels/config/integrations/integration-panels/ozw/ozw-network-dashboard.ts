@@ -139,19 +139,20 @@ class OZWNetworkDashboard extends LitElement {
   }
 
   private async _fetchData() {
+    if (!this.ozwInstance) return;
     this._network = await fetchOZWNetworkStatus(this.hass!, this.ozwInstance);
     this._statistics = await fetchOZWNetworkStatistics(
       this.hass!,
       this.ozwInstance
     );
-    if (networkOnlineStatuses.includes(this._network.Status)) {
+    if (networkOnlineStatuses.includes(this._network!.Status)) {
       this._status = "online";
       this._icon = mdiCheckCircle;
     }
-    if (networkStartingStatuses.includes(this._network.Status)) {
+    if (networkStartingStatuses.includes(this._network!.Status)) {
       this._status = "starting";
     }
-    if (networkOfflineStatuses.includes(this._network.Status)) {
+    if (networkOfflineStatuses.includes(this._network!.Status)) {
       this._status = "offline";
       this._icon = mdiCloseCircle;
     }
