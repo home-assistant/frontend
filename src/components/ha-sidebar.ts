@@ -1,9 +1,12 @@
+import "@material/mwc-button/mwc-button";
 import "@material/mwc-icon-button";
 import {
   mdiBell,
   mdiCellphoneCog,
-  mdiMenuOpen,
+  mdiClose,
   mdiMenu,
+  mdiMenuOpen,
+  mdiPlus,
   mdiViewDashboard,
 } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
@@ -13,20 +16,24 @@ import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
   CSSResult,
+  customElement,
   eventOptions,
   html,
-  customElement,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
+import { guard } from "lit-html/directives/guard";
+import memoizeOne from "memoize-one";
+import { LocalStorage } from "../common/decorators/local-storage";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { compare } from "../common/string/compare";
 import { computeRTL } from "../common/util/compute_rtl";
-import { getDefaultPanel } from "../data/panel";
+import { ActionHandlerDetail } from "../data/lovelace";
 import {
   PersistentNotification,
   subscribeNotifications,
@@ -35,6 +42,7 @@ import {
   ExternalConfig,
   getExternalConfig,
 } from "../external_app/external_config";
+import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
 import type { HomeAssistant, PanelInfo } from "../types";
 import "./ha-icon";
 import "./ha-menu-button";
@@ -54,10 +62,38 @@ const SORT_VALUE_URL_PATHS = {
   config: 11,
 };
 
-const panelSorter = (a: PanelInfo, b: PanelInfo) => {
+const panelSorter = (
+  reverseSort: string[],
+  defaultPanel: string,
+  a: PanelInfo,
+  b: PanelInfo
+) => {
+  const indexA = reverseSort.indexOf(a.url_path);
+  const indexB = reverseSort.indexOf(b.url_path);
+  if (indexA !== indexB) {
+    if (indexA < indexB) {
+      return 1;
+    }
+    return -1;
+  }
+  return defaultPanelSorter(defaultPanel, a, b);
+};
+
+const defaultPanelSorter = (
+  defaultPanel: string,
+  a: PanelInfo,
+  b: PanelInfo
+) => {
   // Put all the Lovelace at the top.
   const aLovelace = a.component_name === "lovelace";
   const bLovelace = b.component_name === "lovelace";
+
+  if (a.url_path === defaultPanel) {
+    return -1;
+  }
+  if (b.url_path === defaultPanel) {
+    return 1;
+  }
 
   if (aLovelace && bLovelace) {
     return compare(a.title!, b.title!);
@@ -85,30 +121,45 @@ const panelSorter = (a: PanelInfo, b: PanelInfo) => {
   return compare(a.title!, b.title!);
 };
 
-const computePanels = (hass: HomeAssistant): [PanelInfo[], PanelInfo[]] => {
-  const panels = hass.panels;
-  if (!panels) {
-    return [[], []];
-  }
-
-  const beforeSpacer: PanelInfo[] = [];
-  const afterSpacer: PanelInfo[] = [];
-
-  Object.values(panels).forEach((panel) => {
-    if (!panel.title || panel.url_path === hass.defaultPanel) {
-      return;
+const computePanels = memoizeOne(
+  (
+    panels: HomeAssistant["panels"],
+    defaultPanel: HomeAssistant["defaultPanel"],
+    panelsOrder: string[],
+    hiddenPanels: string[]
+  ): [PanelInfo[], PanelInfo[]] => {
+    if (!panels) {
+      return [[], []];
     }
-    (SHOW_AFTER_SPACER.includes(panel.url_path)
-      ? afterSpacer
-      : beforeSpacer
-    ).push(panel);
-  });
 
-  beforeSpacer.sort(panelSorter);
-  afterSpacer.sort(panelSorter);
+    const beforeSpacer: PanelInfo[] = [];
+    const afterSpacer: PanelInfo[] = [];
 
-  return [beforeSpacer, afterSpacer];
-};
+    Object.values(panels).forEach((panel) => {
+      if (
+        hiddenPanels.includes(panel.url_path) ||
+        (!panel.title && panel.url_path !== defaultPanel)
+      ) {
+        return;
+      }
+      (SHOW_AFTER_SPACER.includes(panel.url_path)
+        ? afterSpacer
+        : beforeSpacer
+      ).push(panel);
+    });
+
+    const reverseSort = [...panelsOrder].reverse();
+
+    beforeSpacer.sort((a, b) => panelSorter(reverseSort, defaultPanel, a, b));
+    afterSpacer.sort((a, b) => panelSorter(reverseSort, defaultPanel, a, b));
+
+    return [beforeSpacer, afterSpacer];
+  }
+);
+
+let Sortable;
+
+let sortStyles: TemplateResult;
 
 @customElement("ha-sidebar")
 class HaSidebar extends LitElement {
@@ -124,15 +175,29 @@ class HaSidebar extends LitElement {
 
   @internalProperty() private _notifications?: PersistentNotification[];
 
+  @internalProperty() private _editMode = false;
+
   // property used only in css
   // @ts-ignore
   @property({ type: Boolean, reflect: true }) public rtl = false;
+
+  @internalProperty() private _renderEmptySortable = false;
 
   private _mouseLeaveTimeout?: number;
 
   private _tooltipHideTimeout?: number;
 
   private _recentKeydownActiveUntil = 0;
+
+  // @ts-ignore
+  @LocalStorage("sidebarPanelOrder")
+  private _panelOrder: string[] = [];
+
+  // @ts-ignore
+  @LocalStorage("sidebarHiddenPanels")
+  private _hiddenPanels: string[] = [];
+
+  private _sortable?;
 
   protected render() {
     const hass = this.hass;
@@ -141,7 +206,12 @@ class HaSidebar extends LitElement {
       return html``;
     }
 
-    const [beforeSpacer, afterSpacer] = computePanels(hass);
+    const [beforeSpacer, afterSpacer] = computePanels(
+      hass.panels,
+      hass.defaultPanel,
+      this._panelOrder,
+      this._hiddenPanels
+    );
 
     let notificationCount = this._notifications
       ? this._notifications.length
@@ -152,9 +222,8 @@ class HaSidebar extends LitElement {
       }
     }
 
-    const defaultPanel = getDefaultPanel(hass);
-
     return html`
+      ${this._editMode ? sortStyles : ""}
       <div class="menu">
         ${!this.narrow
           ? html`
@@ -170,7 +239,13 @@ class HaSidebar extends LitElement {
               </mwc-icon-button>
             `
           : ""}
-        <span class="title">Home Assistant</span>
+        <div class="title">
+          ${this._editMode
+            ? html`<mwc-button outlined @click=${this._closeEditMode}>
+                DONE
+              </mwc-button>`
+            : "Home Assistant"}
+        </div>
       </div>
       <paper-listbox
         attr-for-selected="data-panel"
@@ -179,31 +254,53 @@ class HaSidebar extends LitElement {
         @focusout=${this._listboxFocusOut}
         @scroll=${this._listboxScroll}
         @keydown=${this._listboxKeydown}
+        @action=${this._handleAction}
+        .actionHandler=${actionHandler({
+          hasHold: !this._editMode,
+          disabled: this._editMode,
+        })}
       >
-        ${this._renderPanel(
-          defaultPanel.url_path,
-          defaultPanel.title || hass.localize("panel.states"),
-          defaultPanel.icon,
-          !defaultPanel.icon ? mdiViewDashboard : undefined
-        )}
-        ${beforeSpacer.map((panel) =>
-          this._renderPanel(
-            panel.url_path,
-            hass.localize(`panel.${panel.title}`) || panel.title,
-            panel.icon,
-            undefined
-          )
-        )}
+        ${this._editMode
+          ? html`<div id="sortable">
+              ${guard([this._hiddenPanels, this._renderEmptySortable], () =>
+                this._renderEmptySortable
+                  ? ""
+                  : this._renderPanels(beforeSpacer)
+              )}
+            </div>`
+          : this._renderPanels(beforeSpacer)}
         <div class="spacer" disabled></div>
-
-        ${afterSpacer.map((panel) =>
-          this._renderPanel(
-            panel.url_path,
-            hass.localize(`panel.${panel.title}`) || panel.title,
-            panel.icon,
-            undefined
-          )
-        )}
+        ${this._editMode && this._hiddenPanels.length
+          ? html`
+              ${this._hiddenPanels.map((url) => {
+                const panel = this.hass.panels[url];
+                return html`<paper-icon-item
+                  @click=${this._unhidePanel}
+                  class="hidden-panel"
+                >
+                  <ha-icon
+                    slot="item-icon"
+                    .icon=${panel.url_path === "lovelace"
+                      ? "mdi:view-dashboard"
+                      : panel.icon}
+                  ></ha-icon>
+                  <span class="item-text"
+                    >${panel.url_path === "lovelace"
+                      ? hass.localize("panel.states")
+                      : hass.localize(`panel.${panel.title}`) ||
+                        panel.title}</span
+                  >
+                  <ha-svg-icon
+                    class="hide-panel"
+                    .panel=${url}
+                    .path=${mdiPlus}
+                  ></ha-svg-icon>
+                </paper-icon-item>`;
+              })}
+              <div class="spacer" disabled></div>
+            `
+          : ""}
+        ${this._renderPanels(afterSpacer)}
         ${this._externalConfig && this._externalConfig.hasSettingsScreen
           ? html`
               <a
@@ -295,7 +392,9 @@ class HaSidebar extends LitElement {
       changedProps.has("narrow") ||
       changedProps.has("alwaysExpand") ||
       changedProps.has("_externalConfig") ||
-      changedProps.has("_notifications")
+      changedProps.has("_notifications") ||
+      changedProps.has("_editMode") ||
+      changedProps.has("_renderEmptySortable")
     ) {
       return true;
     }
@@ -359,6 +458,74 @@ class HaSidebar extends LitElement {
 
   private get _tooltip() {
     return this.shadowRoot!.querySelector(".tooltip")! as HTMLDivElement;
+  }
+
+  private async _handleAction(ev: CustomEvent<ActionHandlerDetail>) {
+    if (ev.detail.action !== "hold") {
+      return;
+    }
+
+    if (!Sortable) {
+      const [sortableImport, sortStylesImport] = await Promise.all([
+        import("sortablejs/modular/sortable.core.esm"),
+        import("./ha-sidebar-sort-styles"),
+      ]);
+
+      sortStyles = sortStylesImport.sortStyles;
+
+      Sortable = sortableImport.Sortable;
+      Sortable.mount(sortableImport.OnSpill);
+      Sortable.mount(sortableImport.AutoScroll());
+    }
+    this._editMode = true;
+
+    await this.updateComplete;
+
+    this._createSortable();
+  }
+
+  private _createSortable() {
+    this._sortable = new Sortable(this.shadowRoot!.getElementById("sortable"), {
+      animation: 150,
+      fallbackClass: "sortable-fallback",
+      dataIdAttr: "data-panel",
+      onSort: async () => {
+        this._panelOrder = this._sortable.toArray();
+      },
+    });
+  }
+
+  private _closeEditMode() {
+    this._sortable?.destroy();
+    this._sortable = undefined;
+    this._editMode = false;
+  }
+
+  private async _hidePanel(ev: Event) {
+    ev.preventDefault();
+    const panel = (ev.target as any).panel;
+    if (this._hiddenPanels.includes(panel)) {
+      return;
+    }
+    // Make a copy for Memoize
+    this._hiddenPanels = [...this._hiddenPanels, panel];
+    this._renderEmptySortable = true;
+    await this.updateComplete;
+    this._renderEmptySortable = false;
+  }
+
+  private async _unhidePanel(ev: Event) {
+    ev.preventDefault();
+    const index = this._hiddenPanels.indexOf((ev.target as any).panel);
+    if (index < 0) {
+      return;
+    }
+    this._hiddenPanels.splice(index, 1);
+    // Make a copy for Memoize
+    this._hiddenPanels = [...this._hiddenPanels];
+    this._renderEmptySortable = true;
+    await this.updateComplete;
+    this._renderEmptySortable = false;
   }
 
   private _itemMouseEnter(ev: MouseEvent) {
@@ -457,6 +624,19 @@ class HaSidebar extends LitElement {
     fireEvent(this, "hass-toggle-menu");
   }
 
+  private _renderPanels(panels: PanelInfo[]) {
+    return panels.map((panel) =>
+      this._renderPanel(
+        panel.url_path,
+        panel.url_path === "lovelace"
+          ? this.hass.localize("panel.states")
+          : this.hass.localize(`panel.${panel.title}`) || panel.title,
+        panel.url_path === "lovelace" ? undefined : panel.icon,
+        panel.url_path === "lovelace" ? mdiViewDashboard : undefined
+      )
+    );
+  }
+
   private _renderPanel(
     urlPath: string,
     title: string | null,
@@ -480,6 +660,14 @@ class HaSidebar extends LitElement {
               ></ha-svg-icon>`
             : html`<ha-icon slot="item-icon" .icon=${icon}></ha-icon>`}
           <span class="item-text">${title}</span>
+          ${this._editMode
+            ? html`<ha-svg-icon
+                class="hide-panel"
+                .panel=${urlPath}
+                @click=${this._hidePanel}
+                .path=${mdiClose}
+              ></ha-svg-icon>`
+            : ""}
         </paper-icon-item>
       </a>
     `;
@@ -542,10 +730,14 @@ class HaSidebar extends LitElement {
       }
 
       .title {
+        width: 100%;
         display: none;
       }
       :host([expanded]) .title {
         display: initial;
+      }
+      .title mwc-button {
+        width: 100%;
       }
 
       paper-listbox::-webkit-scrollbar {

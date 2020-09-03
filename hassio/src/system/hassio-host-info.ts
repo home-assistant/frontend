@@ -1,9 +1,8 @@
 import "@material/mwc-button";
-import "@material/mwc-list/mwc-list-item";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import { safeDump } from "js-yaml";
-import memoizeOne from "memoize-one";
 import {
   css,
   CSSResult,
@@ -14,7 +13,13 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-
+import memoizeOne from "memoize-one";
+import { atLeastVersion } from "../../../src/common/config/version";
+import "../../../src/components/buttons/ha-progress-button";
+import "../../../src/components/ha-button-menu";
+import "../../../src/components/ha-card";
+import "../../../src/components/ha-settings-row";
+import { fetchHassioHardwareInfo } from "../../../src/data/hassio/hardware";
 import {
   changeHostOptions,
   configSyncOS,
@@ -25,26 +30,21 @@ import {
   shutdownHost,
   updateOS,
 } from "../../../src/data/hassio/host";
-import { fetchHassioHardwareInfo } from "../../../src/data/hassio/hardware";
 import {
   fetchNetworkInfo,
   NetworkInfo,
 } from "../../../src/data/hassio/network";
 import { HassioInfo } from "../../../src/data/hassio/supervisor";
-import { hassioStyle } from "../resources/hassio-style";
-import { haStyle } from "../../../src/resources/styles";
-import { HomeAssistant } from "../../../src/types";
 import {
   showAlertDialog,
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../src/dialogs/generic/show-dialog-box";
+import { haStyle } from "../../../src/resources/styles";
+import { HomeAssistant } from "../../../src/types";
 import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
 import { showNetworkDialog } from "../dialogs/network/show-dialog-network";
-
-import "../../../src/components/ha-button-menu";
-import "../../../src/components/ha-card";
-import "../../../src/components/ha-settings-row";
+import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-host-info")
 class HassioHostInfo extends LitElement {
@@ -58,7 +58,7 @@ class HassioHostInfo extends LitElement {
 
   @internalProperty() public _networkInfo?: NetworkInfo;
 
-  public render(): TemplateResult | void {
+  protected render(): TemplateResult | void {
     const primaryIpAddress = this.hostInfo.features.includes("network")
       ? this._primaryIpAddress(this._networkInfo!)
       : "";
@@ -81,7 +81,8 @@ class HassioHostInfo extends LitElement {
                 </mwc-button>
               </ha-settings-row>`
             : ""}
-          ${this.hostInfo.features.includes("network")
+          ${this.hostInfo.features.includes("network") &&
+          atLeastVersion(this.hass.config.version, 0, 115)
             ? html` <ha-settings-row>
                 <span slot="heading">
                   IP address
@@ -108,12 +109,12 @@ class HassioHostInfo extends LitElement {
             ${this.hostInfo.version !== this.hostInfo.version_latest &&
             this.hostInfo.features.includes("hassos")
               ? html`
-                  <mwc-button
+                  <ha-progress-button
                     title="Update the host OS"
-                    label="Update"
                     @click=${this._osUpdate}
                   >
-                  </mwc-button>
+                    Update
+                  </ha-progress-button>
                 `
               : ""}
           </ha-settings-row>
@@ -141,24 +142,24 @@ class HassioHostInfo extends LitElement {
         <div class="card-actions">
           ${this.hostInfo.features.includes("reboot")
             ? html`
-                <mwc-button
+                <ha-progress-button
                   title="Reboot the host OS"
-                  label="Reboot"
                   class="warning"
                   @click=${this._hostReboot}
                 >
-                </mwc-button>
+                  Reboot
+                </ha-progress-button>
               `
             : ""}
           ${this.hostInfo.features.includes("shutdown")
             ? html`
-                <mwc-button
+                <ha-progress-button
                   title="Shutdown the host OS"
-                  label="Shutdown"
                   class="warning"
                   @click=${this._hostShutdown}
                 >
-                </mwc-button>
+                  Shutdown
+                </ha-progress-button>
               `
             : ""}
 
@@ -183,6 +184,177 @@ class HassioHostInfo extends LitElement {
         </div>
       </ha-card>
     `;
+  }
+
+  protected firstUpdated(): void {
+    this._loadData();
+  }
+
+  private _primaryIpAddress = memoizeOne((network_info: NetworkInfo) => {
+    if (!network_info) {
+      return "";
+    }
+    return Object.keys(network_info?.interfaces)
+      .map((device) => network_info.interfaces[device])
+      .find((device) => device.primary)?.ip_address;
+  });
+
+  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        await this._showHardware();
+        break;
+      case 1:
+        await this._importFromUSB();
+        break;
+    }
+  }
+
+  private async _showHardware(): Promise<void> {
+    try {
+      const content = await fetchHassioHardwareInfo(this.hass);
+      showHassioMarkdownDialog(this, {
+        title: "Hardware",
+        content: `<pre>${safeDump(content, { indent: 2 })}</pre>`,
+      });
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Failed to get Hardware list",
+        text:
+          typeof err === "object" ? err.body?.message || "Unkown error" : err,
+      });
+    }
+  }
+
+  private async _hostReboot(ev: CustomEvent): Promise<void> {
+    const button = ev.target as any;
+    button.progress = true;
+
+    const confirmed = await showConfirmationDialog(this, {
+      title: "Reboot",
+      text: "Are you sure you want to reboot the host?",
+      confirmText: "reboot host",
+      dismissText: "no",
+    });
+
+    if (!confirmed) {
+      button.progress = false;
+      return;
+    }
+
+    try {
+      await rebootHost(this.hass);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Failed to reboot",
+        text:
+          typeof err === "object" ? err.body?.message || "Unkown error" : err,
+      });
+    }
+    button.progress = false;
+  }
+
+  private async _hostShutdown(ev: CustomEvent): Promise<void> {
+    const button = ev.target as any;
+    button.progress = true;
+
+    const confirmed = await showConfirmationDialog(this, {
+      title: "Shutdown",
+      text: "Are you sure you want to shutdown the host?",
+      confirmText: "shutdown host",
+      dismissText: "no",
+    });
+
+    if (!confirmed) {
+      button.progress = false;
+      return;
+    }
+
+    try {
+      await shutdownHost(this.hass);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Failed to shutdown",
+        text:
+          typeof err === "object" ? err.body?.message || "Unkown error" : err,
+      });
+    }
+    button.progress = false;
+  }
+
+  private async _osUpdate(ev: CustomEvent): Promise<void> {
+    const button = ev.target as any;
+    button.progress = true;
+
+    const confirmed = await showConfirmationDialog(this, {
+      title: "Update",
+      text: "Are you sure you want to update the OS?",
+      confirmText: "update os",
+      dismissText: "no",
+    });
+
+    if (!confirmed) {
+      button.progress = false;
+      return;
+    }
+
+    try {
+      await updateOS(this.hass);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Failed to update",
+        text:
+          typeof err === "object" ? err.body?.message || "Unkown error" : err,
+      });
+    }
+    button.progress = false;
+  }
+
+  private async _changeNetworkClicked(): Promise<void> {
+    showNetworkDialog(this, {
+      network: this._networkInfo!,
+      loadData: () => this._loadData(),
+    });
+  }
+
+  private async _changeHostnameClicked(): Promise<void> {
+    const curHostname: string = this.hostInfo.hostname;
+    const hostname = await showPromptDialog(this, {
+      title: "Change hostname",
+      inputLabel: "Please enter a new hostname:",
+      inputType: "string",
+      defaultValue: curHostname,
+    });
+
+    if (hostname && hostname !== curHostname) {
+      try {
+        await changeHostOptions(this.hass, { hostname });
+        this.hostInfo = await fetchHassioHostInfo(this.hass);
+      } catch (err) {
+        showAlertDialog(this, {
+          title: "Setting hostname failed",
+          text:
+            typeof err === "object" ? err.body?.message || "Unkown error" : err,
+        });
+      }
+    }
+  }
+
+  private async _importFromUSB(): Promise<void> {
+    try {
+      await configSyncOS(this.hass);
+      this.hostInfo = await fetchHassioHostInfo(this.hass);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Failed to import from USB",
+        text:
+          typeof err === "object" ? err.body?.message || "Unkown error" : err,
+      });
+    }
+  }
+
+  private async _loadData(): Promise<void> {
+    this._networkInfo = await fetchNetworkInfo(this.hass);
   }
 
   static get styles(): CSSResult[] {
@@ -239,162 +411,6 @@ class HassioHostInfo extends LitElement {
         }
       `,
     ];
-  }
-
-  protected firstUpdated(): void {
-    this._loadData();
-  }
-
-  private _primaryIpAddress = memoizeOne((network_info: NetworkInfo) => {
-    if (!network_info) {
-      return "";
-    }
-    return Object.keys(network_info?.interfaces)
-      .map((device) => network_info.interfaces[device])
-      .find((device) => device.primary)?.ip_address;
-  });
-
-  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
-        await this._showHardware();
-        break;
-      case 1:
-        await this._importFromUSB();
-        break;
-    }
-  }
-
-  private async _showHardware(): Promise<void> {
-    try {
-      const content = await fetchHassioHardwareInfo(this.hass);
-      showHassioMarkdownDialog(this, {
-        title: "Hardware",
-        content: `<pre>${safeDump(content, { indent: 2 })}</pre>`,
-      });
-    } catch (err) {
-      showAlertDialog(this, {
-        title: "Failed to get Hardware list",
-        text:
-          typeof err === "object" ? err.body?.message || "Unkown error" : err,
-      });
-    }
-  }
-
-  private async _hostReboot(): Promise<void> {
-    const confirmed = await showConfirmationDialog(this, {
-      title: "Reboot",
-      text: "Are you sure you want to reboot the host?",
-      confirmText: "reboot host",
-      dismissText: "no",
-    });
-
-    if (!confirmed) {
-      return;
-    }
-
-    try {
-      await rebootHost(this.hass);
-    } catch (err) {
-      showAlertDialog(this, {
-        title: "Failed to reboot",
-        text:
-          typeof err === "object" ? err.body?.message || "Unkown error" : err,
-      });
-    }
-  }
-
-  private async _hostShutdown(): Promise<void> {
-    const confirmed = await showConfirmationDialog(this, {
-      title: "Shutdown",
-      text: "Are you sure you want to shutdown the host?",
-      confirmText: "shutdown host",
-      dismissText: "no",
-    });
-
-    if (!confirmed) {
-      return;
-    }
-
-    try {
-      await shutdownHost(this.hass);
-    } catch (err) {
-      showAlertDialog(this, {
-        title: "Failed to shutdown",
-        text:
-          typeof err === "object" ? err.body?.message || "Unkown error" : err,
-      });
-    }
-  }
-
-  private async _osUpdate(): Promise<void> {
-    const confirmed = await showConfirmationDialog(this, {
-      title: "Update",
-      text: "Are you sure you want to update the OS?",
-      confirmText: "update os",
-      dismissText: "no",
-    });
-
-    if (!confirmed) {
-      return;
-    }
-
-    try {
-      await updateOS(this.hass);
-    } catch (err) {
-      showAlertDialog(this, {
-        title: "Failed to update",
-        text:
-          typeof err === "object" ? err.body?.message || "Unkown error" : err,
-      });
-    }
-  }
-
-  private async _changeNetworkClicked(): Promise<void> {
-    showNetworkDialog(this, {
-      network: this._networkInfo!,
-      loadData: () => this._loadData(),
-    });
-  }
-
-  private async _changeHostnameClicked(): Promise<void> {
-    const curHostname: string = this.hostInfo.hostname;
-    const hostname = await showPromptDialog(this, {
-      title: "Change hostname",
-      inputLabel: "Please enter a new hostname:",
-      inputType: "string",
-      defaultValue: curHostname,
-    });
-
-    if (hostname && hostname !== curHostname) {
-      try {
-        await changeHostOptions(this.hass, { hostname });
-        this.hostInfo = await fetchHassioHostInfo(this.hass);
-      } catch (err) {
-        showAlertDialog(this, {
-          title: "Setting hostname failed",
-          text:
-            typeof err === "object" ? err.body?.message || "Unkown error" : err,
-        });
-      }
-    }
-  }
-
-  private async _importFromUSB(): Promise<void> {
-    try {
-      await configSyncOS(this.hass);
-      this.hostInfo = await fetchHassioHostInfo(this.hass);
-    } catch (err) {
-      showAlertDialog(this, {
-        title: "Failed to import from USB",
-        text:
-          typeof err === "object" ? err.body?.message || "Unkown error" : err,
-      });
-    }
-  }
-
-  private async _loadData(): Promise<void> {
-    this._networkInfo = await fetchNetworkInfo(this.hass);
   }
 }
 

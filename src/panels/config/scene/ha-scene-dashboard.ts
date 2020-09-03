@@ -1,4 +1,5 @@
-import "../../../components/ha-icon-button";
+import "@material/mwc-fab";
+import { mdiPlus } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
@@ -13,8 +14,11 @@ import { ifDefined } from "lit-html/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { stateIcon } from "../../../common/entity/state_icon";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
-import "@material/mwc-fab";
+import "../../../components/ha-icon";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-svg-icon";
 import { forwardHaptic } from "../../../data/haptics";
 import { activateScene, SceneEntity } from "../../../data/scene";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
@@ -23,10 +27,6 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
-import "../../../components/ha-icon";
-import "../../../components/ha-svg-icon";
-import { mdiPlus } from "@mdi/js";
-import { stateIcon } from "../../../common/entity/state_icon";
 
 @customElement("ha-scene-dashboard")
 class HaSceneDashboard extends LitElement {
@@ -117,7 +117,7 @@ class HaSceneDashboard extends LitElement {
             </a>
             ${!scene.attributes.id
               ? html`
-                  <paper-tooltip position="left">
+                  <paper-tooltip animation-delay="0" position="left">
                     ${this.hass.localize(
                       "ui.panel.config.scene.picker.only_editable"
                     )}
