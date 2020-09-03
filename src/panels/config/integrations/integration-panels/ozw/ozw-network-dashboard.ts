@@ -43,7 +43,7 @@ class OZWNetworkDashboard extends LitElement {
 
   @property() public configEntryId?: string;
 
-  @property() public ozwInstance = 0;
+  @property() public ozwInstance?: number;
 
   @internalProperty() private _network?: OZWInstance;
 
@@ -54,7 +54,7 @@ class OZWNetworkDashboard extends LitElement {
   @internalProperty() private _icon = mdiCircle;
 
   protected firstUpdated() {
-    if (this.ozwInstance <= 0) {
+    if (!this.ozwInstance) {
       navigate(this, "/config/ozw/dashboard", true);
     } else if (this.hass) {
       this._fetchData();
@@ -67,7 +67,7 @@ class OZWNetworkDashboard extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .tabs=${ozwNetworkTabs(this.ozwInstance)}
+        .tabs=${ozwNetworkTabs(this.ozwInstance!)}
       >
         <ha-config-section .narrow=${this.narrow} .isWide=${this.isWide}>
           <div slot="header">
