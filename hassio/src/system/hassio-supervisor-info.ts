@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import {
   css,
   CSSResult,
@@ -6,24 +5,24 @@ import {
   html,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
-import { fireEvent } from "../../../src/common/dom/fire_event";
-import "../../../src/components/buttons/ha-call-api-button";
+import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-card";
+import "../../../src/components/ha-settings-row";
+import "../../../src/components/ha-switch";
 import { HassioHostInfo as HassioHostInfoType } from "../../../src/data/hassio/host";
 import {
   HassioSupervisorInfo as HassioSupervisorInfoType,
+  reloadSupervisor,
   setSupervisorOption,
   SupervisorOptions,
+  updateSupervisor,
 } from "../../../src/data/hassio/supervisor";
-import "../../../src/components/ha-switch";
 import {
-  showConfirmationDialog,
   showAlertDialog,
+  showConfirmationDialog,
 } from "../../../src/dialogs/generic/show-dialog-box";
-import "../../../src/components/ha-settings-row";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import { hassioStyle } from "../resources/hassio-style";
@@ -36,203 +35,205 @@ class HassioSupervisorInfo extends LitElement {
 
   @property() public hostInfo!: HassioHostInfoType;
 
-  @internalProperty() private _errors?: string;
-
-  public render(): TemplateResult | void {
+  protected render(): TemplateResult | void {
     return html`
-      <ha-card>
+      <ha-card header="Supervisor">
         <div class="card-content">
-          <h2>Supervisor</h2>
-          <table class="info">
-            <tbody>
-              <tr>
-                <td>Version</td>
-                <td>${this.supervisorInfo.version}</td>
-              </tr>
-              <tr>
-                <td>Latest version</td>
-                <td>${this.supervisorInfo.version_latest}</td>
-              </tr>
-              ${this.supervisorInfo.channel !== "stable"
-                ? html`
-                    <tr>
-                      <td>Channel</td>
-                      <td>${this.supervisorInfo.channel}</td>
-                    </tr>
-                  `
-                : ""}
-            </tbody>
-          </table>
-          <div class="options">
-            ${this.supervisorInfo?.supported
-              ? html` <ha-settings-row>
-                  <span slot="heading">
-                    Share Diagnostics
-                  </span>
-                  <div slot="description" class="diagnostics-description">
-                    Share crash reports and diagnostic information.
-                    <button
-                      class="link"
-                      @click=${this._diagnosticsInformationDialog}
-                    >
-                      Learn more
-                    </button>
-                  </div>
-                  <ha-switch
-                    .checked=${this.supervisorInfo.diagnostics}
-                    @change=${this._toggleDiagnostics}
-                  ></ha-switch>
-                </ha-settings-row>`
-              : html`<div class="error">
-                  You are running an unsupported installation.
-                  <a
-                    href="https://github.com/home-assistant/architecture/blob/master/adr/${this.hostInfo.features.includes(
-                      "hassos"
-                    )
-                      ? "0015-home-assistant-os.md"
-                      : "0014-home-assistant-supervised.md"}"
-                    target="_blank"
-                    rel="noreferrer"
-                    >Learn More</a
+          <ha-settings-row>
+            <span slot="heading">
+              Version
+            </span>
+            <span slot="description">
+              ${this.supervisorInfo.version}
+            </span>
+          </ha-settings-row>
+          <ha-settings-row>
+            <span slot="heading">
+              Newest version
+            </span>
+            <span slot="description">
+              ${this.supervisorInfo.version_latest}
+            </span>
+            ${this.supervisorInfo.version !== this.supervisorInfo.version_latest
+              ? html`
+                  <ha-progress-button
+                    title="Update the supervisor"
+                    @click=${this._supervisorUpdate}
                   >
-                </div>`}
-          </div>
-          ${this._errors
-            ? html` <div class="error">Error: ${this._errors}</div> `
-            : ""}
+                    Update
+                  </ha-progress-button>
+                `
+              : ""}
+          </ha-settings-row>
+          <ha-settings-row>
+            <span slot="heading">
+              Channel
+            </span>
+            <span slot="description">
+              ${this.supervisorInfo.channel}
+            </span>
+            ${this.supervisorInfo.channel === "beta"
+              ? html`
+                  <ha-progress-button
+                    @click=${this._toggleBeta}
+                    title="Get stable updates for Home Assistant, supervisor and host"
+                  >
+                    Leave beta channel
+                  </ha-progress-button>
+                `
+              : this.supervisorInfo.channel === "stable"
+              ? html`
+                  <ha-progress-button
+                    @click=${this._toggleBeta}
+                    title="Get beta updates for Home Assistant (RCs), supervisor and host"
+                  >
+                    Join beta channel
+                  </ha-progress-button>
+                `
+              : ""}
+          </ha-settings-row>
+
+          ${this.supervisorInfo?.supported
+            ? html` <ha-settings-row three-line>
+                <span slot="heading">
+                  Share diagnostics
+                </span>
+                <div slot="description" class="diagnostics-description">
+                  Share crash reports and diagnostic information.
+                  <button
+                    class="link"
+                    title="Show more information about this"
+                    @click=${this._diagnosticsInformationDialog}
+                  >
+                    Learn more
+                  </button>
+                </div>
+                <ha-switch
+                  haptic
+                  .checked=${this.supervisorInfo.diagnostics}
+                  @change=${this._toggleDiagnostics}
+                ></ha-switch>
+              </ha-settings-row>`
+            : html`<div class="error">
+                You are running an unsupported installation.
+                <a
+                  href="https://github.com/home-assistant/architecture/blob/master/adr/${this.hostInfo.features.includes(
+                    "hassos"
+                  )
+                    ? "0015-home-assistant-os.md"
+                    : "0014-home-assistant-supervised.md"}"
+                  target="_blank"
+                  rel="noreferrer"
+                  title="Learn more about how you can make your system compliant"
+                >
+                  Learn More
+                </a>
+              </div>`}
         </div>
         <div class="card-actions">
-          <ha-call-api-button .hass=${this.hass} path="hassio/supervisor/reload"
-            >Reload</ha-call-api-button
+          <ha-progress-button
+            @click=${this._supervisorReload}
+            title="Reload parts of the supervisor."
           >
-          ${this.supervisorInfo.version !== this.supervisorInfo.version_latest
-            ? html`
-                <ha-call-api-button
-                  .hass=${this.hass}
-                  path="hassio/supervisor/update"
-                  >Update</ha-call-api-button
-                >
-              `
-            : ""}
-          ${this.supervisorInfo.channel === "beta"
-            ? html`
-                <ha-call-api-button
-                  .hass=${this.hass}
-                  path="hassio/supervisor/options"
-                  .data=${{ channel: "stable" }}
-                  >Leave beta channel</ha-call-api-button
-                >
-              `
-            : ""}
-          ${this.supervisorInfo.channel === "stable"
-            ? html`
-                <mwc-button
-                  @click=${this._joinBeta}
-                  class="warning"
-                  title="Get beta updates for Home Assistant (RCs), supervisor and host"
-                  >Join beta channel</mwc-button
-                >
-              `
-            : ""}
+            Reload
+          </ha-progress-button>
         </div>
       </ha-card>
     `;
   }
 
-  static get styles(): CSSResult[] {
-    return [
-      haStyle,
-      hassioStyle,
-      css`
-        ha-card {
-          height: 100%;
-          width: 100%;
-        }
-        .card-content {
-          color: var(--primary-text-color);
-          box-sizing: border-box;
-          height: calc(100% - 47px);
-        }
-        .info,
-        .options {
-          width: 100%;
-        }
-        .info td:nth-child(2) {
-          text-align: right;
-        }
-        ha-settings-row {
-          padding: 0;
-        }
-        button.link {
-          color: var(--primary-color);
-        }
-        .diagnostics-description {
-          white-space: normal;
-          padding: 0;
-          color: var(--secondary-text-color);
-        }
-      `,
-    ];
-  }
+  private async _toggleBeta(ev: CustomEvent): Promise<void> {
+    const button = ev.target as any;
+    button.progress = true;
 
-  protected firstUpdated(): void {
-    this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
-  }
+    if (this.supervisorInfo.channel === "stable") {
+      const confirmed = await showConfirmationDialog(this, {
+        title: "WARNING",
+        text: html` Beta releases are for testers and early adopters and can
+          contain unstable code changes.
+          <br />
+          <b>
+            Make sure you have backups of your data before you activate this
+            feature.
+          </b>
+          <br /><br />
+          This includes beta releases for:
+          <li>Home Assistant Core</li>
+          <li>Home Assistant Supervisor</li>
+          <li>Home Assistant Operating System</li>
+          <br />
+          Do you want to join the beta channel?`,
+        confirmText: "join beta",
+        dismissText: "no",
+      });
 
-  private _apiCalled(ev): void {
-    if (ev.detail.success) {
-      this._errors = undefined;
-      return;
+      if (!confirmed) {
+        button.progress = false;
+        return;
+      }
     }
 
-    const response = ev.detail.response;
-
-    this._errors =
-      typeof response.body === "object"
-        ? response.body.message || "Unknown error"
-        : response.body;
+    try {
+      const data: Partial<SupervisorOptions> = {
+        channel: this.supervisorInfo.channel !== "stable" ? "beta" : "stable",
+      };
+      await setSupervisorOption(this.hass, data);
+      await reloadSupervisor(this.hass);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Failed to set supervisor option",
+        text:
+          typeof err === "object" ? err.body?.message || "Unkown error" : err,
+      });
+    }
+    button.progress = false;
   }
 
-  private async _joinBeta() {
+  private async _supervisorReload(ev: CustomEvent): Promise<void> {
+    const button = ev.target as any;
+    button.progress = true;
+
+    try {
+      await reloadSupervisor(this.hass);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Failed to reload the supervisor",
+        text:
+          typeof err === "object" ? err.body?.message || "Unkown error" : err,
+      });
+    }
+    button.progress = false;
+  }
+
+  private async _supervisorUpdate(ev: CustomEvent): Promise<void> {
+    const button = ev.target as any;
+    button.progress = true;
+
     const confirmed = await showConfirmationDialog(this, {
-      title: "WARNING",
-      text: html` Beta releases are for testers and early adopters and can
-        contain unstable code changes.
-        <br />
-        <b>
-          Make sure you have backups of your data before you activate this
-          feature.
-        </b>
-        <br /><br />
-        This includes beta releases for:
-        <li>Home Assistant Core</li>
-        <li>Home Assistant Supervisor</li>
-        <li>Home Assistant Operating System</li>
-        <br />
-        Do you want to join the beta channel?`,
-      confirmText: "join beta",
-      dismissText: "no",
+      title: "Update supervisor",
+      text: `Are you sure you want to upgrade supervisor to version ${this.supervisorInfo.version_latest}?`,
+      confirmText: "update",
+      dismissText: "cancel",
     });
 
     if (!confirmed) {
+      button.progress = false;
       return;
     }
 
     try {
-      const data: SupervisorOptions = { channel: "beta" };
-      await setSupervisorOption(this.hass, data);
-      const eventdata = {
-        success: true,
-        response: undefined,
-        path: "option",
-      };
-      fireEvent(this, "hass-api-called", eventdata);
+      await updateSupervisor(this.hass);
     } catch (err) {
-      this._errors = `Error joining beta channel, ${err.body?.message || err}`;
+      showAlertDialog(this, {
+        title: "Failed to update the supervisor",
+        text:
+          typeof err === "object" ? err.body.message || "Unkown error" : err,
+      });
     }
+    button.progress = false;
   }
 
-  private async _diagnosticsInformationDialog() {
+  private async _diagnosticsInformationDialog(): Promise<void> {
     await showAlertDialog(this, {
       title: "Help Improve Home Assistant",
       text: html`Would you want to automatically share crash reports and
@@ -247,23 +248,56 @@ class HassioSupervisorInfo extends LitElement {
     });
   }
 
-  private async _toggleDiagnostics() {
+  private async _toggleDiagnostics(): Promise<void> {
     try {
       const data: SupervisorOptions = {
         diagnostics: !this.supervisorInfo?.diagnostics,
       };
       await setSupervisorOption(this.hass, data);
-      const eventdata = {
-        success: true,
-        response: undefined,
-        path: "option",
-      };
-      fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this._errors = `Error changing supervisor setting, ${
-        err.body?.message || err
-      }`;
+      showAlertDialog(this, {
+        title: "Failed to set supervisor option",
+        text:
+          typeof err === "object" ? err.body.message || "Unkown error" : err,
+      });
     }
+  }
+
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      hassioStyle,
+      css`
+        ha-card {
+          height: 100%;
+          justify-content: space-between;
+          flex-direction: column;
+          display: flex;
+        }
+        .card-actions {
+          height: 48px;
+          border-top: none;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        button.link {
+          color: var(--primary-color);
+        }
+        ha-settings-row {
+          padding: 0;
+          height: 54px;
+          width: 100%;
+        }
+        ha-settings-row[three-line] {
+          height: 74px;
+        }
+        ha-settings-row > div[slot="description"] {
+          white-space: normal;
+          color: var(--secondary-text-color);
+        }
+      `,
+    ];
   }
 }
 

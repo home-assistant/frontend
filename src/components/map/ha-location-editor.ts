@@ -21,8 +21,8 @@ import {
 import { fireEvent } from "../../common/dom/fire_event";
 import {
   LeafletModuleType,
-  setupLeafletMap,
   replaceTileLayer,
+  setupLeafletMap,
 } from "../../common/dom/setup-leaflet-map";
 import { nextRender } from "../../common/util/render-status";
 import { defaultRadiusColor } from "../../data/zone";
@@ -39,6 +39,8 @@ class LocationEditor extends LitElement {
   @property() public radiusColor?: string;
 
   @property() public icon?: string;
+
+  @property({ type: Boolean }) public darkMode?: boolean;
 
   public fitZoom = 16;
 
@@ -129,7 +131,7 @@ class LocationEditor extends LitElement {
   private async _initMap(): Promise<void> {
     [this._leafletMap, this.Leaflet, this._tileLayer] = await setupLeafletMap(
       this._mapEl,
-      this.hass.themes?.darkMode,
+      this.darkMode ?? this.hass.themes?.darkMode,
       Boolean(this.radius)
     );
     this._leafletMap.addEventListener(

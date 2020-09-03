@@ -1,25 +1,26 @@
-import "@material/mwc-tab-bar";
-import "@material/mwc-tab";
 import "@material/mwc-icon-button";
+import "@material/mwc-tab";
+import "@material/mwc-tab-bar";
+import { mdiClose, mdiTune } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { cache } from "lit-html/directives/cache";
-import { fireEvent } from "../../../common/dom/fire_event";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-dialog";
 import "../../../components/ha-header-bar";
-import "../../../components/ha-svg-icon";
 import "../../../components/ha-related-items";
+import "../../../components/ha-svg-icon";
 import {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
@@ -30,7 +31,6 @@ import type { HomeAssistant } from "../../../types";
 import { PLATFORMS_WITH_SETTINGS_TAB } from "./const";
 import "./entity-registry-settings";
 import type { EntityRegistryDetailDialogParams } from "./show-dialog-entity-editor";
-import { mdiClose, mdiTune } from "@mdi/js";
 
 interface Tabs {
   [key: string]: Tab;
@@ -252,7 +252,7 @@ export class DialogEntityEditor extends LitElement {
 
         @media all and (min-width: 451px) and (min-height: 501px) {
           .wrapper {
-            width: 400px;
+            min-width: 400px;
           }
         }
 

@@ -278,7 +278,7 @@
         },
         "sensor": {
             "off": "Neaktívny",
-            "on": "Aktívny"
+            "on": "Zapnutý"
         },
         "sun": {
             "above_horizon": "Nad horizontom",
@@ -628,7 +628,9 @@
                     "pattern": "Vzor regexu na overenie na strane klienta",
                     "text": "Text"
                 },
-                "required_error_msg": "Toto pole je povinné"
+                "platform_not_loaded": "Integrácia {platform} sa nenačítala. Pridajte ju do svojej konfigurácie buď pridaním 'default_config:' alebo ''{platform}:''.",
+                "required_error_msg": "Toto pole je povinné",
+                "yaml_not_editable": "Nastavenia tejto entity nie je možné upravovať z UI. Iba entity nastavené z UI sú konfigurovateľné z UI."
             },
             "more_info_control": {
                 "dismiss": "Zrušiť dialógové okno",
@@ -714,7 +716,7 @@
                 "unknown": "Neznámy",
                 "zha_device_card": {
                     "area_picker_label": "Oblasť",
-                    "device_name_placeholder": "Používateľom zadaný názov",
+                    "device_name_placeholder": "Zmeniť názov zariadenia",
                     "update_name_button": "Aktualizovať názov"
                 }
             }
@@ -761,7 +763,7 @@
                         "confirmation_text": "Všetky zariadenia v tejto oblasti ostanú nepriradené.",
                         "confirmation_title": "Naozaj chcete odstrániť túto oblasť?"
                     },
-                    "description": "Prehľad všetkých oblastí vo vašej domácnosti.",
+                    "description": "Spravujte všetky oblasti vo vašej domácnosti.",
                     "editor": {
                         "create": "VYTVORIŤ",
                         "default_name": "Nová oblasť",
@@ -1274,7 +1276,7 @@
                 },
                 "entities": {
                     "caption": "Register entít",
-                    "description": "Prehľad všetkých známych entít.",
+                    "description": "Spravujte všetky známe entity.",
                     "picker": {
                         "disable_selected": {
                             "button": "Zrušiť vybraté",
@@ -1348,6 +1350,7 @@
                 "info": {
                     "built_using": "Postavené pomocou",
                     "custom_uis": "Vlastné používateľské rozhrania:",
+                    "description": "Zobraziť informácie o inštalácii Home Assistant",
                     "developed_by": "Vyvinuté partiou úžasných ľudí.",
                     "frontend": "frontend-ui",
                     "frontend_version": "Verzia frontendu: {version} - {type}",
@@ -1482,7 +1485,7 @@
                             "open": "Otvoriť"
                         }
                     },
-                    "description": "Nakonfigurujte si svoje Lovelace dashboardy",
+                    "description": "Spravujte svoje Lovelace Dashboardy",
                     "resources": {
                         "cant_edit_yaml": "Používate Lovelace v režime YAML, preto nemôžete spravovať svoje prostriedky cez používateľské rozhranie. Spravujte ich v configuration.yaml.",
                         "caption": "Prostriedky",
@@ -1560,7 +1563,7 @@
                 "scene": {
                     "activated": "Aktivovaná scéna {name}.",
                     "caption": "Scény",
-                    "description": "Vytvárajte a upravujte scény",
+                    "description": "Správa scén",
                     "editor": {
                         "default_name": "Nová scéna",
                         "devices": {
@@ -1666,7 +1669,7 @@
                             "stop": "Zastaviť"
                         },
                         "validation": {
-                            "check_config": "Skontrolujte konfiguráciu",
+                            "check_config": "Skontrolovať konfiguráciu",
                             "heading": "Kontrola konfigurácie",
                             "introduction": "Overte svoju konfiguráciu, ak ste nedávno vykonali nejaké zmeny v konfigurácii a chcete sa uistiť, že je to všetko v poriadku",
                             "invalid": "Konfigurácia je neplatná",
@@ -1715,6 +1718,7 @@
                     "add_device_page": {
                         "discovery_text": "Tu sa zobrazia objavené zariadenia. Postupujte podľa pokynov pre zariadenie (zariadenia) a umiestnite zariadenie (zariadenia) do režimu párovania.",
                         "header": "Zigbee Home Automation - Pridať zariadenia",
+                        "no_devices_found": "Neboli nájdené žiadne zariadenia, uistite sa, že sú v režime párovania a udržujte ich pri prebudené počas zisťovania.",
                         "search_again": "Hľadať znova",
                         "spinner": "Vyhľadávanie ZHA Zigbee zariadení ..."
                     },
@@ -1769,7 +1773,7 @@
                         "create_group": "Zigbee Home Automation - Vytvoriť skupinu",
                         "create_group_details": "Zadajte požadované údaje na vytvorenie novej skupiny ZigBee",
                         "creating_group": "Vytvorenie skupiny",
-                        "description": "Vytvorenie a úprava skupín ZigBee",
+                        "description": "Správa skupín Zigbee",
                         "group_details": "Tu sú všetky podrobnosti o vybranej skupine Zigbee.",
                         "group_id": "ID skupiny",
                         "group_info": "Informácie o skupine",
@@ -2234,7 +2238,7 @@
                         "save": "Prevziať kontrolu",
                         "yaml_config": "Na začiatok vám pomôžeme so súčasnou konfiguráciou tohto dashboardu:",
                         "yaml_control": "Ak chcete prevziať kontrolu v režime YAML, vytvorte súbor YAML s názvom, ktorý ste uviedli vo svojej konfigurácii pre tento dashboard alebo predvolený súbor 'ui-lovelace.yaml'.",
-                        "yaml_mode": "Používate režim YAML, čo znamená, že nemôžete zmeniť konfiguráciu Lovelace z používateľského rozhrania. Ak chcete zmeniť Lovelace z UI, odstráňte 'mode: yaml' z vašej konfigurácie Lovelace v 'configuration.yaml.'"
+                        "yaml_mode": "Používate režim YAML, čo znamená, že nemôžete zmeniť konfiguráciu Lovelace z UI. Ak chcete zmeniť Lovelace z UI, odstráňte 'mode: yaml' z vašej konfigurácie Lovelace v 'configuration.yaml.'"
                     },
                     "select_view": {
                         "dashboard_label": "Dashboard",
@@ -2255,7 +2259,7 @@
                 },
                 "menu": {
                     "close": "Zavrieť",
-                    "configure_ui": "Konfigurovať používateľské rozhranie",
+                    "configure_ui": "Upraviť Dashboard",
                     "exit_edit_mode": "Skončiť režim úprav používateľského rozhrania",
                     "help": "Pomoc",
                     "refresh": "Obnoviť",

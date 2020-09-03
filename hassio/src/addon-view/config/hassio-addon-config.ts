@@ -21,6 +21,8 @@ import {
   HassioAddonSetOptionParams,
   setHassioAddonOption,
 } from "../../../../src/data/hassio/addon";
+import "../../../../src/components/buttons/ha-progress-button";
+
 import { showConfirmationDialog } from "../../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
@@ -55,18 +57,101 @@ class HassioAddonConfig extends LitElement {
           ${valid ? "" : html` <div class="errors">Invalid YAML</div> `}
         </div>
         <div class="card-actions">
-          <mwc-button class="warning" @click=${this._resetTapped}>
+          <ha-progress-button class="warning" @click=${this._resetTapped}>
             Reset to defaults
-          </mwc-button>
-          <mwc-button
+          </ha-progress-button>
+          <ha-progress-button
             @click=${this._saveTapped}
             .disabled=${!this._configHasChanged || !valid}
           >
             Save
-          </mwc-button>
+          </ha-progress-button>
         </div>
       </ha-card>
     `;
+  }
+
+  protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+    if (changedProperties.has("addon")) {
+      this._editor.setValue(this.addon.options);
+    }
+  }
+
+  private _configChanged(): void {
+    this._configHasChanged = true;
+    this.requestUpdate();
+  }
+
+  private async _resetTapped(ev: CustomEvent): Promise<void> {
+    const button = ev.currentTarget as any;
+    button.progress = true;
+
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.addon.name,
+      text: "Are you sure you want to reset all your options?",
+      confirmText: "reset options",
+      dismissText: "no",
+    });
+
+    if (!confirmed) {
+      button.progress = false;
+      return;
+    }
+
+    this._error = undefined;
+    const data: HassioAddonSetOptionParams = {
+      options: null,
+    };
+    try {
+      await setHassioAddonOption(this.hass, this.addon.slug, data);
+      this._configHasChanged = false;
+      const eventdata = {
+        success: true,
+        response: undefined,
+        path: "options",
+      };
+      fireEvent(this, "hass-api-called", eventdata);
+    } catch (err) {
+      this._error = `Failed to reset addon configuration, ${
+        err.body?.message || err
+      }`;
+    }
+    button.progress = false;
+  }
+
+  private async _saveTapped(ev: CustomEvent): Promise<void> {
+    const button = ev.currentTarget as any;
+    button.progress = true;
+
+    let data: HassioAddonSetOptionParams;
+    this._error = undefined;
+    try {
+      data = {
+        options: this._editor.value,
+      };
+    } catch (err) {
+      this._error = err;
+      return;
+    }
+    try {
+      await setHassioAddonOption(this.hass, this.addon.slug, data);
+      this._configHasChanged = false;
+      const eventdata = {
+        success: true,
+        response: undefined,
+        path: "options",
+      };
+      fireEvent(this, "hass-api-called", eventdata);
+      if (this.addon?.state === "started") {
+        await suggestAddonRestart(this, this.hass, this.addon);
+      }
+    } catch (err) {
+      this._error = `Failed to save addon configuration, ${
+        err.body?.message || err
+      }`;
+    }
+    button.progress = false;
   }
 
   static get styles(): CSSResult[] {
@@ -97,80 +182,6 @@ class HassioAddonConfig extends LitElement {
         }
       `,
     ];
-  }
-
-  protected updated(changedProperties: PropertyValues): void {
-    super.updated(changedProperties);
-    if (changedProperties.has("addon")) {
-      this._editor.setValue(this.addon.options);
-    }
-  }
-
-  private _configChanged(): void {
-    this._configHasChanged = true;
-    this.requestUpdate();
-  }
-
-  private async _resetTapped(): Promise<void> {
-    const confirmed = await showConfirmationDialog(this, {
-      title: this.addon.name,
-      text: "Are you sure you want to reset all your options?",
-      confirmText: "reset options",
-      dismissText: "no",
-    });
-
-    if (!confirmed) {
-      return;
-    }
-
-    this._error = undefined;
-    const data: HassioAddonSetOptionParams = {
-      options: null,
-    };
-    try {
-      await setHassioAddonOption(this.hass, this.addon.slug, data);
-      this._configHasChanged = false;
-      const eventdata = {
-        success: true,
-        response: undefined,
-        path: "options",
-      };
-      fireEvent(this, "hass-api-called", eventdata);
-    } catch (err) {
-      this._error = `Failed to reset addon configuration, ${
-        err.body?.message || err
-      }`;
-    }
-  }
-
-  private async _saveTapped(): Promise<void> {
-    let data: HassioAddonSetOptionParams;
-    this._error = undefined;
-    try {
-      data = {
-        options: this._editor.value,
-      };
-    } catch (err) {
-      this._error = err;
-      return;
-    }
-    try {
-      await setHassioAddonOption(this.hass, this.addon.slug, data);
-      this._configHasChanged = false;
-      const eventdata = {
-        success: true,
-        response: undefined,
-        path: "options",
-      };
-      fireEvent(this, "hass-api-called", eventdata);
-    } catch (err) {
-      this._error = `Failed to save addon configuration, ${
-        err.body?.message || err
-      }`;
-    }
-    if (!this._error && this.addon?.state === "started") {
-      await suggestAddonRestart(this, this.hass, this.addon);
-    }
   }
 }
 

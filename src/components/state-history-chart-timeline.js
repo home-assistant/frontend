@@ -25,6 +25,7 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
         }
       </style>
       <ha-chart-base
+        hass="[[hass]]"
         data="[[chartData]]"
         rendered="{{rendered}}"
         rtl="{{rtl}}"
@@ -75,6 +76,8 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
     const staticColors = {
       on: 1,
       off: 0,
+      home: 1,
+      not_home: 0,
       unavailable: "#a0a0a0",
       unknown: "#606060",
       idle: 2,

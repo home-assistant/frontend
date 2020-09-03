@@ -419,9 +419,16 @@
                 "unlock": "Lås upp"
             },
             "media_player": {
+                "browse_media": "Bläddra bland media",
+                "media_next_track": "Nästa",
+                "media_play": "Spela",
+                "media_play_pause": "Spela/pausa",
+                "media_previous_track": "Föregående",
                 "sound_mode": "Ljudläge",
                 "source": "Källa",
-                "text_to_speak": "Text till tal"
+                "text_to_speak": "Text till tal",
+                "turn_off": "Stäng av",
+                "turn_on": "Sätt på"
             },
             "persistent_notification": {
                 "dismiss": "Avfärda"
@@ -554,6 +561,26 @@
                 "loading_history": "Laddar historik...",
                 "no_history_found": "Ingen historik hittad."
             },
+            "media-browser": {
+                "choose-source": "Välj källa",
+                "content-type": {
+                    "album": "Album",
+                    "artist": "Artist",
+                    "library": "Bibliotek",
+                    "playlist": "Spellista",
+                    "server": "Server"
+                },
+                "media-player-browser": "Bläddrare för mediaspelare",
+                "no_items": "Inga objekt",
+                "pick": "Välj",
+                "pick-media": "Välj media",
+                "play": "Spela",
+                "play-media": "Spela media"
+            },
+            "picture-upload": {
+                "label": "Bild",
+                "unsupported_format": "Formated stöds inte, vänligen välj en JPEG, PNG eller GIF-bild."
+            },
             "related-items": {
                 "area": "Område",
                 "automation": "Del av följande automatiseringar",
@@ -574,6 +601,7 @@
                     "week": "{count} {count, plural,\none {vecka}\nother {veckor}\n}"
                 },
                 "future": "{time} sedan",
+                "just_now": "Nyss",
                 "never": "Aldrig",
                 "past": "{time} sedan"
             },
@@ -655,6 +683,9 @@
                 "platform_not_loaded": "Integrationen {platform} har ej laddats in. Lägg till integrationen genom att lägga till 'default_config:' eller ''{platform}:''.",
                 "required_error_msg": "Det här fältet krävs",
                 "yaml_not_editable": "Inställningar för denna entitet kan inte ändras från användargränssnittet. Enbart entiteter uppsatta från användargränssnittet är konfigurerbara från användargränssnittet."
+            },
+            "image_cropper": {
+                "crop": "Beskär"
             },
             "more_info_control": {
                 "dismiss": "Avfärda",
@@ -1050,6 +1081,9 @@
                                     "sunrise": "Soluppgång",
                                     "sunset": "Solnedgång"
                                 },
+                                "tag": {
+                                    "label": "Etikett"
+                                },
                                 "template": {
                                     "label": "Mall",
                                     "value_template": "Värdemall"
@@ -1111,8 +1145,7 @@
                             "manage_entities": "Hantera Entiteter",
                             "state_reporting_error": "Det går inte att {enable_disable} rapportera tillståndet.",
                             "sync_entities": "Synkronisera Entiteter",
-                            "sync_entities_error": "Det gick inte att synkronisera entiteter:",
-                            "title": ""
+                            "sync_entities_error": "Det gick inte att synkronisera entiteter:"
                         },
                         "connected": "Ansluten",
                         "connection_status": "Status för molnanslutning",
@@ -1160,16 +1193,14 @@
                             "no_hooks_yet": "Det verkar som du inte har några webhooks ännu. Kom igång genom att konfigurera en ",
                             "no_hooks_yet_link_automation": "webhook automation",
                             "no_hooks_yet_link_integration": "webhook-baserad integration",
-                            "no_hooks_yet2": " eller genom att skapa en ",
-                            "title": ""
+                            "no_hooks_yet2": " eller genom att skapa en "
                         }
                     },
                     "alexa": {
                         "banner": "Redigering av vilka entiteter som visas via det här användargränssnittet är inaktiverat eftersom du har konfigurerat entitetsfilter i configuration.yaml.",
                         "expose": "Exponera för Alexa",
                         "exposed_entities": "Exponerade entiteter",
-                        "not_exposed_entities": "Ej exponerade entiteter",
-                        "title": ""
+                        "not_exposed_entities": "Ej exponerade entiteter"
                     },
                     "caption": "Home Assistant Cloud",
                     "description_features": "Styra även när du inte är hemma, integrera med Alexa och Google Assistant.",
@@ -1489,6 +1520,9 @@
                         "no_device": "Entitet utan enheter",
                         "no_devices": "Denna integration har inga enheter.",
                         "options": "Alternativ",
+                        "reload": "Ladda om",
+                        "reload_confirm": "Integrationen laddades om",
+                        "reload_restart_confirm": "Starta om Home Assistant för att slutföra omladdningen av denna integration",
                         "rename": "Döp om",
                         "restart_confirm": "Starta om Home Assistant för att slutföra borttagningen av denna integration",
                         "settings_button": "Redigera inställningar för {integration}",
@@ -1656,6 +1690,53 @@
                         "node_failed": "Noden misslyckades",
                         "stage": "Steg",
                         "zwave_info": "Z-Wave info"
+                    },
+                    "navigation": {
+                        "network": "Nätverk",
+                        "nodes": "Noder",
+                        "select_instance": "Välj instans"
+                    },
+                    "network_status": {
+                        "details": {
+                            "driverfailed": "Det gick inte att ansluta till Z-Wave-styrenheten",
+                            "driverready": "Initierar Z-Wave-styrenheten",
+                            "offline": "OZWDaemon offline",
+                            "ready": "Redo att ansluta",
+                            "started": "Ansluten till MQTT",
+                            "starting": "Ansluter till MQTT",
+                            "stopped": "OpenZWave har stoppats"
+                        }
+                    },
+                    "network": {
+                        "header": "Nätverkshantering",
+                        "introduction": "Hantera nätverksövergripande funktioner.",
+                        "node_count": "{count} noder"
+                    },
+                    "node_query_stages": {
+                        "configuration": "Hämtar konfigurationsvärden från noden",
+                        "dynamic": "Hämtar värden som ofta ändras från noden",
+                        "neighbors": "Hämtar en lista av nodens grannar",
+                        "nodeplusinfo": "Hämtar Z-Wave+-information från noden",
+                        "probe": "Kontrollera om noden är vaken / levande",
+                        "session": "Hämtar värden som sällan ändras från noden",
+                        "static": "Hämtar statiska värden från enheten"
+                    },
+                    "refresh_node": {
+                        "complete": "Uppdatering av noden klar",
+                        "node_status": "Nodstatus",
+                        "refreshing_description": "Uppdaterar information om noderna...",
+                        "step": "Steg",
+                        "title": "Uppdatera information om noderna",
+                        "wakeup_header": "Väckningsinstruktioner för",
+                        "wakeup_instructions_source": "Väckningsinstruktioner hämtas från OpenZWave community-databasen."
+                    },
+                    "select_instance": {
+                        "header": "Välj en OpenZWave-instans",
+                        "introduction": "Du har mer än en OpenZWave-instans som körs. Vilken instans vill du hantera?"
+                    },
+                    "services": {
+                        "add_node": "Lägg till nod",
+                        "remove_node": "Ta bort nod"
                     }
                 },
                 "person": {
@@ -1793,6 +1874,7 @@
                             "person": "Ladda om personer",
                             "scene": "Ladda om scenarier",
                             "script": "Ladda om skript",
+                            "template": "Ladda om mallar för entiteter",
                             "zone": "Ladda om zoner"
                         },
                         "server_management": {
@@ -1811,6 +1893,26 @@
                             "valid": "Konfigurationen är giltig!"
                         }
                     }
+                },
+                "tags": {
+                    "add_tag": "Lägg till etikett",
+                    "caption": "Etiketter",
+                    "description": "Hantera etiketter",
+                    "detail": {
+                        "create": "Skapa",
+                        "create_and_write": "Skapa och redigera",
+                        "delete": "Ta bort",
+                        "description": "Beskrivning",
+                        "tag_id": "Etikett-ID",
+                        "tag_id_placeholder": "Autogenereras när det lämnas tomt",
+                        "update": "Uppdatera"
+                    },
+                    "headers": {
+                        "last_scanned": "Senast skannad"
+                    },
+                    "never_scanned": "Aldrig skannad",
+                    "no_tags": "Inga etiketter",
+                    "write": "Redigera"
                 },
                 "users": {
                     "add_user": {
@@ -2133,6 +2235,7 @@
                         "description": "Mallar tolkas med hjälp av Jinja2 template engine med vissa Home Assistant-specifika tillägg.",
                         "editor": "Mallredigerare",
                         "jinja_documentation": "Malldokumentation för Jinja2",
+                        "reset": "Återställ till demomall",
                         "template_extensions": "Mallutökningar för Home Assistant",
                         "title": "Mallar",
                         "unknown_error_template": "Okänt fel vid rendering av mall"
@@ -2214,6 +2317,10 @@
                             "description": "Knappkortet låter dig lägga till knappar för att utföra uppgifter.",
                             "name": "Knapp"
                         },
+                        "calendar": {
+                            "description": "Kalenderkortet visar en kalender med dag-, vecka- och listvyer",
+                            "name": "Kalender"
+                        },
                         "conditional": {
                             "card": "Kort",
                             "change_type": "Ändra typ",
@@ -2268,8 +2375,6 @@
                             "image": "Bildsökväg",
                             "manual": "Manuell",
                             "manual_description": "Behöver du lägga till ett anpassat kort eller vill du bara skriva yaml manuellt?",
-                            "maximum": "",
-                            "minimum": "",
                             "name": "Namn",
                             "no_theme": "Inget tema",
                             "refresh_interval": "Uppdateringsintervall",
@@ -2668,6 +2773,7 @@
                     "intro": "Hej {name}, välkommen till Home Assistant. Hur skulle du vilja namnge ditt hem?",
                     "intro_location": "Vi skulle vilja veta var du bor. Den här informationen hjälper dig att visa information och ställa in solbaserade automatiseringar. Dessa data delas aldrig utanför nätverket.",
                     "intro_location_detect": "Vi kan hjälpa dig att fylla i denna information genom att göra en engångsförfrågan till en extern tjänst.",
+                    "location_name": "Namn på din Home Assistant-installation",
                     "location_name_default": "Hem"
                 },
                 "integration": {

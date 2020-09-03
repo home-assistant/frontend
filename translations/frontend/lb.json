@@ -419,9 +419,16 @@
                 "unlock": "Entspären"
             },
             "media_player": {
+                "browse_media": "Medien duerchgoen",
+                "media_next_track": "Nächst",
+                "media_play": "Spill",
+                "media_play_pause": "Spill/Pause",
+                "media_previous_track": "Viregt",
                 "sound_mode": "Toun Modus",
                 "source": "Quell",
-                "text_to_speak": "Text zu Sprooch"
+                "text_to_speak": "Text zu Sprooch",
+                "turn_off": "Ausschalten",
+                "turn_on": "Uschalten"
             },
             "persistent_notification": {
                 "dismiss": "Verwerfen"
@@ -554,6 +561,26 @@
                 "loading_history": "Lued Status Verlaaf",
                 "no_history_found": "Keen Status Verlaaf fonnt"
             },
+            "media-browser": {
+                "choose-source": "Quell auswielen",
+                "content-type": {
+                    "album": "Album",
+                    "artist": "Artist",
+                    "library": "Bibliothéik",
+                    "playlist": "Ofspilllëscht",
+                    "server": "Server"
+                },
+                "media-player-browser": "Media Player Browser",
+                "no_items": "Keng Elementer",
+                "pick": "Auswielen",
+                "pick-media": "Media auswielen",
+                "play": "Spill",
+                "play-media": "Media ofspillen"
+            },
+            "picture-upload": {
+                "label": "Bild",
+                "unsupported_format": "Net ënnerstëtzte Format, wiel e JPEG, PNG oder GIF Bild."
+            },
             "related-items": {
                 "area": "Beräich",
                 "automation": "Deel vun de folgenden Automatismen",
@@ -574,6 +601,7 @@
                     "week": "{count} {count, plural,\none {Woch}\nother {Wochen}\n}"
                 },
                 "future": "An {time}",
+                "just_now": "Grad eben",
                 "never": "Nie",
                 "past": "virun {time}"
             },
@@ -655,6 +683,9 @@
                 "platform_not_loaded": "{platform} Integratioun ass net gelueden. Setz et an deng Konfiguration dobäi mat  'default_config:' oder ''{platform}:''.",
                 "required_error_msg": "Dëst Feld ass erfuerderlech",
                 "yaml_not_editable": "D'Astellunge vun dëser Entitéit kënnen net vun vum Benotzer Interface as  geännert ginn. Nëmmen Entitéiten déi iwwer den Benotzer Interface aus konfiguréiert sinn kënnen vun do aus geännert ginn."
+            },
+            "image_cropper": {
+                "crop": "Kierzen"
             },
             "more_info_control": {
                 "dismiss": "Dialog ofbriechen",
@@ -833,6 +864,15 @@
                             "name": "Aktioun",
                             "type_select": "Aktioun Typ",
                             "type": {
+                                "choose": {
+                                    "add_option": "Optioun dobäisetzen",
+                                    "conditions": "Konditiounen",
+                                    "default": "Standard Aktiounen",
+                                    "label": "Auswielen",
+                                    "option": "Optioun {number}",
+                                    "remove_option": "Optioun läschen",
+                                    "sequence": "Aktiounen"
+                                },
                                 "condition": {
                                     "label": "Konditioun"
                                 },
@@ -851,6 +891,24 @@
                                     "event": "Evenement:",
                                     "label": "Evenement starten",
                                     "service_data": "Service-Donnéeën"
+                                },
+                                "repeat": {
+                                    "label": "Widderhuelen",
+                                    "sequence": "Aktiounen",
+                                    "type_select": "Widderhuelen Typ",
+                                    "type": {
+                                        "count": {
+                                            "label": "Ziel"
+                                        },
+                                        "until": {
+                                            "conditions": "Bis Konditiounen",
+                                            "label": "Bis"
+                                        },
+                                        "while": {
+                                            "conditions": "Während Konditiounen",
+                                            "label": "Während"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "Zeen aktivéieren"
@@ -1022,6 +1080,9 @@
                                     "offset": "Versat (optional)",
                                     "sunrise": "Sonnenopgank",
                                     "sunset": "Sonnenënnergank"
+                                },
+                                "tag": {
+                                    "label": "Tag"
                                 },
                                 "template": {
                                     "label": "Modell",
@@ -1619,6 +1680,88 @@
                     "title": "MQTT",
                     "topic": "Sujet"
                 },
+                "ozw": {
+                    "button": "Astellen",
+                    "common": {
+                        "controller": "Kontroller",
+                        "instance": "Instanz",
+                        "network": "Netzwierk",
+                        "node_id": "Node ID",
+                        "ozw_instance": "OpenZWave Instanz",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "Feeler am Node",
+                        "stage": "Stage",
+                        "zwave_info": "Z-Wave Info"
+                    },
+                    "navigation": {
+                        "network": "Netzwierk",
+                        "nodes": "Nodes",
+                        "select_instance": "Instanz auswielen"
+                    },
+                    "network_status": {
+                        "details": {
+                            "driverallnodesqueried": "All Nodes goufen ofgefrot",
+                            "driverallnodesqueriedsomedead": "All Nodes goufen ofgefrot. Verschidde Nodes sin net méi ereechbar.",
+                            "driverawakenodesqueries": "All waakreg Nodes goufen ofgefrot",
+                            "driverfailed": "Feeler beim verbannen mam Z-Wave Kontroller",
+                            "driverready": "Z-Wave Kontroller initialiséieren",
+                            "driverremoved": "Den Driver gouf geläscht",
+                            "driverreset": "Den Driver gouf zeréckgesat",
+                            "offline": "OZWDaemon net ereechbar",
+                            "ready": "Prett fir sech ze verbannen",
+                            "started": "Mam MQTT verbonnen",
+                            "starting": "Mam MQTT verbannen",
+                            "stopped": "OpenZWave gestoppt"
+                        },
+                        "offline": "Offline",
+                        "online": "Online",
+                        "starting": "Start",
+                        "unknown": "Onbekannt"
+                    },
+                    "network": {
+                        "header": "Verwaltung vum Netzwierk",
+                        "node_count": "{count} nodes"
+                    },
+                    "node_query_stages": {
+                        "associations": "Associatiounsgruppen a Memberen aktualiséieren",
+                        "cacheload": "Lued Informatioune vun der OpenZWave Cache Datei. Batterie Nodes bleiwen op dëser Etapp bis de Node erwächt.",
+                        "complete": "Interview Prozess ass komplett",
+                        "configuration": "Konfiguratiounswerter vum Node kréien",
+                        "instances": "Detailer kréien iwwert wéieng Instanzen oder Kanäl en Apparat ënnerstëtzt",
+                        "manufacturerspecific1": "Hiersteller a Produkt ID Code vum Node kréien",
+                        "manufacturerspecific2": "Zousätzlech Hiersteller a Produkt ID Coden vum Node kréien",
+                        "neighbors": "Eng Lëscht vun den Nopere vum Node kréien",
+                        "nodeinfo": "Kommando Klassen vum Node kréien",
+                        "nodeplusinfo": "Z-Wave+ Informatiounen vum Node kréien",
+                        "probe": "Checken op de Node un ass",
+                        "protocolinfo": "Basis Z-Wave Fäegkeeten fir dësem Node vum Kontroller kréien",
+                        "static": "Statesch Wäerter vum Apparat kréien",
+                        "versions": "Informatioun kréien iwwert Firmware a Kommando Klass Versiounen",
+                        "wakeup": "Ënnerstëtzung fir Erwäche Waardeschlaangen an Noriichten astellen"
+                    },
+                    "refresh_node": {
+                        "battery_note": "Falls den Node Batterie bedriwwen ass, stell sécher fir en z'erwächen iers de weiderfiers",
+                        "complete": "Aktualiséierung vun den Node Informatioune komplett",
+                        "description": "Dëst befeelt OpenZWave fir en Node ofzefroen a Kommando Klassen, Fäegkeeten a Wäerter vum Node aktualiséieren.",
+                        "node_status": "Status vum Node",
+                        "refreshing_description": "Node Informatiounen aktualiséieren...",
+                        "start_refresh_button": "Aktualiséierung starten",
+                        "step": "Schrëtt",
+                        "title": "Node Informatiounen aktualiséieren",
+                        "wakeup_header": "Instruktioune fir d'erwäche vun",
+                        "wakeup_instructions_source": "D'Instruktioune fir d'erwäche si vun der OpenZwave Communautéit Datebank."
+                    },
+                    "select_instance": {
+                        "header": "Eng OpenZWave Instanz auswielen",
+                        "introduction": "Du hues méi wéi eng OpenZWave Instanz laafen. Wéieng Instanz wëlls du verwalten?"
+                    },
+                    "services": {
+                        "add_node": "Node dobäisetzen",
+                        "remove_node": "Node läschen"
+                    }
+                },
                 "person": {
                     "add_person": "Persoun dobäisetzen",
                     "caption": "Persounen",
@@ -1770,6 +1913,25 @@
                             "valid": "Konfiguratioun gëlteg!"
                         }
                     }
+                },
+                "tags": {
+                    "add_tag": "Tag dobäisetzen",
+                    "caption": "Tags",
+                    "description": "Tags verwalten",
+                    "detail": {
+                        "create": "Erstellen",
+                        "create_and_write": "Erstellen a schréiwen",
+                        "delete": "Läschen",
+                        "description": "Beschreiwung",
+                        "name": "Numm",
+                        "new_tag": "Neien tag",
+                        "tag_id": "Tag id",
+                        "update": "Aktualiséieren"
+                    },
+                    "headers": {
+                        "last_scanned": "Läscht duerchsicht"
+                    },
+                    "no_tags": "Keng Tags"
                 },
                 "users": {
                     "add_user": {
@@ -2092,6 +2254,7 @@
                         "description": "Modeller ginn mëttels Jinja2 template engine duergestallt mat e puer Home Assistant spezifesch Erweiderungen.",
                         "editor": "Modell Editeur",
                         "jinja_documentation": "Jinja2 Modell Dokumentatioun",
+                        "reset": "Op Demo Modell zeréck setzen",
                         "template_extensions": "Home Assistant Modell Erweiderungen",
                         "title": "Modeller",
                         "unknown_error_template": "Onbekannte Feeler beim duerstelle vum Modell"
@@ -2172,6 +2335,10 @@
                         "button": {
                             "description": "Knäppchen Kaart erlaabt et Knäppchen mat Aktioune unzeweisen.",
                             "name": "Knäppchen"
+                        },
+                        "calendar": {
+                            "description": "Kalenner Kaart weist ee Kalenner mat Deeg, Wochen an Lëschten un",
+                            "name": "Kalenner"
                         },
                         "conditional": {
                             "card": "Kaart",
@@ -2385,6 +2552,9 @@
                         "para_migrate": "Home Assistant kann ID's zu all äre Kaarten automatesch dobäisetzen andeem dir de Knäppche 'Konfiguratioun migréieren' dréckt.",
                         "para_no_id": "Dëst Element huet keng ID. Definéiert w.e.g. eng ID fir dëst Element am 'ui-lovelace.yaml'."
                     },
+                    "move_card": {
+                        "header": "Vue auswielen wou d'Kaart geréckelt soll ginn."
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "Mir erstellen automatesch är Lovelace Usiichte mat äre Beräicher an Apparaten wann dir är Lovelace Konfiguratioun läscht.",
                         "confirm_remove_config_title": "Sécher fir är Lovelace Konfiguratioun ze läschen? Mir erstellen automatesch är Lovelace Usiichte mat äre Beräicher an Apparaten.",
@@ -2411,6 +2581,10 @@
                         "yaml_config": "Fir de Start ze vereinfachen, hei ass déi aktuell Konfiguratioun vun dësem Tableau de Bord:",
                         "yaml_control": "Fir d'Kontroll am YAML Modus z'iwwerhuelen, erstell ee YAML Fichier mam Numm deen an der Konfiguratioun vun dësem Tableau de Bord uginn ass, oder de Standard 'ui-lovelace.yaml'",
                         "yaml_mode": "Du benotz de YAML Modus fir dësen Tableau de Bord, dëst bedeit dass du d'Lovelace Konfiguratioun net kanns aus dem Benotzer Interface änneren. Wann's du Lovelace vum Benotzer Interface aus wëlls änneren, läsch de 'mode: yaml' aus denger Lovelace Konfiguratioun am 'configuration.yaml'"
+                    },
+                    "select_view": {
+                        "dashboard_label": "Tableau de Bord",
+                        "header": "Vue auswielen"
                     },
                     "suggest_card": {
                         "add": "Zu Lovelace bäisetzen",
@@ -2620,6 +2794,7 @@
                     "intro": "Hallo {name}, wëllkomm zu Home Assistant. Wéi wëllt dir äert Doheem benennen?",
                     "intro_location": "Mir wëlle wësse wou dir wunnt. Dës Informatioun hëlleft fir Informatiounen unzeweisen an Automatiounen anzeriichten déi op d'Sonne baséieren. Dës Donnéeë ginn nimools ausserhalb vun ärem Netzwierk gedeelt.",
                     "intro_location_detect": "Mir kënne beim Ausfëlle vun dësen Informatiounen hëllefen andeems eng eemoleg Demande bei engem externe Service ugefrot gëtt.",
+                    "location_name": "Numm vun denger Home Assistant Installatioun",
                     "location_name_default": "Doheem"
                 },
                 "integration": {
@@ -2729,10 +2904,18 @@
                     "header": "Verbindung autmatesch zoumaachen"
                 },
                 "themes": {
+                    "accent_color": "Faarf vum Accent",
+                    "dark_mode": {
+                        "auto": "Auto",
+                        "dark": "Däischter",
+                        "light": "Hell"
+                    },
                     "dropdown_label": "Thema",
                     "error_no_theme": "Keen Thema disponibel",
                     "header": "Thema",
-                    "link_promo": "Méi iwwert Thema liesen"
+                    "link_promo": "Méi iwwert Thema liesen",
+                    "primary_color": "Primär Faarf",
+                    "reset": "Reset"
                 },
                 "vibrate": {
                     "description": "Vibratioun op dësem Apparat un oder ausschalte wann aner Apparater gesteiert ginn.",

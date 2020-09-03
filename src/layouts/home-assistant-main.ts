@@ -5,15 +5,15 @@ import type { AppDrawerElement } from "@polymer/app-layout/app-drawer/app-drawer
 import {
   css,
   CSSResult,
+  customElement,
   html,
   LitElement,
   property,
-  customElement,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-import { listenMediaQuery } from "../common/dom/media_query";
 import { fireEvent } from "../common/dom/fire_event";
+import { listenMediaQuery } from "../common/dom/media_query";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { showNotificationDrawer } from "../dialogs/notifications/show-notification-drawer";
 import type { HomeAssistant, Route } from "../types";
@@ -49,7 +49,15 @@ class HomeAssistantMain extends LitElement {
     const disableSwipe =
       !sidebarNarrow || NON_SWIPABLE_PANELS.indexOf(hass.panelUrl) !== -1;
 
+    // Style block in render because of the mixin that is not supported
     return html`
+      <style>
+        app-drawer {
+          --app-drawer-content-container: {
+            background-color: var(--primary-background-color, #fff);
+          }
+        }
+      </style>
       <app-drawer-layout
         fullbleed
         .forceNarrow=${sidebarNarrow}

@@ -7,18 +7,21 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
-import "../../../src/components/ha-card";
+
 import { fetchHassioLogs } from "../../../src/data/hassio/supervisor";
-import "../../../src/layouts/hass-loading-screen";
+import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
+
+import "../../../src/components/buttons/ha-progress-button";
+import "../../../src/components/ha-card";
+import "../../../src/layouts/hass-loading-screen";
 import "../components/hassio-ansi-to-html";
-import { hassioStyle } from "../resources/hassio-style";
 
 interface LogProvider {
   key: string;
@@ -67,7 +70,7 @@ class HassioSupervisorLog extends LitElement {
     await this._loadData();
   }
 
-  public render(): TemplateResult | void {
+  protected render(): TemplateResult | void {
     return html`
       <ha-card>
         ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
@@ -102,10 +105,40 @@ class HassioSupervisorLog extends LitElement {
             : html`<hass-loading-screen no-toolbar></hass-loading-screen>`}
         </div>
         <div class="card-actions">
-          <mwc-button @click=${this._refresh}>Refresh</mwc-button>
+          <ha-progress-button @click=${this._refresh}>
+            Refresh
+          </ha-progress-button>
         </div>
       </ha-card>
     `;
+  }
+
+  private async _setLogProvider(ev): Promise<void> {
+    const provider = ev.detail.item.getAttribute("provider");
+    this._selectedLogProvider = provider;
+   this._loadData();
+  }
+
+  private async _refresh(ev: CustomEvent): Promise<void> {
+    const button = ev.target as any;
+    button.progress = true;
+    await this._loadData();
+    button.progress = false;
+  }
+
+  private async _loadData(): Promise<void> {
+    this._error = undefined;
+
+    try {
+      this._content = await fetchHassioLogs(
+        this.hass,
+        this._selectedLogProvider
+      );
+    } catch (err) {
+      this._error = `Failed to get supervisor logs, ${
+        typeof err === "object" ? err.body?.message || "Unkown error" : err
+      }`;
+    }
   }
 
   static get styles(): CSSResult[] {
@@ -114,6 +147,7 @@ class HassioSupervisorLog extends LitElement {
       hassioStyle,
       css`
         ha-card {
+          margin-top: 8px;
           width: 100%;
         }
         pre {
@@ -127,37 +161,8 @@ class HassioSupervisorLog extends LitElement {
           color: var(--error-color);
           margin-bottom: 16px;
         }
-        .card-content {
-          padding-top: 0px;
-        }
       `,
     ];
-  }
-
-  private async _setLogProvider(ev): Promise<void> {
-    const provider = ev.detail.item.getAttribute("provider");
-    this._selectedLogProvider = provider;
-    await this._loadData();
-  }
-
-  private async _loadData(): Promise<void> {
-    this._error = undefined;
-    this._content = undefined;
-
-    try {
-      this._content = await fetchHassioLogs(
-        this.hass,
-        this._selectedLogProvider
-      );
-    } catch (err) {
-      this._error = `Failed to get supervisor logs, ${
-        err.body?.message || err
-      }`;
-    }
-  }
-
-  private async _refresh(): Promise<void> {
-    await this._loadData();
   }
 }
 

@@ -21,6 +21,7 @@ import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import { suggestAddonRestart } from "../../dialogs/suggestAddonRestart";
 import { hassioStyle } from "../../resources/hassio-style";
+import "../../../../src/components/buttons/ha-progress-button";
 
 interface NetworkItem {
   description: string;
@@ -85,36 +86,15 @@ class HassioAddonNetwork extends LitElement {
           </table>
         </div>
         <div class="card-actions">
-          <mwc-button class="warning" @click=${this._resetTapped}>
-            Reset to defaults
-          </mwc-button>
-          <mwc-button @click=${this._saveTapped}>Save</mwc-button>
+          <ha-progress-button class="warning" @click=${this._resetTapped}>
+            Reset to defaults </ha-progress-button
+          >>
+          <ha-progress-button @click=${this._saveTapped}>
+            Save
+          </ha-progress-button>
         </div>
       </ha-card>
     `;
-  }
-
-  static get styles(): CSSResult[] {
-    return [
-      haStyle,
-      hassioStyle,
-      css`
-        :host {
-          display: block;
-        }
-        ha-card {
-          display: block;
-        }
-        .errors {
-          color: var(--error-color);
-          margin-bottom: 16px;
-        }
-        .card-actions {
-          display: flex;
-          justify-content: space-between;
-        }
-      `,
-    ];
   }
 
   protected update(changedProperties: PropertyValues): void {
@@ -149,7 +129,10 @@ class HassioAddonNetwork extends LitElement {
     });
   }
 
-  private async _resetTapped(): Promise<void> {
+  private async _resetTapped(ev: CustomEvent): Promise<void> {
+    const button = ev.target as any;
+    button.progress = true;
+
     const data: HassioAddonSetOptionParams = {
       network: null,
     };
@@ -162,17 +145,22 @@ class HassioAddonNetwork extends LitElement {
         path: "option",
       };
       fireEvent(this, "hass-api-called", eventdata);
+      if (this.addon?.state === "started") {
+        await suggestAddonRestart(this, this.hass, this.addon);
+      }
     } catch (err) {
       this._error = `Failed to set addon network configuration, ${
         err.body?.message || err
       }`;
     }
-    if (!this._error && this.addon?.state === "started") {
-      await suggestAddonRestart(this, this.hass, this.addon);
-    }
+
+    button.progress = false;
   }
 
-  private async _saveTapped(): Promise<void> {
+  private async _saveTapped(ev: CustomEvent): Promise<void> {
+    const button = ev.target as any;
+    button.progress = true;
+
     this._error = undefined;
     const networkconfiguration = {};
     this._config!.forEach((item) => {
@@ -191,14 +179,38 @@ class HassioAddonNetwork extends LitElement {
         path: "option",
       };
       fireEvent(this, "hass-api-called", eventdata);
+      if (this.addon?.state === "started") {
+        await suggestAddonRestart(this, this.hass, this.addon);
+      }
     } catch (err) {
       this._error = `Failed to set addon network configuration, ${
         err.body?.message || err
       }`;
     }
-    if (!this._error && this.addon?.state === "started") {
-      await suggestAddonRestart(this, this.hass, this.addon);
-    }
+    button.progress = false;
+  }
+
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      hassioStyle,
+      css`
+        :host {
+          display: block;
+        }
+        ha-card {
+          display: block;
+        }
+        .errors {
+          color: var(--error-color);
+          margin-bottom: 16px;
+        }
+        .card-actions {
+          display: flex;
+          justify-content: space-between;
+        }
+      `,
+    ];
   }
 }
 
