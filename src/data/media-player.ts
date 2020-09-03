@@ -46,7 +46,7 @@ export const MediaTypeBrowserSettings: {
   episode: { icon: mdiFolder },
   channel: { icon: mdiFolder },
   image: { icon: mdiImage },
-  url: { icon: mdiFolder },
+  url: { icon: mdiWeb },
   game: { icon: mdiFolder },
   app: { icon: mdiFolder },
   artist: { icon: mdiAccountMusic },
