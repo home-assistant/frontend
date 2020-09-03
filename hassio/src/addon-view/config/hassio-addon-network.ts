@@ -4,24 +4,25 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
+import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-card";
 import {
   HassioAddonDetails,
   HassioAddonSetOptionParams,
   setHassioAddonOption,
 } from "../../../../src/data/hassio/addon";
+import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import { suggestAddonRestart } from "../../dialogs/suggestAddonRestart";
 import { hassioStyle } from "../../resources/hassio-style";
-import "../../../../src/components/buttons/ha-progress-button";
 
 interface NetworkItem {
   description: string;
@@ -130,7 +131,7 @@ class HassioAddonNetwork extends LitElement {
   }
 
   private async _resetTapped(ev: CustomEvent): Promise<void> {
-    const button = ev.target as any;
+    const button = ev.currentTarget as any;
     button.progress = true;
 
     const data: HassioAddonSetOptionParams = {
@@ -149,16 +150,16 @@ class HassioAddonNetwork extends LitElement {
         await suggestAddonRestart(this, this.hass, this.addon);
       }
     } catch (err) {
-      this._error = `Failed to set addon network configuration, ${
-        err.body?.message || err
-      }`;
+      this._error = `Failed to set addon network configuration, ${extractApiErrorMessage(
+        err
+      )}`;
     }
 
     button.progress = false;
   }
 
   private async _saveTapped(ev: CustomEvent): Promise<void> {
-    const button = ev.target as any;
+    const button = ev.currentTarget as any;
     button.progress = true;
 
     this._error = undefined;
@@ -183,9 +184,9 @@ class HassioAddonNetwork extends LitElement {
         await suggestAddonRestart(this, this.hass, this.addon);
       }
     } catch (err) {
-      this._error = `Failed to set addon network configuration, ${
-        err.body?.message || err
-      }`;
+      this._error = `Failed to set addon network configuration, ${extractApiErrorMessage(
+        err
+      )}`;
     }
     button.progress = false;
   }
