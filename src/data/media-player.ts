@@ -45,7 +45,7 @@ export const MediaTypeBrowserSettings: {
   video: { icon: mdiFolder },
   episode: { icon: mdiFolder },
   channel: { icon: mdiFolder },
-  image: { icon: mdiFolder },
+  image: { icon: mdiImage },
   url: { icon: mdiFolder },
   game: { icon: mdiFolder },
   app: { icon: mdiFolder },
