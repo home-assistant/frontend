@@ -54,8 +54,6 @@ class HaPanelConfigDynalite extends LitElement {
 
   private _entryData?: any;
 
-  private _activeIndex = 0;
-
   private _configEntry?: string;
 
   protected render(): TemplateResult {
@@ -139,7 +137,8 @@ class HaPanelConfigDynalite extends LitElement {
                 >
                   <paper-listbox
                     slot="dropdown-content"
-                    .selected=${this._activeIndex}
+                    attr-for-selected="activeConfig"
+                    selected=${this._active || "off"}
                     @iron-select=${this._handleActiveSelection}
                   >
                     ${_activeOptions.map(
@@ -204,15 +203,10 @@ class HaPanelConfigDynalite extends LitElement {
     if (this._entryData.default) {
       this._fade = this._entryData.default.fade;
     }
-    const activeMap = {
-      on: 0,
-      true: 0,
-      init: 1,
-      false: 2,
-      off: 2,
-    };
-    this._activeIndex = activeMap[this._entryData.active];
-    this._active = _activeOptions[this._activeIndex];
+    const currentActive = this._entryData.active;
+    if (currentActive === true) this._active = "on";
+    else if (currentActive === false) this._active = "off";
+    else this._active = currentActive;
     this._autoDiscover = this._entryData.autodiscover;
     this._pollTimer = this._entryData.polltimer;
   }
