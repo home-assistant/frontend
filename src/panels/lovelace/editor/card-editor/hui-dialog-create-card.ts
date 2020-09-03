@@ -1,34 +1,33 @@
-import memoize from "memoize-one";
+import "@material/mwc-tab-bar/mwc-tab-bar";
+import "@material/mwc-tab/mwc-tab";
 import {
   css,
   CSSResultArray,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
-
+import memoize from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { haStyleDialog } from "../../../../resources/styles";
-import { showSuggestCardDialog } from "./show-suggest-card-dialog";
-
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { computeStateName } from "../../../../common/entity/compute_state_name";
+import { DataTableRowData } from "../../../../components/data-table/ha-data-table";
+import "../../../../components/ha-dialog";
+import "../../../../components/ha-header-bar";
 import type { LovelaceViewConfig } from "../../../../data/lovelace";
-import type { HomeAssistant } from "../../../../types";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { haStyleDialog } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
+import "./hui-card-picker";
+import "./hui-entity-picker-table";
 import {
   EditCardDialogParams,
   showEditCardDialog,
 } from "./show-edit-card-dialog";
-
-import "./hui-card-picker";
-import "./hui-entity-picker-table";
-import "../../../../components/ha-dialog";
-import "../../../../components/ha-header-bar";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
-import { computeDomain } from "../../../../common/entity/compute_domain";
-import { DataTableRowData } from "../../../../components/data-table/ha-data-table";
+import { showSuggestCardDialog } from "./show-suggest-card-dialog";
 
 declare global {
   interface HASSDomEvents {
@@ -121,17 +120,7 @@ export class HuiCreateDialogCard extends LitElement implements HassDialog {
                 <hui-entity-picker-table
                   .hass=${this.hass}
                   .narrow=${true}
-                  .entities=${this._allEntities().map((entity) => {
-                    const stateObj = this.hass.states[entity];
-                    return {
-                      icon: "",
-                      entity_id: entity,
-                      stateObj,
-                      name: computeStateName(stateObj),
-                      domain: computeDomain(entity),
-                      last_changed: stateObj!.last_changed,
-                    };
-                  }) as DataTableRowData[]}
+                  .entities=${this._allEntities(this.hass.states)}
                   @selected-changed=${this._handleSelectedChanged}
                 ></hui-entity-picker-table>
               </div>
@@ -266,7 +255,19 @@ export class HuiCreateDialogCard extends LitElement implements HassDialog {
     this.closeDialog();
   }
 
-  private _allEntities = memoize(() => Object.keys(this.hass.states));
+  private _allEntities = memoize((entities) =>
+    Object.keys(entities).map((entity) => {
+      const stateObj = this.hass.states[entity];
+      return {
+        icon: "",
+        entity_id: entity,
+        stateObj,
+        name: computeStateName(stateObj),
+        domain: computeDomain(entity),
+        last_changed: stateObj!.last_changed,
+      } as DataTableRowData;
+    })
+  );
 }
 
 declare global {

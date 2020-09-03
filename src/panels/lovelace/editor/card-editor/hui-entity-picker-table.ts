@@ -1,4 +1,3 @@
-import memoizeOne from "memoize-one";
 import {
   css,
   CSSResult,
@@ -8,21 +7,19 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
-import type { HomeAssistant } from "../../../../types";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import "../../../../components/data-table/ha-data-table";
 import type {
+  DataTableColumnContainer,
   DataTableRowData,
   SelectionChangedEvent,
-  DataTableColumnContainer,
 } from "../../../../components/data-table/ha-data-table";
-
-import "../../../../components/data-table/ha-data-table";
 import "../../../../components/entity/state-badge";
 import "../../../../components/ha-relative-time";
+import type { HomeAssistant } from "../../../../types";
 
 @customElement("hui-entity-picker-table")
 export class HuiEntityPickerTable extends LitElement {
@@ -86,15 +83,12 @@ export class HuiEntityPickerTable extends LitElement {
       },
     };
 
-    if (narrow) {
-      return columns;
-    }
-
     columns.entity_id = {
       title: this.hass!.localize("ui.panel.lovelace.unused_entities.entity_id"),
       sortable: true,
       filterable: true,
       width: "30%",
+      hidden: narrow,
     };
 
     columns.domain = {
@@ -102,6 +96,7 @@ export class HuiEntityPickerTable extends LitElement {
       sortable: true,
       filterable: true,
       width: "15%",
+      hidden: narrow,
     };
 
     columns.last_changed = {
@@ -111,6 +106,7 @@ export class HuiEntityPickerTable extends LitElement {
       type: "numeric",
       sortable: true,
       width: "15%",
+      hidden: narrow,
       template: (lastChanged: string) => html`
         <ha-relative-time
           .hass=${this.hass!}
