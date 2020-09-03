@@ -1,6 +1,7 @@
 import {
   css,
   CSSResult,
+  customElement,
   eventOptions,
   html,
   LitElement,
@@ -8,6 +9,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import { scroll } from "lit-virtualizer";
 import { formatDate } from "../../common/datetime/format_date";
 import { formatTimeWithSeconds } from "../../common/datetime/format_time";
@@ -16,10 +18,12 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { stateIcon } from "../../common/entity/state_icon";
 import { computeRTL, emitRTLDirection } from "../../common/util/compute_rtl";
+import "../../components/ha-circular-progress";
 import "../../components/ha-icon";
 import { LogbookEntry } from "../../data/logbook";
 import { HomeAssistant } from "../../types";
 
+@customElement("ha-logbook")
 class HaLogbook extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -27,19 +31,16 @@ class HaLogbook extends LitElement {
 
   @property({ attribute: false }) public entries: LogbookEntry[] = [];
 
-  @property({ type: Boolean, attribute: "narrow", reflect: true })
+  @property({ type: Boolean, attribute: "narrow" })
   public narrow = false;
 
-  @property({ attribute: "rtl", type: Boolean, reflect: true })
+  @property({ attribute: "rtl", type: Boolean })
   private _rtl = false;
 
-  @property({ type: Boolean, attribute: "no-click", reflect: true })
-  public noClick = false;
-
-  @property({ type: Boolean, attribute: "no-icon", reflect: true })
+  @property({ type: Boolean, attribute: "no-icon" })
   public noIcon = false;
 
-  @property({ type: Boolean, attribute: "no-name", reflect: true })
+  @property({ type: Boolean, attribute: "no-name" })
   public noName = false;
 
   // @ts-ignore
@@ -71,7 +72,15 @@ class HaLogbook extends LitElement {
     }
 
     return html`
-      <div class="container" @scroll=${this._saveScrollPos}>
+      <div
+        class="container ${classMap({
+          narrow: this.narrow,
+          rtl: this._rtl,
+          "no-name": this.noName,
+          "no-icon": this.noIcon,
+        })}"
+        @scroll=${this._saveScrollPos}
+      >
         ${scroll({
           items: this.entries,
           renderItem: (item: LogbookEntry, index?: number) =>
@@ -88,6 +97,7 @@ class HaLogbook extends LitElement {
     if (index === undefined) {
       return html``;
     }
+
     const previous = this.entries[index - 1];
     const state = item.entity_id ? this.hass.states[item.entity_id] : undefined;
     const item_username =
@@ -168,9 +178,6 @@ class HaLogbook extends LitElement {
   }
 
   private _entityClicked(ev: Event) {
-    if (this.noClick) {
-      return;
-    }
     ev.preventDefault();
     fireEvent(this, "hass-more-info", {
       entityId: (ev.target as any).entityId,
@@ -184,23 +191,24 @@ class HaLogbook extends LitElement {
         height: 100%;
       }
 
-      :host([rtl]) {
+      .rtl {
         direction: ltr;
       }
 
       .entry {
         display: flex;
         line-height: 2em;
+        padding-bottom: 8px;
       }
 
       .time {
         width: 65px;
         flex-shrink: 0;
-        font-size: 0.8em;
+        font-size: 12px;
         color: var(--secondary-text-color);
       }
 
-      :host([rtl]) .date {
+      .rtl .date {
         direction: rtl;
       }
 
@@ -223,18 +231,12 @@ class HaLogbook extends LitElement {
         color: var(--primary-text-color);
       }
 
-      :host([no-name]) .item-message {
+      .no-name .item-message {
         text-transform: capitalize;
       }
 
       a {
         color: var(--primary-color);
-      }
-
-      :host([no-click]) a {
-        color: inherit;
-        text-decoration: none;
-        cursor: auto;
       }
 
       .container {
@@ -253,18 +255,17 @@ class HaLogbook extends LitElement {
         box-sizing: border-box;
       }
 
-      :host([narrow]) .entry {
-        flex-direction: column;
+      .narrow .entry {
+        flex-direction: column-reverse;
+        line-height: 1.5;
       }
 
-      :host([narrow]) .icon-message ha-icon {
+      .narrow .icon-message ha-icon {
         margin-left: 0;
       }
     `;
   }
 }
-
-customElements.define("ha-logbook", HaLogbook);
 
 declare global {
   interface HTMLElementTagNameMap {

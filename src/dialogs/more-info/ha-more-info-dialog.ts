@@ -82,7 +82,7 @@ export class MoreInfoDialog extends LitElement {
         hideActions
         data-domain=${domain}
       >
-        <div slot="heading">
+        <div slot="heading" class="heading">
           <ha-header-bar>
             <mwc-icon-button
               slot="navigationIcon"
@@ -278,13 +278,9 @@ export class MoreInfoDialog extends LitElement {
           }
         }
 
-        mwc-tab-bar {
+        .heading {
           border-bottom: 1px solid
             var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
-        }
-
-        .progress-wrapper {
-          height: 50px;
         }
 
         @media all and (min-width: 451px) and (min-height: 501px) {
