@@ -163,7 +163,7 @@ export const validateHassioAddonOption = async (
   hass: HomeAssistant,
   slug: string
 ) => {
-  await hass.callApi<HassioResponse<void>>(
+  return await hass.callApi<HassioResponse<{ message: string }>>(
     "POST",
     `hassio/addons/${slug}/options/validate`
   );

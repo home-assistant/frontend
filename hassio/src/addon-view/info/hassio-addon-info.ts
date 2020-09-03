@@ -793,14 +793,25 @@ class HassioAddonInfo extends LitElement {
     const button = ev.target as any;
     button.progress = true;
     try {
-      await validateHassioAddonOption(this.hass, this.addon.slug);
+      const validate = await validateHassioAddonOption(
+        this.hass,
+        this.addon.slug
+      );
+      if (validate.data.message) {
+        await showConfirmationDialog(this, {
+          title: "Failed to start addon - configruation validation faled!",
+          text: validate.data.message.split(" Got ")[0],
+          confirm: () => this._openConfiguration(),
+          confirmText: "Go to configruation",
+          dismissText: "Cancel",
+        });
+        button.progress = false;
+        return;
+      }
     } catch (err) {
-      await showConfirmationDialog(this, {
-        title: "Failed to start addon - configruation validation faled!",
-        text: extractApiErrorMessage(err).split("Got ")[0],
-        confirm: () => this._openConfiguration(),
-        confirmText: "Go to configruation",
-        dismissText: "Cancel",
+      showAlertDialog(this, {
+        title: "Failed to validate addon configuration",
+        text: extractApiErrorMessage(err),
       });
       button.progress = false;
       return;
