@@ -186,7 +186,9 @@ class HaPanelConfigDynalite extends LitElement {
 
   protected async firstUpdated() {
     const configEntryId = this._getConfigEntry();
-    if (!configEntryId) return;
+    if (!configEntryId) {
+      return;
+    }
     const response = await this.hass.callWS({
       type: "dynalite/get_entry",
       entry_id: configEntryId,
