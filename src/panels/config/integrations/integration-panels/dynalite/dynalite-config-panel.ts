@@ -31,19 +31,19 @@ class HaPanelConfigDynalite extends LitElement {
 
   @property() public narrow!: boolean;
 
-  @internalProperty() private _name = "";
+  @internalProperty() private _name?: string;
 
-  @internalProperty() private _host = "";
+  @internalProperty() private _host?: string;
 
-  @internalProperty() private _port = "";
+  @internalProperty() private _port?: string;
 
-  @internalProperty() private _fade = "";
+  @internalProperty() private _fade?: string;
 
-  @internalProperty() private _active = "";
+  @internalProperty() private _active?: string;
 
-  @internalProperty() private _auto_discover = "";
+  @internalProperty() private _auto_discover?: string;
 
-  @internalProperty() private _poll_timer = "";
+  @internalProperty() private _poll_timer?: string;
 
   private _entryData;
 
