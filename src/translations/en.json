@@ -260,6 +260,7 @@
     },
     "common": {
       "and": "and",
+      "continue": "Continue",
       "previous": "Previous",
       "loading": "Loading",
       "refresh": "Refresh",
@@ -2351,7 +2352,11 @@
           },
           "cardpicker": {
             "no_description": "No description available.",
-            "custom_card": "Custom"
+            "custom_card": "Custom",
+            "domain": "Domain",
+            "entity": "Entity",
+            "by_entity": "By Entity",
+            "by_card": "By Card"
           }
         },
         "warning": {
