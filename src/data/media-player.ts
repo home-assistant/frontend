@@ -49,7 +49,7 @@ export const MediaTypeBrowserSettings: {
   url: { icon: mdiFolder },
   game: { icon: mdiFolder },
   app: { icon: mdiFolder },
-  artist: { icon: mdiFolder },
+  artist: { icon: mdiAccountMusic },
   contributing_artist: { icon: mdiFolder },
   podcast: { icon: mdiFolder },
   season: { icon: mdiFolder },
