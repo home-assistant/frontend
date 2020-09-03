@@ -84,7 +84,7 @@ class HassioAddonConfig extends LitElement {
   }
 
   private async _resetTapped(ev: CustomEvent): Promise<void> {
-    const button = ev.target as any;
+    const button = ev.currentTarget as any;
     button.progress = true;
 
     const confirmed = await showConfirmationDialog(this, {
