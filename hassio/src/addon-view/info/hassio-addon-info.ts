@@ -790,14 +790,14 @@ class HassioAddonInfo extends LitElement {
   }
 
   private async _startClicked(ev: CustomEvent): Promise<void> {
-    const button = ev.target as any;
+    const button = ev.currentTarget as any;
     button.progress = true;
     try {
       const validate = await validateHassioAddonOption(
         this.hass,
         this.addon.slug
       );
-      if (validate.data.message) {
+      if (!validate.data.valid) {
         await showConfirmationDialog(this, {
           title: "Failed to start addon - configruation validation faled!",
           text: validate.data.message.split(" Got ")[0],
