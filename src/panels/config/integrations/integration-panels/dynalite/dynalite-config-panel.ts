@@ -25,6 +25,8 @@ import "../../../../../components/ha-switch";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 
+const _activeOptions = ["on", "init", "off"];
+
 @customElement("dynalite-config-panel")
 class HaPanelConfigDynalite extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -46,8 +48,6 @@ class HaPanelConfigDynalite extends LitElement {
   @internalProperty() private _pollTimer?: string;
 
   private _entryData?: any;
-
-  private _activeOptions = ["on", "init", "off"];
 
   private _activeIndex = 0;
 
@@ -137,7 +137,7 @@ class HaPanelConfigDynalite extends LitElement {
                     .selected=${this._activeIndex}
                     @iron-select=${this._handleActiveSelection}
                   >
-                    ${this._activeOptions.map(
+                    ${_activeOptions.map(
                       (option) =>
                         html`<paper-item .activeConfig=${option}
                           >${this.localStr(`active_${option}`)}</paper-item
@@ -210,7 +210,7 @@ class HaPanelConfigDynalite extends LitElement {
       off: 2,
     };
     this._activeIndex = activeMap[this._entryData.active];
-    this._active = this._activeOptions[this._activeIndex];
+    this._active = _activeOptions[this._activeIndex];
     this._autoDiscover = this._entryData.autodiscover;
     this._pollTimer = this._entryData.polltimer;
   }
@@ -259,7 +259,7 @@ class HaPanelConfigDynalite extends LitElement {
     await this.hass.callWS({
       type: "dynalite/update_entry",
       entry_id: configEntryId,
-      entry_data: this._entryData,
+      entry_data: JSON.stringify(this._entryData),
     });
   }
 
