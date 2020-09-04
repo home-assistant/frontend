@@ -8,11 +8,12 @@ import {
   CSSResultArray,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
+  PropertyValues,
   TemplateResult,
 } from "lit-element";
-import memoize from "memoize-one";
 import { LocalStorage } from "../../common/decorators/local-storage";
 import { HASSDomEvent } from "../../common/dom/fire_event";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
@@ -40,6 +41,8 @@ class PanelMediaBrowser extends LitElement {
   // @ts-ignore
   @LocalStorage("mediaBrowseEntityId")
   private _entityId = BROWSER_SOURCE;
+
+  @internalProperty() private _mediaBrowserEntities: HassEntity[] = [];
 
   protected render(): TemplateResult {
     const stateObj = this._entityId
@@ -87,9 +90,35 @@ class PanelMediaBrowser extends LitElement {
     `;
   }
 
+  protected updated(changedProps: PropertyValues): void {
+    if (changedProps.has("hass")) {
+      const oldHass = changedProps.get("hass") as HomeAssistant;
+      let changed = false;
+
+      const tempStates = Object.values(this.hass!.states).filter((entity) => {
+        if (
+          computeStateDomain(entity) !== "media_player" ||
+          !supportsFeature(entity, SUPPORT_BROWSE_MEDIA)
+        ) {
+          return false;
+        }
+
+        if (oldHass?.states[entity.entity_id] !== entity) {
+          changed = true;
+        }
+
+        return true;
+      });
+
+      if (changed) {
+        this._mediaBrowserEntities = tempStates;
+      }
+    }
+  }
+
   private _showMediaSouceDialog(): void {
     showSelectMediaPlayerDialog(this, {
-      mediaSources: this._browseMediaSources(this.hass),
+      mediaSources: this._mediaBrowserEntities,
       sourceSelectedCallback: (entityId) => {
         this._entityId = entityId;
         this.requestUpdate();
@@ -121,25 +150,6 @@ class PanelMediaBrowser extends LitElement {
       media_content_type: item.media_content_type,
     });
   }
-
-  private _browseMediaSources = memoize((hass: HomeAssistant) => {
-    if (!hass) {
-      return [];
-    }
-
-    const entities: HassEntity[] = [];
-
-    Object.values(hass.states).forEach((entity) => {
-      if (
-        computeStateDomain(entity) === "media_player" &&
-        supportsFeature(entity, SUPPORT_BROWSE_MEDIA)
-      ) {
-        entities.push(entity);
-      }
-    });
-
-    return entities;
-  });
 
   static get styles(): CSSResultArray {
     return [
