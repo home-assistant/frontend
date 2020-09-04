@@ -11,16 +11,16 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-hls-player";
 import type { HomeAssistant } from "../../types";
-import { MediaPlayerBrowserDialogParams } from "./show-media-player-dialog";
+import { WebBrowserPlayMediaDialogParams } from "./show-media-player-dialog";
 
-@customElement("hui-dialog-browser-media-player")
-export class HuiDialogBrowserMediaPlayer extends LitElement {
+@customElement("hui-dialog-web-browser-play-media")
+export class HuiDialogWebBrowserPlayMedia extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false })
-  private _params?: MediaPlayerBrowserDialogParams;
+  private _params?: WebBrowserPlayMediaDialogParams;
 
-  public showDialog(params: MediaPlayerBrowserDialogParams): void {
+  public showDialog(params: WebBrowserPlayMediaDialogParams): void {
     this._params = params;
   }
 
@@ -117,6 +117,6 @@ export class HuiDialogBrowserMediaPlayer extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-dialog-browser-media-player": HuiDialogBrowserMediaPlayer;
+    "hui-dialog-web-browser-play-media": HuiDialogWebBrowserPlayMedia;
   }
 }

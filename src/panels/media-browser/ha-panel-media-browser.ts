@@ -2,16 +2,13 @@ import "@material/mwc-icon-button";
 import { mdiPlayNetwork } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultArray,
   customElement,
   html,
-  internalProperty,
   LitElement,
   property,
-  PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { LocalStorage } from "../../common/decorators/local-storage";
@@ -28,7 +25,7 @@ import {
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import { showMediaPlayerBrowserDialog } from "./show-media-player-dialog";
+import { showWebBrowserPlayMediaDialog } from "./show-media-player-dialog";
 import { showSelectMediaPlayerDialog } from "./show-select-media-source-dialog";
 
 @customElement("ha-panel-media-browser")
@@ -41,8 +38,6 @@ class PanelMediaBrowser extends LitElement {
   // @ts-ignore
   @LocalStorage("mediaBrowseEntityId")
   private _entityId = BROWSER_SOURCE;
-
-  @internalProperty() private _mediaBrowserEntities: HassEntity[] = [];
 
   protected render(): TemplateResult {
     const stateObj = this._entityId
@@ -90,35 +85,22 @@ class PanelMediaBrowser extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues): void {
-    if (changedProps.has("hass")) {
-      const oldHass = changedProps.get("hass") as HomeAssistant;
-      let changed = false;
-
-      const tempStates = Object.values(this.hass!.states).filter((entity) => {
-        if (
-          computeStateDomain(entity) !== "media_player" ||
-          !supportsFeature(entity, SUPPORT_BROWSE_MEDIA)
-        ) {
-          return false;
-        }
-
-        if (oldHass?.states[entity.entity_id] !== entity) {
-          changed = true;
-        }
-
-        return true;
-      });
-
-      if (changed) {
-        this._mediaBrowserEntities = tempStates;
-      }
-    }
-  }
-
   private _showSelectMediaPlayerDialog(): void {
+    const mediaPlayerEntities = Object.values(this.hass!.states).filter(
+      (entity) => {
+        if (
+          computeStateDomain(entity) === "media_player" &&
+          supportsFeature(entity, SUPPORT_BROWSE_MEDIA)
+        ) {
+          return true;
+        }
+
+        return false;
+      }
+    );
+
     showSelectMediaPlayerDialog(this, {
-      mediaSources: this._mediaBrowserEntities,
+      mediaSources: mediaPlayerEntities,
       sourceSelectedCallback: (entityId) => {
         this._entityId = entityId;
         this.requestUpdate();
@@ -136,7 +118,7 @@ class PanelMediaBrowser extends LitElement {
         media_content_id: item.media_content_id,
       });
 
-      showMediaPlayerBrowserDialog(this, {
+      showWebBrowserPlayMediaDialog(this, {
         sourceUrl: resolvedUrl.url,
         sourceType: resolvedUrl.mime_type,
         title: item.title,
