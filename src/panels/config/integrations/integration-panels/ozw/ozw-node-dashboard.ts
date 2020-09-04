@@ -39,18 +39,18 @@ class OZWNodeDashboard extends LitElement {
 
   @property() public configEntryId?: string;
 
-  @property() public ozwInstance = 0;
+  @property() public ozwInstance?;
 
-  @property() public nodeId = 0;
+  @property() public nodeId?;
 
   @internalProperty() private _node?: OZWDevice;
 
   @internalProperty() private _metadata?: OZWDeviceMetaDataResponse;
 
   protected firstUpdated() {
-    if (this.ozwInstance <= 0) {
+    if (!this.ozwInstance) {
       navigate(this, "/config/ozw/dashboard", true);
-    } else if (this.nodeId <= 0) {
+    } else if (!this.nodeId) {
       navigate(this, `/config/ozw/network/${this.ozwInstance}/nodes`, true);
     } else if (this.hass) {
       this._fetchData();
@@ -135,6 +135,8 @@ class OZWNodeDashboard extends LitElement {
   }
 
   private async _fetchData() {
+    if (!this.ozwInstance || !this.nodeId) return;
+
     this._node = await fetchOZWNodeStatus(
       this.hass!,
       this.ozwInstance,

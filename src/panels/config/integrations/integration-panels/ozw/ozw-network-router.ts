@@ -64,16 +64,14 @@ class OZWNetworkRouter extends HassRouterPage {
   };
 
   protected updatePageEl(el): void {
-    el.route = this.routeTail;
+    el.route = computeTail(this.routeTail);
     el.hass = this.hass;
     el.isWide = this.isWide;
     el.narrow = this.narrow;
     el.configEntryId = this._configEntry;
     el.ozwInstance = this.ozwInstance;
     if (this._currentPage === "node") {
-      const path = this.routeTail.path.split("/");
-      el.nodeId = path[1];
-      el.route = computeTail(this.routeTail);
+      el.nodeId = this.routeTail.path.split("/")[1];
     }
   }
 }
