@@ -171,13 +171,7 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
       days = days.filter((d) => d !== day);
     }
 
-    days.sort((a: string, b: string) => {
-      const first: number =
-        this._days.find((d) => d.name === b.toLowerCase())?.order ?? 1;
-      const second: number =
-        this._days.find((d) => d.name === a.toLowerCase())?.order ?? 2;
-      return second - first;
-    });
+    days.sort((a: string, b: string) => DAYS[a] - DAYS[b]);
 
     this.condition.weekday = days;
 
