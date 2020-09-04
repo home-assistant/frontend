@@ -4,7 +4,6 @@ import {
   html,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
   css,
   PropertyValues,
@@ -13,7 +12,6 @@ import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
 import {
-  OZWDevice,
   getIdentifiersFromDevice,
   OZWNodeIdentifiers,
 } from "../../../../../../data/ozw";
