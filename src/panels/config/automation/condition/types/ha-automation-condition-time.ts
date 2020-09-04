@@ -183,15 +183,13 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
     });
   }
 
-  static get styles(): CSSResult[] {
-    return [
-      css`
-        .flex {
-          display: flex;
-          height: 40px;
-        }
-      `,
-    ];
+  static get styles(): CSSResult {
+    return css`
+      .flex {
+        display: flex;
+        height: 40px;
+      }
+    `;
   }
 }
 
