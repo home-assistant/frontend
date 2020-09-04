@@ -10,7 +10,6 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { styleMap } from "lit-html/directives/style-map";
 import { compare } from "../../../common/string/compare";
 import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";

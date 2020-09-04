@@ -8,6 +8,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
+import { styleMap } from "lit-html/directives/style-map";
 import { Person } from "../../data/person";
 import { computeInitials } from "./ha-user-badge";
 
