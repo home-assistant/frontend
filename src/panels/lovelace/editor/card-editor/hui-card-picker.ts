@@ -1,40 +1,45 @@
+import "@material/mwc-tab-bar/mwc-tab-bar";
+import "@material/mwc-tab/mwc-tab";
 import Fuse from "fuse.js";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
+import { styleMap } from "lit-html/directives/style-map";
 import { until } from "lit-html/directives/until";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../common/search/search-input";
+import "../../../../components/ha-circular-progress";
 import { UNAVAILABLE_STATES } from "../../../../data/entity";
-import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
+import type {
+  LovelaceCardConfig,
+  LovelaceConfig,
+} from "../../../../data/lovelace";
 import {
   CustomCardEntry,
   customCards,
   CUSTOM_TYPE_PREFIX,
   getCustomCardEntry,
 } from "../../../../data/lovelace_custom_cards";
-import { HomeAssistant } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 import {
   calcUnusedEntities,
   computeUsedEntities,
 } from "../../common/compute-unused-entities";
 import { tryCreateCardElement } from "../../create-element/create-card-element";
-import { LovelaceCard } from "../../types";
+import type { LovelaceCard } from "../../types";
 import { getCardStubConfig } from "../get-card-stub-config";
-import { CardPickTarget, Card } from "../types";
 import { coreCards } from "../lovelace-cards";
-import { styleMap } from "lit-html/directives/style-map";
-import "../../../../components/ha-circular-progress";
+import type { Card, CardPickTarget } from "../types";
 
 interface CardElement {
   card: Card;
@@ -53,13 +58,13 @@ export class HuiCardPicker extends LitElement {
 
   @internalProperty() private _filter = "";
 
-  private _unusedEntities?: string[];
-
-  private _usedEntities?: string[];
-
   @internalProperty() private _width?: number;
 
   @internalProperty() private _height?: number;
+
+  private _unusedEntities?: string[];
+
+  private _usedEntities?: string[];
 
   private _filterCards = memoizeOne(
     (cardElements: CardElement[], filter?: string): CardElement[] => {
@@ -99,7 +104,7 @@ export class HuiCardPicker extends LitElement {
         no-label-float
         @value-changed=${this._handleSearchChange}
         .label=${this.hass.localize(
-          "ui.panel.lovelace.editor.card.generic.search"
+          "ui.panel.lovelace.editor.edit_card.search_cards"
         )}
       ></search-input>
       <div
@@ -232,85 +237,6 @@ export class HuiCardPicker extends LitElement {
     this._filter = value;
   }
 
-  static get styles(): CSSResult[] {
-    return [
-      css`
-        .cards-container {
-          display: grid;
-          grid-gap: 8px 8px;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-          margin-top: 20px;
-        }
-
-        .card {
-          height: 100%;
-          max-width: 500px;
-          display: flex;
-          flex-direction: column;
-          border-radius: 4px;
-          border: 1px solid var(--divider-color);
-          background: var(--primary-background-color, #fafafa);
-          cursor: pointer;
-          box-sizing: border-box;
-          position: relative;
-        }
-
-        .card-header {
-          color: var(--ha-card-header-color, --primary-text-color);
-          font-family: var(--ha-card-header-font-family, inherit);
-          font-size: 16px;
-          font-weight: bold;
-          letter-spacing: -0.012em;
-          line-height: 20px;
-          padding: 12px 16px;
-          display: block;
-          text-align: center;
-          background: var(
-            --ha-card-background,
-            var(--card-background-color, white)
-          );
-          border-radius: 0 0 4px 4px;
-          border-bottom: 1px solid var(--divider-color);
-        }
-
-        .preview {
-          pointer-events: none;
-          margin: 20px;
-          flex-grow: 1;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .preview > :first-child {
-          zoom: 0.6;
-          display: block;
-          width: 100%;
-        }
-
-        .description {
-          text-align: center;
-        }
-
-        .spinner {
-          align-items: center;
-          justify-content: center;
-        }
-
-        .overlay {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          z-index: 1;
-        }
-
-        .manual {
-          max-width: none;
-        }
-      `,
-    ];
-  }
-
   private _cardPicked(ev: Event): void {
     const config: LovelaceCardConfig = (ev.currentTarget! as CardPickTarget)
       .config;
@@ -405,6 +331,90 @@ export class HuiCardPicker extends LitElement {
         </div>
       </div>
     `;
+  }
+
+  static get styles(): CSSResult[] {
+    return [
+      css`
+        search-input {
+          display: block;
+          margin: 0 -8px;
+        }
+
+        .cards-container {
+          display: grid;
+          grid-gap: 8px 8px;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          margin-top: 20px;
+        }
+
+        .card {
+          height: 100%;
+          max-width: 500px;
+          display: flex;
+          flex-direction: column;
+          border-radius: 4px;
+          border: 1px solid var(--divider-color);
+          background: var(--primary-background-color, #fafafa);
+          cursor: pointer;
+          box-sizing: border-box;
+          position: relative;
+        }
+
+        .card-header {
+          color: var(--ha-card-header-color, --primary-text-color);
+          font-family: var(--ha-card-header-font-family, inherit);
+          font-size: 16px;
+          font-weight: bold;
+          letter-spacing: -0.012em;
+          line-height: 20px;
+          padding: 12px 16px;
+          display: block;
+          text-align: center;
+          background: var(
+            --ha-card-background,
+            var(--card-background-color, white)
+          );
+          border-radius: 0 0 4px 4px;
+          border-bottom: 1px solid var(--divider-color);
+        }
+
+        .preview {
+          pointer-events: none;
+          margin: 20px;
+          flex-grow: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .preview > :first-child {
+          zoom: 0.6;
+          display: block;
+          width: 100%;
+        }
+
+        .description {
+          text-align: center;
+        }
+
+        .spinner {
+          align-items: center;
+          justify-content: center;
+        }
+
+        .overlay {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          z-index: 1;
+        }
+
+        .manual {
+          max-width: none;
+        }
+      `,
+    ];
   }
 }
 

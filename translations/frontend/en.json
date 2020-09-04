@@ -505,6 +505,7 @@
             "back": "Back",
             "cancel": "Cancel",
             "close": "Close",
+            "continue": "Continue",
             "delete": "Delete",
             "error_required": "Required",
             "loading": "Loading",
@@ -689,8 +690,10 @@
                 "crop": "Crop"
             },
             "more_info_control": {
+                "controls": "Controls",
                 "dismiss": "Dismiss dialog",
                 "edit": "Edit entity",
+                "history": "History",
                 "person": {
                     "create_zone": "Create zone from current location"
                 },
@@ -1912,7 +1915,7 @@
                             "filter": "Reload filter entities",
                             "generic": "Reload generic IP camera entities",
                             "generic_thermostat": "Reload generic thermostat entities",
-                            "group": "Reload groups",
+                            "group": "Reload groups, group entities, and notify services",
                             "heading": "YAML configuration reloading",
                             "history_stats": "Reload history stats entities",
                             "homekit": "Reload HomeKit",
@@ -1923,12 +1926,17 @@
                             "input_text": "Reload input texts",
                             "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current YAML configuration and load the new one.",
                             "min_max": "Reload min/max entities",
+                            "mqtt": "Reload mqtt entities",
                             "person": "Reload persons",
                             "ping": "Reload ping binary sensor entities",
-                            "rest": "Reload rest entities",
+                            "reload": "Reload {domain}",
+                            "rest": "Reload rest entities and notify services",
+                            "rpi_gpio": "Reload Raspberry Pi GPIO entities",
                             "scene": "Reload scenes",
                             "script": "Reload scripts",
+                            "smtp": "Reload smtp notify services",
                             "statistics": "Reload statistics entities",
+                            "telegram": "Reload telegram notify services",
                             "template": "Reload template entities",
                             "trend": "Reload trend entities",
                             "universal": "Reload universal media player entities",
@@ -2549,7 +2557,11 @@
                         }
                     },
                     "cardpicker": {
+                        "by_card": "By Card",
+                        "by_entity": "By Entity",
                         "custom_card": "Custom",
+                        "domain": "Domain",
+                        "entity": "Entity",
                         "no_description": "No description available."
                     },
                     "edit_card": {

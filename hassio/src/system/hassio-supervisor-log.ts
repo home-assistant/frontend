@@ -12,16 +12,15 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-
-import { fetchHassioLogs } from "../../../src/data/hassio/supervisor";
-import { hassioStyle } from "../resources/hassio-style";
-import { haStyle } from "../../../src/resources/styles";
-import { HomeAssistant } from "../../../src/types";
-
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-card";
+import { extractApiErrorMessage } from "../../../src/data/hassio/common";
+import { fetchHassioLogs } from "../../../src/data/hassio/supervisor";
 import "../../../src/layouts/hass-loading-screen";
+import { haStyle } from "../../../src/resources/styles";
+import { HomeAssistant } from "../../../src/types";
 import "../components/hassio-ansi-to-html";
+import { hassioStyle } from "../resources/hassio-style";
 
 interface LogProvider {
   key: string;
@@ -116,11 +115,11 @@ class HassioSupervisorLog extends LitElement {
   private async _setLogProvider(ev): Promise<void> {
     const provider = ev.detail.item.getAttribute("provider");
     this._selectedLogProvider = provider;
-   this._loadData();
+    this._loadData();
   }
 
   private async _refresh(ev: CustomEvent): Promise<void> {
-    const button = ev.target as any;
+    const button = ev.currentTarget as any;
     button.progress = true;
     await this._loadData();
     button.progress = false;
@@ -135,9 +134,9 @@ class HassioSupervisorLog extends LitElement {
         this._selectedLogProvider
       );
     } catch (err) {
-      this._error = `Failed to get supervisor logs, ${
-        typeof err === "object" ? err.body?.message || "Unkown error" : err
-      }`;
+      this._error = `Failed to get supervisor logs, ${extractApiErrorMessage(
+        err
+      )}`;
     }
   }
 
