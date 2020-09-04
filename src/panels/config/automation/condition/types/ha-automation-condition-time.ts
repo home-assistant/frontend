@@ -66,13 +66,13 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
       ${this._days.map(
         (day) => html`
           <ha-formfield
+            alignEnd
+            spaceBetween
             class="flex"
             .label=${this.hass!.localize(
               `ui.panel.config.automation.editor.conditions.type.time.weekdays.${day.name}`
             )}
             .dir=${computeRTLDirection(this.hass!)}
-            alignEnd
-            spaceBetween
           >
             <ha-switch
               .day=${day.name}
