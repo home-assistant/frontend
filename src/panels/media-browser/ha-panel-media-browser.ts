@@ -87,7 +87,7 @@ class PanelMediaBrowser extends LitElement {
 
   private _showSelectMediaPlayerDialog(): void {
     showSelectMediaPlayerDialog(this, {
-      mediaSources: this._mediaPlayerEntities(),
+      mediaSources: this._mediaPlayerEntities,
       sourceSelectedCallback: (entityId) => {
         this._entityId = entityId;
         this.requestUpdate();
@@ -120,7 +120,7 @@ class PanelMediaBrowser extends LitElement {
     });
   }
 
-  private _mediaPlayerEntities = () => {
+  private get _mediaPlayerEntities() {
     return Object.values(this.hass!.states).filter((entity) => {
       if (
         computeStateDomain(entity) === "media_player" &&
@@ -131,7 +131,7 @@ class PanelMediaBrowser extends LitElement {
 
       return false;
     });
-  };
+  }
 
   static get styles(): CSSResultArray {
     return [
