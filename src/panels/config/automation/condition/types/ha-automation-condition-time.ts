@@ -75,7 +75,7 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
             spaceBetween
           >
             <ha-switch
-              .day="${day.name}"
+              .day=${day.name}
               .checked=${this._isChecked(weekday, day.name)}
               @change=${this._dayValueChanged}
             >
