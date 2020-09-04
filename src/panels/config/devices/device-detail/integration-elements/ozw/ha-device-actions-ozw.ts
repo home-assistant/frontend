@@ -33,7 +33,6 @@ export class HaDeviceActionsOzw extends LitElement {
   @property()
   private ozw_instance = 1;
 
-  @internalProperty() private _ozwDevice?: OZWDevice;
 
   protected updated(changedProperties: PropertyValues) {
     if (changedProperties.has("device")) {
