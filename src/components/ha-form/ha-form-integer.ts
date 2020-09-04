@@ -54,7 +54,8 @@ export class HaFormInteger extends LitElement implements HaFormElement {
                   `
                 : ""}
               <ha-paper-slider
-                pin=""
+                pin
+                editable
                 .value=${this._value}
                 .min=${this.schema.valueMin}
                 .max=${this.schema.valueMax}
@@ -110,6 +111,10 @@ export class HaFormInteger extends LitElement implements HaFormElement {
     return css`
       .flex {
         display: flex;
+      }
+      ha-paper-slider {
+        width: 100%;
+        margin-right: 16px;
       }
     `;
   }

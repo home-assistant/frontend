@@ -66,7 +66,9 @@
     "state_badge": {
         "alarm_control_panel": {
             "armed_home": "アームしました",
+            "disarmed": "解除",
             "disarming": "解除",
+            "pending": "保留",
             "triggered": "トリガー"
         },
         "default": {
@@ -85,6 +87,8 @@
     },
     "state": {
         "alarm_control_panel": {
+            "disarmed": "解除",
+            "disarming": "解除",
             "pending": "保留中",
             "triggered": "トリガー"
         },
@@ -1877,21 +1881,29 @@
                             "automation": "オートメーションの再読込",
                             "command_line": "コマンド ライン エンティティの再読み込み",
                             "core": "ロケーションとカスタマイズの再読込",
+                            "filesize": "ファイルサイズエンティティを再読み込み",
                             "filter": "フィルターエンティティの再読み込み",
+                            "generic": "汎用 IP カメラ エンティティの再読み込み",
+                            "generic_thermostat": "汎用サーモスタット エンティティの再読み込み",
                             "group": "グループの再読込",
                             "heading": "設定の再読込",
+                            "history_stats": "履歴エンティティを再読み込み",
+                            "homekit": "HomeKitの再読み込み",
                             "input_boolean": "入力ブール値を再読み込み",
                             "input_datetime": "入力日時を再読み込み",
                             "input_number": "入力番号を再読み込み",
                             "input_select": "入力選択の再読み込み",
                             "input_text": "入力テキストを再読み込み",
                             "introduction": "Home Assistant の一部は、再起動を必要とせずに再読込できます。再読込を押すと、現在の設定をアンロードし、新しい設定を読み込みます。",
+                            "min_max": "最小/最大エンティティを再読み込み",
                             "person": "人の再読込",
+                            "ping": "ping バイナリ センサー エンティティの再読み込み",
                             "rest": "残りのエンティティの再読み込み",
                             "scene": "シーンの再読込",
                             "script": "スクリプトの再読込",
                             "statistics": "静的エンティティの再読み込み",
                             "template": "テンプレート エンティティの再読み込み",
+                            "trend": "トレンドエンティティを再読み込み",
                             "universal": "ユニバーサル メディア プレーヤー エンティティの再読み込み",
                             "zone": "ゾーンの再読込"
                         },
@@ -1944,6 +1956,8 @@
                         "create": "作成する",
                         "name": "名前",
                         "password": "パスワード",
+                        "password_confirm": "パスワードの確認",
+                        "password_not_match": "パスワードが一致しません",
                         "username": "ユーザー名"
                     },
                     "caption": "ユーザー",
@@ -1960,7 +1974,9 @@
                         "group": "グループ",
                         "id": "ID",
                         "name": "名前",
+                        "new_password": "新しいパスワード",
                         "owner": "所有者",
+                        "password_changed": "パスワードが変更されました!",
                         "system_generated": "システムジェネレート",
                         "system_generated_users_not_editable": "システムが生成されたユーザーを変更できません。",
                         "system_generated_users_not_removable": "システムで生成されたユーザーを削除できません。",
@@ -2410,6 +2426,7 @@
                             "show_name": "名前を表示しますか？",
                             "show_state": "状態を表示しますか?",
                             "state": "状態",
+                            "state_color": "状態に基づいたカラーアイコン？",
                             "tap_action": "アクションをタップ",
                             "theme": "テーマ",
                             "title": "タイトル",

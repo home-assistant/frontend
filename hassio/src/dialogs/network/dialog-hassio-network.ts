@@ -90,7 +90,14 @@ export class DialogHassioNetwork extends LitElement implements HassDialog {
     }
 
     return html`
-      <ha-dialog open .heading=${true} hideActions @closed=${this.closeDialog}>
+      <ha-dialog
+        open
+        scrimClickAction
+        escapeKeyAction
+        .heading=${true}
+        hideActions
+        @closed=${this.closeDialog}
+      >
         <div slot="heading">
           <ha-header-bar>
             <span slot="title">

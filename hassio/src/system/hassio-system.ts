@@ -12,8 +12,8 @@ import {
   HassioHostInfo,
 } from "../../../src/data/hassio/host";
 import {
-  HassioSupervisorInfo,
   HassioInfo,
+  HassioSupervisorInfo,
 } from "../../../src/data/hassio/supervisor";
 import "../../../src/layouts/hass-tabs-subpage";
 import { haStyle } from "../../../src/resources/styles";
@@ -40,7 +40,7 @@ class HassioSystem extends LitElement {
 
   @property({ attribute: false }) public hassOsInfo!: HassioHassOSInfo;
 
-  public render(): TemplateResult | void {
+  protected render(): TemplateResult | void {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}

@@ -1,17 +1,17 @@
-import "../../components/ha-icon-button";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import "../../components/ha-card";
-import { EventsMixin } from "../../mixins/events-mixin";
-import LocalizeMixin from "../../mixins/localize-mixin";
+import "../../components/ha-icon-button";
+import "../../components/ha-settings-row";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
-import "../../components/ha-settings-row";
+import { EventsMixin } from "../../mixins/events-mixin";
+import LocalizeMixin from "../../mixins/localize-mixin";
 
 /*
  * @appliesMixin EventsMixin
@@ -39,7 +39,7 @@ class HaRefreshTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
             <div slot="description">[[_formatLastUsed(item)]]</div>
             <div>
               <template is="dom-if" if="[[item.is_current]]">
-                <paper-tooltip position="left"
+                <paper-tooltip animation-delay="0" position="left"
                   >[[localize('ui.panel.profile.refresh_tokens.current_token_tooltip')]]</paper-tooltip
                 >
               </template>

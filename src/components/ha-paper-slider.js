@@ -68,6 +68,10 @@ class HaPaperSlider extends PaperSliderClass {
         -webkit-transform: scale(1) translate(0, -17px) scaleX(-1) !important;
         transform: scale(1) translate(0, -17px) scaleX(-1) !important;
         }
+
+        .slider-input {
+          width: 54px;
+        }
     `;
     tpl.content.appendChild(styleEl);
     return tpl;
