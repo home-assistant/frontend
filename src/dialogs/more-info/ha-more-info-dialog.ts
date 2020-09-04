@@ -11,6 +11,7 @@ import {
   LitElement,
   property,
 } from "lit-element";
+import { cache } from "lit-html/directives/cache";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { DOMAINS_MORE_INFO_NO_HISTORY } from "../../common/const";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -147,47 +148,52 @@ export class MoreInfoDialog extends LitElement {
             : ""}
         </div>
         <div class="content">
-          ${this._currTabIndex === 0
-            ? html`
-                ${DOMAINS_NO_INFO.includes(domain)
-                  ? ""
-                  : html`
-                      <state-card-content
-                        in-dialog
-                        .stateObj=${stateObj}
-                        .hass=${this.hass}
-                      ></state-card-content>
-                    `}
-                <more-info-content
-                  .stateObj=${stateObj}
-                  .hass=${this.hass}
-                ></more-info-content>
-                ${stateObj.attributes.restored
-                  ? html`
-                      <p>
-                        ${this.hass.localize(
-                          "ui.dialogs.more_info_control.restored.not_provided"
-                        )}
-                      </p>
-                      <p>
-                        ${this.hass.localize(
-                          "ui.dialogs.more_info_control.restored.remove_intro"
-                        )}
-                      </p>
-                      <mwc-button class="warning" @click=${this._removeEntity}>
-                        ${this.hass.localize(
-                          "ui.dialogs.more_info_control.restored.remove_action"
-                        )}
-                      </mwc-button>
-                    `
-                  : ""}
-              `
-            : html`
-                <ha-more-info-tab-history
-                  .hass=${this.hass}
-                  .entityId=${this._entityId}
-                ></ha-more-info-tab-history>
-              `}
+          ${cache(
+            this._currTabIndex === 0
+              ? html`
+                  ${DOMAINS_NO_INFO.includes(domain)
+                    ? ""
+                    : html`
+                        <state-card-content
+                          in-dialog
+                          .stateObj=${stateObj}
+                          .hass=${this.hass}
+                        ></state-card-content>
+                      `}
+                  <more-info-content
+                    .stateObj=${stateObj}
+                    .hass=${this.hass}
+                  ></more-info-content>
+                  ${stateObj.attributes.restored
+                    ? html`
+                        <p>
+                          ${this.hass.localize(
+                            "ui.dialogs.more_info_control.restored.not_provided"
+                          )}
+                        </p>
+                        <p>
+                          ${this.hass.localize(
+                            "ui.dialogs.more_info_control.restored.remove_intro"
+                          )}
+                        </p>
+                        <mwc-button
+                          class="warning"
+                          @click=${this._removeEntity}
+                        >
+                          ${this.hass.localize(
+                            "ui.dialogs.more_info_control.restored.remove_action"
+                          )}
+                        </mwc-button>
+                      `
+                    : ""}
+                `
+              : html`
+                  <ha-more-info-tab-history
+                    .hass=${this.hass}
+                    .entityId=${this._entityId}
+                  ></ha-more-info-tab-history>
+                `
+          )}
         </div>
       </ha-dialog>
     `;
