@@ -10,7 +10,7 @@ import "./ha-icon-button";
 const MwcDialog = customElements.get("mwc-dialog") as Constructor<Dialog>;
 
 export const createCloseHeading = (hass: HomeAssistant, title: string) => html`
-  <div class="header_title">${title}</div>
+  <span class="header_title">${title}</span>
   <mwc-icon-button
     aria-label=${hass.localize("ui.dialogs.generic.close")}
     dialogAction="close"
