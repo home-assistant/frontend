@@ -3,6 +3,7 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   PropertyValues,
@@ -36,21 +37,27 @@ class HaHLSPlayer extends LitElement {
 
   @query("video") private _videoEl!: HTMLVideoElement;
 
+  @internalProperty() private _attached = false;
+
   private _hlsPolyfillInstance?: Hls;
 
   private _useExoPlayer = false;
 
   public connectedCallback() {
     super.connectedCallback();
-    this._startHls();
+    this._attached = true;
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._destroyPolyfill();
+    this._attached = false;
   }
 
   protected render(): TemplateResult {
+    if (!this._attached) {
+      return html``;
+    }
+
     return html`
       <video
         ?autoplay=${this.autoPlay}
@@ -65,11 +72,22 @@ class HaHLSPlayer extends LitElement {
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
 
-    if (changedProps.has("url")) {
+    const attachedChanged = changedProps.has("_attached");
+    const urlChanged = changedProps.has("url");
+
+    if (!urlChanged && !attachedChanged) {
+      return;
+    }
+
+    // If we are no longer attached, destroy polyfill
+    if (attachedChanged && !this._attached) {
       // Tear down existing polyfill, if available
       this._destroyPolyfill();
-      this._startHls();
+      return;
     }
+
+    this._destroyPolyfill();
+    this._startHls();
   }
 
   private async _getUseExoPlayer(): Promise<boolean> {
