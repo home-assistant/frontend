@@ -3,56 +3,39 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { supportsFeature } from "../common/entity/supports-feature";
-import { nextRender } from "../common/util/render-status";
-import { getExternalConfig } from "../external_app/external_config";
 import {
   CAMERA_SUPPORT_STREAM,
   computeMJPEGStreamUrl,
   fetchStreamUrl,
 } from "../data/camera";
 import { CameraEntity, HomeAssistant } from "../types";
-
-type HLSModule = typeof import("hls.js");
+import "./ha-hls-player";
 
 @customElement("ha-camera-stream")
 class HaCameraStream extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public stateObj?: CameraEntity;
+  @property({ attribute: false }) public stateObj?: CameraEntity;
 
   @property({ type: Boolean }) public showControls = false;
 
-  @internalProperty() private _attached = false;
-
   // We keep track if we should force MJPEG with a string
   // that way it automatically resets if we change entity.
-  @internalProperty() private _forceMJPEG: string | undefined = undefined;
+  @internalProperty() private _forceMJPEG?: string;
 
-  private _hlsPolyfillInstance?: Hls;
-
-  private _useExoPlayer = false;
-
-  public connectedCallback() {
-    super.connectedCallback();
-    this._attached = true;
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    this._attached = false;
-  }
+  @internalProperty() private _url?: string;
 
   protected render(): TemplateResult {
-    if (!this.stateObj || !this._attached) {
+    if (!this.stateObj || (!this._forceMJPEG && !this._url)) {
       return html``;
     }
 
@@ -70,50 +53,22 @@ class HaCameraStream extends LitElement {
             />
           `
         : html`
-            <video
+            <ha-hls-player
               autoplay
               muted
               playsinline
               ?controls=${this.showControls}
-              @loadeddata=${this._elementResized}
-            ></video>
+              .hass=${this.hass}
+              .url=${this._url!}
+            ></ha-hls-player>
           `}
     `;
   }
 
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-
-    const stateObjChanged = changedProps.has("stateObj");
-    const attachedChanged = changedProps.has("_attached");
-
-    const oldState = changedProps.get("stateObj") as this["stateObj"];
-    const oldEntityId = oldState ? oldState.entity_id : undefined;
-    const curEntityId = this.stateObj ? this.stateObj.entity_id : undefined;
-
-    if (
-      (!stateObjChanged && !attachedChanged) ||
-      (stateObjChanged && oldEntityId === curEntityId)
-    ) {
-      return;
-    }
-
-    // If we are no longer attached, destroy polyfill.
-    if (attachedChanged && !this._attached) {
-      this._destroyPolyfill();
-      return;
-    }
-
-    // Nothing to do if we are render MJPEG.
-    if (this._shouldRenderMJPEG) {
-      return;
-    }
-
-    // Tear down existing polyfill, if available
-    this._destroyPolyfill();
-
-    if (curEntityId) {
-      this._startHls();
+  protected updated(changedProps: PropertyValues): void {
+    if (changedProps.has("stateObj")) {
+      this._forceMJPEG = undefined;
+      this._getStreamUrl();
     }
   }
 
@@ -125,136 +80,35 @@ class HaCameraStream extends LitElement {
     );
   }
 
-  private get _videoEl(): HTMLVideoElement {
-    return this.shadowRoot!.querySelector("video")!;
-  }
-
-  private async _getUseExoPlayer(): Promise<boolean> {
-    if (!this.hass!.auth.external) {
-      return false;
-    }
-    const externalConfig = await getExternalConfig(this.hass!.auth.external);
-    return externalConfig && externalConfig.hasExoPlayer;
-  }
-
-  private async _startHls(): Promise<void> {
-    // eslint-disable-next-line
-    let hls;
-    const videoEl = this._videoEl;
-    this._useExoPlayer = await this._getUseExoPlayer();
-    if (!this._useExoPlayer) {
-      hls = ((await import(/* webpackChunkName: "hls.js" */ "hls.js")) as any)
-        .default as HLSModule;
-      let hlsSupported = hls.isSupported();
-
-      if (!hlsSupported) {
-        hlsSupported =
-          videoEl.canPlayType("application/vnd.apple.mpegurl") !== "";
-      }
-
-      if (!hlsSupported) {
-        this._forceMJPEG = this.stateObj!.entity_id;
-        return;
-      }
-    }
-
+  private async _getStreamUrl(): Promise<void> {
     try {
       const { url } = await fetchStreamUrl(
         this.hass!,
         this.stateObj!.entity_id
       );
 
-      if (this._useExoPlayer) {
-        this._renderHLSExoPlayer(url);
-      } else if (hls.isSupported()) {
-        this._renderHLSPolyfill(videoEl, hls, url);
-      } else {
-        this._renderHLSNative(videoEl, url);
-      }
-      return;
+      this._url = url;
     } catch (err) {
       // Fails if we were unable to get a stream
       // eslint-disable-next-line
       console.error(err);
+
       this._forceMJPEG = this.stateObj!.entity_id;
     }
-  }
-
-  private async _renderHLSExoPlayer(url: string) {
-    window.addEventListener("resize", this._resizeExoPlayer);
-    this.updateComplete.then(() => nextRender()).then(this._resizeExoPlayer);
-    this._videoEl.style.visibility = "hidden";
-    await this.hass!.auth.external!.sendMessage({
-      type: "exoplayer/play_hls",
-      payload: new URL(url, window.location.href).toString(),
-    });
-  }
-
-  private _resizeExoPlayer = () => {
-    const rect = this._videoEl.getBoundingClientRect();
-    this.hass!.auth.external!.fireMessage({
-      type: "exoplayer/resize",
-      payload: {
-        left: rect.left,
-        top: rect.top,
-        right: rect.right,
-        bottom: rect.bottom,
-      },
-    });
-  };
-
-  private async _renderHLSNative(videoEl: HTMLVideoElement, url: string) {
-    videoEl.src = url;
-    await new Promise((resolve) =>
-      videoEl.addEventListener("loadedmetadata", resolve)
-    );
-    videoEl.play();
-  }
-
-  private async _renderHLSPolyfill(
-    videoEl: HTMLVideoElement,
-    // eslint-disable-next-line
-    Hls: HLSModule,
-    url: string
-  ) {
-    const hls = new Hls({
-      liveBackBufferLength: 60,
-      fragLoadingTimeOut: 30000,
-      manifestLoadingTimeOut: 30000,
-      levelLoadingTimeOut: 30000,
-    });
-    this._hlsPolyfillInstance = hls;
-    hls.attachMedia(videoEl);
-    hls.on(Hls.Events.MEDIA_ATTACHED, () => {
-      hls.loadSource(url);
-    });
   }
 
   private _elementResized() {
     fireEvent(this, "iron-resize");
   }
 
-  private _destroyPolyfill() {
-    if (this._hlsPolyfillInstance) {
-      this._hlsPolyfillInstance.destroy();
-      this._hlsPolyfillInstance = undefined;
-    }
-    if (this._useExoPlayer) {
-      window.removeEventListener("resize", this._resizeExoPlayer);
-      this.hass!.auth.external!.fireMessage({ type: "exoplayer/stop" });
-    }
-  }
-
   static get styles(): CSSResult {
     return css`
       :host,
-      img,
-      video {
+      img {
         display: block;
       }
 
-      img,
-      video {
+      img {
         width: 100%;
       }
     `;
