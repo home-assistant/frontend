@@ -1,15 +1,13 @@
 import "@material/mwc-button";
 import "@material/mwc-icon-button";
+import { mdiPackageVariant, mdiPackageVariantClosed, mdiReload } from "@mdi/js";
 import "@polymer/paper-checkbox/paper-checkbox";
+import type { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-radio-button/paper-radio-button";
 import "@polymer/paper-radio-group/paper-radio-group";
-
-import type { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import type { PaperRadioGroupElement } from "@polymer/paper-radio-group/paper-radio-group";
-import { mdiPackageVariant, mdiPackageVariantClosed, mdiReload } from "@mdi/js";
-import { fireEvent } from "../../../src/common/dom/fire_event";
 import {
   css,
   CSSResultArray,
@@ -21,7 +19,11 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-
+import { fireEvent } from "../../../src/common/dom/fire_event";
+import "../../../src/components/buttons/ha-progress-button";
+import "../../../src/components/ha-card";
+import "../../../src/components/ha-svg-icon";
+import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import {
   createHassioFullSnapshot,
   createHassioPartialSnapshot,
@@ -31,19 +33,15 @@ import {
   HassioSnapshot,
   reloadHassioSnapshots,
 } from "../../../src/data/hassio/snapshot";
-import "../../../src/components/buttons/ha-progress-button";
-import { hassioStyle } from "../resources/hassio-style";
 import { HassioSupervisorInfo } from "../../../src/data/hassio/supervisor";
+import "../../../src/layouts/hass-tabs-subpage";
+import { PolymerChangedEvent } from "../../../src/polymer-types";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant, Route } from "../../../src/types";
-import { PolymerChangedEvent } from "../../../src/polymer-types";
+import "../components/hassio-card-content";
 import { showHassioSnapshotDialog } from "../dialogs/snapshot/show-dialog-hassio-snapshot";
 import { supervisorTabs } from "../hassio-tabs";
-
-import "../../../src/components/ha-card";
-import "../../../src/components/ha-svg-icon";
-import "../../../src/layouts/hass-tabs-subpage";
-import "../components/hassio-card-content";
+import { hassioStyle } from "../resources/hassio-style";
 
 interface CheckboxItem {
   slug: string;
@@ -292,12 +290,12 @@ class HassioSnapshots extends LitElement {
       this._snapshots = await fetchHassioSnapshots(this.hass);
       this._snapshots.sort((a, b) => (a.date < b.date ? 1 : -1));
     } catch (err) {
-      this._error = err.message;
+      this._error = extractApiErrorMessage(err);
     }
   }
 
   private async _createSnapshot(ev: CustomEvent): Promise<void> {
-    const button = ev.target as any;
+    const button = ev.currentTarget as any;
     button.progress = true;
 
     this._error = "";
@@ -345,7 +343,7 @@ class HassioSnapshots extends LitElement {
       this._updateSnapshots();
       fireEvent(this, "hass-api-called", { success: true, response: null });
     } catch (err) {
-      this._error = err.message;
+      this._error = extractApiErrorMessage(err);
     }
     button.progress = false;
   }

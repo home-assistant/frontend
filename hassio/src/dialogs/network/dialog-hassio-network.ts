@@ -1,43 +1,42 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-icon-button";
-import "@material/mwc-tab-bar";
 import "@material/mwc-tab";
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
+import "@material/mwc-tab-bar";
 import { mdiClose } from "@mdi/js";
+import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { cache } from "lit-html/directives/cache";
-
-import {
-  updateNetworkInterface,
-  NetworkInterface,
-} from "../../../../src/data/hassio/network";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
-import { HassioNetworkDialogParams } from "./show-dialog-network";
-import { haStyleDialog } from "../../../../src/resources/styles";
-import {
-  showAlertDialog,
-  showConfirmationDialog,
-} from "../../../../src/dialogs/generic/show-dialog-box";
-import type { HomeAssistant } from "../../../../src/types";
-import type { HaRadio } from "../../../../src/components/ha-radio";
-import { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
-
 import "../../../../src/components/ha-circular-progress";
 import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-formfield";
 import "../../../../src/components/ha-header-bar";
 import "../../../../src/components/ha-radio";
+import type { HaRadio } from "../../../../src/components/ha-radio";
 import "../../../../src/components/ha-related-items";
 import "../../../../src/components/ha-svg-icon";
+import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
+import {
+  NetworkInterface,
+  updateNetworkInterface,
+} from "../../../../src/data/hassio/network";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../../src/dialogs/generic/show-dialog-box";
+import { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
+import { haStyleDialog } from "../../../../src/resources/styles";
+import type { HomeAssistant } from "../../../../src/types";
+import { HassioNetworkDialogParams } from "./show-dialog-network";
 
 @customElement("dialog-hassio-network")
 export class DialogHassioNetwork extends LitElement implements HassDialog {
@@ -201,8 +200,7 @@ export class DialogHassioNetwork extends LitElement implements HassDialog {
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to change network settings",
-        text:
-          typeof err === "object" ? err.body.message || "Unkown error" : err,
+        text: extractApiErrorMessage(err),
       });
       this._prosessing = false;
       return;

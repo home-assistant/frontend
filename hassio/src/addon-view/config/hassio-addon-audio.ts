@@ -176,7 +176,7 @@ class HassioAddonAudio extends LitElement {
   }
 
   private async _saveSettings(ev: CustomEvent): Promise<void> {
-    const button = ev.target as any;
+    const button = ev.currentTarget as any;
     button.progress = true;
 
     this._error = undefined;
