@@ -8,15 +8,15 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import { styleMap } from "lit-html/directives/style-map";
-import { toggleAttribute } from "../../common/dom/toggle_attribute";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { User } from "../../data/user";
 import { CurrentUser, HomeAssistant } from "../../types";
 
-const computeInitials = (name: string) => {
+export const computeInitials = (name: string) => {
   if (!name) {
-    return "user";
+    return "?";
   }
   return (
     name
@@ -31,7 +31,7 @@ const computeInitials = (name: string) => {
 };
 
 @customElement("ha-user-badge")
-class StateBadge extends LitElement {
+class UserBadge extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public user?: User | CurrentUser;
@@ -44,14 +44,6 @@ class StateBadge extends LitElement {
     super.updated(changedProps);
     if (changedProps.has("user")) {
       this._getPersonPicture();
-      if (!this._personPicture) {
-        toggleAttribute(
-          this,
-          "long",
-          (this.hass.user ? computeInitials(this.hass.user.name) : "?").length >
-            2
-        );
-      }
       return;
     }
     const oldHass = changedProps.get("hass");
@@ -67,6 +59,8 @@ class StateBadge extends LitElement {
       } else {
         this._getPersonPicture();
       }
+    } else if (!this._personEntityId && oldHass) {
+      this._getPersonPicture();
     }
   }
 
@@ -74,22 +68,20 @@ class StateBadge extends LitElement {
     if (!this.hass || !this.user) {
       return html``;
     }
-    const user = this.user;
     const picture = this._personPicture;
 
-    return html`
-      ${picture
-        ? html`<div
-            style=${styleMap({ backgroundImage: `url(${picture})` })}
-            class="picture"
-          ></div>`
-        : html`<div
-            class="initials"
-            ?long=${(user ? computeInitials(user.name) : "?").length > 2}
-          >
-            ${computeInitials(user?.name!)}
-          </div>`}
-    `;
+    if (picture) {
+      return html`<div
+        style=${styleMap({ backgroundImage: `url(${picture})` })}
+        class="picture"
+      ></div>`;
+    }
+    const initials = computeInitials(this.user.name);
+    return html`<div
+      class="initials ${classMap({ long: initials!.length > 2 })}"
+    >
+      ${initials}
+    </div>`;
   }
 
   private _getPersonPicture() {
@@ -100,7 +92,7 @@ class StateBadge extends LitElement {
     }
     for (const entity of Object.values(this.hass.states)) {
       if (
-        entity.attributes.user_id === this.user!.id &&
+        entity.attributes.user_id === this.user.id &&
         computeStateDomain(entity) === "person"
       ) {
         this._personEntityId = entity.entity_id;
@@ -130,7 +122,7 @@ class StateBadge extends LitElement {
         color: var(--text-light-primary-color, var(--primary-text-color));
         overflow: hidden;
       }
-      :host([long]) .initials {
+      .initials.long {
         font-size: 80%;
       }
     `;
@@ -139,6 +131,6 @@ class StateBadge extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-user-badge": StateBadge;
+    "ha-user-badge": UserBadge;
   }
 }
