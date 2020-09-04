@@ -19,6 +19,8 @@ import {
   OZWNodeIdentifiers,
 } from "../../../../../../data/ozw";
 import { showOZWRefreshNodeDialog } from "../../../../integrations/integration-panels/ozw/show-dialog-ozw-refresh-node";
+import { navigate } from "../../../../../../common/navigate";
+import "@material/mwc-button/mwc-button";
 
 @customElement("ha-device-info-ozw")
 export class HaDeviceInfoOzw extends LitElement {
@@ -83,8 +85,11 @@ export class HaDeviceInfoOzw extends LitElement {
           ? this.hass.localize("ui.common.yes")
           : this.hass.localize("ui.common.no")}
       </div>
+      <mwc-button @click=${this._nodeDetailsClicked}>
+        ${this.hass.localize("ui.panel.config.ozw.node.button")}
+      </mwc-button>
       <mwc-button @click=${this._refreshNodeClicked}>
-        Refresh Node
+        ${this.hass.localize("ui.panel.config.ozw.refresh_node.button")}
       </mwc-button>
     `;
   }
@@ -94,6 +99,13 @@ export class HaDeviceInfoOzw extends LitElement {
       node_id: this.node_id,
       ozw_instance: this.ozw_instance,
     });
+  }
+
+  private async _nodeDetailsClicked() {
+    navigate(
+      this,
+      `/config/ozw/network/${this.ozw_instance}/node/${this.node_id}/dashboard`
+    );
   }
 
   static get styles(): CSSResult[] {
