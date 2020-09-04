@@ -86,21 +86,8 @@ class PanelMediaBrowser extends LitElement {
   }
 
   private _showSelectMediaPlayerDialog(): void {
-    const mediaPlayerEntities = Object.values(this.hass!.states).filter(
-      (entity) => {
-        if (
-          computeStateDomain(entity) === "media_player" &&
-          supportsFeature(entity, SUPPORT_BROWSE_MEDIA)
-        ) {
-          return true;
-        }
-
-        return false;
-      }
-    );
-
     showSelectMediaPlayerDialog(this, {
-      mediaSources: mediaPlayerEntities,
+      mediaSources: this._mediaPlayerEntities(),
       sourceSelectedCallback: (entityId) => {
         this._entityId = entityId;
         this.requestUpdate();
@@ -132,6 +119,19 @@ class PanelMediaBrowser extends LitElement {
       media_content_type: item.media_content_type,
     });
   }
+
+  private _mediaPlayerEntities = () => {
+    return Object.values(this.hass!.states).filter((entity) => {
+      if (
+        computeStateDomain(entity) === "media_player" &&
+        supportsFeature(entity, SUPPORT_BROWSE_MEDIA)
+      ) {
+        return true;
+      }
+
+      return false;
+    });
+  };
 
   static get styles(): CSSResultArray {
     return [
