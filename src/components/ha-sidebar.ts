@@ -249,6 +249,7 @@ class HaSidebar extends LitElement {
       </div>
       <paper-listbox
         attr-for-selected="data-panel"
+        class="ha-scrollbar"
         .selected=${hass.panelUrl}
         @focusin=${this._listboxFocusIn}
         @focusout=${this._listboxFocusOut}
@@ -744,12 +745,12 @@ class HaSidebar extends LitElement {
         width: 100%;
       }
 
-      paper-listbox::-webkit-scrollbar {
+      .ha-scrollbar::-webkit-scrollbar {
         width: 0.4rem;
         height: 0.4rem;
       }
 
-      paper-listbox::-webkit-scrollbar-thumb {
+      .ha-scrollbar::-webkit-scrollbar-thumb {
         -webkit-border-radius: 4px;
         border-radius: 4px;
         background: var(--scrollbar-thumb-color);
@@ -761,10 +762,7 @@ class HaSidebar extends LitElement {
         flex-direction: column;
         box-sizing: border-box;
         height: calc(100% - 196px - env(safe-area-inset-bottom));
-        overflow-y: auto;
         overflow-x: hidden;
-        scrollbar-color: var(--scrollbar-thumb-color) transparent;
-        scrollbar-width: thin;
         background: none;
         margin-left: env(safe-area-inset-left);
       }
