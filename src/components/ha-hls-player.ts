@@ -40,6 +40,11 @@ class HaHLSPlayer extends LitElement {
 
   private _useExoPlayer = false;
 
+  public connectedCallback() {
+    super.connectedCallback();
+    this._startHls();
+  }
+
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._destroyPolyfill();
