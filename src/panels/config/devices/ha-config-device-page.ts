@@ -517,12 +517,19 @@ export class HaConfigDevicePage extends LitElement {
       `);
     }
     if (integrations.includes("ozw")) {
+      import("./device-detail/integration-elements/ozw/ha-device-actions-ozw");
       import("./device-detail/integration-elements/ozw/ha-device-info-ozw");
       templates.push(html`
         <ha-device-info-ozw
           .hass=${this.hass}
           .device=${device}
         ></ha-device-info-ozw>
+        <div class="card-actions" slot="actions">
+          <ha-device-actions-ozw
+            .hass=${this.hass}
+            .device=${device}
+          ></ha-device-actions-ozw>
+        </div>
       `);
     }
     if (integrations.includes("zha")) {

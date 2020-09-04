@@ -5,9 +5,9 @@ import {
   CSSResultArray,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   query,
   TemplateResult,
 } from "lit-element";
@@ -21,7 +21,7 @@ import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import { computeCards } from "../../common/generate-lovelace-config";
 import { addCards } from "../config-util";
 import "./hui-card-preview";
-import { showEditCardDialog } from "./show-edit-card-dialog";
+import { showCreateCardDialog } from "./show-create-card-dialog";
 import { SuggestCardDialogParams } from "./show-suggest-card-dialog";
 
 @customElement("hui-dialog-suggest-card")
@@ -179,7 +179,8 @@ export class HuiDialogSuggestCard extends LitElement {
     ) {
       return;
     }
-    showEditCardDialog(this, {
+
+    showCreateCardDialog(this, {
       lovelaceConfig: this._params!.lovelaceConfig,
       saveConfig: this._params!.saveConfig,
       path: this._params!.path,

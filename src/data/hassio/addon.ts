@@ -51,6 +51,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   changelog: boolean;
   hassio_api: boolean;
   hassio_role: "default" | "homeassistant" | "manager" | "admin";
+  startup: "initialize" | "system" | "services" | "application" | "once";
   homeassistant_api: boolean;
   auth_api: boolean;
   full_access: boolean;
@@ -156,6 +157,19 @@ export const setHassioAddonOption = async (
     `hassio/addons/${slug}/options`,
     data
   );
+};
+
+export const validateHassioAddonOption = async (
+  hass: HomeAssistant,
+  slug: string
+) => {
+  return await hass.callApi<
+    HassioResponse<{ message: string; valid: boolean }>
+  >("POST", `hassio/addons/${slug}/options/validate`);
+};
+
+export const startHassioAddon = async (hass: HomeAssistant, slug: string) => {
+  return hass.callApi<string>("POST", `hassio/addons/${slug}/start`);
 };
 
 export const setHassioAddonSecurity = async (
