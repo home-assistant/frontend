@@ -1,48 +1,45 @@
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
 import Fuse from "fuse.js";
-import memoizeOne from "memoize-one";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { styleMap } from "lit-html/directives/style-map";
 import { until } from "lit-html/directives/until";
-
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../common/search/search-input";
+import "../../../../components/ha-circular-progress";
 import { UNAVAILABLE_STATES } from "../../../../data/entity";
+import type {
+  LovelaceCardConfig,
+  LovelaceConfig,
+} from "../../../../data/lovelace";
 import {
   CustomCardEntry,
   customCards,
   CUSTOM_TYPE_PREFIX,
   getCustomCardEntry,
 } from "../../../../data/lovelace_custom_cards";
+import type { HomeAssistant } from "../../../../types";
 import {
-  computeUsedEntities,
   calcUnusedEntities,
+  computeUsedEntities,
 } from "../../common/compute-unused-entities";
 import { tryCreateCardElement } from "../../create-element/create-card-element";
+import type { LovelaceCard } from "../../types";
 import { getCardStubConfig } from "../get-card-stub-config";
 import { coreCards } from "../lovelace-cards";
-
-import type { CardPickTarget, Card } from "../types";
-import type { LovelaceCard } from "../../types";
-import type { HomeAssistant } from "../../../../types";
-import type {
-  LovelaceCardConfig,
-  LovelaceConfig,
-} from "../../../../data/lovelace";
-
-import "../../../../components/ha-circular-progress";
-import "../../../../common/search/search-input";
+import type { Card, CardPickTarget } from "../types";
 
 interface CardElement {
   card: Card;
@@ -107,7 +104,7 @@ export class HuiCardPicker extends LitElement {
         no-label-float
         @value-changed=${this._handleSearchChange}
         .label=${this.hass.localize(
-          "ui.panel.lovelace.editor.card.generic.search"
+          "ui.panel.lovelace.editor.edit_card.search_cards"
         )}
       ></search-input>
       <div
@@ -339,6 +336,11 @@ export class HuiCardPicker extends LitElement {
   static get styles(): CSSResult[] {
     return [
       css`
+        search-input {
+          display: block;
+          margin: 0 -8px;
+        }
+
         .cards-container {
           display: grid;
           grid-gap: 8px 8px;
