@@ -147,6 +147,7 @@ const computePanels = memoizeOne(
         : beforeSpacer
       ).push(panel);
     });
+
     const reverseSort = [...panelsOrder].reverse();
 
     beforeSpacer.sort((a, b) => panelSorter(reverseSort, defaultPanel, a, b));
