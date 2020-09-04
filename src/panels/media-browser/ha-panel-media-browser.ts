@@ -1,3 +1,4 @@
+import "@material/mwc-icon-button";
 import { mdiPlayNetwork } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
@@ -76,28 +77,11 @@ class PanelMediaBrowser extends LitElement {
           </app-toolbar>
         </app-header>
         <div class="content">
-          ${this._entityId
-            ? html`
-                <ha-media-player-browse
-                  .hass=${this.hass}
-                  .entityId=${this._entityId}
-                  @media-picked=${this._mediaPicked}
-                ></ha-media-player-browse>
-              `
-            : html`
-                <div class="no-source">
-                  <h2>
-                    ${this.hass.localize(
-                      "ui.components.media-browser.choose_media_player"
-                    )}
-                  </h2>
-                  <mwc-button raised @click=${this._showMediaSouceDialog}
-                    >${this.hass.localize(
-                      "ui.components.media-browser.choose-player"
-                    )}</mwc-button
-                  >
-                </div>
-              `}
+          <ha-media-player-browse
+            .hass=${this.hass}
+            .entityId=${this._entityId}
+            @media-picked=${this._mediaPicked}
+          ></ha-media-player-browse>
         </div>
       </ha-app-layout>
     `;
@@ -161,17 +145,7 @@ class PanelMediaBrowser extends LitElement {
     return [
       haStyle,
       css`
-        .no-source {
-          text-align: center;
-        }
-
-        .no-source mwc-button {
-          display: block;
-          padding-top: 24px;
-        }
-
-        ha-media-player-browse,
-        .no-source {
+        ha-media-player-browse {
           height: calc(100vh - 84px);
         }
       `,
