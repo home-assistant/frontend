@@ -1804,6 +1804,17 @@
             "introduction": "Manage network-wide functions.",
             "node_count": "{count} nodes"
           },
+          "nodes_table": {
+            "id": "ID",
+            "manufacturer": "Manufacturer",
+            "model": "Model",
+            "query_stage": "Query Stage",
+            "zwave_plus": "Z-Wave Plus",
+            "failed": "Failed"
+          },
+          "node": {
+            "not_found": "Node not found"
+          },
           "services": {
             "add_node": "Add Node",
             "remove_node": "Remove Node"

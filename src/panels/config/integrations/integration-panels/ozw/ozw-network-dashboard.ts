@@ -1,4 +1,6 @@
+import "@material/mwc-button/mwc-button";
 import "@material/mwc-fab";
+import { mdiCheckCircle, mdiCircle, mdiCloseCircle } from "@mdi/js";
 import {
   css,
   CSSResultArray,
@@ -9,31 +11,28 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import { navigate } from "../../../../../common/navigate";
+import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
-import "../../../../../components/buttons/ha-call-service-button";
+import {
+  fetchOZWNetworkStatistics,
+  fetchOZWNetworkStatus,
+  networkOfflineStatuses,
+  networkOnlineStatuses,
+  networkStartingStatuses,
+  OZWInstance,
+  OZWNetworkStatistics,
+} from "../../../../../data/ozw";
+import "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
-import { mdiCircle, mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
-import "../../../../../layouts/hass-tabs-subpage";
-import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
-import "@material/mwc-button/mwc-button";
-import {
-  OZWInstance,
-  fetchOZWNetworkStatus,
-  fetchOZWNetworkStatistics,
-  networkOnlineStatuses,
-  networkOfflineStatuses,
-  networkStartingStatuses,
-  OZWNetworkStatistics,
-} from "../../../../../data/ozw";
+import { ozwNetworkTabs } from "./ozw-network-router";
 
-export const ozwTabs: PageNavigation[] = [];
-
-@customElement("ozw-config-network")
-class OZWConfigNetwork extends LitElement {
+@customElement("ozw-network-dashboard")
+class OZWNetworkDashboard extends LitElement {
   @property({ type: Object }) public hass!: HomeAssistant;
 
   @property({ type: Object }) public route!: Route;
@@ -44,7 +43,7 @@ class OZWConfigNetwork extends LitElement {
 
   @property() public configEntryId?: string;
 
-  @property() public ozw_instance = 0;
+  @property() public ozwInstance?: number;
 
   @internalProperty() private _network?: OZWInstance;
 
@@ -54,45 +53,12 @@ class OZWConfigNetwork extends LitElement {
 
   @internalProperty() private _icon = mdiCircle;
 
-  public connectedCallback(): void {
-    super.connectedCallback();
-    if (this.ozw_instance <= 0) {
+  protected firstUpdated() {
+    if (!this.ozwInstance) {
       navigate(this, "/config/ozw/dashboard", true);
-    }
-    if (this.hass) {
+    } else if (this.hass) {
       this._fetchData();
     }
-  }
-
-  private async _fetchData() {
-    this._network = await fetchOZWNetworkStatus(this.hass!, this.ozw_instance);
-    this._statistics = await fetchOZWNetworkStatistics(
-      this.hass!,
-      this.ozw_instance
-    );
-    if (networkOnlineStatuses.includes(this._network.Status)) {
-      this._status = "online";
-      this._icon = mdiCheckCircle;
-    }
-    if (networkStartingStatuses.includes(this._network.Status)) {
-      this._status = "starting";
-    }
-    if (networkOfflineStatuses.includes(this._network.Status)) {
-      this._status = "offline";
-      this._icon = mdiCloseCircle;
-    }
-  }
-
-  private _generateServiceButton(service: string) {
-    return html`
-      <ha-call-service-button
-        .hass=${this.hass}
-        domain="ozw"
-        service="${service}"
-      >
-        ${this.hass!.localize("ui.panel.config.ozw.services." + service)}
-      </ha-call-service-button>
-    `;
   }
 
   protected render(): TemplateResult {
@@ -101,7 +67,7 @@ class OZWConfigNetwork extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .tabs=${ozwTabs}
+        .tabs=${ozwNetworkTabs(this.ozwInstance!)}
       >
         <ha-config-section .narrow=${this.narrow} .isWide=${this.isWide}>
           <div slot="header">
@@ -118,20 +84,21 @@ class OZWConfigNetwork extends LitElement {
                     <div class="details">
                       <ha-svg-icon
                         .path=${this._icon}
-                        class="network-status-icon ${this._status}"
+                        class="network-status-icon ${classMap({
+                          [this._status]: true,
+                        })}"
                         slot="item-icon"
                       ></ha-svg-icon>
                       ${this.hass.localize(
                         "ui.panel.config.ozw.common.network"
                       )}
                       ${this.hass.localize(
-                        "ui.panel.config.ozw.network_status." + this._status
+                        `ui.panel.config.ozw.network_status.${this._status}`
                       )}
                       <br />
                       <small>
                         ${this.hass.localize(
-                          "ui.panel.config.ozw.network_status.details." +
-                            this._network.Status.toLowerCase()
+                          `ui.panel.config.ozw.network_status.details.${this._network.Status.toLowerCase()}`
                         )}
                       </small>
                     </div>
@@ -168,6 +135,38 @@ class OZWConfigNetwork extends LitElement {
             : ``}
         </ha-config-section>
       </hass-tabs-subpage>
+    `;
+  }
+
+  private async _fetchData() {
+    if (!this.ozwInstance) return;
+    this._network = await fetchOZWNetworkStatus(this.hass!, this.ozwInstance);
+    this._statistics = await fetchOZWNetworkStatistics(
+      this.hass!,
+      this.ozwInstance
+    );
+    if (networkOnlineStatuses.includes(this._network!.Status)) {
+      this._status = "online";
+      this._icon = mdiCheckCircle;
+    }
+    if (networkStartingStatuses.includes(this._network!.Status)) {
+      this._status = "starting";
+    }
+    if (networkOfflineStatuses.includes(this._network!.Status)) {
+      this._status = "offline";
+      this._icon = mdiCloseCircle;
+    }
+  }
+
+  private _generateServiceButton(service: string) {
+    return html`
+      <ha-call-service-button
+        .hass=${this.hass}
+        domain="ozw"
+        .service=${service}
+      >
+        ${this.hass!.localize(`ui.panel.config.ozw.services.${service}`)}
+      </ha-call-service-button>
     `;
   }
 
@@ -248,6 +247,6 @@ class OZWConfigNetwork extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ozw-config-network": OZWConfigNetwork;
+    "ozw-network-dashboard": OZWNetworkDashboard;
   }
 }
