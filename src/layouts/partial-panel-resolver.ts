@@ -73,14 +73,6 @@ const COMPONENTS = {
 const getRoutes = (panels: Panels): RouterOptions => {
   const routes: RouterOptions["routes"] = {};
   const arrayPanels = Object.values(panels);
-  arrayPanels.push({
-    component_name: "media-browser",
-    config: null,
-    icon: "mdi:play",
-    require_admin: false,
-    title: "Media Browser",
-    url_path: "media-browser",
-  });
 
   arrayPanels.forEach((panel) => {
     const data: RouteOptions = {
