@@ -36,7 +36,7 @@ class PanelMediaBrowser extends LitElement {
   public narrow!: boolean;
 
   // @ts-ignore
-  @LocalStorage("mediaBrowseEntityId")
+  @LocalStorage("mediaBrowseEntityId", true)
   private _entityId = BROWSER_SOURCE;
 
   protected render(): TemplateResult {
@@ -90,7 +90,6 @@ class PanelMediaBrowser extends LitElement {
       mediaSources: this._mediaPlayerEntities,
       sourceSelectedCallback: (entityId) => {
         this._entityId = entityId;
-        this.requestUpdate();
       },
     });
   }
