@@ -1,19 +1,3 @@
-import {
-  mdiAccountMusic,
-  mdiAlbum,
-  mdiFile,
-  mdiFileMusic,
-  mdiFolder,
-  mdiGamepadVariant,
-  mdiImage,
-  mdiMovie,
-  mdiMusic,
-  mdiPlaylistMusic,
-  mdiPodcast,
-  mdiTelevisionClassic,
-  mdiVideo,
-  mdiWeb,
-} from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../types";
 
@@ -37,34 +21,6 @@ export const CONTRAST_RATIO = 4.5;
 export type MediaPlayerBrowseAction = "pick" | "play";
 
 export const BROWSER_SOURCE = "browser";
-
-export type MediaTypeBrowserSetting = { icon: string };
-
-export const MediaTypeBrowserSettings: {
-  [type: string]: MediaTypeBrowserSetting;
-} = {
-  file: { icon: mdiFile },
-  library: { icon: mdiFolder },
-  playlist: { icon: mdiPlaylistMusic },
-  track: { icon: mdiFileMusic },
-  album: { icon: mdiAlbum },
-  music: { icon: mdiMusic },
-  tvshow: { icon: mdiTelevisionClassic },
-  movie: { icon: mdiMovie },
-  video: { icon: mdiVideo },
-  episode: { icon: mdiFolder },
-  channel: { icon: mdiFolder },
-  image: { icon: mdiImage },
-  url: { icon: mdiWeb },
-  game: { icon: mdiGamepadVariant },
-  app: { icon: mdiFolder },
-  artist: { icon: mdiAccountMusic },
-  contributing_artist: { icon: mdiFolder },
-  podcast: { icon: mdiPodcast },
-  season: { icon: mdiFolder },
-  genre: { icon: mdiFolder },
-  composer: { icon: mdiFolder },
-};
 
 export interface MediaPickedEvent {
   item: MediaPlayerItem;

@@ -6,7 +6,7 @@ export interface MediaPlayerBrowserDialogParams {
   title?: string;
 }
 
-export const showMediaPlayerDialog = (
+export const showMediaPlayerBrowserDialog = (
   element: HTMLElement,
   mediaPlayerBrowserDialogParams: MediaPlayerBrowserDialogParams
 ): void => {

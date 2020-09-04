@@ -27,8 +27,8 @@ import {
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import { showMediaPlayerDialog } from "./show-media-player-dialog";
-import { showSelectMediaSourceDialog } from "./show-select-media-source-dialog";
+import { showMediaPlayerBrowserDialog } from "./show-media-player-dialog";
+import { showSelectMediaPlayerDialog } from "./show-select-media-source-dialog";
 
 @customElement("ha-panel-media-browser")
 class PanelMediaBrowser extends LitElement {
@@ -88,7 +88,7 @@ class PanelMediaBrowser extends LitElement {
   }
 
   private _showMediaSouceDialog(): void {
-    showSelectMediaSourceDialog(this, {
+    showSelectMediaPlayerDialog(this, {
       mediaSources: this._browseMediaSources(this.hass),
       sourceSelectedCallback: (entityId) => {
         this._entityId = entityId;
@@ -107,7 +107,7 @@ class PanelMediaBrowser extends LitElement {
         media_content_id: item.media_content_id,
       });
 
-      showMediaPlayerDialog(this, {
+      showMediaPlayerBrowserDialog(this, {
         sourceUrl: resolvedUrl.url,
         sourceType: resolvedUrl.mime_type,
         title: item.title,

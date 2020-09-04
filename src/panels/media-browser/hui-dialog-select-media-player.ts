@@ -15,25 +15,25 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { createCloseHeading } from "../../components/ha-dialog";
 import { BROWSER_SOURCE } from "../../data/media-player";
 import type { HomeAssistant } from "../../types";
-import type { SelectMediaPlayereDialogParams } from "./show-select-media-source-dialog";
+import type { SelectMediaPlayerDialogParams } from "./show-select-media-source-dialog";
 
 @customElement("hui-dialog-select-media-player")
 export class HuiDialogSelectMediaPlayer extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false })
-  private _params?: SelectMediaPlayereDialogParams;
+  private _params?: SelectMediaPlayerDialogParams;
 
   @internalProperty() private _mediaSources: HassEntity[] = [];
 
-  public showDialog(params: SelectMediaPlayereDialogParams): void {
+  public showDialog(params: SelectMediaPlayerDialogParams): void {
     this._params = params;
-    this._mediaSources = [...this._params.mediaSources];
+    this._mediaSources = this._params.mediaSources;
   }
 
   public closeDialog() {
     this._params = undefined;
-    fireEvent(this, "dialog-closed", {dialog: this.localName});
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render(): TemplateResult {
