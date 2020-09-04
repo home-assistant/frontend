@@ -445,7 +445,7 @@
           "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this entry?",
           "update": "Update",
-          "note": "Note: this might not work yet with all integrations."
+          "note": "Note: This might not work yet with all integrations."
         }
       },
       "helper_settings": {
@@ -1671,7 +1671,7 @@
         "users": {
           "caption": "Users",
           "description": "Manage users",
-          "users_privileges_note": "The users group is a work in progress. The user will be unable to administer the instance via the UI. We're still auditing all management API endpoints to ensure that they correctly limit access to administrators.",
+          "users_privileges_note": "The user group feature is a work in progress. The user will be unable to administer the instance via the UI. We're still auditing all management API endpoints to ensure that they correctly limit access to administrators.",
           "picker": {
             "headers": {
               "name": "Name",
@@ -1849,7 +1849,7 @@
           "clusters": {
             "header": "Clusters",
             "help_cluster_dropdown": "Select a cluster to view attributes and commands.",
-            "introduction": "Clusters are the building blocks for Zigbee functionality. They seperate functionality into logical units. There are client and server types and that are comprised of attributes and commands."
+            "introduction": "Clusters are the building blocks for Zigbee functionality. They separate functionality into logical units. There are client and server types and that are comprised of attributes and commands."
           },
           "cluster_attributes": {
             "header": "Cluster Attributes",
@@ -1940,10 +1940,10 @@
             "node_group_associations": "Node group associations",
             "group": "Group",
             "node_to_control": "Node to control",
-            "nodes_in_group": "Other Nodes in this group:",
+            "nodes_in_group": "Other nodes in this group:",
             "max_associations": "Max Associations:",
-            "add_to_group": "Add To Group",
-            "remove_from_group": "Remove From Group",
+            "add_to_group": "Add to Group",
+            "remove_from_group": "Remove from Group",
             "remove_broadcast": "Remove Broadcast"
           },
           "ozw_log": {
