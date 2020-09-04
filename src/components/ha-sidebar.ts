@@ -374,7 +374,11 @@ class HaSidebar extends LitElement {
         @mouseleave=${this._itemMouseLeave}
       >
         <paper-icon-item>
-          <ha-user-badge slot="item-icon" .user=${hass.user}></ha-user-badge>
+          <ha-user-badge
+            slot="item-icon"
+            .user=${hass.user}
+            .hass=${hass}
+          ></ha-user-badge>
 
           <span class="item-text">
             ${hass.user ? hass.user.name : ""}

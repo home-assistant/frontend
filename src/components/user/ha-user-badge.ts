@@ -3,6 +3,7 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   TemplateResult,
@@ -11,7 +12,7 @@ import { classMap } from "lit-html/directives/class-map";
 import { styleMap } from "lit-html/directives/style-map";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { User } from "../../data/user";
-import { CurrentUser } from "../../types";
+import { CurrentUser, HomeAssistant } from "../../types";
 
 export const computeInitials = (name: string) => {
   if (!name) {
@@ -103,7 +104,13 @@ class UserBadge extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      :host {
+      .picture {
+        width: 40px;
+        height: 40px;
+        background-size: cover;
+        border-radius: 50%;
+      }
+      .initials {
         display: inline-block;
         box-sizing: border-box;
         width: 40px;
