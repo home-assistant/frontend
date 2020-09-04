@@ -73,7 +73,7 @@ class PanelMediaBrowser extends LitElement {
               .label=${this.hass.localize(
                 "ui.components.media-browser.choose-player"
               )}
-              @click=${this._showMediaSouceDialog}
+              @click=${this._showSelectMediaPlayerDialog}
             >
               <ha-svg-icon .path=${mdiPlayNetwork}></ha-svg-icon>
             </mwc-icon-button>
@@ -116,7 +116,7 @@ class PanelMediaBrowser extends LitElement {
     }
   }
 
-  private _showMediaSouceDialog(): void {
+  private _showSelectMediaPlayerDialog(): void {
     showSelectMediaPlayerDialog(this, {
       mediaSources: this._mediaBrowserEntities,
       sourceSelectedCallback: (entityId) => {

@@ -3,7 +3,6 @@ import {
   CSSResult,
   customElement,
   html,
-  internalProperty,
   LitElement,
   property,
   TemplateResult,
@@ -21,30 +20,21 @@ export class HuiDialogBrowserMediaPlayer extends LitElement {
   @property({ attribute: false })
   private _params?: MediaPlayerBrowserDialogParams;
 
-  @internalProperty() _sourceUrl?: string;
-
-  @internalProperty() _sourceType?: string;
-
-  @internalProperty() _title?: string;
-
   public showDialog(params: MediaPlayerBrowserDialogParams): void {
     this._params = params;
-    this._sourceUrl = this._params.sourceUrl;
-    this._sourceType = this._params.sourceType;
-    this._title = this._params.title;
   }
 
   public closeDialog() {
     this._params = undefined;
-    fireEvent(this, "dialog-closed", {dialog: this.localName});
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render(): TemplateResult {
-    if (!this._params || !this._sourceType || !this._sourceUrl) {
+    if (!this._params || !this._params.sourceType || !this._params.sourceUrl) {
       return html``;
     }
 
-    const mediaType = this._sourceType.split("/", 1)[0];
+    const mediaType = this._params.sourceType.split("/", 1)[0];
 
     return html`
       <ha-dialog
@@ -54,7 +44,7 @@ export class HuiDialogBrowserMediaPlayer extends LitElement {
         hideActions
         .heading=${createCloseHeading(
           this.hass,
-          this._title ||
+          this._params.title ||
             this.hass.localize("ui.components.media-browser.media_player")
         )}
         @closed=${this.closeDialog}
@@ -62,7 +52,10 @@ export class HuiDialogBrowserMediaPlayer extends LitElement {
         ${mediaType === "audio"
           ? html`
               <audio controls autoplay>
-                <source src=${this._sourceUrl} type=${this._sourceType} />
+                <source
+                  src=${this._params.sourceUrl}
+                  type=${this._params.sourceType}
+                />
                 ${this.hass.localize(
                   "ui.components.media-browser.audio_not_supported"
                 )}
@@ -71,24 +64,27 @@ export class HuiDialogBrowserMediaPlayer extends LitElement {
           : mediaType === "video"
           ? html`
               <video controls autoplay playsinline>
-                <source src=${this._sourceUrl} type=${this._sourceType} />
+                <source
+                  src=${this._params.sourceUrl}
+                  type=${this._params.sourceType}
+                />
                 ${this.hass.localize(
                   "ui.components.media-browser.video_not_supported"
                 )}
               </video>
             `
-          : this._sourceType === "application/x-mpegURL"
+          : this._params.sourceType === "application/x-mpegURL"
           ? html`
               <ha-hls-player
                 controls
                 autoplay
                 playsinline
                 .hass=${this.hass}
-                .url=${this._sourceUrl}
+                .url=${this._params.sourceUrl}
               ></ha-hls-player>
             `
           : mediaType === "image"
-          ? html`<img src=${this._sourceUrl} />`
+          ? html`<img src=${this._params.sourceUrl} />`
           : html`${this.hass.localize(
               "ui.components.media-browser.media_not_supported"
             )}`}

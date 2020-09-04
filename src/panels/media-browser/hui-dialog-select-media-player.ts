@@ -1,12 +1,10 @@
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
   customElement,
   html,
-  internalProperty,
   LitElement,
   property,
   TemplateResult,
@@ -24,11 +22,8 @@ export class HuiDialogSelectMediaPlayer extends LitElement {
   @property({ attribute: false })
   private _params?: SelectMediaPlayerDialogParams;
 
-  @internalProperty() private _mediaSources: HassEntity[] = [];
-
   public showDialog(params: SelectMediaPlayerDialogParams): void {
     this._params = params;
-    this._mediaSources = this._params.mediaSources;
   }
 
   public closeDialog() {
@@ -61,7 +56,7 @@ export class HuiDialogSelectMediaPlayer extends LitElement {
               "ui.components.media-browser.web-browser"
             )}</paper-item
           >
-          ${this._mediaSources.map(
+          ${this._params.mediaSources.map(
             (source) => html`
               <paper-item .itemName=${source.entity_id}
                 >${source.attributes.friendly_name}</paper-item
