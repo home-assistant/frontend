@@ -24,6 +24,7 @@ import {
   OZWDevice,
   OZWDeviceMetaDataResponse,
 } from "../../../../../data/ozw";
+import { ERR_NOT_FOUND } from "../../../../../data/websocket_api";
 import { showOZWRefreshNodeDialog } from "./show-dialog-ozw-refresh-node";
 import { ozwNetworkTabs } from "./ozw-network-router";
 
@@ -47,6 +48,8 @@ class OZWNodeDashboard extends LitElement {
 
   @internalProperty() private _metadata?: OZWDeviceMetaDataResponse;
 
+  @internalProperty() private _not_found = false;
+
   protected firstUpdated() {
     if (!this.ozwInstance) {
       navigate(this, "/config/ozw/dashboard", true);
@@ -58,7 +61,7 @@ class OZWNodeDashboard extends LitElement {
   }
 
   protected render(): TemplateResult {
-    if (!this._node) {
+    if (this._not_found) {
       return html`
         <hass-error-screen
           error="${this.hass.localize("ui.panel.config.ozw.node.not_found")}"
@@ -81,55 +84,60 @@ class OZWNodeDashboard extends LitElement {
           <div slot="introduction">
             View the status of a node and manage its configuration.
           </div>
-
-          <ha-card class="content">
-            <div class="card-content">
-              <b
-                >${this._node.node_manufacturer_name}
-                ${this._node.node_product_name}</b
-              ><br />
-              Node ID: ${this._node.node_id}<br />
-              Query Stage: ${this._node.node_query_stage}
-              ${this._metadata?.metadata.ProductManualURL
-                ? html` <a href="${this._metadata.metadata.ProductManualURL}">
-                    <p>Product Manual</p>
-                  </a>`
-                : ``}
-            </div>
-            <div class="card-actions">
-              <mwc-button @click=${this._refreshNodeClicked}>
-                Refresh Node
-              </mwc-button>
-            </div>
-          </ha-card>
-
-          ${this._metadata
+          ${this._node
             ? html`
-                <ha-card class="content" header="Description">
+                <ha-card class="content">
                   <div class="card-content">
-                    ${this._metadata.metadata.Description}
+                    <b
+                      >${this._node.node_manufacturer_name}
+                      ${this._node.node_product_name}</b
+                    ><br />
+                    Node ID: ${this._node.node_id}<br />
+                    Query Stage: ${this._node.node_query_stage}
+                    ${this._metadata?.metadata.ProductManualURL
+                      ? html` <a
+                          href="${this._metadata.metadata.ProductManualURL}"
+                        >
+                          <p>Product Manual</p>
+                        </a>`
+                      : ``}
+                  </div>
+                  <div class="card-actions">
+                    <mwc-button @click=${this._refreshNodeClicked}>
+                      Refresh Node
+                    </mwc-button>
                   </div>
                 </ha-card>
-                <ha-card class="content" header="Inclusion">
-                  <div class="card-content">
-                    ${this._metadata.metadata.InclusionHelp}
-                  </div>
-                </ha-card>
-                <ha-card class="content" header="Exclusion">
-                  <div class="card-content">
-                    ${this._metadata.metadata.ExclusionHelp}
-                  </div>
-                </ha-card>
-                <ha-card class="content" header="Reset">
-                  <div class="card-content">
-                    ${this._metadata.metadata.ResetHelp}
-                  </div>
-                </ha-card>
-                <ha-card class="content" header="WakeUp">
-                  <div class="card-content">
-                    ${this._metadata.metadata.WakeupHelp}
-                  </div>
-                </ha-card>
+
+                ${this._metadata
+                  ? html`
+                      <ha-card class="content" header="Description">
+                        <div class="card-content">
+                          ${this._metadata.metadata.Description}
+                        </div>
+                      </ha-card>
+                      <ha-card class="content" header="Inclusion">
+                        <div class="card-content">
+                          ${this._metadata.metadata.InclusionHelp}
+                        </div>
+                      </ha-card>
+                      <ha-card class="content" header="Exclusion">
+                        <div class="card-content">
+                          ${this._metadata.metadata.ExclusionHelp}
+                        </div>
+                      </ha-card>
+                      <ha-card class="content" header="Reset">
+                        <div class="card-content">
+                          ${this._metadata.metadata.ResetHelp}
+                        </div>
+                      </ha-card>
+                      <ha-card class="content" header="WakeUp">
+                        <div class="card-content">
+                          ${this._metadata.metadata.WakeupHelp}
+                        </div>
+                      </ha-card>
+                    `
+                  : ``}
               `
             : ``}
         </ha-config-section>
@@ -140,16 +148,24 @@ class OZWNodeDashboard extends LitElement {
   private async _fetchData() {
     if (!this.ozwInstance || !this.nodeId) return;
 
-    this._node = await fetchOZWNodeStatus(
-      this.hass!,
-      this.ozwInstance,
-      this.nodeId
-    );
-    this._metadata = await fetchOZWNodeMetadata(
-      this.hass!,
-      this.ozwInstance,
-      this.nodeId
-    );
+    try {
+      this._node = await fetchOZWNodeStatus(
+        this.hass!,
+        this.ozwInstance,
+        this.nodeId
+      );
+      this._metadata = await fetchOZWNodeMetadata(
+        this.hass!,
+        this.ozwInstance,
+        this.nodeId
+      );
+    } catch (err) {
+      if (err.code === ERR_NOT_FOUND) {
+        this._not_found = true;
+        return;
+      }
+      throw err;
+    }
   }
 
   private async _refreshNodeClicked() {
