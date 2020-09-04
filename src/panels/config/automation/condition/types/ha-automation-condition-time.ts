@@ -154,13 +154,6 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
     handleChangeEvent(this, ev);
   }
 
-  private _isChecked(days: string[], day: string): boolean {
-    if (days === undefined) {
-      return false;
-    }
-    return days.includes(day);
-  }
-
   private _dayValueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
 
@@ -168,7 +161,7 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
     const checked = (ev.currentTarget as HaSwitch).checked;
 
     let days = this.condition.weekday;
-    if (days === undefined) {
+    if (!days) {
       days = [];
     }
 
