@@ -72,18 +72,17 @@ const COMPONENTS = {
 
 const getRoutes = (panels: Panels): RouterOptions => {
   const routes: RouterOptions["routes"] = {};
-
   Object.values(panels).forEach((panel) => {
     const data: RouteOptions = {
       tag: `ha-panel-${panel.component_name}`,
       cache: CACHE_URL_PATHS.includes(panel.url_path),
     };
-
     if (panel.component_name in COMPONENTS) {
       data.load = COMPONENTS[panel.component_name];
     }
     routes[panel.url_path] = data;
   });
+
   return {
     showLoading: true,
     routes,
