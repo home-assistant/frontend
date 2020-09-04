@@ -18,6 +18,10 @@ import {
 
 const includeDomains = ["input_datetime"];
 
+interface WeekdayHaSwitch extends HaSwitch {
+  day: string;
+}
+
 @customElement("ha-automation-condition-time")
 export class HaTimeCondition extends LitElement implements ConditionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -157,18 +161,17 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
   private _dayValueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
 
-    const day = (ev.currentTarget as any).day;
-    const checked = (ev.currentTarget as HaSwitch).checked;
+    const daySwitch = ev.currentTarget as WeekdayHaSwitch;
 
     let days = this.condition.weekday;
     if (!days) {
       days = [];
     }
 
-    if (checked) {
-      days.push(day);
+    if (daySwitch.checked) {
+      days.push(daySwitch.day);
     } else {
-      days = days.filter((d) => d !== day);
+      days = days.filter((d) => d !== daySwitch.day);
     }
 
     days.sort((a: string, b: string) => DAYS[a] - DAYS[b]);
