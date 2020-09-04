@@ -58,6 +58,14 @@ class OZWNodeDashboard extends LitElement {
   }
 
   protected render(): TemplateResult {
+    if (!this._node) {
+      return html`
+        <hass-error-screen
+          error="${this.hass.localize("ui.panel.config.ozw.node.not_found")}"
+        ></hass-error-screen>
+      `;
+    }
+
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
@@ -74,32 +82,27 @@ class OZWNodeDashboard extends LitElement {
             View the status of a node and manage its configuration.
           </div>
 
-          ${this._node
-            ? html`
-                <ha-card class="content">
-                  <div class="card-content">
-                    <b
-                      >${this._node.node_manufacturer_name}
-                      ${this._node.node_product_name}</b
-                    ><br />
-                    Node ID: ${this._node.node_id}<br />
-                    Query Stage: ${this._node.node_query_stage}
-                    ${this._metadata?.metadata.ProductManualURL
-                      ? html` <a
-                          href="${this._metadata.metadata.ProductManualURL}"
-                        >
-                          <p>Product Manual</p>
-                        </a>`
-                      : ``}
-                  </div>
-                  <div class="card-actions">
-                    <mwc-button @click=${this._refreshNodeClicked}>
-                      Refresh Node
-                    </mwc-button>
-                  </div>
-                </ha-card>
-              `
-            : ``}
+          <ha-card class="content">
+            <div class="card-content">
+              <b
+                >${this._node.node_manufacturer_name}
+                ${this._node.node_product_name}</b
+              ><br />
+              Node ID: ${this._node.node_id}<br />
+              Query Stage: ${this._node.node_query_stage}
+              ${this._metadata?.metadata.ProductManualURL
+                ? html` <a href="${this._metadata.metadata.ProductManualURL}">
+                    <p>Product Manual</p>
+                  </a>`
+                : ``}
+            </div>
+            <div class="card-actions">
+              <mwc-button @click=${this._refreshNodeClicked}>
+                Refresh Node
+              </mwc-button>
+            </div>
+          </ha-card>
+
           ${this._metadata
             ? html`
                 <ha-card class="content" header="Description">
