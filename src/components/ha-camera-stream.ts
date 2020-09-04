@@ -57,6 +57,7 @@ class HaCameraStream extends LitElement {
               autoplay
               muted
               playsinline
+              ?controls=${this.showControls}
               .hass=${this.hass}
               .url=${this._url!}
             ></ha-hls-player>
