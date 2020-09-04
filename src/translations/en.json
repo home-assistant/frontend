@@ -1764,6 +1764,7 @@
             "complete": "Interview process is complete"
           },
           "refresh_node": {
+            "button": "Refresh Node",
             "title": "Refresh Node Information",
             "complete": "Node Refresh Complete",
             "description": "This will tell OpenZWave to re-interview a node and update the node's command classes, capabilities, and values.",
@@ -1818,6 +1819,7 @@
             "failed": "Failed"
           },
           "node": {
+            "button": "Node Details",
             "not_found": "Node not found"
           },
           "services": {
