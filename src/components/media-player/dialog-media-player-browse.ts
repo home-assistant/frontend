@@ -8,7 +8,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { HASSDomEvent } from "../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../common/dom/fire_event";
 import type {
   MediaPickedEvent,
   MediaPlayerBrowseAction,
@@ -33,16 +33,17 @@ class DialogMediaPlayerBrowse extends LitElement {
 
   @internalProperty() private _params?: MediaPlayerBrowseDialogParams;
 
-  public async showDialog(
-    params: MediaPlayerBrowseDialogParams
-  ): Promise<void> {
+  public showDialog(params: MediaPlayerBrowseDialogParams): void {
     this._params = params;
     this._entityId = this._params.entityId;
     this._mediaContentId = this._params.mediaContentId;
     this._mediaContentType = this._params.mediaContentType;
     this._action = this._params.action || "play";
+  }
 
-    await this.updateComplete;
+  public closeDialog() {
+    this._params = undefined;
+    fireEvent(this, "dialog-closed", {dialog: this.localName});
   }
 
   protected render(): TemplateResult {
@@ -57,7 +58,7 @@ class DialogMediaPlayerBrowse extends LitElement {
         escapeKeyAction
         hideActions
         flexContent
-        @closed=${this._closeDialog}
+        @closed=${this.closeDialog}
       >
         <ha-media-player-browse
           dialog
@@ -66,21 +67,17 @@ class DialogMediaPlayerBrowse extends LitElement {
           .action=${this._action!}
           .mediaContentId=${this._mediaContentId}
           .mediaContentType=${this._mediaContentType}
-          @close-dialog=${this._closeDialog}
+          @close-dialog=${this.closeDialog}
           @media-picked=${this._mediaPicked}
         ></ha-media-player-browse>
       </ha-dialog>
     `;
   }
 
-  private _closeDialog() {
-    this._params = undefined;
-  }
-
   private _mediaPicked(ev: HASSDomEvent<MediaPickedEvent>): void {
     this._params!.mediaPickedCallback(ev.detail);
     if (this._action !== "play") {
-      this._closeDialog();
+      this.closeDialog();
     }
   }
 
@@ -91,14 +88,6 @@ class DialogMediaPlayerBrowse extends LitElement {
         ha-dialog {
           --dialog-z-index: 8;
           --dialog-content-padding: 0;
-        }
-
-        ha-header-bar {
-          --mdc-theme-on-primary: var(--primary-text-color);
-          --mdc-theme-primary: var(--mdc-theme-surface);
-          flex-shrink: 0;
-          border-bottom: 1px solid
-            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
         }
 
         @media (min-width: 800px) {

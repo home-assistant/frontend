@@ -13,15 +13,17 @@ import {
   CSSResultArray,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../src/common/dom/fire_event";
+import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-svg-icon";
+import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import {
   createHassioFullSnapshot,
   createHassioPartialSnapshot,
@@ -79,8 +81,6 @@ class HassioSnapshots extends LitElement {
     { slug: "share", name: "Share", checked: true },
     { slug: "addons/local", name: "Local add-ons", checked: true },
   ];
-
-  @internalProperty() private _creatingSnapshot = false;
 
   @internalProperty() private _error = "";
 
@@ -192,12 +192,9 @@ class HassioSnapshots extends LitElement {
                   : undefined}
               </div>
               <div class="card-actions">
-                <mwc-button
-                  .disabled=${this._creatingSnapshot}
-                  @click=${this._createSnapshot}
-                >
+                <ha-progress-button @click=${this._createSnapshot}>
                   Create
-                </mwc-button>
+                </ha-progress-button>
               </div>
             </ha-card>
           </div>
@@ -230,7 +227,7 @@ class HassioSnapshots extends LitElement {
                           .icon=${snapshot.type === "full"
                             ? mdiPackageVariantClosed
                             : mdiPackageVariant}
-                          .icon-class="snapshot"
+                          icon-class="snapshot"
                         ></hassio-card-content>
                       </div>
                     </ha-card>
@@ -293,17 +290,20 @@ class HassioSnapshots extends LitElement {
       this._snapshots = await fetchHassioSnapshots(this.hass);
       this._snapshots.sort((a, b) => (a.date < b.date ? 1 : -1));
     } catch (err) {
-      this._error = err.message;
+      this._error = extractApiErrorMessage(err);
     }
   }
 
-  private async _createSnapshot() {
+  private async _createSnapshot(ev: CustomEvent): Promise<void> {
+    const button = ev.currentTarget as any;
+    button.progress = true;
+
     this._error = "";
     if (this._snapshotHasPassword && !this._snapshotPassword.length) {
       this._error = "Please enter a password.";
+      button.progress = false;
       return;
     }
-    this._creatingSnapshot = true;
     await this.updateComplete;
 
     const name =
@@ -343,10 +343,9 @@ class HassioSnapshots extends LitElement {
       this._updateSnapshots();
       fireEvent(this, "hass-api-called", { success: true, response: null });
     } catch (err) {
-      this._error = err.message;
-    } finally {
-      this._creatingSnapshot = false;
+      this._error = extractApiErrorMessage(err);
     }
+    button.progress = false;
   }
 
   private _computeDetails(snapshot: HassioSnapshot) {

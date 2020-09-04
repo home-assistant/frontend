@@ -505,6 +505,7 @@
             "back": "Back",
             "cancel": "Cancel",
             "close": "Close",
+            "continue": "Continue",
             "delete": "Delete",
             "error_required": "Required",
             "loading": "Loading",
@@ -617,6 +618,7 @@
                 "update": "Update"
             },
             "domain_toggler": {
+                "reset_entities": "Reset Entities",
                 "title": "Toggle Domains"
             },
             "entity_registry": {
@@ -688,8 +690,10 @@
                 "crop": "Crop"
             },
             "more_info_control": {
+                "controls": "Controls",
                 "dismiss": "Dismiss dialog",
                 "edit": "Edit entity",
+                "history": "History",
                 "person": {
                     "create_zone": "Create zone from current location"
                 },
@@ -1200,9 +1204,15 @@
                     },
                     "alexa": {
                         "banner": "Editing which entities are exposed via this UI is disabled because you have configured entity filters in configuration.yaml.",
+                        "dont_expose_entity": "Don't expose entity",
                         "expose": "Expose to Alexa",
+                        "expose_entity": "Expose entity",
+                        "exposed": "{selected} exposed",
                         "exposed_entities": "Exposed entities",
-                        "not_exposed_entities": "Not Exposed entities",
+                        "follow_domain": "Follow domain",
+                        "manage_domains": "Manage domains",
+                        "not_exposed": "{selected} not exposed",
+                        "not_exposed_entities": "Not exposed entities",
                         "title": "Alexa"
                     },
                     "caption": "Home Assistant Cloud",
@@ -1239,9 +1249,15 @@
                     "google": {
                         "banner": "Editing which entities are exposed via this UI is disabled because you have configured entity filters in configuration.yaml.",
                         "disable_2FA": "Disable two factor authentication",
+                        "dont_expose_entity": "Don't expose entity",
                         "expose": "Expose to Google Assistant",
+                        "expose_entity": "Expose entity",
+                        "exposed": "{selected} exposed",
                         "exposed_entities": "Exposed entities",
-                        "not_exposed_entities": "Not Exposed entities",
+                        "follow_domain": "Follow domain",
+                        "manage_domains": "Manage domains",
+                        "not_exposed": "{selected} not exposed",
+                        "not_exposed_entities": "Not exposed entities",
                         "sync_to_google": "Synchronizing changes to Google.",
                         "title": "Google Assistant"
                     },
@@ -1899,7 +1915,7 @@
                             "filter": "Reload filter entities",
                             "generic": "Reload generic IP camera entities",
                             "generic_thermostat": "Reload generic thermostat entities",
-                            "group": "Reload groups",
+                            "group": "Reload groups, group entities, and notify services",
                             "heading": "YAML configuration reloading",
                             "history_stats": "Reload history stats entities",
                             "homekit": "Reload HomeKit",
@@ -1910,12 +1926,17 @@
                             "input_text": "Reload input texts",
                             "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current YAML configuration and load the new one.",
                             "min_max": "Reload min/max entities",
+                            "mqtt": "Reload mqtt entities",
                             "person": "Reload persons",
                             "ping": "Reload ping binary sensor entities",
-                            "rest": "Reload rest entities",
+                            "reload": "Reload {domain}",
+                            "rest": "Reload rest entities and notify services",
+                            "rpi_gpio": "Reload Raspberry Pi GPIO entities",
                             "scene": "Reload scenes",
                             "script": "Reload scripts",
+                            "smtp": "Reload smtp notify services",
                             "statistics": "Reload statistics entities",
+                            "telegram": "Reload telegram notify services",
                             "template": "Reload template entities",
                             "trend": "Reload trend entities",
                             "universal": "Reload universal media player entities",
@@ -2536,7 +2557,11 @@
                         }
                     },
                     "cardpicker": {
+                        "by_card": "By Card",
+                        "by_entity": "By Entity",
                         "custom_card": "Custom",
+                        "domain": "Domain",
+                        "entity": "Entity",
                         "no_description": "No description available."
                     },
                     "edit_card": {

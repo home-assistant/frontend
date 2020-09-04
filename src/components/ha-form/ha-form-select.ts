@@ -1,4 +1,3 @@
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
@@ -12,6 +11,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../ha-paper-dropdown-menu";
 import { HaFormElement, HaFormSelectData, HaFormSelectSchema } from "./ha-form";
 
 @customElement("ha-form-select")
@@ -24,7 +24,7 @@ export class HaFormSelect extends LitElement implements HaFormElement {
 
   @property() public suffix!: string;
 
-  @query("paper-dropdown-menu") private _input?: HTMLElement;
+  @query("ha-paper-dropdown-menu") private _input?: HTMLElement;
 
   public focus() {
     if (this._input) {
@@ -34,7 +34,7 @@ export class HaFormSelect extends LitElement implements HaFormElement {
 
   protected render(): TemplateResult {
     return html`
-      <paper-dropdown-menu .label=${this.label}>
+      <ha-paper-dropdown-menu .label=${this.label}>
         <paper-listbox
           slot="dropdown-content"
           attr-for-selected="item-value"
@@ -51,7 +51,7 @@ export class HaFormSelect extends LitElement implements HaFormElement {
             `
           )}
         </paper-listbox>
-      </paper-dropdown-menu>
+      </ha-paper-dropdown-menu>
     `;
   }
 
@@ -74,7 +74,7 @@ export class HaFormSelect extends LitElement implements HaFormElement {
 
   static get styles(): CSSResult {
     return css`
-      paper-dropdown-menu {
+      ha-paper-dropdown-menu {
         display: block;
       }
     `;

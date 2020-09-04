@@ -22,7 +22,13 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
-import { browseMediaPlayer, MediaPickedEvent } from "../../data/media-player";
+import {
+  browseLocalMediaPlayer,
+  browseMediaPlayer,
+  BROWSER_SOURCE,
+  MediaPickedEvent,
+  MediaPlayerBrowseAction,
+} from "../../data/media-player";
 import type { MediaPlayerItem } from "../../data/media-player";
 import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
 import { haStyle } from "../../resources/styles";
@@ -50,11 +56,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   @property() public mediaContentType?: string;
 
-  @property() public action: "pick" | "play" = "play";
-
-  @property({ type: Boolean }) public hideBack = false;
-
-  @property({ type: Boolean }) public hideTitle = false;
+  @property() public action: MediaPlayerBrowseAction = "play";
 
   @property({ type: Boolean }) public dialog = false;
 
@@ -88,52 +90,53 @@ export class HaMediaPlayerBrowse extends LitElement {
   }
 
   protected render(): TemplateResult {
-    if (!this._mediaPlayerItems.length) {
-      return html``;
-    }
-
     if (this._loading) {
       return html`<ha-circular-progress active></ha-circular-progress>`;
     }
 
-    const mostRecentItem = this._mediaPlayerItems[
+    if (!this._mediaPlayerItems.length) {
+      return html``;
+    }
+
+    const currentItem = this._mediaPlayerItems[
       this._mediaPlayerItems.length - 1
     ];
-    const previousItem =
+
+    const previousItem: MediaPlayerItem | undefined =
       this._mediaPlayerItems.length > 1
         ? this._mediaPlayerItems[this._mediaPlayerItems.length - 2]
         : undefined;
 
     const hasExpandableChildren:
       | MediaPlayerItem
-      | undefined = this._hasExpandableChildren(mostRecentItem.children);
+      | undefined = this._hasExpandableChildren(currentItem.children);
 
-    const showImages = mostRecentItem.children?.some(
-      (child) => child.thumbnail && child.thumbnail !== mostRecentItem.thumbnail
+    const showImages: boolean | undefined = currentItem.children?.some(
+      (child) => child.thumbnail && child.thumbnail !== currentItem.thumbnail
     );
 
     const mediaType = this.hass.localize(
-      `ui.components.media-browser.content-type.${mostRecentItem.media_content_type}`
+      `ui.components.media-browser.content-type.${currentItem.media_content_type}`
     );
 
     return html`
       <div
         class="header  ${classMap({
-          "no-img": !mostRecentItem.thumbnail,
+          "no-img": !currentItem.thumbnail,
         })}"
       >
         <div class="header-content">
-          ${mostRecentItem.thumbnail
+          ${currentItem.thumbnail
             ? html`
                 <div
                   class="img"
-                  style="background-image: url(${mostRecentItem.thumbnail})"
+                  style="background-image: url(${currentItem.thumbnail})"
                 >
-                  ${this._narrow && mostRecentItem?.can_play
+                  ${this._narrow && currentItem?.can_play
                     ? html`
                         <mwc-fab
                           mini
-                          .item=${mostRecentItem}
+                          .item=${currentItem}
                           @click=${this._actionClicked}
                         >
                           <ha-svg-icon
@@ -153,35 +156,29 @@ export class HaMediaPlayerBrowse extends LitElement {
               `
             : html``}
           <div class="header-info">
-            ${this.hideTitle && (this._narrow || !mostRecentItem.thumbnail)
-              ? ""
-              : html`<div class="breadcrumb-overflow">
-                  <div class="breadcrumb">
-                    ${!this.hideBack && previousItem
-                      ? html`
-                          <div
-                            class="previous-title"
-                            @click=${this.navigateBack}
-                          >
-                            <ha-svg-icon .path=${mdiArrowLeft}></ha-svg-icon>
-                            ${previousItem.title}
-                          </div>
-                        `
-                      : ""}
-                    <h1 class="title">${mostRecentItem.title}</h1>
-                    ${mediaType
-                      ? html`<h2 class="subtitle">
-                          ${mediaType}
-                        </h2>`
-                      : ""}
-                  </div>
-                </div>`}
-            ${mostRecentItem?.can_play &&
-            (!mostRecentItem.thumbnail || !this._narrow)
+            <div class="breadcrumb">
+              ${previousItem
+                ? html`
+                    <div class="previous-title" @click=${this.navigateBack}>
+                      <ha-svg-icon .path=${mdiArrowLeft}></ha-svg-icon>
+                      ${previousItem.title}
+                    </div>
+                  `
+                : ""}
+              <h1 class="title">${currentItem.title}</h1>
+              ${mediaType
+                ? html`
+                    <h2 class="subtitle">
+                      ${mediaType}
+                    </h2>
+                  `
+                : ""}
+            </div>
+            ${currentItem.can_play && (!currentItem.thumbnail || !this._narrow)
               ? html`
                   <mwc-button
                     raised
-                    .item=${mostRecentItem}
+                    .item=${currentItem}
                     @click=${this._actionClicked}
                   >
                     <ha-svg-icon
@@ -207,73 +204,69 @@ export class HaMediaPlayerBrowse extends LitElement {
                 class="header_button"
                 dir=${computeRTLDirection(this.hass)}
               >
-                <ha-svg-icon path=${mdiClose}></ha-svg-icon>
+                <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
               </mwc-icon-button>
             `
           : ""}
       </div>
-      ${mostRecentItem.children?.length
+      ${currentItem.children?.length
         ? hasExpandableChildren
           ? html`
               <div class="children">
-                ${mostRecentItem.children?.length
-                  ? html`
-                      ${mostRecentItem.children.map(
-                        (child) => html`
-                          <div
-                            class="child"
-                            .item=${child}
-                            @click=${this._navigateForward}
-                          >
-                            <div class="ha-card-parent">
-                              <ha-card
-                                outlined
-                                style="background-image: url(${child.thumbnail})"
+                ${currentItem.children.map(
+                  (child) => html`
+                    <div
+                      class="child"
+                      .item=${child}
+                      @click=${this._navigateForward}
+                    >
+                      <div class="ha-card-parent">
+                        <ha-card
+                          outlined
+                          style="background-image: url(${child.thumbnail})"
+                        >
+                          ${child.can_expand && !child.thumbnail
+                            ? html`
+                                <ha-svg-icon
+                                  class="folder"
+                                  .path=${mdiFolder}
+                                ></ha-svg-icon>
+                              `
+                            : ""}
+                        </ha-card>
+                        ${child.can_play
+                          ? html`
+                              <mwc-icon-button
+                                class="play"
+                                .item=${child}
+                                .label=${this.hass.localize(
+                                  `ui.components.media-browser.${this.action}-media`
+                                )}
+                                @click=${this._actionClicked}
                               >
-                                ${child.can_expand && !child.thumbnail
-                                  ? html`
-                                      <ha-svg-icon
-                                        class="folder"
-                                        .path=${mdiFolder}
-                                      ></ha-svg-icon>
-                                    `
-                                  : ""}
-                              </ha-card>
-                              ${child.can_play
-                                ? html`
-                                    <mwc-icon-button
-                                      class="play"
-                                      .item=${child}
-                                      .label=${this.hass.localize(
-                                        `ui.components.media-browser.${this.action}-media`
-                                      )}
-                                      @click=${this._actionClicked}
-                                    >
-                                      <ha-svg-icon
-                                        .path=${this.action === "play"
-                                          ? mdiPlay
-                                          : mdiPlus}
-                                      ></ha-svg-icon>
-                                    </mwc-icon-button>
-                                  `
-                                : ""}
-                            </div>
-                            <div class="title">${child.title}</div>
-                            <div class="type">
-                              ${this.hass.localize(
-                                `ui.components.media-browser.content-type.${child.media_content_type}`
-                              )}
-                            </div>
-                          </div>
-                        `
-                      )}
-                    `
-                  : ""}
+                                <ha-svg-icon
+                                  .path=${this.action === "play"
+                                    ? mdiPlay
+                                    : mdiPlus}
+                                ></ha-svg-icon>
+                              </mwc-icon-button>
+                            `
+                          : ""}
+                      </div>
+                      <div class="title">${child.title}</div>
+                      <div class="type">
+                        ${this.hass.localize(
+                          `ui.components.media-browser.content-type.${child.media_content_type}`
+                        )}
+                      </div>
+                    </div>
+                  `
+                )}
               </div>
             `
           : html`
               <mwc-list>
-                ${mostRecentItem.children.map(
+                ${currentItem.children.map(
                   (child) => html`
                     <mwc-list-item
                       @click=${this._actionClicked}
@@ -353,10 +346,7 @@ export class HaMediaPlayerBrowse extends LitElement {
   }
 
   private _runAction(item: MediaPlayerItem): void {
-    fireEvent(this, "media-picked", {
-      media_content_id: item.media_content_id,
-      media_content_type: item.media_content_type,
-    });
+    fireEvent(this, "media-picked", { item });
   }
 
   private async _navigateForward(ev: MouseEvent): Promise<void> {
@@ -383,12 +373,15 @@ export class HaMediaPlayerBrowse extends LitElement {
     mediaContentId?: string,
     mediaContentType?: string
   ): Promise<MediaPlayerItem> {
-    const itemData = await browseMediaPlayer(
-      this.hass,
-      this.entityId,
-      !mediaContentId ? undefined : mediaContentId,
-      mediaContentType
-    );
+    const itemData =
+      this.entityId !== BROWSER_SOURCE
+        ? await browseMediaPlayer(
+            this.hass,
+            this.entityId,
+            mediaContentId,
+            mediaContentType
+          )
+        : await browseLocalMediaPlayer(this.hass, mediaContentId);
 
     return itemData;
   }
@@ -483,12 +476,6 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         .header-info mwc-button {
           display: block;
-        }
-
-        .breadcrumb-overflow {
-          display: flex;
-          flex-grow: 1;
-          justify-content: space-between;
         }
 
         .breadcrumb {
@@ -714,6 +701,10 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         :host([scroll]) .breadcrumb .title {
           -webkit-line-clamp: 1;
+        }
+
+        :host(:not([narrow])[scroll]) .header-info {
+          height: 75px;
         }
 
         :host([scroll]) .header-info mwc-button,

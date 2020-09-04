@@ -617,6 +617,7 @@
                 "update": "Aktualizovat"
             },
             "domain_toggler": {
+                "reset_entities": "Obnovit entity",
                 "title": "Přepnout domény"
             },
             "entity_registry": {
@@ -1200,9 +1201,15 @@
                     },
                     "alexa": {
                         "banner": "Úprava entit, které jsou exponované prostřednictvím tohoto uživatelského rozhraní je zakázána, protože jste nakonfigurovali filtry entit v souboru configuration.yaml.",
+                        "dont_expose_entity": "Nevystavovat entitu",
                         "expose": "Exponovat do Alexa",
+                        "expose_entity": "Vystavit entitu",
+                        "exposed": "{selected} vystaveno",
                         "exposed_entities": "Exponované entity",
-                        "not_exposed_entities": "Neexponované entity",
+                        "follow_domain": "Sledovat doménu",
+                        "manage_domains": "Správa domén",
+                        "not_exposed": "{selected} není vystaveno",
+                        "not_exposed_entities": "Nevystavené entity",
                         "title": "Alexa"
                     },
                     "caption": "Home Assistant Cloud",
@@ -1239,9 +1246,15 @@
                     "google": {
                         "banner": "Úprava entity, které jsou exponované prostřednictvím tohoto uživatelského rozhraní je zakázána, protože jste nakonfigurovali filtry entit v souboru configuration.yaml.",
                         "disable_2FA": "Zakázat dvoufaktorové ověřování",
+                        "dont_expose_entity": "Nevystavovat entitu",
                         "expose": "Exponovat do Google Assistant",
+                        "expose_entity": "Vystavit entitu",
+                        "exposed": "{selected} vystaveno",
                         "exposed_entities": "Exponované entity",
-                        "not_exposed_entities": "Neexponované entity",
+                        "follow_domain": "Sledovat doménu",
+                        "manage_domains": "Správa domén",
+                        "not_exposed": "{selected} není vystaveno",
+                        "not_exposed_entities": "Nevystavené entity",
                         "sync_to_google": "Synchronizuji změny na Google.",
                         "title": "Google Assistant"
                     },

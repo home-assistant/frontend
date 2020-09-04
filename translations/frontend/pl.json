@@ -379,7 +379,7 @@
                 "preset_mode": "Ustawienia",
                 "swing_mode": "Tryb ruchu łopatek",
                 "target_humidity": "Wilgotność docelowa",
-                "target_temperature": "Wilgotność docelowa",
+                "target_temperature": "Temperatura docelowa",
                 "target_temperature_entity": "{name} temperatura docelowa",
                 "target_temperature_mode": "{name} temperatura docelowa {mode}"
             },
@@ -617,6 +617,7 @@
                 "update": "Aktualizuj"
             },
             "domain_toggler": {
+                "reset_entities": "Zresetuj encje",
                 "title": "Włączanie domen"
             },
             "entity_registry": {
@@ -697,7 +698,7 @@
                     "confirm_remove_text": "Czy na pewno chcesz usunąć tę encję?",
                     "confirm_remove_title": "Usunąć encję?",
                     "not_provided": "Ta encja jest obecnie niedostępna i jest osierocona po usuniętej, zmienionej lub dysfunkcyjnej integracji, lub urządzeniu.",
-                    "remove_action": "Usuń encje",
+                    "remove_action": "Usuń encję",
                     "remove_intro": "Jeśli encja nie jest używana możesz ją usunąć."
                 },
                 "script": {
@@ -1200,8 +1201,14 @@
                     },
                     "alexa": {
                         "banner": "Edytowanie, które encje są udostępnione za pomocą interfejsu użytkownika, jest wyłączone, ponieważ skonfigurowano filtry encji w pliku configuration.yaml.",
+                        "dont_expose_entity": "Nie udostępniaj encji",
                         "expose": "Udostępnione do Alexy",
+                        "expose_entity": "Udostępniaj encję",
+                        "exposed": "{selected} udostępniona",
                         "exposed_entities": "Udostępnione encje",
+                        "follow_domain": "Obserwuj domenę",
+                        "manage_domains": "Zarządzaj domenami",
+                        "not_exposed": "{selected} nieudostępniona",
                         "not_exposed_entities": "Nieudostępnione encje",
                         "title": "Alexa"
                     },
@@ -1239,8 +1246,14 @@
                     "google": {
                         "banner": "Edytowanie, które encje są udostępnione za pomocą interfejsu użytkownika, jest wyłączone, ponieważ skonfigurowano filtry encji w pliku configuration.yaml.",
                         "disable_2FA": "Wyłącz uwierzytelnianie dwuskładnikowe",
+                        "dont_expose_entity": "Nie udostępniaj encji",
                         "expose": "Udostępnione do Asystenta Google",
+                        "expose_entity": "Udostępniaj encję",
+                        "exposed": "{selected} udostępniona",
                         "exposed_entities": "Udostępnione encje",
+                        "follow_domain": "Obserwuj domenę",
+                        "manage_domains": "Zarządzaj domenami",
+                        "not_exposed": "{selected} nieudostępniona",
                         "not_exposed_entities": "Nieudostępnione encje",
                         "sync_to_google": "Synchronizowanie zmian z Google.",
                         "title": "Asystent Google"
@@ -1895,21 +1908,29 @@
                             "automation": "Automatyzacje",
                             "command_line": "Encje komponentu linia komend",
                             "core": "Lokalizacja i dostosowywanie",
+                            "filesize": "Encje komponentu wielkość pliku",
                             "filter": "Encje komponentu filtr",
+                            "generic": "Encje komponentu kamera IP generic",
+                            "generic_thermostat": "Encje komponentu termostatu generic",
                             "group": "Grupy",
                             "heading": "Ponowne wczytanie konfiguracji YAML",
+                            "history_stats": "Encje komponentu historia stanów",
+                            "homekit": "HomeKit",
                             "input_boolean": "Pomocnicy typu przełącznik",
                             "input_datetime": "Pomocnicy typu data i czas",
                             "input_number": "Pomocnicy typu numer",
                             "input_select": "Pomocnicy typu pole wyboru",
                             "input_text": "Pomocnicy typu tekst",
                             "introduction": "Niektóre fragmenty konfiguracji można przeładować bez ponownego uruchamiania. Poniższe przyciski pozwalają na ponowne wczytanie danej części konfiguracji YAML.",
+                            "min_max": "Encje komponentu min/max",
                             "person": "Osoby",
+                            "ping": "Encje komponentu ping",
                             "rest": "Encje komponentu rest",
                             "scene": "Sceny",
                             "script": "Skrypty",
                             "statistics": "Encje komponentu statystyka",
                             "template": "Szablony encji",
+                            "trend": "Encje komponentu trend",
                             "universal": "Encje komponentu uniwersalny odtwarzacz mediów",
                             "zone": "Strefy"
                         },
@@ -1982,6 +2003,7 @@
                         "name": "Nazwa",
                         "new_password": "Nowe hasło",
                         "owner": "Właściciel",
+                        "password_changed": "Hasło zostało zmienione!",
                         "system_generated": "Wygenerowany przez system",
                         "system_generated_users_not_editable": "Nie można zaktualizować użytkowników generowanych przez system.",
                         "system_generated_users_not_removable": "Nie można usunąć użytkowników wygenerowanych przez system.",
@@ -2431,6 +2453,7 @@
                             "show_name": "Wyświetlanie nazwy",
                             "show_state": "Wyświetlanie stanu",
                             "state": "Stan",
+                            "state_color": "Kolory ikon w zależności od stanu",
                             "tap_action": "Akcja dotknięcia",
                             "theme": "Motyw",
                             "title": "Tytuł",
