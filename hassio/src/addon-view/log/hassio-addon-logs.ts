@@ -4,9 +4,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../../../src/components/ha-card";
@@ -14,6 +14,7 @@ import {
   fetchHassioAddonLogs,
   HassioAddonDetails,
 } from "../../../../src/data/hassio/addon";
+import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import "../../components/hassio-ansi-to-html";
@@ -75,7 +76,7 @@ class HassioAddonLogs extends LitElement {
     try {
       this._content = await fetchHassioAddonLogs(this.hass, this.addon.slug);
     } catch (err) {
-      this._error = `Failed to get addon logs, ${err.body?.message || err}`;
+      this._error = `Failed to get addon logs, ${extractApiErrorMessage(err)}`;
     }
   }
 
