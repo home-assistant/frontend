@@ -1776,7 +1776,7 @@
                     },
                     "select_instance": {
                         "header": "选择一个 OpenZWave 实例",
-                        "introduction": "您正在运行多个 OpenZWave 实例。您要管理哪个实例？"
+                        "introduction": "有多个 OpenZWave 实例正在运行。您要管理哪个实例？"
                     },
                     "services": {
                         "add_node": "添加节点",
