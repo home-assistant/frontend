@@ -170,6 +170,7 @@ export interface TimeCondition {
   condition: "time";
   after: string;
   before: string;
+  weekday: string[];
 }
 
 export interface TemplateCondition {

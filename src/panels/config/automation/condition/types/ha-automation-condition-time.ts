@@ -22,7 +22,17 @@ const includeDomains = ["input_datetime"];
 export class HaTimeCondition extends LitElement implements ConditionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public condition!: TimeCondition;
+  @property({ attribute: false }) public condition!: TimeCondition;
+
+  private _days: Weekday[] = [
+    { name: "mon", order: 1 },
+    { name: "tue", order: 2 },
+    { name: "wed", order: 3 },
+    { name: "thu", order: 4 },
+    { name: "fri", order: 5 },
+    { name: "sat", order: 6 },
+    { name: "sun", order: 7 },
+  ];
 
   @internalProperty() private _inputModeBefore?: boolean;
 
@@ -142,5 +152,61 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
 
   private _valueChanged(ev: CustomEvent): void {
     handleChangeEvent(this, ev);
+  }
+
+  private _isChecked(days: string[], day: string): boolean {
+    if (days === undefined) {
+      return false;
+    }
+    return days.includes(day);
+  }
+
+  private _dayValueChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+
+    const day = (ev.currentTarget as any).day;
+    const checked = (ev.currentTarget as HaSwitch).checked;
+
+    let days = this.condition.weekday;
+    if (days === undefined) {
+      days = [];
+    }
+
+    if (checked) {
+      days.push(day);
+    } else {
+      days = days.filter((d) => d !== day);
+    }
+
+    days.sort((a: string, b: string) => {
+      const first: number =
+        this._days.find((d) => d.name === b.toLowerCase())?.order ?? 1;
+      const second: number =
+        this._days.find((d) => d.name === a.toLowerCase())?.order ?? 2;
+      return second - first;
+    });
+
+    this.condition.weekday = days;
+
+    fireEvent(this, "value-changed", {
+      value: this.condition,
+    });
+  }
+
+  static get styles(): CSSResult[] {
+    return [
+      css`
+        .flex {
+          display: flex;
+          height: 40px;
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-automation-condition-time": HaTimeCondition;
   }
 }
