@@ -1010,7 +1010,17 @@
                 "time": {
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::time::label%]",
                   "after": "After",
-                  "before": "Before"
+                  "before": "Before",
+                  "days": "Days",
+                  "weekdays": {
+                    "mon": "Monday",
+                    "tue": "Tuesday",
+                    "wed": "Wednesday",
+                    "thu": "Thursday",
+                    "fri": "Friday",
+                    "sat": "Saturday",
+                    "sun": "Sunday"
+                  }
                 },
                 "zone": {
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]",
