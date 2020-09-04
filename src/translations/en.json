@@ -2137,7 +2137,8 @@
             "delete": "Delete Card",
             "duplicate": "Duplicate Card",
             "move": "Move to View",
-            "options": "More options"
+            "options": "More options",
+            "search_cards": "Search cards"
           },
           "move_card": {
             "header": "Choose a view to move the card to"

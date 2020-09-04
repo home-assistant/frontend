@@ -8,7 +8,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { styleMap } from "lit-html/directives/style-map";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import "../../components/ha-circular-progress";
 import "../../components/state-history-charts";
@@ -57,19 +57,21 @@ export class MoreInfoTabHistoryDialog extends LitElement {
               alt=${this.hass.localize("ui.common.loading")}
             ></ha-circular-progress>
           `
-        : html`
+        : this._entries.length
+        ? html`
             <ha-logbook
               narrow
               no-icon
               no-name
-              class=${classMap({
-                "has-entries": Boolean(this._entries?.length),
+              style=${styleMap({
+                height: `${(this._entries.length + 1) * 56}px`,
               })}
               .hass=${this.hass}
               .entries=${this._entries}
               .userIdToName=${this._persons}
             ></ha-logbook>
-          `}
+          `
+        : ""}
     `;
   }
 
@@ -144,8 +146,8 @@ export class MoreInfoTabHistoryDialog extends LitElement {
           margin-bottom: 16px;
         }
 
-        ha-logbook.has-entries {
-          height: 360px;
+        ha-logbook {
+          max-height: 360px;
         }
 
         ha-circular-progress {

@@ -103,7 +103,7 @@ class HaLogbook extends LitElement {
     const item_username =
       item.context_user_id && this.userIdToName[item.context_user_id];
     return html`
-      <div>
+      <div class="entry-container">
         ${index === 0 ||
         (item?.when &&
           previous?.when &&
@@ -195,17 +195,37 @@ class HaLogbook extends LitElement {
         direction: ltr;
       }
 
+      .entry-container {
+        width: 100%;
+      }
+
       .entry {
         display: flex;
+        width: 100%;
         line-height: 2em;
-        padding-bottom: 8px;
+        padding: 8px 16px;
+        box-sizing: border-box;
+        border-top: 1px solid
+          var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
       }
 
       .time {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
         width: 65px;
         flex-shrink: 0;
         font-size: 12px;
         color: var(--secondary-text-color);
+      }
+
+      .date {
+        margin: 8px 0;
+        padding: 0 16px;
+      }
+
+      .narrow .date {
+        padding: 0 8px;
       }
 
       .rtl .date {
@@ -239,10 +259,6 @@ class HaLogbook extends LitElement {
         color: var(--primary-color);
       }
 
-      .container {
-        padding: 0 16px;
-      }
-
       .uni-virtualizer-host {
         display: block;
         position: relative;
@@ -256,8 +272,9 @@ class HaLogbook extends LitElement {
       }
 
       .narrow .entry {
-        flex-direction: column-reverse;
+        flex-direction: column;
         line-height: 1.5;
+        padding: 8px;
       }
 
       .narrow .icon-message ha-icon {

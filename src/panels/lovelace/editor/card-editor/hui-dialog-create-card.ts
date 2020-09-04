@@ -10,6 +10,8 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { cache } from "lit-html/directives/cache";
+import { classMap } from "lit-html/directives/class-map";
 import memoize from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
@@ -23,10 +25,8 @@ import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "./hui-card-picker";
 import "./hui-entity-picker-table";
-import {
-  EditCardDialogParams,
-  showEditCardDialog,
-} from "./show-edit-card-dialog";
+import { CreateCardDialogParams } from "./show-create-card-dialog";
+import { showEditCardDialog } from "./show-edit-card-dialog";
 import { showSuggestCardDialog } from "./show-suggest-card-dialog";
 
 declare global {
@@ -43,7 +43,7 @@ interface SelectedChangedEvent {
 export class HuiCreateDialogCard extends LitElement implements HassDialog {
   @property({ attribute: false }) protected hass!: HomeAssistant;
 
-  @internalProperty() private _params?: EditCardDialogParams;
+  @internalProperty() private _params?: CreateCardDialogParams;
 
   @internalProperty() private _viewConfig!: LovelaceViewConfig;
 
@@ -51,7 +51,7 @@ export class HuiCreateDialogCard extends LitElement implements HassDialog {
 
   @internalProperty() private _currTabIndex = 0;
 
-  public async showDialog(params: EditCardDialogParams): Promise<void> {
+  public async showDialog(params: CreateCardDialogParams): Promise<void> {
     this._params = params;
     const [view] = params.path;
     this._viewConfig = params.lovelaceConfig.views[view];
@@ -76,10 +76,11 @@ export class HuiCreateDialogCard extends LitElement implements HassDialog {
         @keydown=${this._ignoreKeydown}
         @closed=${this._cancel}
         .heading=${true}
+        class=${classMap({ table: this._currTabIndex === 1 })}
       >
         <div slot="heading">
           <ha-header-bar>
-            <div slot="title">
+            <span slot="title">
               ${this._viewConfig.title
                 ? this.hass!.localize(
                     "ui.panel.lovelace.editor.edit_card.pick_card_view_title",
@@ -89,7 +90,7 @@ export class HuiCreateDialogCard extends LitElement implements HassDialog {
                 : this.hass!.localize(
                     "ui.panel.lovelace.editor.edit_card.pick_card"
                   )}
-            </div>
+            </span>
           </ha-header-bar>
           <mwc-tab-bar
             .activeIndex=${this._currTabIndex}
@@ -108,24 +109,26 @@ export class HuiCreateDialogCard extends LitElement implements HassDialog {
             ></mwc-tab>
           </mwc-tab-bar>
         </div>
-        ${this._currTabIndex === 0
-          ? html`
-              <hui-card-picker
-                .lovelace=${this._params.lovelaceConfig}
-                .hass=${this.hass}
-                @config-changed=${this._handleCardPicked}
-              ></hui-card-picker>
-            `
-          : html`
-              <div class="entity-picker-container">
-                <hui-entity-picker-table
+        ${cache(
+          this._currTabIndex === 0
+            ? html`
+                <hui-card-picker
+                  .lovelace=${this._params.lovelaceConfig}
                   .hass=${this.hass}
-                  .narrow=${true}
-                  .entities=${this._allEntities(this.hass.states)}
-                  @selected-changed=${this._handleSelectedChanged}
-                ></hui-entity-picker-table>
-              </div>
-            `}
+                  @config-changed=${this._handleCardPicked}
+                ></hui-card-picker>
+              `
+            : html`
+                <div class="entity-picker-container">
+                  <hui-entity-picker-table
+                    .hass=${this.hass}
+                    .narrow=${true}
+                    .entities=${this._allEntities(this.hass.states)}
+                    @selected-changed=${this._handleSelectedChanged}
+                  ></hui-entity-picker-table>
+                </div>
+              `
+        )}
 
         <div slot="primaryAction">
           <mwc-button @click=${this._cancel}>
@@ -167,6 +170,11 @@ export class HuiCreateDialogCard extends LitElement implements HassDialog {
 
         ha-dialog {
           --mdc-dialog-max-width: 845px;
+          --dialog-content-padding: 2px 24px 20px 24px;
+        }
+
+        ha-dialog.table {
+          --dialog-content-padding: 0;
         }
 
         ha-header-bar {
@@ -190,7 +198,8 @@ export class HuiCreateDialogCard extends LitElement implements HassDialog {
         }
 
         mwc-tab-bar {
-          padding-top: 8px;
+          border-bottom: 1px solid
+            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
         }
 
         .entity-picker-container {
