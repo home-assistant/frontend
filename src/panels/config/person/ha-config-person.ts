@@ -1,18 +1,21 @@
+import "@material/mwc-fab";
+import { mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 import {
   css,
   CSSResult,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
+import { styleMap } from "lit-html/directives/style-map";
 import { compare } from "../../../common/string/compare";
 import "../../../components/ha-card";
+import "../../../components/ha-svg-icon";
 import "../../../components/user/ha-user-badge";
-import "@material/mwc-fab";
 import {
   createPerson,
   deletePerson,
@@ -31,8 +34,6 @@ import {
   loadPersonDetailDialog,
   showPersonDetailDialog,
 } from "./show-dialog-person-detail";
-import "../../../components/ha-svg-icon";
-import { mdiPlus } from "@mdi/js";
 
 class HaConfigPerson extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -86,11 +87,15 @@ class HaConfigPerson extends LitElement {
             ${this._storageItems.map((entry) => {
               return html`
                 <paper-icon-item @click=${this._openEditEntry} .entry=${entry}>
-                  <ha-user-badge
-                    .user=${entry}
-                    .hass=${this.hass}
-                    slot="item-icon"
-                  ></ha-user-badge>
+                  ${entry.picture
+                    ? html`<div
+                        style=${styleMap({
+                          backgroundImage: `url(${entry.picture})`,
+                        })}
+                        class="picture"
+                        slot="item-icon"
+                      ></div>`
+                    : ""}
                   <paper-item-body>
                     ${entry.name}
                   </paper-item-body>
@@ -118,11 +123,15 @@ class HaConfigPerson extends LitElement {
                   ${this._configItems.map((entry) => {
                     return html`
                       <paper-icon-item>
-                        <ha-user-badge
-                          .user=${entry}
-                          .hass=${this.hass}
-                          slot="item-icon"
-                        ></ha-user-badge>
+                        ${entry.picture
+                          ? html`<div
+                              style=${styleMap({
+                                backgroundImage: `url(${entry.picture})`,
+                              })}
+                              class="picture"
+                              slot="item-icon"
+                            ></div>`
+                          : ""}
                         <paper-item-body>
                           ${entry.name}
                         </paper-item-body>

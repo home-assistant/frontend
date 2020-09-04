@@ -2,8 +2,8 @@ import "@material/mwc-icon-button";
 import {
   mdiBell,
   mdiCellphoneCog,
-  mdiMenuOpen,
   mdiMenu,
+  mdiMenuOpen,
   mdiViewDashboard,
 } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
@@ -13,12 +13,12 @@ import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
   CSSResult,
+  customElement,
   eventOptions,
   html,
-  customElement,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
@@ -277,7 +277,11 @@ class HaSidebar extends LitElement {
         @mouseleave=${this._itemMouseLeave}
       >
         <paper-icon-item>
-          <ha-user-badge slot="item-icon" .hass=${hass}></ha-user-badge>
+          <ha-user-badge
+            slot="item-icon"
+            .user=${hass.user}
+            .hass=${hass}
+          ></ha-user-badge>
 
           <span class="item-text">
             ${hass.user ? hass.user.name : ""}
