@@ -14,6 +14,7 @@ import LocalizeMixin from "../../../mixins/localize-mixin";
 import "../../../styles/polymer-ha-style";
 import { mdiInformationOutline } from "@mdi/js";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import { fuzzyFilter } from "../../../common/string/compare";
 
 const ERROR_SENTINEL = {};
 /*
@@ -296,7 +297,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         return hass.states[key];
       })
       .filter(function (value) {
-        if (!value.entity_id.includes(_entityFilter.toLowerCase())) {
+        if (fuzzyFilter(_entityFilter.toLowerCase(), value.entity_id)) {
           return false;
         }
 
