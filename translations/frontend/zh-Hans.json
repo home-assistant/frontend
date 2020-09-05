@@ -505,6 +505,7 @@
             "back": "返回",
             "cancel": "取消",
             "close": "关闭",
+            "continue": "继续",
             "delete": "删除",
             "error_required": "必填",
             "loading": "加载中",
@@ -689,8 +690,10 @@
                 "crop": "剪裁"
             },
             "more_info_control": {
+                "controls": "控制项",
                 "dismiss": "关闭对话框",
                 "edit": "编辑实体",
+                "history": "历史",
                 "person": {
                     "create_zone": "从当前位置创建地点"
                 },
@@ -1912,7 +1915,7 @@
                             "filter": "重载 filter 实体",
                             "generic": "重载通用 IP 摄像机实体",
                             "generic_thermostat": "重载通用恒温器实体",
-                            "group": "重载分组",
+                            "group": "重载分组、分组实体及通知服务",
                             "heading": "配置重载",
                             "history_stats": "重载历史记录统计实体",
                             "homekit": "重载 HomeKit",
@@ -1923,12 +1926,17 @@
                             "input_text": "重载文字输入",
                             "introduction": "Home Assistant 中的部分配置可以直接重载，而无需重启服务。点击重载按钮将重新载入新的配置。",
                             "min_max": "重载最小值/最大值实体",
+                            "mqtt": "重载 mqtt 实体",
                             "person": "重载人员",
                             "ping": "重载 ping 二元传感器实体",
-                            "rest": "重载 REST 实体",
+                            "reload": "重载{domain}",
+                            "rest": "重载 REST 实体及通知服务",
+                            "rpi_gpio": "重载树莓派 GPIO 实体",
                             "scene": "重载场景",
                             "script": "重载脚本",
+                            "smtp": "重载 smtp 通知服务",
                             "statistics": "重载 statistics 实体",
+                            "telegram": "重载 telegram 通知服务",
                             "template": "重载模板实体",
                             "trend": "重载 trend 实体",
                             "universal": "重载通用媒体播放器实体",
@@ -2549,7 +2557,11 @@
                         }
                     },
                     "cardpicker": {
+                        "by_card": "按卡片",
+                        "by_entity": "按实体",
                         "custom_card": "自定义",
+                        "domain": "域",
+                        "entity": "实体",
                         "no_description": "没有描述。"
                     },
                     "edit_card": {
