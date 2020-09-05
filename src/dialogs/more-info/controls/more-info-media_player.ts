@@ -130,7 +130,7 @@ class MoreInfoMediaPlayer extends LitElement {
             </div>
           `
         : ""}
-      ${stateObj.state !== "off" &&
+      ${![UNAVAILABLE, UNKNOWN, "off"].includes(stateObj.state) &&
       supportsFeature(stateObj, SUPPORT_SELECT_SOURCE) &&
       stateObj.attributes.source_list?.length
         ? html`
