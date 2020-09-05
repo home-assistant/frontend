@@ -405,15 +405,27 @@ class HUIRoot extends LitElement {
 
     const viewPath = this.route!.path.split("/")[1];
 
+    const isVisible = (viewIndex) =>
+      Boolean(
+        this._editMode ||
+          viewIndex.visible === undefined ||
+          viewIndex.visible === true ||
+          (Array.isArray(viewIndex.visible) &&
+            viewIndex.visible.some((e) => e.user === this.hass!.user!.id))
+      );
+
     if (changedProperties.has("route")) {
       const views = this.config.views;
-      if (!viewPath && views.length) {
-        navigate(this, `${this.route!.prefix}/${views[0].path || 0}`, true);
-        newSelectView = 0;
+
+      if ((!viewPath && views.length) || viewPath === "default_view") {
+        newSelectView = views.findIndex(isVisible);
+        navigate(
+          this,
+          `${this.route!.prefix}/${views[newSelectView].path || newSelectView}`,
+          true
+        );
       } else if (viewPath === "hass-unused-entities") {
         newSelectView = "hass-unused-entities";
-      } else if (viewPath === "default_view") {
-        newSelectView = undefined;
       } else if (viewPath) {
         const selectedView = viewPath;
         const selectedViewInt = Number(selectedView);
@@ -451,8 +463,14 @@ class HUIRoot extends LitElement {
           this.lovelace!.mode === "storage" &&
           viewPath === "hass-unused-entities"
         ) {
-          navigate(this, `${this.route?.prefix}/${views[0]?.path || 0}`);
-          newSelectView = 0;
+          newSelectView = views.findIndex(isVisible);
+          navigate(
+            this,
+            `${this.route!.prefix}/${
+              views[newSelectView].path || newSelectView
+            }`,
+            true
+          );
         }
       }
 
@@ -610,18 +628,7 @@ class HUIRoot extends LitElement {
       return;
     }
 
-    const isVisible = (view) =>
-      Boolean(
-        this._editMode ||
-          view.visible === undefined ||
-          view.visible === true ||
-          (Array.isArray(view.visible) &&
-            view.visible.some((e) => e.user === this.hass!.user!.id))
-      );
-    viewIndex =
-      viewIndex === undefined
-        ? this.config.views.findIndex(isVisible)
-        : viewIndex;
+    viewIndex = viewIndex === undefined ? 0 : viewIndex;
 
     this._curView = viewIndex;
 
