@@ -181,7 +181,7 @@ export class HaIntegrationCard extends LitElement {
                             "count",
                             devices.length
                           )}</a
-                        >${devices.length && services.length ? "," : ""}
+                        >${services.length ? "," : ""}
                       `
                     : ""}
                   ${services.length
