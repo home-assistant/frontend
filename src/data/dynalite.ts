@@ -21,5 +21,5 @@ export const updateEntry = (
   hass.callWS({
     type: "dynalite/update_entry",
     entry_id: configEntryId,
-    entry_data: JSON.stringify(entryData),
+    entry_data: entryData,
   });
