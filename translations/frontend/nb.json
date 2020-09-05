@@ -489,6 +489,7 @@
             "back": "Tilbake",
             "cancel": "Avbryt",
             "close": "Lukk",
+            "continue": "Fortsette",
             "delete": "Slett",
             "error_required": "Nødvendig",
             "loading": "Laster",
@@ -672,8 +673,10 @@
                 "crop": "Beskjære"
             },
             "more_info_control": {
+                "controls": "Kontroller",
                 "dismiss": "Avvis dialogboksen",
                 "edit": "Redigér entitet",
+                "history": "Historie",
                 "person": {
                     "create_zone": "Opprett sone fra gjeldende plassering"
                 },
@@ -1866,7 +1869,7 @@
                             "filter": "Last inn filter entiteter på nytt",
                             "generic": "Last inn generiske IP-kamera entiteter på nytt",
                             "generic_thermostat": "Last inn generiske termostat entiteter på nytt",
-                            "group": "Last inn grupper på nytt",
+                            "group": "Laste inn grupper, gruppere enheter og varsle tjenester på nytt",
                             "heading": "YAML -Konfigurasjon lastes på nytt",
                             "history_stats": "Last inn historiske tilstander på nytt",
                             "homekit": "Last inn HomeKit på nytt",
@@ -1877,12 +1880,17 @@
                             "input_text": "Last inn inndata tekst på nytt",
                             "introduction": "Noen deler av Home Assistant kan laste inn uten å kreve omstart. Hvis du trykker last på nytt, vil du bytte den nåværende konfigurasjonen med den nye.",
                             "min_max": "Last inn min/maks entiteter på nytt",
+                            "mqtt": "Last inn mqtt-enheter på nytt",
                             "person": "Last inn personer på nytt",
                             "ping": "Last inn ping binære sensor entiteter på nytt",
-                            "rest": "Last inn REST entiteter på nytt",
+                            "reload": "Last inn {domain} på nytt",
+                            "rest": "Last inn hvileenheter på nytt og varsle tjenester",
+                            "rpi_gpio": "Last inn Raspberry Pi GPIO-enheter på nytt",
                             "scene": "Last inn scener på nytt",
                             "script": "Last inn skript på nytt",
+                            "smtp": "Last inn smtp-varslingstjenester på nytt",
                             "statistics": "Last inn statistiske entiteter på nytt",
+                            "telegram": "Last inn telegram varslingstjenester på nytt",
                             "template": "Laste inn mal entiteter på nytt",
                             "trend": "Laste inn trend entiteter på nytt",
                             "universal": "Laste inn universelle mediespiller entiteter på nytt",
@@ -2493,7 +2501,11 @@
                         }
                     },
                     "cardpicker": {
+                        "by_card": "Med kort",
+                        "by_entity": "Etter enhet",
                         "custom_card": "Tilpasset",
+                        "domain": "Domene",
+                        "entity": "Entitet",
                         "no_description": "Ingen beskrivelse tilgjengelig."
                     },
                     "edit_card": {

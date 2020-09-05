@@ -505,6 +505,7 @@
             "back": "上一步",
             "cancel": "取消",
             "close": "關閉",
+            "continue": "繼續",
             "delete": "刪除",
             "error_required": "必填",
             "loading": "讀取中",
@@ -689,8 +690,10 @@
                 "crop": "裁切"
             },
             "more_info_control": {
+                "controls": "控制",
                 "dismiss": "忽略對話",
                 "edit": "編輯實體",
+                "history": "歷史",
                 "person": {
                     "create_zone": "使用目前位置新增區域"
                 },
@@ -1912,7 +1915,7 @@
                             "filter": "重新載入過濾器實體",
                             "generic": "重新載入通用 IP 攝影機實體",
                             "generic_thermostat": "重新載入通用溫控器實體",
-                            "group": "重新載入群組",
+                            "group": "重新載入群組、群組實體及通知服務",
                             "heading": "YAML 設定新載入中",
                             "history_stats": "重新載入歷史狀態實體",
                             "homekit": "重新載入 Homekit",
@@ -1923,12 +1926,17 @@
                             "input_text": "重新載入輸入文字",
                             "introduction": "Home Assistant 中部分設定無須重啟即可重新載入生效。點選重新載入按鈕，即可解除目前 YAML 設定，並重新載入最新設定。",
                             "min_max": "重新載入最低/最高實體",
+                            "mqtt": "重新載入 MQTT 實體",
                             "person": "重新載入人員",
                             "ping": "重新載入 Pung 二進位傳感器實體",
-                            "rest": "重新載入剩餘實體",
+                            "reload": "重新載入{domain}",
+                            "rest": "重新載入剩餘實體及通知服務",
+                            "rpi_gpio": "重新載入 Raspberry Pi GPIO 實體",
                             "scene": "重新載入場景",
                             "script": "重新載入腳本",
+                            "smtp": "重新載入 SMTP 通知服務",
                             "statistics": "重新載入統計資訊實體",
+                            "telegram": "重新載入 Telegram 通知服務",
                             "template": "重新載入範例實體",
                             "trend": "重新載入趨勢實體",
                             "universal": "重新載入通用媒體播放器實體",
@@ -2549,7 +2557,11 @@
                         }
                     },
                     "cardpicker": {
+                        "by_card": "以面板",
+                        "by_entity": "以實體",
                         "custom_card": "自訂面板",
+                        "domain": "區域",
+                        "entity": "實體",
                         "no_description": "無描述可使用。"
                     },
                     "edit_card": {
