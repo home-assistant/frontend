@@ -78,6 +78,8 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
       return html``;
     }
 
+    const content = this._content || this._config!.content;
+
     return html`
       <ha-card .header="${this._config.title}">
         <ha-markdown
@@ -85,7 +87,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
           class=${classMap({
             "no-header": !this._config.title,
           })}
-          .content="${this._content || this._config!.content}"
+          .content="${content}"
         ></ha-markdown>
       </ha-card>
     `;
