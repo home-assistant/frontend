@@ -137,6 +137,7 @@ export class HaIntegrationCard extends LitElement {
 
   private _renderSingleEntry(item: ConfigEntryExtended): TemplateResult {
     const devices = this._getDevices(item);
+    const services = this._getServices(item);
     const entities = this._getEntities(item);
 
     return html`
@@ -168,7 +169,7 @@ export class HaIntegrationCard extends LitElement {
           <h3>
             ${item.localized_domain_name === item.title ? "" : item.title}
           </h3>
-          ${devices.length || entities.length
+          ${devices.length || services.length || entities.length
             ? html`
                 <div>
                   ${devices.length
@@ -183,7 +184,22 @@ export class HaIntegrationCard extends LitElement {
                         >
                       `
                     : ""}
-                  ${devices.length && entities.length
+                  ${devices.length && services.length
+                    ? this.hass.localize("ui.common.and")
+                    : ""}
+                  ${services.length
+                    ? html`
+                        <a
+                          href=${`/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}`}
+                          >${this.hass.localize(
+                            "ui.panel.config.integrations.config_entry.services",
+                            "count",
+                            services.length
+                          )}</a
+                        >
+                      `
+                    : ""}
+                  ${(devices.length || services.length) && entities.length
                     ? this.hass.localize("ui.common.and")
                     : ""}
                   ${entities.length
@@ -304,8 +320,21 @@ export class HaIntegrationCard extends LitElement {
     if (!this.deviceRegistryEntries) {
       return [];
     }
-    return this.deviceRegistryEntries.filter((device) =>
-      device.config_entries.includes(configEntry.entry_id)
+    return this.deviceRegistryEntries.filter(
+      (device) =>
+        device.config_entries.includes(configEntry.entry_id) &&
+        device.entry_type !== "service"
+    );
+  }
+
+  private _getServices(configEntry: ConfigEntry): DeviceRegistryEntry[] {
+    if (!this.deviceRegistryEntries) {
+      return [];
+    }
+    return this.deviceRegistryEntries.filter(
+      (device) =>
+        device.config_entries.includes(configEntry.entry_id) &&
+        device.entry_type === "service"
     );
   }
 

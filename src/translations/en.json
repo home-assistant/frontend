@@ -1638,6 +1638,7 @@
           "config_entry": {
             "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
             "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
+            "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
             "rename": "Rename",
             "options": "Options",
             "system_options": "System options",
