@@ -563,6 +563,8 @@
                 "no_history_found": "Historie stavu chybí."
             },
             "media-browser": {
+                "audio_not_supported": "Váš prohlížeč nepodporuje element \"audio\".",
+                "choose_player": "Vyberte přehrávač",
                 "choose-source": "Zvolte zdroj",
                 "content-type": {
                     "album": "Album",
@@ -571,12 +573,16 @@
                     "playlist": "Seznam skladeb",
                     "server": "Server"
                 },
+                "media_not_supported": "Přehrávač médií v prohlížeči nepodporuje tento typ média",
+                "media_player": "Přehrávač médií",
                 "media-player-browser": "Prohlížeč přehrávače médií",
                 "no_items": "Žádné položky",
                 "pick": "Vybrat",
                 "pick-media": "Vybrat média",
                 "play": "Přehrát",
-                "play-media": "Přehrát média"
+                "play-media": "Přehrát média",
+                "video_not_supported": "Váš prohlížeč nepodporuje element \"video\".",
+                "web-browser": "Webový prohlížeč"
             },
             "picture-upload": {
                 "label": "Obrázek",
@@ -634,7 +640,7 @@
                     "icon": "Nahrazení ikony",
                     "icon_error": "Ikony by měly být ve formátu 'prefix:nazevikony', např. 'mdi:home'",
                     "name": "Přepsání názvu",
-                    "note": "Poznámka: to nemusí fungovat se všemi integracemi.",
+                    "note": "Poznámka: U všech integrací to ještě nemusí fungovat.",
                     "unavailable": "Tato entita není momentálně k dispozici.",
                     "update": "Aktualizovat"
                 },
@@ -1765,8 +1771,21 @@
                         "versions": "Získávám informace o verzích firmwaru a typech příkazů",
                         "wakeup": "Nastavuji podporu pro probouzecí fronty a zprávy"
                     },
+                    "node": {
+                        "button": "Podrobnosti uzlu",
+                        "not_found": "Uzel nenalezen"
+                    },
+                    "nodes_table": {
+                        "failed": "Selhalo",
+                        "id": "ID",
+                        "manufacturer": "Výrobce",
+                        "model": "Model",
+                        "query_stage": "Fáze dotazu",
+                        "zwave_plus": "Z-Wave Plus"
+                    },
                     "refresh_node": {
                         "battery_note": "Pokud je uzel napájen z baterie, nezapomeňte jej probudit, než budete pokračovat",
+                        "button": "Obnovit uzel",
                         "complete": "Obnova uzlu dokončena",
                         "description": "Toto řekne OpenZWave, aby znovu provedl komunikaci s uzlem a aktualizoval typy příkazů, schopnosti a hodnoty uzlu.",
                         "node_status": "Stav uzlu",
@@ -2025,7 +2044,7 @@
                             "system": "Systémový"
                         }
                     },
-                    "users_privileges_note": "Skupina uživatelů je v přípravě. Uživatel nebude moci spravovat instanci prostřednictvím uživatelského rozhraní. Stále kontrolujeme všechny koncové body API pro správu, abychom zajistili, že správně omezují přístup."
+                    "users_privileges_note": "Skupiny uživatelů jsou v přípravě. Uživatel je nebude moci spravovat prostřednictvím uživatelského rozhraní. Stále kontrolujeme API pro správu, abychom zajistili, že správně omezuje přístup pouze pro administrátory."
                 },
                 "zha": {
                     "add_device_page": {
@@ -2575,6 +2594,7 @@
                         "options": "Více možností",
                         "pick_card": "Kterou kartu chcete přidat?",
                         "pick_card_view_title": "Kterou kartu byste chtěli přidat do svého {name} pohledu?",
+                        "search_cards": "Vyhledat karty",
                         "show_code_editor": "Zobrazit editor kódu",
                         "show_visual_editor": "Zobrazit vizuální editor",
                         "toggle_editor": "Přepnout Editor",
