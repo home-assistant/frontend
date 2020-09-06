@@ -21,6 +21,7 @@ import { ifDefined } from "lit-html/directives/if-defined";
 import { styleMap } from "lit-html/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
+import { compare } from "../../common/string/compare";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
 import {
@@ -413,11 +414,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           ? 1
           : first.can_expand && !second.can_expand
           ? -1
-          : first.title > second.title
-          ? 1
-          : second.title > first.title
-          ? -1
-          : 0
+          : compare(first.title, second.title)
       );
     } catch (error) {
       showAlertDialog(this, {
@@ -478,12 +475,6 @@ export class HaMediaPlayerBrowse extends LitElement {
           display: flex;
           justify-content: space-between;
           border-bottom: 1px solid var(--divider-color);
-        }
-
-        .header_button {
-          position: relative;
-          top: 14px;
-          right: -8px;
         }
 
         .header {
@@ -584,9 +575,6 @@ export class HaMediaPlayerBrowse extends LitElement {
           );
           grid-gap: 16px;
           margin: 8px 0px;
-        }
-
-        :host(:not([narrow])) .children {
           padding: 0px 24px;
         }
 
@@ -728,8 +716,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           padding: 20px 24px 10px;
         }
 
-        :host([narrow]) .media-source,
-        :host([narrow]) .children {
+        :host([narrow]) .media-source {
           padding: 0 24px;
         }
 
@@ -748,8 +735,8 @@ export class HaMediaPlayerBrowse extends LitElement {
           -webkit-line-clamp: 1;
         }
 
-        :host(:not([narrow])[scroll]) .header-info {
-          height: 75px;
+        :host(:not([narrow])[scroll]) .header:not(.no-img) mwc-icon-button {
+          align-self: center;
         }
 
         :host([scroll]) .header-info mwc-button,
