@@ -216,7 +216,7 @@ class HaLogbook extends LitElement {
           display: flex;
           justify-content: center;
           flex-direction: column;
-          width: 65px;
+          width: 70px;
           flex-shrink: 0;
           font-size: 12px;
           color: var(--secondary-text-color);
