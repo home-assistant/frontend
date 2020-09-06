@@ -337,6 +337,10 @@ export class HaMediaPlayerBrowse extends LitElement {
 
     this._fetchData(this.mediaContentId, this.mediaContentType).then(
       (itemData) => {
+        if (!itemData) {
+          return;
+        }
+
         this._mediaPlayerItems = [itemData];
       }
     );
@@ -398,6 +402,17 @@ export class HaMediaPlayerBrowse extends LitElement {
               mediaContentType
             )
           : await browseLocalMediaPlayer(this.hass, mediaContentId);
+      itemData.children = itemData.children?.sort((first, second) =>
+        !first.can_expand && second.can_expand
+          ? 1
+          : first.can_expand && !second.can_expand
+          ? -1
+          : first.title > second.title
+          ? 1
+          : second.title > first.title
+          ? -1
+          : 0
+      );
     } catch (error) {
       showAlertDialog(this, {
         title: this.hass.localize(
