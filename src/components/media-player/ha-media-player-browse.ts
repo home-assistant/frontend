@@ -132,7 +132,11 @@ export class HaMediaPlayerBrowse extends LitElement {
             ? html`
                 <div
                   class="img"
-                  style="background-image: url(${currentItem.thumbnail})"
+                  style=${styleMap({
+                    backgroundImage: currentItem.thumbnail
+                      ? `url(${currentItem.thumbnail})`
+                      : "none",
+                  })}
                 >
                   ${this._narrow && currentItem?.can_play
                     ? html`
@@ -226,7 +230,9 @@ export class HaMediaPlayerBrowse extends LitElement {
                         <ha-card
                           outlined
                           style=${styleMap({
-                            "background-image": `url(${child.thumbnail})`,
+                            backgroundImage: child.thumbnail
+                              ? `url(${child.thumbnail})`
+                              : "none",
                           })}
                         >
                           ${child.can_expand && !child.thumbnail
