@@ -18,8 +18,10 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { ifDefined } from "lit-html/directives/if-defined";
+import { styleMap } from "lit-html/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
+import { compare } from "../../common/string/compare";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
 import {
@@ -30,6 +32,7 @@ import {
   MediaPlayerBrowseAction,
 } from "../../data/media-player";
 import type { MediaPlayerItem } from "../../data/media-player";
+import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
@@ -130,7 +133,11 @@ export class HaMediaPlayerBrowse extends LitElement {
             ? html`
                 <div
                   class="img"
-                  style="background-image: url(${currentItem.thumbnail})"
+                  style=${styleMap({
+                    backgroundImage: currentItem.thumbnail
+                      ? `url(${currentItem.thumbnail})`
+                      : "none",
+                  })}
                 >
                   ${this._narrow && currentItem?.can_play
                     ? html`
@@ -218,12 +225,16 @@ export class HaMediaPlayerBrowse extends LitElement {
                     <div
                       class="child"
                       .item=${child}
-                      @click=${this._navigateForward}
+                      @click=${this._childClicked}
                     >
                       <div class="ha-card-parent">
                         <ha-card
                           outlined
-                          style="background-image: url(${child.thumbnail})"
+                          style=${styleMap({
+                            backgroundImage: child.thumbnail
+                              ? `url(${child.thumbnail})`
+                              : "none",
+                          })}
                         >
                           ${child.can_expand && !child.thumbnail
                             ? html`
@@ -333,6 +344,10 @@ export class HaMediaPlayerBrowse extends LitElement {
 
     this._fetchData(this.mediaContentId, this.mediaContentType).then(
       (itemData) => {
+        if (!itemData) {
+          return;
+        }
+
         this._mediaPlayerItems = [itemData];
       }
     );
@@ -349,13 +364,19 @@ export class HaMediaPlayerBrowse extends LitElement {
     fireEvent(this, "media-picked", { item });
   }
 
-  private async _navigateForward(ev: MouseEvent): Promise<void> {
+  private async _childClicked(ev: MouseEvent): Promise<void> {
     const target = ev.currentTarget as any;
     const item: MediaPlayerItem = target.item;
 
     if (!item) {
       return;
     }
+
+    if (!item.can_expand) {
+      this._runAction(item);
+      return;
+    }
+
     this._navigate(item);
   }
 
@@ -365,6 +386,10 @@ export class HaMediaPlayerBrowse extends LitElement {
       item.media_content_type
     );
 
+    if (!itemData) {
+      return;
+    }
+
     this.scrollTo(0, 0);
     this._mediaPlayerItems = [...this._mediaPlayerItems, itemData];
   }
@@ -372,16 +397,33 @@ export class HaMediaPlayerBrowse extends LitElement {
   private async _fetchData(
     mediaContentId?: string,
     mediaContentType?: string
-  ): Promise<MediaPlayerItem> {
-    const itemData =
-      this.entityId !== BROWSER_SOURCE
-        ? await browseMediaPlayer(
-            this.hass,
-            this.entityId,
-            mediaContentId,
-            mediaContentType
-          )
-        : await browseLocalMediaPlayer(this.hass, mediaContentId);
+  ): Promise<MediaPlayerItem | undefined> {
+    let itemData: MediaPlayerItem | undefined;
+    try {
+      itemData =
+        this.entityId !== BROWSER_SOURCE
+          ? await browseMediaPlayer(
+              this.hass,
+              this.entityId,
+              mediaContentId,
+              mediaContentType
+            )
+          : await browseLocalMediaPlayer(this.hass, mediaContentId);
+      itemData.children = itemData.children?.sort((first, second) =>
+        !first.can_expand && second.can_expand
+          ? 1
+          : first.can_expand && !second.can_expand
+          ? -1
+          : compare(first.title, second.title)
+      );
+    } catch (error) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.components.media-browser.media_browsing_error"
+        ),
+        text: error.message,
+      });
+    }
 
     return itemData;
   }
@@ -433,12 +475,6 @@ export class HaMediaPlayerBrowse extends LitElement {
           display: flex;
           justify-content: space-between;
           border-bottom: 1px solid var(--divider-color);
-        }
-
-        .header_button {
-          position: relative;
-          top: 14px;
-          right: -8px;
         }
 
         .header {
@@ -539,9 +575,6 @@ export class HaMediaPlayerBrowse extends LitElement {
           );
           grid-gap: 16px;
           margin: 8px 0px;
-        }
-
-        :host(:not([narrow])) .children {
           padding: 0px 24px;
         }
 
@@ -683,8 +716,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           padding: 20px 24px 10px;
         }
 
-        :host([narrow]) .media-source,
-        :host([narrow]) .children {
+        :host([narrow]) .media-source {
           padding: 0 24px;
         }
 
@@ -703,8 +735,8 @@ export class HaMediaPlayerBrowse extends LitElement {
           -webkit-line-clamp: 1;
         }
 
-        :host(:not([narrow])[scroll]) .header-info {
-          height: 75px;
+        :host(:not([narrow])[scroll]) .header:not(.no-img) mwc-icon-button {
+          align-self: center;
         }
 
         :host([scroll]) .header-info mwc-button,
