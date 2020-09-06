@@ -1024,9 +1024,10 @@
                   "value_template": "Value template"
                 },
                 "time": {
+                  "type_value": "Fixed time",
+                  "type_input": "Value of an date/time input",
                   "label": "Time",
-                  "at": "At time",
-                  "at_input_datetime": "At date/time input value"
+                  "at": "At time"
                 },
                 "time_pattern": {
                   "label": "Time Pattern",
@@ -1102,6 +1103,8 @@
                   "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::template::value_template%]"
                 },
                 "time": {
+                  "type_value": "[%key:ui::panel::config::automation::editor::triggers::type::time::type_value%]",
+                  "type_input": "[%key:ui::panel::config::automation::editor::triggers::type::time::type_input%]",
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::time::label%]",
                   "after": "After",
                   "before": "Before"

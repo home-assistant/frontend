@@ -1,6 +1,14 @@
 import "@polymer/paper-input/paper-input";
-import { customElement, html, LitElement, property } from "lit-element";
+import {
+  customElement,
+  html,
+  internalProperty,
+  LitElement,
+  property,
+} from "lit-element";
 import "../../../../../components/entity/ha-entity-picker";
+import "../../../../../components/ha-formfield";
+import "../../../../../components/ha-radio";
 import { TimeTrigger } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
 import {
@@ -16,52 +24,68 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
 
   @property() public trigger!: TimeTrigger;
 
+  @internalProperty() private _inputMode?: boolean;
+
   public static get defaultConfig() {
     return { at: "" };
   }
 
   protected render() {
     const { at } = this.trigger;
+    const inputMode = this._inputMode ?? at?.startsWith("input_datetime.");
     return html`
-      <paper-input
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.type.time.at"
+      <ha-formfield
+        .label=${this.hass!.localize(
+          "ui.panel.config.automation.editor.triggers.type.time.type_value"
         )}
-        name="at"
-        .value=${at?.startsWith("input_datetime.") ? "" : at}
-        @value-changed=${this._valueChanged}
-      ></paper-input>
-      or
-      <ha-entity-picker
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.type.time.at_input_datetime"
+      >
+        <ha-radio
+          @change=${this._handleModeChanged}
+          name="mode"
+          value="value"
+          ?checked=${!inputMode}
+        ></ha-radio>
+      </ha-formfield>
+      <ha-formfield
+        .label=${this.hass!.localize(
+          "ui.panel.config.automation.editor.triggers.type.time.type_input"
         )}
-        .includeDomains=${includeDomains}
-        .name=${"at"}
-        .value=${at?.startsWith("input_datetime.") ? at : ""}
-        @value-changed=${this._valueChanged}
-        .hass=${this.hass}
-      ></ha-entity-picker>
+      >
+        <ha-radio
+          @change=${this._handleModeChanged}
+          name="mode"
+          value="input"
+          ?checked=${inputMode}
+        ></ha-radio>
+      </ha-formfield>
+      ${inputMode
+        ? html`<ha-entity-picker
+            .label=${this.hass.localize(
+              "ui.panel.config.automation.editor.triggers.type.time.at"
+            )}
+            .includeDomains=${includeDomains}
+            .name=${"at"}
+            .value=${at?.startsWith("input_datetime.") ? at : ""}
+            @value-changed=${this._valueChanged}
+            .hass=${this.hass}
+          ></ha-entity-picker>`
+        : html`<paper-input
+            .label=${this.hass.localize(
+              "ui.panel.config.automation.editor.triggers.type.time.at"
+            )}
+            name="at"
+            .value=${at?.startsWith("input_datetime.") ? "" : at}
+            @value-changed=${this._valueChanged}
+          ></paper-input>`}
     `;
   }
 
+  private _handleModeChanged(ev: Event) {
+    this._inputMode = (ev.target as any).value === "input";
+  }
+
   private _valueChanged(ev: CustomEvent): void {
-    if (
-      this.trigger.at &&
-      (ev.target as HTMLElement).localName === "paper-input" &&
-      this.trigger.at.startsWith("input_datetime.") &&
-      !ev.detail.value
-    ) {
-      return;
-    }
-    if (
-      this.trigger.at &&
-      (ev.target as HTMLElement).localName === "ha-entity-picker" &&
-      !this.trigger.at.startsWith("input_datetime.") &&
-      !ev.detail.value
-    ) {
-      return;
-    }
+    console.log(ev);
     handleChangeEvent(this, ev);
   }
 }
