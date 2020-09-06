@@ -563,6 +563,8 @@
                 "no_history_found": "找不到狀態歷史。"
             },
             "media-browser": {
+                "audio_not_supported": "瀏覽器不支援音效元件。",
+                "choose_player": "選擇播放器",
                 "choose-source": "選擇來源",
                 "content-type": {
                     "album": "專輯",
@@ -571,12 +573,16 @@
                     "playlist": "播放列表",
                     "server": "伺服器"
                 },
+                "media_not_supported": "瀏覽器媒體播放器不支援此類型媒體",
+                "media_player": "媒體播放器",
                 "media-player-browser": "媒體播放器瀏覽器",
                 "no_items": "沒有項目",
                 "pick": "選擇",
                 "pick-media": "選擇媒體",
                 "play": "播放",
-                "play-media": "播放媒體"
+                "play-media": "播放媒體",
+                "video_not_supported": "瀏覽器不支援影片元件。",
+                "web-browser": "網頁瀏覽器"
             },
             "picture-upload": {
                 "label": "照片",
@@ -1765,8 +1771,21 @@
                         "versions": "獲得韌體與命令 Class 版本資訊",
                         "wakeup": "設定喚醒序列與訊息之支援"
                     },
+                    "node": {
+                        "button": "節點詳細資訊",
+                        "not_found": "找不到節點"
+                    },
+                    "nodes_table": {
+                        "failed": "失敗",
+                        "id": "ID",
+                        "manufacturer": "廠牌",
+                        "model": "型號",
+                        "query_stage": "查詢階段",
+                        "zwave_plus": "Z-Wave Plus"
+                    },
                     "refresh_node": {
                         "battery_note": "假如節點為電池供電、請確定先行喚醒以繼續",
+                        "button": "更新節點",
                         "complete": "節點更新完成",
                         "description": "將會通知 OpenZWave 重新探訪節點並更新節點命令 Class、相容性與數值。",
                         "node_status": "節點狀態",
@@ -2025,7 +2044,7 @@
                             "system": "系統"
                         }
                     },
-                    "users_privileges_note": "使用者群組功能進行中。將無法透過 UI 進行使用者管理，仍在檢視所有管理  API Endpoint 以確保能夠正確符合管理員存取需求。"
+                    "users_privileges_note": "使用者群組功能仍在開發中。將無法透過 UI 進行使用者管理，仍在檢視所有管理  API Endpoint 以確保能夠正確符合管理員存取需求。"
                 },
                 "zha": {
                     "add_device_page": {
@@ -2575,6 +2594,7 @@
                         "options": "更多選項",
                         "pick_card": "選擇所要新增的面板？",
                         "pick_card_view_title": "要加入 {name} 視圖的面板？",
+                        "search_cards": "搜尋面板",
                         "show_code_editor": "顯示編碼編輯器",
                         "show_visual_editor": "顯示視覺編輯器",
                         "toggle_editor": "切換編輯器",

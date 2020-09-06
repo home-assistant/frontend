@@ -1552,6 +1552,7 @@
                         "reload_restart_confirm": "Restart Home Assistant to finish reloading this integration",
                         "rename": "Rename",
                         "restart_confirm": "Restart Home Assistant to finish removing this integration",
+                        "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
                         "settings_button": "Edit settings for {integration}",
                         "system_options": "System options",
                         "system_options_button": "System options for {integration}",
