@@ -166,8 +166,7 @@ export class HassioUpdate extends LitElement {
     } catch (err) {
       // Only show an error if the status code was not expected (user behind proxy)
       // or no status at all(connection terminated)
-      const ignoreCodes = [502, 503, 504];
-      if (err.status_code && !ignoreCodes.includes(err.status_code)) {
+      if (err.status_code && ![502, 503, 504].includes(err.status_code)) {
         showAlertDialog(this, {
           title: "Update failed",
           text: extractApiErrorMessage(err),
