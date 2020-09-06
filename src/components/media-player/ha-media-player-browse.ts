@@ -18,6 +18,7 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { ifDefined } from "lit-html/directives/if-defined";
+import { styleMap } from "lit-html/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
@@ -30,6 +31,7 @@ import {
   MediaPlayerBrowseAction,
 } from "../../data/media-player";
 import type { MediaPlayerItem } from "../../data/media-player";
+import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
@@ -218,12 +220,14 @@ export class HaMediaPlayerBrowse extends LitElement {
                     <div
                       class="child"
                       .item=${child}
-                      @click=${this._navigateForward}
+                      @click=${this._childClicked}
                     >
                       <div class="ha-card-parent">
                         <ha-card
                           outlined
-                          style="background-image: url(${child.thumbnail})"
+                          style=${styleMap({
+                            "background-image": `url(${child.thumbnail})`,
+                          })}
                         >
                           ${child.can_expand && !child.thumbnail
                             ? html`
@@ -349,13 +353,19 @@ export class HaMediaPlayerBrowse extends LitElement {
     fireEvent(this, "media-picked", { item });
   }
 
-  private async _navigateForward(ev: MouseEvent): Promise<void> {
+  private async _childClicked(ev: MouseEvent): Promise<void> {
     const target = ev.currentTarget as any;
     const item: MediaPlayerItem = target.item;
 
     if (!item) {
       return;
     }
+
+    if (!item.can_expand) {
+      this._runAction(item);
+      return;
+    }
+
     this._navigate(item);
   }
 
@@ -365,6 +375,10 @@ export class HaMediaPlayerBrowse extends LitElement {
       item.media_content_type
     );
 
+    if (!itemData) {
+      return;
+    }
+
     this.scrollTo(0, 0);
     this._mediaPlayerItems = [...this._mediaPlayerItems, itemData];
   }
@@ -372,16 +386,26 @@ export class HaMediaPlayerBrowse extends LitElement {
   private async _fetchData(
     mediaContentId?: string,
     mediaContentType?: string
-  ): Promise<MediaPlayerItem> {
-    const itemData =
-      this.entityId !== BROWSER_SOURCE
-        ? await browseMediaPlayer(
-            this.hass,
-            this.entityId,
-            mediaContentId,
-            mediaContentType
-          )
-        : await browseLocalMediaPlayer(this.hass, mediaContentId);
+  ): Promise<MediaPlayerItem | undefined> {
+    let itemData: MediaPlayerItem | undefined;
+    try {
+      itemData =
+        this.entityId !== BROWSER_SOURCE
+          ? await browseMediaPlayer(
+              this.hass,
+              this.entityId,
+              mediaContentId,
+              mediaContentType
+            )
+          : await browseLocalMediaPlayer(this.hass, mediaContentId);
+    } catch (error) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.components.media-browser.media_browsing_error"
+        ),
+        text: error.message,
+      });
+    }
 
     return itemData;
   }
