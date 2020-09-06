@@ -26,13 +26,13 @@
     "state_attributes": {
         "climate": {
             "fan_mode": {
-                "auto": "Auto",
+                "auto": "Automatico",
                 "off": "Spento",
                 "on": "Acceso"
             },
             "hvac_action": {
                 "cooling": "Raffreddamento",
-                "drying": "Asciugatura",
+                "drying": "Deumidificazione",
                 "fan": "Ventilatore",
                 "heating": "Riscaldamento",
                 "idle": "Inattivo",
@@ -617,6 +617,7 @@
                 "update": "Aggiornamento"
             },
             "domain_toggler": {
+                "reset_entities": "Reimpostare le Entità",
                 "title": "Attiva/disattiva domini"
             },
             "entity_registry": {
@@ -1200,8 +1201,14 @@
                     },
                     "alexa": {
                         "banner": "La modifica delle entità esposte tramite questa interfaccia utente è disabilitata perché sono stati configurati filtri di entità in configuration.yaml.",
+                        "dont_expose_entity": "Non esporre l'entità",
                         "expose": "Esporre ad Alexa",
+                        "expose_entity": "Esporre l'entità",
+                        "exposed": "{selected} esposto",
                         "exposed_entities": "Entità esposte",
+                        "follow_domain": "Segui il dominio",
+                        "manage_domains": "Gestire i domini",
+                        "not_exposed": "{selected} non esposto",
                         "not_exposed_entities": "Entità non esposte",
                         "title": "Alexa"
                     },
@@ -1239,8 +1246,14 @@
                     "google": {
                         "banner": "La modifica delle entità esposte tramite questa interfaccia utente è disabilitata perché sono stati configurati filtri di entità in configuration.yaml.",
                         "disable_2FA": "Disattivare l'autenticazione a due fattori",
+                        "dont_expose_entity": "Non esporre l'entità",
                         "expose": "Esporre a Google Assistant",
+                        "expose_entity": "Esporre l'entità",
+                        "exposed": "{selected} esposto",
                         "exposed_entities": "Entità esposte",
+                        "follow_domain": "Segui il dominio",
+                        "manage_domains": "Gestire i domini",
+                        "not_exposed": "{selected} non esposto",
                         "not_exposed_entities": "Entità non esposte",
                         "sync_to_google": "Sincronizzazione delle modifiche a Google.",
                         "title": "Google Assistant"
@@ -1525,6 +1538,9 @@
                         "no_device": "Entità senza dispositivi",
                         "no_devices": "Questa integrazione non ha dispositivi.",
                         "options": "Opzioni",
+                        "reload": "Ricarica",
+                        "reload_confirm": "L'integrazione è stata ricaricata",
+                        "reload_restart_confirm": "Riavvia Home Assistant per completare il ricaricamento di questa integrazione",
                         "rename": "Rinomina",
                         "restart_confirm": "Riavvia Home Assistant per completare la rimozione di questa integrazione",
                         "settings_button": "Modificare le impostazioni per {integration}.",
@@ -1890,19 +1906,32 @@
                     "section": {
                         "reloading": {
                             "automation": "Ricarica le Automazioni",
+                            "command_line": "Ricarica le entità della riga di comando",
                             "core": "Ricarica la Posizione e le Personalizzazioni",
+                            "filesize": "Ricarica entità dimensione file",
+                            "filter": "Ricaricare le entità filtro",
+                            "generic": "Ricaricare le entità delle generiche telecamere IP",
+                            "generic_thermostat": "Ricaricare le entità termostati generiche",
                             "group": "Ricarica i Gruppi",
                             "heading": "Ricarica Configurazione YAML",
+                            "history_stats": "Ricarica le entità delle statistiche della cronologia",
+                            "homekit": "Ricarica HomeKit",
                             "input_boolean": "Ricarica input booleani",
                             "input_datetime": "Ricarica input data e/o tempo",
                             "input_number": "Ricarica input numerici",
                             "input_select": "Ricarica input a discesa",
                             "input_text": "Ricarica input testuali",
                             "introduction": "Alcune parti di Home Assistant possono essere ricaricate senza richiedere un riavvio. Premendo su Ricarica si rimuoverà la loro Configurazione YAML  attuale e si caricherà la versione aggiornata.",
+                            "min_max": "Ricaricare le entità min/max",
                             "person": "Ricarica le persone",
+                            "ping": "Ricarica le entità del sensore binario ping",
+                            "rest": "Ricarica le entità della piattaforma rest",
                             "scene": "Ricarica le Scene",
                             "script": "Ricarica gli Script",
+                            "statistics": "Ricaricare le entità statistiche",
                             "template": "Ricaricare le entità modello",
+                            "trend": "Ricaricare le entità di tendenza",
+                            "universal": "Ricarica le entità del lettore multimediale universale",
                             "zone": "Ricarica le zone"
                         },
                         "server_management": {
@@ -1954,6 +1983,8 @@
                         "create": "Crea",
                         "name": "Nome",
                         "password": "Password",
+                        "password_confirm": "Conferma la password",
+                        "password_not_match": "Le password non corrispondono",
                         "username": "Nome utente"
                     },
                     "caption": "Utenti",
@@ -1970,7 +2001,9 @@
                         "group": "Gruppo",
                         "id": "ID",
                         "name": "Nome",
+                        "new_password": "Nuova password",
                         "owner": "Proprietario",
+                        "password_changed": "La password è stata cambiata!",
                         "system_generated": "Generato dal sistema",
                         "system_generated_users_not_editable": "Impossibile aggiornare gli utenti generati dal sistema.",
                         "system_generated_users_not_removable": "Impossibile rimuovere gli utenti generati dal sistema.",
@@ -2420,6 +2453,7 @@
                             "show_name": "Mostrare il nome?",
                             "show_state": "Mostrare lo stato?",
                             "state": "Stato",
+                            "state_color": "Colorare le icone in base allo stato?",
                             "tap_action": "Tocca Azione",
                             "theme": "Tema",
                             "title": "Titolo",

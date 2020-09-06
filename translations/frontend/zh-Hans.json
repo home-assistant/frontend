@@ -505,6 +505,7 @@
             "back": "返回",
             "cancel": "取消",
             "close": "关闭",
+            "continue": "继续",
             "delete": "删除",
             "error_required": "必填",
             "loading": "加载中",
@@ -562,6 +563,8 @@
                 "no_history_found": "没有找到历史状态。"
             },
             "media-browser": {
+                "audio_not_supported": "您的浏览器不支持音频元素。",
+                "choose_player": "选择播放器",
                 "choose-source": "选择媒体源",
                 "content-type": {
                     "album": "专辑",
@@ -570,12 +573,16 @@
                     "playlist": "播放列表",
                     "server": "服务器"
                 },
+                "media_not_supported": "浏览器媒体播放器不支持此类型的媒体",
+                "media_player": "媒体播放器",
                 "media-player-browser": "媒体播放浏览器",
                 "no_items": "没有项目",
                 "pick": "选定",
                 "pick-media": "选定媒体",
                 "play": "播放",
-                "play-media": "播放媒体"
+                "play-media": "播放媒体",
+                "video_not_supported": "您的浏览器不支持视频元素。",
+                "web-browser": "网页浏览器"
             },
             "picture-upload": {
                 "label": "图片",
@@ -617,6 +624,7 @@
                 "update": "更新"
             },
             "domain_toggler": {
+                "reset_entities": "重置实体",
                 "title": "切换域"
             },
             "entity_registry": {
@@ -688,8 +696,10 @@
                 "crop": "剪裁"
             },
             "more_info_control": {
+                "controls": "控制项",
                 "dismiss": "关闭对话框",
                 "edit": "编辑实体",
+                "history": "历史",
                 "person": {
                     "create_zone": "从当前位置创建地点"
                 },
@@ -1200,9 +1210,15 @@
                     },
                     "alexa": {
                         "banner": "由于已在configuration.yaml中配置了实体过滤器，因此无法编辑通过此UI公开哪些实体。",
+                        "dont_expose_entity": "使实体不可发现",
                         "expose": "向Alexa发送你的位置",
+                        "expose_entity": "使实体可发现",
+                        "exposed": "{selected} 个可发现",
                         "exposed_entities": "公开的实体",
-                        "not_exposed_entities": "未公开的实体",
+                        "follow_domain": "关注域",
+                        "manage_domains": "管理域",
+                        "not_exposed": "{selected} 个不可发现",
+                        "not_exposed_entities": "不可发现的实体",
                         "title": "Alexa"
                     },
                     "caption": "Home Assistant Cloud",
@@ -1239,9 +1255,15 @@
                     "google": {
                         "banner": "编辑器已禁用，因为配置存储于 configuration.yaml。",
                         "disable_2FA": "禁用双因素身份验证",
+                        "dont_expose_entity": "使实体不可发现",
                         "expose": "向HomeAsssiant发送你的位置",
+                        "expose_entity": "使实体可发现",
+                        "exposed": "{selected} 个可发现",
                         "exposed_entities": "公开的实体",
-                        "not_exposed_entities": "未公开的实体",
+                        "follow_domain": "关注域",
+                        "manage_domains": "管理域",
+                        "not_exposed": "{selected} 个不可发现",
+                        "not_exposed_entities": "不可发现的实体",
                         "sync_to_google": "正在将更改同步到Google。",
                         "title": "谷歌助手"
                     },
@@ -1749,8 +1771,21 @@
                         "versions": "正在获取固件和命令类版本信息",
                         "wakeup": "正在设置对唤醒队列和消息的支持"
                     },
+                    "node": {
+                        "button": "节点详细信息",
+                        "not_found": "节点未找到"
+                    },
+                    "nodes_table": {
+                        "failed": "故障",
+                        "id": "ID",
+                        "manufacturer": "制造商",
+                        "model": "型号",
+                        "query_stage": "查询阶段",
+                        "zwave_plus": "Z-Wave Plus"
+                    },
                     "refresh_node": {
                         "battery_note": "如果节点由电池供电，请确保在继续操作之前将其唤醒",
+                        "button": "刷新节点",
                         "complete": "节点刷新完成",
                         "description": "这将通知 OpenZWave 重新访问节点并更新节点的命令类、功能和值。",
                         "node_status": "节点状态",
@@ -1763,7 +1798,7 @@
                     },
                     "select_instance": {
                         "header": "选择一个 OpenZWave 实例",
-                        "introduction": "您正在运行多个 OpenZWave 实例。您要管理哪个实例？"
+                        "introduction": "有多个 OpenZWave 实例正在运行。您要管理哪个实例？"
                     },
                     "services": {
                         "add_node": "添加节点",
@@ -1893,19 +1928,36 @@
                     "section": {
                         "reloading": {
                             "automation": "重载自动化",
+                            "command_line": "重载命令行实体",
                             "core": "重载位置和自定义",
-                            "group": "重载分组",
+                            "filesize": "重载文件大小实体",
+                            "filter": "重载 filter 实体",
+                            "generic": "重载通用 IP 摄像机实体",
+                            "generic_thermostat": "重载通用恒温器实体",
+                            "group": "重载分组、分组实体及通知服务",
                             "heading": "配置重载",
+                            "history_stats": "重载历史记录统计实体",
+                            "homekit": "重载 HomeKit",
                             "input_boolean": "重载二元选择器",
                             "input_datetime": "重载日期选择器",
                             "input_number": "重载数值选择器",
                             "input_select": "重载多项选择器",
                             "input_text": "重载文字输入",
                             "introduction": "Home Assistant 中的部分配置可以直接重载，而无需重启服务。点击重载按钮将重新载入新的配置。",
+                            "min_max": "重载最小值/最大值实体",
+                            "mqtt": "重载 mqtt 实体",
                             "person": "重载人员",
+                            "ping": "重载 ping 二元传感器实体",
+                            "reload": "重载{domain}",
+                            "rest": "重载 REST 实体及通知服务",
+                            "rpi_gpio": "重载树莓派 GPIO 实体",
                             "scene": "重载场景",
                             "script": "重载脚本",
+                            "smtp": "重载 smtp 通知服务",
+                            "statistics": "重载 statistics 实体",
+                            "telegram": "重载 telegram 通知服务",
                             "template": "重载模板实体",
+                            "trend": "重载 trend 实体",
                             "universal": "重载通用媒体播放器实体",
                             "zone": "重载地点"
                         },
@@ -1958,6 +2010,8 @@
                         "create": "创建",
                         "name": "名字",
                         "password": "密码",
+                        "password_confirm": "确认密码",
+                        "password_not_match": "密码不匹配",
                         "username": "用户名"
                     },
                     "caption": "用户",
@@ -1974,7 +2028,9 @@
                         "group": "群组",
                         "id": "ID",
                         "name": "名称",
+                        "new_password": "新密码",
                         "owner": "所有者",
+                        "password_changed": "密码已更改！",
                         "system_generated": "系统生成",
                         "system_generated_users_not_editable": "无法更新系统生成的用户。",
                         "system_generated_users_not_removable": "无法删除系统生成的用户。",
@@ -2424,6 +2480,7 @@
                             "show_name": "显示名称？",
                             "show_state": "显示状态？",
                             "state": "状态",
+                            "state_color": "使图标根据状态变色？",
                             "tap_action": "点击动作",
                             "theme": "主题",
                             "title": "标题",
@@ -2519,7 +2576,11 @@
                         }
                     },
                     "cardpicker": {
+                        "by_card": "按卡片",
+                        "by_entity": "按实体",
                         "custom_card": "自定义",
+                        "domain": "域",
+                        "entity": "实体",
                         "no_description": "没有描述。"
                     },
                     "edit_card": {
@@ -2533,6 +2594,7 @@
                         "options": "更多选项",
                         "pick_card": "请选择要添加的卡片。",
                         "pick_card_view_title": "您想将哪张卡片添加到 {name} 视图？",
+                        "search_cards": "搜索卡片",
                         "show_code_editor": "显示代码编辑器",
                         "show_visual_editor": "显示可视化编辑器",
                         "toggle_editor": "切换编辑器",

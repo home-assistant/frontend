@@ -4,9 +4,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { ifDefined } from "lit-html/directives/if-defined";
@@ -175,8 +175,8 @@ class HaConfigAreaPage extends LitElement {
                                   </a>
                                   ${!state.attributes.id
                                     ? html`
-                                        <paper-tooltip
-                                          >${this.hass.localize(
+                                        <paper-tooltip animation-delay="0">
+                                          ${this.hass.localize(
                                             "ui.panel.config.devices.cant_edit"
                                           )}
                                         </paper-tooltip>
@@ -228,8 +228,8 @@ class HaConfigAreaPage extends LitElement {
                                   </a>
                                   ${!state.attributes.id
                                     ? html`
-                                        <paper-tooltip
-                                          >${this.hass.localize(
+                                        <paper-tooltip animation-delay="0">
+                                          ${this.hass.localize(
                                             "ui.panel.config.devices.cant_edit"
                                           )}
                                         </paper-tooltip>

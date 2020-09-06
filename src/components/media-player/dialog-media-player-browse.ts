@@ -8,14 +8,14 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { HASSDomEvent } from "../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../common/dom/fire_event";
 import type {
   MediaPickedEvent,
   MediaPlayerBrowseAction,
 } from "../../data/media-player";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import { createCloseHeading } from "../ha-dialog";
+import "../ha-dialog";
 import "./ha-media-player-browse";
 import { MediaPlayerBrowseDialogParams } from "./show-media-browser-dialog";
 
@@ -33,16 +33,17 @@ class DialogMediaPlayerBrowse extends LitElement {
 
   @internalProperty() private _params?: MediaPlayerBrowseDialogParams;
 
-  public async showDialog(
-    params: MediaPlayerBrowseDialogParams
-  ): Promise<void> {
+  public showDialog(params: MediaPlayerBrowseDialogParams): void {
     this._params = params;
     this._entityId = this._params.entityId;
     this._mediaContentId = this._params.mediaContentId;
     this._mediaContentType = this._params.mediaContentType;
     this._action = this._params.action || "play";
+  }
 
-    await this.updateComplete;
+  public closeDialog() {
+    this._params = undefined;
+    fireEvent(this, "dialog-closed", {dialog: this.localName});
   }
 
   protected render(): TemplateResult {
@@ -56,32 +57,27 @@ class DialogMediaPlayerBrowse extends LitElement {
         scrimClickAction
         escapeKeyAction
         hideActions
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize("ui.components.media-browser.media-player-browser")
-        )}
-        @closed=${this._closeDialog}
+        flexContent
+        @closed=${this.closeDialog}
       >
         <ha-media-player-browse
+          dialog
           .hass=${this.hass}
           .entityId=${this._entityId}
           .action=${this._action!}
           .mediaContentId=${this._mediaContentId}
           .mediaContentType=${this._mediaContentType}
+          @close-dialog=${this.closeDialog}
           @media-picked=${this._mediaPicked}
         ></ha-media-player-browse>
       </ha-dialog>
     `;
   }
 
-  private _closeDialog() {
-    this._params = undefined;
-  }
-
   private _mediaPicked(ev: HASSDomEvent<MediaPickedEvent>): void {
     this._params!.mediaPickedCallback(ev.detail);
     if (this._action !== "play") {
-      this._closeDialog();
+      this.closeDialog();
     }
   }
 
@@ -100,7 +96,6 @@ class DialogMediaPlayerBrowse extends LitElement {
           }
           ha-media-player-browse {
             width: 700px;
-            padding: 20px 24px;
           }
         }
       `,

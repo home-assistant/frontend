@@ -1,34 +1,48 @@
 import {
   css,
   CSSResult,
+  customElement,
+  eventOptions,
   html,
   LitElement,
   property,
   PropertyValues,
   TemplateResult,
-  eventOptions,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import { scroll } from "lit-virtualizer";
 import { formatDate } from "../../common/datetime/format_date";
 import { formatTimeWithSeconds } from "../../common/datetime/format_time";
+import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { stateIcon } from "../../common/entity/state_icon";
 import { computeRTL, emitRTLDirection } from "../../common/util/compute_rtl";
+import "../../components/ha-circular-progress";
 import "../../components/ha-icon";
 import { LogbookEntry } from "../../data/logbook";
+import { haStyleScrollbar } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
-import { restoreScroll } from "../../common/decorators/restore-scroll";
 
+@customElement("ha-logbook")
 class HaLogbook extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public userIdToName = {};
+  @property({ attribute: false }) public userIdToName = {};
 
-  @property() public entries: LogbookEntry[] = [];
+  @property({ attribute: false }) public entries: LogbookEntry[] = [];
 
-  @property({ attribute: "rtl", type: Boolean, reflect: true })
+  @property({ type: Boolean, attribute: "narrow" })
+  public narrow = false;
+
+  @property({ attribute: "rtl", type: Boolean })
   private _rtl = false;
+
+  @property({ type: Boolean, attribute: "no-icon" })
+  public noIcon = false;
+
+  @property({ type: Boolean, attribute: "no-name" })
+  public noName = false;
 
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
@@ -52,14 +66,22 @@ class HaLogbook extends LitElement {
   protected render(): TemplateResult {
     if (!this.entries?.length) {
       return html`
-        <div class="container" .dir=${emitRTLDirection(this._rtl)}>
+        <div class="container no-entries" .dir=${emitRTLDirection(this._rtl)}>
           ${this.hass.localize("ui.panel.logbook.entries_not_found")}
         </div>
       `;
     }
 
     return html`
-      <div class="container" @scroll=${this._saveScrollPos}>
+      <div
+        class="container ha-scrollbar ${classMap({
+          narrow: this.narrow,
+          rtl: this._rtl,
+          "no-name": this.noName,
+          "no-icon": this.noIcon,
+        })}"
+        @scroll=${this._saveScrollPos}
+      >
         ${scroll({
           items: this.entries,
           renderItem: (item: LogbookEntry, index?: number) =>
@@ -76,12 +98,13 @@ class HaLogbook extends LitElement {
     if (index === undefined) {
       return html``;
     }
+
     const previous = this.entries[index - 1];
     const state = item.entity_id ? this.hass.states[item.entity_id] : undefined;
     const item_username =
       item.context_user_id && this.userIdToName[item.context_user_id];
     return html`
-      <div>
+      <div class="entry-container">
         ${index === 0 ||
         (item?.when &&
           previous?.when &&
@@ -98,46 +121,52 @@ class HaLogbook extends LitElement {
           <div class="time">
             ${formatTimeWithSeconds(new Date(item.when), this.hass.language)}
           </div>
-          <ha-icon
-            .icon=${state ? stateIcon(state) : domainIcon(item.domain)}
-          ></ha-icon>
-          <div class="message">
-            ${!item.entity_id
-              ? html` <span class="name">${item.name}</span> `
-              : html`
-                  <a
-                    href="#"
-                    @click=${this._entityClicked}
-                    .entityId=${item.entity_id}
-                    class="name"
-                    >${item.name}</a
-                  >
-                `}
-            <span
-              >${item.message}${item_username
-                ? ` (${item_username})`
-                : ``}</span
-            >
-            ${!item.context_event_type
-              ? ""
-              : item.context_event_type === "call_service"
-              ? // Service Call
-                html` by service ${item.context_domain}.${item.context_service}`
-              : item.context_entity_id === item.entity_id
-              ? // HomeKit or something that self references
-                html` by
-                ${item.context_name
-                  ? item.context_name
-                  : item.context_event_type}`
-              : // Another entity such as an automation or script
-                html` by
-                  <a
-                    href="#"
-                    @click=${this._entityClicked}
-                    .entityId=${item.context_entity_id}
-                    class="name"
-                    >${item.context_entity_id_name}</a
-                  >`}
+          <div class="icon-message">
+            ${!this.noIcon
+              ? html`
+                  <ha-icon
+                    .icon=${state ? stateIcon(state) : domainIcon(item.domain)}
+                  ></ha-icon>
+                `
+              : ""}
+            <div class="message">
+              ${!this.noName
+                ? !item.entity_id
+                  ? html`<span class="name">${item.name}</span>`
+                  : html`
+                      <a
+                        href="#"
+                        @click=${this._entityClicked}
+                        .entityId=${item.entity_id}
+                        class="name"
+                        >${item.name}</a
+                      >
+                    `
+                : ""}
+              <span class="item-message">${item.message}</span>
+              <span>${item_username ? ` (${item_username})` : ``}</span>
+              ${!item.context_event_type
+                ? ""
+                : item.context_event_type === "call_service"
+                ? // Service Call
+                  html` by service
+                  ${item.context_domain}.${item.context_service}`
+                : item.context_entity_id === item.entity_id
+                ? // HomeKit or something that self references
+                  html` by
+                  ${item.context_name
+                    ? item.context_name
+                    : item.context_event_type}`
+                : // Another entity such as an automation or script
+                  html` by
+                    <a
+                      href="#"
+                      @click=${this._entityClicked}
+                      .entityId=${item.context_entity_id}
+                      class="name"
+                      >${item.context_entity_id_name}</a
+                    >`}
+            </div>
           </div>
         </div>
       </div>
@@ -156,64 +185,111 @@ class HaLogbook extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
-    return css`
-      :host {
-        display: block;
-        height: 100%;
-      }
+  static get styles(): CSSResult[] {
+    return [
+      haStyleScrollbar,
+      css`
+        :host {
+          display: block;
+          height: 100%;
+        }
 
-      :host([rtl]) {
-        direction: ltr;
-      }
+        .rtl {
+          direction: ltr;
+        }
 
-      .entry {
-        display: flex;
-        line-height: 2em;
-      }
+        .entry-container {
+          width: 100%;
+        }
 
-      .time {
-        width: 65px;
-        flex-shrink: 0;
-        font-size: 0.8em;
-        color: var(--secondary-text-color);
-      }
+        .entry {
+          display: flex;
+          width: 100%;
+          line-height: 2em;
+          padding: 8px 16px;
+          box-sizing: border-box;
+          border-top: 1px solid
+            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
+        }
 
-      :host([rtl]) .date {
-        direction: rtl;
-      }
+        .time {
+          display: flex;
+          justify-content: center;
+          flex-direction: column;
+          width: 65px;
+          flex-shrink: 0;
+          font-size: 12px;
+          color: var(--secondary-text-color);
+        }
 
-      ha-icon {
-        margin: 0 8px 0 16px;
-        flex-shrink: 0;
-        color: var(--primary-text-color);
-      }
+        .date {
+          margin: 8px 0;
+          padding: 0 16px;
+        }
 
-      .message {
-        color: var(--primary-text-color);
-      }
+        .narrow .date {
+          padding: 0 8px;
+        }
 
-      a {
-        color: var(--primary-color);
-      }
+        .rtl .date {
+          direction: rtl;
+        }
 
-      .container {
-        padding: 0 16px;
-      }
+        .icon-message {
+          display: flex;
+          align-items: center;
+        }
 
-      .uni-virtualizer-host {
-        display: block;
-        position: relative;
-        contain: strict;
-        height: 100%;
-        overflow: auto;
-      }
+        .no-entries {
+          text-align: center;
+        }
 
-      .uni-virtualizer-host > * {
-        box-sizing: border-box;
-      }
-    `;
+        ha-icon {
+          margin: 0 8px 0 16px;
+          flex-shrink: 0;
+          color: var(--primary-text-color);
+        }
+
+        .message {
+          color: var(--primary-text-color);
+        }
+
+        .no-name .item-message {
+          text-transform: capitalize;
+        }
+
+        a {
+          color: var(--primary-color);
+        }
+
+        .uni-virtualizer-host {
+          display: block;
+          position: relative;
+          contain: strict;
+          height: 100%;
+          overflow: auto;
+        }
+
+        .uni-virtualizer-host > * {
+          box-sizing: border-box;
+        }
+
+        .narrow .entry {
+          flex-direction: column;
+          line-height: 1.5;
+          padding: 8px;
+        }
+
+        .narrow .icon-message ha-icon {
+          margin-left: 0;
+        }
+      `,
+    ];
   }
 }
 
-customElements.define("ha-logbook", HaLogbook);
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-logbook": HaLogbook;
+  }
+}

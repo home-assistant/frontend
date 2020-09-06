@@ -505,6 +505,7 @@
             "back": "Retour",
             "cancel": "Annuler",
             "close": "Fermer",
+            "continue": "Continuer",
             "delete": "Supprimer",
             "error_required": "Obligatoire",
             "loading": "Chargement",
@@ -562,6 +563,8 @@
                 "no_history_found": "Aucun historique des valeurs trouvé."
             },
             "media-browser": {
+                "audio_not_supported": "Votre navigateur ne prend pas en charge l'élément audio.",
+                "choose_player": "Choisissez le lecteur",
                 "choose-source": "Choisissez la source",
                 "content-type": {
                     "album": "Album",
@@ -570,12 +573,16 @@
                     "playlist": "Liste de lecture",
                     "server": "Serveur"
                 },
+                "media_not_supported": "Le Browser Media Player ne prend pas en charge ce type de média",
+                "media_player": "Lecteur multimédia",
                 "media-player-browser": "Lecteur multimédia",
                 "no_items": "Aucun éléments",
                 "pick": "Choisir",
                 "pick-media": "Choisissez un média",
                 "play": "Lecture",
-                "play-media": "Lire le média"
+                "play-media": "Lire le média",
+                "video_not_supported": "Votre navigateur ne prend pas en charge l'élément vidéo.",
+                "web-browser": "Navigateur web"
             },
             "picture-upload": {
                 "label": "Image",
@@ -617,6 +624,7 @@
                 "update": "Mise à jour"
             },
             "domain_toggler": {
+                "reset_entities": "Réinitialiser les entités",
                 "title": "Changer de domaine"
             },
             "entity_registry": {
@@ -688,8 +696,10 @@
                 "crop": "Recadrer"
             },
             "more_info_control": {
+                "controls": "Contrôles",
                 "dismiss": "Fermer la fenêtre de dialogue",
                 "edit": "Modifier l'entité",
+                "history": "Historique",
                 "person": {
                     "create_zone": "Créer une zone à partir de l'emplacement actuel"
                 },
@@ -1200,8 +1210,14 @@
                     },
                     "alexa": {
                         "banner": "La modification des entités exposées via cette interface utilisateur est désactivée, car vous avez configuré les filtres d'entité dans configuration.yaml.",
+                        "dont_expose_entity": "Ne pas exposer l'entité",
                         "expose": "Exposer à Alexa",
+                        "expose_entity": "Exposer l'entité",
+                        "exposed": "{selected} exposé",
                         "exposed_entities": "Entités exposées",
+                        "follow_domain": "Suivre le domaine",
+                        "manage_domains": "Gérer les domaines",
+                        "not_exposed": "{selected} non exposé",
                         "not_exposed_entities": "Entités non exposées",
                         "title": "Alexa"
                     },
@@ -1239,8 +1255,14 @@
                     "google": {
                         "banner": "La modification des entités exposées via cette interface utilisateur est désactivée, car vous avez configuré les filtres d'entité dans configuration.yaml.",
                         "disable_2FA": "Désactiver l'authentification à deux facteurs",
+                        "dont_expose_entity": "Ne pas exposer l'entité",
                         "expose": "Exposer à Google Assistant",
+                        "expose_entity": "Exposer l'entité",
+                        "exposed": "{selected} exposé",
                         "exposed_entities": "Entités exposées",
+                        "follow_domain": "Suivre le domaine",
+                        "manage_domains": "Gérer les domaines",
+                        "not_exposed": "{selected} non exposé",
                         "not_exposed_entities": "Entités non exposées",
                         "sync_to_google": "Synchroniser les modifications sur Google.",
                         "title": "Google Assistant"
@@ -1419,7 +1441,7 @@
                         "filter": {
                             "filter": "Filtre",
                             "show_disabled": "Afficher les entités désactivées",
-                            "show_readonly": "Afficher les entités désactivées",
+                            "show_readonly": "Afficher les entités en lecture seule",
                             "show_unavailable": "Afficher les entités non disponibles"
                         },
                         "header": "Entités",
@@ -1525,6 +1547,9 @@
                         "no_device": "Entités sans appareils",
                         "no_devices": "Cette intégration n'a pas d'appareils.",
                         "options": "Options",
+                        "reload": "Recharger",
+                        "reload_confirm": "L'intégration a été rechargée",
+                        "reload_restart_confirm": "Redémarrer Home Assistant pour finaliser le rechargement de cette intégration",
                         "rename": "Renommer",
                         "restart_confirm": "Redémarrer Home Assistant pour terminer la suppression de cette intégration",
                         "settings_button": "Modifier les paramètres pour {integration}",
@@ -1746,8 +1771,21 @@
                         "versions": "Obtention d'informations sur les versions des microprogrammes et des classes de commande",
                         "wakeup": "Configuration de la prise en charge des files d'attente et des messages de réveil"
                     },
+                    "node": {
+                        "button": "Détails du nœud",
+                        "not_found": "Nœud introuvable"
+                    },
+                    "nodes_table": {
+                        "failed": "Echec",
+                        "id": "ID",
+                        "manufacturer": "Fabricant",
+                        "model": "Modèle",
+                        "query_stage": "Étape de requête",
+                        "zwave_plus": "Z-Wave Plus"
+                    },
                     "refresh_node": {
                         "battery_note": "Si le nœud est alimenté par batterie, assurez-vous de l'activer avant de continuer",
+                        "button": "Actualiser le nœud",
                         "complete": "Actualisation du nœud terminée",
                         "description": "Cela indiquera à OpenZWave de réinterroger le nœud et de le mettre à jour (commandes, possibilités et valeurs).",
                         "node_status": "État du nœud",
@@ -1890,19 +1928,37 @@
                     "section": {
                         "reloading": {
                             "automation": "Recharger les automatisations",
+                            "command_line": "Recharger les entités de ligne de commande",
                             "core": "Recharger les emplacements et personnalisations",
+                            "filesize": "Recharger les entités de taille de fichier",
+                            "filter": "Recharger les entités de filtre",
+                            "generic": "Recharger les entités de caméra IP générique",
+                            "generic_thermostat": "Recharger les entités de thermostat générique",
                             "group": "Recharger les groupes",
                             "heading": "Rechargement de la configuration",
-                            "input_boolean": "Recharger les booléens d'entrée",
-                            "input_datetime": "Recharger les heures de date d'entrée",
-                            "input_number": "Recharger les numéros d'entrée",
-                            "input_select": "Recharger les sélections d'entrée",
-                            "input_text": "Recharger les textes d'entrée",
+                            "history_stats": "Recharger les entités des statistiques historiques",
+                            "homekit": "Recharger HomeKit",
+                            "input_boolean": "Recharger les entrées booléennes (input boolean)",
+                            "input_datetime": "Recharger les entrées de date et heure (input date time)",
+                            "input_number": "Recharger les entrées numériques (input number)",
+                            "input_select": "Recharger les listes de sélection (input select)",
+                            "input_text": "Recharger les entrées de texte (input text)",
                             "introduction": "Certaines parties de Home Assistant peuvent être rechargées sans nécessiter de redémarrage. Le fait de cliquer sur recharger déchargera leur configuration actuelle et chargera la nouvelle.",
+                            "min_max": "Recharger les entités min/max",
+                            "mqtt": "Recharger les entités mqtt",
                             "person": "Recharger les personnes",
+                            "ping": "Recharger les entités de capteur binaire ping",
+                            "reload": "Recharger {domain}",
+                            "rest": "Recharger les entités REST et notifier les services",
+                            "rpi_gpio": "Recharger les entités GPIO du Raspberry Pi",
                             "scene": "Recharger les scènes",
                             "script": "Recharger les scripts",
+                            "smtp": "Recharger les services de notification smtp",
+                            "statistics": "Recharger les entités de statistiques",
+                            "telegram": "Recharger les services de notification de telegram",
                             "template": "Recharger les entités modèles",
+                            "trend": "Recharger les entités de tendance",
+                            "universal": "Recharger les entités de lecteur média universel",
                             "zone": "Recharger les zones"
                         },
                         "server_management": {
@@ -1954,6 +2010,8 @@
                         "create": "Créer",
                         "name": "Nom",
                         "password": "Mot de passe",
+                        "password_confirm": "Confirmer le mot de passe",
+                        "password_not_match": "Le mot de passe ne correspond pas",
                         "username": "Nom d'utilisateur"
                     },
                     "caption": "Utilisateurs",
@@ -1970,7 +2028,9 @@
                         "group": "Groupe",
                         "id": "ID",
                         "name": "Nom",
+                        "new_password": "Nouveau mot de passe",
                         "owner": "Propriétaire",
+                        "password_changed": "Le mot de passe est modifié !",
                         "system_generated": "Généré par le système",
                         "system_generated_users_not_editable": "Impossible de mettre à jour les utilisateurs générés par le système.",
                         "system_generated_users_not_removable": "Impossible de supprimer les utilisateurs générés par le système.",
@@ -1984,7 +2044,7 @@
                             "system": "Système"
                         }
                     },
-                    "users_privileges_note": "Le groupe d'utilisateurs est en cours de développement. L'utilisateur ne pourra pas gérer l'instance via l'interface. Nous vérifions les entrées de l'interface de gestion pour assurer que les accès soient limités aux administrateurs."
+                    "users_privileges_note": "La fonctionnalité de groupe d'utilisateurs est en cours de développement. L'utilisateur ne pourra pas gérer l'instance via l'interface. Nous vérifions toujours tous les points terminaisons d'API pour assurer que les accès soient limités aux administrateurs."
                 },
                 "zha": {
                     "add_device_page": {
@@ -2022,7 +2082,7 @@
                     "clusters": {
                         "header": "Clusters",
                         "help_cluster_dropdown": "Sélectionnez un cluster pour afficher les attributs et les commandes.",
-                        "introduction": "Les clusters sont les blocs de construction de la fonctionnalité Zigbee. Ils séparent les fonctionnalités en unités logiques. Il existe des types de clients et de serveurs qui sont composés d'attributs et de commandes."
+                        "introduction": "Les grappes sont les éléments de construction de la fonctionnalité Zigbee. Ils séparent les fonctionnalités en unités logiques. Il en existe de type clients et serveurs qui sont composés d'attributs et de commandes."
                     },
                     "common": {
                         "add_devices": "Ajouter des appareils",
@@ -2397,9 +2457,9 @@
                         "generic": {
                             "aspect_ratio": "Ratio d'aspect",
                             "attribute": "Attribut",
-                            "camera_image": "Caméra entité",
+                            "camera_image": "Entité caméra",
                             "camera_view": "Vue de la caméra",
-                            "double_tap_action": "Double appui court",
+                            "double_tap_action": "Double appui",
                             "entities": "Entités",
                             "entity": "Entité",
                             "hold_action": "Appui long",
@@ -2420,6 +2480,7 @@
                             "show_name": "Afficher le nom ?",
                             "show_state": "Afficher l'état ?",
                             "state": "État",
+                            "state_color": "Icônes de couleur basées sur l'état ?",
                             "tap_action": "Appui court",
                             "theme": "Thème",
                             "title": "Titre",
@@ -2462,11 +2523,11 @@
                         },
                         "markdown": {
                             "content": "Contenu",
-                            "description": "La carte Markdown est utilisée pour rendre Markdown.",
+                            "description": "La carte Markdown est utilisée pour afficher du Markdown.",
                             "name": "Markdown"
                         },
                         "media-control": {
-                            "description": "La carte Contrôle des médias est utilisée pour afficher les entités du lecteur multimédia sur une interface avec des commandes faciles à utiliser.",
+                            "description": "La carte Contrôle des médias est utilisée pour afficher les entités de lecteur multimédia sur une interface avec des commandes faciles à utiliser.",
                             "name": "Contrôle des médias"
                         },
                         "picture-elements": {
@@ -2515,7 +2576,11 @@
                         }
                     },
                     "cardpicker": {
+                        "by_card": "Par carte",
+                        "by_entity": "Par entité",
                         "custom_card": "Personnalisé",
+                        "domain": "Domaine",
+                        "entity": "Entité",
                         "no_description": "Aucune description disponible."
                     },
                     "edit_card": {
@@ -2529,6 +2594,7 @@
                         "options": "Plus d'options",
                         "pick_card": "Quelle carte aimeriez-vous ajouter ?",
                         "pick_card_view_title": "Quelle carte souhaitez-vous ajouter à votre vue {name} ?",
+                        "search_cards": "Rechercher des cartes",
                         "show_code_editor": "Afficher l'éditeur de code",
                         "show_visual_editor": "Afficher l'éditeur visuel",
                         "toggle_editor": "Permuter l’éditeur",
@@ -2588,7 +2654,7 @@
                     "save_config": {
                         "cancel": "Oublie ce que j'ai dit, c'est pas grave.",
                         "close": "Fermer",
-                        "empty_config": "Commencer avec un tableau de bord vide",
+                        "empty_config": "Commencer par un tableau de bord vide",
                         "header": "Prenez le contrôle de votre Interface Lovelace",
                         "para": "Par défaut, Home Assistant maintient votre interface utilisateur et la met à jour lorsque de nouvelles entités ou de nouveaux composants Lovelace UI sont disponibles. Si vous prenez le contrôle, nous ne ferons plus les changements automatiquement pour vous.",
                         "para_sure": "Êtes-vous sûr de vouloir prendre le contrôle de l'interface utilisateur?",

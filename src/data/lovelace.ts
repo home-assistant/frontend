@@ -334,10 +334,11 @@ export interface WindowWithLovelaceProm extends Window {
 export interface ActionHandlerOptions {
   hasHold?: boolean;
   hasDoubleClick?: boolean;
+  disabled?: boolean;
 }
 
 export interface ActionHandlerDetail {
-  action: string;
+  action: "hold" | "tap" | "double_tap";
 }
 
 export type ActionHandlerEvent = HASSDomEvent<ActionHandlerDetail>;

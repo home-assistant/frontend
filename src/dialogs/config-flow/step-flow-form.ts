@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "../../components/ha-circular-progress";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
@@ -12,6 +11,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-circular-progress";
 import "../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../components/ha-form/ha-form";
 import "../../components/ha-markdown";
@@ -91,7 +91,7 @@ class StepFlowForm extends LitElement {
 
                 ${!allRequiredInfoFilledIn
                   ? html`
-                      <paper-tooltip position="left"
+                      <paper-tooltip animation-delay="0" position="left"
                         >${this.hass.localize(
                           "ui.panel.config.integrations.config_flow.not_all_required_fields"
                         )}
