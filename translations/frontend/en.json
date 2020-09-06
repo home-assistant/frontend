@@ -617,6 +617,7 @@
                 "update": "Update"
             },
             "domain_toggler": {
+                "reset_entities": "Reset Entities",
                 "title": "Toggle Domains"
             },
             "entity_registry": {
@@ -1200,9 +1201,15 @@
                     },
                     "alexa": {
                         "banner": "Editing which entities are exposed via this UI is disabled because you have configured entity filters in configuration.yaml.",
+                        "dont_expose_entity": "Don't expose entity",
                         "expose": "Expose to Alexa",
+                        "expose_entity": "Expose entity",
+                        "exposed": "{selected} exposed",
                         "exposed_entities": "Exposed entities",
-                        "not_exposed_entities": "Not Exposed entities",
+                        "follow_domain": "Follow domain",
+                        "manage_domains": "Manage domains",
+                        "not_exposed": "{selected} not exposed",
+                        "not_exposed_entities": "Not exposed entities",
                         "title": "Alexa"
                     },
                     "caption": "Home Assistant Cloud",
@@ -1239,9 +1246,15 @@
                     "google": {
                         "banner": "Editing which entities are exposed via this UI is disabled because you have configured entity filters in configuration.yaml.",
                         "disable_2FA": "Disable two factor authentication",
+                        "dont_expose_entity": "Don't expose entity",
                         "expose": "Expose to Google Assistant",
+                        "expose_entity": "Expose entity",
+                        "exposed": "{selected} exposed",
                         "exposed_entities": "Exposed entities",
-                        "not_exposed_entities": "Not Exposed entities",
+                        "follow_domain": "Follow domain",
+                        "manage_domains": "Manage domains",
+                        "not_exposed": "{selected} not exposed",
+                        "not_exposed_entities": "Not exposed entities",
                         "sync_to_google": "Synchronizing changes to Google.",
                         "title": "Google Assistant"
                     },

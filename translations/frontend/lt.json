@@ -21,6 +21,9 @@
                 "auto": "Auto",
                 "off": "Išjungta",
                 "on": "Įjungta"
+            },
+            "preset_mode": {
+                "away": "Išvykęs"
             }
         }
     },
@@ -224,7 +227,8 @@
             "on": "Įjungta"
         },
         "sun": {
-            "above_horizon": "Virš horizonto"
+            "above_horizon": "Virš horizonto",
+            "below_horizon": "Žemiau horizonto"
         },
         "switch": {
             "off": "Išjungta",
@@ -263,6 +267,7 @@
                 "attributes": {
                     "air_pressure": "Atmosferos slėgis",
                     "humidity": "Santykinė oro drėgmė",
+                    "precipitation": "Krituliai",
                     "temperature": "Temperatūra",
                     "wind_speed": "Vėjo greitis"
                 },
@@ -287,6 +292,16 @@
         "components": {
             "device-picker": {
                 "device": "Įrenginys"
+            },
+            "relative_time": {
+                "duration": {
+                    "day": "{count} {count, plural,\n  one {diena}\n  other {dienos}\n}",
+                    "hour": "{count} {count, plural,\n  one {valanda}\n  other {valandos}\n}",
+                    "minute": "{count} {count, plural,\n  one {minutė}\n  other {minutės}\n}",
+                    "second": "{count} {count, plural,\n  one {sekundė}\n  other {sekundės}\n}",
+                    "week": "{count} {count, plural,\n  one {savaitė}\n  other {savaitės}\n}"
+                },
+                "past": "prieš {time}"
             }
         },
         "dialogs": {
@@ -308,6 +323,8 @@
         },
         "duration": {
             "day": "{count} {count, plural,\n  one {diena}\n  other {dienos}\n}",
+            "hour": "{count} {count, plural,\n  one {valanda}\n  other {valandos}\n}",
+            "minute": "{count} {count, plural,\n  one {minutė}\n  other {minutės}\n}",
             "second": "{count} {count, plural,\n  one {sekundė}\n  other {sekundės}\n}",
             "week": "{count} {count, plural,\n  one {savaitė}\n  other {savaitės}\n}"
         },
@@ -317,7 +334,12 @@
             "remember": "Prisiminti"
         },
         "notification_drawer": {
-            "close": "Uždaryti"
+            "close": "Uždaryti",
+            "empty": "Pranešimų nėra",
+            "title": "Pranešimai"
+        },
+        "notification_toast": {
+            "started": "Home Assistant startavo"
         },
         "panel": {
             "config": {

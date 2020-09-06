@@ -526,7 +526,8 @@
         }
       },
       "domain_toggler": {
-        "title": "Toggle Domains"
+        "title": "Toggle Domains",
+        "reset_entities": "Reset Entities"
       },
       "mqtt_device_debug_info": {
         "title": "{device} debug info",
@@ -826,8 +827,9 @@
             "reloading": {
               "heading": "YAML configuration reloading",
               "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current YAML configuration and load the new one.",
+              "reload": "Reload {domain}",
               "core": "Reload location & customizations",
-              "group": "Reload groups",
+              "group": "Reload groups, group entities, and notify services",
               "automation": "Reload automations",
               "script": "Reload scripts",
               "scene": "Reload scenes",
@@ -840,7 +842,7 @@
               "input_select": "Reload input selects",
               "template": "Reload template entities",
               "universal": "Reload universal media player entities",
-              "rest": "Reload rest entities",
+              "rest": "Reload rest entities and notify services",
               "command_line": "Reload command line entities",
               "filter": "Reload filter entities",
               "statistics": "Reload statistics entities",
@@ -851,7 +853,11 @@
               "history_stats": "Reload history stats entities",
               "trend": "Reload trend entities",
               "ping": "Reload ping binary sensor entities",
-              "filesize": "Reload file size entities"
+              "filesize": "Reload file size entities",
+              "telegram": "Reload telegram notify services",
+              "smtp": "Reload smtp notify services",
+              "mqtt": "Reload mqtt entities",
+              "rpi_gpio": "Reload Raspberry Pi GPIO entities"
             },
             "server_management": {
               "heading": "Server management",
@@ -1383,7 +1389,13 @@
             "title": "Alexa",
             "banner": "Editing which entities are exposed via this UI is disabled because you have configured entity filters in configuration.yaml.",
             "exposed_entities": "Exposed entities",
-            "not_exposed_entities": "Not Exposed entities",
+            "not_exposed_entities": "Not exposed entities",
+            "manage_domains": "Manage domains",
+            "expose_entity": "Expose entity",
+            "dont_expose_entity": "Don't expose entity",
+            "follow_domain": "Follow domain",
+            "exposed": "{selected} exposed",
+            "not_exposed": "{selected} not exposed",
             "expose": "Expose to Alexa"
           },
           "dialog_certificate": {
@@ -1399,7 +1411,13 @@
             "disable_2FA": "Disable two factor authentication",
             "banner": "Editing which entities are exposed via this UI is disabled because you have configured entity filters in configuration.yaml.",
             "exposed_entities": "Exposed entities",
-            "not_exposed_entities": "Not Exposed entities",
+            "not_exposed_entities": "Not exposed entities",
+            "manage_domains": "Manage domains",
+            "expose_entity": "Expose entity",
+            "dont_expose_entity": "Don't expose entity",
+            "follow_domain": "Follow domain",
+            "exposed": "{selected} exposed",
+            "not_exposed": "{selected} not exposed",
             "sync_to_google": "Synchronizing changes to Google."
           },
           "dialog_cloudhook": {
