@@ -13,6 +13,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { createCloseHeading } from "../../components/ha-dialog";
 import { BROWSER_SOURCE } from "../../data/media-player";
 import type { HomeAssistant } from "../../types";
+import { haStyleDialog } from "../../resources/styles";
 import type { SelectMediaPlayerDialogParams } from "./show-select-media-source-dialog";
 
 @customElement("hui-dialog-select-media-player")
@@ -74,15 +75,18 @@ export class HuiDialogSelectMediaPlayer extends LitElement {
     this.closeDialog();
   }
 
-  static get styles(): CSSResult {
-    return css`
-      ha-dialog {
-        --dialog-content-padding: 0 24px 20px;
-      }
-      paper-item {
-        cursor: pointer;
-      }
-    `;
+  static get styles(): CSSResult[] {
+    return [
+      haStyleDialog,
+      css`
+        ha-dialog {
+          --dialog-content-padding: 0 24px 20px;
+        }
+        paper-item {
+          cursor: pointer;
+        }
+      `,
+    ];
   }
 }
 
