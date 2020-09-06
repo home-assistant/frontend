@@ -133,7 +133,6 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
 
   private _handleModeChanged(ev: Event) {
     const target = ev.target as Radio;
-    console.log(target, target.getAttribute("name"));
     if (target.getAttribute("name") === "mode_after") {
       this._inputModeAfter = target.value === "input";
     } else {

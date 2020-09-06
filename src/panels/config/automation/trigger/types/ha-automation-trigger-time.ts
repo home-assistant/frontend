@@ -85,7 +85,6 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    console.log(ev);
     handleChangeEvent(this, ev);
   }
 }
