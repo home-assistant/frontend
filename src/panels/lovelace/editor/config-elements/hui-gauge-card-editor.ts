@@ -9,9 +9,8 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-switch";
 import { assert, number, object, optional, string } from "superstruct";
+import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-switch";
