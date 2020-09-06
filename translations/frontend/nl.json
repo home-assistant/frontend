@@ -923,7 +923,7 @@
                                     "wait_template": "Wachtsjabloon"
                                 }
                             },
-                            "unsupported_action": "Niet-ondersteunde actie: {action}"
+                            "unsupported_action": "Geen UI-ondersteuning voor actie: {action}"
                         },
                         "alias": "Naam",
                         "conditions": {
@@ -1488,7 +1488,7 @@
                     "frontend": "Frontend",
                     "frontend_version": "Frontend-versie: {version} - {type}",
                     "home_assistant_logo": "Home Assistant-logo",
-                    "icons_by": "Icons door",
+                    "icons_by": "Pictogrammen door",
                     "integrations": "Integraties",
                     "issues": "Problemen",
                     "license": "Gepubliceerd onder de Apache 2.0-licentie",
@@ -1726,7 +1726,7 @@
                     "network": {
                         "header": "Netwerkbeheer",
                         "introduction": "Beheer netwerkbrede functies.",
-                        "node_count": "{count} nodes"
+                        "node_count": "{count} knooppunten"
                     },
                     "node_query_stages": {
                         "associations": "Associatiegroepen en lidmaatschappen verversen",
@@ -1760,12 +1760,12 @@
                         "wakeup_instructions_source": "Wekinstructies zijn afkomstig uit de OpenZWave-gemeenschapsapparaatdatabase."
                     },
                     "select_instance": {
-                        "header": "Selecteer een OpenZWave-instantie",
-                        "introduction": "Je hebt meer dan één OpenZWave instantie lopen. Welke instantie wilt u beheren?"
+                        "header": "Selecteer een OpenZWave instantie",
+                        "introduction": "Je hebt meer dan één OpenZWave instantie lopen. Welke instantie wil je beheren?"
                     },
                     "services": {
-                        "add_node": "Node toevoegen",
-                        "remove_node": "Node verwijderen"
+                        "add_node": "Knooppunt toevoegen",
+                        "remove_node": "Knooppunt verwijderen"
                     }
                 },
                 "person": {
@@ -1891,24 +1891,32 @@
                     "section": {
                         "reloading": {
                             "automation": "Herlaad automatiseringen",
-                            "command_line": "Laad opdrachtregelentiteiten opnieuw",
+                            "command_line": "Herlaad opdrachtregel-entiteiten",
                             "core": "Herlaad locatie en aanpassingen",
-                            "filter": "Laad filterentiteiten opnieuw",
+                            "filesize": "Herlaad bestandsgrootte entiteiten",
+                            "filter": "Herlaad filter-entiteiten",
+                            "generic": "Herlaad generieke IP camera entiteiten",
+                            "generic_thermostat": "Herlaad generieke thermostaat entiteiten",
                             "group": "Herlaad groepen",
                             "heading": "Configuratie herladen",
+                            "history_stats": "Herlaad historische statistieken entiteiten",
+                            "homekit": "Herlaad HomeKit",
                             "input_boolean": "Herlaad input booleans",
                             "input_datetime": "Herlaad input date times",
                             "input_number": "Herlaad input numbers",
                             "input_select": "Herlaad input selects",
                             "input_text": "Herlaad input texts",
                             "introduction": "Sommige delen van Home Assistant kunnen opnieuw worden geladen zonder dat een herstart vereist is. Als je herladen gebruikt, wordt de huidige configuratie leeggemaakt en wordt de nieuwe geladen.",
+                            "min_max": "Herlaad min/max entiteiten",
                             "person": "Herlaad personen",
-                            "rest": "Laad rustentiteiten opnieuw",
+                            "ping": "Herlaad ping binaire sensor entiteiten",
+                            "rest": "Herlaad rust-entiteiten",
                             "scene": "Herlaad scenes",
                             "script": "Herlaad scripts",
-                            "statistics": "Laad statistische entiteiten opnieuw",
-                            "template": "Laad sjabloonentiteiten opnieuw",
-                            "universal": "Laad de entiteiten van de universele mediaspeler opnieuw",
+                            "statistics": "Herlaad statistische entiteiten",
+                            "template": "Herlaad sjabloon-entiteiten",
+                            "trend": "Herlaad trend-entiteiten",
+                            "universal": "Herlaad universele mediaspeler entiteiten",
                             "zone": "Herlaad zones"
                         },
                         "server_management": {
@@ -1960,6 +1968,8 @@
                         "create": "Maken",
                         "name": "Naam",
                         "password": "Wachtwoord",
+                        "password_confirm": "Bevestig wachtwoord",
+                        "password_not_match": "Wachtwoorden komen niet overeen",
                         "username": "Gebruikersnaam"
                     },
                     "caption": "Gebruikers",
@@ -1976,7 +1986,9 @@
                         "group": "Groep",
                         "id": "ID",
                         "name": "Naam",
+                        "new_password": "Nieuw wachtwoord",
                         "owner": "Eigenaar",
+                        "password_changed": "Het wachtwoord is gewijzigd!",
                         "system_generated": "Gegenereerd door systeem",
                         "system_generated_users_not_editable": "Kan door het systeem gegenereerde gebruikers niet bijwerken.",
                         "system_generated_users_not_removable": "Kan door het systeem gegenereerde gebruikers niet verwijderen.",
@@ -2144,17 +2156,17 @@
                     },
                     "network_status": {
                         "network_started": "Z-Wave netwerk gestart",
-                        "network_started_note_all_queried": "Alle nodes zijn opgevraagd.",
-                        "network_started_note_some_queried": "Alle actieve nodes zijn opgevraagd. Inactieve nodes worden opgevraagd wanneer ze actief worden.",
+                        "network_started_note_all_queried": "Alle knooppunten zijn opgevraagd.",
+                        "network_started_note_some_queried": "Alle actieve knooppunten zijn opgevraagd. Inactieve knooppunten worden opgevraagd wanneer ze actief worden.",
                         "network_starting": "Z-Wave netwerk starten...",
                         "network_starting_note": "Dit kan een tijdje duren, afhankelijk van de grootte van je netwerk.",
                         "network_stopped": "Z-Wave netwerk gestopt"
                     },
                     "node_config": {
                         "config_parameter": "Configuratie Parameter",
-                        "config_value": "Configuratie Waarde",
+                        "config_value": "Configuratiewaarde",
                         "false": "Niet waar",
-                        "header": "Node Configuratie Opties",
+                        "header": "Knooppunt Configuratie Opties",
                         "seconds": "Seconden",
                         "set_config_parameter": "Stel de configuratieparameter in",
                         "set_wakeup": "Activeringsinterval instellen",
@@ -2170,11 +2182,11 @@
                         "introduction": "Voer Z-Wave commando's uit die een enkel knooppunt beïnvloeden. Kies een knooppunt om een lijst met beschikbare commando's te zien.",
                         "max_associations": "Maximale associaties:",
                         "node_group_associations": "Knooppuntgroepassociaties",
-                        "node_protection": "Node beveiliging",
-                        "node_to_control": "Node om te besturen",
+                        "node_protection": "Knooppunt beveiliging",
+                        "node_to_control": "Knooppunt om te besturen",
                         "nodes": "Knooppunten",
                         "nodes_hint": "Selecteer knooppunt om de opties per knooppunt te bekijken",
-                        "nodes_in_group": "Andere nodes in deze groep:",
+                        "nodes_in_group": "Andere knooppunten in deze groep:",
                         "pooling_intensity": "Polling intensiteit",
                         "protection": "Bescherming",
                         "remove_broadcast": "Broadcast verwijderen",
@@ -2189,24 +2201,24 @@
                         "tail": "Staart"
                     },
                     "services": {
-                        "add_node": "Node toevoegen",
-                        "add_node_secure": "Secure Node toevoegen",
+                        "add_node": "Knooppunt toevoegen",
+                        "add_node_secure": "Beveiligd knooppunt toevoegen",
                         "cancel_command": "Opdracht annuleren",
                         "heal_network": "Herstel Netwerk",
-                        "heal_node": "Herstel node",
-                        "node_info": "Node informatie",
-                        "print_node": "Print node",
+                        "heal_node": "Herstel knooppunt",
+                        "node_info": "Knooppunt informatie",
+                        "print_node": "Print knooppunt",
                         "refresh_entity": "Entiteit vernieuwen",
-                        "refresh_node": "Node verwijderen",
-                        "remove_failed_node": "Verwijder gefaalde node",
-                        "remove_node": "Node verwijderen",
-                        "replace_failed_node": "Vervang gefaalde node",
+                        "refresh_node": "Knooppunt verversen",
+                        "remove_failed_node": "Verwijder gefaald knooppunt",
+                        "remove_node": "Knooppunt verwijderen",
+                        "replace_failed_node": "Vervang gefaald knooppunt",
                         "save_config": "Configuratie Opslaan",
                         "soft_reset": "Soft Reset",
                         "start_network": "Start netwerk",
                         "stop_network": "Stop Netwerk",
                         "test_network": "Test Netwerk",
-                        "test_node": "Test node"
+                        "test_node": "Test knooppunt"
                     },
                     "values": {
                         "header": "Knooppunt waarden"
@@ -2426,6 +2438,7 @@
                             "show_name": "Naam weergeven?",
                             "show_state": "Staat tonen?",
                             "state": "Toestand",
+                            "state_color": "Kleur pictogrammen op basis van status?",
                             "tap_action": "Tik Actie",
                             "theme": "Thema",
                             "title": "Titel",

@@ -489,6 +489,7 @@
             "back": "Tilbake",
             "cancel": "Avbryt",
             "close": "Lukk",
+            "continue": "Fortsette",
             "delete": "Slett",
             "error_required": "Nødvendig",
             "loading": "Laster",
@@ -601,6 +602,7 @@
                 "update": "Oppdater"
             },
             "domain_toggler": {
+                "reset_entities": "Tilbakestill enheter",
                 "title": "Veksle domener"
             },
             "entity_registry": {
@@ -671,8 +673,10 @@
                 "crop": "Beskjære"
             },
             "more_info_control": {
+                "controls": "Kontroller",
                 "dismiss": "Avvis dialogboksen",
                 "edit": "Redigér entitet",
+                "history": "Historie",
                 "person": {
                     "create_zone": "Opprett sone fra gjeldende plassering"
                 },
@@ -1169,9 +1173,15 @@
                     },
                     "alexa": {
                         "banner": "Redigere hvilke entiteter som vises via dette grensesnittet er deaktivert fordi du har konfigurert entitetsfilter i configuration.yaml.",
+                        "dont_expose_entity": "Ikke eksponer enheten",
                         "expose": "Eksponer til Alexa",
+                        "expose_entity": "Vis enhet",
+                        "exposed": "{selected} eksponert",
                         "exposed_entities": "Eksponerte entiteter",
-                        "not_exposed_entities": "Ikke-eksponerte entiteter"
+                        "follow_domain": "Følg domenet",
+                        "manage_domains": "Administrer domener",
+                        "not_exposed": "{selected} ikke eksponert",
+                        "not_exposed_entities": "Ikke eksponerte enheter"
                     },
                     "description_features": "Kontroller borte fra hjemmet, integrer med Alexa og Google Assistant.",
                     "description_login": "Logget inn som {email}",
@@ -1206,9 +1216,15 @@
                     "google": {
                         "banner": "Redigere hvilke entiteter som vises via dette grensesnittet er deaktivert fordi du har konfigurert entitetsfilter i configuration.yaml.",
                         "disable_2FA": "Deaktiver totrinnsbekreftelse",
+                        "dont_expose_entity": "Ikke eksponer enheten",
                         "expose": "Eksponer til Google Assistant",
+                        "expose_entity": "Vis enhet",
+                        "exposed": "{selected} eksponert",
                         "exposed_entities": "Eksponerte entiteter",
-                        "not_exposed_entities": "Ikke-eksponerte entiteter",
+                        "follow_domain": "Følg domenet",
+                        "manage_domains": "Administrer domener",
+                        "not_exposed": "{selected} ikke eksponert",
+                        "not_exposed_entities": "Ikke eksponerte enheter",
                         "sync_to_google": "Synkroniserer endringer til Google."
                     },
                     "login": {
@@ -1486,8 +1502,8 @@
                         "no_devices": "Denne integrasjonen har ingen enheter.",
                         "options": "Alternativer",
                         "reload": "Last inn på nytt",
-                        "reload_confirm": "Integreringen ble lastet på nytt",
-                        "reload_restart_confirm": "Start Home Assistant på nytt for å fullføre omlastingen av denne integreringen",
+                        "reload_confirm": "integrasjonen ble lastet på nytt",
+                        "reload_restart_confirm": "Start Home Assistant på nytt for å fullføre omlastingen av denne integrasjonen",
                         "rename": "Gi nytt navn",
                         "restart_confirm": "Start Home Assistant på nytt for å fullføre fjerningen av denne integrasjonen",
                         "settings_button": "Rediger innstillinger for {integration}",
@@ -1853,7 +1869,7 @@
                             "filter": "Last inn filter entiteter på nytt",
                             "generic": "Last inn generiske IP-kamera entiteter på nytt",
                             "generic_thermostat": "Last inn generiske termostat entiteter på nytt",
-                            "group": "Last inn grupper på nytt",
+                            "group": "Laste inn grupper, gruppere enheter og varsle tjenester på nytt",
                             "heading": "YAML -Konfigurasjon lastes på nytt",
                             "history_stats": "Last inn historiske tilstander på nytt",
                             "homekit": "Last inn HomeKit på nytt",
@@ -1864,12 +1880,17 @@
                             "input_text": "Last inn inndata tekst på nytt",
                             "introduction": "Noen deler av Home Assistant kan laste inn uten å kreve omstart. Hvis du trykker last på nytt, vil du bytte den nåværende konfigurasjonen med den nye.",
                             "min_max": "Last inn min/maks entiteter på nytt",
+                            "mqtt": "Last inn mqtt-enheter på nytt",
                             "person": "Last inn personer på nytt",
                             "ping": "Last inn ping binære sensor entiteter på nytt",
-                            "rest": "Last inn REST entiteter på nytt",
+                            "reload": "Last inn {domain} på nytt",
+                            "rest": "Last inn hvileenheter på nytt og varsle tjenester",
+                            "rpi_gpio": "Last inn Raspberry Pi GPIO-enheter på nytt",
                             "scene": "Last inn scener på nytt",
                             "script": "Last inn skript på nytt",
+                            "smtp": "Last inn smtp-varslingstjenester på nytt",
                             "statistics": "Last inn statistiske entiteter på nytt",
+                            "telegram": "Last inn telegram varslingstjenester på nytt",
                             "template": "Laste inn mal entiteter på nytt",
                             "trend": "Laste inn trend entiteter på nytt",
                             "universal": "Laste inn universelle mediespiller entiteter på nytt",
@@ -2403,8 +2424,8 @@
                             "name": "Historikk graf"
                         },
                         "horizontal-stack": {
-                            "description": "Horizontal Stack-kortet lar deg stable sammen flere kort, slik at de alltid sitter ved siden av hverandre i løpet av en kolonne.",
-                            "name": "Horisontal Stack"
+                            "description": "Horisontal Stabel kortet lar deg stable sammen flere kort, slik at de alltid sitter ved siden av hverandre i løpet av en kolonne.",
+                            "name": "Horisontal Stabel"
                         },
                         "humidifier": {
                             "description": "Luftfukter kortet gir kontroll over luftfukter enheten din. Lar deg endre fuktigheten og modusen til enheten.",
@@ -2432,7 +2453,7 @@
                             "description": "Markdown-kortet brukes til å gjengi Markdown."
                         },
                         "media-control": {
-                            "description": "Media Control-kortet brukes til å vise mediespillerenheter på et grensesnitt med brukervennlige kontroller.",
+                            "description": "Mediekontroll kortet brukes til å vise mediespillerenheter på et grensesnitt med brukervennlige kontroller.",
                             "name": "Mediekontroll"
                         },
                         "picture-elements": {
@@ -2452,7 +2473,7 @@
                             "name": "Bilde"
                         },
                         "plant-status": {
-                            "description": "Plant Status-kortet er for alle de flotte botanikerne der ute.",
+                            "description": "Plante Status kortet er for alle de flotte botanikerne der ute.",
                             "name": "Plante status"
                         },
                         "sensor": {
@@ -2461,7 +2482,7 @@
                             "graph_type": "Graf type"
                         },
                         "shopping-list": {
-                            "description": "På Shopping List-kortet kan du legge til, redigere, sjekke av og fjerne gjenstander fra handlelisten din.",
+                            "description": "På handlelistekortet kan du legge til, redigere, sjekke av og fjerne gjenstander fra handlelisten din.",
                             "integration_not_loaded": "Dette kortet krever at `shopping_list` integrasjonen er satt opp.",
                             "name": "Handleliste"
                         },
@@ -2470,7 +2491,7 @@
                             "name": "Termostat"
                         },
                         "vertical-stack": {
-                            "description": "Vertical Stack-kortet lar deg gruppere flere kort slik at de alltid sitter i samme kolonne.",
+                            "description": "Vertical Stabel kortet lar deg gruppere flere kort slik at de alltid sitter i samme kolonne.",
                             "name": "Vertikal stabel"
                         },
                         "weather-forecast": {
@@ -2480,7 +2501,11 @@
                         }
                     },
                     "cardpicker": {
+                        "by_card": "Med kort",
+                        "by_entity": "Etter enhet",
                         "custom_card": "Tilpasset",
+                        "domain": "Domene",
+                        "entity": "Entitet",
                         "no_description": "Ingen beskrivelse tilgjengelig."
                     },
                     "edit_card": {

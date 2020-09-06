@@ -20,9 +20,10 @@ export const CONTRAST_RATIO = 4.5;
 
 export type MediaPlayerBrowseAction = "pick" | "play";
 
+export const BROWSER_SOURCE = "browser";
+
 export interface MediaPickedEvent {
-  media_content_id: string;
-  media_content_type: string;
+  item: MediaPlayerItem;
 }
 
 export interface MediaPlayerThumbnail {
@@ -56,6 +57,15 @@ export const browseMediaPlayer = (
     entity_id: entityId,
     media_content_id: mediaContentId,
     media_content_type: mediaContentType,
+  });
+
+export const browseLocalMediaPlayer = (
+  hass: HomeAssistant,
+  mediaContentId?: string
+): Promise<MediaPlayerItem> =>
+  hass.callWS<MediaPlayerItem>({
+    type: "media_source/browse_media",
+    media_content_id: mediaContentId,
   });
 
 export const getCurrentProgress = (stateObj: HassEntity): number => {

@@ -1,16 +1,16 @@
-import {
-  LitElement,
-  TemplateResult,
-  property,
-  svg,
-  html,
-  customElement,
-  unsafeCSS,
-  SVGTemplateResult,
-  css,
-} from "lit-element";
 // @ts-ignore
 import progressStyles from "@material/circular-progress/dist/mdc.circular-progress.min.css";
+import {
+  css,
+  customElement,
+  html,
+  LitElement,
+  property,
+  svg,
+  SVGTemplateResult,
+  TemplateResult,
+  unsafeCSS,
+} from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 
 @customElement("ha-circular-progress")
@@ -24,7 +24,7 @@ export class HaCircularProgress extends LitElement {
   @property()
   public size: "small" | "medium" | "large" = "medium";
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     let indeterminatePart: SVGTemplateResult;
 
     if (this.size === "small") {

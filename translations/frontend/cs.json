@@ -505,6 +505,7 @@
             "back": "Zpět",
             "cancel": "Zrušit",
             "close": "Zavřít",
+            "continue": "Pokračovat",
             "delete": "Smazat",
             "error_required": "Povinné",
             "loading": "Načítání",
@@ -617,6 +618,7 @@
                 "update": "Aktualizovat"
             },
             "domain_toggler": {
+                "reset_entities": "Obnovit entity",
                 "title": "Přepnout domény"
             },
             "entity_registry": {
@@ -688,8 +690,10 @@
                 "crop": "Oříznout"
             },
             "more_info_control": {
+                "controls": "Ovládací prvky",
                 "dismiss": "Zavřít dialog",
                 "edit": "Upravit entitu",
+                "history": "Historie",
                 "person": {
                     "create_zone": "Vytvořit zónu z aktuálního umístění"
                 },
@@ -1200,9 +1204,15 @@
                     },
                     "alexa": {
                         "banner": "Úprava entit, které jsou exponované prostřednictvím tohoto uživatelského rozhraní je zakázána, protože jste nakonfigurovali filtry entit v souboru configuration.yaml.",
+                        "dont_expose_entity": "Nevystavovat entitu",
                         "expose": "Exponovat do Alexa",
+                        "expose_entity": "Vystavit entitu",
+                        "exposed": "{selected} vystaveno",
                         "exposed_entities": "Exponované entity",
-                        "not_exposed_entities": "Neexponované entity",
+                        "follow_domain": "Sledovat doménu",
+                        "manage_domains": "Správa domén",
+                        "not_exposed": "{selected} není vystaveno",
+                        "not_exposed_entities": "Nevystavené entity",
                         "title": "Alexa"
                     },
                     "caption": "Home Assistant Cloud",
@@ -1239,9 +1249,15 @@
                     "google": {
                         "banner": "Úprava entity, které jsou exponované prostřednictvím tohoto uživatelského rozhraní je zakázána, protože jste nakonfigurovali filtry entit v souboru configuration.yaml.",
                         "disable_2FA": "Zakázat dvoufaktorové ověřování",
+                        "dont_expose_entity": "Nevystavovat entitu",
                         "expose": "Exponovat do Google Assistant",
+                        "expose_entity": "Vystavit entitu",
+                        "exposed": "{selected} vystaveno",
                         "exposed_entities": "Exponované entity",
-                        "not_exposed_entities": "Neexponované entity",
+                        "follow_domain": "Sledovat doménu",
+                        "manage_domains": "Správa domén",
+                        "not_exposed": "{selected} není vystaveno",
+                        "not_exposed_entities": "Nevystavené entity",
                         "sync_to_google": "Synchronizuji změny na Google.",
                         "title": "Google Assistant"
                     },
@@ -1899,7 +1915,7 @@
                             "filter": "Nově načíst entity integrace Filter",
                             "generic": "Nově načíst entity integrace Generic IP camera",
                             "generic_thermostat": "Nově načíst entity integrace Generic thermostat",
-                            "group": "Nově načíst skupiny",
+                            "group": "Nově načíst skupiny, skupiny entit a notifikační služby",
                             "heading": "Konfigurace se načítá",
                             "history_stats": "Nově načíst entity integrace History stats",
                             "homekit": "Nově načíst entity integrace HomeKit",
@@ -1910,12 +1926,17 @@
                             "input_text": "Nově načíst pomocníky - texty",
                             "introduction": "Některé části Home Assistant lze nově načíst bez nutnosti restartování. Nové načtení zahodí jejich aktuální konfiguraci a načte novou.",
                             "min_max": "Nově načíst entity integrace Min/Max",
+                            "mqtt": "Nově načíst entity integrace MQTT",
                             "person": "Nově načíst osoby",
                             "ping": "Nově načíst entity integrace Ping",
-                            "rest": "Nově načíst entity integrace Rest",
+                            "reload": "Nově načíst integraci {domain}",
+                            "rest": "Nově načíst entity a notifikační služby integrace Rest",
+                            "rpi_gpio": "Nově načíst entity integrace Raspberry Pi GPIO",
                             "scene": "Nově načíst scény",
                             "script": "Nově načíst skripty",
+                            "smtp": "Nově načíst notifikační služby integrace SMTP",
                             "statistics": "Nově načíst entity integrace Statistics",
+                            "telegram": "Nově načíst notifikační služby integrace Telegram",
                             "template": "Nově načíst entity integrace Template",
                             "trend": "Nově načíst entity integrace Trend",
                             "universal": "Nově načíst entity integrace Universal media player",
@@ -2536,7 +2557,11 @@
                         }
                     },
                     "cardpicker": {
+                        "by_card": "Podle karty",
+                        "by_entity": "Podle entity",
                         "custom_card": "Vlastní",
+                        "domain": "Doména",
+                        "entity": "Entita",
                         "no_description": "Žádný popis není k dispozici."
                     },
                     "edit_card": {

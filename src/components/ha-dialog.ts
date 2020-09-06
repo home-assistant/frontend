@@ -1,16 +1,16 @@
 import "@material/mwc-dialog";
 import type { Dialog } from "@material/mwc-dialog";
 import { style } from "@material/mwc-dialog/mwc-dialog-css";
-import "./ha-icon-button";
-import { css, CSSResult, customElement, html } from "lit-element";
-import type { Constructor, HomeAssistant } from "../types";
 import { mdiClose } from "@mdi/js";
+import { css, CSSResult, customElement, html } from "lit-element";
 import { computeRTLDirection } from "../common/util/compute_rtl";
+import type { Constructor, HomeAssistant } from "../types";
+import "./ha-icon-button";
 
 const MwcDialog = customElements.get("mwc-dialog") as Constructor<Dialog>;
 
 export const createCloseHeading = (hass: HomeAssistant, title: string) => html`
-  ${title}
+  <span class="header_title">${title}</span>
   <mwc-icon-button
     aria-label=${hass.localize("ui.dialogs.generic.close")}
     dialogAction="close"
@@ -23,6 +23,10 @@ export const createCloseHeading = (hass: HomeAssistant, title: string) => html`
 
 @customElement("ha-dialog")
 export class HaDialog extends MwcDialog {
+  public scrollToPos(x: number, y: number) {
+    this.contentElement.scrollTo(x, y);
+  }
+
   protected renderHeading() {
     return html`<slot name="heading">
       ${super.renderHeading()}
@@ -62,6 +66,10 @@ export class HaDialog extends MwcDialog {
           position: var(--dialog-surface-position, relative);
           min-height: var(--mdc-dialog-min-height, auto);
         }
+        :host([flexContent]) .mdc-dialog .mdc-dialog__content {
+          display: flex;
+          flex-direction: column;
+        }
         .header_button {
           position: absolute;
           right: 16px;
@@ -69,9 +77,16 @@ export class HaDialog extends MwcDialog {
           text-decoration: none;
           color: inherit;
         }
+        .header_title {
+          margin-right: 40px;
+        }
         [dir="rtl"].header_button {
           right: auto;
           left: 16px;
+        }
+        [dir="rtl"].header_title {
+          margin-left: 40px;
+          margin-right: 0px;
         }
       `,
     ];

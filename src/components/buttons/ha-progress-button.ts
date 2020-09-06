@@ -1,4 +1,5 @@
 import "@material/mwc-button";
+import type { Button } from "@material/mwc-button";
 import {
   css,
   CSSResult,
@@ -7,6 +8,7 @@ import {
   LitElement,
   property,
   TemplateResult,
+  query,
 } from "lit-element";
 
 import "../ha-circular-progress";
@@ -17,9 +19,14 @@ class HaProgressButton extends LitElement {
 
   @property({ type: Boolean }) public progress = false;
 
+  @property({ type: Boolean }) public raised = false;
+
+  @query("mwc-button") private _button?: Button;
+
   public render(): TemplateResult {
     return html`
       <mwc-button
+        ?raised=${this.raised}
         .disabled=${this.disabled || this.progress}
         @click=${this._buttonTapped}
       >
@@ -42,9 +49,9 @@ class HaProgressButton extends LitElement {
   }
 
   private _tempClass(className: string): void {
-    this.classList.add(className);
+    this._button!.classList.add(className);
     setTimeout(() => {
-      this.classList.remove(className);
+      this._button!.classList.remove(className);
     }, 1000);
   }
 
@@ -66,16 +73,26 @@ class HaProgressButton extends LitElement {
         transition: all 1s;
       }
 
-      .success mwc-button {
+      mwc-button.success {
         --mdc-theme-primary: white;
         background-color: var(--success-color);
         transition: none;
       }
 
-      .error mwc-button {
+      mwc-button[raised].success {
+        --mdc-theme-primary: var(--success-color);
+        --mdc-theme-on-primary: white;
+      }
+
+      mwc-button.error {
         --mdc-theme-primary: white;
         background-color: var(--error-color);
         transition: none;
+      }
+
+      mwc-button[raised].error {
+        --mdc-theme-primary: var(--error-color);
+        --mdc-theme-on-primary: white;
       }
 
       .progress {

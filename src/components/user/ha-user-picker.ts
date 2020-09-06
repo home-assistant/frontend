@@ -53,7 +53,11 @@ class HaUserPicker extends LitElement {
           ${this._sortedUsers(this.users).map(
             (user) => html`
               <paper-icon-item data-user-id=${user.id}>
-                <ha-user-badge .user=${user} slot="item-icon"></ha-user-badge>
+                <ha-user-badge
+                  .hass=${this.hass}
+                  .user=${user}
+                  slot="item-icon"
+                ></ha-user-badge>
                 ${user.name}
               </paper-icon-item>
             `

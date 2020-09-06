@@ -409,8 +409,8 @@ class MoreInfoMediaPlayer extends LitElement {
       entityId: this.stateObj!.entity_id,
       mediaPickedCallback: (pickedMedia: MediaPickedEvent) =>
         this._playMedia(
-          pickedMedia.media_content_id,
-          pickedMedia.media_content_type
+          pickedMedia.item.media_content_id,
+          pickedMedia.item.media_content_type
         ),
     });
   }
