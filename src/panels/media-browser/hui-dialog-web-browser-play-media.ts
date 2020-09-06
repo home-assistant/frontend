@@ -11,6 +11,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-hls-player";
 import type { HomeAssistant } from "../../types";
+import { haStyleDialog } from "../../resources/styles";
 import { WebBrowserPlayMediaDialogParams } from "./show-media-player-dialog";
 
 @customElement("hui-dialog-web-browser-play-media")
@@ -92,26 +93,25 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
-    return css`
-      ha-dialog {
-        --mdc-dialog-heading-ink-color: var(--primary-text-color);
-      }
-
-      @media (min-width: 800px) {
-        ha-dialog {
-          --mdc-dialog-max-width: 800px;
-          --mdc-dialog-min-width: 400px;
+  static get styles(): CSSResult[] {
+    return [
+      haStyleDialog,
+      css`
+        @media (min-width: 800px) {
+          ha-dialog {
+            --mdc-dialog-max-width: 800px;
+            --mdc-dialog-min-width: 400px;
+          }
         }
-      }
 
-      video,
-      audio,
-      img {
-        outline: none;
-        width: 100%;
-      }
-    `;
+        video,
+        audio,
+        img {
+          outline: none;
+          width: 100%;
+        }
+      `,
+    ];
   }
 }
 
