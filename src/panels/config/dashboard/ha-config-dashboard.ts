@@ -10,6 +10,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
@@ -37,7 +38,7 @@ class HaConfigDashboard extends LitElement {
 
   protected render(): TemplateResult {
     const content = html`
-      <ha-config-section .narrow=${this.narrow}>
+      <ha-config-section .isWide=${this.isWide}>
         <div slot="header">
           ${this.hass.localize("ui.panel.config.header")}
         </div>
@@ -46,36 +47,38 @@ class HaConfigDashboard extends LitElement {
           ${this.hass.localize("ui.panel.config.introduction")}
         </div>
 
-        ${this.cloudStatus && isComponentLoaded(this.hass, "cloud")
-          ? html`
+        <div class="content ${classMap({ narrow: this.narrow })}">
+          ${this.cloudStatus && isComponentLoaded(this.hass, "cloud")
+            ? html`
+                <ha-card class="cloud">
+                  <ha-config-navigation
+                    .hass=${this.hass}
+                    .showAdvanced=${this.showAdvanced}
+                    .pages=${[
+                      {
+                        component: "cloud",
+                        path: "/config/cloud",
+                        translationKey: "ui.panel.config.cloud.caption",
+                        info: this.cloudStatus,
+                        iconPath: mdiCloudLock,
+                      },
+                    ]}
+                  ></ha-config-navigation>
+                </ha-card>
+              `
+            : ""}
+          ${Object.values(configSections).map(
+            (section) => html`
               <ha-card>
                 <ha-config-navigation
                   .hass=${this.hass}
                   .showAdvanced=${this.showAdvanced}
-                  .pages=${[
-                    {
-                      component: "cloud",
-                      path: "/config/cloud",
-                      translationKey: "ui.panel.config.cloud.caption",
-                      info: this.cloudStatus,
-                      iconPath: mdiCloudLock,
-                    },
-                  ]}
+                  .pages=${section}
                 ></ha-config-navigation>
               </ha-card>
             `
-          : ""}
-        ${Object.values(configSections).map(
-          (section) => html`
-            <ha-card>
-              <ha-config-navigation
-                .hass=${this.hass}
-                .showAdvanced=${this.showAdvanced}
-                .pages=${section}
-              ></ha-config-navigation>
-            </ha-card>
-          `
-        )}
+          )}
+        </div>
         ${isComponentLoaded(this.hass, "zha")
           ? html`
               <div class="promo-advanced">
@@ -173,6 +176,27 @@ class HaConfigDashboard extends LitElement {
         }
         .promo-advanced a {
           color: var(--secondary-text-color);
+        }
+
+        .content {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-between;
+          margin: 0;
+        }
+
+        .content > * {
+          width: calc(50% - 12px);
+          margin: 12px 0;
+          align-self: flex-start;
+        }
+
+        .cloud {
+          width: 100%;
+        }
+
+        .narrow.content > * {
+          width: 100%;
         }
       `,
     ];

@@ -6,12 +6,12 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import { configSections } from "../ha-panel-config";
 import "./integrations-card";
 import "./system-health-card";
-import { configSections } from "../ha-panel-config";
-import "../../../layouts/hass-tabs-subpage";
 
 const JS_TYPE = __BUILD__;
 const JS_VERSION = __VERSION__;
@@ -93,10 +93,10 @@ class HaConfigInfo extends LitElement {
               >Python 3</a
             >,
             <a
-              href="https://www.polymer-project.org"
+              href="https://lit-element.polymer-project.org/"
               target="_blank"
               rel="noreferrer"
-              >Polymer</a
+              >LitElement</a
             >, ${this.hass.localize("ui.panel.config.info.icons_by")}
             <a
               href="https://www.google.com/design/icons/"
