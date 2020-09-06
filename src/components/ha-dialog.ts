@@ -78,6 +78,7 @@ export class HaDialog extends MwcDialog {
           color: inherit;
         }
         .header_title {
+          color: var(--primary-text-color);
           margin-right: 40px;
         }
         [dir="rtl"].header_button {
