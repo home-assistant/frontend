@@ -1,18 +1,16 @@
 import {
-  LitElement,
-  CSSResult,
   css,
+  CSSResult,
+  customElement,
   html,
+  LitElement,
   property,
   TemplateResult,
-  customElement,
 } from "lit-element";
-
 import type { HomeAssistant } from "../../../types";
-
 import "../ha-config-section";
-import "./ha-config-name-form";
 import "./ha-config-core-form";
+import "./ha-config-name-form";
 import "./ha-config-url-form";
 
 @customElement("ha-config-section-core")
@@ -27,16 +25,14 @@ export class HaConfigSectionCore extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-config-section .isWide=${this.isWide}>
-        <span slot="header"
-          >${this.hass.localize(
-            "ui.panel.config.core.section.core.header"
-          )}</span
-        >
-        <span slot="introduction"
-          >${this.hass.localize(
+        <div slot="header">
+          ${this.hass.localize("ui.panel.config.core.section.core.header")}
+        </div>
+        <div slot="introduction">
+          ${this.hass.localize(
             "ui.panel.config.core.section.core.introduction"
-          )}</span
-        >
+          )}
+        </div>
         <div class="content">
           <ha-config-name-form .hass=${this.hass}></ha-config-name-form>
           <ha-config-url-form .hass=${this.hass}></ha-config-url-form>

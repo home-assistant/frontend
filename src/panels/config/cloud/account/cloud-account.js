@@ -4,13 +4,13 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/buttons/ha-call-api-button";
 import "../../../../components/ha-card";
 import { fetchCloudSubscriptionInfo } from "../../../../data/cloud";
 import "../../../../layouts/hass-subpage";
 import { EventsMixin } from "../../../../mixins/events-mixin";
 import LocalizeMixin from "../../../../mixins/localize-mixin";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../styles/polymer-ha-style";
 import "../../ha-config-section";
 import "./cloud-alexa-pref";
@@ -131,7 +131,7 @@ class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
             </ha-card>
           </ha-config-section>
 
-          <ha-config-section is-wide="[[isWide]]">
+          <ha-config-section side-by-side is-wide="[[isWide]]">
             <span slot="header"
               >[[localize('ui.panel.config.cloud.account.integrations')]]</span
             >
@@ -150,13 +150,14 @@ class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
                 >.
               </p>
             </div>
+            <cloud-remote-pref
+              hass="[[hass]]"
+              cloud-status="[[cloudStatus]]"
+              dir="[[_rtlDirection]]"
+            ></cloud-remote-pref>
+          </ha-config-section>
+          <ha-config-section no-header is-wide="[[isWide]]">
             <div class$="integrations [[_computeIsNarrow(isWide)]]">
-              <cloud-remote-pref
-                hass="[[hass]]"
-                cloud-status="[[cloudStatus]]"
-                dir="[[_rtlDirection]]"
-              ></cloud-remote-pref>
-
               <cloud-alexa-pref
                 hass="[[hass]]"
                 cloud-status="[[cloudStatus]]"

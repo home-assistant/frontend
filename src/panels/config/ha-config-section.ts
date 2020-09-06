@@ -5,11 +5,16 @@ import { classMap } from "lit-html/directives/class-map";
 export class HaConfigSection extends LitElement {
   @property({ type: Boolean }) public isWide = false;
 
+  @property({ type: Boolean }) public narrow?: boolean;
+
+  @property({ type: Boolean, attribute: "no-header" }) public noHeader = false;
+
   protected render() {
     return html`
       <div
         class="content ${classMap({
-          narrow: !this.isWide,
+          narrow: this.narrow !== undefined ? this.narrow : !this.isWide,
+          "no-header": this.noHeader,
         })}"
       >
         <div class="heading">
@@ -65,11 +70,12 @@ export class HaConfigSection extends LitElement {
       }
 
       :host([side-by-side]) .content:not(.narrow) .heading {
+        min-width: 400px;
         max-width: 400px;
         margin-right: 40px;
       }
 
-      .header {
+      slot[name="header"]::slotted(*) {
         font-family: var(--paper-font-headline_-_font-family);
         -webkit-font-smoothing: var(
           --paper-font-headline_-_-webkit-font-smoothing
@@ -86,7 +92,7 @@ export class HaConfigSection extends LitElement {
         margin-top: 32px;
       }
 
-      .intro {
+      slot[name="introduction"]::slotted(*) {
         font-family: var(--paper-font-subhead_-_font-family);
         -webkit-font-smoothing: var(
           --paper-font-subhead_-_-webkit-font-smoothing
@@ -115,10 +121,14 @@ export class HaConfigSection extends LitElement {
       .narrow .together {
         margin-top: 20px;
       }
-      .narrow .intro {
+      .narrow slot[name="introduction"]::slotted(*) {
         padding-bottom: 20px;
         margin-right: 0;
         max-width: 500px;
+      }
+
+      .no-header.content {
+        padding-top: 0;
       }
     `;
   }
