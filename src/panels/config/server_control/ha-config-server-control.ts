@@ -237,12 +237,7 @@ export class HaConfigServerControl extends LitElement {
                               >
                                 ${this.hass.localize(
                                   `ui.panel.config.server_control.section.reloading.${domain}`
-                                ) ||
-                                this.hass.localize(
-                                  "ui.panel.config.server_control.section.reloading.reload",
-                                  "domain",
-                                  domainToName(this.hass.localize, domain)
-                                )}
+                                ) || domainToName(this.hass.localize, domain)}
                               </ha-call-service-button>
                             `
                           : ""

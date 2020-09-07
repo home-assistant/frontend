@@ -827,7 +827,6 @@
             "reloading": {
               "heading": "YAML configuration reloading",
               "introduction": "Some parts of Home Assistant can reload without requiring a restart. Clicking a button below will unload their current YAML configuration and load the new one.",
-              "reload": "{domain}",
               "core": "location & customizations",
               "group": "groups, group entities, and notify services",
               "automation": "automations",
