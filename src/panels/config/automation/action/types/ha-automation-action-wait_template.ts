@@ -40,7 +40,7 @@ export class HaWaitAction extends LitElement implements ActionElement {
       ></paper-input>
       <br />
       <ha-formfield
-        label="ui.panel.config.automation.editor.actions.type.wait_template.continue_timeout"
+        .label=${this.hass.localize("ui.panel.config.automation.editor.actions.type.wait_template.continue_timeout")}
       >
         <ha-switch
           .checked=${continue_on_timeout}
