@@ -40,6 +40,7 @@ import {
   SUPPORT_VOLUME_SET,
 } from "../../../data/media-player";
 import { HomeAssistant, MediaEntity } from "../../../types";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 @customElement("more-info-media_player")
 class MoreInfoMediaPlayer extends LitElement {
@@ -404,6 +405,7 @@ class MoreInfoMediaPlayer extends LitElement {
   }
 
   private _showBrowseMedia(): void {
+    fireEvent(this, "hass-more-info", { entityId: null });
     showMediaBrowserDialog(this, {
       action: "play",
       entityId: this.stateObj!.entity_id,
