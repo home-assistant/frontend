@@ -31,6 +31,7 @@ import memoizeOne from "memoize-one";
 import { LocalStorage } from "../common/decorators/local-storage";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
+import { navigate } from "../common/navigate";
 import { compare } from "../common/string/compare";
 import { computeRTL } from "../common/util/compute_rtl";
 import { ActionHandlerDetail } from "../data/lovelace";
@@ -649,6 +650,10 @@ class HaSidebar extends LitElement {
     );
   }
 
+  private _handlePanelTap(ev: Event) {
+    navigate(this, (ev.currentTarget as HTMLAnchorElement).href);
+  }
+
   private _renderPanel(
     urlPath: string,
     title: string | null,
@@ -661,6 +666,7 @@ class HaSidebar extends LitElement {
         href="${`/${urlPath}`}"
         data-panel="${urlPath}"
         tabindex="-1"
+        @tap=${this._handlePanelTap}
         @mouseenter=${this._itemMouseEnter}
         @mouseleave=${this._itemMouseLeave}
       >
