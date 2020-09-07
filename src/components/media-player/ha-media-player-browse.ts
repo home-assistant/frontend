@@ -95,7 +95,7 @@ export class HaMediaPlayerBrowse extends LitElement {
   }
 
   private _renderError(err: { message: string; code: string }) {
-    if (err.message === "Path does not exist.") {
+    if (err.message === "Media directory does not exist.") {
       return html`
         <h2>No local media found.</h2>
         <p>
