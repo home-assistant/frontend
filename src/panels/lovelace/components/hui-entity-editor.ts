@@ -85,6 +85,11 @@ export class HuiEntityEditor extends LitElement {
     `;
   }
 
+  protected firstUpdated(): void {
+    Sortable.mount(OnSpill);
+    Sortable.mount(new AutoScroll());
+  }
+
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
@@ -103,9 +108,6 @@ export class HuiEntityEditor extends LitElement {
     }
 
     if (!this._sortable && this.entities) {
-      Sortable.mount(OnSpill);
-      Sortable.mount(new AutoScroll());
-
       this._createSortable();
       return;
     }
