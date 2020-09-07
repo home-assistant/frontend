@@ -286,6 +286,10 @@
           "entity": "Entity",
           "clear": "Clear",
           "show_entities": "Show entities"
+        },
+        "entity-attribute-picker": {
+          "attribute": "Attribute",
+          "show_attributes": "Show attributes"
         }
       },
       "device-picker": {
@@ -915,6 +919,8 @@
             "show_info_automation": "Show info about automation",
             "delete_automation": "Delete automation",
             "delete_confirm": "Are you sure you want to delete this automation?",
+            "duplicate_automation": "Duplicate automation",
+            "duplicate": "Duplicate",
             "headers": {
               "name": "Name"
             }
@@ -985,6 +991,7 @@
                 },
                 "state": {
                   "label": "State",
+                  "attribute": "Attribute (Optional)",
                   "from": "From",
                   "for": "For",
                   "to": "To"
@@ -1021,8 +1028,10 @@
                   "value_template": "Value template"
                 },
                 "time": {
+                  "type_value": "Fixed time",
+                  "type_input": "Value of a date/time helper",
                   "label": "Time",
-                  "at": "At"
+                  "at": "At time"
                 },
                 "time_pattern": {
                   "label": "Time Pattern",
@@ -1098,6 +1107,8 @@
                   "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::template::value_template%]"
                 },
                 "time": {
+                  "type_value": "[%key:ui::panel::config::automation::editor::triggers::type::time::type_value%]",
+                  "type_input": "[%key:ui::panel::config::automation::editor::triggers::type::time::type_input%]",
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::time::label%]",
                   "after": "After",
                   "before": "Before"
@@ -1132,7 +1143,13 @@
                 "wait_template": {
                   "label": "Wait",
                   "wait_template": "Wait Template",
-                  "timeout": "Timeout (optional)"
+                  "timeout": "Timeout (optional)",
+                  "continue_timeout": "Continue on timeout"
+                },
+                "wait_for_trigger": {
+                  "label": "Wait for trigger",
+                  "timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::timeout%]",
+                  "continue_timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::continue_timeout%]"
                 },
                 "condition": {
                   "label": "Condition"

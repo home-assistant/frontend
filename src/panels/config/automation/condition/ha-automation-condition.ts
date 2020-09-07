@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  PropertyValues,
 } from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
@@ -20,13 +21,43 @@ export default class HaAutomationCondition extends LitElement {
 
   @property() public conditions!: Condition[];
 
+  protected updated(changedProperties: PropertyValues) {
+    if (!changedProperties.has("conditions")) {
+      return;
+    }
+    let updatedConditions: Condition[] | undefined;
+    if (!Array.isArray(this.conditions)) {
+      updatedConditions = [this.conditions];
+    }
+
+    (updatedConditions || this.conditions).forEach((condition, index) => {
+      if (typeof condition === "string") {
+        updatedConditions = updatedConditions || [...this.conditions];
+        updatedConditions[index] = {
+          condition: "template",
+          value_template: condition,
+        };
+      }
+    });
+
+    if (updatedConditions) {
+      fireEvent(this, "value-changed", {
+        value: updatedConditions,
+      });
+    }
+  }
+
   protected render() {
+    if (!Array.isArray(this.conditions)) {
+      return html``;
+    }
     return html`
       ${this.conditions.map(
         (cond, idx) => html`
           <ha-automation-condition-row
             .index=${idx}
             .condition=${cond}
+            @duplicate=${this._duplicateCondition}
             @value-changed=${this._conditionChanged}
             .hass=${this.hass}
           ></ha-automation-condition-row>
@@ -66,6 +97,14 @@ export default class HaAutomationCondition extends LitElement {
     }
 
     fireEvent(this, "value-changed", { value: conditions });
+  }
+
+  private _duplicateCondition(ev: CustomEvent) {
+    ev.stopPropagation();
+    const index = (ev.target as any).index;
+    fireEvent(this, "value-changed", {
+      value: this.conditions.concat(this.conditions[index]),
+    });
   }
 
   static get styles(): CSSResult {

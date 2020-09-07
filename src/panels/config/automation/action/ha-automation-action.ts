@@ -28,6 +28,7 @@ export default class HaAutomationAction extends LitElement {
             .index=${idx}
             .totalActions=${this.actions.length}
             .action=${action}
+            @duplicate=${this._duplicateAction}
             @move-action=${this._move}
             @value-changed=${this._actionChanged}
             .hass=${this.hass}
@@ -76,6 +77,14 @@ export default class HaAutomationAction extends LitElement {
     }
 
     fireEvent(this, "value-changed", { value: actions });
+  }
+
+  private _duplicateAction(ev: CustomEvent) {
+    ev.stopPropagation();
+    const index = (ev.target as any).index;
+    fireEvent(this, "value-changed", {
+      value: this.actions.concat(this.actions[index]),
+    });
   }
 
   static get styles(): CSSResult {

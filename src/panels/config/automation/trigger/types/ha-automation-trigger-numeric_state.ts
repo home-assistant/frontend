@@ -1,7 +1,6 @@
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
 import { customElement, html, LitElement, property } from "lit-element";
-import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/entity/ha-entity-picker";
 import { ForDict, NumericStateTrigger } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
@@ -19,8 +18,8 @@ export default class HaNumericStateTrigger extends LitElement {
     };
   }
 
-  protected render() {
-    const { value_template, entity_id, below, above } = this.trigger;
+  public render() {
+    const { value_template, entity_id, attribute, below, above } = this.trigger;
     let trgFor = this.trigger.for;
 
     if (
@@ -41,10 +40,22 @@ export default class HaNumericStateTrigger extends LitElement {
     return html`
       <ha-entity-picker
         .value="${entity_id}"
-        @value-changed="${this._entityPicked}"
+        @value-changed="${this._valueChanged}"
+        .name=${"entity_id"}
         .hass=${this.hass}
         allow-custom-entity
       ></ha-entity-picker>
+      <ha-entity-attribute-picker
+        .hass=${this.hass}
+        .entityId=${entity_id}
+        .value=${attribute}
+        .name=${"attribute"}
+        .label=${this.hass.localize(
+          "ui.panel.config.automation.editor.triggers.type.state.attribute"
+        )}
+        @value-changed=${this._valueChanged}
+        allow-custom-value
+      ></ha-entity-attribute-picker>
       <paper-input
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.numeric_state.above"
@@ -83,13 +94,6 @@ export default class HaNumericStateTrigger extends LitElement {
 
   private _valueChanged(ev: CustomEvent): void {
     handleChangeEvent(this, ev);
-  }
-
-  private _entityPicked(ev) {
-    ev.stopPropagation();
-    fireEvent(this, "value-changed", {
-      value: { ...this.trigger, entity_id: ev.detail.value },
-    });
   }
 }
 

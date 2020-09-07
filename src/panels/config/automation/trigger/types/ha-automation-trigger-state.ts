@@ -1,9 +1,8 @@
 import "@polymer/paper-input/paper-input";
 import { customElement, html, LitElement, property } from "lit-element";
-import { fireEvent } from "../../../../../common/dom/fire_event";
+import "../../../../../components/entity/ha-entity-attribute-picker";
 import "../../../../../components/entity/ha-entity-picker";
 import { ForDict, StateTrigger } from "../../../../../data/automation";
-import { PolymerChangedEvent } from "../../../../../polymer-types";
 import { HomeAssistant } from "../../../../../types";
 import {
   handleChangeEvent,
@@ -21,7 +20,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
   }
 
   protected render() {
-    const { entity_id, to, from } = this.trigger;
+    const { entity_id, attribute, to, from } = this.trigger;
     let trgFor = this.trigger.for;
 
     if (
@@ -43,10 +42,22 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     return html`
       <ha-entity-picker
         .value=${entity_id}
-        @value-changed=${this._entityPicked}
+        @value-changed=${this._valueChanged}
+        .name=${"entity_id"}
         .hass=${this.hass}
         allow-custom-entity
       ></ha-entity-picker>
+      <ha-entity-attribute-picker
+        .hass=${this.hass}
+        .entityId=${entity_id}
+        .value=${attribute}
+        .name=${"attribute"}
+        .label=${this.hass.localize(
+          "ui.panel.config.automation.editor.triggers.type.state.attribute"
+        )}
+        @value-changed=${this._valueChanged}
+        allow-custom-value
+      ></ha-entity-attribute-picker>
       <paper-input
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.state.from"
@@ -76,13 +87,6 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
 
   private _valueChanged(ev: CustomEvent): void {
     handleChangeEvent(this, ev);
-  }
-
-  private _entityPicked(ev: PolymerChangedEvent<string>) {
-    ev.stopPropagation();
-    fireEvent(this, "value-changed", {
-      value: { ...this.trigger, entity_id: ev.detail.value },
-    });
   }
 }
 
