@@ -23,7 +23,6 @@ import {
   LitElement,
   property,
   PropertyValues,
-  TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { guard } from "lit-html/directives/guard";
@@ -161,7 +160,7 @@ const computePanels = memoizeOne(
 
 let Sortable;
 
-let sortStyles: TemplateResult;
+let sortStyles: CSSResult;
 
 @customElement("ha-sidebar")
 class HaSidebar extends LitElement {
@@ -229,7 +228,13 @@ class HaSidebar extends LitElement {
     }
 
     return html`
-      ${this._editMode ? sortStyles : ""}
+      ${this._editMode
+        ? html`
+            <style>
+              ${sortStyles?.cssText}
+            </style>
+          `
+        : ""}
       <div class="menu">
         ${!this.narrow
           ? html`
@@ -481,10 +486,10 @@ class HaSidebar extends LitElement {
     if (!Sortable) {
       const [sortableImport, sortStylesImport] = await Promise.all([
         import("sortablejs/modular/sortable.core.esm"),
-        import("./ha-sidebar-sort-styles"),
+        import("../resources/ha-sortable-style"),
       ]);
 
-      sortStyles = sortStylesImport.sortStyles;
+      sortStyles = sortStylesImport.sortableStyles;
 
       Sortable = sortableImport.Sortable;
       Sortable.mount(sortableImport.OnSpill);
