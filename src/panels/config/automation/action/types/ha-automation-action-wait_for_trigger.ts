@@ -26,14 +26,18 @@ export class HaWaitForTriggerAction extends LitElement
     return html`
       <paper-input
         .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.actions.type.wait_template.timeout"
+          "ui.panel.config.automation.editor.actions.type.wait_for_trigger.timeout"
         )}
         .name=${"timeout"}
         .value=${timeout}
         @value-changed=${this._valueChanged}
       ></paper-input>
       <br />
-      <ha-formfield label="Continue on timeout">
+      <ha-formfield
+        .label=${this.hass.localize(
+          "ui.panel.config.automation.editor.actions.type.wait_for_trigger.timeout"
+        )}
+      >
         <ha-switch
           .checked=${continue_on_timeout}
           @change=${this._continueChanged}

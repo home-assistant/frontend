@@ -917,6 +917,8 @@
             "show_info_automation": "Show info about automation",
             "delete_automation": "Delete automation",
             "delete_confirm": "Are you sure you want to delete this automation?",
+            "duplicate_automation": "Duplicate automation",
+            "duplicate": "Duplicate",
             "headers": {
               "name": "Name"
             }
@@ -1025,7 +1027,7 @@
                 },
                 "time": {
                   "type_value": "Fixed time",
-                  "type_input": "Value of an date/time input",
+                  "type_input": "Value of a date/time helper",
                   "label": "Time",
                   "at": "At time"
                 },
@@ -1139,10 +1141,13 @@
                 "wait_template": {
                   "label": "Wait",
                   "wait_template": "Wait Template",
-                  "timeout": "Timeout (optional)"
+                  "timeout": "Timeout (optional)",
+                  "continue_timeout": "Continue on timeout"
                 },
                 "wait_for_trigger": {
-                  "label": "Wait for trigger"
+                  "label": "Wait for trigger",
+                  "timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::timeout%]",
+                  "continue_timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::continue_timeout%]"
                 },
                 "condition": {
                   "label": "Condition"

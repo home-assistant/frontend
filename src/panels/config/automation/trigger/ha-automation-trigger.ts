@@ -70,6 +70,7 @@ export default class HaAutomationTrigger extends LitElement {
   }
 
   private _duplicateTrigger(ev: CustomEvent) {
+    ev.stopPropagation();
     const index = (ev.target as any).index;
     fireEvent(this, "value-changed", {
       value: this.triggers.concat(this.triggers[index]),

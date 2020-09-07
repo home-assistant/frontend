@@ -80,6 +80,7 @@ export default class HaAutomationAction extends LitElement {
   }
 
   private _duplicateAction(ev: CustomEvent) {
+    ev.stopPropagation();
     const index = (ev.target as any).index;
     fireEvent(this, "value-changed", {
       value: this.actions.concat(this.actions[index]),

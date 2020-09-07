@@ -501,7 +501,9 @@ export class HaAutomationEditor extends LitElement {
     showAutomationEditor(this, {
       ...this._config,
       id: undefined,
-      alias: `${this._config?.alias} (Duplicate)`,
+      alias: `${this._config?.alias} (${this.hass.localize(
+        "ui.panel.config.automation.picker.duplicate"
+      )})`,
     });
   }
 
