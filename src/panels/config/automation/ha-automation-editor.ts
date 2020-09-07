@@ -1,28 +1,32 @@
+import "@material/mwc-fab";
+import { mdiContentDuplicate, mdiContentSave, mdiDelete } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-input/paper-textarea";
-import "../../../components/ha-icon-button";
+import { PaperListboxElement } from "@polymer/paper-listbox";
 import {
   css,
   CSSResult,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import { navigate } from "../../../common/navigate";
 import "../../../components/ha-card";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
-import "@material/mwc-fab";
 import {
   AutomationConfig,
   AutomationEntity,
   Condition,
   deleteAutomation,
   getAutomationEditorInitData,
+  showAutomationEditor,
   Trigger,
   triggerAutomation,
 } from "../../../data/automation";
@@ -42,9 +46,6 @@ import { HaDeviceAction } from "./action/types/ha-automation-action-device_id";
 import "./condition/ha-automation-condition";
 import "./trigger/ha-automation-trigger";
 import { HaDeviceTrigger } from "./trigger/types/ha-automation-trigger-device";
-import { mdiContentSave } from "@mdi/js";
-import { PaperListboxElement } from "@polymer/paper-listbox";
-import { classMap } from "lit-html/directives/class-map";
 
 const MODES = ["single", "restart", "queued", "parallel"];
 const MODES_MAX = ["queued", "parallel"];
@@ -53,6 +54,7 @@ declare global {
   // for fire event
   interface HASSDomEvents {
     "ui-mode-not-available": Error;
+    duplicate: undefined;
   }
 }
 
@@ -92,14 +94,24 @@ export class HaAutomationEditor extends LitElement {
         ${!this.automationId
           ? ""
           : html`
-              <ha-icon-button
+              <mwc-icon-button
+                slot="toolbar-icon"
+                title="${this.hass.localize(
+                  "ui.panel.config.automation.picker.duplicate_automation"
+                )}"
+                @click=${this._duplicate}
+              >
+                <ha-svg-icon .path=${mdiContentDuplicate}></ha-svg-icon>
+              </mwc-icon-button>
+              <mwc-icon-button
                 slot="toolbar-icon"
                 title="${this.hass.localize(
                   "ui.panel.config.automation.picker.delete_automation"
                 )}"
-                icon="hass:delete"
                 @click=${this._deleteConfirm}
-              ></ha-icon-button>
+              >
+                <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
+              </mwc-icon-button>
             `}
         ${this._config
           ? html`
@@ -471,6 +483,31 @@ export class HaAutomationEditor extends LitElement {
     } else {
       history.back();
     }
+  }
+
+  private async _duplicate() {
+    if (this._dirty) {
+      if (
+        !(await showConfirmationDialog(this, {
+          text: this.hass!.localize(
+            "ui.panel.config.automation.editor.unsaved_confirm"
+          ),
+          confirmText: this.hass!.localize("ui.common.yes"),
+          dismissText: this.hass!.localize("ui.common.no"),
+        }))
+      ) {
+        return;
+      }
+      // Wait for dialog to complate closing
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    }
+    showAutomationEditor(this, {
+      ...this._config,
+      id: undefined,
+      alias: `${this._config?.alias} (${this.hass.localize(
+        "ui.panel.config.automation.picker.duplicate"
+      )})`,
+    });
   }
 
   private async _deleteConfirm() {

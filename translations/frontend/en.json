@@ -19,6 +19,7 @@
         "logbook": "Logbook",
         "mailbox": "Mailbox",
         "map": "Map",
+        "media_browser": "Media Browser",
         "profile": "Profile",
         "shopping_list": "Shopping list",
         "states": "Overview"
@@ -563,6 +564,8 @@
                 "no_history_found": "No state history found."
             },
             "media-browser": {
+                "audio_not_supported": "Your browser does not support the audio element.",
+                "choose_player": "Choose Player",
                 "choose-source": "Choose Source",
                 "content-type": {
                     "album": "Album",
@@ -571,12 +574,17 @@
                     "playlist": "Playlist",
                     "server": "Server"
                 },
+                "media_browsing_error": "Media Browsing Error",
+                "media_not_supported": "The Browser Media Player does not support this type of media",
+                "media_player": "Media Player",
                 "media-player-browser": "Media Player Browser",
                 "no_items": "No items",
                 "pick": "Pick",
                 "pick-media": "Pick Media",
                 "play": "Play",
-                "play-media": "Play Media"
+                "play-media": "Play Media",
+                "video_not_supported": "Your browser does not support the video element.",
+                "web-browser": "Web Browser"
             },
             "picture-upload": {
                 "label": "Picture",
@@ -634,7 +642,7 @@
                     "icon": "Icon Override",
                     "icon_error": "Icons should be in the format 'prefix:iconname', e.g. 'mdi:home'",
                     "name": "Name Override",
-                    "note": "Note: this might not work yet with all integrations.",
+                    "note": "Note: This might not work yet with all integrations.",
                     "unavailable": "This entity is not currently available.",
                     "update": "Update"
                 },
@@ -1546,6 +1554,7 @@
                         "reload_restart_confirm": "Restart Home Assistant to finish reloading this integration",
                         "rename": "Rename",
                         "restart_confirm": "Restart Home Assistant to finish removing this integration",
+                        "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
                         "settings_button": "Edit settings for {integration}",
                         "system_options": "System options",
                         "system_options_button": "System options for {integration}",
@@ -1765,8 +1774,21 @@
                         "versions": "Obtaining information about firmware and command class versions",
                         "wakeup": "Setting up support for wakeup queues and messages"
                     },
+                    "node": {
+                        "button": "Node Details",
+                        "not_found": "Node not found"
+                    },
+                    "nodes_table": {
+                        "failed": "Failed",
+                        "id": "ID",
+                        "manufacturer": "Manufacturer",
+                        "model": "Model",
+                        "query_stage": "Query Stage",
+                        "zwave_plus": "Z-Wave Plus"
+                    },
                     "refresh_node": {
                         "battery_note": "If the node is battery powered, be sure to wake it before proceeding",
+                        "button": "Refresh Node",
                         "complete": "Node Refresh Complete",
                         "description": "This will tell OpenZWave to re-interview a node and update the node's command classes, capabilities, and values.",
                         "node_status": "Node Status",
@@ -2025,7 +2047,7 @@
                             "system": "System"
                         }
                     },
-                    "users_privileges_note": "The users group is a work in progress. The user will be unable to administer the instance via the UI. We're still auditing all management API endpoints to ensure that they correctly limit access to administrators."
+                    "users_privileges_note": "The user group feature is a work in progress. The user will be unable to administer the instance via the UI. We're still auditing all management API endpoints to ensure that they correctly limit access to administrators."
                 },
                 "zha": {
                     "add_device_page": {
@@ -2063,7 +2085,7 @@
                     "clusters": {
                         "header": "Clusters",
                         "help_cluster_dropdown": "Select a cluster to view attributes and commands.",
-                        "introduction": "Clusters are the building blocks for Zigbee functionality. They seperate functionality into logical units. There are client and server types and that are comprised of attributes and commands."
+                        "introduction": "Clusters are the building blocks for Zigbee functionality. They separate functionality into logical units. There are client and server types and that are comprised of attributes and commands."
                     },
                     "common": {
                         "add_devices": "Add Devices",
@@ -2196,7 +2218,7 @@
                         "true": "True"
                     },
                     "node_management": {
-                        "add_to_group": "Add To Group",
+                        "add_to_group": "Add to Group",
                         "entities": "Entities of this node",
                         "entity_info": "Entity Information",
                         "exclude_entity": "Exclude this entity from Home Assistant",
@@ -2209,11 +2231,11 @@
                         "node_to_control": "Node to control",
                         "nodes": "Nodes",
                         "nodes_hint": "Select node to view per-node options",
-                        "nodes_in_group": "Other Nodes in this group:",
+                        "nodes_in_group": "Other nodes in this group:",
                         "pooling_intensity": "Polling intensity",
                         "protection": "Protection",
                         "remove_broadcast": "Remove Broadcast",
-                        "remove_from_group": "Remove From Group",
+                        "remove_from_group": "Remove from Group",
                         "set_protection": "Set Protection"
                     },
                     "ozw_log": {
@@ -2575,6 +2597,7 @@
                         "options": "More options",
                         "pick_card": "Which card would you like to add?",
                         "pick_card_view_title": "Which card would you like to add to your {name} view?",
+                        "search_cards": "Search cards",
                         "show_code_editor": "Show Code Editor",
                         "show_visual_editor": "Show Visual Editor",
                         "toggle_editor": "Toggle Editor",

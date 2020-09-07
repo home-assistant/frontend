@@ -1,24 +1,24 @@
-import "../../../../components/ha-icon-button";
-import "@polymer/paper-item/paper-item";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
-import "../../../../components/ha-button-menu";
 import { mdiDotsVertical } from "@mdi/js";
+import "@polymer/paper-item/paper-item";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
 } from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
+import "../../../../components/ha-icon-button";
 import { Condition } from "../../../../data/automation";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../../../../types";
 import "./ha-automation-condition-editor";
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
@@ -81,7 +81,7 @@ export default class HaAutomationConditionRow extends LitElement {
                       "ui.panel.config.automation.editor.edit_yaml"
                     )}
               </mwc-list-item>
-              <mwc-list-item disabled>
+              <mwc-list-item>
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.actions.duplicate"
                 )}
@@ -109,6 +109,7 @@ export default class HaAutomationConditionRow extends LitElement {
         this._switchYamlMode();
         break;
       case 1:
+        fireEvent(this, "duplicate");
         break;
       case 2:
         this._onDelete();

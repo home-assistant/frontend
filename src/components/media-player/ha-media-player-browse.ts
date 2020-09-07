@@ -18,8 +18,10 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { ifDefined } from "lit-html/directives/if-defined";
+import { styleMap } from "lit-html/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
+import { compare } from "../../common/string/compare";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
 import {
@@ -30,6 +32,7 @@ import {
   MediaPlayerBrowseAction,
 } from "../../data/media-player";
 import type { MediaPlayerItem } from "../../data/media-player";
+import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
@@ -65,6 +68,8 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   @internalProperty() private _loading = false;
 
+  @internalProperty() private _error?: { message: string; code: string };
+
   @internalProperty() private _mediaPlayerItems: MediaPlayerItem[] = [];
 
   private _resizeObserver?: ResizeObserver;
@@ -89,9 +94,53 @@ export class HaMediaPlayerBrowse extends LitElement {
     this._navigate(item);
   }
 
+  private _renderError(err: { message: string; code: string }) {
+    if (err.message === "Media directory does not exist.") {
+      return html`
+        <h2>No local media found.</h2>
+        <p>
+          It looks like you have not yet created a media directory.
+          <br />Create a directory with the name <b>"media"</b> in the
+          configuration directory of Home Assistant
+          (${this.hass.config.config_dir}). <br />Place your video, audio and
+          image files in this directory to be able to browse and play them in
+          the browser or on supported media players.
+        </p>
+
+        <p>
+          Check the
+          <a
+            href="https://www.home-assistant.io/integrations/media_source/#local-media"
+            target="_blank"
+            rel="noreferrer"
+            >documentation</a
+          >
+          for more info
+        </p>
+      `;
+    }
+    return err.message;
+  }
+
   protected render(): TemplateResult {
     if (this._loading) {
       return html`<ha-circular-progress active></ha-circular-progress>`;
+    }
+
+    if (this._error && !this._mediaPlayerItems.length) {
+      if (this.dialog) {
+        this._closeDialogAction();
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.components.media-browser.media_browsing_error"
+          ),
+          text: this._renderError(this._error),
+        });
+      } else {
+        return html`<div class="container error">
+          ${this._renderError(this._error)}
+        </div>`;
+      }
     }
 
     if (!this._mediaPlayerItems.length) {
@@ -130,7 +179,11 @@ export class HaMediaPlayerBrowse extends LitElement {
             ? html`
                 <div
                   class="img"
-                  style="background-image: url(${currentItem.thumbnail})"
+                  style=${styleMap({
+                    backgroundImage: currentItem.thumbnail
+                      ? `url(${currentItem.thumbnail})`
+                      : "none",
+                  })}
                 >
                   ${this._narrow && currentItem?.can_play
                     ? html`
@@ -209,7 +262,11 @@ export class HaMediaPlayerBrowse extends LitElement {
             `
           : ""}
       </div>
-      ${currentItem.children?.length
+      ${this._error
+        ? html`<div class="container error">
+            ${this._renderError(this._error)}
+          </div>`
+        : currentItem.children?.length
         ? hasExpandableChildren
           ? html`
               <div class="children">
@@ -218,12 +275,16 @@ export class HaMediaPlayerBrowse extends LitElement {
                     <div
                       class="child"
                       .item=${child}
-                      @click=${this._navigateForward}
+                      @click=${this._childClicked}
                     >
                       <div class="ha-card-parent">
                         <ha-card
                           outlined
-                          style="background-image: url(${child.thumbnail})"
+                          style=${styleMap({
+                            backgroundImage: child.thumbnail
+                              ? `url(${child.thumbnail})`
+                              : "none",
+                          })}
                         >
                           ${child.can_expand && !child.thumbnail
                             ? html`
@@ -305,7 +366,9 @@ export class HaMediaPlayerBrowse extends LitElement {
                 )}
               </mwc-list>
             `
-        : this.hass.localize("ui.components.media-browser.no_items")}
+        : html`<div class="container">
+            ${this.hass.localize("ui.components.media-browser.no_items")}
+          </div>`}
     `;
   }
 
@@ -331,11 +394,22 @@ export class HaMediaPlayerBrowse extends LitElement {
       return;
     }
 
-    this._fetchData(this.mediaContentId, this.mediaContentType).then(
-      (itemData) => {
+    if (changedProps.has("entityId")) {
+      this._error = undefined;
+      this._mediaPlayerItems = [];
+    }
+
+    this._fetchData(this.mediaContentId, this.mediaContentType)
+      .then((itemData) => {
+        if (!itemData) {
+          return;
+        }
+
         this._mediaPlayerItems = [itemData];
-      }
-    );
+      })
+      .catch((err) => {
+        this._error = err;
+      });
   }
 
   private _actionClicked(ev: MouseEvent): void {
@@ -349,21 +423,41 @@ export class HaMediaPlayerBrowse extends LitElement {
     fireEvent(this, "media-picked", { item });
   }
 
-  private async _navigateForward(ev: MouseEvent): Promise<void> {
+  private async _childClicked(ev: MouseEvent): Promise<void> {
     const target = ev.currentTarget as any;
     const item: MediaPlayerItem = target.item;
 
     if (!item) {
       return;
     }
+
+    if (!item.can_expand) {
+      this._runAction(item);
+      return;
+    }
+
     this._navigate(item);
   }
 
   private async _navigate(item: MediaPlayerItem) {
-    const itemData = await this._fetchData(
-      item.media_content_id,
-      item.media_content_type
-    );
+    this._error = undefined;
+
+    let itemData: MediaPlayerItem;
+
+    try {
+      itemData = await this._fetchData(
+        item.media_content_id,
+        item.media_content_type
+      );
+    } catch (err) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.components.media-browser.media_browsing_error"
+        ),
+        text: this._renderError(err),
+      });
+      return;
+    }
 
     this.scrollTo(0, 0);
     this._mediaPlayerItems = [...this._mediaPlayerItems, itemData];
@@ -382,6 +476,13 @@ export class HaMediaPlayerBrowse extends LitElement {
             mediaContentType
           )
         : await browseLocalMediaPlayer(this.hass, mediaContentId);
+    itemData.children = itemData.children?.sort((first, second) =>
+      !first.can_expand && second.can_expand
+        ? 1
+        : first.can_expand && !second.can_expand
+        ? -1
+        : compare(first.title, second.title)
+    );
 
     return itemData;
   }
@@ -409,8 +510,8 @@ export class HaMediaPlayerBrowse extends LitElement {
     this._resizeObserver.observe(this);
   }
 
-  private _hasExpandableChildren = memoizeOne((children) =>
-    children.find((item: MediaPlayerItem) => item.can_expand)
+  private _hasExpandableChildren = memoizeOne((children?: MediaPlayerItem[]) =>
+    children?.find((item: MediaPlayerItem) => item.can_expand)
   );
 
   private _closeDialogAction(): void {
@@ -429,16 +530,14 @@ export class HaMediaPlayerBrowse extends LitElement {
           flex-direction: column;
         }
 
+        .container {
+          padding: 16px;
+        }
+
         .header {
           display: flex;
           justify-content: space-between;
           border-bottom: 1px solid var(--divider-color);
-        }
-
-        .header_button {
-          position: relative;
-          top: 14px;
-          right: -8px;
         }
 
         .header {
@@ -539,9 +638,6 @@ export class HaMediaPlayerBrowse extends LitElement {
           );
           grid-gap: 16px;
           margin: 8px 0px;
-        }
-
-        :host(:not([narrow])) .children {
           padding: 0px 24px;
         }
 
@@ -683,8 +779,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           padding: 20px 24px 10px;
         }
 
-        :host([narrow]) .media-source,
-        :host([narrow]) .children {
+        :host([narrow]) .media-source {
           padding: 0 24px;
         }
 
@@ -703,8 +798,8 @@ export class HaMediaPlayerBrowse extends LitElement {
           -webkit-line-clamp: 1;
         }
 
-        :host(:not([narrow])[scroll]) .header-info {
-          height: 75px;
+        :host(:not([narrow])[scroll]) .header:not(.no-img) mwc-icon-button {
+          align-self: center;
         }
 
         :host([scroll]) .header-info mwc-button,

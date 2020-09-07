@@ -505,6 +505,7 @@
             "back": "Wstecz",
             "cancel": "Anuluj",
             "close": "Zamknij",
+            "continue": "Kontynuuj",
             "delete": "Usuń",
             "error_required": "To pole jest wymagane",
             "loading": "Ładowanie",
@@ -562,6 +563,8 @@
                 "no_history_found": "Nie znaleziono historii."
             },
             "media-browser": {
+                "audio_not_supported": "Twoja przeglądarka nie obsługuje elementu audio.",
+                "choose_player": "Wybierz odtwarzacz",
                 "choose-source": "Wybierz źródło",
                 "content-type": {
                     "album": "Album",
@@ -570,12 +573,16 @@
                     "playlist": "Lista odtwarzania",
                     "server": "Serwer"
                 },
+                "media_not_supported": "Przeglądarka odtwarzacza mediów nie obsługuje tego typu mediów",
+                "media_player": "Odtwarzacz mediów",
                 "media-player-browser": "Przeglądarka odtwarzacza mediów",
                 "no_items": "Brak elementów",
                 "pick": "Wybierz",
                 "pick-media": "Wybierz media",
                 "play": "Odtwarzaj",
-                "play-media": "Odtwarzaj media"
+                "play-media": "Odtwarzaj media",
+                "video_not_supported": "Twoja przeglądarka nie obsługuje elementu wideo.",
+                "web-browser": "Przeglądarka internetowa"
             },
             "picture-upload": {
                 "label": "Obraz",
@@ -689,8 +696,10 @@
                 "crop": "Przytnij"
             },
             "more_info_control": {
+                "controls": "Sterowanie",
                 "dismiss": "Zamknij okno dialogowe",
                 "edit": "Edytuj encję",
+                "history": "Historia",
                 "person": {
                     "create_zone": "Utwórz strefę z bieżącej lokalizacji"
                 },
@@ -1543,6 +1552,7 @@
                         "reload_restart_confirm": "Uruchom ponownie Home Assistanta, aby dokończyć ponowne wczytywanie tej integracji",
                         "rename": "Zmień nazwę",
                         "restart_confirm": "Zrestartuj Home Assistanta, aby zakończyć usuwanie tej integracji",
+                        "services": "{count} {count, plural,\n  one {usługa}\n  few {usługi}\n  many {usług}\n  other {usług}\n}",
                         "settings_button": "Edytuj ustawienia dla {integration}",
                         "system_options": "Opcje systemowe",
                         "system_options_button": "Opcje systemowe dla {integration}",
@@ -1746,7 +1756,7 @@
                     "node_query_stages": {
                         "associations": "Odświeżanie grup skojarzeń i członkostwa",
                         "cacheload": "Ładowanie informacji z pliku pamięci podręcznej OpenZWave. Węzły baterii pozostaną na tym etapie, dopóki węzeł się nie wybudzi.",
-                        "complete": "Proces wywiadu jest zakończony",
+                        "complete": "Proces odpytywania jest zakończony",
                         "configuration": "Pobieranie wartości konfiguracyjnych z węzła",
                         "dynamic": "Pobieranie często zmieniających się wartości z węzła",
                         "instances": "Pobieranie szczegółowych informacji o instancjach lub kanałach obsługiwanych przez urządzenie",
@@ -1762,8 +1772,21 @@
                         "versions": "Pobieranie informacji o wersjach oprogramowania i klas poleceń",
                         "wakeup": "Konfigurowanie obsługi kolejek wybudzania i wiadomości"
                     },
+                    "node": {
+                        "button": "Szczegóły węzła",
+                        "not_found": "Nie znaleziono węzła"
+                    },
+                    "nodes_table": {
+                        "failed": "Uszkodzony",
+                        "id": "Identyfikator",
+                        "manufacturer": "Producent",
+                        "model": "Model",
+                        "query_stage": "Etap odpytywania",
+                        "zwave_plus": "Z-Wave Plus"
+                    },
                     "refresh_node": {
                         "battery_note": "Jeśli węzeł jest zasilany bateryjnie, przed kontynuowaniem należy go wybudzić",
+                        "button": "Odśwież węzeł",
                         "complete": "Odświeżanie węzła zakończone",
                         "description": "Poinformuje to OpenZWave o konieczności ponownego odpytania węzła i zaktualizowaniu jego klas poleceń, możliwości i wartości.",
                         "node_status": "Stan węzła",
@@ -1923,12 +1946,17 @@
                             "input_text": "Pomocnicy typu tekst",
                             "introduction": "Niektóre fragmenty konfiguracji można przeładować bez ponownego uruchamiania. Poniższe przyciski pozwalają na ponowne wczytanie danej części konfiguracji YAML.",
                             "min_max": "Encje komponentu min/max",
+                            "mqtt": "Encje komponentu MQTT",
                             "person": "Osoby",
                             "ping": "Encje komponentu ping",
+                            "reload": "Domenę {domain}",
                             "rest": "Encje komponentu rest",
+                            "rpi_gpio": "Encje komponentu Raspberry Pi GPIO",
                             "scene": "Sceny",
                             "script": "Skrypty",
+                            "smtp": "Usługi powiadomień komponentu SMTP",
                             "statistics": "Encje komponentu statystyka",
+                            "telegram": "Usługi powiadomień komponentu Telegram",
                             "template": "Szablony encji",
                             "trend": "Encje komponentu trend",
                             "universal": "Encje komponentu uniwersalny odtwarzacz mediów",
@@ -2549,7 +2577,11 @@
                         }
                     },
                     "cardpicker": {
+                        "by_card": "Według karty",
+                        "by_entity": "Według encji",
                         "custom_card": "Niestandardowa",
+                        "domain": "Domena",
+                        "entity": "Encja",
                         "no_description": "Brak dostępnego opisu."
                     },
                     "edit_card": {
@@ -2563,6 +2595,7 @@
                         "options": "Więcej opcji",
                         "pick_card": "Wybierz kartę, którą chcesz dodać.",
                         "pick_card_view_title": "Którą kartę chcesz dodać do widoku {name}?",
+                        "search_cards": "Szukaj kart",
                         "show_code_editor": "Edytor kodu",
                         "show_visual_editor": "Edytor wizualny",
                         "toggle_editor": "Przełącz edytor",

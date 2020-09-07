@@ -484,6 +484,7 @@
             "back": "Späť",
             "cancel": "Zrušiť",
             "close": "Zavrieť",
+            "continue": "Pokračovať",
             "delete": "Odstrániť",
             "loading": "Načítava sa",
             "next": "Ďalej",
@@ -532,6 +533,11 @@
             "history_charts": {
                 "loading_history": "Načítavam históriu stavov",
                 "no_history_found": "Nenašla sa žiadna história stavov"
+            },
+            "media-browser": {
+                "choose_player": "Vyberte prehrávač",
+                "media_player": "Prehrávač médií",
+                "web-browser": "Webový prehliadač"
             },
             "related-items": {
                 "area": "Oblasť",
@@ -635,6 +641,7 @@
             "more_info_control": {
                 "dismiss": "Zrušiť dialógové okno",
                 "edit": "Upraviť entitu",
+                "history": "História",
                 "person": {
                     "create_zone": "Vytvoriť zónu z aktuálnej polohy"
                 },
@@ -1534,6 +1541,11 @@
                     "title": "MQTT",
                     "topic": "téma"
                 },
+                "ozw": {
+                    "nodes_table": {
+                        "id": "ID"
+                    }
+                },
                 "person": {
                     "add_person": "Pridať osobu",
                     "caption": "Osoby",
@@ -1683,6 +1695,8 @@
                         "create": "Vytvoriť",
                         "name": "Meno",
                         "password": "Heslo",
+                        "password_confirm": "Potvrdiť heslo",
+                        "password_not_match": "Heslá sa nezhodujú",
                         "username": "Užívateľské meno"
                     },
                     "caption": "Používatelia",
@@ -1699,7 +1713,9 @@
                         "group": "Skupina",
                         "id": "ID",
                         "name": "Názov",
+                        "new_password": "Nové heslo",
                         "owner": "Vlastník",
+                        "password_changed": "Heslo je zmenené!",
                         "system_generated": "Systémom vytvorený",
                         "system_generated_users_not_editable": "Nie je možné aktualizovať používateľov generovaných systémom.",
                         "system_generated_users_not_removable": "Nie je možné odstrániť používateľov generovaných systémom.",
@@ -1871,6 +1887,10 @@
                         "set_config_parameter": "Nastavte konfiguračný parameter",
                         "set_wakeup": "Nastaviť interval prebudenia",
                         "true": "True"
+                    },
+                    "node_management": {
+                        "add_to_group": "Pridať do skupiny",
+                        "remove_from_group": "Odstrániť zo skupiny"
                     },
                     "ozw_log": {
                         "introduction": "Zobraziť denník. 0 je minimum (načíta celý protokol) a 1000 je maximum. Načítanie zobrazí statický protokol a posledný riadok sa automaticky aktualizuje s určeným počtom riadkov protokolu."
@@ -2176,6 +2196,7 @@
                         "options": "Viac možností",
                         "pick_card": "Ktorú kartu chcete pridať?",
                         "pick_card_view_title": "Ktorú kartu chcete pridať do svojho zobrazenia {name} ?",
+                        "search_cards": "Vyhľadať karty",
                         "show_code_editor": "Zobraziť editor kódu",
                         "show_visual_editor": "Zobraziť vizuálny editor",
                         "toggle_editor": "Prepnúť editor"

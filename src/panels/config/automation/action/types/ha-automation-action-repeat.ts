@@ -1,22 +1,21 @@
 import "@polymer/paper-input/paper-input";
-import { customElement, LitElement, property, CSSResult } from "lit-element";
-import { html } from "lit-html";
-import {
-  RepeatAction,
-  Action,
-  CountRepeat,
-  WhileRepeat,
-  UntilRepeat,
-} from "../../../../../data/script";
-import { HomeAssistant } from "../../../../../types";
-import { ActionElement } from "../ha-automation-action-row";
-import "../../condition/ha-automation-condition-editor";
 import type { PaperListboxElement } from "@polymer/paper-listbox";
 import "@polymer/paper-listbox/paper-listbox";
+import { CSSResult, customElement, LitElement, property } from "lit-element";
+import { html } from "lit-html";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../ha-automation-action";
-import { Condition } from "../../../../lovelace/common/validate-condition";
+import {
+  Action,
+  CountRepeat,
+  RepeatAction,
+  UntilRepeat,
+  WhileRepeat,
+} from "../../../../../data/script";
 import { haStyle } from "../../../../../resources/styles";
+import { HomeAssistant } from "../../../../../types";
+import { Condition } from "../../../../lovelace/common/validate-condition";
+import "../ha-automation-action";
+import { ActionElement } from "../ha-automation-action-row";
 
 const OPTIONS = ["count", "while", "until"];
 

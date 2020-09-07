@@ -27,6 +27,7 @@ export default class HaAutomationTrigger extends LitElement {
           <ha-automation-trigger-row
             .index=${idx}
             .trigger=${trg}
+            @duplicate=${this._duplicateTrigger}
             @value-changed=${this._triggerChanged}
             .hass=${this.hass}
           ></ha-automation-trigger-row>
@@ -66,6 +67,14 @@ export default class HaAutomationTrigger extends LitElement {
     }
 
     fireEvent(this, "value-changed", { value: triggers });
+  }
+
+  private _duplicateTrigger(ev: CustomEvent) {
+    ev.stopPropagation();
+    const index = (ev.target as any).index;
+    fireEvent(this, "value-changed", {
+      value: this.triggers.concat(this.triggers[index]),
+    });
   }
 
   static get styles(): CSSResult {
