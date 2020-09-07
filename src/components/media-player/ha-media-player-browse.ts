@@ -171,22 +171,22 @@ export class HaMediaPlayerBrowse extends LitElement {
     return html`
       <div
         class="header  ${classMap({
-      "no-img": !currentItem.thumbnail,
-    })}"
+          "no-img": !currentItem.thumbnail,
+        })}"
       >
         <div class="header-content">
           ${currentItem.thumbnail
-        ? html`
+            ? html`
                 <div
                   class="img"
                   style=${styleMap({
-          backgroundImage: currentItem.thumbnail
-            ? `url(${currentItem.thumbnail})`
-            : "none",
-        })}
+                    backgroundImage: currentItem.thumbnail
+                      ? `url(${currentItem.thumbnail})`
+                      : "none",
+                  })}
                 >
                   ${this._narrow && currentItem?.can_play
-            ? html`
+                    ? html`
                         <mwc-fab
                           mini
                           .item=${currentItem}
@@ -195,40 +195,40 @@ export class HaMediaPlayerBrowse extends LitElement {
                           <ha-svg-icon
                             slot="icon"
                             .label=${this.hass.localize(
-              `ui.components.media-browser.${this.action}-media`
-            )}
+                              `ui.components.media-browser.${this.action}-media`
+                            )}
                             .path=${this.action === "play" ? mdiPlay : mdiPlus}
                           ></ha-svg-icon>
                           ${this.hass.localize(
-              `ui.components.media-browser.${this.action}`
-            )}
+                            `ui.components.media-browser.${this.action}`
+                          )}
                         </mwc-fab>
                       `
-            : ""}
+                    : ""}
                 </div>
               `
-        : html``}
+            : html``}
           <div class="header-info">
             <div class="breadcrumb">
               ${previousItem
-        ? html`
+                ? html`
                     <div class="previous-title" @click=${this.navigateBack}>
                       <ha-svg-icon .path=${mdiArrowLeft}></ha-svg-icon>
                       ${previousItem.title}
                     </div>
                   `
-        : ""}
+                : ""}
               <h1 class="title">${currentItem.title}</h1>
               ${mediaType
-        ? html`
+                ? html`
                     <h2 class="subtitle">
                       ${mediaType}
                     </h2>
                   `
-        : ""}
+                : ""}
             </div>
             ${currentItem.can_play && (!currentItem.thumbnail || !this._narrow)
-        ? html`
+              ? html`
                   <mwc-button
                     raised
                     .item=${currentItem}
@@ -237,20 +237,20 @@ export class HaMediaPlayerBrowse extends LitElement {
                     <ha-svg-icon
                       slot="icon"
                       .label=${this.hass.localize(
-          `ui.components.media-browser.${this.action}-media`
-        )}
+                        `ui.components.media-browser.${this.action}-media`
+                      )}
                       .path=${this.action === "play" ? mdiPlay : mdiPlus}
                     ></ha-svg-icon>
                     ${this.hass.localize(
-          `ui.components.media-browser.${this.action}`
-        )}
+                      `ui.components.media-browser.${this.action}`
+                    )}
                   </mwc-button>
                 `
-        : ""}
+              : ""}
           </div>
         </div>
         ${this.dialog
-        ? html`
+          ? html`
               <mwc-icon-button
                 aria-label=${this.hass.localize("ui.dialogs.generic.close")}
                 @click=${this._closeDialogAction}
@@ -260,18 +260,18 @@ export class HaMediaPlayerBrowse extends LitElement {
                 <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
               </mwc-icon-button>
             `
-        : ""}
+          : ""}
       </div>
       ${this._error
         ? html`<div class="container error">
             ${this._renderError(this._error)}
           </div>`
         : currentItem.children?.length
-          ? hasExpandableChildren
-            ? html`
+        ? hasExpandableChildren
+          ? html`
               <div class="children">
                 ${currentItem.children.map(
-              (child) => html`
+                  (child) => html`
                     <div
                       class="child"
                       .item=${child}
@@ -281,54 +281,54 @@ export class HaMediaPlayerBrowse extends LitElement {
                         <ha-card
                           outlined
                           style=${styleMap({
-                backgroundImage: child.thumbnail
-                  ? `url(${child.thumbnail})`
-                  : "none",
-              })}
+                            backgroundImage: child.thumbnail
+                              ? `url(${child.thumbnail})`
+                              : "none",
+                          })}
                         >
                           ${child.can_expand && !child.thumbnail
-                  ? html`
+                            ? html`
                                 <ha-svg-icon
                                   class="folder"
                                   .path=${mdiFolder}
                                 ></ha-svg-icon>
                               `
-                  : ""}
+                            : ""}
                         </ha-card>
                         ${child.can_play
-                  ? html`
+                          ? html`
                               <mwc-icon-button
                                 class="play"
                                 .item=${child}
                                 .label=${this.hass.localize(
-                    `ui.components.media-browser.${this.action}-media`
-                  )}
+                                  `ui.components.media-browser.${this.action}-media`
+                                )}
                                 @click=${this._actionClicked}
                               >
                                 <ha-svg-icon
                                   .path=${this.action === "play"
-                      ? mdiPlay
-                      : mdiPlus}
+                                    ? mdiPlay
+                                    : mdiPlus}
                                 ></ha-svg-icon>
                               </mwc-icon-button>
                             `
-                  : ""}
+                          : ""}
                       </div>
                       <div class="title">${child.title}</div>
                       <div class="type">
                         ${this.hass.localize(
-                    `ui.components.media-browser.content-type.${child.media_content_type}`
-                  )}
+                          `ui.components.media-browser.content-type.${child.media_content_type}`
+                        )}
                       </div>
                     </div>
                   `
-            )}
+                )}
               </div>
             `
-            : html`
+          : html`
               <mwc-list>
                 ${currentItem.children.map(
-              (child) => html`
+                  (child) => html`
                     <mwc-list-item
                       @click=${this._actionClicked}
                       .item=${child}
@@ -338,20 +338,20 @@ export class HaMediaPlayerBrowse extends LitElement {
                       <div
                         class="graphic"
                         style=${ifDefined(
-                showImages && child.thumbnail
-                  ? `background-image: url(${child.thumbnail})`
-                  : undefined
-              )}
+                          showImages && child.thumbnail
+                            ? `background-image: url(${child.thumbnail})`
+                            : undefined
+                        )}
                         slot="graphic"
                       >
                         <mwc-icon-button
                           class="play ${classMap({
-                show: !showImages || !child.thumbnail,
-              })}"
+                            show: !showImages || !child.thumbnail,
+                          })}"
                           .item=${child}
                           .label=${this.hass.localize(
-                `ui.components.media-browser.${this.action}-media`
-              )}
+                            `ui.components.media-browser.${this.action}-media`
+                          )}
                           @click=${this._actionClicked}
                         >
                           <ha-svg-icon
@@ -363,10 +363,10 @@ export class HaMediaPlayerBrowse extends LitElement {
                     </mwc-list-item>
                     <li divider role="separator"></li>
                   `
-            )}
+                )}
               </mwc-list>
             `
-          : html`<div class="container">
+        : html`<div class="container">
             ${this.hass.localize("ui.components.media-browser.no_items")}
           </div>`}
     `;
@@ -470,18 +470,18 @@ export class HaMediaPlayerBrowse extends LitElement {
     const itemData =
       this.entityId !== BROWSER_SOURCE
         ? await browseMediaPlayer(
-          this.hass,
-          this.entityId,
-          mediaContentId,
-          mediaContentType
-        )
+            this.hass,
+            this.entityId,
+            mediaContentId,
+            mediaContentType
+          )
         : await browseLocalMediaPlayer(this.hass, mediaContentId);
     itemData.children = itemData.children?.sort((first, second) =>
       !first.can_expand && second.can_expand
         ? 1
         : first.can_expand && !second.can_expand
-          ? -1
-          : compare(first.title, second.title)
+        ? -1
+        : compare(first.title, second.title)
     );
 
     return itemData;
