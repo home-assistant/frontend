@@ -11,7 +11,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { guard } from "lit-html/directives/guard";
-import { SortableEvent } from "sortablejs";
+import type { SortableEvent } from "sortablejs";
 import Sortable, {
   AutoScroll,
   OnSpill,
@@ -33,8 +33,6 @@ export class HuiEntityEditor extends LitElement {
   @property() protected label?: string;
 
   @internalProperty() private _attached = false;
-
-  @internalProperty() private _renderEmptySortable = false;
 
   private _sortable?;
 
@@ -63,10 +61,10 @@ export class HuiEntityEditor extends LitElement {
           ")"}
       </h3>
       <div class="entities">
-        ${guard([this.entities, this._renderEmptySortable], () =>
+        ${guard([this.entities], () =>
           this.entities!.map((entityConf, index) => {
             return html`
-              <div class="entity">
+              <div class="entity" data-entity-id=${entityConf.entity}>
                 <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
                 <ha-entity-picker
                   .hass=${this.hass}
@@ -109,6 +107,11 @@ export class HuiEntityEditor extends LitElement {
       Sortable.mount(new AutoScroll());
 
       this._createSortable();
+      return;
+    }
+
+    if (entitiesChanged) {
+      this._sortable.sort(this.entities?.map((entity) => entity.entity));
     }
   }
 
@@ -117,6 +120,7 @@ export class HuiEntityEditor extends LitElement {
       animation: 150,
       fallbackClass: "sortable-fallback",
       handle: "ha-svg-icon",
+      dataIdAttr: "data-entity-id",
       onEnd: async (evt: SortableEvent) => this._entityMoved(evt),
     });
   }
@@ -131,9 +135,6 @@ export class HuiEntityEditor extends LitElement {
     });
     target.value = "";
     fireEvent(this, "entities-changed", { entities: newConfigEntities });
-    this._renderEmptySortable = true;
-    await this.updateComplete;
-    this._renderEmptySortable = false;
   }
 
   private _entityMoved(ev: SortableEvent): void {
