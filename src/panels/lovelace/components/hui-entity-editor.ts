@@ -101,7 +101,7 @@ export class HuiEntityEditor extends LitElement {
     }
 
     if (attachedChanged && !this._attached) {
-      // Tear down existing polyfill, if available
+      // Tear down sortable, if available
       this._sortable?.destroy();
       this._sortable = undefined;
       return;
