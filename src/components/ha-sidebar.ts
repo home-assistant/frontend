@@ -228,9 +228,13 @@ class HaSidebar extends LitElement {
     }
 
     return html`
-      <style>
-        ${sortStyles?.cssText}
-      </style>
+      ${this._editMode
+        ? html`
+            <style>
+              ${sortStyles?.cssText}
+            </style>
+          `
+        : ""}
       <div class="menu">
         ${!this.narrow
           ? html`
@@ -688,7 +692,7 @@ class HaSidebar extends LitElement {
   }
 
   static get styles(): CSSResult[] {
-    const styles = [
+    return [
       haStyleScrollbar,
       css`
         :host {
@@ -964,8 +968,6 @@ class HaSidebar extends LitElement {
         }
       `,
     ];
-
-    return styles;
   }
 }
 
