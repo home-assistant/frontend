@@ -167,22 +167,20 @@ export class HuiEntityEditor extends LitElement {
     fireEvent(this, "entities-changed", { entities: newConfigEntities });
   }
 
-  static get styles(): CSSResult[] {
-    return [
-      css`
-        .entity {
-          display: flex;
-          align-items: center;
-        }
-        .entity ha-svg-icon {
-          padding-right: 8px;
-          cursor: move;
-        }
-        .entity ha-entity-picker {
-          flex-grow: 1;
-        }
-      `,
-    ];
+  static get styles(): CSSResult {
+    return css`
+      .entity {
+        display: flex;
+        align-items: center;
+      }
+      .entity ha-svg-icon {
+        padding-right: 8px;
+        cursor: move;
+      }
+      .entity ha-entity-picker {
+        flex-grow: 1;
+      }
+    `;
   }
 }
 
