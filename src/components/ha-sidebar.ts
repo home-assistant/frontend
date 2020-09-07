@@ -23,7 +23,7 @@ import {
   LitElement,
   property,
   PropertyValues,
-  TemplateResult,
+  unsafeCSS,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { guard } from "lit-html/directives/guard";
@@ -160,7 +160,7 @@ const computePanels = memoizeOne(
 
 let Sortable;
 
-let sortStyles: TemplateResult;
+let sortStyles: CSSResult;
 
 @customElement("ha-sidebar")
 class HaSidebar extends LitElement {
@@ -228,7 +228,9 @@ class HaSidebar extends LitElement {
     }
 
     return html`
-      ${this._editMode ? sortStyles : ""}
+      <style>
+        ${sortStyles?.cssText}
+      </style>
       <div class="menu">
         ${!this.narrow
           ? html`
@@ -483,7 +485,7 @@ class HaSidebar extends LitElement {
         import("./ha-sidebar-sort-styles"),
       ]);
 
-      sortStyles = sortStylesImport.sortStyles;
+      sortStyles = sortStylesImport.sortableStyles;
 
       Sortable = sortableImport.Sortable;
       Sortable.mount(sortableImport.OnSpill);
@@ -686,7 +688,7 @@ class HaSidebar extends LitElement {
   }
 
   static get styles(): CSSResult[] {
-    return [
+    const styles = [
       haStyleScrollbar,
       css`
         :host {
@@ -962,6 +964,8 @@ class HaSidebar extends LitElement {
         }
       `,
     ];
+
+    return styles;
   }
 }
 

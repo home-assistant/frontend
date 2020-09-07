@@ -19,7 +19,7 @@ import Sortable, {
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-icon-button";
-import { sortStyles } from "../../../components/ha-sidebar-sort-styles";
+import { sortableStyles } from "../../../components/ha-sidebar-sort-styles";
 import { HomeAssistant } from "../../../types";
 import { EditorTarget } from "../editor/types";
 import { EntityConfig } from "../entity-rows/types";
@@ -52,7 +52,6 @@ export class HuiEntityEditor extends LitElement {
     }
 
     return html`
-      ${sortStyles}
       <h3>
         ${this.label ||
         this.hass!.localize("ui.panel.lovelace.editor.card.generic.entities") +
@@ -167,20 +166,23 @@ export class HuiEntityEditor extends LitElement {
     fireEvent(this, "entities-changed", { entities: newConfigEntities });
   }
 
-  static get styles(): CSSResult {
-    return css`
-      .entity {
-        display: flex;
-        align-items: center;
-      }
-      .entity ha-svg-icon {
-        padding-right: 8px;
-        cursor: move;
-      }
-      .entity ha-entity-picker {
-        flex-grow: 1;
-      }
-    `;
+  static get styles(): CSSResult[] {
+    return [
+      sortableStyles,
+      css`
+        .entity {
+          display: flex;
+          align-items: center;
+        }
+        .entity ha-svg-icon {
+          padding-right: 8px;
+          cursor: move;
+        }
+        .entity ha-entity-picker {
+          flex-grow: 1;
+        }
+      `,
+    ];
   }
 }
 
