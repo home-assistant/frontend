@@ -101,9 +101,10 @@ export class HaMediaPlayerBrowse extends LitElement {
         <p>
           It looks like you have not yet created a media directory.
           <br />Create a directory with the name <b>"media"</b> in the
-          configuration directory of Home Assistant (${this.hass.config.config_dir}). <br />Place your video,
-          audio and image files in this directory to be able to browse and play
-          them in the browser or on supported media players.
+          configuration directory of Home Assistant
+          (${this.hass.config.config_dir}). <br />Place your video, audio and
+          image files in this directory to be able to browse and play them in
+          the browser or on supported media players.
         </p>
 
         <p>
@@ -398,15 +399,17 @@ export class HaMediaPlayerBrowse extends LitElement {
       this._mediaPlayerItems = [];
     }
 
-    this._fetchData(this.mediaContentId, this.mediaContentType).then(
-      (itemData) => {
+    this._fetchData(this.mediaContentId, this.mediaContentType)
+      .then((itemData) => {
         if (!itemData) {
           return;
         }
 
         this._mediaPlayerItems = [itemData];
-      }
-    );
+      })
+      .catch((err) => {
+        this._error = err;
+      });
   }
 
   private _actionClicked(ev: MouseEvent): void {
@@ -439,18 +442,22 @@ export class HaMediaPlayerBrowse extends LitElement {
   private async _navigate(item: MediaPlayerItem) {
     this._error = undefined;
 
-    const itemData = (await this._fetchData(
-      item.media_content_id,
-      item.media_content_type
-    )) || {
-      title: this.hass.localize(
-        "ui.components.media-browser.media_browsing_error"
-      ),
-      can_expand: false,
-      can_play: false,
-      media_content_type: "",
-      media_content_id: "",
-    };
+    let itemData: MediaPlayerItem;
+
+    try {
+      itemData = await this._fetchData(
+        item.media_content_id,
+        item.media_content_type
+      );
+    } catch (err) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.components.media-browser.media_browsing_error"
+        ),
+        text: this._renderError(err),
+      });
+      return;
+    }
 
     this.scrollTo(0, 0);
     this._mediaPlayerItems = [...this._mediaPlayerItems, itemData];
@@ -459,28 +466,23 @@ export class HaMediaPlayerBrowse extends LitElement {
   private async _fetchData(
     mediaContentId?: string,
     mediaContentType?: string
-  ): Promise<MediaPlayerItem | undefined> {
-    let itemData: MediaPlayerItem | undefined;
-    try {
-      itemData =
-        this.entityId !== BROWSER_SOURCE
-          ? await browseMediaPlayer(
-              this.hass,
-              this.entityId,
-              mediaContentId,
-              mediaContentType
-            )
-          : await browseLocalMediaPlayer(this.hass, mediaContentId);
-      itemData.children = itemData.children?.sort((first, second) =>
-        !first.can_expand && second.can_expand
-          ? 1
-          : first.can_expand && !second.can_expand
-          ? -1
-          : compare(first.title, second.title)
-      );
-    } catch (error) {
-      this._error = error;
-    }
+  ): Promise<MediaPlayerItem> {
+    const itemData =
+      this.entityId !== BROWSER_SOURCE
+        ? await browseMediaPlayer(
+            this.hass,
+            this.entityId,
+            mediaContentId,
+            mediaContentType
+          )
+        : await browseLocalMediaPlayer(this.hass, mediaContentId);
+    itemData.children = itemData.children?.sort((first, second) =>
+      !first.can_expand && second.can_expand
+        ? 1
+        : first.can_expand && !second.can_expand
+        ? -1
+        : compare(first.title, second.title)
+    );
 
     return itemData;
   }
