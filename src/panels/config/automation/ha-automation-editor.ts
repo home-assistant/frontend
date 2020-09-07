@@ -486,17 +486,20 @@ export class HaAutomationEditor extends LitElement {
   }
 
   private async _duplicate() {
-    if (
-      this._dirty &&
-      !(await showConfirmationDialog(this, {
-        text: this.hass!.localize(
-          "ui.panel.config.automation.editor.unsaved_confirm"
-        ),
-        confirmText: this.hass!.localize("ui.common.yes"),
-        dismissText: this.hass!.localize("ui.common.no"),
-      }))
-    ) {
-      return;
+    if (this._dirty) {
+      if (
+        !(await showConfirmationDialog(this, {
+          text: this.hass!.localize(
+            "ui.panel.config.automation.editor.unsaved_confirm"
+          ),
+          confirmText: this.hass!.localize("ui.common.yes"),
+          dismissText: this.hass!.localize("ui.common.no"),
+        }))
+      ) {
+        return;
+      }
+      // Wait for dialog to complate closing
+      await new Promise((resolve) => setTimeout(resolve, 0));
     }
     showAutomationEditor(this, {
       ...this._config,
