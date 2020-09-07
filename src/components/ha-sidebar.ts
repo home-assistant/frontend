@@ -23,7 +23,6 @@ import {
   LitElement,
   property,
   PropertyValues,
-  unsafeCSS,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { guard } from "lit-html/directives/guard";
