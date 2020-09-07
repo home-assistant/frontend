@@ -101,7 +101,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         <p>
           It looks like you have not yet created a media directory.
           <br />Create a directory with the name <b>"media"</b> in the
-          configuration directory of Home Assistant. <br />Place your video,
+          configuration directory of Home Assistant (${this.hass.config.config_dir}). <br />Place your video,
           audio and image files in this directory to be able to browse and play
           them in the browser or on supported media players.
         </p>
