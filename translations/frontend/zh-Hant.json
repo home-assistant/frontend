@@ -1552,6 +1552,7 @@
                         "reload_restart_confirm": "重啟 Home Assistant 以為重整合重新載入",
                         "rename": "重新命名",
                         "restart_confirm": "重啟 Home Assistant 以完成此整合移動",
+                        "services": "{count} {count, plural,\n  one {項服務}\n  other {項服務}\n}",
                         "settings_button": "編輯 {integration} 設定",
                         "system_options": "系統選項",
                         "system_options_button": "{integration} 系統選項",
