@@ -486,7 +486,7 @@ class HaSidebar extends LitElement {
     if (!Sortable) {
       const [sortableImport, sortStylesImport] = await Promise.all([
         import("sortablejs/modular/sortable.core.esm"),
-        import("./ha-sidebar-sort-styles"),
+        import("../resources/ha-sortable-style"),
       ]);
 
       sortStyles = sortStylesImport.sortableStyles;
