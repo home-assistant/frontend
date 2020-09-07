@@ -88,9 +88,15 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
 
       const themeMeta = document.querySelector("meta[name=theme-color]");
-      const headerColor = getComputedStyle(
-        document.documentElement
-      ).getPropertyValue("--app-header-background-color");
+      const computedStyles = getComputedStyle(document.documentElement);
+      const headerColor = computedStyles.getPropertyValue(
+        "--app-header-background-color"
+      );
+
+      document.documentElement.style.backgroundColor = computedStyles.getPropertyValue(
+        "--primary-background-color"
+      );
+
       if (themeMeta) {
         if (!themeMeta.hasAttribute("default-content")) {
           themeMeta.setAttribute(
