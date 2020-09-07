@@ -40,8 +40,8 @@ export class HuiDialogSelectMediaPlayer extends LitElement {
     return html`
       <ha-dialog
         open
-        scrimClickAction
-        escapeKeyAction
+        scrimClickAction="true"
+        escapeKeyAction="true"
         hideActions
         .heading=${createCloseHeading(
           this.hass,
