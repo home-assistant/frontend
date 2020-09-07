@@ -1,25 +1,27 @@
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import "@material/mwc-list/mwc-list-item";
+import { mdiDotsVertical } from "@mdi/js";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
-import "../../../../components/ha-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "@material/mwc-list/mwc-list-item";
-import "../../../../components/ha-button-menu";
-import { mdiDotsVertical } from "@mdi/js";
 import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
 } from "lit-element";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
+import "../../../../components/ha-icon-button";
 import type { Trigger } from "../../../../data/automation";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
+import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "./types/ha-automation-trigger-device";
 import "./types/ha-automation-trigger-event";
@@ -29,14 +31,12 @@ import "./types/ha-automation-trigger-mqtt";
 import "./types/ha-automation-trigger-numeric_state";
 import "./types/ha-automation-trigger-state";
 import "./types/ha-automation-trigger-sun";
+import "./types/ha-automation-trigger-tag";
 import "./types/ha-automation-trigger-template";
 import "./types/ha-automation-trigger-time";
 import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
-import "./types/ha-automation-trigger-tag";
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
-import { haStyle } from "../../../../resources/styles";
 
 const OPTIONS = [
   "device",
@@ -113,7 +113,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                       "ui.panel.config.automation.editor.edit_yaml"
                     )}
               </mwc-list-item>
-              <mwc-list-item disabled>
+              <mwc-list-item>
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.actions.duplicate"
                 )}
@@ -183,6 +183,7 @@ export default class HaAutomationTriggerRow extends LitElement {
         this._switchYamlMode();
         break;
       case 1:
+        fireEvent(this, "duplicate");
         break;
       case 2:
         this._onDelete();

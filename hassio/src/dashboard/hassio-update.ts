@@ -164,8 +164,9 @@ export class HassioUpdate extends LitElement {
     try {
       await this.hass.callApi<HassioResponse<void>>("POST", item.apiPath);
     } catch (err) {
-      // Only show an error if the status code was not 504, or no status at all (connection terminated)
-      if (err.status_code && err.status_code !== 504) {
+      // Only show an error if the status code was not expected (user behind proxy)
+      // or no status at all(connection terminated)
+      if (err.status_code && ![502, 503, 504].includes(err.status_code)) {
         showAlertDialog(this, {
           title: "Update failed",
           text: extractApiErrorMessage(err),

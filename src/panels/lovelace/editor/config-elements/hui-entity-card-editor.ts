@@ -2,13 +2,15 @@ import "@polymer/paper-input/paper-input";
 import {
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
+import { assert, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stateIcon } from "../../../../common/entity/state_icon";
+import "../../../../components/entity/ha-entity-attribute-picker";
 import "../../../../components/ha-icon-input";
 import { HomeAssistant } from "../../../../types";
 import { EntityCardConfig } from "../../cards/types";
@@ -19,7 +21,6 @@ import { headerFooterConfigStructs } from "../../header-footer/types";
 import { LovelaceCardEditor } from "../../types";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import { string, object, optional, assert } from "superstruct";
 
 const cardConfigStruct = object({
   type: string(),
@@ -113,7 +114,9 @@ export class HuiEntityCardEditor extends LitElement
           ></ha-icon-input>
         </div>
         <div class="side-by-side">
-          <paper-input
+          <ha-entity-attribute-picker
+            .hass=${this.hass}
+            .entityId=${this._entity}
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.attribute"
             )} (${this.hass.localize(
@@ -122,7 +125,7 @@ export class HuiEntityCardEditor extends LitElement
             .value=${this._attribute}
             .configValue=${"attribute"}
             @value-changed=${this._valueChanged}
-          ></paper-input>
+          ></ha-entity-attribute-picker>
           <paper-input
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.unit"

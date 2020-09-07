@@ -23,7 +23,6 @@ import {
   LitElement,
   property,
   PropertyValues,
-  TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { guard } from "lit-html/directives/guard";
@@ -31,6 +30,7 @@ import memoizeOne from "memoize-one";
 import { LocalStorage } from "../common/decorators/local-storage";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
+import { navigate } from "../common/navigate";
 import { compare } from "../common/string/compare";
 import { computeRTL } from "../common/util/compute_rtl";
 import { ActionHandlerDetail } from "../data/lovelace";
@@ -160,7 +160,7 @@ const computePanels = memoizeOne(
 
 let Sortable;
 
-let sortStyles: TemplateResult;
+let sortStyles: CSSResult;
 
 @customElement("ha-sidebar")
 class HaSidebar extends LitElement {
@@ -228,7 +228,13 @@ class HaSidebar extends LitElement {
     }
 
     return html`
-      ${this._editMode ? sortStyles : ""}
+      ${this._editMode
+        ? html`
+            <style>
+              ${sortStyles?.cssText}
+            </style>
+          `
+        : ""}
       <div class="menu">
         ${!this.narrow
           ? html`
@@ -480,10 +486,10 @@ class HaSidebar extends LitElement {
     if (!Sortable) {
       const [sortableImport, sortStylesImport] = await Promise.all([
         import("sortablejs/modular/sortable.core.esm"),
-        import("./ha-sidebar-sort-styles"),
+        import("../resources/ha-sortable-style"),
       ]);
 
-      sortStyles = sortStylesImport.sortStyles;
+      sortStyles = sortStylesImport.sortableStyles;
 
       Sortable = sortableImport.Sortable;
       Sortable.mount(sortableImport.OnSpill);
@@ -649,6 +655,10 @@ class HaSidebar extends LitElement {
     );
   }
 
+  private _handlePanelTap(ev: Event) {
+    navigate(this, (ev.currentTarget as HTMLAnchorElement).href);
+  }
+
   private _renderPanel(
     urlPath: string,
     title: string | null,
@@ -661,6 +671,7 @@ class HaSidebar extends LitElement {
         href="${`/${urlPath}`}"
         data-panel="${urlPath}"
         tabindex="-1"
+        @tap=${this._handlePanelTap}
         @mouseenter=${this._itemMouseEnter}
         @mouseleave=${this._itemMouseLeave}
       >

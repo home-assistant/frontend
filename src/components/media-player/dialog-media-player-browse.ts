@@ -43,7 +43,7 @@ class DialogMediaPlayerBrowse extends LitElement {
 
   public closeDialog() {
     this._params = undefined;
-    fireEvent(this, "dialog-closed", {dialog: this.localName});
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render(): TemplateResult {
@@ -93,6 +93,9 @@ class DialogMediaPlayerBrowse extends LitElement {
         @media (min-width: 800px) {
           ha-dialog {
             --mdc-dialog-max-width: 800px;
+            --dialog-surface-position: fixed;
+            --dialog-surface-top: 40px;
+            --mdc-dialog-max-height: calc(100% - 72px);
           }
           ha-media-player-browse {
             width: 700px;

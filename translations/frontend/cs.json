@@ -505,6 +505,7 @@
             "back": "Zpět",
             "cancel": "Zrušit",
             "close": "Zavřít",
+            "continue": "Pokračovat",
             "delete": "Smazat",
             "error_required": "Povinné",
             "loading": "Načítání",
@@ -562,6 +563,8 @@
                 "no_history_found": "Historie stavu chybí."
             },
             "media-browser": {
+                "audio_not_supported": "Váš prohlížeč nepodporuje element \"audio\".",
+                "choose_player": "Vyberte přehrávač",
                 "choose-source": "Zvolte zdroj",
                 "content-type": {
                     "album": "Album",
@@ -570,12 +573,16 @@
                     "playlist": "Seznam skladeb",
                     "server": "Server"
                 },
+                "media_not_supported": "Přehrávač médií v prohlížeči nepodporuje tento typ média",
+                "media_player": "Přehrávač médií",
                 "media-player-browser": "Prohlížeč přehrávače médií",
                 "no_items": "Žádné položky",
                 "pick": "Vybrat",
                 "pick-media": "Vybrat média",
                 "play": "Přehrát",
-                "play-media": "Přehrát média"
+                "play-media": "Přehrát média",
+                "video_not_supported": "Váš prohlížeč nepodporuje element \"video\".",
+                "web-browser": "Webový prohlížeč"
             },
             "picture-upload": {
                 "label": "Obrázek",
@@ -633,7 +640,7 @@
                     "icon": "Nahrazení ikony",
                     "icon_error": "Ikony by měly být ve formátu 'prefix:nazevikony', např. 'mdi:home'",
                     "name": "Přepsání názvu",
-                    "note": "Poznámka: to nemusí fungovat se všemi integracemi.",
+                    "note": "Poznámka: U všech integrací to ještě nemusí fungovat.",
                     "unavailable": "Tato entita není momentálně k dispozici.",
                     "update": "Aktualizovat"
                 },
@@ -689,8 +696,10 @@
                 "crop": "Oříznout"
             },
             "more_info_control": {
+                "controls": "Ovládací prvky",
                 "dismiss": "Zavřít dialog",
                 "edit": "Upravit entitu",
+                "history": "Historie",
                 "person": {
                     "create_zone": "Vytvořit zónu z aktuálního umístění"
                 },
@@ -1543,6 +1552,7 @@
                         "reload_restart_confirm": "Restartujte Home Assistant pro nové načtení této integrace",
                         "rename": "Přejmenovat",
                         "restart_confirm": "Restartujte Home Assistant pro odstranění této integrace",
+                        "services": "{count} {count, plural,\n  one {služba}\n  few {služby}\n  other {služeb}\n}",
                         "settings_button": "Upravit nastavení pro {integration}",
                         "system_options": "Více možností",
                         "system_options_button": "Upravit nastavení pro {integration}",
@@ -1762,8 +1772,21 @@
                         "versions": "Získávám informace o verzích firmwaru a typech příkazů",
                         "wakeup": "Nastavuji podporu pro probouzecí fronty a zprávy"
                     },
+                    "node": {
+                        "button": "Podrobnosti uzlu",
+                        "not_found": "Uzel nenalezen"
+                    },
+                    "nodes_table": {
+                        "failed": "Selhalo",
+                        "id": "ID",
+                        "manufacturer": "Výrobce",
+                        "model": "Model",
+                        "query_stage": "Fáze dotazu",
+                        "zwave_plus": "Z-Wave Plus"
+                    },
                     "refresh_node": {
                         "battery_note": "Pokud je uzel napájen z baterie, nezapomeňte jej probudit, než budete pokračovat",
+                        "button": "Obnovit uzel",
                         "complete": "Obnova uzlu dokončena",
                         "description": "Toto řekne OpenZWave, aby znovu provedl komunikaci s uzlem a aktualizoval typy příkazů, schopnosti a hodnoty uzlu.",
                         "node_status": "Stav uzlu",
@@ -1912,7 +1935,7 @@
                             "filter": "Nově načíst entity integrace Filter",
                             "generic": "Nově načíst entity integrace Generic IP camera",
                             "generic_thermostat": "Nově načíst entity integrace Generic thermostat",
-                            "group": "Nově načíst skupiny",
+                            "group": "Nově načíst skupiny, skupiny entit a notifikační služby",
                             "heading": "Konfigurace se načítá",
                             "history_stats": "Nově načíst entity integrace History stats",
                             "homekit": "Nově načíst entity integrace HomeKit",
@@ -1923,12 +1946,17 @@
                             "input_text": "Nově načíst pomocníky - texty",
                             "introduction": "Některé části Home Assistant lze nově načíst bez nutnosti restartování. Nové načtení zahodí jejich aktuální konfiguraci a načte novou.",
                             "min_max": "Nově načíst entity integrace Min/Max",
+                            "mqtt": "Nově načíst entity integrace MQTT",
                             "person": "Nově načíst osoby",
                             "ping": "Nově načíst entity integrace Ping",
-                            "rest": "Nově načíst entity integrace Rest",
+                            "reload": "Nově načíst integraci {domain}",
+                            "rest": "Nově načíst entity a notifikační služby integrace Rest",
+                            "rpi_gpio": "Nově načíst entity integrace Raspberry Pi GPIO",
                             "scene": "Nově načíst scény",
                             "script": "Nově načíst skripty",
+                            "smtp": "Nově načíst notifikační služby integrace SMTP",
                             "statistics": "Nově načíst entity integrace Statistics",
+                            "telegram": "Nově načíst notifikační služby integrace Telegram",
                             "template": "Nově načíst entity integrace Template",
                             "trend": "Nově načíst entity integrace Trend",
                             "universal": "Nově načíst entity integrace Universal media player",
@@ -2017,7 +2045,7 @@
                             "system": "Systémový"
                         }
                     },
-                    "users_privileges_note": "Skupina uživatelů je v přípravě. Uživatel nebude moci spravovat instanci prostřednictvím uživatelského rozhraní. Stále kontrolujeme všechny koncové body API pro správu, abychom zajistili, že správně omezují přístup."
+                    "users_privileges_note": "Skupiny uživatelů jsou v přípravě. Uživatel je nebude moci spravovat prostřednictvím uživatelského rozhraní. Stále kontrolujeme API pro správu, abychom zajistili, že správně omezuje přístup pouze pro administrátory."
                 },
                 "zha": {
                     "add_device_page": {
@@ -2549,7 +2577,11 @@
                         }
                     },
                     "cardpicker": {
+                        "by_card": "Podle karty",
+                        "by_entity": "Podle entity",
                         "custom_card": "Vlastní",
+                        "domain": "Doména",
+                        "entity": "Entita",
                         "no_description": "Žádný popis není k dispozici."
                     },
                     "edit_card": {
@@ -2563,6 +2595,7 @@
                         "options": "Více možností",
                         "pick_card": "Kterou kartu chcete přidat?",
                         "pick_card_view_title": "Kterou kartu byste chtěli přidat do svého {name} pohledu?",
+                        "search_cards": "Vyhledat karty",
                         "show_code_editor": "Zobrazit editor kódu",
                         "show_visual_editor": "Zobrazit vizuální editor",
                         "toggle_editor": "Přepnout Editor",

@@ -44,6 +44,8 @@ class ActionHandler extends HTMLElement implements ActionHandler {
 
   protected held = false;
 
+  private cancelled = false;
+
   private dblClickTimeout?: number;
 
   constructor() {
@@ -76,9 +78,12 @@ class ActionHandler extends HTMLElement implements ActionHandler {
       document.addEventListener(
         ev,
         () => {
-          clearTimeout(this.timer);
-          this.stopAnimation();
-          this.timer = undefined;
+          this.cancelled = true;
+          if (this.timer) {
+            this.stopAnimation();
+            clearTimeout(this.timer);
+            this.timer = undefined;
+          }
         },
         { passive: true }
       );
@@ -124,7 +129,7 @@ class ActionHandler extends HTMLElement implements ActionHandler {
     }
 
     element.actionHandler.start = (ev: Event) => {
-      this.held = false;
+      this.cancelled = false;
       let x;
       let y;
       if ((ev as TouchEvent).touches) {
@@ -136,6 +141,7 @@ class ActionHandler extends HTMLElement implements ActionHandler {
       }
 
       if (options.hasHold) {
+        this.held = false;
         this.timer = window.setTimeout(() => {
           this.startAnimation(x, y);
           this.held = true;
@@ -144,24 +150,20 @@ class ActionHandler extends HTMLElement implements ActionHandler {
     };
 
     element.actionHandler.end = (ev: Event) => {
-      // Don't respond on our own generated click
-      if (!ev.isTrusted) {
+      // Don't respond when moved or scrolled while touch
+      if (["touchend", "touchcancel"].includes(ev.type) && this.cancelled) {
         return;
       }
       // Prevent mouse event if touch event
-      ev.preventDefault();
+      if (ev.cancelable) {
+        ev.preventDefault();
+      }
       if (options.hasHold) {
-        if (
-          ["touchend", "touchcancel"].includes(ev.type) &&
-          this.timer === undefined
-        ) {
-          return;
-        }
         clearTimeout(this.timer);
         this.stopAnimation();
         this.timer = undefined;
       }
-      if (this.held) {
+      if (options.hasHold && this.held) {
         fireEvent(element, "action", { action: "hold" });
       } else if (options.hasDoubleClick) {
         if (
@@ -179,8 +181,6 @@ class ActionHandler extends HTMLElement implements ActionHandler {
         }
       } else {
         fireEvent(element, "action", { action: "tap" });
-        // Fire the click we prevented the action for
-        (ev.target as HTMLElement)?.click();
       }
     };
 

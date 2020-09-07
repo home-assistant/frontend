@@ -1,4 +1,3 @@
-import "../ha-icon-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
@@ -20,6 +19,7 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
+import "../ha-icon-button";
 import "./state-badge";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
@@ -95,6 +95,8 @@ class HaEntityPicker extends LitElement {
 
   @query("vaadin-combo-box-light") private _comboBox!: HTMLElement;
 
+  private _initedStates = false;
+
   private _getStates = memoizeOne(
     (
       _opened: boolean,
@@ -148,11 +150,18 @@ class HaEntityPicker extends LitElement {
   );
 
   protected shouldUpdate(changedProps: PropertyValues) {
+    if (
+      changedProps.has("value") ||
+      changedProps.has("label") ||
+      changedProps.has("disabled")
+    ) {
+      return true;
+    }
     return !(!changedProps.has("_opened") && this._opened);
   }
 
   protected updated(changedProps: PropertyValues) {
-    if (changedProps.has("_opened") && this._opened) {
+    if (!this._initedStates || (changedProps.has("_opened") && this._opened)) {
       const states = this._getStates(
         this._opened,
         this.hass,
@@ -162,6 +171,7 @@ class HaEntityPicker extends LitElement {
         this.includeDeviceClasses
       );
       (this._comboBox as any).items = states;
+      this._initedStates = true;
     }
   }
 
@@ -169,7 +179,6 @@ class HaEntityPicker extends LitElement {
     if (!this.hass) {
       return html``;
     }
-
     return html`
       <vaadin-combo-box-light
         item-value-path="entity_id"

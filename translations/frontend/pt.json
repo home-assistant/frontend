@@ -419,7 +419,7 @@
                 "unlock": "Desbloquear"
             },
             "media_player": {
-                "browse_media": "Pesquisar mídia",
+                "browse_media": "Pesquisar media",
                 "media_next_track": "Próximo",
                 "media_play": "Reproduzir",
                 "media_play_pause": "Reproduzir/pausar",
@@ -505,6 +505,7 @@
             "back": "Retroceder",
             "cancel": "Cancelar",
             "close": "Fechar",
+            "continue": "Continuar",
             "delete": "Apagar",
             "error_required": "Obrigatório",
             "loading": "A carregar",
@@ -562,6 +563,8 @@
                 "no_history_found": "Nenhum histórico de estado encontrado."
             },
             "media-browser": {
+                "audio_not_supported": "O seu navegador não suporta o elemento de áudio.",
+                "choose_player": "Escolha o Leitor",
                 "choose-source": "Escolha a fonte",
                 "content-type": {
                     "album": "Álbum",
@@ -570,12 +573,15 @@
                     "playlist": "Lista de reprodução",
                     "server": "Servidor"
                 },
+                "media_player": "Leitor multimédia",
                 "media-player-browser": "Navegador do Media Player",
                 "no_items": "Sem itens",
                 "pick": "Escolher",
-                "pick-media": "Escolha a mídia",
+                "pick-media": "Escolha a média",
                 "play": "Reproduzir",
-                "play-media": "Reproduzir Mídia"
+                "play-media": "Reproduzir Média",
+                "video_not_supported": "O seu navegador não suporta o elemento de vídeo.",
+                "web-browser": "Navegador web"
             },
             "picture-upload": {
                 "label": "Imagem",
@@ -600,7 +606,7 @@
                     "second": "{count} {count, plural,\n  one {segundo}\n  other {segundos}\n}",
                     "week": "{count} {count, plural,\n  one {semana}\n  other {semanas}\n}"
                 },
-                "future": "À {time}",
+                "future": "Há {time}",
                 "just_now": "Agora mesmo",
                 "never": "Nunca",
                 "past": "{time} atrás"
@@ -690,6 +696,7 @@
             "more_info_control": {
                 "dismiss": "Descartar diálogo",
                 "edit": "Editar entidade",
+                "history": "Histórico",
                 "person": {
                     "create_zone": "Criar zona a partir da localização atual"
                 },
@@ -851,7 +858,7 @@
                 },
                 "automation": {
                     "caption": "Automação",
-                    "description": "Criar e editar automações",
+                    "description": "Gerir Automações",
                     "editor": {
                         "actions": {
                             "add": "Adicionar ação",
@@ -1357,7 +1364,7 @@
                     "caption": "Dispositivos",
                     "confirm_delete": "Tem a certeza que quer apagar este dispositivo?",
                     "confirm_rename_entity_ids": "Deseja também renomear os id's de entidade de suas entidades?",
-                    "confirm_rename_entity_ids_warning": "Isso não mudará nenhuma configuração (como automações, scripts, cenas, Lovelace) que está usando essas entidades, você mesmo terá que atualizá-las.",
+                    "confirm_rename_entity_ids_warning": "Tal não altera nenhuma configuração (como automações, scripts, cenas, Lovelace) que esteja a usar essas entidades, terá que atualizá-las por si.",
                     "data_table": {
                         "area": "Área",
                         "battery": "Bateria",
@@ -1720,10 +1727,22 @@
                     },
                     "network": {
                         "header": "Gestão de Rede",
-                        "introduction": "Gerenciar funções em toda a rede.",
+                        "introduction": "Gerir funções de rede.",
                         "node_count": "{count} nós"
                     },
+                    "node": {
+                        "button": "Detalhes do nó",
+                        "not_found": "Nó não encontrado"
+                    },
+                    "nodes_table": {
+                        "failed": "Falhou",
+                        "id": "ID",
+                        "manufacturer": "Fabricante",
+                        "model": "Modelo",
+                        "zwave_plus": "Z-Wave Plus"
+                    },
                     "refresh_node": {
+                        "button": "Atualizar nó",
                         "node_status": "Estado do Nó",
                         "refreshing_description": "A atualizar as informações do nó ...",
                         "start_refresh_button": "Iniciar atualização",
@@ -1733,7 +1752,7 @@
                     },
                     "select_instance": {
                         "header": "Selecione uma instância OpenZWave",
-                        "introduction": "Você tem mais de uma instância OpenZWave em execução. Qual instância você gostaria de gerenciar?"
+                        "introduction": "Tem mais do que uma instância Openzwave em execução. Que instância deseja gerir?"
                     },
                     "services": {
                         "add_node": "Adicionar nó",
@@ -1880,9 +1899,11 @@
                             "input_text": "Recarregar input texts",
                             "introduction": "Algumas partes do Home Assistant podem ser recarregadas sem a necessidade de reiniciar. Ao carregar em Recarregar a configuração irá descartar a configuração atual e carregar a nova.",
                             "min_max": "Recarregar entidades Mín. / Máx.",
+                            "mqtt": "Recarregar entidades mqtt",
                             "person": "Recarregar pessoas",
                             "ping": "Recarregar entidades de sensor binárias de ping",
-                            "rest": "Recarregar entidades REST",
+                            "reload": "Recarregar {domain}",
+                            "rest": "Recarregar as restantes entidades e notificar serviços",
                             "scene": "Recarregar cenas",
                             "script": "Recarregar scripts",
                             "statistics": "Recarregar entidades estatísticas",
@@ -2011,7 +2032,7 @@
                     "clusters": {
                         "header": "Clusters",
                         "help_cluster_dropdown": "Selecione um cluster para visualizar atributos e comandos.",
-                        "introduction": "Clusters são os blocos de construção para a funcionalidade Zigbee. Eles separam a funcionalidade em unidades lógicas. Existem tipos de cliente e servidor e que são compostos de atributos e comandos."
+                        "introduction": "Os Clusters são os blocos de construção da funcionalidade Zigbee. Eles separam a funcionalidade em unidades lógicas. Existem do tipo cliente e servidor e são compostos de atributos e comandos."
                     },
                     "common": {
                         "add_devices": "Adicionar dispositivos",
@@ -2505,7 +2526,11 @@
                         }
                     },
                     "cardpicker": {
+                        "by_card": "Pelo Cartão",
+                        "by_entity": "Pela Entidade",
                         "custom_card": "Personalizado",
+                        "domain": "Domínio",
+                        "entity": "Entidade",
                         "no_description": "Não há descrição disponível."
                     },
                     "edit_card": {
@@ -2519,6 +2544,7 @@
                         "options": "Mais opções",
                         "pick_card": "Que cartão gostaria de adicionar?",
                         "pick_card_view_title": "Que cartão você gostaria de adicionar à sua vista {name}?",
+                        "search_cards": "Procurar cartões",
                         "show_code_editor": "Mostrar Editor de Código",
                         "show_visual_editor": "Mostrar Editor Visual",
                         "toggle_editor": "Alternar Editor",
@@ -2606,7 +2632,7 @@
                 },
                 "menu": {
                     "close": "Fechar",
-                    "configure_ui": "Configurar UI",
+                    "configure_ui": "Configurar Painel",
                     "exit_edit_mode": "Sair do modo de edição do IU",
                     "help": "Ajuda",
                     "refresh": "Atualizar",
