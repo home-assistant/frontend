@@ -68,6 +68,8 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   @internalProperty() private _loading = false;
 
+  @internalProperty() private _error?: { message: string; code: string };
+
   @internalProperty() private _mediaPlayerItems: MediaPlayerItem[] = [];
 
   private _resizeObserver?: ResizeObserver;
@@ -92,9 +94,52 @@ export class HaMediaPlayerBrowse extends LitElement {
     this._navigate(item);
   }
 
+  private _renderError(err: { message: string; code: string }) {
+    if (err.message === "Path does not exist.") {
+      return html`
+        <h2>No local media found.</h2>
+        <p>
+          It looks like you have not yet created a media directory.
+          <br />Create a directory with the name <b>"media"</b> in the
+          configuration directory of Home Assistant. <br />Place your video,
+          audio and image files in this directory to be able to browse and play
+          them in the browser or on supported media players.
+        </p>
+
+        <p>
+          Check the
+          <a
+            href="https://www.home-assistant.io/integrations/media_source/#local-media"
+            target="_blank"
+            rel="noreferrer"
+            >documentation</a
+          >
+          for more info
+        </p>
+      `;
+    }
+    return err.message;
+  }
+
   protected render(): TemplateResult {
     if (this._loading) {
       return html`<ha-circular-progress active></ha-circular-progress>`;
+    }
+
+    if (this._error && !this._mediaPlayerItems.length) {
+      if (this.dialog) {
+        this._closeDialogAction();
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.components.media-browser.media_browsing_error"
+          ),
+          text: this._renderError(this._error),
+        });
+      } else {
+        return html`<div class="container error">
+          ${this._renderError(this._error)}
+        </div>`;
+      }
     }
 
     if (!this._mediaPlayerItems.length) {
@@ -216,7 +261,11 @@ export class HaMediaPlayerBrowse extends LitElement {
             `
           : ""}
       </div>
-      ${currentItem.children?.length
+      ${this._error
+        ? html`<div class="container error">
+            ${this._renderError(this._error)}
+          </div>`
+        : currentItem.children?.length
         ? hasExpandableChildren
           ? html`
               <div class="children">
@@ -316,7 +365,9 @@ export class HaMediaPlayerBrowse extends LitElement {
                 )}
               </mwc-list>
             `
-        : this.hass.localize("ui.components.media-browser.no_items")}
+        : html`<div class="container">
+            ${this.hass.localize("ui.components.media-browser.no_items")}
+          </div>`}
     `;
   }
 
@@ -340,6 +391,11 @@ export class HaMediaPlayerBrowse extends LitElement {
       !changedProps.has("action")
     ) {
       return;
+    }
+
+    if (changedProps.has("entityId")) {
+      this._error = undefined;
+      this._mediaPlayerItems = [];
     }
 
     this._fetchData(this.mediaContentId, this.mediaContentType).then(
@@ -381,14 +437,20 @@ export class HaMediaPlayerBrowse extends LitElement {
   }
 
   private async _navigate(item: MediaPlayerItem) {
-    const itemData = await this._fetchData(
+    this._error = undefined;
+
+    const itemData = (await this._fetchData(
       item.media_content_id,
       item.media_content_type
-    );
-
-    if (!itemData) {
-      return;
-    }
+    )) || {
+      title: this.hass.localize(
+        "ui.components.media-browser.media_browsing_error"
+      ),
+      can_expand: false,
+      can_play: false,
+      media_content_type: "",
+      media_content_id: "",
+    };
 
     this.scrollTo(0, 0);
     this._mediaPlayerItems = [...this._mediaPlayerItems, itemData];
@@ -417,12 +479,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           : compare(first.title, second.title)
       );
     } catch (error) {
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.components.media-browser.media_browsing_error"
-        ),
-        text: error.message,
-      });
+      this._error = error;
     }
 
     return itemData;
@@ -451,8 +508,8 @@ export class HaMediaPlayerBrowse extends LitElement {
     this._resizeObserver.observe(this);
   }
 
-  private _hasExpandableChildren = memoizeOne((children) =>
-    children.find((item: MediaPlayerItem) => item.can_expand)
+  private _hasExpandableChildren = memoizeOne((children?: MediaPlayerItem[]) =>
+    children?.find((item: MediaPlayerItem) => item.can_expand)
   );
 
   private _closeDialogAction(): void {
@@ -469,6 +526,10 @@ export class HaMediaPlayerBrowse extends LitElement {
           display: flex;
           padding: 0px 0px 20px;
           flex-direction: column;
+        }
+
+        .container {
+          padding: 16px;
         }
 
         .header {
