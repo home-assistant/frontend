@@ -5,6 +5,15 @@
     <link rel="preload" href="<%= latestPageJS %>" as="script" crossorigin="use-credentials" />
     <%= renderTemplate('_header') %>
     <style>
+      html {
+        color: var(--primary-text-color, #212121);
+      }
+      @media (prefers-color-scheme: dark) {
+        html {
+          background-color: #111111;
+          color: var(--primary-text-color, #e1e1e1);
+        }
+      }
       .content {
         padding: 20px 16px;
         max-width: 400px;
@@ -22,14 +31,6 @@
 
       .header img {
         margin-right: 16px;
-      }
-      @media (prefers-color-scheme: dark) {
-        body {
-          background-color: #111111;
-          color: #e1e1e1;
-          --primary-text-color: #e1e1e1;
-          --secondary-text-color: #9b9b9b;
-        }
       }
     </style>
   </head>
