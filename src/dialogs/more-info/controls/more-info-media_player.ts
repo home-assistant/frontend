@@ -40,7 +40,6 @@ import {
   SUPPORT_VOLUME_SET,
 } from "../../../data/media-player";
 import { HomeAssistant, MediaEntity } from "../../../types";
-import { fireEvent } from "../../../common/dom/fire_event";
 
 @customElement("more-info-media_player")
 class MoreInfoMediaPlayer extends LitElement {
