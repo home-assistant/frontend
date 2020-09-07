@@ -405,7 +405,6 @@ class MoreInfoMediaPlayer extends LitElement {
   }
 
   private _showBrowseMedia(): void {
-    fireEvent(this, "hass-more-info", { entityId: null });
     showMediaBrowserDialog(this, {
       action: "play",
       entityId: this.stateObj!.entity_id,
