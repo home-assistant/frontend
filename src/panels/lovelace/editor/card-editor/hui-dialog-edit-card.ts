@@ -366,6 +366,7 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
 
         ha-dialog {
           --mdc-dialog-max-width: 845px;
+          --dialog-z-index: 5;
         }
 
         ha-header-bar {
