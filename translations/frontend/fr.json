@@ -79,7 +79,7 @@
         "default": {
             "entity_not_found": "Entité introuvable",
             "error": "Erreur",
-            "unavailable": "Indisponible",
+            "unavailable": "Indispo.",
             "unknown": "Inconnu"
         },
         "device_tracker": {
@@ -170,7 +170,7 @@
                 "on": "Problème"
             },
             "safety": {
-                "off": "Sécurisé",
+                "off": "Sûr",
                 "on": "Dangereux"
             },
             "smoke": {
@@ -318,7 +318,7 @@
             "fog": "Brouillard",
             "hail": "Grêle",
             "lightning": "Orage",
-            "lightning-rainy": "Orage / Pluie",
+            "lightning-rainy": "Orage / Pluvieux",
             "partlycloudy": "Partiellement nuageux",
             "pouring": "Averses",
             "rainy": "Pluvieux",
@@ -351,7 +351,7 @@
             "alarm_control_panel": {
                 "arm_away": "Armer (absent)",
                 "arm_custom_bypass": "Bypass personnalisé",
-                "arm_home": "Armer (domicile)",
+                "arm_home": "Armer (présent)",
                 "arm_night": "Armer nuit",
                 "clear_code": "Effacer",
                 "code": "Code",
@@ -1451,7 +1451,7 @@
                             "name": "Nom",
                             "status": "Statut"
                         },
-                        "introduction": "Home Assistant tient un registre de chaque entité qu'il a déjà vu au moins une fois et qui peut être identifié de manière unique. Chacune de ces entités se verra attribuer un identifiant qui sera réservé à cette seule entité.",
+                        "introduction": "Home Assistant tient un registre de chaque entité qu'il a déjà vu au moins une fois et qui peut être identifiée de manière unique. Chacune de ces entités se verra attribuer un identifiant qui sera réservé à cette seule entité.",
                         "introduction2": "Utilisé le registre des entités pour remplacer le nom, modifier l'ID de l'entité ou supprimer l'entrée de Home Assistant.",
                         "remove_selected": {
                             "button": "Supprimer la sélection",
@@ -1543,7 +1543,7 @@
                         "firmware": "Firmware: {version}",
                         "hub": "Connecté via",
                         "manuf": "par {manufacturer}",
-                        "no_area": "Pas de pièce",
+                        "no_area": "Pas de zone",
                         "no_device": "Entités sans appareils",
                         "no_devices": "Cette intégration n'a pas d'appareils.",
                         "options": "Options",
@@ -1749,7 +1749,7 @@
                     },
                     "network": {
                         "header": "Gestion du réseau",
-                        "introduction": "Διαχείρηση λειτουργιών δικτύου",
+                        "introduction": "Gérez les fonctions de niveau réseau.",
                         "node_count": "{count} nœuds"
                     },
                     "node_query_stages": {
@@ -1934,7 +1934,7 @@
                             "filter": "Recharger les entités de filtre",
                             "generic": "Recharger les entités de caméra IP générique",
                             "generic_thermostat": "Recharger les entités de thermostat générique",
-                            "group": "Recharger les groupes",
+                            "group": "Recharger les groupes, les entités de groupe et notifier les services",
                             "heading": "Rechargement de la configuration",
                             "history_stats": "Recharger les entités des statistiques historiques",
                             "homekit": "Recharger HomeKit",
@@ -2082,7 +2082,7 @@
                     "clusters": {
                         "header": "Clusters",
                         "help_cluster_dropdown": "Sélectionnez un cluster pour afficher les attributs et les commandes.",
-                        "introduction": "Les grappes sont les éléments de construction de la fonctionnalité Zigbee. Ils séparent les fonctionnalités en unités logiques. Il en existe de type clients et serveurs qui sont composés d'attributs et de commandes."
+                        "introduction": "Les grappes sont les éléments de construction de la fonctionnalité Zigbee. Ils séparent les fonctionnalités en unités logiques. Il en existe de types client et serveur et sont composés d'attributs et de commandes."
                     },
                     "common": {
                         "add_devices": "Ajouter des appareils",
@@ -2523,7 +2523,7 @@
                         },
                         "markdown": {
                             "content": "Contenu",
-                            "description": "La carte Markdown est utilisée pour afficher du Markdown.",
+                            "description": "La carte Markdown est utilisée pour le rendu du Markdown.",
                             "name": "Markdown"
                         },
                         "media-control": {
@@ -2797,7 +2797,7 @@
                                     "data": {
                                         "code": "Code d'authentification à deux facteurs"
                                     },
-                                    "description": "Ouvrez le **{mfa_module_name}** sur votre appareil pour afficher votre code d'authentification à deux facteurs et vérifier votre identité:"
+                                    "description": "Ouvrez le ** {mfa_module_name} ** sur votre appareil pour afficher votre code d'authentification à deux facteurs et confirmer votre identité:"
                                 }
                             }
                         },
@@ -2817,7 +2817,7 @@
                         }
                     },
                     "start_over": "Recommencer",
-                    "unknown_error": "Quelque chose a mal tourné",
+                    "unknown_error": "Un problème est survenu",
                     "working": "Veuillez patienter"
                 },
                 "initializing": "Initialisation",

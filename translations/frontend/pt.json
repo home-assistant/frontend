@@ -1730,13 +1730,19 @@
                         "introduction": "Gerir funções de rede.",
                         "node_count": "{count} nós"
                     },
+                    "node": {
+                        "button": "Detalhes do nó",
+                        "not_found": "Nó não encontrado"
+                    },
                     "nodes_table": {
+                        "failed": "Falhou",
                         "id": "ID",
                         "manufacturer": "Fabricante",
                         "model": "Modelo",
                         "zwave_plus": "Z-Wave Plus"
                     },
                     "refresh_node": {
+                        "button": "Atualizar nó",
                         "node_status": "Estado do Nó",
                         "refreshing_description": "A atualizar as informações do nó ...",
                         "start_refresh_button": "Iniciar atualização",

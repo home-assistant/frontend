@@ -19,6 +19,7 @@
         "logbook": "Logbook",
         "mailbox": "Mailbox",
         "map": "Map",
+        "media_browser": "Media Browser",
         "profile": "Profile",
         "shopping_list": "Shopping list",
         "states": "Overview"
@@ -573,6 +574,7 @@
                     "playlist": "Playlist",
                     "server": "Server"
                 },
+                "media_browsing_error": "Media Browsing Error",
                 "media_not_supported": "The Browser Media Player does not support this type of media",
                 "media_player": "Media Player",
                 "media-player-browser": "Media Player Browser",

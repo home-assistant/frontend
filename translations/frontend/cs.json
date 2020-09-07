@@ -1552,6 +1552,7 @@
                         "reload_restart_confirm": "Restartujte Home Assistant pro nové načtení této integrace",
                         "rename": "Přejmenovat",
                         "restart_confirm": "Restartujte Home Assistant pro odstranění této integrace",
+                        "services": "{count} {count, plural,\n  one {služba}\n  few {služby}\n  other {služeb}\n}",
                         "settings_button": "Upravit nastavení pro {integration}",
                         "system_options": "Více možností",
                         "system_options_button": "Upravit nastavení pro {integration}",
