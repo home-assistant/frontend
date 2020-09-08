@@ -105,12 +105,12 @@ class MoreInfoLight extends LitElement {
                 ? html`
                     <div class="segmentationContainer">
                       <ha-color-picker
-                        throttle="500"
                         class="color"
+                        @colorselected=${this._colorPicked}
                         .desiredHsColor=${this._colorPickerColor}
+                        throttle="500"
                         .hueSegments=${this._hueSegments}
                         .saturationSegments=${this._saturationSegments}
-                        @colorselected=${this._colorPicked}
                       >
                       </ha-color-picker>
                       <ha-icon-button
@@ -147,7 +147,7 @@ class MoreInfoLight extends LitElement {
           : ""}
         <ha-attributes
           .stateObj=${this.stateObj}
-          .extraFilters=${"brightness,color_temp,white_value,effect_list,effect,hs_color,rgb_color,xy_color,min_mireds,max_mireds,entity_id"}
+          extra-filters="brightness,color_temp,white_value,effect_list,effect,hs_color,rgb_color,xy_color,min_mireds,max_mireds,entity_id"
         ></ha-attributes>
       </div>
     `;
