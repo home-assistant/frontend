@@ -37,10 +37,6 @@ interface WeekdayHaSwitch extends HaSwitch {
   day: string;
 }
 
-interface WeekdayHaSwitch extends HaSwitch {
-  day: string;
-}
-
 @customElement("ha-automation-condition-time")
 export class HaTimeCondition extends LitElement implements ConditionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
