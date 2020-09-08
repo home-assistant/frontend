@@ -19,6 +19,7 @@
         "logbook": "Registro",
         "mailbox": "Buzón",
         "map": "Mapa",
+        "media_browser": "Navegador de medios",
         "profile": "Perfil",
         "shopping_list": "Lista de la compra",
         "states": "Resumen"
@@ -505,6 +506,7 @@
             "back": "Volver",
             "cancel": "Cancelar",
             "close": "Cerrar",
+            "continue": "Continuar",
             "delete": "Eliminar",
             "error_required": "Obligatorio",
             "loading": "Cargando",
@@ -562,6 +564,8 @@
                 "no_history_found": "No se encontró historial de estado."
             },
             "media-browser": {
+                "audio_not_supported": "Tu navegador no es compatible con el elemento de audio.",
+                "choose_player": "Elige reproductor",
                 "choose-source": "Elige la fuente",
                 "content-type": {
                     "album": "Álbum",
@@ -570,12 +574,17 @@
                     "playlist": "Lista de reproducción",
                     "server": "Servidor"
                 },
+                "media_browsing_error": "Error de navegación de medios",
+                "media_not_supported": "El Reproductor multimedia del navegador no es compatible con este tipo de medio",
+                "media_player": "Reproductor multimedia",
                 "media-player-browser": "Navegador del Reproductor Multimedia",
                 "no_items": "No hay elementos",
                 "pick": "Elegir",
                 "pick-media": "Elegir medio",
                 "play": "Reproducir",
-                "play-media": "Reproducir medio"
+                "play-media": "Reproducir medio",
+                "video_not_supported": "Tu navegador no es compatible con el elemento de vídeo.",
+                "web-browser": "Navegador web"
             },
             "picture-upload": {
                 "label": "Imagen",
@@ -689,8 +698,10 @@
                 "crop": "Recortar"
             },
             "more_info_control": {
+                "controls": "Controles",
                 "dismiss": "Descartar diálogo",
                 "edit": "Editar entidad",
+                "history": "Historial",
                 "person": {
                     "create_zone": "Crear zona a partir de la ubicación actual"
                 },
@@ -1543,6 +1554,7 @@
                         "reload_restart_confirm": "Reinicia Home Assistant para terminar de recargar esta integración",
                         "rename": "Renombrar",
                         "restart_confirm": "Reinicia Home Assistant para terminar de eliminar esta integración.",
+                        "services": "{count} {count, plural,\n  one {servicio}\n  other {servicios}\n}",
                         "settings_button": "Editar configuración para {integration}",
                         "system_options": "Opciones del sistema",
                         "system_options_button": "Opciones del sistema para {integration}",
@@ -1762,8 +1774,21 @@
                         "versions": "Obteniendo información sobre versiones de firmware y clases de órdenes",
                         "wakeup": "Configurando soporte para colas de despertador y mensajes"
                     },
+                    "node": {
+                        "button": "Detalles del nodo",
+                        "not_found": "Nodo no encontrado"
+                    },
+                    "nodes_table": {
+                        "failed": "Ha fallado",
+                        "id": "ID",
+                        "manufacturer": "Fabricante",
+                        "model": "Modelo",
+                        "query_stage": "Etapa de consulta",
+                        "zwave_plus": "Z-Wave Plus"
+                    },
                     "refresh_node": {
                         "battery_note": "Si el nodo funciona con batería, asegúrate de despertarlo antes de continuar",
+                        "button": "Actualizar nodo",
                         "complete": "Refresco del Nodo Finalizado",
                         "description": "Esto le indicará a OpenZWave que vuelva a entrevistar un nodo y actualice las clases de órdenes, las capacidades y los valores del mismo.",
                         "node_status": "Estado del Nodo",
@@ -1912,7 +1937,7 @@
                             "filter": "Recargar entidades de filtro",
                             "generic": "Recargar entidades de cámara IP genéricas",
                             "generic_thermostat": "Recargar entidades de termostato genéricas",
-                            "group": "Recargar grupos",
+                            "group": "Recargar grupos, entidades de grupo, y notificar servicios",
                             "heading": "Recargando la configuración YAML",
                             "history_stats": "Recargar entidades de estadísticas del historial",
                             "homekit": "Recargar HomeKit",
@@ -1923,12 +1948,17 @@
                             "input_text": "Recargar los campos de texto",
                             "introduction": "Algunas partes de Home Assistant pueden recargarse sin necesidad de reiniciar. Al pulsar en recargar se descartará la configuración YAML actual y se cargará la nueva.",
                             "min_max": "Recargar entidades min/max",
+                            "mqtt": "Recargar entidades mqtt",
                             "person": "Recargar personas",
                             "ping": "Recargar entidades de sensor binario de ping",
-                            "rest": "Recargar entidades rest",
+                            "reload": "Recargar {domain}",
+                            "rest": "Recargar entidades rest y notificar servicios",
+                            "rpi_gpio": "Recargar entidades GPIO de Raspberry Pi",
                             "scene": "Recargar escenas",
                             "script": "Recargar scripts",
+                            "smtp": "Recargar servicios de notificación smtp",
                             "statistics": "Recargar entidades de estadísticas",
+                            "telegram": "Recargar servicios de notificación de telegram",
                             "template": "Recargar entidades de plantilla",
                             "trend": "Recargar entidades de tendencia",
                             "universal": "Recargar entidades de reproductor multimedia universal",
@@ -2017,7 +2047,7 @@
                             "system": "Sistema"
                         }
                     },
-                    "users_privileges_note": "El grupo de usuarios es un trabajo en progreso. El usuario no podrá administrar la instancia a través de la interfaz de usuario. Todavía estamos auditando todos los endpoints de la API de administración para garantizar que se limita correctamente el acceso sólo a los administradores."
+                    "users_privileges_note": "El grupo de usuarios es un trabajo en progreso. El usuario no podrá administrar la instancia a través de la IU. Todavía estamos auditando todos los endpoints de la API de administración para garantizar que se limita correctamente el acceso sólo a los administradores."
                 },
                 "zha": {
                     "add_device_page": {
@@ -2055,7 +2085,7 @@
                     "clusters": {
                         "header": "Clústeres",
                         "help_cluster_dropdown": "Selecciona un clúster para ver atributos y comandos.",
-                        "introduction": "Los clústeres son los bloques de construcción para la funcionalidad de Zigbee. Separan la funcionalidad en unidades lógicas. Hay tipos de cliente y servidor y se componen de atributos y comandos."
+                        "introduction": "Los clústeres son los bloques de construcción para la funcionalidad de Zigbee. Separan la funcionalidad en unidades lógicas. Hay tipos de cliente y de servidor y se componen de atributos y comandos."
                     },
                     "common": {
                         "add_devices": "Añadir dispositivos",
@@ -2188,7 +2218,7 @@
                         "true": "Verdadero"
                     },
                     "node_management": {
-                        "add_to_group": "Añadir al grupo",
+                        "add_to_group": "Añadir al Grupo",
                         "entities": "Entidades de este nodo",
                         "entity_info": "Información de la entidad",
                         "exclude_entity": "Excluir esta entidad de Home Assistant",
@@ -2205,7 +2235,7 @@
                         "pooling_intensity": "Intensidad de sondeo",
                         "protection": "Protección",
                         "remove_broadcast": "Eliminar difusión",
-                        "remove_from_group": "Eliminar del grupo",
+                        "remove_from_group": "Eliminar del Grupo",
                         "set_protection": "Establecer protección"
                     },
                     "ozw_log": {
@@ -2549,7 +2579,11 @@
                         }
                     },
                     "cardpicker": {
+                        "by_card": "Por tarjeta",
+                        "by_entity": "Por entidad",
                         "custom_card": "Personalizado",
+                        "domain": "Dominio",
+                        "entity": "Entidad",
                         "no_description": "No hay descripción disponible."
                     },
                     "edit_card": {
@@ -2563,6 +2597,7 @@
                         "options": "Más opciones",
                         "pick_card": "¿Qué tarjeta te gustaría añadir?",
                         "pick_card_view_title": "¿Qué tarjeta te gustaría añadir a tu vista {name} ?",
+                        "search_cards": "Buscar tarjetas",
                         "show_code_editor": "Mostrar editor de código",
                         "show_visual_editor": "Mostrar editor visual",
                         "toggle_editor": "Alternar editor",

@@ -11,21 +11,93 @@
     },
     "state_badge": {
         "alarm_control_panel": {
+            "armed_away": "",
+            "armed_custom_bypass": "",
+            "armed_night": "",
             "arming": "Aktiviranje",
             "disarming": "Deaktiviraj"
         },
         "default": {
             "entity_not_found": "Вредност није пронађена",
             "error": "Грешка"
+        },
+        "device_tracker": {
+            "home": "",
+            "not_home": ""
         }
     },
     "state": {
+        "automation": {
+            "off": "",
+            "on": ""
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "",
+                "on": ""
+            },
+            "motion": {
+                "on": ""
+            },
+            "occupancy": {
+                "off": ""
+            },
+            "opening": {
+                "on": ""
+            },
+            "presence": {
+                "off": "",
+                "on": ""
+            },
+            "vibration": {
+                "off": "",
+                "on": ""
+            }
+        },
+        "calendar": {
+            "off": "",
+            "on": ""
+        },
+        "fan": {
+            "off": "",
+            "on": ""
+        },
+        "group": {
+            "home": "",
+            "not_home": "",
+            "off": "",
+            "on": "",
+            "problem": ""
+        },
+        "input_boolean": {
+            "on": ""
+        },
+        "light": {
+            "off": "",
+            "on": ""
+        },
+        "media_player": {
+            "off": "",
+            "on": ""
+        },
+        "remote": {
+            "on": ""
+        },
+        "script": {
+            "off": "",
+            "on": ""
+        },
+        "sensor": {
+            "off": "",
+            "on": ""
+        },
         "sun": {
             "above_horizon": "Iznad horizonta",
             "below_horizon": "Ispod horizonta"
         },
         "switch": {
-            "off": "Isključen"
+            "off": "Isključen",
+            "on": ""
         },
         "timer": {
             "active": "укључен",
@@ -56,6 +128,13 @@
             "config": {
                 "automation": {
                     "editor": {
+                        "conditions": {
+                            "type": {
+                                "zone": {
+                                    "entity": ""
+                                }
+                            }
+                        },
                         "triggers": {
                             "learn_more": "Сазнајте више о окидачима",
                             "type": {
@@ -110,6 +189,45 @@
                         "navigate_to": "Отиђите на {location}",
                         "tap": "Додирни",
                         "toggle": "Укључи {name}"
+                    }
+                }
+            },
+            "page-authorize": {
+                "form": {
+                    "providers": {
+                        "command_line": {
+                            "abort": {
+                                "login_expired": ""
+                            },
+                            "error": {
+                                "invalid_auth": "",
+                                "invalid_code": ""
+                            },
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "",
+                                        "username": ""
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": ""
+                                    },
+                                    "description": ""
+                                }
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "mfa": {
+                                    "data": {
+                                        "code": ""
+                                    },
+                                    "description": ""
+                                }
+                            }
+                        }
                     }
                 }
             },

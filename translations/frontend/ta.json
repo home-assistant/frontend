@@ -35,7 +35,8 @@
             "unknown": "தெரியாத"
         },
         "device_tracker": {
-            "home": "முகப்பு"
+            "home": "முகப்பு",
+            "not_home": ""
         },
         "person": {
             "home": "முகப்பு"
@@ -239,6 +240,13 @@
             "config": {
                 "automation": {
                     "editor": {
+                        "conditions": {
+                            "type": {
+                                "zone": {
+                                    "entity": ""
+                                }
+                            }
+                        },
                         "triggers": {
                             "type": {
                                 "mqtt": {
@@ -255,6 +263,45 @@
                     "caption": "Z-Wave",
                     "node_config": {
                         "set_config_parameter": "கட்டமைப்பு அளவுருவை அமைக்கவும்"
+                    }
+                }
+            },
+            "page-authorize": {
+                "form": {
+                    "providers": {
+                        "command_line": {
+                            "abort": {
+                                "login_expired": ""
+                            },
+                            "error": {
+                                "invalid_auth": "",
+                                "invalid_code": ""
+                            },
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "",
+                                        "username": ""
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": ""
+                                    },
+                                    "description": ""
+                                }
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "mfa": {
+                                    "data": {
+                                        "code": ""
+                                    },
+                                    "description": ""
+                                }
+                            }
+                        }
                     }
                 }
             }

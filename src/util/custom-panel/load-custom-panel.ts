@@ -47,17 +47,6 @@ export const loadCustomPanel = (
 ): Promise<unknown> => {
   const panelSource = getUrl(panelConfig);
 
-  if (panelSource.type === "html") {
-    const toLoad = [
-      import(
-        /* webpackChunkName: "import-href-polyfill" */ "../../resources/html-import/import-href"
-      ),
-    ];
-
-    return Promise.all(toLoad).then(([{ importHrefPromise }]) =>
-      importHrefPromise(panelSource.url)
-    );
-  }
   if (panelSource.type === "js") {
     if (!(panelSource.url in JS_CACHE)) {
       JS_CACHE[panelSource.url] = loadJS(panelSource.url);

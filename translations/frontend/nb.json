@@ -19,6 +19,7 @@
         "logbook": "Loggbok",
         "mailbox": "Postkasse",
         "map": "Kart",
+        "media_browser": "Medieleser",
         "profile": "Profil",
         "shopping_list": "Handleliste",
         "states": "Oversikt"
@@ -26,6 +27,7 @@
     "state_attributes": {
         "climate": {
             "fan_mode": {
+                "auto": "",
                 "off": "Av",
                 "on": "På"
             },
@@ -50,11 +52,14 @@
         },
         "humidifier": {
             "mode": {
+                "auto": "",
                 "away": "Borte",
+                "baby": "",
                 "boost": "Øke",
                 "comfort": "Komfort",
                 "eco": "Øko",
                 "home": "Hjem",
+                "normal": "",
                 "sleep": "Sove"
             }
         }
@@ -110,6 +115,7 @@
                 "on": "Lavt"
             },
             "cold": {
+                "off": "",
                 "on": "Kald"
             },
             "connectivity": {
@@ -159,6 +165,10 @@
             "presence": {
                 "off": "Borte",
                 "on": "Hjemme"
+            },
+            "problem": {
+                "off": "",
+                "on": ""
             },
             "safety": {
                 "off": "Sikker",
@@ -229,6 +239,7 @@
             "locked": "Låst",
             "not_home": "Borte",
             "off": "Av",
+            "ok": "",
             "on": "På",
             "open": "Åpen",
             "opening": "Åpner",
@@ -260,6 +271,7 @@
             "home": "Hjemme"
         },
         "plant": {
+            "ok": "",
             "problem": "Problem"
         },
         "remote": {
@@ -365,6 +377,7 @@
                 "low": "lav",
                 "on_off": "På / av",
                 "operation": "Operasjon",
+                "preset_mode": "",
                 "swing_mode": "Svingmodus",
                 "target_humidity": "Ønsket luftfuktighet",
                 "target_temperature": "Ønsket temperatur",
@@ -409,7 +422,7 @@
             "media_player": {
                 "browse_media": "Bla gjennom medier",
                 "media_next_track": "Neste",
-                "media_play": "Spille",
+                "media_play": "Spill av",
                 "media_play_pause": "Spill av/pause",
                 "media_previous_track": "Forrige",
                 "sound_mode": "Lydmodus",
@@ -435,7 +448,9 @@
             "timer": {
                 "actions": {
                     "cancel": "Avbryt",
-                    "finish": "Ferdig"
+                    "finish": "Ferdig",
+                    "pause": "",
+                    "start": ""
                 }
             },
             "vacuum": {
@@ -467,10 +482,12 @@
                     "e": "Ø",
                     "ene": "ØNØ",
                     "ese": "ØSØ",
+                    "n": "",
                     "ne": "NØ",
                     "nne": "NNØ",
                     "nnw": "NNV",
                     "nw": "NV",
+                    "s": "",
                     "se": "SØ",
                     "sse": "SSØ",
                     "ssw": "SSV",
@@ -547,6 +564,8 @@
                 "no_history_found": "Ingen statushistorikk funnet."
             },
             "media-browser": {
+                "audio_not_supported": "Nettleseren din støtter ikke lydelementet.",
+                "choose_player": "Velg spiller",
                 "choose-source": "Velg kilde",
                 "content-type": {
                     "album": "Album",
@@ -555,12 +574,17 @@
                     "playlist": "Spilleliste",
                     "server": "Server"
                 },
+                "media_browsing_error": "Feil ved medievisning",
+                "media_not_supported": "Browser Media Player støtter ikke denne typen medier",
+                "media_player": "Mediaspiller",
                 "media-player-browser": "Nettleser for Mediespiller",
                 "no_items": "Ingen elementer",
                 "pick": "Velg",
                 "pick-media": "Velg Media",
-                "play": "Spille",
-                "play-media": "Spill media"
+                "play": "Spill av",
+                "play-media": "Spill media",
+                "video_not_supported": "Nettleseren din støtter ikke videoelementet.",
+                "web-browser": "Nettleser"
             },
             "picture-upload": {
                 "label": "Bilde",
@@ -618,7 +642,7 @@
                     "icon": "Overstyring av ikon",
                     "icon_error": "Ikoner bør være i formatet 'prefiks:ikonnavn', f.eks 'mdi:home'",
                     "name": "Overstyr Navn",
-                    "note": "Merk: dette fungerer kanskje ikke med alle integrasjoner ennå .",
+                    "note": "Merk: Dette fungerer kanskje ikke ennå med alle integrasjoner.",
                     "unavailable": "Denne entiteten er ikke tilgjengelig for øyeblikket.",
                     "update": "Oppdater"
                 },
@@ -629,7 +653,8 @@
             "generic": {
                 "cancel": "Avbryt",
                 "close": "Lukk",
-                "default_confirmation_title": "Er du sikker?"
+                "default_confirmation_title": "Er du sikker?",
+                "ok": ""
             },
             "helper_settings": {
                 "generic": {
@@ -705,8 +730,11 @@
                     "commands": "Støvsugerkommandoer:",
                     "fan_speed": "Viftehastighet",
                     "locate": "Lokaliser",
+                    "pause": "",
                     "return_home": "Returner hjem",
+                    "start": "",
                     "start_pause": "Start / Pause",
+                    "status": "",
                     "stop": "Stopp"
                 }
             },
@@ -753,6 +781,7 @@
                 "manuf": "av {manufacturer}",
                 "no_area": "Intet område",
                 "power_source": "Strømkilde",
+                "quirk": "",
                 "services": {
                     "reconfigure": "Rekonfigurer ZHA-enhet (heal enhet). Bruk dette hvis du har problemer med enheten. Hvis den aktuelle enheten er en batteridrevet enhet, sørg for at den er våken og aksepterer kommandoer når du bruker denne tjenesten.",
                     "remove": "Fjern en enhet fra Zigbee-nettverket.",
@@ -881,7 +910,7 @@
                                     "type_select": "Gjenta type",
                                     "type": {
                                         "count": {
-                                            "label": "Telle"
+                                            "label": "Antall"
                                         },
                                         "until": {
                                             "conditions": "Inntil forholdene",
@@ -1036,7 +1065,9 @@
                                 },
                                 "homeassistant": {
                                     "event": "Hendelse:",
-                                    "shutdown": "Slå av"
+                                    "label": "",
+                                    "shutdown": "Slå av",
+                                    "start": ""
                                 },
                                 "mqtt": {
                                     "label": "MQTT",
@@ -1050,6 +1081,7 @@
                                     "value_template": "Verdi fra mal (valgfritt)"
                                 },
                                 "state": {
+                                    "for": "",
                                     "from": "Fra",
                                     "label": "Tilstand",
                                     "to": "Til"
@@ -1077,6 +1109,10 @@
                                 "time": {
                                     "at": "Klokken",
                                     "label": "Tid"
+                                },
+                                "webhook": {
+                                    "label": "",
+                                    "webhook_id": ""
                                 },
                                 "zone": {
                                     "enter": "Ankommer",
@@ -1121,7 +1157,8 @@
                             "manage_entities": "Håndtér entiteter",
                             "state_reporting_error": "Kan ikke {enable_disable} rapportere status.",
                             "sync_entities": "Synkronisér entiteter",
-                            "sync_entities_error": "Kunne ikke synkronisere entiteter:"
+                            "sync_entities_error": "Kunne ikke synkronisere entiteter:",
+                            "title": ""
                         },
                         "connected": "Tilkoblet",
                         "connection_status": "Status for skytilkobling",
@@ -1139,7 +1176,8 @@
                             "manage_entities": "Håndtér entiteter",
                             "security_devices": "Sikkerhetsenheter",
                             "sync_entities": "Synkronisér entiteter til Google",
-                            "sync_entities_404_message": "Kunne ikke synkronisere enhetene dine med Google, be Google 'Hei Google, synkroniser enhetene mine' for å synkronisere enhetene dine."
+                            "sync_entities_404_message": "Kunne ikke synkronisere enhetene dine med Google, be Google 'Hei Google, synkroniser enhetene mine' for å synkronisere enhetene dine.",
+                            "title": ""
                         },
                         "integrations": "Integrasjoner",
                         "integrations_introduction": "Integrasjoner for Home Assistant Cloud lar deg koble til tjenester i skyen uten å måtte avsløre Home Assistant-forekomsten offentlig på internett.",
@@ -1168,7 +1206,8 @@
                             "no_hooks_yet": "Ser ut som du ikke har noen webhooks ennå. Kom i gang ved å konfigurere en ",
                             "no_hooks_yet_link_automation": "webhook-automasjon",
                             "no_hooks_yet_link_integration": "webhook-basert integrasjon",
-                            "no_hooks_yet2": " eller ved å opprette en "
+                            "no_hooks_yet2": " eller ved å opprette en ",
+                            "title": ""
                         }
                     },
                     "alexa": {
@@ -1181,8 +1220,10 @@
                         "follow_domain": "Følg domenet",
                         "manage_domains": "Administrer domener",
                         "not_exposed": "{selected} ikke eksponert",
-                        "not_exposed_entities": "Ikke eksponerte enheter"
+                        "not_exposed_entities": "Ikke eksponerte enheter",
+                        "title": ""
                     },
+                    "caption": "",
                     "description_features": "Kontroller borte fra hjemmet, integrer med Alexa og Google Assistant.",
                     "description_login": "Logget inn som {email}",
                     "description_not_login": "Ikke pålogget",
@@ -1225,7 +1266,8 @@
                         "manage_domains": "Administrer domener",
                         "not_exposed": "{selected} ikke eksponert",
                         "not_exposed_entities": "Ikke eksponerte enheter",
-                        "sync_to_google": "Synkroniserer endringer til Google."
+                        "sync_to_google": "Synkroniserer endringer til Google.",
+                        "title": ""
                     },
                     "login": {
                         "alert_email_confirm_necessary": "Du må bekrefte e-posten din før du logger inn.",
@@ -1399,6 +1441,7 @@
                             "confirm_title": "Vil du aktivere {number} enheter?"
                         },
                         "filter": {
+                            "filter": "",
                             "show_disabled": "Vis deaktiverte entiteter",
                             "show_readonly": "Vis skrivebeskyttede enheter",
                             "show_unavailable": "Vis utilgjengelige enheter"
@@ -1407,7 +1450,8 @@
                         "headers": {
                             "entity_id": "Entitets-ID",
                             "integration": "Integrasjon",
-                            "name": "Navn"
+                            "name": "Navn",
+                            "status": ""
                         },
                         "introduction": "Home Assistant bygger opp et register over hver entitet den har sett som kan identifiseres unikt. Hver av disse entitetene vil ha en ID som er reservert kun til denne.",
                         "introduction2": "Bruk entitetsregistret til å overstyre navnet, endre id-en eller fjerne den fra Home Assistant.",
@@ -1422,6 +1466,7 @@
                         "selected": "{number} valgte",
                         "status": {
                             "disabled": "Deaktivert",
+                            "ok": "",
                             "readonly": "Skrivebeskyttet",
                             "restored": "Gjennopprettet",
                             "unavailable": "Utilgjengelig"
@@ -1446,7 +1491,8 @@
                         "headers": {
                             "editable": "Redigerbare",
                             "entity_id": "Entitets-ID",
-                            "name": "Navn"
+                            "name": "Navn",
+                            "type": ""
                         },
                         "no_helpers": "Det ser ut som om du ikke har noen hjelpere ennå!"
                     },
@@ -1454,6 +1500,7 @@
                         "input_boolean": "Veksle",
                         "input_datetime": "Dato og/eller klokkeslett",
                         "input_number": "Nummer",
+                        "input_select": "",
                         "input_text": "Tekst"
                     }
                 },
@@ -1466,6 +1513,7 @@
                     "documentation": "Dokumentasjon",
                     "frontend": "frontend",
                     "frontend_version": "Brukergrensesnittet-versjon: {version} - {type}",
+                    "home_assistant_logo": "",
                     "icons_by": "Ikoner fra",
                     "integrations": "Integrasjoner",
                     "issues": "Problemer",
@@ -1506,6 +1554,7 @@
                         "reload_restart_confirm": "Start Home Assistant på nytt for å fullføre omlastingen av denne integrasjonen",
                         "rename": "Gi nytt navn",
                         "restart_confirm": "Start Home Assistant på nytt for å fullføre fjerningen av denne integrasjonen",
+                        "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
                         "settings_button": "Rediger innstillinger for {integration}",
                         "system_options": "Systemalternativer",
                         "system_options_button": "Systemalternativer for {integration}",
@@ -1596,6 +1645,7 @@
                             "title": "Tittel",
                             "title_required": "Tittel er påkrevd.",
                             "update": "Oppdater",
+                            "url": "",
                             "url_error_msg": "URLen skal inneholde en - og kan ikke inneholde mellomrom eller spesialtegn, bortsett fra _ og -"
                         },
                         "picker": {
@@ -1623,12 +1673,17 @@
                             "new_resource": "Legg til ny ressurs",
                             "type": "Ressurstype",
                             "update": "Oppdater",
+                            "url": "",
                             "url_error_msg": "URL-adresse er et obligatorisk felt",
                             "warning_header": "Vær forsiktig!",
                             "warning_text": "Det kan være farlig å legge til ressurser, sørg for at du kjenner kilden til ressursen og stoler på dem. Dårlige ressurser kan skade systemet ditt alvorlig."
                         },
                         "picker": {
                             "add_resource": "Legg til ressurs",
+                            "headers": {
+                                "type": "",
+                                "url": ""
+                            },
                             "no_resources": "Ingen ressurser"
                         },
                         "refresh_body": "Du må oppdatere siden for å fullføre fjerningen, vil du oppdatere nå?",
@@ -1719,8 +1774,21 @@
                         "versions": "Hente informasjon om fastvare- og kommandoklasseversjoner",
                         "wakeup": "Sette opp støtte for vekkingskøer og meldinger"
                     },
+                    "node": {
+                        "button": "Node Detaljer",
+                        "not_found": "Finner ikke noden"
+                    },
+                    "nodes_table": {
+                        "failed": "Mislyktes",
+                        "id": "ID",
+                        "manufacturer": "Produsent",
+                        "model": "Modell",
+                        "query_stage": "Spørringsstadiet",
+                        "zwave_plus": "Z-Wave Plus"
+                    },
                     "refresh_node": {
                         "battery_note": "Hvis noden er batteridrevet, må du passe på å vekke den før du fortsetter",
+                        "button": "Oppdater node",
                         "complete": "Node oppdatering fullført",
                         "description": "Dette vil fortelle OpenZWave å re-intervjue en node og oppdatere nodens kommandoklasser, evner og verdier.",
                         "node_status": "Node-status",
@@ -1954,6 +2022,7 @@
                     "editor": {
                         "activate_user": "Aktiver bruker",
                         "active": "Aktiv",
+                        "admin": "",
                         "caption": "Vis bruker",
                         "change_password": "Endre passord",
                         "confirm_user_deletion": "Er du sikker på at du vil slette {name} ?",
@@ -1974,10 +2043,11 @@
                     "picker": {
                         "headers": {
                             "group": "Gruppe",
-                            "name": "Navn"
+                            "name": "Navn",
+                            "system": ""
                         }
                     },
-                    "users_privileges_note": "Brukere-gruppen er et pågående arbeid. Brukeren kan ikke administrere forekomsten via brukergrensesnittet. Vi reviderer fortsatt alle API-endepunkter for å sikre at de begrenser tilgangen til administratorer på riktig måte."
+                    "users_privileges_note": "Brukergruppefunksjonen er et pågående arbeid. Brukeren vil ikke kunne administrere forekomsten via brukergrensesnittet. Vi overvåker fortsatt alle administrasjons-API-endepunkter for å sikre at de begrenser tilgangen til administratorer på riktig måte."
                 },
                 "zha": {
                     "add_device_page": {
@@ -1994,6 +2064,7 @@
                         "description": "Legg til enheter i Zigbee-nettverket"
                     },
                     "button": "Konfigurer",
+                    "caption": "",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Attributter for den valgte klyngen",
                         "get_zigbee_attribute": "Hent ZigBee-attributt",
@@ -2014,7 +2085,7 @@
                     "clusters": {
                         "header": "Klynger",
                         "help_cluster_dropdown": "Velg en klynge for å vise attributter og kommandoer.",
-                        "introduction": "Klynger er byggesteinene for ZigBee-funksjonalitet. De skiller funksjonalitet i logiske enheter. Det finnes klient og server typer som består av attributter og kommandoer."
+                        "introduction": "Klynger er byggesteinene for Zigbee-funksjonalitet. De skiller funksjonalitet i logiske enheter. Det finnes klient- og servertyper, og som består av attributter og kommandoer."
                     },
                     "common": {
                         "add_devices": "Legg til enheter",
@@ -2101,6 +2172,7 @@
                         "new_zone": "Ny sone",
                         "passive": "Passiv",
                         "passive_note": "Passive soner er skjult i grensesnittet og brukes ikke som sted for enhetssporere. Dette er nyttig hvis du bare vil bruke dem til automasjoner.",
+                        "radius": "",
                         "required_error_msg": "Dette feltet er påkrevd",
                         "update": "Oppdater"
                     },
@@ -2146,7 +2218,7 @@
                         "true": "Sant"
                     },
                     "node_management": {
-                        "add_to_group": "Legg til i gruppe",
+                        "add_to_group": "Legg til gruppe",
                         "entities": "Entiteter fra denne noden",
                         "entity_info": "Entitetsinformasjon",
                         "exclude_entity": "Ekskluder denne entiteten fra Home Assistant",
@@ -2163,7 +2235,7 @@
                         "pooling_intensity": "Intensitet for polling",
                         "protection": "Beskyttelse",
                         "remove_broadcast": "Fjern kringkasting",
-                        "remove_from_group": "Fjern fra gruppe",
+                        "remove_from_group": "Fjern fra gruppen",
                         "set_protection": "Angi beskyttelse"
                     },
                     "ozw_log": {
@@ -2230,6 +2302,7 @@
                         "call_service": "Tilkall tjeneste",
                         "column_description": "Beskrivelse",
                         "column_example": "Eksempel",
+                        "column_parameter": "",
                         "data": "Tjenestedata (YAML, valgfritt)",
                         "description": "Service utviklingsverktøyet lar deg tilkalle alle tilgjengelige tjenester i Home Assistant.",
                         "fill_example_data": "Fyll ut eksempeldata",
@@ -2305,6 +2378,7 @@
                     },
                     "picture-elements": {
                         "call_service": "Tilkall tjeneste {name}",
+                        "hold": "",
                         "more_info": "Vis mer info: {name}",
                         "navigate_to": "Naviger til {location}",
                         "tap": "Trykk:",
@@ -2399,6 +2473,7 @@
                             "manual": "Manuell",
                             "manual_description": "Trenger du å legge til et tilpasset kort eller bare ønsker å skrive yaml manuelt?",
                             "maximum": "Maksimalt",
+                            "minimum": "",
                             "name": "Navn",
                             "no_theme": "Ingen tema",
                             "refresh_interval": "Oppdateringsintervall",
@@ -2412,7 +2487,8 @@
                             "tap_action": "Trykk handling",
                             "theme": "Tema",
                             "title": "Tittel",
-                            "unit": "Betegnelse"
+                            "unit": "Betegnelse",
+                            "url": ""
                         },
                         "glance": {
                             "columns": "Kolonner",
@@ -2450,7 +2526,8 @@
                         },
                         "markdown": {
                             "content": "Innhold",
-                            "description": "Markdown-kortet brukes til å gjengi Markdown."
+                            "description": "Markdown-kortet brukes til å gjengi Markdown.",
+                            "name": ""
                         },
                         "media-control": {
                             "description": "Mediekontroll kortet brukes til å vise mediespillerenheter på et grensesnitt med brukervennlige kontroller.",
@@ -2479,7 +2556,8 @@
                         "sensor": {
                             "description": "Sensorkortet gir deg en rask oversikt over sensortilstanden din med en valgfri graf for å visualisere endring over tid.",
                             "graph_detail": "Detaljer for graf",
-                            "graph_type": "Graf type"
+                            "graph_type": "Graf type",
+                            "name": ""
                         },
                         "shopping-list": {
                             "description": "På handlelistekortet kan du legge til, redigere, sjekke av og fjerne gjenstander fra handlelisten din.",
@@ -2519,6 +2597,7 @@
                         "options": "Flere alternativer",
                         "pick_card": "Hvilket kort vil du legge til?",
                         "pick_card_view_title": "Hvilket kort vil du legge til i {name} visningen?",
+                        "search_cards": "Søk på kort",
                         "show_code_editor": "Vis koderedigering",
                         "show_visual_editor": "Vis visuell redigering",
                         "toggle_editor": "Bytt redigering",
@@ -2786,6 +2865,7 @@
                             "upstairs": "Oppe"
                         },
                         "unit": {
+                            "minutes_abbr": "",
                             "watching": "Ser på"
                         }
                     }
@@ -2839,7 +2919,9 @@
                 },
                 "current_user": "Du er logget inn som {fullName}.",
                 "dashboard": {
-                    "description": "Velg et standard instrumentbord for denne enheten."
+                    "description": "Velg et standard instrumentbord for denne enheten.",
+                    "dropdown_label": "",
+                    "header": ""
                 },
                 "force_narrow": {
                     "description": "Dette vil skjule sidepanelet som standard, tilsvarende opplevelsen på en mobil.",
