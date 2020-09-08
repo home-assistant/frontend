@@ -134,7 +134,7 @@ class MoreInfoLight extends LitElement {
                         attr-for-selected="item-name"
                         >${this.stateObj.attributes.effect_list.map(
                           (effect: string) => html`
-                            <paper-item itemName=${effect}
+                            <paper-item .itemName=${effect}
                               >${effect}</paper-item
                             >
                           `
@@ -170,7 +170,7 @@ class MoreInfoLight extends LitElement {
   }
 
   private _effectChanged(ev: CustomEvent) {
-    const newVal = ev.detail.value;
+    const newVal = ev.detail.item.itemName;
 
     if (!newVal || this.stateObj!.attributes.effect === newVal) {
       return;
