@@ -727,7 +727,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         }
 
         mwc-list-item .title {
-          margin-left: 10px;
+          margin-left: 16px;
         }
 
         /* ============= Narrow ============= */
