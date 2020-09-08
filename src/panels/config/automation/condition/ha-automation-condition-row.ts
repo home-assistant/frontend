@@ -19,6 +19,7 @@ import { Condition } from "../../../../data/automation";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../../../../types";
 import "./ha-automation-condition-editor";
+import { haStyle } from "../../../../resources/styles";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
@@ -86,7 +87,7 @@ export default class HaAutomationConditionRow extends LitElement {
                   "ui.panel.config.automation.editor.actions.duplicate"
                 )}
               </mwc-list-item>
-              <mwc-list-item>
+              <mwc-list-item class="warning">
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.actions.delete"
                 )}
@@ -134,20 +135,23 @@ export default class HaAutomationConditionRow extends LitElement {
     this._yamlMode = !this._yamlMode;
   }
 
-  static get styles(): CSSResult {
-    return css`
-      .card-menu {
-        float: right;
-        z-index: 3;
-        --mdc-theme-text-primary-on-background: var(--primary-text-color);
-      }
-      .rtl .card-menu {
-        float: left;
-      }
-      mwc-list-item[disabled] {
-        --mdc-theme-text-primary-on-background: var(--disabled-text-color);
-      }
-    `;
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
+        .card-menu {
+          float: right;
+          z-index: 3;
+          --mdc-theme-text-primary-on-background: var(--primary-text-color);
+        }
+        .rtl .card-menu {
+          float: left;
+        }
+        mwc-list-item[disabled] {
+          --mdc-theme-text-primary-on-background: var(--disabled-text-color);
+        }
+      `,
+    ];
   }
 }
 
