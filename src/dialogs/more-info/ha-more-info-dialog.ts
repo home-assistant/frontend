@@ -274,6 +274,7 @@ export class MoreInfoDialog extends LitElement {
           --mdc-theme-on-primary: var(--primary-text-color);
           --mdc-theme-primary: var(--mdc-theme-surface);
           flex-shrink: 0;
+          display: block;
         }
 
         @media all and (max-width: 450px), all and (max-height: 500px) {
