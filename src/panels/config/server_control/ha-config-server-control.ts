@@ -23,6 +23,8 @@ import { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 
+const platformsWithReload = ["template"];
+
 @customElement("ha-config-server-control")
 export class HaConfigServerControl extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -49,11 +51,13 @@ export class HaConfigServerControl extends LitElement {
       changedProperties.has("hass") &&
       (!oldHass || oldHass.config.components !== this.hass.config.components)
     ) {
-      this._reloadableDomains = this.hass.config.components.filter(
-        (component) =>
-          !component.includes(".") &&
-          isServiceLoaded(this.hass, component, "reload")
-      );
+      this._reloadableDomains = this.hass.config.components
+        .concat(platformsWithReload)
+        .filter(
+          (component) =>
+            !component.includes(".") &&
+            isServiceLoaded(this.hass, component, "reload")
+        );
     }
   }
 
