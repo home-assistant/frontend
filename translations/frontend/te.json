@@ -37,7 +37,8 @@
             "unknown": "తెలియదు"
         },
         "device_tracker": {
-            "home": "ఇంట"
+            "home": "ఇంట",
+            "not_home": ""
         },
         "person": {
             "home": "ఇంట"
@@ -410,6 +411,9 @@
                                 "time": {
                                     "after": "తరువాత",
                                     "before": "ముందు"
+                                },
+                                "zone": {
+                                    "entity": ""
                                 }
                             }
                         },
@@ -531,7 +535,8 @@
                                 "login_expired": "సెషన్ గడువు ముగిసింది, మళ్ళీ లాగిన్ అవ్వండి."
                             },
                             "error": {
-                                "invalid_auth": "తప్పు యూజర్ పేరు లేదా తప్పు పాస్ వర్డ్"
+                                "invalid_auth": "తప్పు యూజర్ పేరు లేదా తప్పు పాస్ వర్డ్",
+                                "invalid_code": ""
                             },
                             "step": {
                                 "init": {
@@ -539,6 +544,12 @@
                                         "password": "పాస్వర్డ్",
                                         "username": "యూజర్ పేరు"
                                     }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": ""
+                                    },
+                                    "description": ""
                                 }
                             }
                         },
@@ -555,6 +566,16 @@
                                         "password": "పాస్వర్డ్",
                                         "username": "యూజర్ పేరు"
                                     }
+                                }
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "mfa": {
+                                    "data": {
+                                        "code": ""
+                                    },
+                                    "description": ""
                                 }
                             }
                         },

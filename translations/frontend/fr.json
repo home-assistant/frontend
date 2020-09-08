@@ -19,6 +19,7 @@
         "logbook": "Journal",
         "mailbox": "Boîtes aux lettres",
         "map": "Carte",
+        "media_browser": "Navigateur multimédia",
         "profile": "Profil",
         "shopping_list": "Liste de courses",
         "states": "Aperçu"
@@ -573,6 +574,7 @@
                     "playlist": "Liste de lecture",
                     "server": "Serveur"
                 },
+                "media_browsing_error": "Erreur de navigation multimédia",
                 "media_not_supported": "Le Browser Media Player ne prend pas en charge ce type de média",
                 "media_player": "Lecteur multimédia",
                 "media-player-browser": "Lecteur multimédia",

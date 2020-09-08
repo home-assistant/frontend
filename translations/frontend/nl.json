@@ -1023,6 +1023,7 @@
                             "delete": "Verwijderen",
                             "delete_confirm": "Weet je zeker dat je dit item wilt verwijderen?",
                             "duplicate": "Dupliceren",
+                            "header": "",
                             "introduction": "Triggers starten de verwerking van een automatiseringsregel. Het is mogelijk om meerdere triggers voor dezelfde regel op te geven. Zodra een trigger start, valideert Home Assistant de eventuele voorwaarden en roept hij de actie aan.",
                             "learn_more": "Meer informatie over triggers",
                             "name": "Trigger",
@@ -1052,6 +1053,7 @@
                                 },
                                 "homeassistant": {
                                     "event": "Gebeurtenis:",
+                                    "label": "",
                                     "shutdown": "Afsluiten",
                                     "start": "Opstarten"
                                 },
