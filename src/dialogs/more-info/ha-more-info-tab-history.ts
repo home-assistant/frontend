@@ -85,7 +85,18 @@ export class MoreInfoTabHistoryDialog extends LitElement {
       clearInterval(this._historyRefreshInterval);
     }
 
-    if (changedProps.has("entityId")) {
+    if (!this.hass) {
+      return;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant;
+    const newStateObj = this.hass.states[this.entityId];
+    const oldStateObj = oldHass?.states[this.entityId];
+
+    if (
+      changedProps.has("entityId") ||
+      (oldHass && newStateObj !== oldStateObj)
+    ) {
       this._stateHistory = undefined;
       this._entries = undefined;
 
