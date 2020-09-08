@@ -636,11 +636,18 @@ export class HaMediaPlayerBrowse extends LitElement {
           display: grid;
           grid-template-columns: repeat(
             auto-fit,
-            minmax(var(--media-browse-item-size, 175px), 0.33fr)
+            minmax(var(--media-browse-item-size, 175px), 0.1fr)
           );
           grid-gap: 16px;
           margin: 8px 0px;
           padding: 0px 24px;
+        }
+
+        :host([dialog]) .children {
+          grid-template-columns: repeat(
+            auto-fit,
+            minmax(var(--media-browse-item-size, 175px), 0.33fr)
+          );
         }
 
         .child {
