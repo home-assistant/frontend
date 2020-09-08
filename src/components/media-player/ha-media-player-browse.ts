@@ -702,6 +702,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         .child .title {
           font-size: 16px;
           padding-top: 8px;
+          padding-left: 2px;
           overflow: hidden;
           display: -webkit-box;
           -webkit-box-orient: vertical;
