@@ -172,6 +172,7 @@ export class HaMediaPlayerBrowse extends LitElement {
       <div
         class="header  ${classMap({
           "no-img": !currentItem.thumbnail,
+          "no-dialog": !this.dialog,
         })}"
       >
         <div class="header-content">
@@ -543,6 +544,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         .header {
           background-color: var(--card-background-color);
           position: sticky;
+          position: -webkit-sticky;
           top: 0;
           z-index: 5;
           padding: 20px 24px 10px;
@@ -738,6 +740,10 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         :host([narrow]) .header {
           padding: 0;
+        }
+
+        :host([narrow]) .header.no-dialog {
+          display: block;
         }
 
         :host([narrow]) .header_button {
