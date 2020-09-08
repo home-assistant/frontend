@@ -6,8 +6,6 @@ import {
   internalProperty,
   LitElement,
   property,
-  CSSResult,
-  css,
 } from "lit-element";
 import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-radio";
@@ -17,21 +15,8 @@ import {
   ConditionElement,
   handleChangeEvent,
 } from "../ha-automation-condition-row";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import { HaSwitch } from "../../../../../components/ha-switch";
-import { computeRTLDirection } from "../../../../../common/util/compute_rtl";
 
 const includeDomains = ["input_datetime"];
-
-const DAYS = {
-  mon: 1,
-  tue: 2,
-  wed: 3,
-  thu: 4,
-  fri: 5,
-  sat: 6,
-  sun: 7,
-};
 
 interface WeekdayHaSwitch extends HaSwitch {
   day: string;
@@ -43,6 +28,16 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
 
   @property({ attribute: false }) public condition!: TimeCondition;
 
+  private _days: Weekday[] = [
+    { name: "mon", order: 1 },
+    { name: "tue", order: 2 },
+    { name: "wed", order: 3 },
+    { name: "thu", order: 4 },
+    { name: "fri", order: 5 },
+    { name: "sat", order: 6 },
+    { name: "sun", order: 7 },
+  ];
+
   @internalProperty() private _inputModeBefore?: boolean;
 
   @internalProperty() private _inputModeAfter?: boolean;
@@ -52,7 +47,7 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
   }
 
   protected render() {
-    const { after, before, weekday } = this.condition;
+    const { after, before } = this.condition;
 
     const inputModeBefore =
       this._inputModeBefore ?? before?.startsWith("input_datetime.");
@@ -147,26 +142,6 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
             .value=${before?.startsWith("input_datetime.") ? "" : before}
             @value-changed=${this._valueChanged}
           ></paper-input>`}
-      ${Object.keys(DAYS).map(
-        (day) => html`
-          <ha-formfield
-            alignEnd
-            spaceBetween
-            class="weekday-toggle"
-            .label=${this.hass!.localize(
-              `ui.panel.config.automation.editor.conditions.type.time.weekdays.${day}`
-            )}
-            .dir=${computeRTLDirection(this.hass!)}
-          >
-            <ha-switch
-              .day=${day}
-              .checked=${weekday?.includes(day)}
-              @change=${this._dayValueChanged}
-            >
-            </ha-switch>
-          </ha-formfield>
-        `
-      )}
     `;
   }
 
@@ -207,7 +182,7 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
 
   static get styles(): CSSResult {
     return css`
-      .weekday-toggle {
+      .flex {
         display: flex;
         height: 40px;
       }
