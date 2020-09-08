@@ -335,6 +335,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                       .item=${child}
                       graphic="avatar"
                       hasMeta
+                      dir=${computeRTLDirection(this.hass)}
                     >
                       <div
                         class="graphic"
@@ -360,7 +361,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                           ></ha-svg-icon>
                         </mwc-icon-button>
                       </div>
-                      <span>${child.title}</span>
+                      <span class="title">${child.title}</span>
                     </mwc-list-item>
                     <li divider role="separator"></li>
                   `
@@ -620,6 +621,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         mwc-list {
           --mdc-list-vertical-padding: 0;
+          --mdc-list-item-graphic-margin: 0;
           --mdc-theme-text-icon-on-background: var(--secondary-text-color);
           margin-top: 10px;
         }
@@ -726,6 +728,14 @@ export class HaMediaPlayerBrowse extends LitElement {
         mwc-list-item .graphic .play.show {
           opacity: 1;
           background-color: transparent;
+        }
+
+        mwc-list-item .title {
+          margin-left: 16px;
+        }
+        mwc-list-item[dir="rtl"] .title {
+          margin-right: 16px;
+          margin-left: 0;
         }
 
         /* ============= Narrow ============= */
