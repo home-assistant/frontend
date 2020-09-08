@@ -20,8 +20,6 @@ export const sortableStyles = css`
 
   #sortable {
     outline: none;
-    display: flex;
-    flex-direction: column;
   }
 
   .sortable-ghost {
