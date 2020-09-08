@@ -85,10 +85,6 @@ export class MoreInfoTabHistoryDialog extends LitElement {
       clearInterval(this._historyRefreshInterval);
     }
 
-    if (!this.hass) {
-      return;
-    }
-
     if (changedProps.has("entityId")) {
       this._stateHistory = undefined;
       this._entries = undefined;
