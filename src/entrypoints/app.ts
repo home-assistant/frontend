@@ -7,5 +7,3 @@ import "../util/legacy-support";
 setPassiveTouchGestures(true);
 
 (window as any).frontendVersion = __VERSION__;
-
-import("../resources/html-import/polyfill");
