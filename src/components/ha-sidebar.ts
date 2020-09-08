@@ -661,7 +661,9 @@ class HaSidebar extends LitElement {
   }
 
   private async _handlePanelTap(ev: Event) {
-    const path = (ev.currentTarget as HTMLAnchorElement).href;
+    const path = __DEMO__
+      ? (ev.currentTarget as HTMLAnchorElement).getAttribute("href")!
+      : (ev.currentTarget as HTMLAnchorElement).href;
     navigate(this, path);
   }
 
