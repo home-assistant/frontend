@@ -23,7 +23,7 @@ class StateCardTimer extends PolymerElement {
 
       <div class="horizontal justified layout">
         ${this.stateInfoTemplate}
-        <div class="state">[[_secondsToDuration(timeRemaining)]]</div>
+        <div class="state">[[_displayState(timeRemaining, stateObj)]]</div>
       </div>
     `;
   }
@@ -90,8 +90,10 @@ class StateCardTimer extends PolymerElement {
     this.timeRemaining = timerTimeRemaining(stateObj);
   }
 
-  _secondsToDuration(time) {
-    return secondsToDuration(time);
+  _displayState(time, stateObj) {
+    return time
+      ? secondsToDuration(time)
+      : this.hass.localize(`state.timer.${stateObj.state}`) || stateObj.state;
   }
 }
 customElements.define("state-card-timer", StateCardTimer);

@@ -1039,6 +1039,7 @@
                                 },
                                 "homeassistant": {
                                     "event": "Evento:",
+                                    "label": "",
                                     "shutdown": "Desligar",
                                     "start": "Iniciar"
                                 },
@@ -1664,6 +1665,7 @@
                     "start_listening": "Começar a ouvir",
                     "stop_listening": "Parar de ouvir",
                     "subscribe_to": "Evento para se inscrever",
+                    "title": "",
                     "topic": "tópico"
                 },
                 "ozw": {
@@ -2040,6 +2042,7 @@
                 },
                 "zwave": {
                     "button": "Configurar",
+                    "caption": "",
                     "common": {
                         "index": "Índice",
                         "instance": "Instância",

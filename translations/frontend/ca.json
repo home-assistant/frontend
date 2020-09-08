@@ -19,6 +19,7 @@
         "logbook": "Diari de registre",
         "mailbox": "Bústia",
         "map": "Mapa",
+        "media_browser": "Navegador multimèdia",
         "profile": "Perfil",
         "shopping_list": "Llista de compres",
         "states": "Visualització general"
@@ -505,6 +506,7 @@
             "back": "Torna",
             "cancel": "Cancel·la",
             "close": "Tanca",
+            "continue": "Continua",
             "delete": "Elimina",
             "error_required": "Obligatori",
             "loading": "Carregant",
@@ -562,6 +564,8 @@
                 "no_history_found": "No s'ha trobat cap historial d'estats."
             },
             "media-browser": {
+                "audio_not_supported": "El teu navegador no és compatible amb l'element d'àudio.",
+                "choose_player": "Tria el reproductor",
                 "choose-source": "Tria la font",
                 "content-type": {
                     "album": "Àlbum",
@@ -570,12 +574,17 @@
                     "playlist": "Llista de reproducció",
                     "server": "Servidor"
                 },
+                "media_browsing_error": "Error de navegació multimèdia",
+                "media_not_supported": "El reproductor multimèdia de navegador no és compatible amb aquest tipus de mitjà",
+                "media_player": "Reproductor multimèdia",
                 "media-player-browser": "Navegador del reproductor multimèdia",
                 "no_items": "Sense elements",
                 "pick": "Escull",
                 "pick-media": "Tria mitjans",
                 "play": "Reprodueix",
-                "play-media": "Reprodueix mitjans"
+                "play-media": "Reprodueix mitjans",
+                "video_not_supported": "El teu navegador no és compatible amb l'element de vídeo.",
+                "web-browser": "Navegador web"
             },
             "picture-upload": {
                 "label": "Imatge",
@@ -689,8 +698,10 @@
                 "crop": "Retalla"
             },
             "more_info_control": {
+                "controls": "Controls",
                 "dismiss": "Desestimar el diàleg",
                 "edit": "Edita entitat",
+                "history": "Historial",
                 "person": {
                     "create_zone": "Crea una zona a partir de la ubicació actual"
                 },
@@ -1543,6 +1554,7 @@
                         "reload_restart_confirm": "Reinicia Home Assistant per acabar de carregar aquesta integració",
                         "rename": "Canvia el nom",
                         "restart_confirm": "Reinicia Home Assistant per acabar d'eliminar aquesta integració",
+                        "services": "{count} {count, plural,\n  one {servei}\n  other {serveis}\n}",
                         "settings_button": "Edita la configuració de {integration}",
                         "system_options": "Opcions de sistema",
                         "system_options_button": "Opcions de sistema de {integration}",
@@ -1762,8 +1774,21 @@
                         "versions": "Obtenint informació de programari i versions de classes de comandes",
                         "wakeup": "Configurant el suport per a cues i missatges"
                     },
+                    "node": {
+                        "button": "Detalls del node",
+                        "not_found": "No s'ha trobat el node"
+                    },
+                    "nodes_table": {
+                        "failed": "Ha fallat",
+                        "id": "ID",
+                        "manufacturer": "Fabricant",
+                        "model": "Model",
+                        "query_stage": "Fase de consulta",
+                        "zwave_plus": "Z-Wave Plus"
+                    },
                     "refresh_node": {
                         "battery_note": "Si el node funciona amb bateria, assegura't de que estigui actiu abans de continuar",
+                        "button": "Actualitza node",
                         "complete": "Actualització del node completa",
                         "description": "Això farà que OpenZWave torni a consultar el node i n'actualitzi les classes de comandes, funcions i valors.",
                         "node_status": "Estat del node",
@@ -1912,7 +1937,7 @@
                             "filter": "Torna a carregar entitats de filtre",
                             "generic": "Torna a carregar entitats genèriques de càmera IP",
                             "generic_thermostat": "Torna a carregar entitats genèriques de termòstat",
-                            "group": "Actualitza grups",
+                            "group": "Torna a carregar grups, grups d'entitats i serveis de notificació",
                             "heading": "Tornant a carregar la configuració",
                             "history_stats": "Torna a carregar entitats d'estadístiques històriques",
                             "homekit": "Torna a carregar HomeKit",
@@ -1923,12 +1948,17 @@
                             "input_text": "Actualitza entrades de text",
                             "introduction": "Algunes parts de Home Assistant es poden actualitzar sense necessitat reiniciar-lo. Si prems actualitza s'esborrarà la configuració YAML actual i se'n carregarà la nova.",
                             "min_max": "Torna a carregar entitats min/max",
+                            "mqtt": "Torna a carregar entitats MQTT",
                             "person": "Actualitza persones",
                             "ping": "Torna a carregar entitats de sensors binaris de ping",
-                            "rest": "Torna a carregar entitats de repòs",
+                            "reload": "Torna a carregar {domain}",
+                            "rest": "Torna a carregar entitats de repòs i serveis de notificació",
+                            "rpi_gpio": "Torna a carregar entitats GPIO de la Raspberry Pi",
                             "scene": "Actualitza escenes",
                             "script": "Actualitza programes",
+                            "smtp": "Torna a carregar serveis de notificació SMTP",
                             "statistics": "Torna a carregar entitats estadístiques",
+                            "telegram": "Torna a carregar serveis de notificació de Telegram",
                             "template": "Torna a carregar entitats de plantilla",
                             "trend": "Torna a carregar entitats de tendència",
                             "universal": "Torna a carregar entitats del reproductor universal",
@@ -2549,7 +2579,11 @@
                         }
                     },
                     "cardpicker": {
+                        "by_card": "Per targeta",
+                        "by_entity": "Per entitat",
                         "custom_card": "Personalitzada",
+                        "domain": "Domini",
+                        "entity": "Entitat",
                         "no_description": "No hi ha cap descripció disponible."
                     },
                     "edit_card": {
@@ -2563,6 +2597,7 @@
                         "options": "Més opcions",
                         "pick_card": "Quina targeta vols afegir?",
                         "pick_card_view_title": "Quina targeta vols afegir a la visualització {name}?",
+                        "search_cards": "Cerca targetes",
                         "show_code_editor": "Mostra l'editor de codi",
                         "show_visual_editor": "Mostra l'editor visual",
                         "toggle_editor": "Commutar l'editor",

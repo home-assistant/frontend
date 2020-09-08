@@ -19,6 +19,7 @@
         "logbook": "Záznamy",
         "mailbox": "Schránka",
         "map": "Mapa",
+        "media_browser": "Prohlížeč médií",
         "profile": "Profil",
         "shopping_list": "Nákupní seznam",
         "states": "Přehled"
@@ -573,6 +574,7 @@
                     "playlist": "Seznam skladeb",
                     "server": "Server"
                 },
+                "media_browsing_error": "Chyba při procházení médií",
                 "media_not_supported": "Přehrávač médií v prohlížeči nepodporuje tento typ média",
                 "media_player": "Přehrávač médií",
                 "media-player-browser": "Prohlížeč přehrávače médií",

@@ -66,7 +66,7 @@ class HaCameraStream extends LitElement {
   }
 
   protected updated(changedProps: PropertyValues): void {
-    if (changedProps.has("stateObj")) {
+    if (changedProps.has("stateObj") && !this._shouldRenderMJPEG) {
       this._forceMJPEG = undefined;
       this._getStreamUrl();
     }
