@@ -728,12 +728,12 @@ export class HaMediaPlayerBrowse extends LitElement {
           background-color: transparent;
         }
 
-        mwc-list-item[dir="ltr"] .title {
+        mwc-list-item .title {
           margin-left: 16px;
         }
-
         mwc-list-item[dir="rtl"] .title {
           margin-right: 16px;
+          margin-left: 0;
         }
 
         /* ============= Narrow ============= */
