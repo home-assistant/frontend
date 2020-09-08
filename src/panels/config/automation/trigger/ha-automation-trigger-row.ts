@@ -118,7 +118,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                   "ui.panel.config.automation.editor.actions.duplicate"
                 )}
               </mwc-list-item>
-              <mwc-list-item>
+              <mwc-list-item class="error">
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.actions.delete"
                 )}
