@@ -553,6 +553,10 @@
                 "toggle": "Toggle"
             },
             "entity": {
+                "entity-attribute-picker": {
+                    "attribute": "Attribute",
+                    "show_attributes": "Show attributes"
+                },
                 "entity-picker": {
                     "clear": "Clear",
                     "entity": "Entity",
@@ -929,7 +933,13 @@
                                     "label": "Call service",
                                     "service_data": "Service data"
                                 },
+                                "wait_for_trigger": {
+                                    "continue_timeout": "Continue on timeout",
+                                    "label": "Wait for trigger",
+                                    "timeout": "Timeout (optional)"
+                                },
                                 "wait_template": {
+                                    "continue_timeout": "Continue on timeout",
                                     "label": "Wait",
                                     "timeout": "Timeout (optional)",
                                     "wait_template": "Wait Template"
@@ -993,7 +1003,9 @@
                                 "time": {
                                     "after": "After",
                                     "before": "Before",
-                                    "label": "Time"
+                                    "label": "Time",
+                                    "type_input": "Value of a date/time helper",
+                                    "type_value": "Fixed time"
                                 },
                                 "zone": {
                                     "entity": "Entity with location",
@@ -1081,6 +1093,7 @@
                                     "value_template": "Value template (optional)"
                                 },
                                 "state": {
+                                    "attribute": "Attribute (Optional)",
                                     "for": "For",
                                     "from": "From",
                                     "label": "State",
@@ -1107,8 +1120,10 @@
                                     "seconds": "Seconds"
                                 },
                                 "time": {
-                                    "at": "At",
-                                    "label": "Time"
+                                    "at": "At time",
+                                    "label": "Time",
+                                    "type_input": "Value of a date/time helper",
+                                    "type_value": "Fixed time"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -1131,6 +1146,8 @@
                         "add_automation": "Add automation",
                         "delete_automation": "Delete automation",
                         "delete_confirm": "Are you sure you want to delete this automation?",
+                        "duplicate": "Duplicate",
+                        "duplicate_automation": "Duplicate automation",
                         "edit_automation": "Edit automation",
                         "header": "Automation Editor",
                         "headers": {
@@ -1531,6 +1548,7 @@
                 },
                 "integrations": {
                     "add_integration": "Add integration",
+                    "attention": "Attention required",
                     "caption": "Integrations",
                     "config_entry": {
                         "area": "In {area}",
@@ -1601,6 +1619,7 @@
                     "none_found_detail": "Adjust your search criteria.",
                     "note_about_integrations": "Not all integrations can be configured via the UI yet.",
                     "note_about_website_reference": "More are available on the ",
+                    "reconfigure": "Reconfigure",
                     "rename_dialog": "Edit the name of this config entry",
                     "rename_input_label": "Entry name",
                     "search": "Search integrations"

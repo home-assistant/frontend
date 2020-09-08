@@ -19,6 +19,7 @@
         "logbook": "日誌",
         "mailbox": "郵箱",
         "map": "地圖",
+        "media_browser": "媒體瀏覽器",
         "profile": "個人設定",
         "shopping_list": "購物清單",
         "states": "總覽"
@@ -573,6 +574,7 @@
                     "playlist": "播放列表",
                     "server": "伺服器"
                 },
+                "media_browsing_error": "媒體瀏覽錯誤",
                 "media_not_supported": "瀏覽器媒體播放器不支援此類型媒體",
                 "media_player": "媒體播放器",
                 "media-player-browser": "媒體播放器瀏覽器",

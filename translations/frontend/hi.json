@@ -19,6 +19,9 @@
     },
     "state_badge": {
         "alarm_control_panel": {
+            "armed_away": "",
+            "armed_custom_bypass": "",
+            "armed_night": "",
             "pending": "अपूर्ण"
         },
         "default": {
@@ -28,7 +31,8 @@
             "unknown": "अज्ञात"
         },
         "device_tracker": {
-            "home": "घर"
+            "home": "घर",
+            "not_home": ""
         },
         "person": {
             "home": "घर"
@@ -75,15 +79,26 @@
                 "off": "विशद",
                 "on": "अनुसन्धानित"
             },
+            "occupancy": {
+                "off": "",
+                "on": ""
+            },
             "opening": {
                 "on": "खुला"
             },
             "presence": {
+                "off": "",
                 "on": "घर"
             },
             "safety": {
                 "off": "सुरक्षित",
                 "on": "असुरक्षित"
+            },
+            "smoke": {
+                "off": ""
+            },
+            "vibration": {
+                "on": ""
             },
             "window": {
                 "off": "बंद",
@@ -115,10 +130,15 @@
             "on": "चालू"
         },
         "group": {
+            "closing": "",
             "home": "घर",
+            "not_home": "",
             "off": "बंद",
+            "ok": "",
             "on": "चालू",
-            "problem": "समस्या"
+            "open": "",
+            "problem": "समस्या",
+            "stopped": ""
         },
         "input_boolean": {
             "off": "बंद",
@@ -234,6 +254,9 @@
                                 "time": {
                                     "after": "बाद",
                                     "before": "पहले"
+                                },
+                                "zone": {
+                                    "entity": ""
                                 }
                             }
                         },
@@ -405,6 +428,39 @@
                 "form": {
                     "next": "अगला",
                     "providers": {
+                        "command_line": {
+                            "abort": {
+                                "login_expired": ""
+                            },
+                            "error": {
+                                "invalid_auth": "",
+                                "invalid_code": ""
+                            },
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "",
+                                        "username": ""
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": ""
+                                    },
+                                    "description": ""
+                                }
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "mfa": {
+                                    "data": {
+                                        "code": ""
+                                    },
+                                    "description": ""
+                                }
+                            }
+                        },
                         "trusted_networks": {
                             "step": {
                                 "init": {
