@@ -100,9 +100,5 @@
         {% endfor -%}
       }
     </script>
-
-    {% for extra_url in extra_urls -%}
-    <link rel="import" href="{{ extra_url }}" async />
-    {% endfor -%}
   </body>
 </html>
