@@ -62,7 +62,6 @@ export class HaConfigServerControl extends LitElement {
   }
 
   protected render(): TemplateResult {
-    console.log(this.hass.config.components);
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
