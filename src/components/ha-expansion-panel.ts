@@ -21,9 +21,9 @@ class HaExpansionPanel extends LitElement {
         @click=${this._togglePanel}
       >
         <div class="summary-content">
-          <p class="summaty-title">
+          <span class="summary-title">
             ${this.title}
-          </p>
+          </span>
         </div>
         <div class="summary-icon ${this.expanded ? "expanded" : ""}">
           <svg viewBox="0 0 24 24">
@@ -85,7 +85,7 @@ class HaExpansionPanel extends LitElement {
         transition: margin 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
       }
 
-      .summaty-title {
+      .summary-title {
         margin: 0;
         line-height: 1.5;
         letter-spacing: 0.00938em;
