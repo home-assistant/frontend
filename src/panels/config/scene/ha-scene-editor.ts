@@ -782,9 +782,6 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
         mwc-fab.dirty {
           bottom: 0;
         }
-        .warning {
-          color: var(--error-color);
-        }
       `,
     ];
   }
