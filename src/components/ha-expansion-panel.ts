@@ -8,6 +8,8 @@ import {
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
+import "./ha-svg-icon";
+import { mdiChevronDown } from "@mdi/js";
 
 @customElement("ha-expansion-panel")
 class HaExpansionPanel extends LitElement {
@@ -27,9 +29,7 @@ class HaExpansionPanel extends LitElement {
           </span>
         </div>
         <div class="summary-icon ${this.expanded ? "expanded" : ""}">
-          <svg viewBox="0 0 24 24">
-            <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"></path>
-          </svg>
+          <ha-svg-icon path=${mdiChevronDown}></ha-svg-icon>
         </div>
       </div>
       <div class="container ${this.expanded ? "expanded" : ""}">
@@ -85,24 +85,16 @@ class HaExpansionPanel extends LitElement {
         display: flex;
         flex-grow: 1;
         transition: margin 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+        overflow: hidden;
       }
 
       .summary-title {
         margin: 0;
-        line-height: 1.5;
-        letter-spacing: 0.00938em;
-        font-size: 0.9375rem;
-        font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+        line-height: 1.2;
+        overflow: hidden;
       }
 
       .summary-icon {
-        width: 1em;
-        height: 1em;
-        display: inline-block;
-        font-size: 1.5rem;
-        flex-shrink: 0;
-        user-select: none;
-        transform: rotate(0deg);
         transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
       }
 
