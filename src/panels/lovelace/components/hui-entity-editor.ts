@@ -115,8 +115,6 @@ export class HuiEntityEditor extends LitElement {
       return;
     }
 
-    console.log("updated", this.entities);
-
     if (entitiesChanged) {
       this._handleEntitiesChanged();
     }
@@ -174,8 +172,6 @@ export class HuiEntityEditor extends LitElement {
         entity: target.value!,
       };
     }
-
-    console.log(newConfigEntities);
 
     fireEvent(this, "entities-changed", { entities: newConfigEntities });
   }
