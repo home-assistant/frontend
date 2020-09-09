@@ -34,7 +34,10 @@ class MoreInfoAutomation extends LitElement {
       </div>
 
       <div class="actions">
-        <mwc-button @click=${this.handleAction}>
+        <mwc-button
+          @click=${this.handleAction}
+          .disabled=${this.stateObj!.state === "unavailable"}
+        >
           ${this.hass.localize("ui.card.automation.trigger")}
         </mwc-button>
       </div>
@@ -52,7 +55,7 @@ class MoreInfoAutomation extends LitElement {
         justify-content: space-between;
       }
       .actions {
-        margin: 36px 0 8px 0;
+        margin: 8px 0;
         text-align: right;
       }
     `;

@@ -553,6 +553,10 @@
                 "toggle": "Přepnout"
             },
             "entity": {
+                "entity-attribute-picker": {
+                    "attribute": "Atribut",
+                    "show_attributes": "Zobrazit atributy"
+                },
                 "entity-picker": {
                     "clear": "Zrušit",
                     "entity": "Entita",
@@ -929,7 +933,13 @@
                                     "label": "Zavolat službu",
                                     "service_data": "Data služby"
                                 },
+                                "wait_for_trigger": {
+                                    "continue_timeout": "Pokračovat po časovém limitu",
+                                    "label": "Počkat na spouštěč",
+                                    "timeout": "Časový limit (volitelný)"
+                                },
                                 "wait_template": {
+                                    "continue_timeout": "Pokračovat po časovém limitu",
                                     "label": "Čekání",
                                     "timeout": "Časový limit (volitelné)",
                                     "wait_template": "Šablona pro čekání"
@@ -993,7 +1003,9 @@
                                 "time": {
                                     "after": "Po",
                                     "before": "Před",
-                                    "label": "Čas"
+                                    "label": "Čas",
+                                    "type_input": "Hodnota pomocníka \"Datum a/nebo čas\"",
+                                    "type_value": "Pevný čas"
                                 },
                                 "zone": {
                                     "entity": "Entita s umístěním",
@@ -1081,6 +1093,7 @@
                                     "value_template": "Šablona hodnoty (volitelné)"
                                 },
                                 "state": {
+                                    "attribute": "Atribut (volitelný)",
                                     "for": "Po dobu",
                                     "from": "Z",
                                     "label": "Stav",
@@ -1108,7 +1121,9 @@
                                 },
                                 "time": {
                                     "at": "V",
-                                    "label": "Čas"
+                                    "label": "Čas",
+                                    "type_input": "Hodnota pomocníka \"Datum a/nebo čas\"",
+                                    "type_value": "Pevný čas"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -1131,6 +1146,8 @@
                         "add_automation": "Přidat automatizaci",
                         "delete_automation": "Odstranit automatizaci",
                         "delete_confirm": "Opravdu chcete odstranit tuto automatizaci?",
+                        "duplicate": "Duplikovat",
+                        "duplicate_automation": "Duplikovat automatizaci",
                         "edit_automation": "Upravit automatizaci",
                         "header": "Editor automatizací",
                         "headers": {
@@ -1531,6 +1548,7 @@
                 },
                 "integrations": {
                     "add_integration": "Přidat integraci",
+                    "attention": "Vyžadována pozornost",
                     "caption": "Integrace",
                     "config_entry": {
                         "area": "V {area}",
@@ -1601,6 +1619,7 @@
                     "none_found_detail": "Upravte kritéria vyhledávání.",
                     "note_about_integrations": "Ne všechny integrace lze prozatím konfigurovat prostřednictvím uživatelského rozhraní.",
                     "note_about_website_reference": "Další jsou k dispozici na ",
+                    "reconfigure": "Překonfigurovat",
                     "rename_dialog": "Upravit název této položky nastavení",
                     "rename_input_label": "Název položky",
                     "search": "Hledat integraci"

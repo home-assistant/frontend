@@ -4,9 +4,9 @@ import {
   css,
   CSSResult,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -47,7 +47,7 @@ class MoreInfoCamera extends LitElement {
     return html`
       <ha-camera-stream
         .hass=${this.hass}
-        .stateObj="${this.stateObj}"
+        .stateObj=${this.stateObj}
         showcontrols
       ></ha-camera-stream>
       ${this._cameraPrefs

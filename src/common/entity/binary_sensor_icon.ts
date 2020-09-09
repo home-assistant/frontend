@@ -3,49 +3,51 @@ import { HassEntity } from "home-assistant-js-websocket";
 /** Return an icon representing a binary sensor state. */
 
 export const binarySensorIcon = (state: HassEntity) => {
-  const activated = state.state && state.state === "off";
+  const is_off = state.state && state.state === "off";
   switch (state.attributes.device_class) {
     case "battery":
-      return activated ? "hass:battery" : "hass:battery-outline";
+      return is_off ? "hass:battery" : "hass:battery-outline";
+    case "battery_charging":
+      return is_off ? "hass:battery" : "hass:battery-charging";
     case "cold":
-      return activated ? "hass:thermometer" : "hass:snowflake";
+      return is_off ? "hass:thermometer" : "hass:snowflake";
     case "connectivity":
-      return activated ? "hass:server-network-off" : "hass:server-network";
+      return is_off ? "hass:server-network-off" : "hass:server-network";
     case "door":
-      return activated ? "hass:door-closed" : "hass:door-open";
+      return is_off ? "hass:door-closed" : "hass:door-open";
     case "garage_door":
-      return activated ? "hass:garage" : "hass:garage-open";
+      return is_off ? "hass:garage" : "hass:garage-open";
     case "gas":
     case "power":
     case "problem":
     case "safety":
     case "smoke":
-      return activated ? "hass:shield-check" : "hass:alert";
+      return is_off ? "hass:shield-check" : "hass:alert";
     case "heat":
-      return activated ? "hass:thermometer" : "hass:fire";
+      return is_off ? "hass:thermometer" : "hass:fire";
     case "light":
-      return activated ? "hass:brightness-5" : "hass:brightness-7";
+      return is_off ? "hass:brightness-5" : "hass:brightness-7";
     case "lock":
-      return activated ? "hass:lock" : "hass:lock-open";
+      return is_off ? "hass:lock" : "hass:lock-open";
     case "moisture":
-      return activated ? "hass:water-off" : "hass:water";
+      return is_off ? "hass:water-off" : "hass:water";
     case "motion":
-      return activated ? "hass:walk" : "hass:run";
+      return is_off ? "hass:walk" : "hass:run";
     case "occupancy":
-      return activated ? "hass:home-outline" : "hass:home";
+      return is_off ? "hass:home-outline" : "hass:home";
     case "opening":
-      return activated ? "hass:square" : "hass:square-outline";
+      return is_off ? "hass:square" : "hass:square-outline";
     case "plug":
-      return activated ? "hass:power-plug-off" : "hass:power-plug";
+      return is_off ? "hass:power-plug-off" : "hass:power-plug";
     case "presence":
-      return activated ? "hass:home-outline" : "hass:home";
+      return is_off ? "hass:home-outline" : "hass:home";
     case "sound":
-      return activated ? "hass:music-note-off" : "hass:music-note";
+      return is_off ? "hass:music-note-off" : "hass:music-note";
     case "vibration":
-      return activated ? "hass:crop-portrait" : "hass:vibrate";
+      return is_off ? "hass:crop-portrait" : "hass:vibrate";
     case "window":
-      return activated ? "hass:window-closed" : "hass:window-open";
+      return is_off ? "hass:window-closed" : "hass:window-open";
     default:
-      return activated ? "hass:radiobox-blank" : "hass:checkbox-marked-circle";
+      return is_off ? "hass:radiobox-blank" : "hass:checkbox-marked-circle";
   }
 };

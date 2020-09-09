@@ -5,14 +5,16 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
-  TemplateResult,
   query,
+  TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTL } from "../../../../common/util/compute_rtl";
+import { deepEqual } from "../../../../common/util/deep-equal";
+import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-code-editor";
 import type { HaCodeEditor } from "../../../../components/ha-code-editor";
 import type {
@@ -20,14 +22,12 @@ import type {
   LovelaceConfig,
 } from "../../../../data/lovelace";
 import type { HomeAssistant } from "../../../../types";
+import { handleStructError } from "../../common/structs/handle-errors";
 import { getCardElementClass } from "../../create-element/create-card-element";
 import type { EntityConfig } from "../../entity-rows/types";
 import type { LovelaceCardEditor } from "../../types";
-import type { GUIModeChangedEvent } from "../types";
-import "../../../../components/ha-circular-progress";
-import { deepEqual } from "../../../../common/util/deep-equal";
-import { handleStructError } from "../../common/structs/handle-errors";
 import { GUISupportError } from "../gui-support-error";
+import type { GUIModeChangedEvent } from "../types";
 
 export interface ConfigChangedEvent {
   config: LovelaceCardConfig;
@@ -78,6 +78,9 @@ export class HuiCardEditor extends LitElement {
   @query("ha-code-editor") _yamlEditor?: HaCodeEditor;
 
   public get yaml(): string {
+    if (!this._yaml) {
+      this._yaml = safeDump(this._config);
+    }
     return this._yaml || "";
   }
 
@@ -101,7 +104,7 @@ export class HuiCardEditor extends LitElement {
       return;
     }
     this._config = config;
-    this._yaml = safeDump(config);
+    this._yaml = undefined;
     this._error = undefined;
     this._setConfig();
   }
