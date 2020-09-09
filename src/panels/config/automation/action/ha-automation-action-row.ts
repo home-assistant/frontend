@@ -336,7 +336,6 @@ export default class HaAutomationActionRow extends LitElement {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
         }
         .warning {
-          color: var(--warning-color);
           margin-bottom: 8px;
         }
         .warning ul {
