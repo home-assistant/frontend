@@ -109,7 +109,9 @@ class CloudGoogleAssistant extends LitElement {
 
     this._entities.forEach((entity) => {
       const stateObj = this.hass.states[entity.entity_id];
-      const config = this._entityConfigs[entity.entity_id] || {};
+      const config = this._entityConfigs[entity.entity_id] || {
+        should_expose: null,
+      };
       const isExposed = emptyFilter
         ? this._configIsExposed(entity.entity_id, config)
         : filterFunc(entity.entity_id);
@@ -324,9 +326,7 @@ class CloudGoogleAssistant extends LitElement {
   }
 
   private _configIsExposed(entityId: string, config: GoogleEntityConfig) {
-    return config.should_expose === null
-      ? this._configIsDomainExposed(entityId)
-      : config.should_expose;
+    return config.should_expose ?? this._configIsDomainExposed(entityId);
   }
 
   private async _fetchData() {

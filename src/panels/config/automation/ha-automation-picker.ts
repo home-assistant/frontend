@@ -91,10 +91,11 @@ class HaAutomationPicker extends LitElement {
       if (!narrow) {
         columns.execute = {
           title: "",
-          template: (_info, automation) => html`
+          template: (_info, automation: any) => html`
             <mwc-button
               .automation=${automation}
               @click=${(ev) => this._execute(ev)}
+              .disabled=${automation.state === "unavailable"}
             >
               ${this.hass.localize("ui.card.automation.trigger")}
             </mwc-button>

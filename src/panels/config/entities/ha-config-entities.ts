@@ -58,6 +58,7 @@ import {
   loadEntityEditorDialog,
   showEntityEditorDialog,
 } from "./show-dialog-entity-editor";
+import { haStyle } from "../../../resources/styles";
 
 export interface StateEntity extends EntityRegistryEntry {
   readonly?: boolean;
@@ -378,7 +379,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                       "ui.panel.config.entities.picker.disable_selected.button"
                     )}</mwc-button
                   >
-                  <mwc-button @click=${this._removeSelected}
+                  <mwc-button @click=${this._removeSelected} class="warning"
                     >${this.hass.localize(
                       "ui.panel.config.entities.picker.remove_selected.button"
                     )}</mwc-button
@@ -406,6 +407,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                     )}
                   </paper-tooltip>
                   <ha-icon-button
+                    class="warning"
                     id="remove-btn"
                     icon="hass:delete"
                     @click=${this._removeSelected}
@@ -721,111 +723,114 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     navigate(this, window.location.pathname, true);
   }
 
-  static get styles(): CSSResult {
-    return css`
-      hass-loading-screen {
-        --app-header-background-color: var(--sidebar-background-color);
-        --app-header-text-color: var(--sidebar-text-color);
-      }
-      a {
-        color: var(--primary-color);
-      }
-      h2 {
-        margin-top: 0;
-        font-family: var(--paper-font-headline_-_font-family);
-        -webkit-font-smoothing: var(
-          --paper-font-headline_-_-webkit-font-smoothing
-        );
-        font-size: var(--paper-font-headline_-_font-size);
-        font-weight: var(--paper-font-headline_-_font-weight);
-        letter-spacing: var(--paper-font-headline_-_letter-spacing);
-        line-height: var(--paper-font-headline_-_line-height);
-        opacity: var(--dark-primary-opacity);
-      }
-      p {
-        font-family: var(--paper-font-subhead_-_font-family);
-        -webkit-font-smoothing: var(
-          --paper-font-subhead_-_-webkit-font-smoothing
-        );
-        font-weight: var(--paper-font-subhead_-_font-weight);
-        line-height: var(--paper-font-subhead_-_line-height);
-      }
-      ha-data-table {
-        width: 100%;
-        --data-table-border-width: 0;
-      }
-      :host(:not([narrow])) ha-data-table {
-        height: calc(100vh - 65px);
-        display: block;
-      }
-      ha-button-menu {
-        margin-right: 8px;
-      }
-      .table-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
-      }
-      search-input {
-        margin-left: 16px;
-        flex-grow: 1;
-        position: relative;
-        top: 2px;
-      }
-      .search-toolbar search-input {
-        margin-left: 8px;
-        top: 1px;
-      }
-      .search-toolbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        color: var(--secondary-text-color);
-      }
-      .search-toolbar ha-button-menu {
-        position: static;
-      }
-      .selected-txt {
-        font-weight: bold;
-        padding-left: 16px;
-      }
-      .table-header .selected-txt {
-        margin-top: 20px;
-      }
-      .search-toolbar .selected-txt {
-        font-size: 16px;
-      }
-      .header-btns > mwc-button,
-      .header-btns > ha-icon-button {
-        margin: 8px;
-      }
-      .active-filters {
-        color: var(--primary-text-color);
-        position: relative;
-        display: flex;
-        align-items: center;
-        padding: 2px 2px 2px 8px;
-        margin-left: 4px;
-        font-size: 14px;
-      }
-      .active-filters ha-icon {
-        color: var(--primary-color);
-      }
-      .active-filters mwc-button {
-        margin-left: 8px;
-      }
-      .active-filters::before {
-        background-color: var(--primary-color);
-        opacity: 0.12;
-        border-radius: 4px;
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        content: "";
-      }
-    `;
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
+        hass-loading-screen {
+          --app-header-background-color: var(--sidebar-background-color);
+          --app-header-text-color: var(--sidebar-text-color);
+        }
+        a {
+          color: var(--primary-color);
+        }
+        h2 {
+          margin-top: 0;
+          font-family: var(--paper-font-headline_-_font-family);
+          -webkit-font-smoothing: var(
+            --paper-font-headline_-_-webkit-font-smoothing
+          );
+          font-size: var(--paper-font-headline_-_font-size);
+          font-weight: var(--paper-font-headline_-_font-weight);
+          letter-spacing: var(--paper-font-headline_-_letter-spacing);
+          line-height: var(--paper-font-headline_-_line-height);
+          opacity: var(--dark-primary-opacity);
+        }
+        p {
+          font-family: var(--paper-font-subhead_-_font-family);
+          -webkit-font-smoothing: var(
+            --paper-font-subhead_-_-webkit-font-smoothing
+          );
+          font-weight: var(--paper-font-subhead_-_font-weight);
+          line-height: var(--paper-font-subhead_-_line-height);
+        }
+        ha-data-table {
+          width: 100%;
+          --data-table-border-width: 0;
+        }
+        :host(:not([narrow])) ha-data-table {
+          height: calc(100vh - 65px);
+          display: block;
+        }
+        ha-button-menu {
+          margin-right: 8px;
+        }
+        .table-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
+        }
+        search-input {
+          margin-left: 16px;
+          flex-grow: 1;
+          position: relative;
+          top: 2px;
+        }
+        .search-toolbar search-input {
+          margin-left: 8px;
+          top: 1px;
+        }
+        .search-toolbar {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          color: var(--secondary-text-color);
+        }
+        .search-toolbar ha-button-menu {
+          position: static;
+        }
+        .selected-txt {
+          font-weight: bold;
+          padding-left: 16px;
+        }
+        .table-header .selected-txt {
+          margin-top: 20px;
+        }
+        .search-toolbar .selected-txt {
+          font-size: 16px;
+        }
+        .header-btns > mwc-button,
+        .header-btns > ha-icon-button {
+          margin: 8px;
+        }
+        .active-filters {
+          color: var(--primary-text-color);
+          position: relative;
+          display: flex;
+          align-items: center;
+          padding: 2px 2px 2px 8px;
+          margin-left: 4px;
+          font-size: 14px;
+        }
+        .active-filters ha-icon {
+          color: var(--primary-color);
+        }
+        .active-filters mwc-button {
+          margin-left: 8px;
+        }
+        .active-filters::before {
+          background-color: var(--primary-color);
+          opacity: 0.12;
+          border-radius: 4px;
+          position: absolute;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
+          content: "";
+        }
+      `,
+    ];
   }
 }

@@ -97,8 +97,13 @@ export const showConfigFlowDialog = (
     },
 
     renderExternalStepHeader(hass, step) {
-      return hass.localize(
-        `component.${step.handler}.config.step.${step.step_id}.title`
+      return (
+        hass.localize(
+          `component.${step.handler}.config.step.${step.step_id}.title`
+        ) ||
+        hass.localize(
+          "ui.panel.config.integrations.config_flow.external_step.open_site"
+        )
       );
     },
 
