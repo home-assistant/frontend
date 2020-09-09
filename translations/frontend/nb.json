@@ -553,6 +553,10 @@
                 "toggle": "Veksle"
             },
             "entity": {
+                "entity-attribute-picker": {
+                    "attribute": "Attributt",
+                    "show_attributes": "Vis attributter"
+                },
                 "entity-picker": {
                     "clear": "Tøm",
                     "entity": "Entitet",
@@ -929,7 +933,13 @@
                                     "label": "Tilkall tjeneste",
                                     "service_data": "Tjenestedata"
                                 },
+                                "wait_for_trigger": {
+                                    "continue_timeout": "Fortsett ved tidsavbrudd",
+                                    "label": "Vent på utløser",
+                                    "timeout": "Tidsavbrudd"
+                                },
                                 "wait_template": {
+                                    "continue_timeout": "Fortsett ved tidsavbrudd",
                                     "label": "Vent",
                                     "timeout": "Tidsavbrudd (valgfritt)",
                                     "wait_template": "Ventemal"
@@ -993,7 +1003,9 @@
                                 "time": {
                                     "after": "Etter",
                                     "before": "Før",
-                                    "label": "Tid"
+                                    "label": "Tid",
+                                    "type_input": "Verdien til en tid/dato hjelper",
+                                    "type_value": "Bestemt tid"
                                 },
                                 "zone": {
                                     "entity": "Entitet med posisjon",
@@ -1081,6 +1093,7 @@
                                     "value_template": "Verdi fra mal (valgfritt)"
                                 },
                                 "state": {
+                                    "attribute": "Attributt (valgfritt)",
                                     "for": "",
                                     "from": "Fra",
                                     "label": "Tilstand",
@@ -1108,7 +1121,9 @@
                                 },
                                 "time": {
                                     "at": "Klokken",
-                                    "label": "Tid"
+                                    "label": "Tid",
+                                    "type_input": "Verdien til en tid/dato hjelper",
+                                    "type_value": "Bestemt tid"
                                 },
                                 "webhook": {
                                     "label": "",
@@ -1131,6 +1146,8 @@
                         "add_automation": "Legg til automasjon",
                         "delete_automation": "Slett automasjon",
                         "delete_confirm": "Er du sikker på at du vil slette denne automasjonen?",
+                        "duplicate": "Dupliser",
+                        "duplicate_automation": "Dupliser automasjon",
                         "edit_automation": "Rediger automasjon",
                         "header": "Automasjonsredigering",
                         "headers": {
@@ -1531,6 +1548,7 @@
                 },
                 "integrations": {
                     "add_integration": "Legg til integrasjon",
+                    "attention": "Oppmerksomhet kreves",
                     "caption": "Integrasjoner",
                     "config_entry": {
                         "area": "I {area}",
@@ -1601,6 +1619,7 @@
                     "none_found_detail": "Juster dine søkekriterier",
                     "note_about_integrations": "Ikke alle integrasjoner kan konfigureres via brukergrensesnittet ennå.",
                     "note_about_website_reference": "Flere er tilgjengelige på",
+                    "reconfigure": "Konfigurer på nytt",
                     "rename_dialog": "Redigere navnet på denne config-oppføringen",
                     "rename_input_label": "Navn på oppføring",
                     "search": "Søk i integrasjoner"
