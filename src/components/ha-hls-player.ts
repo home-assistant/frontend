@@ -12,14 +12,21 @@ import {
 } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
 import { nextRender } from "../common/util/render-status";
+import {
+  CameraPreferences,
+  fetchCameraPrefs,
+  updateCameraPrefs,
+} from "../data/camera";
 import { getExternalConfig } from "../external_app/external_config";
-import type { HomeAssistant } from "../types";
+import type { CameraEntity, HomeAssistant } from "../types";
 
 type HLSModule = typeof import("hls.js");
 
 @customElement("ha-hls-player")
 class HaHLSPlayer extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public stateObj?: CameraEntity;
 
   @property() public url!: string;
 
@@ -39,9 +46,13 @@ class HaHLSPlayer extends LitElement {
 
   @internalProperty() private _attached = false;
 
+  @internalProperty() private _cameraPrefs?: CameraPreferences;
+
   private _hlsPolyfillInstance?: Hls;
 
   private _useExoPlayer = false;
+
+  private _exoPreloadMsgId = 0;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -131,7 +142,48 @@ class HaHLSPlayer extends LitElement {
     }
   }
 
+  private async _fetchCameraPrefs() {
+    this._cameraPrefs = await fetchCameraPrefs(
+      this.hass!,
+      this.stateObj!.entity_id
+    );
+    // Register a listener for set_preload_stream messages
+    this._exoPreloadMsgId = ++this.hass!.auth.external!.msgId;
+    this.hass!.auth.external!.commands[this._exoPreloadMsgId] = {
+      resolve: (data: any) => this._set_preload_stream(data as boolean),
+      reject: (_: any) => {},
+    };
+    // Send current preload_stream state and msg_id to use for updates
+    await this.hass!.auth.external!.sendMessage({
+      type: "exoplayer/set_preload_stream",
+      payload: {
+        preload_stream: this._cameraPrefs.preload_stream,
+        listener_msg_id: this._exoPreloadMsgId,
+      },
+    });
+  }
+
+  private async _set_preload_stream(preload: boolean) {
+    try {
+      this._cameraPrefs = await updateCameraPrefs(
+        this.hass!,
+        this.stateObj!.entity_id,
+        {
+          preload_stream: preload,
+        }
+      );
+    } catch (err) {
+      alert(err.message);
+      await this.hass!.auth.external!.sendMessage({
+        type: "exoplayer/set_preload_stream",
+        payload: this._cameraPrefs!.preload_stream,
+      });
+    }
+  }
+
   private async _renderHLSExoPlayer(url: string) {
+    // Fetch in background while we set up the video.
+    this._fetchCameraPrefs();
     window.addEventListener("resize", this._resizeExoPlayer);
     this.updateComplete.then(() => nextRender()).then(this._resizeExoPlayer);
     this._videoEl.style.visibility = "hidden";
@@ -192,6 +244,8 @@ class HaHLSPlayer extends LitElement {
     if (this._useExoPlayer) {
       window.removeEventListener("resize", this._resizeExoPlayer);
       this.hass!.auth.external!.fireMessage({ type: "exoplayer/stop" });
+      // Deregister set_preload_stream listener
+      delete this.hass!.auth.external!.commands[this._exoPreloadMsgId];
     }
   }
 
