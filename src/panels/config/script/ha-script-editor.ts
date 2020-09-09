@@ -74,6 +74,7 @@ export class HaScriptEditor extends LitElement {
           ? ""
           : html`
               <ha-icon-button
+                class="warning"
                 slot="toolbar-icon"
                 title="${this.hass.localize(
                   "ui.panel.config.script.editor.delete_script"
@@ -445,6 +446,9 @@ export class HaScriptEditor extends LitElement {
         }
         mwc-fab.dirty {
           bottom: 0;
+        }
+        .warning {
+          color: var(--error-color);
         }
       `,
     ];
