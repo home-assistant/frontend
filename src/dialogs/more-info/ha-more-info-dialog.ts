@@ -178,7 +178,7 @@ export class MoreInfoDialog extends LitElement {
                   ${!CONTROL_DOMAINS.includes(domain) ||
                   !this._computeShowHistoryComponent(entityId)
                     ? ""
-                    : html` <ha-more-info-history
+                    : html`<ha-more-info-history
                         .hass=${this.hass}
                         .entityId=${this._entityId}
                       ></ha-more-info-history>`}
