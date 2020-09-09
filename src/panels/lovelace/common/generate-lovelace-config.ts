@@ -213,15 +213,17 @@ const computeDefaultViewStates = (
   entityEntries: EntityRegistryEntry[]
 ): HassEntities => {
   const states = {};
-  const hiddenEntities = entityEntries
-    .filter((entry) => HIDE_PLATFORM.has(entry.platform))
-    .map((entry) => entry.entity_id);
+  const hiddenEntities = new Set(
+    entityEntries
+      .filter((entry) => HIDE_PLATFORM.has(entry.platform))
+      .map((entry) => entry.entity_id)
+  );
 
   Object.keys(entities).forEach((entityId) => {
     const stateObj = entities[entityId];
     if (
       !HIDE_DOMAIN.has(computeStateDomain(stateObj)) &&
-      !hiddenEntities.includes(entityId)
+      !hiddenEntities.has(stateObj.entity_id)
     ) {
       states[entityId] = entities[entityId];
     }
