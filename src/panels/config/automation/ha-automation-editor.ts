@@ -104,6 +104,7 @@ export class HaAutomationEditor extends LitElement {
                 <ha-svg-icon .path=${mdiContentDuplicate}></ha-svg-icon>
               </mwc-icon-button>
               <mwc-icon-button
+                class="warning"
                 slot="toolbar-icon"
                 title="${this.hass.localize(
                   "ui.panel.config.automation.picker.delete_automation"
