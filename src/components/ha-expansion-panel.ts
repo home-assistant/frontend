@@ -7,6 +7,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { fireEvent } from "../common/dom/fire_event";
 
 @customElement("ha-expansion-panel")
 class HaExpansionPanel extends LitElement {
@@ -39,6 +40,7 @@ class HaExpansionPanel extends LitElement {
 
   private _togglePanel(): void {
     this.expanded = !this.expanded;
+    fireEvent(this, this.expanded ? "expanded" : "collapsed");
   }
 
   static get styles(): CSSResult {
@@ -131,5 +133,11 @@ class HaExpansionPanel extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-expansion-panel": HaExpansionPanel;
+  }
+
+  // for fire event
+  interface HASSDomEvents {
+    expanded: undefined;
+    collapsed: undefined;
   }
 }
