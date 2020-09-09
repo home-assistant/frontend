@@ -29,9 +29,19 @@ import { haStyleDialog } from "../../resources/styles";
 import "../../state-summary/state-card-content";
 import { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
+import "./ha-more-info-history";
 import "./more-info-content";
 
 const DOMAINS_NO_INFO = ["camera", "configurator"];
+const CONTROL_DOMAINS = [
+  "light",
+  "media_player",
+  "vacuum",
+  "alarm_control_panel",
+  "climate",
+  "humidifier",
+  "weather",
+];
 const EDITABLE_DOMAINS_WITH_ID = ["scene", "automation"];
 const EDITABLE_DOMAINS = ["script"];
 
@@ -127,7 +137,8 @@ export class MoreInfoDialog extends LitElement {
                 `
               : ""}
           </ha-header-bar>
-          ${this._computeShowHistoryComponent(entityId)
+          ${CONTROL_DOMAINS.includes(domain) &&
+          this._computeShowHistoryComponent(entityId)
             ? html`
                 <mwc-tab-bar
                   .activeIndex=${this._currTabIndex}
@@ -135,7 +146,7 @@ export class MoreInfoDialog extends LitElement {
                 >
                   <mwc-tab
                     .label=${this.hass.localize(
-                      "ui.dialogs.more_info_control.controls"
+                      "ui.dialogs.more_info_control.details"
                     )}
                   ></mwc-tab>
                   <mwc-tab
@@ -164,6 +175,13 @@ export class MoreInfoDialog extends LitElement {
                     .stateObj=${stateObj}
                     .hass=${this.hass}
                   ></more-info-content>
+                  ${!CONTROL_DOMAINS.includes(domain) ||
+                  !this._computeShowHistoryComponent(entityId)
+                    ? ""
+                    : html`<ha-more-info-history
+                        .hass=${this.hass}
+                        .entityId=${this._entityId}
+                      ></ha-more-info-history>`}
                   ${stateObj.attributes.restored
                     ? html`
                         <p>
@@ -188,19 +206,15 @@ export class MoreInfoDialog extends LitElement {
                     : ""}
                 `
               : html`
-                  <ha-more-info-tab-history
+                  <ha-more-info-history
                     .hass=${this.hass}
                     .entityId=${this._entityId}
-                  ></ha-more-info-tab-history>
+                  ></ha-more-info-history>
                 `
           )}
         </div>
       </ha-dialog>
     `;
-  }
-
-  protected firstUpdated(): void {
-    import("./ha-more-info-tab-history");
   }
 
   private _enlarge() {
