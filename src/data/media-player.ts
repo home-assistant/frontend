@@ -1,5 +1,21 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../types";
+import {
+  mdiFile,
+  mdiFolder,
+  mdiPlaylistMusic,
+  mdiFileMusic,
+  mdiAlbum,
+  mdiMusic,
+  mdiTelevisionClassic,
+  mdiMovie,
+  mdiVideo,
+  mdiImage,
+  mdiWeb,
+  mdiGamepadVariant,
+  mdiAccountMusic,
+  mdiPodcast,
+} from "@mdi/js";
 
 export const SUPPORT_PAUSE = 1;
 export const SUPPORT_SEEK = 2;
@@ -21,6 +37,39 @@ export const CONTRAST_RATIO = 4.5;
 export type MediaPlayerBrowseAction = "pick" | "play";
 
 export const BROWSER_SOURCE = "browser";
+
+export type MediaTypeBrowserSetting = {
+  icon?: string;
+  thumbnail_ratio?: string;
+  layout?: string;
+};
+
+export const MediaTypeBrowserSettings: {
+  [type: string]: MediaTypeBrowserSetting;
+} = {
+  album: { icon: mdiAlbum },
+  app: { icon: mdiFolder },
+  apps: { icon: mdiFolder },
+  artist: { icon: mdiAccountMusic },
+  channel: { icon: mdiFolder, thumbnail_ratio: "portrait", layout: "grid" },
+  channels: { icon: mdiFolder, thumbnail_ratio: "portrait" },
+  composer: { icon: mdiFolder },
+  contributing_artist: { icon: mdiFolder },
+  directory: { icon: mdiFolder },
+  episode: { icon: mdiFolder, thumbnail_ratio: "portrait" },
+  game: { icon: mdiGamepadVariant, thumbnail_ratio: "portrait" },
+  genre: { icon: mdiFolder },
+  image: { icon: mdiImage },
+  movie: { icon: mdiMovie, thumbnail_ratio: "portrait", layout: "grid" },
+  music: { icon: mdiMusic },
+  playlist: { icon: mdiPlaylistMusic },
+  podcast: { icon: mdiPodcast },
+  season: { icon: mdiFolder, thumbnail_ratio: "portrait" },
+  track: { icon: mdiFileMusic },
+  tv_show: { icon: mdiTelevisionClassic, thumbnail_ratio: "portrait" },
+  url: { icon: mdiWeb },
+  video: { icon: mdiVideo },
+};
 
 export interface MediaPickedEvent {
   item: MediaPlayerItem;
