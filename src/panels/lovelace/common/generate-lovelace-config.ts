@@ -413,6 +413,15 @@ export const generateLovelaceConfigFromData = async (
     viewEntities.length === 0 ||
     viewEntities[0].entity_id !== DEFAULT_VIEW_ENTITY_ID
   ) {
+    const hiddenPlatforms = ["mobile_app"];
+    const hidddenEntitites = entityEntries
+      .filter((entry) => hiddenPlatforms.includes(entry.platform))
+      .map((entry) => entry.entity_id);
+
+    hidddenEntitites.forEach((entity) => {
+      delete entities[entity];
+    });
+
     views.unshift(
       generateDefaultViewConfig(
         areaEntries,
