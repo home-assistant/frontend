@@ -33,6 +33,8 @@ export class MoreInfoHistory extends LitElement {
 
   private _historyRefreshInterval?: number;
 
+  private _lastLogbookDate?: Date;
+
   protected render(): TemplateResult {
     if (!this.entityId) {
       return html``;
@@ -88,6 +90,7 @@ export class MoreInfoHistory extends LitElement {
     if (changedProps.has("entityId")) {
       this._stateHistory = undefined;
       this._entries = undefined;
+      this._lastLogbookDate = undefined;
 
       this._getStateHistory();
       this._getLogBookData();
@@ -115,15 +118,20 @@ export class MoreInfoHistory extends LitElement {
   }
 
   private async _getLogBookData() {
-    const yesterday = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
+    const lastDate =
+      this._lastLogbookDate ||
+      new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
     const now = new Date();
+
     this._entries = await getLogbookData(
       this.hass,
-      yesterday.toISOString(),
+      lastDate.toISOString(),
       now.toISOString(),
       this.entityId,
       true
     );
+
+    this._lastLogbookDate = now;
   }
 
   private _fetchPersonNames() {
