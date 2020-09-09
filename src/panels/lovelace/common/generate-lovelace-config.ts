@@ -208,11 +208,21 @@ export const computeCards = (
   return cards;
 };
 
-const computeDefaultViewStates = (entities: HassEntities): HassEntities => {
+const computeDefaultViewStates = (
+  entities: HassEntities,
+  entityEntries: EntityRegistryEntry[]
+): HassEntities => {
   const states = {};
+  const removedEntities = entityEntries
+    .filter((entry) => HIDE_PLATFORM.includes(entry.platform))
+    .map((entry) => entry.entity_id);
+
   Object.keys(entities).forEach((entityId) => {
     const stateObj = entities[entityId];
-    if (!HIDE_DOMAIN.has(computeStateDomain(stateObj))) {
+    if (
+      !HIDE_DOMAIN.has(computeStateDomain(stateObj)) &&
+      !removedEntities.includes(entityId)
+    ) {
       states[entityId] = entities[entityId];
     }
   });
@@ -319,7 +329,7 @@ export const generateDefaultViewConfig = (
   entities: HassEntities,
   localize: LocalizeFunc
 ): LovelaceViewConfig => {
-  const states = computeDefaultViewStates(entities);
+  const states = computeDefaultViewStates(entities, entityEntries);
   const path = "default_view";
   const title = "Home";
   const icon = undefined;
@@ -415,14 +425,6 @@ export const generateLovelaceConfigFromData = async (
     viewEntities.length === 0 ||
     viewEntities[0].entity_id !== DEFAULT_VIEW_ENTITY_ID
   ) {
-    // Filter out unwanted platforms
-    entityEntries
-      .filter((entry) => HIDE_PLATFORM.includes(entry.platform))
-      .map((entry) => entry.entity_id)
-      .forEach((entityId) => {
-        delete entities[entityId];
-      });
-
     views.unshift(
       generateDefaultViewConfig(
         areaEntries,
