@@ -213,7 +213,7 @@ const computeDefaultViewStates = (
   entityEntries: EntityRegistryEntry[]
 ): HassEntities => {
   const states = {};
-  const removedEntities = entityEntries
+  const hiddenEntities = entityEntries
     .filter((entry) => HIDE_PLATFORM.includes(entry.platform))
     .map((entry) => entry.entity_id);
 
@@ -221,7 +221,7 @@ const computeDefaultViewStates = (
     const stateObj = entities[entityId];
     if (
       !HIDE_DOMAIN.has(computeStateDomain(stateObj)) &&
-      !removedEntities.includes(entityId)
+      !hiddenEntities.includes(entityId)
     ) {
       states[entityId] = entities[entityId];
     }
