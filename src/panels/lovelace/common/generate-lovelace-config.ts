@@ -63,6 +63,8 @@ const HIDE_DOMAIN = new Set([
   "zone",
 ]);
 
+const HIDE_PLATFORM = ["mobile_app"];
+
 let subscribedRegistries = false;
 
 interface SplittedByAreas {
@@ -413,14 +415,13 @@ export const generateLovelaceConfigFromData = async (
     viewEntities.length === 0 ||
     viewEntities[0].entity_id !== DEFAULT_VIEW_ENTITY_ID
   ) {
-    const hiddenPlatforms = ["mobile_app"];
-    const hidddenEntitites = entityEntries
-      .filter((entry) => hiddenPlatforms.includes(entry.platform))
-      .map((entry) => entry.entity_id);
-
-    hidddenEntitites.forEach((entity) => {
-      delete entities[entity];
-    });
+    // Filter out unwanted platforms
+    entityEntries
+      .filter((entry) => HIDE_PLATFORM.includes(entry.platform))
+      .map((entry) => entry.entity_id)
+      .forEach((entityId) => {
+        delete entities[entityId];
+      });
 
     views.unshift(
       generateDefaultViewConfig(
