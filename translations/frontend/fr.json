@@ -553,6 +553,10 @@
                 "toggle": "Permuter"
             },
             "entity": {
+                "entity-attribute-picker": {
+                    "attribute": "Attribut",
+                    "show_attributes": "Afficher les attributs"
+                },
                 "entity-picker": {
                     "clear": "Effacer",
                     "entity": "Entité",
@@ -929,6 +933,9 @@
                                     "label": "Appeler un service",
                                     "service_data": "Données du service"
                                 },
+                                "wait_for_trigger": {
+                                    "label": "Attendre le déclencheur"
+                                },
                                 "wait_template": {
                                     "label": "Attendre",
                                     "timeout": "Délai d'expiration (optionnel)",
@@ -1081,6 +1088,7 @@
                                     "value_template": "Contenu du template (optionnel)"
                                 },
                                 "state": {
+                                    "attribute": "Attribut (facultatif)",
                                     "for": "Pendant",
                                     "from": "De",
                                     "label": "État",
@@ -1108,7 +1116,9 @@
                                 },
                                 "time": {
                                     "at": "À",
-                                    "label": "Heure"
+                                    "label": "Heure",
+                                    "type_input": "Valeur d'une aide de date/heure",
+                                    "type_value": "Temps fixe"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -1131,6 +1141,8 @@
                         "add_automation": "Ajouter une automatisation",
                         "delete_automation": "Supprimer l'automatisation",
                         "delete_confirm": "Voulez-vous vraiment supprimer cette automatisation ?",
+                        "duplicate": "Dupliquer",
+                        "duplicate_automation": "Dupliquer l'automatisation",
                         "edit_automation": "Modifier l'automatisation",
                         "header": "Éditeur d'automatisation",
                         "headers": {
@@ -1531,6 +1543,7 @@
                 },
                 "integrations": {
                     "add_integration": "Ajouter l'intégration",
+                    "attention": "Attention requise",
                     "caption": "Intégrations",
                     "config_entry": {
                         "area": "Dans {area}",
@@ -1600,6 +1613,7 @@
                     "none_found_detail": "Ajustez vos critères de recherche.",
                     "note_about_integrations": "Toutes les intégrations ne peuvent pas encore être configurées via l'interface utilisateur.",
                     "note_about_website_reference": "D'autres sont disponibles sur le ",
+                    "reconfigure": "Reconfigurer",
                     "rename_dialog": "Modifier le nom de cette entrée de configuration",
                     "rename_input_label": "Nom de l'entrée",
                     "search": "Chercher les intégrations"

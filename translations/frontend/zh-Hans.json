@@ -19,6 +19,7 @@
         "logbook": "日志",
         "mailbox": "邮箱",
         "map": "地图",
+        "media_browser": "媒体浏览器",
         "profile": "用户资料",
         "shopping_list": "购物清单",
         "states": "概览"
@@ -552,6 +553,10 @@
                 "toggle": "切换"
             },
             "entity": {
+                "entity-attribute-picker": {
+                    "attribute": "属性",
+                    "show_attributes": "显示属性"
+                },
                 "entity-picker": {
                     "clear": "清除",
                     "entity": "实体",
@@ -573,6 +578,7 @@
                     "playlist": "播放列表",
                     "server": "服务器"
                 },
+                "media_browsing_error": "媒体浏览错误",
                 "media_not_supported": "浏览器媒体播放器不支持此类型的媒体",
                 "media_player": "媒体播放器",
                 "media-player-browser": "媒体播放浏览器",
@@ -927,7 +933,13 @@
                                     "label": "调用服务",
                                     "service_data": "服务数据"
                                 },
+                                "wait_for_trigger": {
+                                    "continue_timeout": "超时继续",
+                                    "label": "等待触发",
+                                    "timeout": "超时（可选）"
+                                },
                                 "wait_template": {
+                                    "continue_timeout": "超时继续",
                                     "label": "等待",
                                     "timeout": "超时（可选）",
                                     "wait_template": "等待模板"
@@ -991,7 +1003,9 @@
                                 "time": {
                                     "after": "晚于",
                                     "before": "早于",
-                                    "label": "时间"
+                                    "label": "时间",
+                                    "type_input": "“日期/时间”辅助元素的值",
+                                    "type_value": "固定时间"
                                 },
                                 "zone": {
                                     "entity": "位置追踪设备",
@@ -1079,6 +1093,7 @@
                                     "value_template": "自定义值（可选）"
                                 },
                                 "state": {
+                                    "attribute": "属性（可选）",
                                     "for": "持续",
                                     "from": "从",
                                     "label": "状态",
@@ -1105,8 +1120,10 @@
                                     "seconds": "秒"
                                 },
                                 "time": {
-                                    "at": "当",
-                                    "label": "时间"
+                                    "at": "时间为",
+                                    "label": "时间",
+                                    "type_input": "“日期/时间”辅助元素的值",
+                                    "type_value": "固定时间"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -1129,6 +1146,8 @@
                         "add_automation": "添加自动化",
                         "delete_automation": "删除自动化",
                         "delete_confirm": "您确定要删除此自动化吗？",
+                        "duplicate": "制作副本",
+                        "duplicate_automation": "复制自动化",
                         "edit_automation": "编辑自动化",
                         "header": "自动化编辑器",
                         "headers": {
@@ -1529,6 +1548,7 @@
                 },
                 "integrations": {
                     "add_integration": "添加集成",
+                    "attention": "需要注意",
                     "caption": "集成",
                     "config_entry": {
                         "area": "位于：{area}",
@@ -1552,6 +1572,7 @@
                         "reload_restart_confirm": "重启 Home Assistant 以完成此集成的重载",
                         "rename": "重命名",
                         "restart_confirm": "重启 Home Assistant 以完成此集成的删除",
+                        "services": "{count} {count, plural,\n  one {个服务}\n  other {个服务}\n}",
                         "settings_button": "编辑{integration}设置",
                         "system_options": "系统选项",
                         "system_options_button": "{integration}系统选项",
@@ -1598,6 +1619,7 @@
                     "none_found_detail": "请调整搜索条件。",
                     "note_about_integrations": "并非所有集成都可以通过 UI 进行配置。",
                     "note_about_website_reference": "更多可用信息，尽在 ",
+                    "reconfigure": "重新配置",
                     "rename_dialog": "编辑此配置项的名称",
                     "rename_input_label": "条目名称",
                     "search": "搜索集成"
