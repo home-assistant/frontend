@@ -63,7 +63,7 @@ const HIDE_DOMAIN = new Set([
   "zone",
 ]);
 
-const HIDE_PLATFORM = ["mobile_app"];
+const HIDE_PLATFORM = new Set(["mobile_app"]);
 
 let subscribedRegistries = false;
 
