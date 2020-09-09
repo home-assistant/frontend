@@ -91,7 +91,7 @@ class HaAutomationPicker extends LitElement {
       if (!narrow) {
         columns.execute = {
           title: "",
-          template: (_info, automation) => html`
+          template: (_info, automation: any) => html`
             <mwc-button
               .automation=${automation}
               @click=${(ev) => this._execute(ev)}
