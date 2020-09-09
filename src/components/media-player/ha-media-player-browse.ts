@@ -630,11 +630,18 @@ export class HaMediaPlayerBrowse extends LitElement {
           display: grid;
           grid-template-columns: repeat(
             auto-fit,
-            minmax(var(--media-browse-item-size, 175px), 0.33fr)
+            minmax(var(--media-browse-item-size, 175px), 0.1fr)
           );
           grid-gap: 16px;
           margin: 8px 0px;
           padding: 0px 24px;
+        }
+
+        :host([dialog]) .children {
+          grid-template-columns: repeat(
+            auto-fit,
+            minmax(var(--media-browse-item-size, 175px), 0.33fr)
+          );
         }
 
         .child {
@@ -689,6 +696,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         .child .title {
           font-size: 16px;
           padding-top: 8px;
+          padding-left: 2px;
           overflow: hidden;
           display: -webkit-box;
           -webkit-box-orient: vertical;
