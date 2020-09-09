@@ -281,6 +281,9 @@
       "error_required": "Required"
     },
     "components": {
+      "logbook": {
+        "entries_not_found": "No logbook entries found."
+      },
       "entity": {
         "entity-picker": {
           "entity": "Entity",
@@ -401,7 +404,7 @@
         "dismiss": "Dismiss dialog",
         "settings": "Entity settings",
         "edit": "Edit entity",
-        "controls": "Controls",
+        "details": "Details",
         "history": "History",
         "script": {
           "last_action": "Last Action",
@@ -2045,7 +2048,6 @@
         }
       },
       "logbook": {
-        "entries_not_found": "No logbook entries found.",
         "ranges": {
           "today": "Today",
           "yesterday": "Yesterday",
