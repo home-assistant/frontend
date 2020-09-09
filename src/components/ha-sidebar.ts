@@ -526,7 +526,7 @@ class HaSidebar extends LitElement {
 
   private async _hidePanel(ev: Event) {
     ev.preventDefault();
-    const panel = (ev.target as any).panel;
+    const panel = (ev.currentTarget as any).panel;
     if (this._hiddenPanels.includes(panel)) {
       return;
     }
@@ -692,12 +692,13 @@ class HaSidebar extends LitElement {
             : html`<ha-icon slot="item-icon" .icon=${icon}></ha-icon>`}
           <span class="item-text">${title}</span>
           ${this._editMode
-            ? html`<ha-svg-icon
+            ? html`<mwc-icon-button
                 class="hide-panel"
                 .panel=${urlPath}
                 @click=${this._hidePanel}
-                .path=${mdiClose}
-              ></ha-svg-icon>`
+              >
+                <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+              </mwc-icon-button>`
             : ""}
         </paper-icon-item>
       </a>
