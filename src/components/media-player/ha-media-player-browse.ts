@@ -478,13 +478,6 @@ export class HaMediaPlayerBrowse extends LitElement {
             mediaContentType
           )
         : await browseLocalMediaPlayer(this.hass, mediaContentId);
-    itemData.children = itemData.children?.sort((first, second) =>
-      !first.can_expand && second.can_expand
-        ? 1
-        : first.can_expand && !second.can_expand
-        ? -1
-        : compare(first.title, second.title)
-    );
 
     return itemData;
   }
