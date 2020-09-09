@@ -21,7 +21,6 @@ import { ifDefined } from "lit-html/directives/if-defined";
 import { styleMap } from "lit-html/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
-import { compare } from "../../common/string/compare";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
 import {
@@ -478,13 +477,6 @@ export class HaMediaPlayerBrowse extends LitElement {
             mediaContentType
           )
         : await browseLocalMediaPlayer(this.hass, mediaContentId);
-    itemData.children = itemData.children?.sort((first, second) =>
-      !first.can_expand && second.can_expand
-        ? 1
-        : first.can_expand && !second.can_expand
-        ? -1
-        : compare(first.title, second.title)
-    );
 
     return itemData;
   }
