@@ -214,7 +214,7 @@ const computeDefaultViewStates = (
 ): HassEntities => {
   const states = {};
   const hiddenEntities = entityEntries
-    .filter((entry) => HIDE_PLATFORM.includes(entry.platform))
+    .filter((entry) => HIDE_PLATFORM.has(entry.platform))
     .map((entry) => entry.entity_id);
 
   Object.keys(entities).forEach((entityId) => {
