@@ -8,7 +8,7 @@ export const binarySensorIcon = (state: HassEntity) => {
     case "battery":
       return activated ? "hass:battery" : "hass:battery-outline";
     case "battery_charging":
-      return activated ? "hass:flash" : "hass:flash-off";
+      return activated ? "hass:battery" : "hass:battery-charging";
     case "cold":
       return activated ? "hass:thermometer" : "hass:snowflake";
     case "connectivity":
