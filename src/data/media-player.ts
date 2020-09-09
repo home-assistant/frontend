@@ -1,7 +1,6 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../types";
 import {
-  mdiFile,
   mdiFolder,
   mdiPlaylistMusic,
   mdiFileMusic,
