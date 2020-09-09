@@ -21,7 +21,6 @@ import { ifDefined } from "lit-html/directives/if-defined";
 import { styleMap } from "lit-html/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
-import { compare } from "../../common/string/compare";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
 import {
@@ -172,6 +171,7 @@ export class HaMediaPlayerBrowse extends LitElement {
       <div
         class="header  ${classMap({
           "no-img": !currentItem.thumbnail,
+          "no-dialog": !this.dialog,
         })}"
       >
         <div class="header-content">
@@ -334,6 +334,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                       .item=${child}
                       graphic="avatar"
                       hasMeta
+                      dir=${computeRTLDirection(this.hass)}
                     >
                       <div
                         class="graphic"
@@ -359,7 +360,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                           ></ha-svg-icon>
                         </mwc-icon-button>
                       </div>
-                      <span>${child.title}</span>
+                      <span class="title">${child.title}</span>
                     </mwc-list-item>
                     <li divider role="separator"></li>
                   `
@@ -476,13 +477,6 @@ export class HaMediaPlayerBrowse extends LitElement {
             mediaContentType
           )
         : await browseLocalMediaPlayer(this.hass, mediaContentId);
-    itemData.children = itemData.children?.sort((first, second) =>
-      !first.can_expand && second.can_expand
-        ? 1
-        : first.can_expand && !second.can_expand
-        ? -1
-        : compare(first.title, second.title)
-    );
 
     return itemData;
   }
@@ -543,6 +537,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         .header {
           background-color: var(--card-background-color);
           position: sticky;
+          position: -webkit-sticky;
           top: 0;
           z-index: 5;
           padding: 20px 24px 10px;
@@ -618,6 +613,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         mwc-list {
           --mdc-list-vertical-padding: 0;
+          --mdc-list-item-graphic-margin: 0;
           --mdc-theme-text-icon-on-background: var(--secondary-text-color);
           margin-top: 10px;
         }
@@ -726,6 +722,14 @@ export class HaMediaPlayerBrowse extends LitElement {
           background-color: transparent;
         }
 
+        mwc-list-item .title {
+          margin-left: 16px;
+        }
+        mwc-list-item[dir="rtl"] .title {
+          margin-right: 16px;
+          margin-left: 0;
+        }
+
         /* ============= Narrow ============= */
 
         :host([narrow]) {
@@ -738,6 +742,10 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         :host([narrow]) .header {
           padding: 0;
+        }
+
+        :host([narrow]) .header.no-dialog {
+          display: block;
         }
 
         :host([narrow]) .header_button {

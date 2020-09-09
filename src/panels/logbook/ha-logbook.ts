@@ -67,7 +67,7 @@ class HaLogbook extends LitElement {
     if (!this.entries?.length) {
       return html`
         <div class="container no-entries" .dir=${emitRTLDirection(this._rtl)}>
-          ${this.hass.localize("ui.panel.logbook.entries_not_found")}
+          ${this.hass.localize("ui.components.logbook.entries_not_found")}
         </div>
       `;
     }
@@ -216,7 +216,7 @@ class HaLogbook extends LitElement {
           display: flex;
           justify-content: center;
           flex-direction: column;
-          width: 70px;
+          width: 75px;
           flex-shrink: 0;
           font-size: 12px;
           color: var(--secondary-text-color);

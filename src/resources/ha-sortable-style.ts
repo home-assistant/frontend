@@ -20,8 +20,6 @@ export const sortableStyles = css`
 
   #sortable {
     outline: none;
-    display: flex;
-    flex-direction: column;
   }
 
   .sortable-ghost {
@@ -59,7 +57,7 @@ export const sortableStyles = css`
   .hide-panel {
     display: none;
     position: absolute;
-    right: 8px;
+    right: 0;
   }
 
   :host([expanded]) .hide-panel {

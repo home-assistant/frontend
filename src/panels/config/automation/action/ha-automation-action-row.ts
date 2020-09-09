@@ -173,7 +173,7 @@ export default class HaAutomationActionRow extends LitElement {
                   "ui.panel.config.automation.editor.actions.duplicate"
                 )}
               </mwc-list-item>
-              <mwc-list-item>
+              <mwc-list-item class="warning">
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.actions.delete"
                 )}
@@ -336,7 +336,6 @@ export default class HaAutomationActionRow extends LitElement {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
         }
         .warning {
-          color: var(--warning-color);
           margin-bottom: 8px;
         }
         .warning ul {

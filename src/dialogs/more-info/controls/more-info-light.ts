@@ -105,12 +105,12 @@ class MoreInfoLight extends LitElement {
                 ? html`
                     <div class="segmentationContainer">
                       <ha-color-picker
-                        throttle="500"
                         class="color"
+                        @colorselected=${this._colorPicked}
                         .desiredHsColor=${this._colorPickerColor}
+                        throttle="500"
                         .hueSegments=${this._hueSegments}
                         .saturationSegments=${this._saturationSegments}
-                        @colorselected=${this._colorPicked}
                       >
                       </ha-color-picker>
                       <ha-icon-button
@@ -134,7 +134,7 @@ class MoreInfoLight extends LitElement {
                         attr-for-selected="item-name"
                         >${this.stateObj.attributes.effect_list.map(
                           (effect: string) => html`
-                            <paper-item itemName=${effect}
+                            <paper-item .itemName=${effect}
                               >${effect}</paper-item
                             >
                           `
@@ -170,7 +170,7 @@ class MoreInfoLight extends LitElement {
   }
 
   private _effectChanged(ev: CustomEvent) {
-    const newVal = ev.detail.value;
+    const newVal = ev.detail.item.itemName;
 
     if (!newVal || this.stateObj!.attributes.effect === newVal) {
       return;

@@ -35,7 +35,7 @@ class HaCameraStream extends LitElement {
   @internalProperty() private _url?: string;
 
   protected render(): TemplateResult {
-    if (!this.stateObj || (!this._forceMJPEG && !this._url)) {
+    if (!this.stateObj) {
       return html``;
     }
 
@@ -52,21 +52,23 @@ class HaCameraStream extends LitElement {
               )} camera.`}
             />
           `
-        : html`
+        : this._url
+        ? html`
             <ha-hls-player
               autoplay
               muted
               playsinline
               ?controls=${this.showControls}
               .hass=${this.hass}
-              .url=${this._url!}
+              .url=${this._url}
             ></ha-hls-player>
-          `}
+          `
+        : ""}
     `;
   }
 
   protected updated(changedProps: PropertyValues): void {
-    if (changedProps.has("stateObj")) {
+    if (changedProps.has("stateObj") && !this._shouldRenderMJPEG) {
       this._forceMJPEG = undefined;
       this._getStreamUrl();
     }

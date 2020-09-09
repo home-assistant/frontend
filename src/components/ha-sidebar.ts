@@ -322,7 +322,7 @@ class HaSidebar extends LitElement {
                 )}
                 href="#external-app-configuration"
                 tabindex="-1"
-                @click=${this._handleExternalAppConfiguration}
+                @panel-tap=${this._handleExternalAppConfiguration}
                 @mouseenter=${this._itemMouseEnter}
                 @mouseleave=${this._itemMouseLeave}
               >
@@ -479,7 +479,8 @@ class HaSidebar extends LitElement {
   }
 
   private async _handleAction(ev: CustomEvent<ActionHandlerDetail>) {
-    if (ev.detail.action !== "hold") {
+    if (ev.detail.action === "tap") {
+      fireEvent(ev.target as HTMLElement, "panel-tap");
       return;
     }
 
@@ -496,6 +497,10 @@ class HaSidebar extends LitElement {
       Sortable.mount(sortableImport.AutoScroll());
     }
     this._editMode = true;
+
+    if (!this.expanded) {
+      fireEvent(this, "hass-toggle-menu");
+    }
 
     await this.updateComplete;
 
@@ -521,7 +526,7 @@ class HaSidebar extends LitElement {
 
   private async _hidePanel(ev: Event) {
     ev.preventDefault();
-    const panel = (ev.target as any).panel;
+    const panel = (ev.currentTarget as any).panel;
     if (this._hiddenPanels.includes(panel)) {
       return;
     }
@@ -655,8 +660,11 @@ class HaSidebar extends LitElement {
     );
   }
 
-  private _handlePanelTap(ev: Event) {
-    navigate(this, (ev.currentTarget as HTMLAnchorElement).href);
+  private async _handlePanelTap(ev: Event) {
+    const path = __DEMO__
+      ? (ev.currentTarget as HTMLAnchorElement).getAttribute("href")!
+      : (ev.currentTarget as HTMLAnchorElement).href;
+    navigate(this, path);
   }
 
   private _renderPanel(
@@ -668,10 +676,10 @@ class HaSidebar extends LitElement {
     return html`
       <a
         aria-role="option"
-        href="${`/${urlPath}`}"
-        data-panel="${urlPath}"
+        href=${`/${urlPath}`}
+        data-panel=${urlPath}
         tabindex="-1"
-        @tap=${this._handlePanelTap}
+        @panel-tap=${this._handlePanelTap}
         @mouseenter=${this._itemMouseEnter}
         @mouseleave=${this._itemMouseLeave}
       >
@@ -684,12 +692,13 @@ class HaSidebar extends LitElement {
             : html`<ha-icon slot="item-icon" .icon=${icon}></ha-icon>`}
           <span class="item-text">${title}</span>
           ${this._editMode
-            ? html`<ha-svg-icon
+            ? html`<mwc-icon-button
                 class="hide-panel"
                 .panel=${urlPath}
                 @click=${this._hidePanel}
-                .path=${mdiClose}
-              ></ha-svg-icon>`
+              >
+                <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+              </mwc-icon-button>`
             : ""}
         </paper-icon-item>
       </a>
@@ -979,5 +988,9 @@ class HaSidebar extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-sidebar": HaSidebar;
+  }
+
+  interface HASSDomEvents {
+    "panel-tap": undefined;
   }
 }

@@ -5,7 +5,7 @@ import {
   ShowViewConfig,
 } from "../../../data/lovelace";
 import { EntityConfig } from "../entity-rows/types";
-import { optional, string, object, union } from "superstruct";
+import { optional, string, object, union, boolean } from "superstruct";
 import { EntityId } from "../common/structs/is-entity-id";
 import { Icon } from "../common/structs/is-icon";
 
@@ -81,6 +81,10 @@ export const entitiesConfigStruct = union([
     entity: EntityId,
     name: optional(string()),
     icon: optional(Icon),
+    image: optional(string()),
+    secondary_info: optional(string()),
+    format: optional(string()),
+    state_color: optional(boolean()),
   }),
   EntityId,
 ]);
