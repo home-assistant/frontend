@@ -58,7 +58,7 @@ import {
   loadEntityEditorDialog,
   showEntityEditorDialog,
 } from "./show-dialog-entity-editor";
-import { haStyle } from "../../../../src/resources/styles";
+import { haStyle } from "../../../resources/styles";
 
 export interface StateEntity extends EntityRegistryEntry {
   readonly?: boolean;
