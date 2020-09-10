@@ -167,19 +167,17 @@ class HaPanelProfile extends LitElement {
             .mfaModules=${this.hass.user!.mfa_modules}
           ></ha-mfa-modules-card>
 
-          ${this.hass.userData?.showAdvanced
-            ? html`<ha-refresh-tokens-card
-                  .hass=${this.hass}
-                  .refreshTokens=${this._refreshTokens}
-                  @hass-refresh-tokens=${this._refreshRefreshTokens}
-                ></ha-refresh-tokens-card>
+          <ha-refresh-tokens-card
+            .hass=${this.hass}
+            .refreshTokens=${this._refreshTokens}
+            @hass-refresh-tokens=${this._refreshRefreshTokens}
+          ></ha-refresh-tokens-card>
 
-                <ha-long-lived-access-tokens-card
-                  .hass=${this.hass}
-                  .refreshTokens=${this._refreshTokens}
-                  @hass-refresh-tokens=${this._refreshRefreshTokens}
-                ></ha-long-lived-access-tokens-card>`
-            : ""}
+          <ha-long-lived-access-tokens-card
+            .hass=${this.hass}
+            .refreshTokens=${this._refreshTokens}
+            @hass-refresh-tokens=${this._refreshRefreshTokens}
+          ></ha-long-lived-access-tokens-card>
         </div>
       </ha-app-layout>
     `;
