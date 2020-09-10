@@ -134,7 +134,7 @@ class HaLongLivedTokens extends LitElement {
         title: this.hass.localize(
           "ui.panel.profile.long_lived_access_tokens.create_failed"
         ),
-        text: err,
+        text: err.message,
       });
     }
   }
@@ -163,7 +163,7 @@ class HaLongLivedTokens extends LitElement {
         title: this.hass.localize(
           "ui.panel.profile.long_lived_access_tokens.delete_failed"
         ),
-        text: err,
+        text: err.message,
       });
     }
   }
