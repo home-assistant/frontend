@@ -104,6 +104,9 @@ class HaLongLivedTokens extends LitElement {
       text: this.hass.localize(
         "ui.panel.profile.long_lived_access_tokens.prompt_name"
       ),
+      inputLabel: this.hass.localize(
+        "ui.panel.profile.long_lived_access_tokens.name"
+      ),
     });
 
     if (!name) {

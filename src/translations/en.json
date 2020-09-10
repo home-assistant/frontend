@@ -2517,7 +2517,7 @@
           "delete_failed": "Failed to delete the access token.",
           "create": "Create Token",
           "create_failed": "Failed to create the access token.",
-          "name_required": "Name is required",
+          "name": "Name",
           "prompt_name": "Give the token a name",
           "prompt_copy_token": "Copy your access token. It will not be shown again.",
           "empty_state": "You have no long-lived access tokens yet."
