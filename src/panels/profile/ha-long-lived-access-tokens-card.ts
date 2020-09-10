@@ -117,7 +117,7 @@ class HaLongLivedTokens extends LitElement {
         client_name: name,
       });
 
-      await showPromptDialog(this, {
+     showPromptDialog(this, {
         title: name,
         text: this.hass.localize(
           "ui.panel.profile.long_lived_access_tokens.prompt_copy_token"
