@@ -123,13 +123,15 @@ export class MoreInfoHistory extends LitElement {
       new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
     const now = new Date();
 
-    this._entries = await getLogbookData(
+    const newEntries = await getLogbookData(
       this.hass,
       lastDate.toISOString(),
       now.toISOString(),
       this.entityId,
       true
     );
+
+    this._entries = [...(this._entries || []), ...newEntries];
 
     this._lastLogbookDate = now;
   }
