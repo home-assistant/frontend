@@ -26,6 +26,7 @@ import { HomeAssistant } from "../../types";
 @customElement("ha-long-lived-access-tokens-card")
 class HaLongLivedTokens extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+  
   @property({ attribute: false }) public refreshTokens?: RefreshToken[];
 
   protected render(): TemplateResult {
