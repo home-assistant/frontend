@@ -135,10 +135,8 @@ class DialogBox extends LitElement {
 
   private _close(): void {
     if (!this._params) {
-      console.log("Skipping close", this.localName);
       return;
     }
-    console.log(this._params);
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
