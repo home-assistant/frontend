@@ -57,7 +57,7 @@ class DialogBox extends LitElement {
         open
         ?scrimClickAction=${this._params.prompt}
         ?escapeKeyAction=${this._params.prompt}
-        @close=${this._close}
+        @closing=${this._dismiss}
         .heading=${this._params.title
           ? this._params.title
           : this._params.confirmation &&
@@ -134,6 +134,11 @@ class DialogBox extends LitElement {
   }
 
   private _close(): void {
+    if (!this._params) {
+      console.log("Skipping close", this.localName);
+      return;
+    }
+    console.log(this._params);
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
