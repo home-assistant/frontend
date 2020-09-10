@@ -567,6 +567,9 @@
                 "loading_history": "Loading state history...",
                 "no_history_found": "No state history found."
             },
+            "logbook": {
+                "entries_not_found": "No logbook entries found."
+            },
             "media-browser": {
                 "audio_not_supported": "Your browser does not support the audio element.",
                 "choose_player": "Choose Player",
@@ -703,6 +706,7 @@
             },
             "more_info_control": {
                 "controls": "Controls",
+                "details": "Details",
                 "dismiss": "Dismiss dialog",
                 "edit": "Edit entity",
                 "history": "History",
