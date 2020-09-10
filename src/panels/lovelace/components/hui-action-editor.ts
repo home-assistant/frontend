@@ -1,4 +1,5 @@
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -9,7 +10,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
+import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-service-picker";
 import {
   ActionConfig,
@@ -19,17 +20,6 @@ import {
 } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { EditorTarget } from "../editor/types";
-
-declare global {
-  // for fire event
-  interface HASSDomEvents {
-    "action-changed": undefined;
-  }
-  // for add event listener
-  interface HTMLElementEventMap {
-    "action-changed": HASSDomEvent<undefined>;
-  }
-}
 
 @customElement("hui-action-editor")
 export class HuiActionEditor extends LitElement {
@@ -42,21 +32,21 @@ export class HuiActionEditor extends LitElement {
   @property() protected hass?: HomeAssistant;
 
   get _action(): string {
-    return this.config!.action || "";
+    return this.config?.action || "";
   }
 
   get _navigation_path(): string {
-    const config = this.config! as NavigateActionConfig;
+    const config = this.config as NavigateActionConfig;
     return config.navigation_path || "";
   }
 
   get _url_path(): string {
-    const config = this.config! as UrlActionConfig;
+    const config = this.config as UrlActionConfig;
     return config.url_path || "";
   }
 
   get _service(): string {
-    const config = this.config! as CallServiceActionConfig;
+    const config = this.config as CallServiceActionConfig;
     return config.service || "";
   }
 
@@ -107,13 +97,14 @@ export class HuiActionEditor extends LitElement {
               .configValue="${"service"}"
               @value-changed="${this._valueChanged}"
             ></ha-service-picker>
-            <h3>Toggle Editor to input Service Data</h3>
+            <b>Service data can only be entered in the code editor</b>
           `
         : ""}
     `;
   }
 
   private _valueChanged(ev: Event): void {
+    ev.stopPropagation();
     if (!this.hass) {
       return;
     }
@@ -121,12 +112,12 @@ export class HuiActionEditor extends LitElement {
     if (this[`_${target.configValue}`] === target.value) {
       return;
     }
-    if (target.configValue === "action") {
-      this.config = { action: "none" };
-    }
     if (target.configValue) {
-      this.config = { ...this.config!, [target.configValue!]: target.value };
-      fireEvent(this, "action-changed");
+      const newConfig =
+        target.configValue === "action"
+          ? { action: target.value }
+          : { ...this.config!, [target.configValue!]: target.value };
+      fireEvent(this, "value-changed", { value: newConfig });
     }
   }
 }
