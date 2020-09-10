@@ -1,4 +1,5 @@
 import { HomeAssistant } from "../../../types";
+import { UNAVAILABLE } from "../../../data/entity";
 
 export interface Condition {
   entity: string;
@@ -13,7 +14,7 @@ export function checkConditionsMet(
   return conditions.every((c) => {
     const state = hass.states[c.entity]
       ? hass!.states[c.entity].state
-      : "unavailable";
+      : UNAVAILABLE;
 
     return c.state ? state === c.state : state !== c.state_not;
   });

@@ -20,7 +20,7 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-card";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { UNAVAILABLE_STATES, UNAVAILABLE } from "../../../data/entity";
 import { SUPPORT_BRIGHTNESS } from "../../../data/light";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant, LightEntity } from "../../../types";
@@ -133,7 +133,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                     SUPPORT_BRIGHTNESS
                   ),
                   "state-on": stateObj.state === "on",
-                  "state-unavailable": stateObj.state === "unavailable",
+                  "state-unavailable": stateObj.state === UNAVAILABLE,
                 })}"
                 .icon=${this._config.icon || stateIcon(stateObj)}
                 .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}

@@ -59,6 +59,7 @@ import {
   showEntityEditorDialog,
 } from "./show-dialog-entity-editor";
 import { haStyle } from "../../../resources/styles";
+import { UNAVAILABLE } from "../../../data/entity";
 
 export interface StateEntity extends EntityRegistryEntry {
   readonly?: boolean;
@@ -281,7 +282,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
       for (const entry of entities) {
         const entity = this.hass.states[entry.entity_id];
-        const unavailable = entity?.state === "unavailable";
+        const unavailable = entity?.state === UNAVAILABLE;
         const restored = entity?.attributes.restored;
 
         if (!showUnavailable && unavailable) {
