@@ -2,7 +2,7 @@ import "@material/mwc-button/mwc-button";
 import "@material/mwc-fab/mwc-fab";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
-import { mdiArrowLeft, mdiClose, mdiFolder, mdiPlay, mdiPlus } from "@mdi/js";
+import { mdiArrowLeft, mdiClose, mdiPlay, mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
@@ -19,7 +19,6 @@ import {
 import { classMap } from "lit-html/directives/class-map";
 import { ifDefined } from "lit-html/directives/if-defined";
 import { styleMap } from "lit-html/directives/style-map";
-import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
