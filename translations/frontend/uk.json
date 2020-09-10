@@ -810,6 +810,9 @@
                                     "label": "Викликати сервіс",
                                     "service_data": "Дані сервісу"
                                 },
+                                "wait_for_trigger": {
+                                    "timeout": "Таймаут (опціонально)"
+                                },
                                 "wait_template": {
                                     "label": "Чекати",
                                     "timeout": "Тайм-аут (необов'язково)",
@@ -873,7 +876,8 @@
                                 "time": {
                                     "after": "Після",
                                     "before": "До",
-                                    "label": "Час"
+                                    "label": "Час",
+                                    "type_value": "Фіксований час"
                                 },
                                 "zone": {
                                     "entity": "Об'єкт з місцем розташування",
@@ -982,7 +986,8 @@
                                 },
                                 "time": {
                                     "at": "У",
-                                    "label": "Час"
+                                    "label": "Час",
+                                    "type_value": "Фіксований час"
                                 },
                                 "webhook": {
                                     "label": "Webhook",

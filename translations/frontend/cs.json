@@ -1497,7 +1497,7 @@
                 "header": "Konfigurace Home Assistant",
                 "helpers": {
                     "caption": "Pomocníci",
-                    "description": "Prvky, které mohou pomoci při vytváření automatizací.",
+                    "description": "Správa prvků, které mohou pomoci při vytváření automatizací",
                     "dialog": {
                         "add_helper": "Přidat pomocníka",
                         "add_platform": "Přidat {platform}",
@@ -1628,7 +1628,7 @@
                 "logs": {
                     "caption": "Logy",
                     "clear": "Zrušit",
-                    "description": "Zobrazit log Home Assistant",
+                    "description": "Zobrazení logů Home Assistant",
                     "details": "Detaily protokolu ({level})",
                     "load_full_log": "Načíst úplný protokol Home Assistanta",
                     "loading_log": "Načítání protokolu chyb...",
@@ -2179,7 +2179,7 @@
                     "configured_in_yaml": "Zóny konfigurované pomocí configuration.yaml nelze upravovat pomocí UI.",
                     "confirm_delete": "Opravdu chcete tuto zónu smazat?",
                     "create_zone": "Vytvořit zónu",
-                    "description": "Spravujte zóny, ve kterých chcete sledovat osoby.",
+                    "description": "Spravá zón, ve kterých chcete sledovat osoby",
                     "detail": {
                         "create": "Vytvořit",
                         "delete": "Smazat",
