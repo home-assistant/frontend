@@ -279,6 +279,7 @@ class LocationEditor extends LitElement {
       }
       #map {
         height: 100%;
+        background: inherit;
       }
       .leaflet-edit-move {
         border-radius: 50%;
