@@ -1,5 +1,4 @@
 import "@material/mwc-icon-button";
-import { mdiPlayNetwork } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
@@ -64,12 +63,9 @@ class PanelMediaBrowser extends LitElement {
                 "ui.components.media-browser.media-player-browser"
               )}
             </div>
-              <mwc-button @click=${this._showSelectMediaPlayerDialog}>
-                <ha-svg-icon .path=${mdiPlayNetwork}></ha-svg-icon>
-                ${this.hass.localize(
-                  "ui.components.media-browser.choose_player"
-                )}
-              </mwc-button>
+            <mwc-button @click=${this._showSelectMediaPlayerDialog}>
+              ${this.hass.localize("ui.components.media-browser.choose_player")}
+            </mwc-button>
           </app-toolbar>
         </app-header>
         <div class="content">
