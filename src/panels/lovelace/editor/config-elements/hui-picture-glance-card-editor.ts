@@ -234,7 +234,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
       return;
     }
     const target = ev.target! as EditorTarget;
-    let value = ev.detail.value;
+    const value = ev.detail.value;
 
     if (ev.detail && ev.detail.entities) {
       this._config = { ...this._config, entities: ev.detail.entities };
