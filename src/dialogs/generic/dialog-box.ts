@@ -57,7 +57,7 @@ class DialogBox extends LitElement {
         open
         ?scrimClickAction=${this._params.prompt}
         ?escapeKeyAction=${this._params.prompt}
-        @closing=${this._dismiss}
+        @closed=${this._dismiss}
         .heading=${this._params.title
           ? this._params.title
           : this._params.confirmation &&
