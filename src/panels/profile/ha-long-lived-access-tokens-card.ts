@@ -60,7 +60,7 @@ class HaLongLivedTokens extends LitElement {
                   "ui.panel.profile.long_lived_access_tokens.empty_state"
                 )}
               </p>`
-            : accessTokens?.map(
+            : accessTokens!.map(
                 (token) => html`<ha-settings-row two-line>
                   <span slot="heading">${token.client_name}</span>
                   <div slot="description">
