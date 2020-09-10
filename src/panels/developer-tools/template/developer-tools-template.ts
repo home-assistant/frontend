@@ -31,10 +31,9 @@ The temperature is {{ my_test_json.temperature }} {{ my_test_json.unit }}.
   The sun will rise at {{ as_timestamp(strptime(state_attr("sun.sun", "next_rising"), "")) | timestamp_local }}.
 {%- endif %}
 
-For loop example getting 2 entity values in the weather domain:
+For loop example getting entity values in the weather domain:
 
-{% for states in states.weather | slice(2) -%}
-  {% set state = states | first %}
+{% for state in states.weather -%}
   {%- if loop.first %}The {% elif loop.last %} and the {% else %}, the {% endif -%}
   {{ state.name | lower }} is {{state.state_with_unit}}
 {%- endfor %}.`;
