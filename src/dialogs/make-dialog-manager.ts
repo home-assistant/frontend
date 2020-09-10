@@ -1,4 +1,5 @@
 import { HASSDomEvent, ValidHassDomEvent } from "../common/dom/fire_event";
+import { nextRender } from "../common/util/render-status";
 import { ProvideHassElement } from "../mixins/provide-hass-lit-mixin";
 
 declare global {
@@ -58,6 +59,9 @@ export const showDialog = async (
       return dialogEl;
     });
   }
+
+  // allow other dialogs to be closed and removed from history
+  await nextRender();
 
   history.replaceState(
     {
