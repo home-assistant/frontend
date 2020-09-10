@@ -14,6 +14,9 @@ import {
   mdiGamepadVariant,
   mdiAccountMusic,
   mdiPodcast,
+  mdiApplication,
+  mdiAccountMusicOutline,
+  mdiDramaMasks,
 } from "@mdi/js";
 
 export const SUPPORT_PAUSE = 1;
@@ -37,35 +40,54 @@ export type MediaPlayerBrowseAction = "pick" | "play";
 
 export const BROWSER_SOURCE = "browser";
 
-export type MediaTypeBrowserSetting = {
-  icon?: string;
+export type MediaClassBrowserSetting = {
+  icon: string;
   thumbnail_ratio?: string;
   layout?: string;
+  show_list_images?: boolean;
 };
 
-export const MediaTypeBrowserSettings: {
-  [type: string]: MediaTypeBrowserSetting;
+export const MediaClassBrowserSettings: {
+  [type: string]: MediaClassBrowserSetting;
 } = {
   album: { icon: mdiAlbum },
-  app: { icon: mdiFolder },
-  apps: { icon: mdiFolder },
-  artist: { icon: mdiAccountMusic },
-  channel: { icon: mdiFolder, thumbnail_ratio: "portrait", layout: "grid" },
-  channels: { icon: mdiFolder, thumbnail_ratio: "portrait" },
-  composer: { icon: mdiFolder },
-  contributing_artist: { icon: mdiFolder },
-  directory: { icon: mdiFolder },
-  episode: { icon: mdiFolder, thumbnail_ratio: "portrait" },
-  game: { icon: mdiGamepadVariant, thumbnail_ratio: "portrait" },
-  genre: { icon: mdiFolder },
+  app: { icon: mdiApplication },
+  artist: { icon: mdiAccountMusic, show_list_images: true },
+  channel: {
+    icon: mdiTelevisionClassic,
+    thumbnail_ratio: "portrait",
+    layout: "grid",
+  },
+  composer: { icon: mdiAccountMusicOutline, show_list_images: true },
+  contributing_artist: { icon: mdiAccountMusic, show_list_images: true },
+  directory: { icon: mdiFolder, layout: "grid" },
+  episode: {
+    icon: mdiTelevisionClassic,
+    thumbnail_ratio: "portrait",
+    layout: "grid",
+  },
+  game: {
+    icon: mdiGamepadVariant,
+    thumbnail_ratio: "portrait",
+    layout: "grid",
+  },
+  genre: { icon: mdiDramaMasks },
   image: { icon: mdiImage },
   movie: { icon: mdiMovie, thumbnail_ratio: "portrait", layout: "grid" },
   music: { icon: mdiMusic },
-  playlist: { icon: mdiPlaylistMusic },
-  podcast: { icon: mdiPodcast },
-  season: { icon: mdiFolder, thumbnail_ratio: "portrait" },
+  playlist: { icon: mdiPlaylistMusic, show_list_images: true },
+  podcast: { icon: mdiPodcast, layout: "grid" },
+  season: {
+    icon: mdiTelevisionClassic,
+    thumbnail_ratio: "portrait",
+    layout: "grid",
+  },
   track: { icon: mdiFileMusic },
-  tv_show: { icon: mdiTelevisionClassic, thumbnail_ratio: "portrait" },
+  tv_show: {
+    icon: mdiTelevisionClassic,
+    thumbnail_ratio: "portrait",
+    layout: "grid",
+  },
   url: { icon: mdiWeb },
   video: { icon: mdiVideo },
 };
@@ -88,6 +110,7 @@ export interface MediaPlayerItem {
   title: string;
   media_content_type: string;
   media_content_id: string;
+  media_class: string;
   can_play: boolean;
   can_expand: boolean;
   thumbnail?: string;

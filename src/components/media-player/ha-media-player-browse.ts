@@ -29,6 +29,7 @@ import {
   BROWSER_SOURCE,
   MediaPickedEvent,
   MediaPlayerBrowseAction,
+  MediaClassBrowserSettings,
 } from "../../data/media-player";
 import type { MediaPlayerItem } from "../../data/media-player";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
@@ -93,34 +94,6 @@ export class HaMediaPlayerBrowse extends LitElement {
     this._navigate(item);
   }
 
-  private _renderError(err: { message: string; code: string }) {
-    if (err.message === "Media directory does not exist.") {
-      return html`
-        <h2>No local media found.</h2>
-        <p>
-          It looks like you have not yet created a media directory.
-          <br />Create a directory with the name <b>"media"</b> in the
-          configuration directory of Home Assistant
-          (${this.hass.config.config_dir}). <br />Place your video, audio and
-          image files in this directory to be able to browse and play them in
-          the browser or on supported media players.
-        </p>
-
-        <p>
-          Check the
-          <a
-            href="https://www.home-assistant.io/integrations/media_source/#local-media"
-            target="_blank"
-            rel="noreferrer"
-            >documentation</a
-          >
-          for more info
-        </p>
-      `;
-    }
-    return err.message;
-  }
-
   protected render(): TemplateResult {
     if (this._loading) {
       return html`<ha-circular-progress active></ha-circular-progress>`;
@@ -155,17 +128,10 @@ export class HaMediaPlayerBrowse extends LitElement {
         ? this._mediaPlayerItems[this._mediaPlayerItems.length - 2]
         : undefined;
 
-    const hasExpandableChildren:
-      | MediaPlayerItem
-      | undefined = this._hasExpandableChildren(currentItem.children);
-
-    const showImages: boolean | undefined = currentItem.children?.some(
-      (child) => child.thumbnail && child.thumbnail !== currentItem.thumbnail
-    );
-
     const mediaType = this.hass.localize(
       `ui.components.media-browser.content-type.${currentItem.media_content_type}`
     );
+    const mediaClass = MediaClassBrowserSettings[currentItem.media_class];
 
     return html`
       <div
@@ -263,13 +229,19 @@ export class HaMediaPlayerBrowse extends LitElement {
           : ""}
       </div>
       ${this._error
-        ? html`<div class="container error">
-            ${this._renderError(this._error)}
-          </div>`
+        ? html`
+            <div class="container error">
+              ${this._renderError(this._error)}
+            </div>
+          `
         : currentItem.children?.length
-        ? hasExpandableChildren
+        ? mediaClass.layout === "grid"
           ? html`
-              <div class="children">
+              <div
+                class="children ${classMap({
+                  portrait: mediaClass.thumbnail_ratio === "portrait",
+                })}"
+              >
                 ${currentItem.children.map(
                   (child) => html`
                     <div
@@ -286,11 +258,13 @@ export class HaMediaPlayerBrowse extends LitElement {
                               : "none",
                           })}
                         >
-                          ${child.can_expand && !child.thumbnail
+                          ${!child.thumbnail
                             ? html`
                                 <ha-svg-icon
                                   class="folder"
-                                  .path=${mdiFolder}
+                                  .path=${MediaClassBrowserSettings[
+                                    child.media_class
+                                  ].icon}
                                 ></ha-svg-icon>
                               `
                             : ""}
@@ -339,7 +313,8 @@ export class HaMediaPlayerBrowse extends LitElement {
                       <div
                         class="graphic"
                         style=${ifDefined(
-                          showImages && child.thumbnail
+                          MediaClassBrowserSettings[child.media_class]
+                            .show_list_images && child.thumbnail
                             ? `background-image: url(${child.thumbnail})`
                             : undefined
                         )}
@@ -347,7 +322,9 @@ export class HaMediaPlayerBrowse extends LitElement {
                       >
                         <mwc-icon-button
                           class="play ${classMap({
-                            show: !showImages || !child.thumbnail,
+                            show:
+                              !MediaClassBrowserSettings[child.media_class]
+                                .show_list_images || !child.thumbnail,
                           })}"
                           .item=${child}
                           .label=${this.hass.localize(
@@ -367,9 +344,11 @@ export class HaMediaPlayerBrowse extends LitElement {
                 )}
               </mwc-list>
             `
-        : html`<div class="container">
-            ${this.hass.localize("ui.components.media-browser.no_items")}
-          </div>`}
+        : html`
+            <div class="container">
+              ${this.hass.localize("ui.components.media-browser.no_items")}
+            </div>
+          `}
     `;
   }
 
@@ -504,12 +483,36 @@ export class HaMediaPlayerBrowse extends LitElement {
     this._resizeObserver.observe(this);
   }
 
-  private _hasExpandableChildren = memoizeOne((children?: MediaPlayerItem[]) =>
-    children?.find((item: MediaPlayerItem) => item.can_expand)
-  );
-
   private _closeDialogAction(): void {
     fireEvent(this, "close-dialog");
+  }
+
+  private _renderError(err: { message: string; code: string }) {
+    if (err.message === "Media directory does not exist.") {
+      return html`
+        <h2>No local media found.</h2>
+        <p>
+          It looks like you have not yet created a media directory.
+          <br />Create a directory with the name <b>"media"</b> in the
+          configuration directory of Home Assistant
+          (${this.hass.config.config_dir}). <br />Place your video, audio and
+          image files in this directory to be able to browse and play them in
+          the browser or on supported media players.
+        </p>
+
+        <p>
+          Check the
+          <a
+            href="https://www.home-assistant.io/integrations/media_source/#local-media"
+            target="_blank"
+            rel="noreferrer"
+            >documentation</a
+          >
+          for more info
+        </p>
+      `;
+    }
+    return err.message;
   }
 
   static get styles(): CSSResultArray {
@@ -655,7 +658,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           width: 100%;
         }
 
-        ha-card {
+        .children ha-card {
           width: 100%;
           padding-bottom: 100%;
           position: relative;
@@ -663,6 +666,10 @@ export class HaMediaPlayerBrowse extends LitElement {
           background-size: cover;
           background-repeat: no-repeat;
           background-position: center;
+        }
+
+        .portrait.children ha-card {
+          padding-bottom: 150%;
         }
 
         .child .folder,
@@ -706,6 +713,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         .child .type {
           font-size: 12px;
           color: var(--secondary-text-color);
+          padding-left: 2px;
         }
 
         mwc-list-item .graphic {
