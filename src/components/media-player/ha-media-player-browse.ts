@@ -21,7 +21,6 @@ import { ifDefined } from "lit-html/directives/if-defined";
 import { styleMap } from "lit-html/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
-import { compare } from "../../common/string/compare";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
 import {
@@ -478,13 +477,6 @@ export class HaMediaPlayerBrowse extends LitElement {
             mediaContentType
           )
         : await browseLocalMediaPlayer(this.hass, mediaContentId);
-    itemData.children = itemData.children?.sort((first, second) =>
-      !first.can_expand && second.can_expand
-        ? 1
-        : first.can_expand && !second.can_expand
-        ? -1
-        : compare(first.title, second.title)
-    );
 
     return itemData;
   }
@@ -638,11 +630,18 @@ export class HaMediaPlayerBrowse extends LitElement {
           display: grid;
           grid-template-columns: repeat(
             auto-fit,
-            minmax(var(--media-browse-item-size, 175px), 0.33fr)
+            minmax(var(--media-browse-item-size, 175px), 0.1fr)
           );
           grid-gap: 16px;
           margin: 8px 0px;
           padding: 0px 24px;
+        }
+
+        :host([dialog]) .children {
+          grid-template-columns: repeat(
+            auto-fit,
+            minmax(var(--media-browse-item-size, 175px), 0.33fr)
+          );
         }
 
         .child {
@@ -697,6 +696,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         .child .title {
           font-size: 16px;
           padding-top: 8px;
+          padding-left: 2px;
           overflow: hidden;
           display: -webkit-box;
           -webkit-box-orient: vertical;

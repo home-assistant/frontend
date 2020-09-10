@@ -67,7 +67,7 @@ class HaLogbook extends LitElement {
     if (!this.entries?.length) {
       return html`
         <div class="container no-entries" .dir=${emitRTLDirection(this._rtl)}>
-          ${this.hass.localize("ui.panel.logbook.entries_not_found")}
+          ${this.hass.localize("ui.components.logbook.entries_not_found")}
         </div>
       `;
     }

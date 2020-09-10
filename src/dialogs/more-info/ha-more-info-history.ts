@@ -16,11 +16,11 @@ import { getRecentWithCache } from "../../data/cached-history";
 import { HistoryResult } from "../../data/history";
 import { getLogbookData, LogbookEntry } from "../../data/logbook";
 import "../../panels/logbook/ha-logbook";
-import { haStyleDialog } from "../../resources/styles";
+import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 
-@customElement("ha-more-info-tab-history")
-export class MoreInfoTabHistoryDialog extends LitElement {
+@customElement("ha-more-info-history")
+export class MoreInfoHistory extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public entityId!: string;
@@ -43,8 +43,7 @@ export class MoreInfoTabHistoryDialog extends LitElement {
       return html``;
     }
 
-    return html`
-      <state-history-charts
+    return html`<state-history-charts
         up-to-now
         .hass=${this.hass}
         .historyData=${this._stateHistory}
@@ -71,8 +70,9 @@ export class MoreInfoTabHistoryDialog extends LitElement {
               .userIdToName=${this._persons}
             ></ha-logbook>
           `
-        : ""}
-    `;
+        : html`<div class="no-entries">
+            ${this.hass.localize("ui.components.logbook.entries_not_found")}
+          </div>`}`;
   }
 
   protected firstUpdated(): void {
@@ -139,13 +139,16 @@ export class MoreInfoTabHistoryDialog extends LitElement {
 
   static get styles() {
     return [
-      haStyleDialog,
+      haStyle,
       css`
         state-history-charts {
           display: block;
           margin-bottom: 16px;
         }
-
+        .no-entries {
+          text-align: center;
+          padding: 16px;
+        }
         ha-logbook {
           max-height: 360px;
         }
@@ -161,6 +164,6 @@ export class MoreInfoTabHistoryDialog extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-more-info-tab-history": MoreInfoTabHistoryDialog;
+    "ha-more-info-history": MoreInfoHistory;
   }
 }

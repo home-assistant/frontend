@@ -34,7 +34,9 @@ export class HuiEntityEditor extends LitElement {
 
   @internalProperty() private _attached = false;
 
-  private _sortable?;
+  @internalProperty() private _renderEmptySortable = false;
+
+  private _sortable?: Sortable;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -60,21 +62,23 @@ export class HuiEntityEditor extends LitElement {
           ")"}
       </h3>
       <div class="entities">
-        ${guard([this.entities], () =>
-          this.entities!.map((entityConf, index) => {
-            return html`
-              <div class="entity" data-entity-id=${entityConf.entity}>
-                <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
-                <ha-entity-picker
-                  .hass=${this.hass}
-                  .value=${entityConf.entity}
-                  .index=${index}
-                  @change=${this._valueChanged}
-                  allow-custom-entity
-                ></ha-entity-picker>
-              </div>
-            `;
-          })
+        ${guard([this.entities, this._renderEmptySortable], () =>
+          this._renderEmptySortable
+            ? ""
+            : this.entities!.map((entityConf, index) => {
+                return html`
+                  <div class="entity" data-entity-id=${entityConf.entity}>
+                    <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                    <ha-entity-picker
+                      .hass=${this.hass}
+                      .value=${entityConf.entity}
+                      .index=${index}
+                      @change=${this._valueChanged}
+                      allow-custom-entity
+                    ></ha-entity-picker>
+                  </div>
+                `;
+              })
         )}
       </div>
       <ha-entity-picker
@@ -112,8 +116,14 @@ export class HuiEntityEditor extends LitElement {
     }
 
     if (entitiesChanged) {
-      this._sortable.sort(this.entities?.map((entity) => entity.entity));
+      this._handleEntitiesChanged();
     }
+  }
+
+  private async _handleEntitiesChanged() {
+    this._renderEmptySortable = true;
+    await this.updateComplete;
+    this._renderEmptySortable = false;
   }
 
   private _createSortable() {

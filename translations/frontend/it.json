@@ -19,6 +19,7 @@
         "logbook": "Registro",
         "mailbox": "Posta",
         "map": "Mappa",
+        "media_browser": "Browser multimediale",
         "profile": "Profilo",
         "shopping_list": "Lista della spesa",
         "states": "Panoramica"
@@ -505,6 +506,7 @@
             "back": "Indietro",
             "cancel": "Annulla",
             "close": "Chiudi",
+            "continue": "Continua",
             "delete": "Elimina",
             "error_required": "Necessario",
             "loading": "Caricamento",
@@ -551,6 +553,10 @@
                 "toggle": "Azionare"
             },
             "entity": {
+                "entity-attribute-picker": {
+                    "attribute": "Attributo",
+                    "show_attributes": "Mostra attributi"
+                },
                 "entity-picker": {
                     "clear": "Cancella",
                     "entity": "Entità",
@@ -562,6 +568,8 @@
                 "no_history_found": "Nessuno storico trovato."
             },
             "media-browser": {
+                "audio_not_supported": "Il tuo browser non supporta l'elemento audio.",
+                "choose_player": "Scegli il lettore",
                 "choose-source": "Scegli origine",
                 "content-type": {
                     "album": "Album",
@@ -570,12 +578,17 @@
                     "playlist": "Elenco di riproduzione",
                     "server": "Server"
                 },
+                "media_browsing_error": "Errore di navigazione multimediale",
+                "media_not_supported": "Il Browser Media Player non supporta questo tipo di file multimediali",
+                "media_player": "Lettore multimediale",
                 "media-player-browser": "Lettore multimediale",
                 "no_items": "Nessun elemento",
                 "pick": "Scegli",
                 "pick-media": "Seleziona file multimediali",
                 "play": "Riproduci",
-                "play-media": "Riproduci file multimediali"
+                "play-media": "Riproduci file multimediali",
+                "video_not_supported": "Il tuo browser non supporta l'elemento video.",
+                "web-browser": "Web Browser"
             },
             "picture-upload": {
                 "label": "Immagine",
@@ -689,8 +702,10 @@
                 "crop": "Ritaglia"
             },
             "more_info_control": {
+                "controls": "Controlli",
                 "dismiss": "Chiudi finestra di dialogo",
                 "edit": "Modifica entità",
+                "history": "Storico",
                 "person": {
                     "create_zone": "Crea zona dalla posizione corrente"
                 },
@@ -918,7 +933,13 @@
                                     "label": "Chiama servizio",
                                     "service_data": "Dati del servizio"
                                 },
+                                "wait_for_trigger": {
+                                    "continue_timeout": "Continua al timeout",
+                                    "label": "In attesa dell'attivazione",
+                                    "timeout": "Timeout (opzionale)"
+                                },
                                 "wait_template": {
+                                    "continue_timeout": "Continua al timeout",
                                     "label": "Attendere",
                                     "timeout": "Timeout (opzionale)",
                                     "wait_template": "Modello di attesa"
@@ -982,7 +1003,9 @@
                                 "time": {
                                     "after": "Dopo",
                                     "before": "Prima",
-                                    "label": "Tempo"
+                                    "label": "Tempo",
+                                    "type_input": "Valore di un aiutante data/ora",
+                                    "type_value": "Tempo fisso"
                                 },
                                 "zone": {
                                     "entity": "Entità con posizione",
@@ -1070,6 +1093,7 @@
                                     "value_template": "Valore modello (opzionale)"
                                 },
                                 "state": {
+                                    "attribute": "Attributo (opzionale)",
                                     "for": "Per",
                                     "from": "Da",
                                     "label": "Stato",
@@ -1096,8 +1120,10 @@
                                     "seconds": "Secondi"
                                 },
                                 "time": {
-                                    "at": "Alle",
-                                    "label": "Ora"
+                                    "at": "Al tempo",
+                                    "label": "Ora",
+                                    "type_input": "Valore di un aiutante data/ora",
+                                    "type_value": "Tempo fisso"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -1120,6 +1146,8 @@
                         "add_automation": "Aggiungi Automazione",
                         "delete_automation": "Cancellare l'automazione",
                         "delete_confirm": "Sei sicuro di voler eliminare questa automazione?",
+                        "duplicate": "Duplica",
+                        "duplicate_automation": "Duplica automazione",
                         "edit_automation": "Modifica automazione",
                         "header": "Editor di Automazione",
                         "headers": {
@@ -1520,6 +1548,7 @@
                 },
                 "integrations": {
                     "add_integration": "Aggiungi integrazione",
+                    "attention": "Attenzione richiesta",
                     "caption": "Integrazioni",
                     "config_entry": {
                         "area": "In {area}",
@@ -1543,6 +1572,7 @@
                         "reload_restart_confirm": "Riavvia Home Assistant per completare il ricaricamento di questa integrazione",
                         "rename": "Rinomina",
                         "restart_confirm": "Riavvia Home Assistant per completare la rimozione di questa integrazione",
+                        "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
                         "settings_button": "Modificare le impostazioni per {integration}.",
                         "system_options": "Opzioni di sistema",
                         "system_options_button": "Opzioni di sistema per {integration}",
@@ -1589,6 +1619,7 @@
                     "none_found_detail": "Modifica i criteri di ricerca.",
                     "note_about_integrations": "Non tutte le integrazioni possono ancora essere configurate tramite l'interfaccia utente.",
                     "note_about_website_reference": "Ulteriori informazioni sono disponibili su ",
+                    "reconfigure": "Riconfigurare",
                     "rename_dialog": "Modifica il nome di questa voce di configurazione",
                     "rename_input_label": "Nome della voce",
                     "search": "Cerca integrazioni"
@@ -1762,8 +1793,21 @@
                         "versions": "Recupero di informazioni sulle versioni del firmware e della classe di comando",
                         "wakeup": "Configurazione del supporto per code di riattivazione e messaggi "
                     },
+                    "node": {
+                        "button": "Dettagli del nodo",
+                        "not_found": "Nodo non trovato"
+                    },
+                    "nodes_table": {
+                        "failed": "Fallito",
+                        "id": "ID",
+                        "manufacturer": "Produttore",
+                        "model": "Modello",
+                        "query_stage": "Fase di richiesta",
+                        "zwave_plus": "Z-Wave Plus"
+                    },
                     "refresh_node": {
                         "battery_note": "Se il nodo è alimentato a batteria, assicurarsi di riattivarlo prima di procedere",
+                        "button": "Aggiorna nodo",
                         "complete": "Aggiornamento del nodo completato",
                         "description": "In questo modo si dirà a OpenZWave di re-interrogare un nodo e aggiornare le classi di comando, le funzionalità e i valori del nodo.",
                         "node_status": "Stato del nodo",
@@ -1912,7 +1956,7 @@
                             "filter": "Ricaricare le entità filtro",
                             "generic": "Ricaricare le entità delle generiche telecamere IP",
                             "generic_thermostat": "Ricaricare le entità termostati generiche",
-                            "group": "Ricarica i Gruppi",
+                            "group": "Ricarica gruppi, entità di gruppo e servizi di notifica",
                             "heading": "Ricarica Configurazione YAML",
                             "history_stats": "Ricarica le entità delle statistiche della cronologia",
                             "homekit": "Ricarica HomeKit",
@@ -1923,12 +1967,17 @@
                             "input_text": "Ricarica input testuali",
                             "introduction": "Alcune parti di Home Assistant possono essere ricaricate senza richiedere un riavvio. Premendo su Ricarica si rimuoverà la loro Configurazione YAML  attuale e si caricherà la versione aggiornata.",
                             "min_max": "Ricaricare le entità min/max",
+                            "mqtt": "Ricarica le entità mqtt",
                             "person": "Ricarica le persone",
                             "ping": "Ricarica le entità del sensore binario ping",
-                            "rest": "Ricarica le entità della piattaforma rest",
+                            "reload": "Ricarica {domain}",
+                            "rest": "Ricarica le entità di rest e i servizi di notifica",
+                            "rpi_gpio": "Ricarica le entità GPIO di Raspberry Pi ",
                             "scene": "Ricarica le Scene",
                             "script": "Ricarica gli Script",
+                            "smtp": "Ricarica i servizi di notifica smtp",
                             "statistics": "Ricaricare le entità statistiche",
+                            "telegram": "Ricarica i servizi di notifica telegram",
                             "template": "Ricaricare le entità modello",
                             "trend": "Ricaricare le entità di tendenza",
                             "universal": "Ricarica le entità del lettore multimediale universale",
@@ -2017,7 +2066,7 @@
                             "system": "Sistema"
                         }
                     },
-                    "users_privileges_note": "Il gruppo di utenti è in fase di elaborazione. L'utente non sarà in grado di amministrare l'istanza tramite l'interfaccia utente. Stiamo ancora verificando tutti gli endpoint dell'API di gestione per garantire che limitino correttamente l'accesso agli amministratori."
+                    "users_privileges_note": "La funzionalità del gruppo di utenti è in fase di elaborazione. L'utente non sarà in grado di amministrare l'istanza tramite l'Interfaccia Utente. Stiamo ancora verificando tutti gli endpoint dell'API di gestione per garantire che limitino correttamente l'accesso solo agli amministratori."
                 },
                 "zha": {
                     "add_device_page": {
@@ -2549,7 +2598,11 @@
                         }
                     },
                     "cardpicker": {
+                        "by_card": "Per Scheda",
+                        "by_entity": "Per Entità",
                         "custom_card": "Personalizzato",
+                        "domain": "Dominio",
+                        "entity": "Entità",
                         "no_description": "Nessuna descrizione disponibile."
                     },
                     "edit_card": {
@@ -2563,6 +2616,7 @@
                         "options": "Altre opzioni",
                         "pick_card": "Quale scheda vorresti aggiungere?",
                         "pick_card_view_title": "Quale scheda vorresti aggiungere alla tua vista {name}?",
+                        "search_cards": "Schede di ricerca",
                         "show_code_editor": "Mostra Editor di Codice",
                         "show_visual_editor": "Mostra Editor Visivo",
                         "toggle_editor": "Attiva / disattiva l'editor",
