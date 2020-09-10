@@ -148,7 +148,7 @@ export class MoreInfoHistory extends LitElement {
           padding: 16px;
         }
         ha-logbook {
-          max-height: 360px;
+          max-height: 250px;
           overflow: auto;
         }
         ha-circular-progress {
