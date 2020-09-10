@@ -223,7 +223,8 @@ export class MoreInfoDialog extends LitElement {
 
   private _computeShowHistoryComponent(entityId) {
     return (
-      isComponentLoaded(this.hass, "history") &&
+      (isComponentLoaded(this.hass, "history") ||
+        isComponentLoaded(this.hass, "logbook")) &&
       !DOMAINS_MORE_INFO_NO_HISTORY.includes(computeDomain(entityId))
     );
   }
