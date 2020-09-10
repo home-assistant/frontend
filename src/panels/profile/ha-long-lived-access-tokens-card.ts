@@ -55,7 +55,7 @@ class HaLongLivedTokens extends LitElement {
             )}
           </a>
           ${!accessTokens?.length
-            ? html` <p>
+            ? html`<p>
                 ${this.hass.localize(
                   "ui.panel.profile.long_lived_access_tokens.empty_state"
                 )}
