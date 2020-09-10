@@ -13,3 +13,5 @@ export const extractApiErrorMessage = (error: any): string => {
       : error.body || "Unknown error, see logs"
     : error;
 };
+
+export const ignoredStatusCodes = new Set([502, 503, 504]);
