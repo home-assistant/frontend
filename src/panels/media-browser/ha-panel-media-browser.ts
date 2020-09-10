@@ -130,6 +130,9 @@ class PanelMediaBrowser extends LitElement {
     return [
       haStyle,
       css`
+        :host {
+          --mdc-theme-primary: var(--app-header-text-color);
+        }
         ha-media-player-browse {
           height: calc(100vh - 84px);
         }
