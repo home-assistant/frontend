@@ -8,6 +8,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import memoizeOne from "memoize-one";
 import relativeTime from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
@@ -29,10 +30,15 @@ class HaLongLivedTokens extends LitElement {
 
   @property({ attribute: false }) public refreshTokens?: RefreshToken[];
 
+  private _accessTokens = memoizeOne(
+    (refreshTokens: RefreshToken[]): RefreshToken[] =>
+      refreshTokens
+        ?.filter((token) => token.type === "long_lived_access_token")
+        .reverse()
+  );
+
   protected render(): TemplateResult {
-    const accessTokens = this.refreshTokens
-      ?.filter((token) => token.type === "long_lived_access_token")
-      .reverse();
+    const accessTokens = this._accessTokens(this.refreshTokens!);
 
     return html`
       <ha-card
