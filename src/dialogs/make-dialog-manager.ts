@@ -59,6 +59,8 @@ export const showDialog = async (
     });
   }
 
+  await new Promise((resolve) => setTimeout(resolve, 50));
+
   history.replaceState(
     {
       dialog: dialogTag,

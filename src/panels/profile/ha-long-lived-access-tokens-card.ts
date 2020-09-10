@@ -26,7 +26,7 @@ import { HomeAssistant } from "../../types";
 @customElement("ha-long-lived-access-tokens-card")
 class HaLongLivedTokens extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
-  
+
   @property({ attribute: false }) public refreshTokens?: RefreshToken[];
 
   protected render(): TemplateResult {
@@ -111,15 +111,13 @@ class HaLongLivedTokens extends LitElement {
         client_name: name,
       });
 
-      setTimeout(() => {
-        showPromptDialog(this, {
-          title: name,
-          text: this.hass.localize(
-            "ui.panel.profile.long_lived_access_tokens.prompt_copy_token"
-          ),
-          defaultValue: token,
-        });
-      }, 100);
+      await showPromptDialog(this, {
+        title: name,
+        text: this.hass.localize(
+          "ui.panel.profile.long_lived_access_tokens.prompt_copy_token"
+        ),
+        defaultValue: token,
+      });
 
       fireEvent(this, "hass-refresh-tokens");
     } catch (err) {
