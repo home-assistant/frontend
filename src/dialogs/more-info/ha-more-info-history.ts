@@ -131,7 +131,11 @@ export class MoreInfoHistory extends LitElement {
       true
     );
 
-    this._entries = [...(this._entries || []), ...newEntries];
+    if (this._entries) {
+      this._entries = [...this._entries, ...newEntries];
+    } else {
+      this._entries = newEntries;
+    }
 
     this._lastLogbookDate = now;
   }
