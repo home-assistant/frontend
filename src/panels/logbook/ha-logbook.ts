@@ -109,6 +109,7 @@ class HaLogbook extends LitElement {
     const state = item.entity_id ? this.hass.states[item.entity_id] : undefined;
     const item_username =
       item.context_user_id && this.userIdToName[item.context_user_id];
+    console.log(item);
     return html`
       <div class="entry-container">
         ${index === 0 ||
@@ -149,20 +150,23 @@ class HaLogbook extends LitElement {
                       >
                     `
                 : ""}
-              <span class="item-message">${item.message}</span>
-              <span>${item_username ? ` (${item_username})` : ``}</span>
-              ${!item.context_event_type
+              ${item.message}
+              ${item_username
+                ? ` by ${item_username}`
+                : !item.context_event_type
                 ? ""
                 : item.context_event_type === "call_service"
                 ? // Service Call
-                  html` by service
+                  ` by service
                   ${item.context_domain}.${item.context_service}`
                 : item.context_entity_id === item.entity_id
                 ? // HomeKit or something that self references
-                  html` by
-                  ${item.context_name
-                    ? item.context_name
-                    : item.context_event_type}`
+                  ` by
+                  ${
+                    item.context_name
+                      ? item.context_name
+                      : item.context_event_type
+                  }`
                 : // Another entity such as an automation or script
                   html` by
                     <a
@@ -258,7 +262,7 @@ class HaLogbook extends LitElement {
         color: var(--primary-text-color);
       }
 
-      .no-name .item-message {
+      .no-name .message:first-letter {
         text-transform: capitalize;
       }
 
