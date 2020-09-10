@@ -17,6 +17,7 @@ import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-camera-stream";
 import { fetchThumbnailUrlWithCache } from "../../../data/camera";
 import { CameraEntity, HomeAssistant } from "../../../types";
+import { UNAVAILABLE } from "../../../data/entity";
 
 const UPDATE_INTERVAL = 10000;
 const DEFAULT_FILTER = "grayscale(100%)";
@@ -73,7 +74,7 @@ export class HuiImage extends LitElement {
     }
     const ratio = this.aspectRatio ? parseAspectRatio(this.aspectRatio) : null;
     const stateObj = this.entity ? this.hass.states[this.entity] : undefined;
-    const state = stateObj ? stateObj.state : "unavailable";
+    const state = stateObj ? stateObj.state : UNAVAILABLE;
 
     // Figure out image source to use
     let imageSrc: string | undefined;

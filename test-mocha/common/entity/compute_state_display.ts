@@ -1,5 +1,6 @@
 import { assert } from "chai";
 import { computeStateDisplay } from "../../../src/common/entity/compute_state_display";
+import { UNKNOWN } from "../../../src/data/entity";
 
 describe("computeStateDisplay", () => {
   // Mock Localize function for testing
@@ -72,7 +73,7 @@ describe("computeStateDisplay", () => {
     };
     const stateObj: any = {
       entity_id: "sensor.test",
-      state: "unknown",
+      state: UNKNOWN,
       attributes: {
         unit_of_measurement: "m",
       },

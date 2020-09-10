@@ -22,6 +22,7 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
 
 interface SensorEntityConfig extends EntitiesCardEntityConfig {
   format?: "relative" | "date" | "time" | "datetime";
@@ -71,8 +72,7 @@ class HuiSensorEntityRow extends LitElement implements LovelaceRow {
         >
           ${stateObj.attributes.device_class ===
             SENSOR_DEVICE_CLASS_TIMESTAMP &&
-          stateObj.state !== "unavailable" &&
-          stateObj.state !== "unknown"
+          !UNAVAILABLE_STATES.includes(stateObj.state)
             ? html`
                 <hui-timestamp-display
                   .hass=${this.hass}
