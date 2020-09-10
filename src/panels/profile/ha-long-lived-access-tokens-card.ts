@@ -117,7 +117,7 @@ class HaLongLivedTokens extends LitElement {
         client_name: name,
       });
 
-     showPromptDialog(this, {
+      showPromptDialog(this, {
         title: name,
         text: this.hass.localize(
           "ui.panel.profile.long_lived_access_tokens.prompt_copy_token"
@@ -127,7 +127,7 @@ class HaLongLivedTokens extends LitElement {
 
       fireEvent(this, "hass-refresh-tokens");
     } catch (err) {
-      await showAlertDialog(this, {
+      showAlertDialog(this, {
         title: this.hass.localize(
           "ui.panel.profile.long_lived_access_tokens.create_failed"
         ),
