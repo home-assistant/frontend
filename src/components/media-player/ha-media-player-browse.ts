@@ -572,6 +572,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         .header-info mwc-button {
           display: block;
+          --mdc-theme-primary: var(--primary-theme-color);
         }
 
         .breadcrumb {

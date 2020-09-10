@@ -52,7 +52,7 @@ export const MediaClassBrowserSettings: {
 } = {
   album: { icon: mdiAlbum },
   app: { icon: mdiApplication },
-  artist: { icon: mdiAccountMusic, show_list_images: true },
+  artist: { icon: mdiAccountMusic, show_list_images: true, layout: "grid" },
   channel: {
     icon: mdiTelevisionClassic,
     thumbnail_ratio: "portrait",
