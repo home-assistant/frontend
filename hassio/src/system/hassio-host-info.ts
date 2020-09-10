@@ -248,7 +248,6 @@ class HassioHostInfo extends LitElement {
     try {
       await rebootHost(this.hass);
     } catch (err) {
-      console.log(err);
       // Ignore connection errors, these are all expected
       if (err.status_code && !ignoredStatusCodes.has(err.status_code)) {
         showAlertDialog(this, {
