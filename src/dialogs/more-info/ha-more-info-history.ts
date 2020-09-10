@@ -8,7 +8,6 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-import { styleMap } from "lit-html/directives/style-map";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import "../../components/ha-circular-progress";
 import "../../components/state-history-charts";
@@ -16,7 +15,7 @@ import { getRecentWithCache } from "../../data/cached-history";
 import { HistoryResult } from "../../data/history";
 import { getLogbookData, LogbookEntry } from "../../data/logbook";
 import "../../panels/logbook/ha-logbook";
-import { haStyle } from "../../resources/styles";
+import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 
 @customElement("ha-more-info-history")
@@ -59,12 +58,10 @@ export class MoreInfoHistory extends LitElement {
         : this._entries.length
         ? html`
             <ha-logbook
+              class="ha-scrollbar"
               narrow
               no-icon
               no-name
-              style=${styleMap({
-                height: `${(this._entries.length + 1) * 56}px`,
-              })}
               .hass=${this.hass}
               .entries=${this._entries}
               .userIdToName=${this._persons}
@@ -140,6 +137,7 @@ export class MoreInfoHistory extends LitElement {
   static get styles() {
     return [
       haStyle,
+      haStyleScrollbar,
       css`
         state-history-charts {
           display: block;
@@ -151,8 +149,8 @@ export class MoreInfoHistory extends LitElement {
         }
         ha-logbook {
           max-height: 360px;
+          overflow: auto;
         }
-
         ha-circular-progress {
           display: flex;
           justify-content: center;
