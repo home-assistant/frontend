@@ -2,14 +2,18 @@ import "@polymer/paper-input/paper-input";
 import {
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
+import { assert, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stateIcon } from "../../../../common/entity/state_icon";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-input";
+import "../../../../components/ha-switch";
 import { ActionConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import { ButtonCardConfig } from "../../cards/types";
@@ -17,16 +21,8 @@ import "../../components/hui-action-editor";
 import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
-import {
-  actionConfigStruct,
-  EditorTarget,
-  EntitiesEditorEvent,
-} from "../types";
-import "../../../../components/ha-switch";
-import "../../../../components/ha-formfield";
+import { actionConfigStruct, EditorTarget } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
-import { assert, object, string, optional, boolean } from "superstruct";
 
 const cardConfigStruct = object({
   type: string(),
@@ -63,11 +59,11 @@ export class HuiButtonCardEditor extends LitElement
   }
 
   get _show_name(): boolean {
-    return this._config!.show_name || true;
+    return this._config!.show_name ?? true;
   }
 
   get _show_state(): boolean {
-    return this._config!.show_state || false;
+    return this._config!.show_state ?? false;
   }
 
   get _icon(): string {
@@ -75,7 +71,7 @@ export class HuiButtonCardEditor extends LitElement
   }
 
   get _show_icon(): boolean {
-    return this._config!.show_icon || true;
+    return this._config!.show_icon ?? true;
   }
 
   get _icon_height(): string {
@@ -85,11 +81,11 @@ export class HuiButtonCardEditor extends LitElement
   }
 
   get _tap_action(): ActionConfig {
-    return this._config!.tap_action || { action: "more-info" };
+    return this._config!.tap_action || { action: "toggle" };
   }
 
   get _hold_action(): ActionConfig {
-    return this._config!.hold_action || { action: "none" };
+    return this._config!.hold_action || { action: "more-info" };
   }
 
   get _theme(): string {
@@ -123,7 +119,7 @@ export class HuiButtonCardEditor extends LitElement
           .hass=${this.hass}
           .value="${this._entity}"
           .configValue=${"entity"}
-          @change="${this._valueChanged}"
+          @value-changed="${this._valueChanged}"
           allow-custom-entity
         ></ha-entity-picker>
         <div class="side-by-side">
@@ -161,7 +157,7 @@ export class HuiButtonCardEditor extends LitElement
               <ha-switch
                 .checked="${this._show_name !== false}"
                 .configValue="${"show_name"}"
-                @change="${this._valueChanged}"
+                @change="${this._change}"
               ></ha-switch>
             </ha-formfield>
           </div>
@@ -175,7 +171,7 @@ export class HuiButtonCardEditor extends LitElement
               <ha-switch
                 .checked=${this._show_state !== false}
                 .configValue=${"show_state"}
-                @change=${this._valueChanged}
+                @change=${this._change}
               ></ha-switch>
             </ha-formfield>
           </div>
@@ -189,7 +185,7 @@ export class HuiButtonCardEditor extends LitElement
               <ha-switch
                 .checked="${this._show_icon !== false}"
                 .configValue="${"show_icon"}"
-                @change="${this._valueChanged}"
+                @change="${this._change}"
               ></ha-switch>
             </ha-formfield>
           </div>
@@ -225,7 +221,7 @@ export class HuiButtonCardEditor extends LitElement
             .config="${this._tap_action}"
             .actions="${actions}"
             .configValue="${"tap_action"}"
-            @action-changed="${this._valueChanged}"
+            @value-changed="${this._valueChanged}"
           ></hui-action-editor>
           <hui-action-editor
             .label="${this.hass.localize(
@@ -237,27 +233,43 @@ export class HuiButtonCardEditor extends LitElement
             .config="${this._hold_action}"
             .actions="${actions}"
             .configValue="${"hold_action"}"
-            @action-changed="${this._valueChanged}"
+            @value-changed="${this._valueChanged}"
           ></hui-action-editor>
         </div>
       </div>
     `;
   }
 
-  private _valueChanged(ev: EntitiesEditorEvent): void {
+  private _change(ev: Event) {
     if (!this._config || !this.hass) {
       return;
     }
     const target = ev.target! as EditorTarget;
+    const value = target.checked;
 
-    if (
-      this[`_${target.configValue}`] === target.value ||
-      this[`_${target.configValue}`] === target.config
-    ) {
+    if (this[`_${target.configValue}`] === value) {
+      return;
+    }
+
+    this._config = {
+      ...this._config,
+      [target.configValue!]: value,
+    };
+    fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  private _valueChanged(ev: CustomEvent): void {
+    if (!this._config || !this.hass) {
+      return;
+    }
+    const target = ev.target! as EditorTarget;
+    const value = ev.detail.value;
+
+    if (this[`_${target.configValue}`] === value) {
       return;
     }
     if (target.configValue) {
-      if (target.value === "") {
+      if (value !== false && !value) {
         this._config = { ...this._config };
         delete this._config[target.configValue!];
       } else {
@@ -266,18 +278,11 @@ export class HuiButtonCardEditor extends LitElement
           target.configValue === "icon_height" &&
           !isNaN(Number(target.value))
         ) {
-          newValue = `${String(target.value)}px`;
+          newValue = `${String(value)}px`;
         }
         this._config = {
           ...this._config,
-          [target.configValue!]:
-            target.checked !== undefined
-              ? target.checked
-              : newValue !== undefined
-              ? newValue
-              : target.value
-              ? target.value
-              : target.config,
+          [target.configValue!]: newValue !== undefined ? newValue : value,
         };
       }
     }
