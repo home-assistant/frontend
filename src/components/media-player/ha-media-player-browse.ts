@@ -665,6 +665,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           background-size: cover;
           background-repeat: no-repeat;
           background-position: center;
+          transition: padding-bottom 0.1s ease-out;
         }
 
         .portrait.children ha-card {
@@ -686,7 +687,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         .child .play {
           bottom: 4px;
           right: 4px;
-          transition: all 0.5s;
+          transition: color 0.5s;
           background-color: rgba(var(--rgb-card-background-color), 0.5);
           border-radius: 50%;
         }
