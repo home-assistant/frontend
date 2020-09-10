@@ -109,7 +109,6 @@ class HaLogbook extends LitElement {
     const state = item.entity_id ? this.hass.states[item.entity_id] : undefined;
     const item_username =
       item.context_user_id && this.userIdToName[item.context_user_id];
-    console.log(item);
     return html`
       <div class="entry-container">
         ${index === 0 ||
