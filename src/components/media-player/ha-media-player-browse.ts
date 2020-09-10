@@ -127,8 +127,8 @@ export class HaMediaPlayerBrowse extends LitElement {
         ? this._mediaPlayerItems[this._mediaPlayerItems.length - 2]
         : undefined;
 
-    const mediaType = this.hass.localize(
-      `ui.components.media-browser.content-type.${currentItem.media_content_type}`
+    const subtitle = this.hass.localize(
+      `ui.components.media-browser.class.${currentItem.media_class}`
     );
     const mediaClass = MediaClassBrowserSettings[currentItem.media_class];
 
@@ -184,10 +184,10 @@ export class HaMediaPlayerBrowse extends LitElement {
                   `
                 : ""}
               <h1 class="title">${currentItem.title}</h1>
-              ${mediaType
+              ${subtitle
                 ? html`
                     <h2 class="subtitle">
-                      ${mediaType}
+                      ${subtitle}
                     </h2>
                   `
                 : ""}
