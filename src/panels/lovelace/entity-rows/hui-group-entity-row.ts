@@ -24,7 +24,7 @@ class HuiGroupEntityRow extends LitElement implements LovelaceRow {
   @internalProperty() private _config?: EntityConfig;
 
   private _computeCanToggle = memoizeOne(
-    (hass: HomeAssistant, entityIds: string[]) => {
+    (hass: HomeAssistant, entityIds: string[]): boolean => {
       return entityIds.some((entityId) => {
         const domain = entityId.split(".", 1)[0];
         if (domain === "group") {
