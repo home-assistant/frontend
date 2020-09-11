@@ -7,7 +7,6 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-import memoizeOne from "memoize-one";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
@@ -24,21 +23,18 @@ class HuiGroupEntityRow extends LitElement implements LovelaceRow {
 
   @internalProperty() private _config?: EntityConfig;
 
-  private _computeCanToggle = memoizeOne(
-    (hass: HomeAssistant, entityIds: string[]): boolean => {
-      return entityIds.some((entityId) => {
-        const domain = computeDomain(entityId);
-        if (domain === "group") {
-          return this._computeCanToggle(
-            hass,
-            this.hass?.states[entityId].attributes["entity_id"]
-          );
-        }
-        return DOMAINS_TOGGLE.has(domain);
-      });
-    }
-  );
-
+  private _computeCanToggle(hass: HomeAssistant, entityIds: string[]): boolean {
+    return entityIds.some((entityId) => {
+      const domain = computeDomain(entityId);
+      if (domain === "group") {
+        return this._computeCanToggle(
+          hass,
+          this.hass?.states[entityId].attributes["entity_id"]
+        );
+      }
+      return DOMAINS_TOGGLE.has(domain);
+    });
+  }
   public setConfig(config: EntityConfig): void {
     if (!config) {
       throw new Error("Configuration error");
