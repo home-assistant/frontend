@@ -15,6 +15,7 @@ import "../../../components/ha-attributes";
 import "../../../components/map/ha-map";
 import { showZoneEditor } from "../../../data/zone";
 import { HomeAssistant } from "../../../types";
+import relativeTime from "../../../common/datetime/relative_time";
 
 @customElement("more-info-person")
 class MoreInfoPerson extends LitElement {
@@ -27,6 +28,12 @@ class MoreInfoPerson extends LitElement {
   protected render(): TemplateResult {
     if (!this.hass || !this.stateObj) {
       return html``;
+    }
+    if (this.stateObj.last_updated && Date.parse(this.stateObj.last_updated)) {
+      this.stateObj.attributes.last_updated = relativeTime(
+        new Date(this.stateObj.last_updated),
+        this.hass.localize
+      );
     }
 
     return html`
