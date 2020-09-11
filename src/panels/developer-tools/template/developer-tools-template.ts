@@ -47,7 +47,7 @@ class HaPanelDevTemplate extends LitElement {
 
   @property() public narrow!: boolean;
 
-  @internalProperty() private _error = "";
+  @internalProperty() private _error?: string;
 
   @internalProperty() private _rendering = false;
 
