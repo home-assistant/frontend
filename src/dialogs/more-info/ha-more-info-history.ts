@@ -8,6 +8,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import "../../components/ha-circular-progress";
 import "../../components/state-history-charts";
@@ -42,13 +43,16 @@ export class MoreInfoHistory extends LitElement {
       return html``;
     }
 
-    return html`<state-history-charts
-        up-to-now
-        .hass=${this.hass}
-        .historyData=${this._stateHistory}
-        .isLoadingData=${!this._stateHistory}
-      ></state-history-charts>
-      ${!this._entries
+    return html`${isComponentLoaded(this.hass, "history")
+      ? html`<state-history-charts
+          up-to-now
+          .hass=${this.hass}
+          .historyData=${this._stateHistory}
+          .isLoadingData=${!this._stateHistory}
+        ></state-history-charts>`
+      : ""}
+    ${isComponentLoaded(this.hass, "logbook")
+      ? !this._entries
         ? html`
             <ha-circular-progress
               active
@@ -69,7 +73,8 @@ export class MoreInfoHistory extends LitElement {
           `
         : html`<div class="no-entries">
             ${this.hass.localize("ui.components.logbook.entries_not_found")}
-          </div>`}`;
+          </div>`
+      : ""} `;
   }
 
   protected firstUpdated(): void {
@@ -97,6 +102,9 @@ export class MoreInfoHistory extends LitElement {
   }
 
   private async _getStateHistory(): Promise<void> {
+    if (!isComponentLoaded(this.hass, "history")) {
+      return;
+    }
     this._stateHistory = await getRecentWithCache(
       this.hass!,
       this.entityId,
@@ -111,6 +119,9 @@ export class MoreInfoHistory extends LitElement {
   }
 
   private async _getLogBookData() {
+    if (!isComponentLoaded(this.hass, "logbook")) {
+      return;
+    }
     const yesterday = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
     const now = new Date();
     this._entries = await getLogbookData(
