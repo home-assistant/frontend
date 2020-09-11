@@ -266,7 +266,7 @@ class HaPanelDevTemplate extends LitElement {
   private _templateChanged(ev) {
     this._template = ev.detail.value;
     if (this._error) {
-      this._error = "";
+      this._error = undefined;
     }
     this._debounceRender();
   }
