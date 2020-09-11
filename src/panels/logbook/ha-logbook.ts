@@ -249,6 +249,7 @@ class HaLogbook extends LitElement {
 
       .no-entries {
         text-align: center;
+        color: var(--secondary-text-color);
       }
 
       ha-icon {

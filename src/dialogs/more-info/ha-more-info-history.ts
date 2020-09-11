@@ -157,6 +157,7 @@ export class MoreInfoHistory extends LitElement {
         .no-entries {
           text-align: center;
           padding: 16px;
+          color: var(--secondary-text-color);
         }
         ha-logbook {
           max-height: 250px;
