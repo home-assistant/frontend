@@ -29,18 +29,22 @@ class MoreInfoPerson extends LitElement {
     if (!this.hass || !this.stateObj) {
       return html``;
     }
-    if (this.stateObj.last_updated && Date.parse(this.stateObj.last_updated)) {
-      this.stateObj.attributes.last_updated = relativeTime(
-        new Date(this.stateObj.last_updated),
-        this.hass.localize
-      );
-    }
-
     return html`
       <ha-attributes
         .stateObj=${this.stateObj}
         extraFilters="id,user_id,editable"
       ></ha-attributes>
+      ${this.stateObj.last_updated && Date.parse(this.stateObj.last_updated)
+        ? html` <div class="data-entry">
+            <div class="key">last updated</div>
+            <div class="value">
+              ${relativeTime(
+                new Date(this.stateObj.last_updated),
+                this.hass.localize
+              )}
+            </div>
+          </div>`
+        : ""}
       ${this.stateObj.attributes.latitude && this.stateObj.attributes.longitude
         ? html`
             <ha-map
@@ -84,6 +88,15 @@ class MoreInfoPerson extends LitElement {
       .actions {
         margin: 36px 0 8px 0;
         text-align: right;
+      }
+      .data-entry {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+      }
+      .data-entry .value {
+        max-width: 200px;
+        overflow-wrap: break-word;
       }
     `;
   }
