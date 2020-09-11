@@ -567,6 +567,9 @@
                 "loading_history": "正在載入狀態歷史...",
                 "no_history_found": "找不到狀態歷史。"
             },
+            "logbook": {
+                "entries_not_found": "找不到實體日誌。"
+            },
             "media-browser": {
                 "audio_not_supported": "瀏覽器不支援音效元件。",
                 "choose_player": "選擇播放器",
@@ -703,6 +706,7 @@
             },
             "more_info_control": {
                 "controls": "控制",
+                "details": "詳細資訊",
                 "dismiss": "忽略對話",
                 "edit": "編輯實體",
                 "history": "歷史",

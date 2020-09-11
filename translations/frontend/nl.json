@@ -19,6 +19,7 @@
         "logbook": "Logboek",
         "mailbox": "Postvak",
         "map": "Kaart",
+        "media_browser": "Mediabrowser",
         "profile": "Profiel",
         "shopping_list": "Boodschappenlijst",
         "states": "Overzicht"
@@ -552,6 +553,10 @@
                 "toggle": "Omschakelen"
             },
             "entity": {
+                "entity-attribute-picker": {
+                    "attribute": "Attribuut",
+                    "show_attributes": "Toon attributen"
+                },
                 "entity-picker": {
                     "clear": "Wis",
                     "entity": "Entiteit",
@@ -562,7 +567,11 @@
                 "loading_history": "Geschiedenis laden ...",
                 "no_history_found": "Geen geschiedenis gevonden"
             },
+            "logbook": {
+                "entries_not_found": "Geen logboekvermeldingen gevonden."
+            },
             "media-browser": {
+                "audio_not_supported": "Uw browser ondersteunt het audio-element niet.",
                 "choose_player": "Kies speler",
                 "choose-source": "Kies bron",
                 "content-type": {
@@ -572,6 +581,7 @@
                     "playlist": "Afspeellijst",
                     "server": "Server"
                 },
+                "media_browsing_error": "Fout bij bladeren door media",
                 "media_not_supported": "De Browser Media Player ondersteunt dit type media niet",
                 "media_player": "Mediaspeler",
                 "media-player-browser": "Mediaspeler-browser",
@@ -696,6 +706,7 @@
             },
             "more_info_control": {
                 "controls": "Besturing",
+                "details": "Details",
                 "dismiss": "Dialoogvenster sluiten",
                 "edit": "Entiteit bewerken",
                 "history": "Geschiedenis",
@@ -927,7 +938,9 @@
                                     "service_data": "Service data"
                                 },
                                 "wait_for_trigger": {
-                                    "label": "Wacht op trigger"
+                                    "continue_timeout": "Ga verder op time-out",
+                                    "label": "Wacht op trigger",
+                                    "timeout": "Time-out (optioneel)"
                                 },
                                 "wait_template": {
                                     "continue_timeout": "Ga verder op time-out",
@@ -994,7 +1007,9 @@
                                 "time": {
                                     "after": "Nadat",
                                     "before": "Voordat",
-                                    "label": "Tijd"
+                                    "label": "Tijd",
+                                    "type_input": "Waarde van een datum/tijdhelper",
+                                    "type_value": "Vaste tijd"
                                 },
                                 "zone": {
                                     "entity": "Entiteit met locatie",
@@ -1082,6 +1097,7 @@
                                     "value_template": "Waardesjabloon (optioneel)"
                                 },
                                 "state": {
+                                    "attribute": "Attribuut (Optioneel)",
                                     "for": "Voor",
                                     "from": "Van",
                                     "label": "Staat",
@@ -1108,8 +1124,10 @@
                                     "seconds": "Seconden"
                                 },
                                 "time": {
-                                    "at": "Om",
-                                    "label": "Tijd"
+                                    "at": "Op tijd",
+                                    "label": "Tijd",
+                                    "type_input": "Waarde van een datum/tijdhelper",
+                                    "type_value": "Vaste tijd"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -1132,6 +1150,8 @@
                         "add_automation": "Automatisering toevoegen",
                         "delete_automation": "Verwijder automatisering",
                         "delete_confirm": "Weet je zeker dat je deze automatisering wilt verwijderen?",
+                        "duplicate": "Dupliceren",
+                        "duplicate_automation": "Dupliceer automatisering",
                         "edit_automation": "Bewerk automatisering",
                         "header": "Automatiseringsbewerker",
                         "headers": {
@@ -1216,9 +1236,11 @@
                         "dont_expose_entity": "Entiteit niet beschikbaar maken",
                         "expose": "Blootstellen aan Alexa",
                         "expose_entity": "Enititeit beschikbaar maken",
+                        "exposed": "{selected} blootgesteld",
                         "exposed_entities": "Blootgestelde entiteiten",
                         "follow_domain": "Domein volgen",
                         "manage_domains": "Beheer domeinen",
+                        "not_exposed": "{selected} niet blootgesteld",
                         "not_exposed_entities": "Niet blootgestelde entiteiten",
                         "title": "Alexa"
                     },
@@ -1259,8 +1281,11 @@
                         "dont_expose_entity": "Entiteit niet beschikbaar maken",
                         "expose": "Blootstellen aan Google Assistant",
                         "expose_entity": "Enititeit beschikbaar maken",
+                        "exposed": "{selected} blootgesteld",
                         "exposed_entities": "Blootgestelde entiteiten",
+                        "follow_domain": "Domein volgen",
                         "manage_domains": "Beheer domeinen",
+                        "not_exposed": "{selected} niet blootgesteld",
                         "not_exposed_entities": "Niet blootgestelde entiteiten",
                         "sync_to_google": "Wijzigingen synchroniseren met Google.",
                         "title": "Google Assistant"
@@ -1551,6 +1576,7 @@
                         "reload_restart_confirm": "Start Home Assistant opnieuw om het opnieuw laden van deze integratie te voltooien",
                         "rename": "Naam wijzigen",
                         "restart_confirm": "Herstart Home Assistant om het verwijderen van deze integratie te voltooien",
+                        "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
                         "settings_button": "Instellingen bewerken voor {integration}",
                         "system_options": "Systeeminstellingen",
                         "system_options_button": "Systeeminstellingen voor {integration}",
@@ -1771,11 +1797,21 @@
                         "versions": "Het verkrijgen van informatie over firmware en commandoklasseversies",
                         "wakeup": "Ondersteuning instellen voor waakwachtrijen en berichten"
                     },
+                    "node": {
+                        "button": "Node details",
+                        "not_found": "Node niet gevonden"
+                    },
                     "nodes_table": {
-                        "failed": "Mislukt"
+                        "failed": "Mislukt",
+                        "id": "ID",
+                        "manufacturer": "Fabrikant",
+                        "model": "Model",
+                        "query_stage": "Vraagfase",
+                        "zwave_plus": "Z-Wave Plus"
                     },
                     "refresh_node": {
                         "battery_note": "Als het knooppunt op batterijen werkt, moet u het uit de sluimerstand halen voordat u verder gaat",
+                        "button": "Node verversen",
                         "complete": "Knooppunt vernieuwen voltooid",
                         "description": "Dit zal OpenZWave vertellen om een knooppunt opnieuw te ondervragen en de opdrachtklassen, mogelijkheden en waarden van het knooppunt bij te werken.",
                         "node_status": "Knooppuntstatus",
@@ -1924,7 +1960,7 @@
                             "filter": "Herlaad filter-entiteiten",
                             "generic": "Herlaad generieke IP camera entiteiten",
                             "generic_thermostat": "Herlaad generieke thermostaat entiteiten",
-                            "group": "Herlaad groepen",
+                            "group": "Herlaad groepen, groepsentiteiten en meld services",
                             "heading": "Configuratie herladen",
                             "history_stats": "Herlaad historische statistieken entiteiten",
                             "homekit": "Herlaad HomeKit",
@@ -1938,7 +1974,8 @@
                             "mqtt": "Herlaad mqtt entiteiten",
                             "person": "Herlaad personen",
                             "ping": "Herlaad ping binaire sensor entiteiten",
-                            "rest": "Herlaad rust-entiteiten",
+                            "reload": "Herlaad {domain}",
+                            "rest": "Laad resterende entiteiten opnieuw en stel services op de hoogte",
                             "rpi_gpio": "Herlaad Raspberry Pi GPIO-entiteiten",
                             "scene": "Herlaad scenes",
                             "script": "Herlaad scripts",
@@ -2033,7 +2070,7 @@
                             "system": "Systeem"
                         }
                     },
-                    "users_privileges_note": "Gebruikersgroepen zijn nog in ontwikkeling. De gebruiker kan de instantie niet beheren via de interface. We zijn bezig met het controleren van de API-eindpunten toegang voor beheerders."
+                    "users_privileges_note": "Gebruikersgroepen zijn nog in ontwikkeling. De gebruiker kan de instantie niet beheren via de interface. We controleren nog steeds alle beheer API eindpunten om ervoor te zorgen dat ze de toegang tot beheerders correct beperken."
                 },
                 "zha": {
                     "add_device_page": {
@@ -2217,7 +2254,7 @@
                         "node_to_control": "Knooppunt om te besturen",
                         "nodes": "Knooppunten",
                         "nodes_hint": "Selecteer knooppunt om de opties per knooppunt te bekijken",
-                        "nodes_in_group": "Andere knooppunten in deze groep:",
+                        "nodes_in_group": "Andere nodes in deze groep:",
                         "pooling_intensity": "Polling intensiteit",
                         "protection": "Bescherming",
                         "remove_broadcast": "Broadcast verwijderen",
@@ -2565,6 +2602,8 @@
                         }
                     },
                     "cardpicker": {
+                        "by_card": "Per kaart",
+                        "by_entity": "Per entiteit",
                         "custom_card": "Aangepaste",
                         "domain": "Domein",
                         "entity": "Entiteit",
