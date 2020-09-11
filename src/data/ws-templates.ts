@@ -7,7 +7,7 @@ export interface RenderTemplateResult {
 
 interface TemplateListeners {
   all: boolean;
-  domains: Array<string>;
+  domains: string[];
   entities: Array<string>;
 }
 
