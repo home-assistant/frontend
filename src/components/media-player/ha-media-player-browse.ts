@@ -131,6 +131,8 @@ export class HaMediaPlayerBrowse extends LitElement {
       `ui.components.media-browser.class.${currentItem.media_class}`
     );
     const mediaClass = MediaClassBrowserSettings[currentItem.media_class];
+    const childrenMediaClass =
+      MediaClassBrowserSettings[currentItem.children_media_class];
 
     return html`
       <div
@@ -234,7 +236,7 @@ export class HaMediaPlayerBrowse extends LitElement {
             </div>
           `
         : currentItem.children?.length
-        ? mediaClass.layout === "grid"
+        ? childrenMediaClass.layout === "grid"
           ? html`
               <div
                 class="children ${classMap({
