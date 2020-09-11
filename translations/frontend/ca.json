@@ -567,6 +567,9 @@
                 "loading_history": "Carregant historial d'estats...",
                 "no_history_found": "No s'ha trobat cap historial d'estats."
             },
+            "logbook": {
+                "entries_not_found": "No s'han trobat entrades al registre."
+            },
             "media-browser": {
                 "audio_not_supported": "El teu navegador no és compatible amb l'element d'àudio.",
                 "choose_player": "Tria el reproductor",
@@ -703,6 +706,7 @@
             },
             "more_info_control": {
                 "controls": "Controls",
+                "details": "Detalls",
                 "dismiss": "Desestimar el diàleg",
                 "edit": "Edita entitat",
                 "history": "Historial",

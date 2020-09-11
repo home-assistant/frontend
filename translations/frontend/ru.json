@@ -567,6 +567,9 @@
                 "loading_history": "Загрузка истории...",
                 "no_history_found": "История не найдена."
             },
+            "logbook": {
+                "entries_not_found": "В журнале нет записей."
+            },
             "media-browser": {
                 "audio_not_supported": "Ваш браузер не поддерживает аудио.",
                 "choose_player": "Выберите медиаплеер",

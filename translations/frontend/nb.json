@@ -567,6 +567,9 @@
                 "loading_history": "Laster statushistorikk...",
                 "no_history_found": "Ingen statushistorikk funnet."
             },
+            "logbook": {
+                "entries_not_found": "Ingen loggbokoppføringer funnet."
+            },
             "media-browser": {
                 "audio_not_supported": "Nettleseren din støtter ikke lydelementet.",
                 "choose_player": "Velg spiller",
@@ -703,6 +706,7 @@
             },
             "more_info_control": {
                 "controls": "Kontroller",
+                "details": "Detaljer",
                 "dismiss": "Avvis dialogboksen",
                 "edit": "Redigér entitet",
                 "history": "Historie",
@@ -1788,7 +1792,7 @@
                         "nodeplusinfo": "Innhenting av Z-Wave + informasjon fra noden",
                         "probe": "Kontrollere om noden er våken/levende",
                         "protocolinfo": "Få grunnleggende Z-Wave-funksjoner i denne noden fra kontrolleren",
-                        "session": "\nFå sjelden endrede verdier fra noden",
+                        "session": "Henter verdier fra noden som sjeldent oppdateres",
                         "static": "Innhenting av statiske verdier fra enheten",
                         "versions": "Hente informasjon om fastvare- og kommandoklasseversjoner",
                         "wakeup": "Sette opp støtte for vekkingskøer og meldinger"
@@ -2463,7 +2467,7 @@
                             "name": "Entitetsfilter"
                         },
                         "entity": {
-                            "description": "Enhetskortet gir deg en rask oversikt over enhetens tilstand.",
+                            "description": "Entitetskortet gir deg en rask oversikt over entitetens tilstand.",
                             "name": "Entitet"
                         },
                         "gauge": {
@@ -2523,7 +2527,7 @@
                             "name": "Horisontal Stabel"
                         },
                         "humidifier": {
-                            "description": "Luftfukter kortet gir kontroll over luftfukter enheten din. Lar deg endre fuktigheten og modusen til enheten.",
+                            "description": "Luftfukter kortet gir kontroll over luftfukter entiteten din. Lar deg endre fuktigheten og modusen til entiteten.",
                             "name": "Luftfukter"
                         },
                         "iframe": {

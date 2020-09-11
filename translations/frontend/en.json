@@ -2963,6 +2963,7 @@
                     "confirm_delete": "Are you sure you want to delete the access token for {name}?",
                     "create": "Create Token",
                     "create_failed": "Failed to create the access token.",
+                    "created": "Created {date}",
                     "created_at": "Created at {date}",
                     "delete_failed": "Failed to delete the access token.",
                     "description": "Create long-lived access tokens to allow your scripts to interact with your Home Assistant instance. Each token will be valid for 10 years from creation. The following long-lived access tokens are currently active.",
@@ -2970,9 +2971,10 @@
                     "header": "Long-Lived Access Tokens",
                     "last_used": "Last used at {date} from {location}",
                     "learn_auth_requests": "Learn how to make authenticated requests.",
+                    "name": "Name",
                     "not_used": "Has never been used",
                     "prompt_copy_token": "Copy your access token. It will not be shown again.",
-                    "prompt_name": "Name?"
+                    "prompt_name": "Give the token a name"
                 },
                 "mfa_setup": {
                     "close": "Close",
