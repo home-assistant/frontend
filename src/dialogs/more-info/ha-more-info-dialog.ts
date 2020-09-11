@@ -49,6 +49,32 @@ const CONTROL_DOMAINS = [
 const EDITABLE_DOMAINS_WITH_ID = ["scene", "automation"];
 const EDITABLE_DOMAINS = ["script"];
 
+const MORE_INFO_CONTROL_IMPORT = {
+  alarm_control_panel: () => import("./controls/more-info-alarm_control_panel"),
+  automation: () => import("./controls/more-info-automation"),
+  camera: () => import("./controls/more-info-camera"),
+  climate: () => import("./controls/more-info-climate"),
+  configurator: () => import("./controls/more-info-configurator"),
+  counter: () => import("./controls/more-info-counter"),
+  cover: () => import("./controls/more-info-cover"),
+  fan: () => import("./controls/more-info-fan"),
+  group: () => import("./controls/more-info-group"),
+  humidifier: () => import("./controls/more-info-humidifier"),
+  input_datetime: () => import("./controls/more-info-input_datetime"),
+  light: () => import("./controls/more-info-light"),
+  lock: () => import("./controls/more-info-lock"),
+  media_player: () => import("./controls/more-info-media_player"),
+  person: () => import("./controls/more-info-person"),
+  script: () => import("./controls/more-info-script"),
+  sun: () => import("./controls/more-info-sun"),
+  timer: () => import("./controls/more-info-timer"),
+  vacuum: () => import("./controls/more-info-vacuum"),
+  water_heater: () => import("./controls/more-info-water_heater"),
+  weather: () => import("./controls/more-info-weather"),
+  hidden: () => {},
+  default: () => import("./controls/more-info-default"),
+};
+
 export interface MoreInfoDialogParams {
   entityId: string | null;
 }
@@ -87,12 +113,13 @@ export class MoreInfoDialog extends LitElement {
     if (!stateObj) {
       return;
     }
-    this._moreInfoType =
-      stateObj.attributes && "custom_ui_more_info" in stateObj.attributes
-        ? stateObj.attributes.custom_ui_more_info
-        : "more-info-" + stateMoreInfoType(stateObj);
-
-    import(`./controls/${this._moreInfoType}`);
+    if (stateObj.attributes && "custom_ui_more_info" in stateObj.attributes) {
+      this._moreInfoType = stateObj.attributes.custom_ui_more_info;
+    } else {
+      const type = stateMoreInfoType(stateObj);
+      this._moreInfoType = `more-info-${type}`;
+      MORE_INFO_CONTROL_IMPORT[type]();
+    }
   }
 
   protected render() {
