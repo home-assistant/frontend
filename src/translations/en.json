@@ -2731,7 +2731,7 @@
             "template_extensions": "Home Assistant template extensions",
             "unknown_error_template": "Unknown error rendering template",
             "all_listeners": "This template listens for all state changed events.",
-            "no_listeners": "This template does not listen for any state changed events.",
+            "no_listeners": "This template does not listen for any state changed events and will not update automatically.",
             "listeners": "This template listens for the following state changed events:",
             "entity": "Entity",
             "domain": "Domain"
