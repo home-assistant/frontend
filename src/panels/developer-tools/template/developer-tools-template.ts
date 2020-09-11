@@ -283,10 +283,8 @@ ${this._templateResult?.result}</pre
     } catch (err) {
       this._error = true;
       if (err.message) {
-        this._templateResult = {
-          result: err.message,
-          listeners: { all: false, domains: [], entities: [] },
-        };
+		this._error = err.message;
+        this._templateResult = undefined;
       }
       this._unsubRenderTemplate = undefined;
     } finally {
