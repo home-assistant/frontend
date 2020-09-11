@@ -32,6 +32,7 @@ import "../../state-summary/state-card-content";
 import { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import "./ha-more-info-history";
+import "./ha-more-info-logbook";
 
 const DOMAINS_NO_INFO = ["camera", "configurator"];
 const CONTROL_DOMAINS = [
@@ -42,6 +43,8 @@ const CONTROL_DOMAINS = [
   "climate",
   "humidifier",
   "weather",
+  "person",
+  "water_heater",
 ];
 const EDITABLE_DOMAINS_WITH_ID = ["scene", "automation"];
 const EDITABLE_DOMAINS = ["script"];
@@ -203,6 +206,13 @@ export class MoreInfoDialog extends LitElement {
                         stateObj,
                       })
                     : ""}
+                  ${CONTROL_DOMAINS.includes(domain) ||
+                  !this._computeShowHistoryComponent(entityId)
+                    ? ""
+                    : html`<ha-more-info-logbook
+                        .hass=${this.hass}
+                        .entityId=${this._entityId}
+                      ></ha-more-info-logbook>`}
                   ${stateObj.attributes.restored
                     ? html`
                         <p>
@@ -231,6 +241,10 @@ export class MoreInfoDialog extends LitElement {
                     .hass=${this.hass}
                     .entityId=${this._entityId}
                   ></ha-more-info-history>
+                  <ha-more-info-logbook
+                    .hass=${this.hass}
+                    .entityId=${this._entityId}
+                  ></ha-more-info-logbook>
                 `
           )}
         </div>
