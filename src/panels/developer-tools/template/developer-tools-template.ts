@@ -145,7 +145,7 @@ class HaPanelDevTemplate extends LitElement {
           <pre class="rendered ${classMap({ error: this._error })}">
 ${this._templateResult?.result}</pre
           >
-          ${this._templateResult.listeners.all
+          ${!this._templateResult ? "" : this._templateResult.listeners.all
             ? html`
                 <span class="all_listeners">
                   ${this.hass.localize(
