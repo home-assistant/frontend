@@ -18,6 +18,7 @@ import { getLogbookData, LogbookEntry } from "../../data/logbook";
 import "../../panels/logbook/ha-logbook";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
+import { throttleAndQueue } from "../../common/util/throttle";
 
 @customElement("ha-more-info-history")
 export class MoreInfoHistory extends LitElement {
@@ -35,6 +36,8 @@ export class MoreInfoHistory extends LitElement {
 
   private _lastLogbookDate?: Date;
 
+  private _throttleHistoryFunction?: Function;
+
   protected render(): TemplateResult {
     if (!this.entityId) {
       return html``;
@@ -45,7 +48,8 @@ export class MoreInfoHistory extends LitElement {
       return html``;
     }
 
-    return html`<state-history-charts
+    return html`
+      <state-history-charts
         up-to-now
         .hass=${this.hass}
         .historyData=${this._stateHistory}
@@ -72,9 +76,12 @@ export class MoreInfoHistory extends LitElement {
               .userIdToName=${this._persons}
             ></ha-logbook>
           `
-        : html`<div class="no-entries">
-            ${this.hass.localize("ui.components.logbook.entries_not_found")}
-          </div>`}`;
+        : html`
+            <div class="no-entries">
+              ${this.hass.localize("ui.components.logbook.entries_not_found")}
+            </div>
+          `}
+    `;
   }
 
   protected firstUpdated(): void {
@@ -85,21 +92,43 @@ export class MoreInfoHistory extends LitElement {
     super.updated(changedProps);
     if (!this.entityId) {
       clearInterval(this._historyRefreshInterval);
+      this._stateHistory = undefined;
+      this._entries = undefined;
+      this._lastLogbookDate = undefined;
+      this._throttleHistoryFunction = undefined;
+      return;
     }
 
     if (changedProps.has("entityId")) {
       this._stateHistory = undefined;
       this._entries = undefined;
       this._lastLogbookDate = undefined;
+      this._throttleHistoryFunction = undefined;
 
       this._getStateHistory();
       this._getLogBookData();
 
-      clearInterval(this._historyRefreshInterval);
-      this._historyRefreshInterval = window.setInterval(() => {
-        this._getStateHistory();
-        this._getLogBookData();
-      }, 60 * 1000);
+      this._throttleHistoryFunction = throttleAndQueue(
+        () => {
+          this._getStateHistory();
+          this._getLogBookData();
+        },
+        10000,
+        5000
+      );
+      return;
+    }
+
+    if (!changedProps.has("hass")) {
+      return;
+    }
+
+    const stateObj = this.hass.states[this.entityId];
+    const oldHass = changedProps.get("hass") as HomeAssistant;
+    const oldStateObj = oldHass.states[this.entityId];
+
+    if (stateObj !== oldStateObj && this._throttleHistoryFunction) {
+      this._throttleHistoryFunction();
     }
   }
 
@@ -108,7 +137,7 @@ export class MoreInfoHistory extends LitElement {
       this.hass!,
       this.entityId,
       {
-        refresh: 60,
+        refresh: 10,
         cacheKey: `more_info.${this.entityId}`,
         hoursToShow: 24,
       },
@@ -132,7 +161,7 @@ export class MoreInfoHistory extends LitElement {
     );
 
     if (this._entries) {
-      this._entries = [...this._entries, ...newEntries];
+      this._entries = [...newEntries, ...this._entries];
     } else {
       this._entries = newEntries;
     }
