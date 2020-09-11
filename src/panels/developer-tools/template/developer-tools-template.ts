@@ -264,7 +264,7 @@ ${this._templateResult?.result}</pre
   private _templateChanged(ev) {
     this._template = ev.detail.value;
     if (this._error) {
-      this._error = false;
+      this._error = "";
     }
     this._debounceRender();
   }
