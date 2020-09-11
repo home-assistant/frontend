@@ -107,6 +107,23 @@ class HaPanelProfile extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-dashboard-row>
+            <ha-settings-row .narrow=${this.narrow}>
+              <span slot="heading">
+                ${this.hass.localize(
+                  "ui.panel.profile.customize_sidebar.header"
+                )}
+              </span>
+              <span slot="description">
+                ${this.hass.localize(
+                  "ui.panel.profile.customize_sidebar.description"
+                )}
+              </span>
+              <mwc-button @click=${this._customizeSidebar}>
+                ${this.hass.localize(
+                  "ui.panel.profile.customize_sidebar.button"
+                )}
+              </mwc-button>
+            </ha-settings-row>
             ${this.hass.dockedSidebar !== "auto" || !this.narrow
               ? html`
                   <ha-force-narrow-row
@@ -181,6 +198,10 @@ class HaPanelProfile extends LitElement {
         </div>
       </ha-app-layout>
     `;
+  }
+
+  private _customizeSidebar() {
+    fireEvent(this, "hass-edit-sidebar");
   }
 
   private async _refreshRefreshTokens() {

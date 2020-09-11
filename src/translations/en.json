@@ -585,7 +585,8 @@
     },
     "sidebar": {
       "external_app_configuration": "App Configuration",
-      "sidebar_toggle": "Sidebar Toggle"
+      "sidebar_toggle": "Sidebar Toggle",
+      "done": "Done"
     },
     "panel": {
       "calendar": {
@@ -2430,6 +2431,11 @@
         "force_narrow": {
           "header": "Always hide the sidebar",
           "description": "This will hide the sidebar by default, similar to the mobile experience."
+        },
+        "customize_sidebar": {
+          "header": "Change the order and hide items from the sidebar",
+          "description": "You can also press and hold the header of the sidebar to activate edit mode.",
+          "button": "Edit"
         },
         "vibrate": {
           "header": "Vibrate",
