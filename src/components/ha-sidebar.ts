@@ -651,11 +651,13 @@ class HaSidebar extends LitElement {
     return panels.map((panel) =>
       this._renderPanel(
         panel.url_path,
-        panel.url_path === "lovelace"
-          ? this.hass.localize("panel.states")
+        panel.url_path === this.hass.defaultPanel
+          ? panel.title || this.hass.localize("panel.states")
           : this.hass.localize(`panel.${panel.title}`) || panel.title,
-        panel.url_path === "lovelace" ? undefined : panel.icon,
-        panel.url_path === "lovelace" ? mdiViewDashboard : undefined
+        panel.icon,
+        panel.url_path === this.hass.defaultPanel && !panel.icon
+          ? mdiViewDashboard
+          : undefined
       )
     );
   }
