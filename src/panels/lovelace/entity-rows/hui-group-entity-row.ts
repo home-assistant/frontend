@@ -35,6 +35,7 @@ class HuiGroupEntityRow extends LitElement implements LovelaceRow {
       return DOMAINS_TOGGLE.has(domain);
     });
   }
+
   public setConfig(config: EntityConfig): void {
     if (!config) {
       throw new Error("Configuration error");
