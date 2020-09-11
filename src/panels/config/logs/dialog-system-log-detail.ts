@@ -1,3 +1,4 @@
+import "../../../components/ha-svg-icon";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import {
   css,
@@ -22,6 +23,7 @@ import { HomeAssistant } from "../../../types";
 import { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
 import { formatSystemLogTime } from "./util";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { mdiContentCopy } from "@mdi/js";
 
 class DialogSystemLogDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -66,13 +68,19 @@ class DialogSystemLogDetail extends LitElement {
         opened
         @opened-changed="${this._openedChanged}"
       >
-        <h2>
-          ${this.hass.localize(
-            "ui.panel.config.logs.details",
-            "level",
-            item.level
-          )}
-        </h2>
+        <div class="heading">
+          <h2>
+            ${this.hass.localize(
+              "ui.panel.config.logs.details",
+              "level",
+              item.level
+            )}
+          </h2>
+          <ha-svg-icon
+            @click=${this._copyLog}
+            .path=${mdiContentCopy}
+          ></ha-svg-icon>
+        </div>
         <paper-dialog-scrollable>
           <p>
             Logger: ${item.name}<br />
@@ -146,6 +154,17 @@ class DialogSystemLogDetail extends LitElement {
     if (!(ev.detail as any).value) {
       this.closeDialog();
     }
+  }
+
+  private _copyLog(ev: CustomEvent): void {
+    const copyElement = this.shadowRoot?.querySelector(
+      "paper-dialog-scrollable"
+    ) as HTMLElement;
+    const range = document.createRange();
+    range.selectNode(copyElement);
+    window.getSelection().addRange(range);
+    document.execCommand("copy");
+    alert("Text has been copied, now paste in the text-area");
   }
 
   static get styles(): CSSResult[] {
