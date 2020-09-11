@@ -9,6 +9,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { throttle } from "../../common/util/throttle";
 import "../../components/state-history-charts";
 import { getRecentWithCache } from "../../data/cached-history";
 import { HistoryResult } from "../../data/history";
@@ -23,7 +24,9 @@ export class MoreInfoHistory extends LitElement {
 
   @internalProperty() private _stateHistory?: HistoryResult;
 
-  private _historyRefreshInterval?: number;
+  private _throttleHistoryFunction = throttle(() => {
+    this._getStateHistory();
+  }, 10000);
 
   protected render(): TemplateResult {
     if (!this.entityId) {
@@ -42,19 +45,26 @@ export class MoreInfoHistory extends LitElement {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-    if (!this.entityId) {
-      clearInterval(this._historyRefreshInterval);
-    }
 
     if (changedProps.has("entityId")) {
       this._stateHistory = undefined;
 
-      this._getStateHistory();
+      this._throttleHistoryFunction();
+      return;
+    }
 
-      clearInterval(this._historyRefreshInterval);
-      this._historyRefreshInterval = window.setInterval(() => {
-        this._getStateHistory();
-      }, 60 * 1000);
+    if (!this.entityId || !changedProps.has("hass")) {
+      return;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+
+    if (
+      oldHass &&
+      this.hass.states[this.entityId] !== oldHass?.states[this.entityId]
+    ) {
+      // wait for commit of data (we only account for the default setting of 1 sec)
+      setTimeout(this._throttleHistoryFunction, 1000);
     }
   }
 

@@ -10,6 +10,7 @@ import {
 } from "lit-element";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
+import { throttle } from "../../common/util/throttle";
 import "../../components/ha-circular-progress";
 import "../../components/state-history-charts";
 import { getLogbookData, LogbookEntry } from "../../data/logbook";
@@ -27,7 +28,11 @@ export class MoreInfoLogbook extends LitElement {
 
   @internalProperty() private _persons = {};
 
-  private _logbookRefreshInterval?: number;
+  private _lastLogbookDate?: Date;
+
+  private _throttleLogbookFunction = throttle(() => {
+    this._getLogBookData();
+  }, 10000);
 
   protected render(): TemplateResult {
     if (!this.entityId) {
@@ -73,19 +78,26 @@ export class MoreInfoLogbook extends LitElement {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-    if (!this.entityId) {
-      clearInterval(this._logbookRefreshInterval);
-    }
 
     if (changedProps.has("entityId")) {
+      this._lastLogbookDate = undefined;
       this._logbookEntries = undefined;
+      this._throttleLogbookFunction();
+      return;
+    }
 
-      this._getLogBookData();
+    if (!this.entityId || !changedProps.has("hass")) {
+      return;
+    }
 
-      clearInterval(this._logbookRefreshInterval);
-      this._logbookRefreshInterval = window.setInterval(() => {
-        this._getLogBookData();
-      }, 60 * 1000);
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+
+    if (
+      oldHass &&
+      this.hass.states[this.entityId] !== oldHass?.states[this.entityId]
+    ) {
+      // wait for commit of data (we only account for the default setting of 1 sec)
+      setTimeout(this._throttleLogbookFunction, 1000);
     }
   }
 
@@ -93,15 +105,21 @@ export class MoreInfoLogbook extends LitElement {
     if (!isComponentLoaded(this.hass, "logbook")) {
       return;
     }
-    const yesterday = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
+    const lastDate =
+      this._lastLogbookDate ||
+      new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
     const now = new Date();
-    this._logbookEntries = await getLogbookData(
+    const newEntries = await getLogbookData(
       this.hass,
-      yesterday.toISOString(),
+      lastDate.toISOString(),
       now.toISOString(),
       this.entityId,
       true
     );
+    this._logbookEntries = this._logbookEntries
+      ? [...newEntries, ...this._logbookEntries]
+      : newEntries;
+    this._lastLogbookDate = now;
   }
 
   private _fetchPersonNames() {
