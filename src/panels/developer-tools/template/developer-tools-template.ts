@@ -187,9 +187,11 @@ ${this._templateResult?.result}</pre
                   )}
                 </ul>
               `
-            : this.hass.localize(
-                "ui.panel.developer-tools.tabs.templates.no_listeners"
-              )}
+            : html` <span class="all_listeners">
+                ${this.hass.localize(
+                  "ui.panel.developer-tools.tabs.templates.no_listeners"
+                )}
+              </span>`}
         </div>
       </div>
     `;
