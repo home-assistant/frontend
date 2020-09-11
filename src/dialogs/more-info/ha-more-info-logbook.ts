@@ -30,7 +30,7 @@ export class MoreInfoLogbook extends LitElement {
 
   private _lastLogbookDate?: Date;
 
-  private _throttleLogbookFunction = throttle(() => {
+  private _throttleGetLogbookEntries = throttle(() => {
     this._getLogBookData();
   }, 10000);
 
@@ -87,7 +87,7 @@ export class MoreInfoLogbook extends LitElement {
         return;
       }
 
-      this._throttleLogbookFunction();
+      this._throttleGetLogbookEntries();
       return;
     }
 
@@ -102,7 +102,7 @@ export class MoreInfoLogbook extends LitElement {
       this.hass.states[this.entityId] !== oldHass?.states[this.entityId]
     ) {
       // wait for commit of data (we only account for the default setting of 1 sec)
-      setTimeout(this._throttleLogbookFunction, 1000);
+      setTimeout(this._throttleGetLogbookEntries, 1000);
     }
   }
 

@@ -24,7 +24,7 @@ export class MoreInfoHistory extends LitElement {
 
   @internalProperty() private _stateHistory?: HistoryResult;
 
-  private _throttleHistoryFunction = throttle(() => {
+  private _throttleGetStateHistory = throttle(() => {
     this._getStateHistory();
   }, 10000);
 
@@ -53,7 +53,7 @@ export class MoreInfoHistory extends LitElement {
         return;
       }
 
-      this._throttleHistoryFunction();
+      this._throttleGetStateHistory();
       return;
     }
 
@@ -68,7 +68,7 @@ export class MoreInfoHistory extends LitElement {
       this.hass.states[this.entityId] !== oldHass?.states[this.entityId]
     ) {
       // wait for commit of data (we only account for the default setting of 1 sec)
-      setTimeout(this._throttleHistoryFunction, 1000);
+      setTimeout(this._throttleGetStateHistory, 1000);
     }
   }
 
