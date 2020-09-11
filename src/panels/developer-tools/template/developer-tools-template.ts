@@ -51,14 +51,7 @@ class HaPanelDevTemplate extends LitElement {
 
   @internalProperty() private _rendering = false;
 
-  @internalProperty() private _templateResult: RenderTemplateResult = {
-    result: "",
-    listeners: {
-      all: false,
-      domains: [],
-      entities: [],
-    },
-  };
+  @internalProperty() private _templateResult?: RenderTemplateResult;
 
   @internalProperty() private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
 
