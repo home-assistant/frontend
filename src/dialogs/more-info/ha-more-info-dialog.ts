@@ -14,9 +14,11 @@ import {
 import { cache } from "lit-html/directives/cache";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { DOMAINS_MORE_INFO_NO_HISTORY } from "../../common/const";
+import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
+import { stateMoreInfoType } from "../../common/entity/state_more_info_type";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-dialog";
 import "../../components/ha-header-bar";
@@ -30,7 +32,6 @@ import "../../state-summary/state-card-content";
 import { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import "./ha-more-info-history";
-import "./more-info-content";
 
 const DOMAINS_NO_INFO = ["camera", "configurator"];
 const CONTROL_DOMAINS = [
@@ -57,6 +58,8 @@ export class MoreInfoDialog extends LitElement {
 
   @internalProperty() private _entityId?: string | null;
 
+  @internalProperty() private _moreInfoType?: string;
+
   @internalProperty() private _currTabIndex = 0;
 
   public showDialog(params: MoreInfoDialogParams) {
@@ -71,6 +74,22 @@ export class MoreInfoDialog extends LitElement {
     this._entityId = undefined;
     this._currTabIndex = 0;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  protected updated(changedProperties) {
+    if (!this.hass || !this._entityId || !changedProperties.has("_entityId")) {
+      return;
+    }
+    const stateObj = this.hass.states[this._entityId];
+    if (!stateObj) {
+      return;
+    }
+    this._moreInfoType =
+      stateObj.attributes && "custom_ui_more_info" in stateObj.attributes
+        ? stateObj.attributes.custom_ui_more_info
+        : "more-info-" + stateMoreInfoType(stateObj);
+
+    import(`./controls/${this._moreInfoType}`);
   }
 
   protected render() {
@@ -171,10 +190,6 @@ export class MoreInfoDialog extends LitElement {
                           .hass=${this.hass}
                         ></state-card-content>
                       `}
-                  <more-info-content
-                    .stateObj=${stateObj}
-                    .hass=${this.hass}
-                  ></more-info-content>
                   ${CONTROL_DOMAINS.includes(domain) ||
                   !this._computeShowHistoryComponent(entityId)
                     ? ""
@@ -182,6 +197,12 @@ export class MoreInfoDialog extends LitElement {
                         .hass=${this.hass}
                         .entityId=${this._entityId}
                       ></ha-more-info-history>`}
+                  ${this._moreInfoType
+                    ? dynamicElement(this._moreInfoType, {
+                        hass: this.hass,
+                        stateObj,
+                      })
+                    : ""}
                   ${stateObj.attributes.restored
                     ? html`
                         <p>
