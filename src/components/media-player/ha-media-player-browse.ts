@@ -240,7 +240,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           ? html`
               <div
                 class="children ${classMap({
-                  portrait: mediaClass.thumbnail_ratio === "portrait",
+                  portrait: childrenMediaClass.thumbnail_ratio === "portrait",
                 })}"
               >
                 ${currentItem.children.map(
@@ -264,7 +264,8 @@ export class HaMediaPlayerBrowse extends LitElement {
                                 <ha-svg-icon
                                   class="folder"
                                   .path=${MediaClassBrowserSettings[
-                                    child.media_class
+                                    child.children_media_class ||
+                                      child.media_class
                                   ].icon}
                                 ></ha-svg-icon>
                               `
@@ -314,8 +315,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                       <div
                         class="graphic"
                         style=${ifDefined(
-                          MediaClassBrowserSettings[child.media_class]
-                            .show_list_images && child.thumbnail
+                          mediaClass.show_list_images && child.thumbnail
                             ? `background-image: url(${child.thumbnail})`
                             : undefined
                         )}
@@ -574,7 +574,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         .header-info mwc-button {
           display: block;
-          --mdc-theme-primary: var(--primary-theme-color);
+          --mdc-theme-primary: var(--primary-color);
         }
 
         .breadcrumb {

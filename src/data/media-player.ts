@@ -50,46 +50,54 @@ export type MediaClassBrowserSetting = {
 export const MediaClassBrowserSettings: {
   [type: string]: MediaClassBrowserSetting;
 } = {
-  album: { icon: mdiAlbum },
-  app: { icon: mdiApplication },
-  artist: { icon: mdiAccountMusic, show_list_images: true, layout: "grid" },
+  album: { icon: mdiAlbum, layout: "grid" },
+  app: { icon: mdiApplication, layout: "grid" },
+  artist: { icon: mdiAccountMusic, layout: "grid", show_list_images: true },
   channel: {
     icon: mdiTelevisionClassic,
     thumbnail_ratio: "portrait",
     layout: "grid",
   },
-  composer: { icon: mdiAccountMusicOutline, show_list_images: true },
-  contributing_artist: { icon: mdiAccountMusic, show_list_images: true },
-  directory: { icon: mdiFolder, layout: "grid" },
+  composer: {
+    icon: mdiAccountMusicOutline,
+    layout: "grid",
+    show_list_images: true,
+  },
+  contributing_artist: {
+    icon: mdiAccountMusic,
+    layout: "grid",
+    show_list_images: true,
+  },
+  directory: { icon: mdiFolder, layout: "grid", show_list_images: true },
   episode: {
     icon: mdiTelevisionClassic,
-    thumbnail_ratio: "portrait",
     layout: "grid",
+    thumbnail_ratio: "portrait",
   },
   game: {
     icon: mdiGamepadVariant,
-    thumbnail_ratio: "portrait",
     layout: "grid",
+    thumbnail_ratio: "portrait",
   },
-  genre: { icon: mdiDramaMasks },
-  image: { icon: mdiImage },
+  genre: { icon: mdiDramaMasks, layout: "grid", show_list_images: true },
+  image: { icon: mdiImage, layout: "grid" },
   movie: { icon: mdiMovie, thumbnail_ratio: "portrait", layout: "grid" },
   music: { icon: mdiMusic },
-  playlist: { icon: mdiPlaylistMusic, show_list_images: true },
+  playlist: { icon: mdiPlaylistMusic, layout: "grid", show_list_images: true },
   podcast: { icon: mdiPodcast, layout: "grid" },
   season: {
     icon: mdiTelevisionClassic,
-    thumbnail_ratio: "portrait",
     layout: "grid",
+    thumbnail_ratio: "portrait",
   },
   track: { icon: mdiFileMusic },
   tv_show: {
     icon: mdiTelevisionClassic,
-    thumbnail_ratio: "portrait",
     layout: "grid",
+    thumbnail_ratio: "portrait",
   },
   url: { icon: mdiWeb },
-  video: { icon: mdiVideo },
+  video: { icon: mdiVideo, layout: "grid" },
 };
 
 export interface MediaPickedEvent {
