@@ -285,7 +285,7 @@ ${this._templateResult?.result}</pre
       );
       await this._unsubRenderTemplate;
     } catch (err) {
-      this._error = true;
+      this._error = "Unknown error";
       if (err.message) {
         this._error = err.message;
         this._templateResult = undefined;
