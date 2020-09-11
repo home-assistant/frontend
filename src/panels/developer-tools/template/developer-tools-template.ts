@@ -13,7 +13,10 @@ import { classMap } from "lit-html/directives/class-map";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-code-editor";
-import { subscribeRenderTemplate } from "../../../data/ws-templates";
+import {
+  subscribeRenderTemplate,
+  RenderTemplateResult,
+} from "../../../data/ws-templates";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 
@@ -48,7 +51,14 @@ class HaPanelDevTemplate extends LitElement {
 
   @internalProperty() private _rendering = false;
 
-  @internalProperty() private _processed = "";
+  @internalProperty() private _templateResult: RenderTemplateResult = {
+    result: "",
+    listeners: {
+      all: false,
+      domains: [],
+      entities: [],
+    },
+  };
 
   @internalProperty() private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
 
@@ -140,8 +150,51 @@ class HaPanelDevTemplate extends LitElement {
             size="small"
           ></ha-circular-progress>
           <pre class="rendered ${classMap({ error: this._error })}">
-${this._processed}</pre
+${this._templateResult.result}</pre
           >
+          ${this._templateResult.listeners.all
+            ? html`
+                <span class="all_listeners">
+                  ${this.hass.localize(
+                    "ui.panel.developer-tools.tabs.templates.all_listeners"
+                  )}
+                  <span> </span
+                ></span>
+              `
+            : this._templateResult.listeners.domains ||
+              this._templateResult.listeners.entities
+            ? html`
+                ${this.hass.localize(
+                  "ui.panel.developer-tools.tabs.templates.listeners"
+                )}
+                <ul>
+                  ${this._templateResult.listeners.domains.map(
+                    (domain) =>
+                      html`
+                        <li>
+                          ${this.hass.localize(
+                            "ui.panel.developer-tools.tabs.templates.domain"
+                          )}:
+                          ${domain}
+                        </li>
+                      `
+                  )}
+                  ${this._templateResult.listeners.entities.map(
+                    (entity_id) =>
+                      html`
+                        <li>
+                          ${this.hass.localize(
+                            "ui.panel.developer-tools.tabs.templates.entity"
+                          )}:
+                          ${entity_id}
+                        </li>
+                      `
+                  )}
+                </ul>
+              `
+            : this.hass.localize(
+                "ui.panel.developer-tools.tabs.templates.all_listeners"
+              )}
         </div>
       </div>
     `;
@@ -189,6 +242,11 @@ ${this._processed}</pre
           @apply --paper-font-code1;
           clear: both;
           white-space: pre-wrap;
+          background-color: var(--secondary-background-color);
+        }
+
+        .all_listeners {
+          color: var(--warning-color);
         }
 
         .rendered.error {
@@ -222,7 +280,7 @@ ${this._processed}</pre
       this._unsubRenderTemplate = subscribeRenderTemplate(
         this.hass.connection,
         (result) => {
-          this._processed = result;
+          this._templateResult = result;
         },
         {
           template: this._template,
@@ -232,7 +290,10 @@ ${this._processed}</pre
     } catch (err) {
       this._error = true;
       if (err.message) {
-        this._processed = err.message;
+        this._templateResult = {
+          result: err.message,
+          listeners: { all: false, domains: [], entities: [] },
+        };
       }
       this._unsubRenderTemplate = undefined;
     } finally {
