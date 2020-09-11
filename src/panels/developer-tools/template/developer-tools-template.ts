@@ -154,8 +154,7 @@ ${this._templateResult?.result}</pre
                   ${this.hass.localize(
                     "ui.panel.developer-tools.tabs.templates.all_listeners"
                   )}
-                  <span> </span
-                ></span>
+                </span>
               `
             : this._templateResult.listeners.domains.length ||
               this._templateResult.listeners.entities.length
