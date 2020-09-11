@@ -43,14 +43,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
   @internalProperty() private _config?: MarkdownCardConfig;
 
-  @internalProperty() private _templateResult: RenderTemplateResult = {
-    result: "",
-    listeners: {
-      all: false,
-      domains: [],
-      entities: [],
-    },
-  };
+  @internalProperty() private _templateResult?: RenderTemplateResult;
 
   @internalProperty() private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
 
