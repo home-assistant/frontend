@@ -145,7 +145,9 @@ class HaPanelDevTemplate extends LitElement {
           <pre class="rendered ${classMap({ error: this._error })}">
 ${this._templateResult?.result}</pre
           >
-          ${!this._templateResult ? "" : this._templateResult.listeners.all
+          ${!this._templateResult
+            ? ""
+            : this._templateResult.listeners.all
             ? html`
                 <span class="all_listeners">
                   ${this.hass.localize(
@@ -154,8 +156,8 @@ ${this._templateResult?.result}</pre
                   <span> </span
                 ></span>
               `
-            : this._templateResult.listeners.domains ||
-              this._templateResult.listeners.entities
+            : this._templateResult.listeners.domains.length ||
+              this._templateResult.listeners.entities.length
             ? html`
                 ${this.hass.localize(
                   "ui.panel.developer-tools.tabs.templates.listeners"
@@ -283,7 +285,7 @@ ${this._templateResult?.result}</pre
     } catch (err) {
       this._error = true;
       if (err.message) {
-		this._error = err.message;
+        this._error = err.message;
         this._templateResult = undefined;
       }
       this._unsubRenderTemplate = undefined;
