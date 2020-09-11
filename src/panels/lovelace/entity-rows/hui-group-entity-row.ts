@@ -9,6 +9,7 @@ import {
 } from "lit-element";
 import memoizeOne from "memoize-one";
 import { DOMAINS_TOGGLE } from "../../../common/const";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import "../../../components/entity/ha-entity-toggle";
 import { HomeAssistant } from "../../../types";
@@ -26,7 +27,7 @@ class HuiGroupEntityRow extends LitElement implements LovelaceRow {
   private _computeCanToggle = memoizeOne(
     (hass: HomeAssistant, entityIds: string[]): boolean => {
       return entityIds.some((entityId) => {
-        const domain = entityId.split(".", 1)[0];
+        const domain = computeDomain(entityId);
         if (domain === "group") {
           return this._computeCanToggle(
             hass,
