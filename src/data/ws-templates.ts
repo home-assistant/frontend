@@ -8,7 +8,7 @@ export interface RenderTemplateResult {
 interface TemplateListeners {
   all: boolean;
   domains: string[];
-  entities: Array<string>;
+  entities: string[];
 }
 
 export const subscribeRenderTemplate = (
