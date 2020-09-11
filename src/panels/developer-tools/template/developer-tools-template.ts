@@ -147,7 +147,7 @@ class HaPanelDevTemplate extends LitElement {
             class="rendered ${classMap({ error: Boolean(this._error) })}"
           ><!-- display: block -->${this._error}${this._templateResult
             ?.result}</pre>
-          ${!this._templateResult
+          ${!this._templateResult || !this._templateResult.listeners
             ? ""
             : this._templateResult.listeners.all
             ? html`
