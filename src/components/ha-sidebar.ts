@@ -287,27 +287,29 @@ class HaSidebar extends LitElement {
           ? html`
               ${this._hiddenPanels.map((url) => {
                 const panel = this.hass.panels[url];
+                if (!panel) {
+                  return "";
+                }
                 return html`<paper-icon-item
                   @click=${this._unhidePanel}
                   class="hidden-panel"
+                  .panel=${url}
                 >
                   <ha-icon
                     slot="item-icon"
-                    .icon=${panel.url_path === "lovelace"
+                    .icon=${panel.url_path === this.hass.defaultPanel
                       ? "mdi:view-dashboard"
                       : panel.icon}
                   ></ha-icon>
                   <span class="item-text"
-                    >${panel.url_path === "lovelace"
+                    >${panel.url_path === this.hass.defaultPanel
                       ? hass.localize("panel.states")
                       : hass.localize(`panel.${panel.title}`) ||
                         panel.title}</span
                   >
-                  <ha-svg-icon
-                    class="hide-panel"
-                    .panel=${url}
-                    .path=${mdiPlus}
-                  ></ha-svg-icon>
+                  <mwc-icon-button class="hide-panel">
+                    <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
+                  </mwc-icon-button>
                 </paper-icon-item>`;
               })}
               <div class="spacer" disabled></div>
@@ -544,7 +546,7 @@ class HaSidebar extends LitElement {
 
   private async _unhidePanel(ev: Event) {
     ev.preventDefault();
-    const index = this._hiddenPanels.indexOf((ev.target as any).panel);
+    const index = this._hiddenPanels.indexOf((ev.currentTarget as any).panel);
     if (index < 0) {
       return;
     }
