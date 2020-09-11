@@ -1,13 +1,14 @@
 import {
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { DOMAINS_TOGGLE } from "../../../common/const";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import "../../../components/entity/ha-entity-toggle";
 import { HomeAssistant } from "../../../types";
@@ -21,6 +22,19 @@ class HuiGroupEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @internalProperty() private _config?: EntityConfig;
+
+  private _computeCanToggle(hass: HomeAssistant, entityIds: string[]): boolean {
+    return entityIds.some((entityId) => {
+      const domain = computeDomain(entityId);
+      if (domain === "group") {
+        return this._computeCanToggle(
+          hass,
+          this.hass?.states[entityId].attributes["entity_id"]
+        );
+      }
+      return DOMAINS_TOGGLE.has(domain);
+    });
+  }
 
   public setConfig(config: EntityConfig): void {
     if (!config) {
@@ -50,7 +64,7 @@ class HuiGroupEntityRow extends LitElement implements LovelaceRow {
 
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
-        ${this._computeCanToggle(stateObj.attributes.entity_id)
+        ${this._computeCanToggle(this.hass, stateObj.attributes.entity_id)
           ? html`
               <ha-entity-toggle
                 .hass=${this.hass}
@@ -68,12 +82,6 @@ class HuiGroupEntityRow extends LitElement implements LovelaceRow {
             `}
       </hui-generic-entity-row>
     `;
-  }
-
-  private _computeCanToggle(entityIds): boolean {
-    return entityIds.some((entityId) =>
-      DOMAINS_TOGGLE.has(entityId.split(".", 1)[0])
-    );
   }
 }
 
