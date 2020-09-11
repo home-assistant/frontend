@@ -279,6 +279,7 @@ class HaPanelDevTemplate extends LitElement {
         this.hass.connection,
         (result) => {
           this._templateResult = result;
+          this._error = undefined;
         },
         {
           template: this._template,
