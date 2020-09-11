@@ -165,7 +165,7 @@ let sortStyles: CSSResult;
 class HaSidebar extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
 
   @property({ type: Boolean }) public alwaysExpand = false;
 
@@ -259,7 +259,7 @@ class HaSidebar extends LitElement {
         <div class="title">
           ${this._editMode
             ? html`<mwc-button outlined @click=${this._closeEditMode}>
-                DONE
+                ${hass.localize("ui.sidebar.done")}
               </mwc-button>`
             : "Home Assistant"}
         </div>
@@ -447,6 +447,9 @@ class HaSidebar extends LitElement {
     subscribeNotifications(this.hass.connection, (notifications) => {
       this._notifications = notifications;
     });
+    window.addEventListener("hass-edit-sidebar", () =>
+      this._activateEditMode()
+    );
   }
 
   protected updated(changedProps) {
@@ -479,11 +482,15 @@ class HaSidebar extends LitElement {
     return this.shadowRoot!.querySelector(".tooltip")! as HTMLDivElement;
   }
 
-  private async _handleAction(ev: CustomEvent<ActionHandlerDetail>) {
+  private _handleAction(ev: CustomEvent<ActionHandlerDetail>) {
     if (ev.detail.action !== "hold") {
       return;
     }
 
+    this._activateEditMode();
+  }
+
+  private async _activateEditMode() {
     if (!Sortable) {
       const [sortableImport, sortStylesImport] = await Promise.all([
         import("sortablejs/modular/sortable.core.esm"),
@@ -498,9 +505,7 @@ class HaSidebar extends LitElement {
     }
     this._editMode = true;
 
-    if (!this.expanded) {
-      fireEvent(this, "hass-toggle-menu");
-    }
+    fireEvent(this, "hass-open-menu");
 
     await this.updateComplete;
 
@@ -760,6 +765,9 @@ class HaSidebar extends LitElement {
         .title {
           width: 100%;
           display: none;
+        }
+        :host([narrow]) .title {
+          padding: 0 16px;
         }
         :host([expanded]) .title {
           display: initial;
