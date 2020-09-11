@@ -30,7 +30,6 @@ import memoizeOne from "memoize-one";
 import { LocalStorage } from "../common/decorators/local-storage";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
-import { navigate } from "../common/navigate";
 import { compare } from "../common/string/compare";
 import { computeRTL } from "../common/util/compute_rtl";
 import { ActionHandlerDetail } from "../data/lovelace";
@@ -235,7 +234,14 @@ class HaSidebar extends LitElement {
             </style>
           `
         : ""}
-      <div class="menu">
+      <div
+        class="menu"
+        @action=${this._handleAction}
+        .actionHandler=${actionHandler({
+          hasHold: !this._editMode,
+          disabled: this._editMode,
+        })}
+      >
         ${!this.narrow
           ? html`
               <mwc-icon-button
@@ -266,11 +272,6 @@ class HaSidebar extends LitElement {
         @focusout=${this._listboxFocusOut}
         @scroll=${this._listboxScroll}
         @keydown=${this._listboxKeydown}
-        @action=${this._handleAction}
-        .actionHandler=${actionHandler({
-          hasHold: !this._editMode,
-          disabled: this._editMode,
-        })}
       >
         ${this._editMode
           ? html`<div id="sortable">
@@ -322,7 +323,7 @@ class HaSidebar extends LitElement {
                 )}
                 href="#external-app-configuration"
                 tabindex="-1"
-                @panel-tap=${this._handleExternalAppConfiguration}
+                @click=${this._handleExternalAppConfiguration}
                 @mouseenter=${this._itemMouseEnter}
                 @mouseleave=${this._itemMouseLeave}
               >
@@ -479,8 +480,7 @@ class HaSidebar extends LitElement {
   }
 
   private async _handleAction(ev: CustomEvent<ActionHandlerDetail>) {
-    if (ev.detail.action === "tap") {
-      fireEvent(ev.target as HTMLElement, "panel-tap");
+    if (ev.detail.action !== "hold") {
       return;
     }
 
@@ -660,13 +660,6 @@ class HaSidebar extends LitElement {
     );
   }
 
-  private async _handlePanelTap(ev: Event) {
-    const path = __DEMO__
-      ? (ev.currentTarget as HTMLAnchorElement).getAttribute("href")!
-      : (ev.currentTarget as HTMLAnchorElement).href;
-    navigate(this, path);
-  }
-
   private _renderPanel(
     urlPath: string,
     title: string | null,
@@ -679,7 +672,6 @@ class HaSidebar extends LitElement {
         href=${`/${urlPath}`}
         data-panel=${urlPath}
         tabindex="-1"
-        @panel-tap=${this._handlePanelTap}
         @mouseenter=${this._itemMouseEnter}
         @mouseleave=${this._itemMouseLeave}
       >
@@ -988,9 +980,5 @@ class HaSidebar extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-sidebar": HaSidebar;
-  }
-
-  interface HASSDomEvents {
-    "panel-tap": undefined;
   }
 }
