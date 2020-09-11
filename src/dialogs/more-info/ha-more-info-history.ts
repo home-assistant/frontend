@@ -49,6 +49,10 @@ export class MoreInfoHistory extends LitElement {
     if (changedProps.has("entityId")) {
       this._stateHistory = undefined;
 
+      if (!this.entityId) {
+        return;
+      }
+
       this._throttleHistoryFunction();
       return;
     }

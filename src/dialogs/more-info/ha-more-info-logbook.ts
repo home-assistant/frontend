@@ -82,6 +82,11 @@ export class MoreInfoLogbook extends LitElement {
     if (changedProps.has("entityId")) {
       this._lastLogbookDate = undefined;
       this._logbookEntries = undefined;
+
+      if (!this.entityId) {
+        return;
+      }
+
       this._throttleLogbookFunction();
       return;
     }
