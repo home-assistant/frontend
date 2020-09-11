@@ -143,8 +143,7 @@ class HaPanelDevTemplate extends LitElement {
             size="small"
           ></ha-circular-progress>
           <pre class="rendered ${classMap({ error: Boolean(this._error) })}">
-          ${this._error}
-${this._templateResult?.result}</pre
+{this._error}${this._templateResult?.result}</pre
           >
           ${!this._templateResult
             ? ""
