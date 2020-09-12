@@ -22,7 +22,6 @@ import { styleMap } from "lit-html/directives/style-map";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
-import type { MediaPlayerItem } from "../../data/media-player";
 import {
   browseLocalMediaPlayer,
   browseMediaPlayer,
@@ -31,6 +30,7 @@ import {
   MediaPickedEvent,
   MediaPlayerBrowseAction,
 } from "../../data/media-player";
+import type { MediaPlayerItem } from "../../data/media-player";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
 import { haStyle } from "../../resources/styles";
@@ -141,93 +141,98 @@ export class HaMediaPlayerBrowse extends LitElement {
           "no-dialog": !this.dialog,
         })}"
       >
-        <div class="header-content">
-          ${currentItem.thumbnail
-            ? html`
-                <div
-                  class="img"
-                  style=${styleMap({
-                    backgroundImage: currentItem.thumbnail
-                      ? `url(${currentItem.thumbnail})`
-                      : "none",
-                  })}
-                >
-                  ${this._narrow && currentItem?.can_play
-                    ? html`
-                        <mwc-fab
-                          mini
-                          .item=${currentItem}
-                          @click=${this._actionClicked}
-                        >
-                          <ha-svg-icon
-                            slot="icon"
-                            .label=${this.hass.localize(
-                              `ui.components.media-browser.${this.action}-media`
+        <div class="header-wrapper">
+          <div class="header-content">
+            ${currentItem.thumbnail
+              ? html`
+                  <div
+                    class="img"
+                    style=${styleMap({
+                      backgroundImage: currentItem.thumbnail
+                        ? `url(${currentItem.thumbnail})`
+                        : "none",
+                    })}
+                  >
+                    ${this._narrow && currentItem?.can_play
+                      ? html`
+                          <mwc-fab
+                            mini
+                            .item=${currentItem}
+                            @click=${this._actionClicked}
+                          >
+                            <ha-svg-icon
+                              slot="icon"
+                              .label=${this.hass.localize(
+                                `ui.components.media-browser.${this.action}-media`
+                              )}
+                              .path=${this.action === "play"
+                                ? mdiPlay
+                                : mdiPlus}
+                            ></ha-svg-icon>
+                            ${this.hass.localize(
+                              `ui.components.media-browser.${this.action}`
                             )}
-                            .path=${this.action === "play" ? mdiPlay : mdiPlus}
-                          ></ha-svg-icon>
-                          ${this.hass.localize(
-                            `ui.components.media-browser.${this.action}`
-                          )}
-                        </mwc-fab>
-                      `
-                    : ""}
-                </div>
-              `
-            : html``}
-          <div class="header-info">
-            <div class="breadcrumb">
-              ${previousItem
+                          </mwc-fab>
+                        `
+                      : ""}
+                  </div>
+                `
+              : html``}
+            <div class="header-info">
+              <div class="breadcrumb">
+                ${previousItem
+                  ? html`
+                      <div class="previous-title" @click=${this.navigateBack}>
+                        <ha-svg-icon .path=${mdiArrowLeft}></ha-svg-icon>
+                        ${previousItem.title}
+                      </div>
+                    `
+                  : ""}
+                <h1 class="title">${currentItem.title}</h1>
+                ${subtitle
+                  ? html`
+                      <h2 class="subtitle">
+                        ${subtitle}
+                      </h2>
+                    `
+                  : ""}
+              </div>
+              ${currentItem.can_play &&
+              (!currentItem.thumbnail || !this._narrow)
                 ? html`
-                    <div class="previous-title" @click=${this.navigateBack}>
-                      <ha-svg-icon .path=${mdiArrowLeft}></ha-svg-icon>
-                      ${previousItem.title}
-                    </div>
-                  `
-                : ""}
-              <h1 class="title">${currentItem.title}</h1>
-              ${subtitle
-                ? html`
-                    <h2 class="subtitle">
-                      ${subtitle}
-                    </h2>
+                    <mwc-button
+                      raised
+                      .item=${currentItem}
+                      @click=${this._actionClicked}
+                    >
+                      <ha-svg-icon
+                        slot="icon"
+                        .label=${this.hass.localize(
+                          `ui.components.media-browser.${this.action}-media`
+                        )}
+                        .path=${this.action === "play" ? mdiPlay : mdiPlus}
+                      ></ha-svg-icon>
+                      ${this.hass.localize(
+                        `ui.components.media-browser.${this.action}`
+                      )}
+                    </mwc-button>
                   `
                 : ""}
             </div>
-            ${currentItem.can_play && (!currentItem.thumbnail || !this._narrow)
-              ? html`
-                  <mwc-button
-                    raised
-                    .item=${currentItem}
-                    @click=${this._actionClicked}
-                  >
-                    <ha-svg-icon
-                      slot="icon"
-                      .label=${this.hass.localize(
-                        `ui.components.media-browser.${this.action}-media`
-                      )}
-                      .path=${this.action === "play" ? mdiPlay : mdiPlus}
-                    ></ha-svg-icon>
-                    ${this.hass.localize(
-                      `ui.components.media-browser.${this.action}`
-                    )}
-                  </mwc-button>
-                `
-              : ""}
           </div>
+          ${this.dialog
+            ? html`
+                <mwc-icon-button
+                  aria-label=${this.hass.localize("ui.dialogs.generic.close")}
+                  @click=${this._closeDialogAction}
+                  class="header_button"
+                  dir=${computeRTLDirection(this.hass)}
+                >
+                  <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+                </mwc-icon-button>
+              `
+            : ""}
         </div>
-        ${this.dialog
-          ? html`
-              <mwc-icon-button
-                aria-label=${this.hass.localize("ui.dialogs.generic.close")}
-                @click=${this._closeDialogAction}
-                class="header_button"
-                dir=${computeRTLDirection(this.hass)}
-              >
-                <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-              </mwc-icon-button>
-            `
-          : ""}
       </div>
       ${this._error
         ? html`
@@ -274,7 +279,9 @@ export class HaMediaPlayerBrowse extends LitElement {
                         ${child.can_play
                           ? html`
                               <mwc-icon-button
-                                class="play"
+                                class="play ${classMap({
+                                  can_expand: child.can_expand,
+                                })}"
                                 .item=${child}
                                 .label=${this.hass.localize(
                                   `ui.components.media-browser.${this.action}-media`
@@ -533,18 +540,19 @@ export class HaMediaPlayerBrowse extends LitElement {
         }
 
         .header {
-          display: flex;
+          display: block;
           justify-content: space-between;
           border-bottom: 1px solid var(--divider-color);
-        }
-
-        .header {
           background-color: var(--card-background-color);
           position: sticky;
           position: -webkit-sticky;
           top: 0;
           z-index: 5;
           padding: 20px 24px 10px;
+        }
+
+        .header-wrapper {
+          display: flex;
         }
 
         .header-content {
@@ -688,11 +696,16 @@ export class HaMediaPlayerBrowse extends LitElement {
         }
 
         .child .play {
+          transition: color 0.5s;
+          border-radius: 50%;
+          bottom: calc(50% - 24px);
+          right: calc(50% - 24px);
+        }
+
+        .child .play.can_expand {
+          background-color: rgba(var(--rgb-card-background-color), 0.5);
           bottom: 4px;
           right: 4px;
-          transition: color 0.5s;
-          background-color: rgba(var(--rgb-card-background-color), 0.5);
-          border-radius: 50%;
         }
 
         .child .play:hover {
