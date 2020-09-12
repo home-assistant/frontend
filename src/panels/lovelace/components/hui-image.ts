@@ -3,9 +3,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   query,
   TemplateResult,
@@ -16,8 +16,8 @@ import { STATES_OFF } from "../../../common/const";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-camera-stream";
 import { fetchThumbnailUrlWithCache } from "../../../data/camera";
-import { CameraEntity, HomeAssistant } from "../../../types";
 import { UNAVAILABLE } from "../../../data/entity";
+import { CameraEntity, HomeAssistant } from "../../../types";
 
 const UPDATE_INTERVAL = 10000;
 const DEFAULT_FILTER = "grayscale(100%)";
@@ -132,8 +132,9 @@ export class HuiImage extends LitElement {
         ${this.cameraImage && this.cameraView === "live"
           ? html`
               <ha-camera-stream
+                muted
                 .hass=${this.hass}
-                .stateObj="${cameraObj}"
+                .stateObj=${cameraObj}
               ></ha-camera-stream>
             `
           : html`
