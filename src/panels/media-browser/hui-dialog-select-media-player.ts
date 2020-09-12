@@ -15,6 +15,7 @@ import { BROWSER_SOURCE } from "../../data/media-player";
 import type { HomeAssistant } from "../../types";
 import { haStyleDialog } from "../../resources/styles";
 import type { SelectMediaPlayerDialogParams } from "./show-select-media-source-dialog";
+import { compare } from "../../common/string/compare";
 
 @customElement("hui-dialog-select-media-player")
 export class HuiDialogSelectMediaPlayer extends LitElement {
@@ -57,7 +58,11 @@ export class HuiDialogSelectMediaPlayer extends LitElement {
           >
           ${this._params.mediaSources
             .sort((a, b) =>
-          compare(a.attributes.friendly_name || "", b.attributes.friendly_name || ""))
+              compare(
+                a.attributes.friendly_name || "",
+                b.attributes.friendly_name || ""
+              )
+            )
             .map(
               (source) => html`
                 <paper-item .itemName=${source.entity_id}
