@@ -1,2 +1,0 @@
-#!/bin/bash
-docker run -i --rm -v $(pwd):/usr/$(pwd) -w /usr/$(pwd) node node $@

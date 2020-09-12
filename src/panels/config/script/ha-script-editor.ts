@@ -195,17 +195,22 @@ export class HaScriptEditor extends LitElement {
                             </paper-input>`
                           : html``}
                       </div>
-                      <div class="card-actions">
-                        <mwc-button
-                          @click=${this._runScript}
-                          title="${this.hass.localize(
-                            "ui.panel.config.script.picker.activate_script"
-                          )}"
-                          ?disabled=${this._dirty}
-                        >
-                          ${this.hass.localize("ui.card.script.execute")}
-                        </mwc-button>
-                      </div>
+                      ${this.scriptEntityId
+                        ? html`
+                          <div class="card-actions layout horizontal justified center">
+                            <span></span>
+                            <mwc-button
+                              @click=${this._runScript}
+                              title="${this.hass.localize(
+                                "ui.panel.config.script.picker.activate_script"
+                             )}"
+                             ?disabled=${this._dirty}
+                            >
+                              ${this.hass.localize("ui.card.script.execute")}
+                           </mwc-button>
+                         </div>
+                          `
+                        : ``}
                     </ha-card>
                   </ha-config-section>
 
