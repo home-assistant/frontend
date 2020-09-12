@@ -22,10 +22,10 @@ import {
   IntegrationManifest,
 } from "../../../data/integration";
 import { getLoggedErrorIntegration } from "../../../data/system_log";
-import { PolymerChangedEvent } from "../../../polymer-types";
+import type { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
-import { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
+import type { HomeAssistant } from "../../../types";
+import type { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
 import { formatSystemLogTime } from "./util";
 
 class DialogSystemLogDetail extends LitElement {
@@ -35,7 +35,7 @@ class DialogSystemLogDetail extends LitElement {
 
   @internalProperty() private _manifest?: IntegrationManifest;
 
-  @query("paper-tooltip") private _toolTip!: PaperTooltipElement;
+  @query("paper-tooltip") private _toolTip?: PaperTooltipElement;
 
   public async showDialog(params: SystemLogDetailDialogParams): Promise<void> {
     this._params = params;
@@ -91,7 +91,7 @@ class DialogSystemLogDetail extends LitElement {
             for="copy"
             position="top"
             animation-delay="0"
-            >${this.hass.localize("ui.common.copy_to_clipboard")}</paper-tooltip
+            >${this.hass.localize("ui.common.copied")}</paper-tooltip
           >
         </div>
         <paper-dialog-scrollable>
@@ -184,8 +184,10 @@ class DialogSystemLogDetail extends LitElement {
     document.execCommand("copy");
     window.getSelection()!.removeAllRanges();
 
-    this._toolTip.show();
-    setTimeout(() => this._toolTip.hide(), 3000);
+    console.log(this._toolTip);
+
+    this._toolTip!.show();
+    setTimeout(() => this._toolTip?.hide(), 3000);
   }
 
   static get styles(): CSSResult[] {
@@ -209,6 +211,9 @@ class DialogSystemLogDetail extends LitElement {
           display: flex;
           align-items: center;
           justify-content: space-between;
+        }
+        .heading ha-svg-icon {
+          cursor: pointer;
         }
       `,
     ];

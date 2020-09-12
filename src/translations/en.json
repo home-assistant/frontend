@@ -279,7 +279,7 @@
       "successfully_deleted": "Successfully deleted",
       "back": "Back",
       "error_required": "Required",
-      "copied_to_clipboard": "Copied to clipboard"
+      "copied": "Copied"
     },
     "components": {
       "logbook": {
