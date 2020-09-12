@@ -184,8 +184,6 @@ class DialogSystemLogDetail extends LitElement {
     document.execCommand("copy");
     window.getSelection()!.removeAllRanges();
 
-    console.log(this._toolTip);
-
     this._toolTip!.show();
     setTimeout(() => this._toolTip?.hide(), 3000);
   }
