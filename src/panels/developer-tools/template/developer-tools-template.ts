@@ -249,6 +249,7 @@ class HaPanelDevTemplate extends LitElement {
           clear: both;
           white-space: pre-wrap;
           background-color: var(--secondary-background-color);
+          padding: 8px;
         }
 
         .all_listeners {
