@@ -2434,8 +2434,7 @@
                                 "mfa": {
                                     "data": {
                                         "code": "İki adımlı kimlik doğrulama kodu"
-                                    },
-                                    "description": ""
+                                    }
                                 }
                             }
                         },
@@ -2480,8 +2479,7 @@
                                 "mfa": {
                                     "data": {
                                         "code": "İki adımlı kimlik doğrulama kodu"
-                                    },
-                                    "description": ""
+                                    }
                                 }
                             }
                         },

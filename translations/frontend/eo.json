@@ -1,49 +1,4 @@
 {
-    "state_badge": {
-        "device_tracker": {
-            "home": ""
-        }
-    },
-    "state": {
-        "automation": {
-            "off": ""
-        },
-        "binary_sensor": {
-            "default": {
-                "on": ""
-            },
-            "presence": {
-                "on": ""
-            }
-        },
-        "calendar": {
-            "on": ""
-        },
-        "group": {
-            "home": "",
-            "off": "",
-            "on": ""
-        },
-        "input_boolean": {
-            "on": ""
-        },
-        "light": {
-            "off": "",
-            "on": ""
-        },
-        "media_player": {
-            "off": ""
-        },
-        "script": {
-            "off": ""
-        },
-        "sensor": {
-            "off": ""
-        },
-        "switch": {
-            "on": ""
-        }
-    },
     "ui": {
         "card": {
             "climate": {
@@ -124,12 +79,7 @@
                         "edit_ui": "Redakti kun UI",
                         "edit_yaml": "Redakti kiel YAML",
                         "triggers": {
-                            "name": "Ellasilo",
-                            "type": {
-                                "mqtt": {
-                                    "label": ""
-                                }
-                            }
+                            "name": "Ellasilo"
                         }
                     },
                     "picker": {

@@ -65,10 +65,7 @@
     },
     "state_badge": {
         "alarm_control_panel": {
-            "armed_away": "",
-            "armed_custom_bypass": "",
             "armed_home": "アームしました",
-            "armed_night": "",
             "disarmed": "解除",
             "disarming": "解除",
             "pending": "保留",

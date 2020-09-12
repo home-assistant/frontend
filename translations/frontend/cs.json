@@ -793,7 +793,7 @@
                 "services": {
                     "reconfigure": "Překonfigurovat zařízení ZHA (opravit zařízení). Použijte, pokud se zařízením máte problémy. Je-li dotyčné zařízení napájené bateriemi, ujistěte se prosím, že je při používání této služby spuštěné a přijímá příkazy.",
                     "remove": "Odebrat zařízení ze sítě Zigbee.",
-                    "updateDeviceName": "Nastavte vlastní název tohoto zařízení v registru zařízení.",
+                    "updateDeviceName": "Nastavte vlastní název tohoto zařízení v seznamu zařízení.",
                     "zigbee_information": "Zobrazit Zigbee informace zařízení."
                 },
                 "unknown": "Neznámý",
@@ -1474,8 +1474,8 @@
                             "name": "Název",
                             "status": "Stav"
                         },
-                        "introduction": "Homa Assistant uchovává registr všech entit, které kdy viděl a mohou být jednoznačně identifikovány. Každá z těchto entit bude mít přiděleno ID, které bude rezervováno pouze pro tuto entitu.",
-                        "introduction2": "Pomocí registru entit můžete přepsat název, změnit identifikátor entity nebo odebrat entitu.",
+                        "introduction": "Homa Assistant uchovává záznam o každé entitě, kterou kdy viděl a která může být jednoznačně identifikována. Každá z těchto entit bude mít přiděleno ID, které bude rezervováno pouze pro tuto entitu.",
+                        "introduction2": "Entitě můžete přepsat název, změnit její identifikátor nebo ji odebrat z Home Assistant.",
                         "remove_selected": {
                             "button": "Odstranit vybrané",
                             "confirm_partly_text": "Můžete odebrat pouze {removable} z vybraných {selected} entit. Entity lze odebrat pouze v případě, že integrace již entity neposkytuje. Občas je třeba restartovat Home Assistant před tím, než je možné odstranit entity ze smazané integrace. Opravdu chcete odebrat odstranitelné entity?",
@@ -1950,7 +1950,7 @@
                 },
                 "server_control": {
                     "caption": "Ovládání serveru",
-                    "description": "Restart a zastavení serveru Home Asistent",
+                    "description": "Restartování a zastavení serveru Home Asistent",
                     "section": {
                         "reloading": {
                             "automation": "Nově načíst automatizace",
@@ -2963,6 +2963,7 @@
                     "confirm_delete": "Opravdu chcete smazat přístupový token pro {name} ?",
                     "create": "Vytvořte token",
                     "create_failed": "Nepodařilo se vytvořit přístupový token.",
+                    "created": "Vytvořeno {date}",
                     "created_at": "Vytvořeno {date}",
                     "delete_failed": "Nepodařilo se odstranit přístupový token.",
                     "description": "Vytvořte přístupové tokeny s dlouhou životností, aby vaše skripty mohly komunikovat s instancí Home Assistant. Každý token bude platný po dobu 10 let od vytvoření. Tyto tokeny s dlouhou životností jsou v současné době aktivní.",
@@ -2970,9 +2971,10 @@
                     "header": "Tokeny s dlouhou životností",
                     "last_used": "Naposledy použito {date} z {location}",
                     "learn_auth_requests": "Naučte se, jak posílat ověřené požadavky.",
+                    "name": "Název",
                     "not_used": "Nikdy nebylo použito",
                     "prompt_copy_token": "Zkopírujte přístupový token. Už nikdy nebude znovu zobrazen.",
-                    "prompt_name": "Název?"
+                    "prompt_name": "Pojmenujte token"
                 },
                 "mfa_setup": {
                     "close": "Zavřít",
