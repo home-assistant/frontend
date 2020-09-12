@@ -567,6 +567,9 @@
                 "loading_history": "Caricamento storico...",
                 "no_history_found": "Nessuno storico trovato."
             },
+            "logbook": {
+                "entries_not_found": "Non sono state trovate voci nel registro."
+            },
             "media-browser": {
                 "audio_not_supported": "Il tuo browser non supporta l'elemento audio.",
                 "choose_player": "Scegli il lettore",
@@ -703,6 +706,7 @@
             },
             "more_info_control": {
                 "controls": "Controlli",
+                "details": "Dettagli",
                 "dismiss": "Chiudi finestra di dialogo",
                 "edit": "Modifica entità",
                 "history": "Storico",

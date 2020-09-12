@@ -3,9 +3,10 @@ import { HomeAssistant } from "../../types";
 import { DOMAINS_WITH_CARD } from "../const";
 import { canToggleState } from "./can_toggle_state";
 import { computeStateDomain } from "./compute_state_domain";
+import { UNAVAILABLE } from "../../data/entity";
 
 export const stateCardType = (hass: HomeAssistant, stateObj: HassEntity) => {
-  if (stateObj.state === "unavailable") {
+  if (stateObj.state === UNAVAILABLE) {
     return "display";
   }
 

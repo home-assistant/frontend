@@ -61,20 +61,20 @@ class MoreInfoLight extends LitElement {
           "is-on": this.stateObj.state === "on",
         })}"
       >
+        ${supportsFeature(this.stateObj!, SUPPORT_BRIGHTNESS)
+          ? html`
+              <ha-labeled-slider
+                caption=${this.hass.localize("ui.card.light.brightness")}
+                icon="hass:brightness-5"
+                min="1"
+                max="255"
+                value=${this._brightnessSliderValue}
+                @change=${this._brightnessSliderChanged}
+              ></ha-labeled-slider>
+            `
+          : ""}
         ${this.stateObj.state === "on"
           ? html`
-              ${supportsFeature(this.stateObj!, SUPPORT_BRIGHTNESS)
-                ? html`
-                    <ha-labeled-slider
-                      caption=${this.hass.localize("ui.card.light.brightness")}
-                      icon="hass:brightness-5"
-                      min="1"
-                      max="255"
-                      value=${this._brightnessSliderValue}
-                      @change=${this._brightnessSliderChanged}
-                    ></ha-labeled-slider>
-                  `
-                : ""}
               ${supportsFeature(this.stateObj, SUPPORT_COLOR_TEMP)
                 ? html`
                     <ha-labeled-slider

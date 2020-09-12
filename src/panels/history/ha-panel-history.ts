@@ -79,10 +79,12 @@ class HaPanelHistory extends LitElement {
             ></ha-date-range-picker>
           </div>
           ${this._isLoading
-            ? html`<ha-circular-progress
-                active
-                alt=${this.hass.localize("ui.common.loading")}
-              ></ha-circular-progress>`
+            ? html`<div class="progress-wrapper">
+                <ha-circular-progress
+                  active
+                  alt=${this.hass.localize("ui.common.loading")}
+                ></ha-circular-progress>
+              </div>`
             : html`
                 <state-history-charts
                   .hass=${this.hass}
@@ -196,6 +198,19 @@ class HaPanelHistory extends LitElement {
         .content {
           padding: 0 16px 16px;
         }
+
+        .progress-wrapper {
+          height: calc(100vh - 136px);
+        }
+
+        :host([narrow]) .progress-wrapper {
+          height: calc(100vh - 198px);
+        }
+
+        .progress-wrapper {
+          position: relative;
+        }
+
         ha-circular-progress {
           position: absolute;
           left: 50%;

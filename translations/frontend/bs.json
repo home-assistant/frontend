@@ -36,8 +36,7 @@
             "unknown": "Nepoznat"
         },
         "device_tracker": {
-            "home": "Kod kuće",
-            "not_home": ""
+            "home": "Kod kuće"
         },
         "person": {
             "home": "Kod kuće"
@@ -94,7 +93,6 @@
                 "on": "Otvoren"
             },
             "presence": {
-                "off": "",
                 "on": "Kod kuće"
             },
             "problem": {
@@ -161,7 +159,6 @@
             "closing": "Zatvoreno",
             "home": "Kod kuće",
             "locked": "Zaključan",
-            "not_home": "",
             "off": "Isključen",
             "ok": "OK",
             "on": "Uključen",
@@ -245,13 +242,6 @@
             "config": {
                 "automation": {
                     "editor": {
-                        "conditions": {
-                            "type": {
-                                "zone": {
-                                    "entity": ""
-                                }
-                            }
-                        },
                         "triggers": {
                             "type": {
                                 "mqtt": {
@@ -302,45 +292,6 @@
                 "delete_prompt": "Izbriši ovu poruku?",
                 "empty": "Nemate poruke",
                 "playback_title": "Poruku preslušati"
-            },
-            "page-authorize": {
-                "form": {
-                    "providers": {
-                        "command_line": {
-                            "abort": {
-                                "login_expired": ""
-                            },
-                            "error": {
-                                "invalid_auth": "",
-                                "invalid_code": ""
-                            },
-                            "step": {
-                                "init": {
-                                    "data": {
-                                        "password": "",
-                                        "username": ""
-                                    }
-                                },
-                                "mfa": {
-                                    "data": {
-                                        "code": ""
-                                    },
-                                    "description": ""
-                                }
-                            }
-                        },
-                        "legacy_api_password": {
-                            "step": {
-                                "mfa": {
-                                    "data": {
-                                        "code": ""
-                                    },
-                                    "description": ""
-                                }
-                            }
-                        }
-                    }
-                }
             },
             "shopping-list": {
                 "add_item": "Dodajte objekat",

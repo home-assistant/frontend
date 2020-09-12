@@ -567,6 +567,9 @@
                 "loading_history": "正在加载历史状态...",
                 "no_history_found": "没有找到历史状态。"
             },
+            "logbook": {
+                "entries_not_found": "未找到日志条目。"
+            },
             "media-browser": {
                 "audio_not_supported": "您的浏览器不支持音频元素。",
                 "choose_player": "选择播放器",
@@ -703,6 +706,7 @@
             },
             "more_info_control": {
                 "controls": "控制项",
+                "details": "详情",
                 "dismiss": "关闭对话框",
                 "edit": "编辑实体",
                 "history": "历史",
@@ -2959,6 +2963,7 @@
                     "confirm_delete": "确定要删除 {name} 的访问令牌吗？",
                     "create": "创建令牌",
                     "create_failed": "无法创建访问令牌。",
+                    "created": "创建于 {date}",
                     "created_at": "创建于 {date}",
                     "delete_failed": "无法删除访问令牌。",
                     "description": "创建长期访问令牌以允许脚本与 Home Assistant 实例进行交互。每个令牌在创建后有效期为 10 年。以下是处于激活状态的长期访问令牌。",
@@ -2966,9 +2971,10 @@
                     "header": "长期访问令牌",
                     "last_used": "上次使用于 {date} 来自 {location}",
                     "learn_auth_requests": "了解如何创建经过身份验证的请求。",
+                    "name": "名称",
                     "not_used": "从未使用过",
                     "prompt_copy_token": "请复制您的访问令牌。它不会再显示出来。",
-                    "prompt_name": "名称？"
+                    "prompt_name": "为令牌指定名称"
                 },
                 "mfa_setup": {
                     "close": "关闭",

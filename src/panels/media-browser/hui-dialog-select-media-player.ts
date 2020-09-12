@@ -10,10 +10,12 @@ import {
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeStateName } from "../../common/entity/compute_state_name";
+import { compare } from "../../common/string/compare";
 import { createCloseHeading } from "../../components/ha-dialog";
 import { BROWSER_SOURCE } from "../../data/media-player";
-import type { HomeAssistant } from "../../types";
 import { haStyleDialog } from "../../resources/styles";
+import type { HomeAssistant } from "../../types";
 import type { SelectMediaPlayerDialogParams } from "./show-select-media-source-dialog";
 
 @customElement("hui-dialog-select-media-player")
@@ -55,13 +57,15 @@ export class HuiDialogSelectMediaPlayer extends LitElement {
               "ui.components.media-browser.web-browser"
             )}</paper-item
           >
-          ${this._params.mediaSources.map(
-            (source) => html`
-              <paper-item .itemName=${source.entity_id}
-                >${source.attributes.friendly_name}</paper-item
-              >
-            `
-          )}
+          ${this._params.mediaSources
+            .sort((a, b) => compare(computeStateName(a), computeStateName(b)))
+            .map(
+              (source) => html`
+                <paper-item .itemName=${source.entity_id}
+                  >${computeStateName(source)}</paper-item
+                >
+              `
+            )}
         </paper-listbox>
       </ha-dialog>
     `;

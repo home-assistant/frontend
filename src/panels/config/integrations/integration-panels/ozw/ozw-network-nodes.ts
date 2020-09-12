@@ -11,9 +11,9 @@ import {
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
+import { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/buttons/ha-call-service-button";
-import { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -117,7 +117,6 @@ class OZWNetworkNodes extends LitElement {
         .data=${this._nodes}
         id="node_id"
         @row-click=${this._handleRowClicked}
-        back-path="/config/ozw/network/${this.ozwInstance}/dashboard"
       >
       </hass-tabs-subpage-data-table>
     `;

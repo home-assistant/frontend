@@ -5,11 +5,12 @@ import "@polymer/paper-listbox/paper-listbox";
 import {
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
+import { array, assert, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import { ActionConfig } from "../../../../data/lovelace";
@@ -25,10 +26,8 @@ import {
   actionConfigStruct,
   EditorTarget,
   entitiesConfigStruct,
-  EntitiesEditorEvent,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import { assert, string, object, optional, array } from "superstruct";
 
 const cardConfigStruct = object({
   type: string(),
@@ -92,19 +91,11 @@ export class HuiPictureGlanceCardEditor extends LitElement
   }
 
   get _tap_action(): ActionConfig {
-    return this._config!.tap_action || { action: "more-info" };
+    return this._config!.tap_action || { action: "toggle" };
   }
 
   get _hold_action(): ActionConfig {
     return this._config!.hold_action || { action: "more-info" };
-  }
-
-  get _show_name(): boolean {
-    return this._config!.show_name || false;
-  }
-
-  get _show_state(): boolean {
-    return this._config!.show_state || false;
   }
 
   get _theme(): string {
@@ -151,7 +142,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
           .hass=${this.hass}
           .value="${this._camera_image}"
           .configValue=${"camera_image"}
-          @change="${this._valueChanged}"
+          @value-changed="${this._valueChanged}"
           allow-custom-entity
           .includeDomains=${includeDomains}
         ></ha-entity-picker>
@@ -180,8 +171,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            type="number"
-            .value="${Number(this._aspect_ratio.replace("%", ""))}"
+            .value="${this._aspect_ratio}"
             .configValue="${"aspect_ratio"}"
             @value-changed="${this._valueChanged}"
           ></paper-input>
@@ -195,7 +185,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
           .hass=${this.hass}
           .value="${this._entity}"
           .configValue=${"entity"}
-          @change="${this._valueChanged}"
+          @value-changed="${this._valueChanged}"
           allow-custom-entity
         ></ha-entity-picker>
         <div class="side-by-side">
@@ -209,7 +199,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
             .config="${this._tap_action}"
             .actions="${actions}"
             .configValue="${"tap_action"}"
-            @action-changed="${this._valueChanged}"
+            @value-changed="${this._valueChanged}"
           ></hui-action-editor>
           <hui-action-editor
             .label="${this.hass.localize(
@@ -221,7 +211,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
             .config="${this._hold_action}"
             .actions="${actions}"
             .configValue="${"hold_action"}"
-            @action-changed="${this._valueChanged}"
+            @value-changed="${this._valueChanged}"
           ></hui-action-editor>
         </div>
         <hui-entity-editor
@@ -239,36 +229,29 @@ export class HuiPictureGlanceCardEditor extends LitElement
     `;
   }
 
-  private _valueChanged(ev: EntitiesEditorEvent): void {
+  private _valueChanged(ev: CustomEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
     const target = ev.target! as EditorTarget;
-    let value = target.value;
-
-    if (target.configValue! === "aspect_ratio" && target.value) {
-      value += "%";
-    }
+    const value = ev.detail.value;
 
     if (ev.detail && ev.detail.entities) {
       this._config = { ...this._config, entities: ev.detail.entities };
 
       this._configEntities = processEditorEntities(this._config.entities);
     } else if (target.configValue) {
-      if (
-        this[`_${target.configValue}`] === value ||
-        this[`_${target.configValue}`] === target.config
-      ) {
+      if (this[`_${target.configValue}`] === value) {
         return;
       }
 
-      if (value === "") {
+      if (value !== false && !value) {
         this._config = { ...this._config };
         delete this._config[target.configValue!];
       } else {
         this._config = {
           ...this._config,
-          [target.configValue!]: value || target.config,
+          [target.configValue!]: value,
         };
       }
     }

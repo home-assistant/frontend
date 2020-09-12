@@ -188,14 +188,17 @@ class MoreInfoMediaPlayer extends LitElement {
             <div class="tts">
               <paper-input
                 id="ttsInput"
+                .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
                 .label=${this.hass.localize(
                   "ui.card.media_player.text_to_speak"
                 )}
                 @keydown=${this._ttsCheckForEnter}
               ></paper-input>
-              <ha-icon-button icon="hass:send" @click=${
-                this._sendTTS
-              }></ha-icon-button>
+              <ha-icon-button 
+                icon="hass:send"                 
+                .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
+                @click=${this._sendTTS}
+              ></ha-icon-button>
             </div>
           </div>
           `

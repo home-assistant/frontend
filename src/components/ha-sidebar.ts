@@ -30,7 +30,6 @@ import memoizeOne from "memoize-one";
 import { LocalStorage } from "../common/decorators/local-storage";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
-import { navigate } from "../common/navigate";
 import { compare } from "../common/string/compare";
 import { computeRTL } from "../common/util/compute_rtl";
 import { ActionHandlerDetail } from "../data/lovelace";
@@ -166,7 +165,7 @@ let sortStyles: CSSResult;
 class HaSidebar extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
 
   @property({ type: Boolean }) public alwaysExpand = false;
 
@@ -235,7 +234,14 @@ class HaSidebar extends LitElement {
             </style>
           `
         : ""}
-      <div class="menu">
+      <div
+        class="menu"
+        @action=${this._handleAction}
+        .actionHandler=${actionHandler({
+          hasHold: !this._editMode,
+          disabled: this._editMode,
+        })}
+      >
         ${!this.narrow
           ? html`
               <mwc-icon-button
@@ -253,7 +259,7 @@ class HaSidebar extends LitElement {
         <div class="title">
           ${this._editMode
             ? html`<mwc-button outlined @click=${this._closeEditMode}>
-                DONE
+                ${hass.localize("ui.sidebar.done")}
               </mwc-button>`
             : "Home Assistant"}
         </div>
@@ -266,11 +272,6 @@ class HaSidebar extends LitElement {
         @focusout=${this._listboxFocusOut}
         @scroll=${this._listboxScroll}
         @keydown=${this._listboxKeydown}
-        @action=${this._handleAction}
-        .actionHandler=${actionHandler({
-          hasHold: !this._editMode,
-          disabled: this._editMode,
-        })}
       >
         ${this._editMode
           ? html`<div id="sortable">
@@ -286,27 +287,29 @@ class HaSidebar extends LitElement {
           ? html`
               ${this._hiddenPanels.map((url) => {
                 const panel = this.hass.panels[url];
+                if (!panel) {
+                  return "";
+                }
                 return html`<paper-icon-item
                   @click=${this._unhidePanel}
                   class="hidden-panel"
+                  .panel=${url}
                 >
                   <ha-icon
                     slot="item-icon"
-                    .icon=${panel.url_path === "lovelace"
+                    .icon=${panel.url_path === this.hass.defaultPanel
                       ? "mdi:view-dashboard"
                       : panel.icon}
                   ></ha-icon>
                   <span class="item-text"
-                    >${panel.url_path === "lovelace"
+                    >${panel.url_path === this.hass.defaultPanel
                       ? hass.localize("panel.states")
                       : hass.localize(`panel.${panel.title}`) ||
                         panel.title}</span
                   >
-                  <ha-svg-icon
-                    class="hide-panel"
-                    .panel=${url}
-                    .path=${mdiPlus}
-                  ></ha-svg-icon>
+                  <mwc-icon-button class="hide-panel">
+                    <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
+                  </mwc-icon-button>
                 </paper-icon-item>`;
               })}
               <div class="spacer" disabled></div>
@@ -322,7 +325,7 @@ class HaSidebar extends LitElement {
                 )}
                 href="#external-app-configuration"
                 tabindex="-1"
-                @panel-tap=${this._handleExternalAppConfiguration}
+                @click=${this._handleExternalAppConfiguration}
                 @mouseenter=${this._itemMouseEnter}
                 @mouseleave=${this._itemMouseLeave}
               >
@@ -446,6 +449,9 @@ class HaSidebar extends LitElement {
     subscribeNotifications(this.hass.connection, (notifications) => {
       this._notifications = notifications;
     });
+    window.addEventListener("hass-edit-sidebar", () =>
+      this._activateEditMode()
+    );
   }
 
   protected updated(changedProps) {
@@ -478,12 +484,15 @@ class HaSidebar extends LitElement {
     return this.shadowRoot!.querySelector(".tooltip")! as HTMLDivElement;
   }
 
-  private async _handleAction(ev: CustomEvent<ActionHandlerDetail>) {
-    if (ev.detail.action === "tap") {
-      fireEvent(ev.target as HTMLElement, "panel-tap");
+  private _handleAction(ev: CustomEvent<ActionHandlerDetail>) {
+    if (ev.detail.action !== "hold") {
       return;
     }
 
+    this._activateEditMode();
+  }
+
+  private async _activateEditMode() {
     if (!Sortable) {
       const [sortableImport, sortStylesImport] = await Promise.all([
         import("sortablejs/modular/sortable.core.esm"),
@@ -498,9 +507,7 @@ class HaSidebar extends LitElement {
     }
     this._editMode = true;
 
-    if (!this.expanded) {
-      fireEvent(this, "hass-toggle-menu");
-    }
+    fireEvent(this, "hass-open-menu");
 
     await this.updateComplete;
 
@@ -539,7 +546,7 @@ class HaSidebar extends LitElement {
 
   private async _unhidePanel(ev: Event) {
     ev.preventDefault();
-    const index = this._hiddenPanels.indexOf((ev.target as any).panel);
+    const index = this._hiddenPanels.indexOf((ev.currentTarget as any).panel);
     if (index < 0) {
       return;
     }
@@ -651,20 +658,15 @@ class HaSidebar extends LitElement {
     return panels.map((panel) =>
       this._renderPanel(
         panel.url_path,
-        panel.url_path === "lovelace"
-          ? this.hass.localize("panel.states")
+        panel.url_path === this.hass.defaultPanel
+          ? panel.title || this.hass.localize("panel.states")
           : this.hass.localize(`panel.${panel.title}`) || panel.title,
-        panel.url_path === "lovelace" ? undefined : panel.icon,
-        panel.url_path === "lovelace" ? mdiViewDashboard : undefined
+        panel.icon,
+        panel.url_path === this.hass.defaultPanel && !panel.icon
+          ? mdiViewDashboard
+          : undefined
       )
     );
-  }
-
-  private async _handlePanelTap(ev: Event) {
-    const path = __DEMO__
-      ? (ev.currentTarget as HTMLAnchorElement).getAttribute("href")!
-      : (ev.currentTarget as HTMLAnchorElement).href;
-    navigate(this, path);
   }
 
   private _renderPanel(
@@ -679,7 +681,6 @@ class HaSidebar extends LitElement {
         href=${`/${urlPath}`}
         data-panel=${urlPath}
         tabindex="-1"
-        @panel-tap=${this._handlePanelTap}
         @mouseenter=${this._itemMouseEnter}
         @mouseleave=${this._itemMouseLeave}
       >
@@ -766,6 +767,9 @@ class HaSidebar extends LitElement {
         .title {
           width: 100%;
           display: none;
+        }
+        :host([narrow]) .title {
+          padding: 0 16px;
         }
         :host([expanded]) .title {
           display: initial;
@@ -988,9 +992,5 @@ class HaSidebar extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-sidebar": HaSidebar;
-  }
-
-  interface HASSDomEvents {
-    "panel-tap": undefined;
   }
 }

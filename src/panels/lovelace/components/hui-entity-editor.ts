@@ -18,10 +18,10 @@ import Sortable, {
 } from "sortablejs/modular/sortable.core.esm";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entity-picker";
+import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-icon-button";
 import { sortableStyles } from "../../../resources/ha-sortable-style";
 import { HomeAssistant } from "../../../types";
-import { EditorTarget } from "../editor/types";
 import { EntityConfig } from "../entity-rows/types";
 
 @customElement("hui-entity-editor")
@@ -73,7 +73,7 @@ export class HuiEntityEditor extends LitElement {
                       .hass=${this.hass}
                       .value=${entityConf.entity}
                       .index=${index}
-                      @change=${this._valueChanged}
+                      @value-changed=${this._valueChanged}
                       allow-custom-entity
                     ></ha-entity-picker>
                   </div>
@@ -83,7 +83,7 @@ export class HuiEntityEditor extends LitElement {
       </div>
       <ha-entity-picker
         .hass=${this.hass}
-        @change=${this._addEntity}
+        @value-changed=${this._addEntity}
       ></ha-entity-picker>
     `;
   }
@@ -136,15 +136,15 @@ export class HuiEntityEditor extends LitElement {
     });
   }
 
-  private async _addEntity(ev: Event): Promise<void> {
-    const target = ev.target! as EditorTarget;
-    if (target.value === "") {
+  private async _addEntity(ev: CustomEvent): Promise<void> {
+    const value = ev.detail.value;
+    if (value === "") {
       return;
     }
     const newConfigEntities = this.entities!.concat({
-      entity: target.value as string,
+      entity: value as string,
     });
-    target.value = "";
+    (ev.target as HaEntityPicker).value = "";
     fireEvent(this, "entities-changed", { entities: newConfigEntities });
   }
 
@@ -160,16 +160,17 @@ export class HuiEntityEditor extends LitElement {
     fireEvent(this, "entities-changed", { entities: newEntities });
   }
 
-  private _valueChanged(ev: Event): void {
-    const target = ev.target! as EditorTarget;
+  private _valueChanged(ev: CustomEvent): void {
+    const value = ev.detail.value;
+    const index = (ev.target as any).index;
     const newConfigEntities = this.entities!.concat();
 
-    if (target.value === "") {
-      newConfigEntities.splice(target.index!, 1);
+    if (value === "") {
+      newConfigEntities.splice(index, 1);
     } else {
-      newConfigEntities[target.index!] = {
-        ...newConfigEntities[target.index!],
-        entity: target.value!,
+      newConfigEntities[index] = {
+        ...newConfigEntities[index],
+        entity: value!,
       };
     }
 
