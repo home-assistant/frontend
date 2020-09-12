@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import "../../../components/ha-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
@@ -61,42 +60,42 @@ export class SystemLogCard extends LitElement {
                     `
                   : this._items.map(
                       (item, idx) => html`
-                        <mwc-list-item
-                          twoline
-                          .logItem=${item}
-                          @click=${this._openLog}
-                        >
-                          <span>${item.message[0]}</span>
-                          <span slot="secondary">
-                            ${formatSystemLogTime(
-                              item.timestamp,
-                              this.hass!.language
-                            )}
-                            –
-                            ${integrations[idx]
-                              ? domainToName(
-                                  this.hass!.localize,
-                                  integrations[idx]!
-                                )
-                              : item.source[0]}
-                            (${item.level})
-                            ${item.count > 1
-                              ? html`
-                                  -
-                                  ${this.hass.localize(
-                                    "ui.panel.config.logs.multiple_messages",
-                                    "time",
-                                    formatSystemLogTime(
-                                      item.first_occurred,
-                                      this.hass!.language
-                                    ),
-                                    "counter",
-                                    item.count
-                                  )}
-                                `
-                              : html``}
-                          </span>
-                        </mwc-list-item>
+                        <paper-item @click=${this._openLog} .logItem=${item}>
+                          <paper-item-body two-line>
+                            <div class="row">
+                              ${item.message[0]}
+                            </div>
+                            <div secondary>
+                              ${formatSystemLogTime(
+                                item.timestamp,
+                                this.hass!.language
+                              )}
+                              –
+                              ${integrations[idx]
+                                ? domainToName(
+                                    this.hass!.localize,
+                                    integrations[idx]!
+                                  )
+                                : item.source[0]}
+                              (${item.level})
+                              ${item.count > 1
+                                ? html`
+                                    -
+                                    ${this.hass.localize(
+                                      "ui.panel.config.logs.multiple_messages",
+                                      "time",
+                                      formatSystemLogTime(
+                                        item.first_occurred,
+                                        this.hass!.language
+                                      ),
+                                      "counter",
+                                      item.count
+                                    )}
+                                  `
+                                : html``}
+                            </div>
+                          </paper-item-body>
+                        </paper-item>
                       `
                     )}
 
@@ -151,13 +150,8 @@ export class SystemLogCard extends LitElement {
         padding-top: 16px;
       }
 
-      mwc-list-item {
-        --mdc-theme-text-secondary-on-background: var(--secondary-text-color);
-      }
-
-      ha-svg-icon {
-        color: var(--primary-text-color);
-        min-width: 24px;
+      paper-item {
+        cursor: pointer;
       }
 
       .system-log-intro {
