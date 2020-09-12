@@ -13,10 +13,15 @@ import {
 } from "lit-element";
 import { cache } from "lit-html/directives/cache";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { DOMAINS_MORE_INFO_NO_HISTORY } from "../../common/const";
+import {
+  DOMAINS_MORE_INFO_NO_HISTORY,
+  DOMAINS_WITH_MORE_INFO,
+} from "../../common/const";
+import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
+import { stateMoreInfoType } from "../../common/entity/state_more_info_type";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-dialog";
 import "../../components/ha-header-bar";
@@ -30,20 +35,37 @@ import "../../state-summary/state-card-content";
 import { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import "./ha-more-info-history";
-import "./more-info-content";
+import "./ha-more-info-logbook";
 
 const DOMAINS_NO_INFO = ["camera", "configurator"];
-const CONTROL_DOMAINS = [
-  "light",
-  "media_player",
-  "vacuum",
-  "alarm_control_panel",
-  "climate",
-  "humidifier",
-  "weather",
-];
 const EDITABLE_DOMAINS_WITH_ID = ["scene", "automation"];
 const EDITABLE_DOMAINS = ["script"];
+
+const MORE_INFO_CONTROL_IMPORT = {
+  alarm_control_panel: () => import("./controls/more-info-alarm_control_panel"),
+  automation: () => import("./controls/more-info-automation"),
+  camera: () => import("./controls/more-info-camera"),
+  climate: () => import("./controls/more-info-climate"),
+  configurator: () => import("./controls/more-info-configurator"),
+  counter: () => import("./controls/more-info-counter"),
+  cover: () => import("./controls/more-info-cover"),
+  fan: () => import("./controls/more-info-fan"),
+  group: () => import("./controls/more-info-group"),
+  humidifier: () => import("./controls/more-info-humidifier"),
+  input_datetime: () => import("./controls/more-info-input_datetime"),
+  light: () => import("./controls/more-info-light"),
+  lock: () => import("./controls/more-info-lock"),
+  media_player: () => import("./controls/more-info-media_player"),
+  person: () => import("./controls/more-info-person"),
+  script: () => import("./controls/more-info-script"),
+  sun: () => import("./controls/more-info-sun"),
+  timer: () => import("./controls/more-info-timer"),
+  vacuum: () => import("./controls/more-info-vacuum"),
+  water_heater: () => import("./controls/more-info-water_heater"),
+  weather: () => import("./controls/more-info-weather"),
+  hidden: () => {},
+  default: () => import("./controls/more-info-default"),
+};
 
 export interface MoreInfoDialogParams {
   entityId: string | null;
@@ -56,6 +78,8 @@ export class MoreInfoDialog extends LitElement {
   @property({ type: Boolean, reflect: true }) public large = false;
 
   @internalProperty() private _entityId?: string | null;
+
+  @internalProperty() private _moreInfoType?: string;
 
   @internalProperty() private _currTabIndex = 0;
 
@@ -71,6 +95,23 @@ export class MoreInfoDialog extends LitElement {
     this._entityId = undefined;
     this._currTabIndex = 0;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  protected updated(changedProperties) {
+    if (!this.hass || !this._entityId || !changedProperties.has("_entityId")) {
+      return;
+    }
+    const stateObj = this.hass.states[this._entityId];
+    if (!stateObj) {
+      return;
+    }
+    if (stateObj.attributes && "custom_ui_more_info" in stateObj.attributes) {
+      this._moreInfoType = stateObj.attributes.custom_ui_more_info;
+    } else {
+      const type = stateMoreInfoType(stateObj);
+      this._moreInfoType = `more-info-${type}`;
+      MORE_INFO_CONTROL_IMPORT[type]();
+    }
   }
 
   protected render() {
@@ -137,7 +178,7 @@ export class MoreInfoDialog extends LitElement {
                 `
               : ""}
           </ha-header-bar>
-          ${CONTROL_DOMAINS.includes(domain) &&
+          ${DOMAINS_WITH_MORE_INFO.includes(domain) &&
           this._computeShowHistoryComponent(entityId)
             ? html`
                 <mwc-tab-bar
@@ -171,17 +212,23 @@ export class MoreInfoDialog extends LitElement {
                           .hass=${this.hass}
                         ></state-card-content>
                       `}
-                  <more-info-content
-                    .stateObj=${stateObj}
-                    .hass=${this.hass}
-                  ></more-info-content>
-                  ${CONTROL_DOMAINS.includes(domain) ||
+                  ${DOMAINS_WITH_MORE_INFO.includes(domain) ||
                   !this._computeShowHistoryComponent(entityId)
                     ? ""
                     : html`<ha-more-info-history
-                        .hass=${this.hass}
-                        .entityId=${this._entityId}
-                      ></ha-more-info-history>`}
+                          .hass=${this.hass}
+                          .entityId=${this._entityId}
+                        ></ha-more-info-history>
+                        <ha-more-info-logbook
+                          .hass=${this.hass}
+                          .entityId=${this._entityId}
+                        ></ha-more-info-logbook>`}
+                  ${this._moreInfoType
+                    ? dynamicElement(this._moreInfoType, {
+                        hass: this.hass,
+                        stateObj,
+                      })
+                    : ""}
                   ${stateObj.attributes.restored
                     ? html`
                         <p>
@@ -210,6 +257,10 @@ export class MoreInfoDialog extends LitElement {
                     .hass=${this.hass}
                     .entityId=${this._entityId}
                   ></ha-more-info-history>
+                  <ha-more-info-logbook
+                    .hass=${this.hass}
+                    .entityId=${this._entityId}
+                  ></ha-more-info-logbook>
                 `
           )}
         </div>

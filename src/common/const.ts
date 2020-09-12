@@ -44,7 +44,6 @@ export const DOMAINS_WITH_MORE_INFO = [
   "script",
   "sun",
   "timer",
-  "updater",
   "vacuum",
   "water_heater",
   "weather",
