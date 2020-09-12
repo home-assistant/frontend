@@ -552,6 +552,9 @@
                 "toggle": "Przełącz"
             },
             "entity": {
+                "entity-attribute-picker": {
+                    "show_attributes": "Pokaż atrybuty"
+                },
                 "entity-picker": {
                     "clear": "Wyczyść",
                     "entity": "Encja",
@@ -697,6 +700,7 @@
             },
             "more_info_control": {
                 "controls": "Sterowanie",
+                "details": "Szczegóły",
                 "dismiss": "Zamknij okno dialogowe",
                 "edit": "Edytuj encję",
                 "history": "Historia",
@@ -1129,6 +1133,8 @@
                         "add_automation": "Dodaj automatyzację",
                         "delete_automation": "Usuń automatyzację",
                         "delete_confirm": "Czy na pewno chcesz usunąć tę automatyzację?",
+                        "duplicate": "Duplikuj",
+                        "duplicate_automation": "Duplikat automatyzację",
                         "edit_automation": "Edytuj automatyzację",
                         "header": "Edytor automatyzacji",
                         "headers": {
@@ -1599,6 +1605,7 @@
                     "none_found_detail": "Dostosuj kryteria wyszukiwania.",
                     "note_about_integrations": "Jeszcze nie wszystkie integracje można skonfigurować za pomocą interfejsu użytkownika.",
                     "note_about_website_reference": "Więcej jest dostępnych na stronie integracji ",
+                    "reconfigure": "Zmień konfigurację",
                     "rename_dialog": "Edytuj nazwę tego wpisu konfiguracji",
                     "rename_input_label": "Nazwa wpisu",
                     "search": "Szukaj integracji"
@@ -2945,6 +2952,7 @@
                     "header": "Tokeny dostępu",
                     "last_used": "Ostatnio używany {date} z {location}",
                     "learn_auth_requests": "Dowiedz się, jak tworzyć uwierzytelnione żądania.",
+                    "name": "Nazwa",
                     "not_used": "Nigdy nie był używany",
                     "prompt_copy_token": "Skopiuj token. Nie będzie on już ponownie wyświetlany.",
                     "prompt_name": "Nazwa"

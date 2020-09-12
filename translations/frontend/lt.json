@@ -189,7 +189,6 @@
             "ok": "Ok",
             "on": "Įjungta",
             "open": "Atidarytas",
-            "problem": "",
             "stopped": "Sustabdytas",
             "unlocked": "Atrakinta"
         },
@@ -409,7 +408,6 @@
                                     "label": "Laikas"
                                 },
                                 "zone": {
-                                    "entity": "",
                                     "label": "Vieta",
                                     "zone": "Vieta"
                                 }
@@ -690,9 +688,6 @@
                 "form": {
                     "providers": {
                         "command_line": {
-                            "abort": {
-                                "login_expired": ""
-                            },
                             "error": {
                                 "invalid_auth": "Netinkamas vartotojo vardas arba slaptažodis",
                                 "invalid_code": "Netinkamas autentifikacijos kodas"
@@ -707,18 +702,7 @@
                                 "mfa": {
                                     "data": {
                                         "code": "Dvieju lygiu autentifikacija"
-                                    },
-                                    "description": ""
-                                }
-                            }
-                        },
-                        "legacy_api_password": {
-                            "step": {
-                                "mfa": {
-                                    "data": {
-                                        "code": ""
-                                    },
-                                    "description": ""
+                                    }
                                 }
                             }
                         }

@@ -37,8 +37,7 @@
             "unknown": "Unbekannt"
         },
         "device_tracker": {
-            "home": "Dahei",
-            "not_home": ""
+            "home": "Dahei"
         },
         "person": {
             "home": "Dahei"
@@ -97,7 +96,6 @@
                 "on": "Offä"
             },
             "presence": {
-                "off": "",
                 "on": "Dahei"
             },
             "problem": {
@@ -419,9 +417,6 @@
                                 "time": {
                                     "after": "Nachhär",
                                     "before": "Vorhär"
-                                },
-                                "zone": {
-                                    "entity": ""
                                 }
                             }
                         },
@@ -514,45 +509,6 @@
             },
             "mailbox": {
                 "delete_button": "Lösche"
-            },
-            "page-authorize": {
-                "form": {
-                    "providers": {
-                        "command_line": {
-                            "abort": {
-                                "login_expired": ""
-                            },
-                            "error": {
-                                "invalid_auth": "",
-                                "invalid_code": ""
-                            },
-                            "step": {
-                                "init": {
-                                    "data": {
-                                        "password": "",
-                                        "username": ""
-                                    }
-                                },
-                                "mfa": {
-                                    "data": {
-                                        "code": ""
-                                    },
-                                    "description": ""
-                                }
-                            }
-                        },
-                        "legacy_api_password": {
-                            "step": {
-                                "mfa": {
-                                    "data": {
-                                        "code": ""
-                                    },
-                                    "description": ""
-                                }
-                            }
-                        }
-                    }
-                }
             },
             "profile": {
                 "change_password": {

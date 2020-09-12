@@ -2352,9 +2352,14 @@
                         "title": "States"
                     },
                     "templates": {
+                        "all_listeners": "This template listens for all state changed events.",
                         "description": "Templates are rendered using the Jinja2 template engine with some Home Assistant specific extensions.",
+                        "domain": "Domain",
                         "editor": "Template editor",
+                        "entity": "Entity",
                         "jinja_documentation": "Jinja2 template documentation",
+                        "listeners": "This template listens for the following state changed events:",
+                        "no_listeners": "This template does not listen for any state changed events and will not update automatically.",
                         "reset": "Reset to demo template",
                         "template_extensions": "Home Assistant template extensions",
                         "title": "Template",
@@ -2941,6 +2946,11 @@
                     "submit": "Submit"
                 },
                 "current_user": "You are currently logged in as {fullName}.",
+                "customize_sidebar": {
+                    "button": "Edit",
+                    "description": "You can also press and hold the header of the sidebar to activate edit mode.",
+                    "header": "Change the order and hide items from the sidebar"
+                },
                 "dashboard": {
                     "description": "Pick a default dashboard for this device.",
                     "dropdown_label": "Dashboard",
@@ -3038,6 +3048,7 @@
             }
         },
         "sidebar": {
+            "done": "Done",
             "external_app_configuration": "App Configuration",
             "sidebar_toggle": "Sidebar Toggle"
         }

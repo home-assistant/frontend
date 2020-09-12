@@ -1283,18 +1283,7 @@
                                 "mfa": {
                                     "data": {
                                         "code": "Cod dilysu dwy-ffactor"
-                                    },
-                                    "description": ""
-                                }
-                            }
-                        },
-                        "legacy_api_password": {
-                            "step": {
-                                "mfa": {
-                                    "data": {
-                                        "code": ""
-                                    },
-                                    "description": ""
+                                    }
                                 }
                             }
                         }
