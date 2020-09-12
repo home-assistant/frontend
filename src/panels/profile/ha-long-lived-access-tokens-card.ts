@@ -86,7 +86,7 @@ class HaLongLivedTokens extends LitElement {
                     .title=${this.hass.localize(`ui.common.delete`)}
                     @click=${this._deleteToken}
                   >
-                    <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
+                    <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
                   </mwc-button>
                 </ha-settings-row>`
               )}
