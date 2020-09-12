@@ -56,7 +56,8 @@ export class HuiDialogSelectMediaPlayer extends LitElement {
             )}</paper-item
           >
           ${this._params.mediaSources
-            .sort()
+            .sort((a, b) =>
+          compare(a.attributes.friendly_name || "", b.attributes.friendly_name || ""))
             .map(
               (source) => html`
                 <paper-item .itemName=${source.entity_id}
