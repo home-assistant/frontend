@@ -1,15 +1,20 @@
-import "../../../components/ha-svg-icon";
+import { mdiContentCopy } from "@mdi/js";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import "@polymer/paper-tooltip/paper-tooltip";
+import type { PaperTooltipElement } from "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
   CSSResult,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
+  query,
   TemplateResult,
 } from "lit-element";
+import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/dialog/ha-paper-dialog";
+import "../../../components/ha-svg-icon";
 import {
   domainToName,
   fetchIntegrationManifest,
@@ -22,8 +27,6 @@ import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
 import { formatSystemLogTime } from "./util";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { mdiContentCopy } from "@mdi/js";
 
 class DialogSystemLogDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -31,6 +34,8 @@ class DialogSystemLogDetail extends LitElement {
   @internalProperty() private _params?: SystemLogDetailDialogParams;
 
   @internalProperty() private _manifest?: IntegrationManifest;
+
+  @query("paper-tooltip") private _toolTip!: PaperTooltipElement;
 
   public async showDialog(params: SystemLogDetailDialogParams): Promise<void> {
     this._params = params;
@@ -77,9 +82,17 @@ class DialogSystemLogDetail extends LitElement {
             )}
           </h2>
           <ha-svg-icon
-            @click=${this._copyLog}
+            id="copy"
             .path=${mdiContentCopy}
+            @click=${this._copyLog}
           ></ha-svg-icon>
+          <paper-tooltip
+            manual-mode
+            for="copy"
+            position="top"
+            animation-delay="0"
+            >${this.hass.localize("ui.common.copy_to_clipboard")}</paper-tooltip
+          >
         </div>
         <paper-dialog-scrollable>
           <p>
@@ -156,15 +169,23 @@ class DialogSystemLogDetail extends LitElement {
     }
   }
 
-  private _copyLog(ev: CustomEvent): void {
+  private _copyLog(): void {
     const copyElement = this.shadowRoot?.querySelector(
       "paper-dialog-scrollable"
     ) as HTMLElement;
+
+    const selection = window.getSelection()!;
     const range = document.createRange();
-    range.selectNode(copyElement);
-    window.getSelection().addRange(range);
+
+    range.selectNodeContents(copyElement);
+    selection.removeAllRanges();
+    selection.addRange(range);
+
     document.execCommand("copy");
-    alert("Text has been copied, now paste in the text-area");
+    window.getSelection()!.removeAllRanges();
+
+    this._toolTip.show();
+    setTimeout(() => this._toolTip.hide(), 3000);
   }
 
   static get styles(): CSSResult[] {
@@ -182,6 +203,12 @@ class DialogSystemLogDetail extends LitElement {
         }
         pre {
           margin-bottom: 0;
+        }
+        .heading {
+          display: flex;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
         }
       `,
     ];
