@@ -1,4 +1,5 @@
-import "@material/mwc-button";
+import "@material/mwc-button/mwc-button";
+import { mdiDelete } from "@mdi/js";
 import {
   css,
   CSSResultArray,
@@ -12,8 +13,8 @@ import memoizeOne from "memoize-one";
 import relativeTime from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
-import "../../components/ha-icon-button";
 import "../../components/ha-settings-row";
+import "../../components/ha-svg-icon";
 import { RefreshToken } from "../../data/refresh_token";
 import {
   showAlertDialog,
@@ -79,11 +80,14 @@ class HaLongLivedTokens extends LitElement {
                       )
                     )}
                   </div>
-                  <ha-icon-button
+                  <mwc-button
                     .token=${token}
-                    icon="hass:delete"
+                    .disabled=${token.is_current}
+                    .title=${this.hass.localize(`ui.common.delete`)}
                     @click=${this._deleteToken}
-                  ></ha-icon-button>
+                  >
+                    <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
+                  </mwc-button>
                 </ha-settings-row>`
               )}
         </div>
@@ -178,8 +182,8 @@ class HaLongLivedTokens extends LitElement {
         a {
           color: var(--primary-color);
         }
-        ha-icon-button {
-          color: var(--primary-text-color);
+        mwc-button {
+          --mdc-theme-primary: var(--primary-color);
         }
       `,
     ];
