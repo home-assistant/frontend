@@ -22,15 +22,15 @@ import { styleMap } from "lit-html/directives/style-map";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
+import type { MediaPlayerItem } from "../../data/media-player";
 import {
   browseLocalMediaPlayer,
   browseMediaPlayer,
   BROWSER_SOURCE,
+  MediaClassBrowserSettings,
   MediaPickedEvent,
   MediaPlayerBrowseAction,
-  MediaClassBrowserSettings,
 } from "../../data/media-player";
-import type { MediaPlayerItem } from "../../data/media-player";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
 import { haStyle } from "../../resources/styles";
@@ -108,7 +108,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           text: this._renderError(this._error),
         });
       } else {
-        return html`<div class="container error">
+        return html`<div class="container">
           ${this._renderError(this._error)}
         </div>`;
       }
