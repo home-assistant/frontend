@@ -6,6 +6,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
+  customElement,
   html,
   LitElement,
   property,
@@ -51,7 +52,8 @@ const rowRenderer = (
   root.querySelector("[secondary]")!.textContent = model.item.entity_id;
 };
 
-class HaEntityPicker extends LitElement {
+@customElement("ha-entity-picker")
+export class HaEntityPicker extends LitElement {
   @property({ type: Boolean }) public autofocus = false;
 
   @property({ type: Boolean }) public disabled?: boolean;
@@ -275,8 +277,6 @@ class HaEntityPicker extends LitElement {
     `;
   }
 }
-
-customElements.define("ha-entity-picker", HaEntityPicker);
 
 declare global {
   interface HTMLElementTagNameMap {
