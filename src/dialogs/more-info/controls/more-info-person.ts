@@ -15,7 +15,6 @@ import "../../../components/ha-attributes";
 import "../../../components/map/ha-map";
 import { showZoneEditor } from "../../../data/zone";
 import { HomeAssistant } from "../../../types";
-import relativeTime from "../../../common/datetime/relative_time";
 
 @customElement("more-info-person")
 class MoreInfoPerson extends LitElement {
@@ -29,22 +28,12 @@ class MoreInfoPerson extends LitElement {
     if (!this.hass || !this.stateObj) {
       return html``;
     }
+
     return html`
       <ha-attributes
         .stateObj=${this.stateObj}
         extraFilters="id,user_id,editable"
       ></ha-attributes>
-      ${this.stateObj.last_updated && Date.parse(this.stateObj.last_updated)
-        ? html` <div class="data-entry">
-            <div class="key">last updated</div>
-            <div class="value">
-              ${relativeTime(
-                new Date(this.stateObj.last_updated),
-                this.hass.localize
-              )}
-            </div>
-          </div>`
-        : ""}
       ${this.stateObj.attributes.latitude && this.stateObj.attributes.longitude
         ? html`
             <ha-map
@@ -88,15 +77,6 @@ class MoreInfoPerson extends LitElement {
       .actions {
         margin: 36px 0 8px 0;
         text-align: right;
-      }
-      .data-entry {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-      }
-      .data-entry .value {
-        max-width: 200px;
-        overflow-wrap: break-word;
       }
     `;
   }

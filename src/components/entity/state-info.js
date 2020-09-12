@@ -57,6 +57,27 @@ class StateInfo extends PolymerElement {
           @apply --paper-font-common-nowrap;
           color: var(--secondary-text-color);
         }
+
+        .last-updated {
+          font-size: 90%;
+          opacity: 0;
+          padding: 3px 5px;
+          position: absolute;
+          background: rgba(80, 80, 80, 0.9);
+          color: white;
+          border-radius: 3px;
+          pointer-events: none;
+          z-index: 1000;
+          width: 200px;
+          transition: opacity 0.15s ease-in-out;
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+        }
+
+        .time-ago:hover + .last-updated {
+          opacity: 1;
+        }
       </style>
     `;
   }
@@ -78,6 +99,15 @@ class StateInfo extends PolymerElement {
               hass="[[hass]]"
               datetime="[[stateObj.last_changed]]"
             ></ha-relative-time>
+          </div>
+          <div class="last-updated">
+            <div class="key">Last updated</div>
+            <div class="value">
+              <ha-relative-time
+                hass="[[hass]]"
+                datetime="[[stateObj.last_updated]]"
+              ></ha-relative-time>
+            </div>
           </div>
         </template>
         <template is="dom-if" if="[[!inDialog]]">
