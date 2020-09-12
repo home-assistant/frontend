@@ -55,13 +55,15 @@ export class HuiDialogSelectMediaPlayer extends LitElement {
               "ui.components.media-browser.web-browser"
             )}</paper-item
           >
-          ${this._params.mediaSources.map(
-            (source) => html`
-              <paper-item .itemName=${source.entity_id}
-                >${source.attributes.friendly_name}</paper-item
-              >
-            `
-          )}
+          ${this._params.mediaSources
+            .sort()
+            .map(
+              (source) => html`
+                <paper-item .itemName=${source.entity_id}
+                  >${source.attributes.friendly_name}</paper-item
+                >
+              `
+            )}
         </paper-listbox>
       </ha-dialog>
     `;
