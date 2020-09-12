@@ -10,12 +10,13 @@ import {
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeStateName } from "../../common/entity/compute_state_name";
+import { compare } from "../../common/string/compare";
 import { createCloseHeading } from "../../components/ha-dialog";
 import { BROWSER_SOURCE } from "../../data/media-player";
-import type { HomeAssistant } from "../../types";
 import { haStyleDialog } from "../../resources/styles";
+import type { HomeAssistant } from "../../types";
 import type { SelectMediaPlayerDialogParams } from "./show-select-media-source-dialog";
-import { compare } from "../../common/string/compare";
 
 @customElement("hui-dialog-select-media-player")
 export class HuiDialogSelectMediaPlayer extends LitElement {
@@ -57,16 +58,11 @@ export class HuiDialogSelectMediaPlayer extends LitElement {
             )}</paper-item
           >
           ${this._params.mediaSources
-            .sort((a, b) =>
-              compare(
-                a.attributes.friendly_name || "",
-                b.attributes.friendly_name || ""
-              )
-            )
+            .sort((a, b) => compare(computeStateName(a), computeStateName(b)))
             .map(
               (source) => html`
                 <paper-item .itemName=${source.entity_id}
-                  >${source.attributes.friendly_name}</paper-item
+                  >${computeStateName(source)}</paper-item
                 >
               `
             )}
