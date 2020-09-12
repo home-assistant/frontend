@@ -43,7 +43,7 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
     return css`
       :host {
         display: block;
-        background-color: #ef5350;
+        background-color: var(--error-color);
         color: white;
         padding: 8px;
         font-weight: 500;
