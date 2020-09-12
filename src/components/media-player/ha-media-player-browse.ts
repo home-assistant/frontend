@@ -269,8 +269,10 @@ export class HaMediaPlayerBrowse extends LitElement {
                                 <ha-svg-icon
                                   class="folder"
                                   .path=${MediaClassBrowserSettings[
-                                    child.children_media_class ||
-                                      child.media_class
+                                    child.media_class === "directory"
+                                      ? child.children_media_class ||
+                                        child.media_class
+                                      : child.media_class
                                   ].icon}
                                 ></ha-svg-icon>
                               `
