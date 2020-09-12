@@ -1,3 +1,5 @@
+import "@material/mwc-fab";
+import { mdiPlus } from "@mdi/js";
 import {
   customElement,
   LitElement,
@@ -11,7 +13,7 @@ import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
-import "@material/mwc-fab";
+import "../../../components/ha-svg-icon";
 import { deleteUser, fetchUsers, updateUser, User } from "../../../data/user";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
@@ -19,8 +21,6 @@ import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { showAddUserDialog } from "./show-dialog-add-user";
 import { showUserDetailDialog } from "./show-dialog-user-detail";
-import "../../../components/ha-svg-icon";
-import { mdiPlus } from "@mdi/js";
 
 @customElement("ha-config-users")
 export class HaConfigUsers extends LitElement {
@@ -56,7 +56,7 @@ export class HaConfigUsers extends LitElement {
           ),
           sortable: true,
           filterable: true,
-          width: "25%",
+          width: "30%",
           template: (groupIds) => html`
             ${this.hass.localize(`groups.${groupIds[0]}`)}
           `,
@@ -66,6 +66,7 @@ export class HaConfigUsers extends LitElement {
             "ui.panel.config.users.picker.headers.system"
           ),
           type: "icon",
+          width: "80px",
           sortable: true,
           filterable: true,
           template: (generated) => html`
