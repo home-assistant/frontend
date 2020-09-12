@@ -14,8 +14,8 @@ import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-code-editor";
 import {
-  subscribeRenderTemplate,
   RenderTemplateResult,
+  subscribeRenderTemplate,
 } from "../../../data/ws-templates";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
@@ -151,41 +151,49 @@ class HaPanelDevTemplate extends LitElement {
             ? ""
             : this._templateResult.listeners.all
             ? html`
-                <span class="all_listeners">
+                <h3 class="all_listeners">
                   ${this.hass.localize(
                     "ui.panel.developer-tools.tabs.templates.all_listeners"
                   )}
-                </span>
+                </h3>
               `
             : this._templateResult.listeners.domains.length ||
               this._templateResult.listeners.entities.length
             ? html`
-                ${this.hass.localize(
-                  "ui.panel.developer-tools.tabs.templates.listeners"
-                )}
+                <h3>
+                  ${this.hass.localize(
+                    "ui.panel.developer-tools.tabs.templates.listeners"
+                  )}
+                </h3>
                 <ul>
-                  ${this._templateResult.listeners.domains.map(
-                    (domain) =>
-                      html`
-                        <li>
-                          ${this.hass.localize(
-                            "ui.panel.developer-tools.tabs.templates.domain"
-                          )}:
-                          ${domain}
-                        </li>
-                      `
-                  )}
-                  ${this._templateResult.listeners.entities.map(
-                    (entity_id) =>
-                      html`
-                        <li>
-                          ${this.hass.localize(
-                            "ui.panel.developer-tools.tabs.templates.entity"
-                          )}:
-                          ${entity_id}
-                        </li>
-                      `
-                  )}
+                  ${this._templateResult.listeners.domains
+                    .sort()
+                    .map(
+                      (domain) =>
+                        html`
+                          <li>
+                            <b
+                              >${this.hass.localize(
+                                "ui.panel.developer-tools.tabs.templates.domain"
+                              )}</b
+                            >: ${domain}
+                          </li>
+                        `
+                    )}
+                  ${this._templateResult.listeners.entities
+                    .sort()
+                    .map(
+                      (entity_id) =>
+                        html`
+                          <li>
+                            <b
+                              >${this.hass.localize(
+                                "ui.panel.developer-tools.tabs.templates.entity"
+                              )}</b
+                            >: ${entity_id}
+                          </li>
+                        `
+                    )}
                 </ul>
               `
             : html` <span class="all_listeners">
