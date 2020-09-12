@@ -1,3 +1,5 @@
+import "@material/mwc-button/mwc-button";
+import { mdiDelete } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
@@ -12,8 +14,8 @@ import memoizeOne from "memoize-one";
 import relativeTime from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
-import "../../components/ha-icon-button";
 import "../../components/ha-settings-row";
+import "../../components/ha-svg-icon";
 import { RefreshToken } from "../../data/refresh_token";
 import {
   showAlertDialog,
@@ -81,13 +83,14 @@ class HaRefreshTokens extends LitElement {
                         )}
                       </paper-tooltip>`
                     : ""}
-
-                  <ha-icon-button
+                  <mwc-button
                     .token=${token}
                     .disabled=${token.is_current}
-                    icon="hass:delete"
+                    .title=${this.hass.localize(`ui.common.delete`)}
                     @click=${this._deleteToken}
-                  ></ha-icon-button>
+                  >
+                    <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
+                  </mwc-button>
                 </div>
               </ha-settings-row>`
             )
@@ -132,11 +135,8 @@ class HaRefreshTokens extends LitElement {
         ha-settings-row {
           padding: 0;
         }
-        ha-icon-button {
-          color: var(--primary-text-color);
-        }
-        ha-icon-button[disabled] {
-          color: var(--disabled-text-color);
+        mwc-button {
+          --mdc-theme-primary: var(--primary-color);
         }
       `,
     ];
