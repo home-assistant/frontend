@@ -1,13 +1,13 @@
-import "../../../components/ha-icon-button";
+import { mdiDotsVertical } from "@mdi/js";
 import "@thomasloven/round-slider";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -20,7 +20,8 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-card";
-import { UNAVAILABLE_STATES, UNAVAILABLE } from "../../../data/entity";
+import "../../../components/ha-icon-button";
+import { UNAVAILABLE, UNAVAILABLE_STATES } from "../../../data/entity";
 import { SUPPORT_BRIGHTNESS } from "../../../data/light";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant, LightEntity } from "../../../types";
@@ -32,7 +33,6 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LightCardConfig } from "./types";
-import { mdiDotsVertical } from "@mdi/js";
 
 @customElement("hui-light-card")
 export class HuiLightCard extends LitElement implements LovelaceCard {
@@ -77,8 +77,9 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     }
 
     this._config = {
-      ...config,
       tap_action: { action: "toggle" },
+      hold_action: { action: "more-info" },
+      ...config,
     };
   }
 

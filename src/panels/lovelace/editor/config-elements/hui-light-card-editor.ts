@@ -62,11 +62,11 @@ export class HuiLightCardEditor extends LitElement
   }
 
   get _hold_action(): ActionConfig {
-    return this._config!.hold_action || { action: "none" };
+    return this._config!.hold_action || { action: "more-info" };
   }
 
-  get _double_tap_action(): ActionConfig {
-    return this._config!.double_tap_action || { action: "none" };
+  get _double_tap_action(): ActionConfig | undefined {
+    return this._config!.double_tap_action;
   }
 
   protected render(): TemplateResult {

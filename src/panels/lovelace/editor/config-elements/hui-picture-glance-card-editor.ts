@@ -90,12 +90,12 @@ export class HuiPictureGlanceCardEditor extends LitElement
     return this._config!.aspect_ratio || "";
   }
 
-  get _tap_action(): ActionConfig | undefined {
-    return this._config!.tap_action;
+  get _tap_action(): ActionConfig {
+    return this._config!.tap_action || { action: "toggle" };
   }
 
-  get _hold_action(): ActionConfig | undefined {
-    return this._config!.hold_action;
+  get _hold_action(): ActionConfig {
+    return this._config!.hold_action || { action: "more-info" };
   }
 
   get _theme(): string {
