@@ -313,7 +313,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                 ${currentItem.children.map(
                   (child) => html`
                     <mwc-list-item
-                      @click=${this._actionClicked}
+                      @click=${this._childClicked}
                       .item=${child}
                       graphic="avatar"
                       hasMeta
@@ -331,8 +331,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                         <mwc-icon-button
                           class="play ${classMap({
                             show:
-                              !MediaClassBrowserSettings[child.media_class]
-                                .show_list_images || !child.thumbnail,
+                              !mediaClass.show_list_images || !child.thumbnail,
                           })}"
                           .item=${child}
                           .label=${this.hass.localize(
@@ -698,11 +697,24 @@ export class HaMediaPlayerBrowse extends LitElement {
         .child .play {
           transition: color 0.5s;
           border-radius: 50%;
-          bottom: calc(50% - 24px);
-          right: calc(50% - 24px);
+          bottom: calc(50% - 35px);
+          right: calc(50% - 35px);
+          opacity: 0;
+          transition: opacity 0.1s ease-out;
+        }
+
+        .child .play:not(.can_expand) {
+          --mdc-icon-button-size: 70px;
+          --mdc-icon-size: 48px;
+        }
+
+        .ha-card-parent:hover .play:not(.can_expand) {
+          opacity: 1;
+          color: var(--primary-color);
         }
 
         .child .play.can_expand {
+          opacity: 1;
           background-color: rgba(var(--rgb-card-background-color), 0.5);
           bottom: 4px;
           right: 4px;
@@ -712,7 +724,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           color: var(--primary-color);
         }
 
-        ha-card:hover {
+        .ha-card-parent:hover ha-card {
           opacity: 0.5;
         }
 
