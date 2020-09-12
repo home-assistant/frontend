@@ -206,7 +206,6 @@ export class HaMediaPlayerBrowse extends LitElement {
                       @click=${this._actionClicked}
                     >
                       <ha-svg-icon
-                        slot="icon"
                         .label=${this.hass.localize(
                           `ui.components.media-browser.${this.action}-media`
                         )}
