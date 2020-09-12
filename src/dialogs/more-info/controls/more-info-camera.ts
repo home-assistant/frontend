@@ -48,7 +48,7 @@ class MoreInfoCamera extends LitElement {
       <ha-camera-stream
         .hass=${this.hass}
         .stateObj=${this.stateObj}
-        showcontrols
+        controls
       ></ha-camera-stream>
       ${this._cameraPrefs
         ? html`

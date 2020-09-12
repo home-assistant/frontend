@@ -26,7 +26,11 @@ class HaCameraStream extends LitElement {
 
   @property({ attribute: false }) public stateObj?: CameraEntity;
 
-  @property({ type: Boolean }) public showControls = false;
+  @property({ type: Boolean, attribute: "controls" })
+  public controls = false;
+
+  @property({ type: Boolean, attribute: "muted" })
+  public muted = false;
 
   // We keep track if we should force MJPEG with a string
   // that way it automatically resets if we change entity.
@@ -56,9 +60,9 @@ class HaCameraStream extends LitElement {
         ? html`
             <ha-hls-player
               autoplay
-              muted
               playsinline
-              ?controls=${this.showControls}
+              .muted=${this.muted}
+              .controls=${this.controls}
               .hass=${this.hass}
               .url=${this._url}
             ></ha-hls-player>
