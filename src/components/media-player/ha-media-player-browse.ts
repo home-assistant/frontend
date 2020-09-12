@@ -519,7 +519,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         </p>
       `;
     }
-    return err.message;
+    return html`<span class="error">err.message</span>`;
   }
 
   static get styles(): CSSResultArray {
