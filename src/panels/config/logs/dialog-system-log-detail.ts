@@ -1,3 +1,4 @@
+import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiContentCopy } from "@mdi/js";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-tooltip/paper-tooltip";
@@ -81,11 +82,9 @@ class DialogSystemLogDetail extends LitElement {
               item.level
             )}
           </h2>
-          <ha-svg-icon
-            id="copy"
-            .path=${mdiContentCopy}
-            @click=${this._copyLog}
-          ></ha-svg-icon>
+          <mwc-icon-button id="copy" @click=${this._copyLog}>
+            <ha-svg-icon .path=${mdiContentCopy}></ha-svg-icon>
+          </mwc-icon-button>
           <paper-tooltip
             manual-mode
             for="copy"
