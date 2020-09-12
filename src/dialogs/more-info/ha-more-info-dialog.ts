@@ -13,7 +13,10 @@ import {
 } from "lit-element";
 import { cache } from "lit-html/directives/cache";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { DOMAINS_MORE_INFO_NO_HISTORY } from "../../common/const";
+import {
+  DOMAINS_MORE_INFO_NO_HISTORY,
+  DOMAINS_WITH_MORE_INFO,
+} from "../../common/const";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -35,17 +38,6 @@ import "./ha-more-info-history";
 import "./ha-more-info-logbook";
 
 const DOMAINS_NO_INFO = ["camera", "configurator"];
-const CONTROL_DOMAINS = [
-  "light",
-  "media_player",
-  "vacuum",
-  "alarm_control_panel",
-  "climate",
-  "humidifier",
-  "weather",
-  "person",
-  "water_heater",
-];
 const EDITABLE_DOMAINS_WITH_ID = ["scene", "automation"];
 const EDITABLE_DOMAINS = ["script"];
 
@@ -186,7 +178,7 @@ export class MoreInfoDialog extends LitElement {
                 `
               : ""}
           </ha-header-bar>
-          ${CONTROL_DOMAINS.includes(domain) &&
+          ${DOMAINS_WITH_MORE_INFO.includes(domain) &&
           this._computeShowHistoryComponent(entityId)
             ? html`
                 <mwc-tab-bar
@@ -220,26 +212,23 @@ export class MoreInfoDialog extends LitElement {
                           .hass=${this.hass}
                         ></state-card-content>
                       `}
-                  ${CONTROL_DOMAINS.includes(domain) ||
+                  ${DOMAINS_WITH_MORE_INFO.includes(domain) ||
                   !this._computeShowHistoryComponent(entityId)
                     ? ""
                     : html`<ha-more-info-history
-                        .hass=${this.hass}
-                        .entityId=${this._entityId}
-                      ></ha-more-info-history>`}
+                          .hass=${this.hass}
+                          .entityId=${this._entityId}
+                        ></ha-more-info-history>
+                        <ha-more-info-logbook
+                          .hass=${this.hass}
+                          .entityId=${this._entityId}
+                        ></ha-more-info-logbook>`}
                   ${this._moreInfoType
                     ? dynamicElement(this._moreInfoType, {
                         hass: this.hass,
                         stateObj,
                       })
                     : ""}
-                  ${CONTROL_DOMAINS.includes(domain) ||
-                  !this._computeShowHistoryComponent(entityId)
-                    ? ""
-                    : html`<ha-more-info-logbook
-                        .hass=${this.hass}
-                        .entityId=${this._entityId}
-                      ></ha-more-info-logbook>`}
                   ${stateObj.attributes.restored
                     ? html`
                         <p>
