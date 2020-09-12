@@ -21,6 +21,7 @@ import { DOMAINS_TOGGLE } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeActiveState } from "../../../common/entity/compute_active_state";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
@@ -36,7 +37,6 @@ import { hasAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { ButtonCardConfig } from "./types";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 
 @customElement("hui-button-card")
 export class HuiButtonCard extends LitElement implements LovelaceCard {
@@ -63,11 +63,6 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
 
     return {
       type: "button",
-      tap_action: { action: "toggle" },
-      hold_action: { action: "more-info" },
-      show_icon: true,
-      show_name: true,
-      show_state: false,
       entity: foundEntities[0] || "",
     };
   }
@@ -92,29 +87,18 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     }
 
     this._config = {
+      tap_action: {
+        action:
+          config.entity && DOMAINS_TOGGLE.has(computeDomain(config.entity))
+            ? "toggle"
+            : "more-info",
+      },
       hold_action: { action: "more-info" },
-      double_tap_action: { action: "none" },
       show_icon: true,
       show_name: true,
       state_color: true,
       ...config,
     };
-
-    if (config.entity && DOMAINS_TOGGLE.has(computeDomain(config.entity))) {
-      this._config = {
-        tap_action: {
-          action: "toggle",
-        },
-        ...this._config,
-      };
-    } else {
-      this._config = {
-        tap_action: {
-          action: "more-info",
-        },
-        ...this._config,
-      };
-    }
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
