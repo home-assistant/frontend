@@ -110,7 +110,7 @@ const processTheme = (
     keys[prefixedKey] = "";
 
     // Try to create a rgb value for this key if it is not a var
-    if (!value.startsWith("#")) {
+    if (!value || !value.startsWith("#")) {
       // Can't convert non hex value
       continue;
     }
