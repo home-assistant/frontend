@@ -13,7 +13,10 @@ import { classMap } from "lit-html/directives/class-map";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-code-editor";
-import { subscribeRenderTemplate } from "../../../data/ws-templates";
+import {
+  RenderTemplateResult,
+  subscribeRenderTemplate,
+} from "../../../data/ws-templates";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 
@@ -31,10 +34,9 @@ The temperature is {{ my_test_json.temperature }} {{ my_test_json.unit }}.
   The sun will rise at {{ as_timestamp(strptime(state_attr("sun.sun", "next_rising"), "")) | timestamp_local }}.
 {%- endif %}
 
-For loop example getting 3 entity values:
+For loop example getting entity values in the weather domain:
 
-{% for states in states | slice(3) -%}
-  {% set state = states | first %}
+{% for state in states.weather -%}
   {%- if loop.first %}The {% elif loop.last %} and the {% else %}, the {% endif -%}
   {{ state.name | lower }} is {{state.state_with_unit}}
 {%- endfor %}.`;
@@ -45,11 +47,11 @@ class HaPanelDevTemplate extends LitElement {
 
   @property() public narrow!: boolean;
 
-  @internalProperty() private _error = false;
+  @internalProperty() private _error?: string;
 
   @internalProperty() private _rendering = false;
 
-  @internalProperty() private _processed = "";
+  @internalProperty() private _templateResult?: RenderTemplateResult;
 
   @internalProperty() private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
 
@@ -140,9 +142,65 @@ class HaPanelDevTemplate extends LitElement {
             .active=${this._rendering}
             size="small"
           ></ha-circular-progress>
-          <pre class="rendered ${classMap({ error: this._error })}">
-${this._processed}</pre
-          >
+
+          <pre
+            class="rendered ${classMap({ error: Boolean(this._error) })}"
+          ><!-- display: block -->${this._error}${this._templateResult
+            ?.result}</pre>
+          ${!this._templateResult?.listeners
+            ? ""
+            : this._templateResult.listeners.all
+            ? html`
+                <h3 class="all_listeners">
+                  ${this.hass.localize(
+                    "ui.panel.developer-tools.tabs.templates.all_listeners"
+                  )}
+                </h3>
+              `
+            : this._templateResult.listeners.domains.length ||
+              this._templateResult.listeners.entities.length
+            ? html`
+                <h3>
+                  ${this.hass.localize(
+                    "ui.panel.developer-tools.tabs.templates.listeners"
+                  )}
+                </h3>
+                <ul>
+                  ${this._templateResult.listeners.domains
+                    .sort()
+                    .map(
+                      (domain) =>
+                        html`
+                          <li>
+                            <b
+                              >${this.hass.localize(
+                                "ui.panel.developer-tools.tabs.templates.domain"
+                              )}</b
+                            >: ${domain}
+                          </li>
+                        `
+                    )}
+                  ${this._templateResult.listeners.entities
+                    .sort()
+                    .map(
+                      (entity_id) =>
+                        html`
+                          <li>
+                            <b
+                              >${this.hass.localize(
+                                "ui.panel.developer-tools.tabs.templates.entity"
+                              )}</b
+                            >: ${entity_id}
+                          </li>
+                        `
+                    )}
+                </ul>
+              `
+            : html` <span class="all_listeners">
+                ${this.hass.localize(
+                  "ui.panel.developer-tools.tabs.templates.no_listeners"
+                )}
+              </span>`}
         </div>
       </div>
     `;
@@ -190,6 +248,12 @@ ${this._processed}</pre
           @apply --paper-font-code1;
           clear: both;
           white-space: pre-wrap;
+          background-color: var(--secondary-background-color);
+          padding: 8px;
+        }
+
+        .all_listeners {
+          color: var(--warning-color);
         }
 
         .rendered.error {
@@ -211,7 +275,7 @@ ${this._processed}</pre
   private _templateChanged(ev) {
     this._template = ev.detail.value;
     if (this._error) {
-      this._error = false;
+      this._error = undefined;
     }
     this._debounceRender();
   }
@@ -223,7 +287,8 @@ ${this._processed}</pre
       this._unsubRenderTemplate = subscribeRenderTemplate(
         this.hass.connection,
         (result) => {
-          this._processed = result;
+          this._templateResult = result;
+          this._error = undefined;
         },
         {
           template: this._template,
@@ -231,9 +296,10 @@ ${this._processed}</pre
       );
       await this._unsubRenderTemplate;
     } catch (err) {
-      this._error = true;
+      this._error = "Unknown error";
       if (err.message) {
-        this._processed = err.message;
+        this._error = err.message;
+        this._templateResult = undefined;
       }
       this._unsubRenderTemplate = undefined;
     } finally {

@@ -8,85 +8,7 @@
         "shopping_list": "Lista za kupovinu",
         "states": "Pregled"
     },
-    "state_badge": {
-        "alarm_control_panel": {
-            "armed_away": "",
-            "armed_custom_bypass": "",
-            "armed_night": ""
-        },
-        "device_tracker": {
-            "home": "",
-            "not_home": ""
-        }
-    },
     "state": {
-        "automation": {
-            "off": "",
-            "on": ""
-        },
-        "binary_sensor": {
-            "default": {
-                "off": "",
-                "on": ""
-            },
-            "motion": {
-                "on": ""
-            },
-            "occupancy": {
-                "off": ""
-            },
-            "opening": {
-                "on": ""
-            },
-            "presence": {
-                "off": "",
-                "on": ""
-            },
-            "vibration": {
-                "off": "",
-                "on": ""
-            }
-        },
-        "calendar": {
-            "off": "",
-            "on": ""
-        },
-        "fan": {
-            "off": "",
-            "on": ""
-        },
-        "group": {
-            "home": "",
-            "not_home": "",
-            "off": "",
-            "on": "",
-            "problem": ""
-        },
-        "input_boolean": {
-            "on": ""
-        },
-        "light": {
-            "off": "",
-            "on": ""
-        },
-        "media_player": {
-            "off": "",
-            "on": ""
-        },
-        "remote": {
-            "on": ""
-        },
-        "script": {
-            "off": "",
-            "on": ""
-        },
-        "sensor": {
-            "off": "",
-            "on": ""
-        },
-        "switch": {
-            "on": ""
-        },
         "weather": {
             "clear-night": "Vedra noć",
             "cloudy": "Oblačno",
@@ -151,13 +73,6 @@
             "config": {
                 "automation": {
                     "editor": {
-                        "conditions": {
-                            "type": {
-                                "zone": {
-                                    "entity": ""
-                                }
-                            }
-                        },
                         "triggers": {
                             "type": {
                                 "mqtt": {
@@ -190,45 +105,6 @@
                     "caption": "Z-Wave",
                     "node_config": {
                         "set_config_parameter": "Подесите параметар Цонфиг"
-                    }
-                }
-            },
-            "page-authorize": {
-                "form": {
-                    "providers": {
-                        "command_line": {
-                            "abort": {
-                                "login_expired": ""
-                            },
-                            "error": {
-                                "invalid_auth": "",
-                                "invalid_code": ""
-                            },
-                            "step": {
-                                "init": {
-                                    "data": {
-                                        "password": "",
-                                        "username": ""
-                                    }
-                                },
-                                "mfa": {
-                                    "data": {
-                                        "code": ""
-                                    },
-                                    "description": ""
-                                }
-                            }
-                        },
-                        "legacy_api_password": {
-                            "step": {
-                                "mfa": {
-                                    "data": {
-                                        "code": ""
-                                    },
-                                    "description": ""
-                                }
-                            }
-                        }
                     }
                 }
             }

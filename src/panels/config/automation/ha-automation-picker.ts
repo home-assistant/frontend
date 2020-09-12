@@ -25,6 +25,7 @@ import {
   showAutomationEditor,
   triggerAutomation,
 } from "../../../data/automation";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
@@ -35,9 +36,9 @@ import { showThingtalkDialog } from "./show-dialog-thingtalk";
 class HaAutomationPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide!: boolean;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow!: boolean;
 
   @property() public route!: Route;
 
@@ -58,7 +59,7 @@ class HaAutomationPicker extends LitElement {
         toggle: {
           title: "",
           type: "icon",
-          template: (_toggle, automation) =>
+          template: (_toggle, automation: any) =>
             html`
               <ha-entity-toggle
                 .hass=${this.hass}
@@ -95,7 +96,7 @@ class HaAutomationPicker extends LitElement {
             <mwc-button
               .automation=${automation}
               @click=${(ev) => this._execute(ev)}
-              .disabled=${automation.state === "unavailable"}
+              .disabled=${UNAVAILABLE_STATES.includes(automation.state)}
             >
               ${this.hass.localize("ui.card.automation.trigger")}
             </mwc-button>

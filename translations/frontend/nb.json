@@ -567,6 +567,9 @@
                 "loading_history": "Laster statushistorikk...",
                 "no_history_found": "Ingen statushistorikk funnet."
             },
+            "logbook": {
+                "entries_not_found": "Ingen loggbokoppføringer funnet."
+            },
             "media-browser": {
                 "audio_not_supported": "Nettleseren din støtter ikke lydelementet.",
                 "choose_player": "Velg spiller",
@@ -625,12 +628,12 @@
         "dialogs": {
             "config_entry_system_options": {
                 "enable_new_entities_description": "Hvis den er deaktivert, blir ikke nyoppdagede entiteter for {integration} automatisk lagt til i Home Assistant.",
-                "enable_new_entities_label": "Aktiver enheter som nylig er lagt til.",
+                "enable_new_entities_label": "Aktiver entiteter som nylig er lagt til.",
                 "title": "Systemalternativer for {integration}",
                 "update": "Oppdater"
             },
             "domain_toggler": {
-                "reset_entities": "Tilbakestill enheter",
+                "reset_entities": "Tilbakestill entiteter",
                 "title": "Veksle domener"
             },
             "entity_registry": {
@@ -703,6 +706,7 @@
             },
             "more_info_control": {
                 "controls": "Kontroller",
+                "details": "Detaljer",
                 "dismiss": "Avvis dialogboksen",
                 "edit": "Redigér entitet",
                 "history": "Historie",
@@ -744,7 +748,7 @@
             },
             "mqtt_device_debug_info": {
                 "deserialize": "Forsøk å analysere MQTT-meldinger som JSON",
-                "entities": "Enheter",
+                "entities": "Entiteter",
                 "no_entities": "Ingen entiteter",
                 "no_triggers": "Ingen utløsere",
                 "payload_display": "Nyttelastvisning",
@@ -1120,7 +1124,7 @@
                                     "seconds": "Sekunder"
                                 },
                                 "time": {
-                                    "at": "Klokken",
+                                    "at": "På tidspunktet",
                                     "label": "Tid",
                                     "type_input": "Verdien til en tid/dato hjelper",
                                     "type_value": "Bestemt tid"
@@ -1193,7 +1197,7 @@
                             "manage_entities": "Håndtér entiteter",
                             "security_devices": "Sikkerhetsenheter",
                             "sync_entities": "Synkronisér entiteter til Google",
-                            "sync_entities_404_message": "Kunne ikke synkronisere enhetene dine med Google, be Google 'Hei Google, synkroniser enhetene mine' for å synkronisere enhetene dine.",
+                            "sync_entities_404_message": "Kunne ikke synkronisere entitetene dine med Google, be Google 'Hei Google, synkroniser enhetene mine' for å synkronisere entitetene dine.",
                             "title": ""
                         },
                         "integrations": "Integrasjoner",
@@ -1229,15 +1233,15 @@
                     },
                     "alexa": {
                         "banner": "Redigere hvilke entiteter som vises via dette grensesnittet er deaktivert fordi du har konfigurert entitetsfilter i configuration.yaml.",
-                        "dont_expose_entity": "Ikke eksponer enheten",
+                        "dont_expose_entity": "Ikke eksponer entiteten",
                         "expose": "Eksponer til Alexa",
-                        "expose_entity": "Vis enhet",
+                        "expose_entity": "Eksponer entitet",
                         "exposed": "{selected} eksponert",
                         "exposed_entities": "Eksponerte entiteter",
                         "follow_domain": "Følg domenet",
                         "manage_domains": "Administrer domener",
                         "not_exposed": "{selected} ikke eksponert",
-                        "not_exposed_entities": "Ikke eksponerte enheter",
+                        "not_exposed_entities": "Ikke eksponerte entiteter",
                         "title": ""
                     },
                     "caption": "",
@@ -1274,15 +1278,15 @@
                     "google": {
                         "banner": "Redigere hvilke entiteter som vises via dette grensesnittet er deaktivert fordi du har konfigurert entitetsfilter i configuration.yaml.",
                         "disable_2FA": "Deaktiver totrinnsbekreftelse",
-                        "dont_expose_entity": "Ikke eksponer enheten",
+                        "dont_expose_entity": "Ikke eksponer entiteten",
                         "expose": "Eksponer til Google Assistant",
-                        "expose_entity": "Vis enhet",
+                        "expose_entity": "Eksponer entiteten",
                         "exposed": "{selected} eksponert",
                         "exposed_entities": "Eksponerte entiteter",
                         "follow_domain": "Følg domenet",
                         "manage_domains": "Administrer domener",
                         "not_exposed": "{selected} ikke eksponert",
-                        "not_exposed_entities": "Ikke eksponerte enheter",
+                        "not_exposed_entities": "Ikke eksponerte entiteter",
                         "sync_to_google": "Synkroniserer endringer til Google.",
                         "title": ""
                     },
@@ -1383,7 +1387,7 @@
                     }
                 },
                 "devices": {
-                    "add_prompt": "Ingen {navn} er lagt til ved hjelp av denne enheten ennå. Du kan legge til en ved å klikke på + knappen ovenfor.",
+                    "add_prompt": "Ingen {name} er lagt til ved hjelp av denne enheten ennå. Du kan legge til en ved å klikke på + knappen ovenfor.",
                     "automation": {
                         "actions": {
                             "caption": "Når noe er utløst..."
@@ -1403,7 +1407,7 @@
                     "caption": "Enheter",
                     "confirm_delete": "Er du sikker på at du vil slette denne enheten?",
                     "confirm_rename_entity_ids": "Vil du også endre navn på entitets-ID-en for entitetene dine?",
-                    "confirm_rename_entity_ids_warning": "Dette vil ikke endre noen konfigurasjon (som automatiseringer, skript, scener, Lovelace) som bruker disse enhetene, må du oppdatere dem selv.",
+                    "confirm_rename_entity_ids_warning": "Dette vil ikke endre noen konfigurasjon (som automatiseringer, skript, scener, Lovelace) som bruker disse entitetene, du må oppdatere dem selv.",
                     "data_table": {
                         "area": "Område",
                         "battery": "Batteri",
@@ -1421,9 +1425,9 @@
                     "entities": {
                         "add_entities_lovelace": "Legg til i Lovelace",
                         "disabled_entities": "+{count} {count, plural,\n  one {deaktivert entitet}\n  other {deaktiverte entiteter}\n}",
-                        "entities": "Enheter",
+                        "entities": "Entiteter",
                         "hide_disabled": "Skjul deaktiverte",
-                        "none": "Denne enheten har ingen enheter"
+                        "none": "Denne enheten har ingen entiteter"
                     },
                     "name": "Navn",
                     "no_devices": "Ingen enheter",
@@ -1461,7 +1465,7 @@
                             "filter": "",
                             "show_disabled": "Vis deaktiverte entiteter",
                             "show_readonly": "Vis skrivebeskyttede enheter",
-                            "show_unavailable": "Vis utilgjengelige enheter"
+                            "show_unavailable": "Vis utilgjengelige entiteter"
                         },
                         "header": "Entiteter",
                         "headers": {
@@ -1788,7 +1792,7 @@
                         "nodeplusinfo": "Innhenting av Z-Wave + informasjon fra noden",
                         "probe": "Kontrollere om noden er våken/levende",
                         "protocolinfo": "Få grunnleggende Z-Wave-funksjoner i denne noden fra kontrolleren",
-                        "session": "\nFå sjelden endrede verdier fra noden",
+                        "session": "Henter verdier fra noden som sjeldent oppdateres",
                         "static": "Innhenting av statiske verdier fra enheten",
                         "versions": "Hente informasjon om fastvare- og kommandoklasseversjoner",
                         "wakeup": "Sette opp støtte for vekkingskøer og meldinger"
@@ -1870,7 +1874,7 @@
                             "delete": "Slett entitet",
                             "device_entities": "Hvis du legger til en entitet som tilhører en enhet, vil enheten også bli lagt til.",
                             "header": "Entiteter",
-                            "introduction": "Enheter som ikke tilhører en enhet kan angis her.",
+                            "introduction": "Entiteter som ikke tilhører en enhet kan angis her.",
                             "without_device": "Entiteter uten enhet"
                         },
                         "icon": "Ikon",
@@ -1967,19 +1971,19 @@
                             "input_text": "Last inn inndata tekst på nytt",
                             "introduction": "Noen deler av Home Assistant kan laste inn uten å kreve omstart. Hvis du trykker last på nytt, vil du bytte den nåværende konfigurasjonen med den nye.",
                             "min_max": "Last inn min/maks entiteter på nytt",
-                            "mqtt": "Last inn mqtt-enheter på nytt",
+                            "mqtt": "Last inn mqtt-entiteter på nytt",
                             "person": "Last inn personer på nytt",
                             "ping": "Last inn ping binære sensor entiteter på nytt",
                             "reload": "Last inn {domain} på nytt",
-                            "rest": "Last inn hvileenheter på nytt og varsle tjenester",
-                            "rpi_gpio": "Last inn Raspberry Pi GPIO-enheter på nytt",
+                            "rest": "Last inn REST entiteter og varslingstjenester på nytt",
+                            "rpi_gpio": "Last inn Raspberry Pi GPIO-entiteter på nytt",
                             "scene": "Last inn scener på nytt",
                             "script": "Last inn skript på nytt",
                             "smtp": "Last inn smtp-varslingstjenester på nytt",
                             "statistics": "Last inn statistiske entiteter på nytt",
                             "telegram": "Last inn telegram varslingstjenester på nytt",
                             "template": "Laste inn mal entiteter på nytt",
-                            "trend": "Laste inn trend entiteter på nytt",
+                            "trend": "Last inn trend entiteter på nytt",
                             "universal": "Laste inn universelle mediespiller entiteter på nytt",
                             "zone": "Last inn soner på nytt"
                         },
@@ -2463,7 +2467,7 @@
                             "name": "Entitetsfilter"
                         },
                         "entity": {
-                            "description": "Enhetskortet gir deg en rask oversikt over enhetens tilstand.",
+                            "description": "Entitetskortet gir deg en rask oversikt over entitetens tilstand.",
                             "name": "Entitet"
                         },
                         "gauge": {
@@ -2523,7 +2527,7 @@
                             "name": "Horisontal Stabel"
                         },
                         "humidifier": {
-                            "description": "Luftfukter kortet gir kontroll over luftfukter enheten din. Lar deg endre fuktigheten og modusen til enheten.",
+                            "description": "Luftfukter kortet gir kontroll over luftfukter entiteten din. Lar deg endre fuktigheten og modusen til entiteten.",
                             "name": "Luftfukter"
                         },
                         "iframe": {
@@ -2599,7 +2603,7 @@
                     },
                     "cardpicker": {
                         "by_card": "Med kort",
-                        "by_entity": "Etter enhet",
+                        "by_entity": "Etter entitet",
                         "custom_card": "Tilpasset",
                         "domain": "Domene",
                         "entity": "Entitet",
@@ -2716,14 +2720,14 @@
                     "refresh_header": "Vil du oppfriske?"
                 },
                 "unused_entities": {
-                    "available_entities": "Dette er enheter som du har tilgjengelig, men som ikke er i Lovelace brukergrensesnittet ennå.",
+                    "available_entities": "Dette er entitene som du har tilgjengelig, men som ikke er i Lovelace brukergrensesnittet ennå.",
                     "domain": "Domene",
                     "entity": "Entitet",
                     "entity_id": "Entitets-ID",
                     "last_changed": "Sist endret",
                     "no_data": "Ingen ubrukte entiteter funnet",
-                    "search": "Søk etter enheter",
-                    "select_to_add": "Velg enhetene du vil legge til et kort, og klikk deretter på knappen Legg til kort.",
+                    "search": "Søk etter entiteter",
+                    "select_to_add": "Velg entitene du vil legge til et kort, og klikk deretter på knappen Legg til kort.",
                     "title": "Ubrukte entiteter"
                 },
                 "views": {

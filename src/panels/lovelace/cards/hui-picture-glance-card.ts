@@ -3,9 +3,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -28,10 +28,10 @@ import { hasAction } from "../common/has-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-image";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 import "../components/hui-warning-element";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { PictureGlanceCardConfig, PictureGlanceEntityConfig } from "./types";
-import { createEntityNotFoundWarning } from "../components/hui-warning";
 
 const STATES_OFF = new Set(["closed", "locked", "not_home", "off"]);
 
@@ -104,7 +104,10 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       }
     });
 
-    this._config = config;
+    this._config = {
+      hold_action: { action: "more-info" },
+      ...config,
+    };
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -225,6 +228,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
 
     entityConf = {
       tap_action: { action: dialog ? "more-info" : "toggle" },
+      hold_action: { action: "more-info" },
       ...entityConf,
     };
 

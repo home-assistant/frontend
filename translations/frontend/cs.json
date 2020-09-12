@@ -567,6 +567,9 @@
                 "loading_history": "Historie stavu se načítá...",
                 "no_history_found": "Historie stavu chybí."
             },
+            "logbook": {
+                "entries_not_found": "Nenalezeny žádné záznamy."
+            },
             "media-browser": {
                 "audio_not_supported": "Váš prohlížeč nepodporuje element \"audio\".",
                 "choose_player": "Vyberte přehrávač",
@@ -703,6 +706,7 @@
             },
             "more_info_control": {
                 "controls": "Ovládací prvky",
+                "details": "Podrobnosti",
                 "dismiss": "Zavřít dialog",
                 "edit": "Upravit entitu",
                 "history": "Historie",
@@ -789,7 +793,7 @@
                 "services": {
                     "reconfigure": "Překonfigurovat zařízení ZHA (opravit zařízení). Použijte, pokud se zařízením máte problémy. Je-li dotyčné zařízení napájené bateriemi, ujistěte se prosím, že je při používání této služby spuštěné a přijímá příkazy.",
                     "remove": "Odebrat zařízení ze sítě Zigbee.",
-                    "updateDeviceName": "Nastavte vlastní název tohoto zařízení v registru zařízení.",
+                    "updateDeviceName": "Nastavte vlastní název tohoto zařízení v seznamu zařízení.",
                     "zigbee_information": "Zobrazit Zigbee informace zařízení."
                 },
                 "unknown": "Neznámý",
@@ -1470,8 +1474,8 @@
                             "name": "Název",
                             "status": "Stav"
                         },
-                        "introduction": "Homa Assistant uchovává registr všech entit, které kdy viděl a mohou být jednoznačně identifikovány. Každá z těchto entit bude mít přiděleno ID, které bude rezervováno pouze pro tuto entitu.",
-                        "introduction2": "Pomocí registru entit můžete přepsat název, změnit identifikátor entity nebo odebrat entitu.",
+                        "introduction": "Homa Assistant uchovává záznam o každé entitě, kterou kdy viděl a která může být jednoznačně identifikována. Každá z těchto entit bude mít přiděleno ID, které bude rezervováno pouze pro tuto entitu.",
+                        "introduction2": "Entitě můžete přepsat název, změnit její identifikátor nebo ji odebrat z Home Assistant.",
                         "remove_selected": {
                             "button": "Odstranit vybrané",
                             "confirm_partly_text": "Můžete odebrat pouze {removable} z vybraných {selected} entit. Entity lze odebrat pouze v případě, že integrace již entity neposkytuje. Občas je třeba restartovat Home Assistant před tím, než je možné odstranit entity ze smazané integrace. Opravdu chcete odebrat odstranitelné entity?",
@@ -1497,7 +1501,7 @@
                 "header": "Konfigurace Home Assistant",
                 "helpers": {
                     "caption": "Pomocníci",
-                    "description": "Prvky, které mohou pomoci při vytváření automatizací.",
+                    "description": "Správa prvků, které mohou pomoci při vytváření automatizací",
                     "dialog": {
                         "add_helper": "Přidat pomocníka",
                         "add_platform": "Přidat {platform}",
@@ -1628,7 +1632,7 @@
                 "logs": {
                     "caption": "Logy",
                     "clear": "Zrušit",
-                    "description": "Zobrazit log Home Assistant",
+                    "description": "Zobrazení logů Home Assistant",
                     "details": "Detaily protokolu ({level})",
                     "load_full_log": "Načíst úplný protokol Home Assistanta",
                     "loading_log": "Načítání protokolu chyb...",
@@ -1946,7 +1950,7 @@
                 },
                 "server_control": {
                     "caption": "Ovládání serveru",
-                    "description": "Restart a zastavení serveru Home Asistent",
+                    "description": "Restartování a zastavení serveru Home Asistent",
                     "section": {
                         "reloading": {
                             "automation": "Nově načíst automatizace",
@@ -2179,7 +2183,7 @@
                     "configured_in_yaml": "Zóny konfigurované pomocí configuration.yaml nelze upravovat pomocí UI.",
                     "confirm_delete": "Opravdu chcete tuto zónu smazat?",
                     "create_zone": "Vytvořit zónu",
-                    "description": "Spravujte zóny, ve kterých chcete sledovat osoby.",
+                    "description": "Spravá zón, ve kterých chcete sledovat osoby",
                     "detail": {
                         "create": "Vytvořit",
                         "delete": "Smazat",
@@ -2959,6 +2963,7 @@
                     "confirm_delete": "Opravdu chcete smazat přístupový token pro {name} ?",
                     "create": "Vytvořte token",
                     "create_failed": "Nepodařilo se vytvořit přístupový token.",
+                    "created": "Vytvořeno {date}",
                     "created_at": "Vytvořeno {date}",
                     "delete_failed": "Nepodařilo se odstranit přístupový token.",
                     "description": "Vytvořte přístupové tokeny s dlouhou životností, aby vaše skripty mohly komunikovat s instancí Home Assistant. Každý token bude platný po dobu 10 let od vytvoření. Tyto tokeny s dlouhou životností jsou v současné době aktivní.",
@@ -2966,9 +2971,10 @@
                     "header": "Tokeny s dlouhou životností",
                     "last_used": "Naposledy použito {date} z {location}",
                     "learn_auth_requests": "Naučte se, jak posílat ověřené požadavky.",
+                    "name": "Název",
                     "not_used": "Nikdy nebylo použito",
                     "prompt_copy_token": "Zkopírujte přístupový token. Už nikdy nebude znovu zobrazen.",
-                    "prompt_name": "Název?"
+                    "prompt_name": "Pojmenujte token"
                 },
                 "mfa_setup": {
                     "close": "Zavřít",

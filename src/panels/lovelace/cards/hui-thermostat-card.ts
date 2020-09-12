@@ -1,4 +1,4 @@
-import "../../../components/ha-icon-button";
+import { mdiDotsVertical } from "@mdi/js";
 import "@thomasloven/round-slider";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
@@ -6,13 +6,13 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
+  query,
   svg,
   TemplateResult,
-  query,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { UNIT_F } from "../../../common/const";
@@ -20,6 +20,8 @@ import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_elemen
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-card";
+import type { HaCard } from "../../../components/ha-card";
+import "../../../components/ha-icon-button";
 import {
   ClimateEntity,
   CLIMATE_PRESET_NONE,
@@ -28,14 +30,11 @@ import {
 } from "../../../data/climate";
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
-import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entites";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { ThermostatCardConfig } from "./types";
-import type { HaCard } from "../../../components/ha-card";
-import { mdiDotsVertical } from "@mdi/js";
 
 const modeIcons: { [mode in HvacMode]: string } = {
   auto: "hass:calendar-sync",
@@ -385,8 +384,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         class="${classMap({ "selected-icon": currentMode === mode })}"
         .mode="${mode}"
         .icon="${modeIcons[mode]}"
-        @action=${this._handleAction}
-        .actionHandler=${actionHandler()}
+        @click=${this._handleAction}
         tabindex="0"
       ></ha-icon-button>
     `;

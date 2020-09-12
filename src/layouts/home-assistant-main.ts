@@ -24,6 +24,7 @@ const NON_SWIPABLE_PANELS = ["map"];
 declare global {
   // for fire event
   interface HASSDomEvents {
+    "hass-open-menu": undefined;
     "hass-toggle-menu": undefined;
     "hass-show-notifications": undefined;
   }
@@ -91,6 +92,17 @@ class HomeAssistantMain extends LitElement {
 
   protected firstUpdated() {
     import(/* webpackChunkName: "ha-sidebar" */ "../components/ha-sidebar");
+
+    this.addEventListener("hass-open-menu", () => {
+      if (this._sidebarNarrow) {
+        this.drawer.open();
+      } else {
+        fireEvent(this, "hass-dock-sidebar", {
+          dock: "docked",
+        });
+        setTimeout(() => this.appLayout.resetLayout());
+      }
+    });
 
     this.addEventListener("hass-toggle-menu", () => {
       if (this._sidebarNarrow) {

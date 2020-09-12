@@ -553,6 +553,10 @@
                 "toggle": "觸發"
             },
             "entity": {
+                "entity-attribute-picker": {
+                    "attribute": "屬性",
+                    "show_attributes": "顯示屬性"
+                },
                 "entity-picker": {
                     "clear": "清除",
                     "entity": "實體",
@@ -562,6 +566,9 @@
             "history_charts": {
                 "loading_history": "正在載入狀態歷史...",
                 "no_history_found": "找不到狀態歷史。"
+            },
+            "logbook": {
+                "entries_not_found": "找不到實體日誌。"
             },
             "media-browser": {
                 "audio_not_supported": "瀏覽器不支援音效元件。",
@@ -699,6 +706,7 @@
             },
             "more_info_control": {
                 "controls": "控制",
+                "details": "詳細資訊",
                 "dismiss": "忽略對話",
                 "edit": "編輯實體",
                 "history": "歷史",
@@ -929,7 +937,13 @@
                                     "label": "執行服務",
                                     "service_data": "服務資料"
                                 },
+                                "wait_for_trigger": {
+                                    "continue_timeout": "繼續逾時計算",
+                                    "label": "等候觸發",
+                                    "timeout": "超時（選項）"
+                                },
                                 "wait_template": {
+                                    "continue_timeout": "繼續逾時計算",
                                     "label": "等待",
                                     "timeout": "超時（選項）",
                                     "wait_template": "等待模板"
@@ -993,7 +1007,9 @@
                                 "time": {
                                     "after": "在...之後",
                                     "before": "在...之前",
-                                    "label": "時間"
+                                    "label": "時間",
+                                    "type_input": "日期/時間協助數值",
+                                    "type_value": "固定時間"
                                 },
                                 "zone": {
                                     "entity": "區域實體",
@@ -1081,6 +1097,7 @@
                                     "value_template": "數值模板（選項）"
                                 },
                                 "state": {
+                                    "attribute": "屬性（選項）",
                                     "for": "持續",
                                     "from": "從...狀態",
                                     "label": "狀態",
@@ -1107,8 +1124,10 @@
                                     "seconds": "秒鐘"
                                 },
                                 "time": {
-                                    "at": "在...時間",
-                                    "label": "時間"
+                                    "at": "時間於",
+                                    "label": "時間",
+                                    "type_input": "日期/時間協助數值",
+                                    "type_value": "固定時間"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -1131,6 +1150,8 @@
                         "add_automation": "新增一個自動化",
                         "delete_automation": "刪除自動化",
                         "delete_confirm": "確定要刪除此自動化？",
+                        "duplicate": "複製",
+                        "duplicate_automation": "複製自動化",
                         "edit_automation": "編輯自動化",
                         "header": "自動化編輯器",
                         "headers": {
@@ -1531,6 +1552,7 @@
                 },
                 "integrations": {
                     "add_integration": "新增整合",
+                    "attention": "需要注意",
                     "caption": "整合",
                     "config_entry": {
                         "area": "於 {area}",
@@ -1601,6 +1623,7 @@
                     "none_found_detail": "調整搜尋條件。",
                     "note_about_integrations": "目前並非所有整合皆可以透過 UI 進行設定。",
                     "note_about_website_reference": "更多資訊請參閱",
+                    "reconfigure": "重新設定",
                     "rename_dialog": "編輯設定實體名稱",
                     "rename_input_label": "實體名稱",
                     "search": "搜尋整合"

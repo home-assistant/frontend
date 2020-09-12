@@ -21,7 +21,6 @@ import { computeRTL, emitRTLDirection } from "../../common/util/compute_rtl";
 import "../../components/ha-circular-progress";
 import "../../components/ha-icon";
 import { LogbookEntry } from "../../data/logbook";
-import { haStyleScrollbar } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 
 @customElement("ha-logbook")
@@ -37,6 +36,9 @@ class HaLogbook extends LitElement {
 
   @property({ attribute: "rtl", type: Boolean })
   private _rtl = false;
+
+  @property({ type: Boolean, attribute: "virtualize", reflect: true })
+  public virtualize = false;
 
   @property({ type: Boolean, attribute: "no-icon" })
   public noIcon = false;
@@ -74,7 +76,7 @@ class HaLogbook extends LitElement {
 
     return html`
       <div
-        class="container ha-scrollbar ${classMap({
+        class="container ${classMap({
           narrow: this.narrow,
           rtl: this._rtl,
           "no-name": this.noName,
@@ -82,11 +84,15 @@ class HaLogbook extends LitElement {
         })}"
         @scroll=${this._saveScrollPos}
       >
-        ${scroll({
-          items: this.entries,
-          renderItem: (item: LogbookEntry, index?: number) =>
-            this._renderLogbookItem(item, index),
-        })}
+        ${this.virtualize
+          ? scroll({
+              items: this.entries,
+              renderItem: (item: LogbookEntry, index?: number) =>
+                this._renderLogbookItem(item, index),
+            })
+          : this.entries.map((item, index) =>
+              this._renderLogbookItem(item, index)
+            )}
       </div>
     `;
   }
@@ -143,20 +149,23 @@ class HaLogbook extends LitElement {
                       >
                     `
                 : ""}
-              <span class="item-message">${item.message}</span>
-              <span>${item_username ? ` (${item_username})` : ``}</span>
-              ${!item.context_event_type
+              ${item.message}
+              ${item_username
+                ? ` by ${item_username}`
+                : !item.context_event_type
                 ? ""
                 : item.context_event_type === "call_service"
                 ? // Service Call
-                  html` by service
+                  ` by service
                   ${item.context_domain}.${item.context_service}`
                 : item.context_entity_id === item.entity_id
                 ? // HomeKit or something that self references
-                  html` by
-                  ${item.context_name
-                    ? item.context_name
-                    : item.context_event_type}`
+                  ` by
+                  ${
+                    item.context_name
+                      ? item.context_name
+                      : item.context_event_type
+                  }`
                 : // Another entity such as an automation or script
                   html` by
                     <a
@@ -185,106 +194,104 @@ class HaLogbook extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
-    return [
-      haStyleScrollbar,
-      css`
-        :host {
-          display: block;
-          height: 100%;
-        }
+  static get styles(): CSSResult {
+    return css`
+      :host {
+        display: block;
+        height: 100%;
+      }
 
-        .rtl {
-          direction: ltr;
-        }
+      .rtl {
+        direction: ltr;
+      }
 
-        .entry-container {
-          width: 100%;
-        }
+      .entry-container {
+        width: 100%;
+      }
 
-        .entry {
-          display: flex;
-          width: 100%;
-          line-height: 2em;
-          padding: 8px 16px;
-          box-sizing: border-box;
-          border-top: 1px solid
-            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
-        }
+      .entry {
+        display: flex;
+        width: 100%;
+        line-height: 2em;
+        padding: 8px 16px;
+        box-sizing: border-box;
+        border-top: 1px solid
+          var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
+      }
 
-        .time {
-          display: flex;
-          justify-content: center;
-          flex-direction: column;
-          width: 75px;
-          flex-shrink: 0;
-          font-size: 12px;
-          color: var(--secondary-text-color);
-        }
+      .time {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        width: 75px;
+        flex-shrink: 0;
+        font-size: 12px;
+        color: var(--secondary-text-color);
+      }
 
-        .date {
-          margin: 8px 0;
-          padding: 0 16px;
-        }
+      .date {
+        margin: 8px 0;
+        padding: 0 16px;
+      }
 
-        .narrow .date {
-          padding: 0 8px;
-        }
+      .narrow .date {
+        padding: 0 8px;
+      }
 
-        .rtl .date {
-          direction: rtl;
-        }
+      .rtl .date {
+        direction: rtl;
+      }
 
-        .icon-message {
-          display: flex;
-          align-items: center;
-        }
+      .icon-message {
+        display: flex;
+        align-items: center;
+      }
 
-        .no-entries {
-          text-align: center;
-        }
+      .no-entries {
+        text-align: center;
+        color: var(--secondary-text-color);
+      }
 
-        ha-icon {
-          margin: 0 8px 0 16px;
-          flex-shrink: 0;
-          color: var(--primary-text-color);
-        }
+      ha-icon {
+        margin: 0 8px 0 16px;
+        flex-shrink: 0;
+        color: var(--primary-text-color);
+      }
 
-        .message {
-          color: var(--primary-text-color);
-        }
+      .message {
+        color: var(--primary-text-color);
+      }
 
-        .no-name .item-message {
-          text-transform: capitalize;
-        }
+      .no-name .message:first-letter {
+        text-transform: capitalize;
+      }
 
-        a {
-          color: var(--primary-color);
-        }
+      a {
+        color: var(--primary-color);
+      }
 
-        .uni-virtualizer-host {
-          display: block;
-          position: relative;
-          contain: strict;
-          height: 100%;
-          overflow: auto;
-        }
+      .uni-virtualizer-host {
+        display: block;
+        position: relative;
+        contain: strict;
+        height: 100%;
+        overflow: auto;
+      }
 
-        .uni-virtualizer-host > * {
-          box-sizing: border-box;
-        }
+      .uni-virtualizer-host > * {
+        box-sizing: border-box;
+      }
 
-        .narrow .entry {
-          flex-direction: column;
-          line-height: 1.5;
-          padding: 8px;
-        }
+      .narrow .entry {
+        flex-direction: column;
+        line-height: 1.5;
+        padding: 8px;
+      }
 
-        .narrow .icon-message ha-icon {
-          margin-left: 0;
-        }
-      `,
-    ];
+      .narrow .icon-message ha-icon {
+        margin-left: 0;
+      }
+    `;
   }
 }
 

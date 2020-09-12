@@ -567,6 +567,9 @@
                 "loading_history": "Carregant historial d'estats...",
                 "no_history_found": "No s'ha trobat cap historial d'estats."
             },
+            "logbook": {
+                "entries_not_found": "No s'han trobat entrades al registre."
+            },
             "media-browser": {
                 "audio_not_supported": "El teu navegador no és compatible amb l'element d'àudio.",
                 "choose_player": "Tria el reproductor",
@@ -703,6 +706,7 @@
             },
             "more_info_control": {
                 "controls": "Controls",
+                "details": "Detalls",
                 "dismiss": "Desestimar el diàleg",
                 "edit": "Edita entitat",
                 "history": "Historial",
@@ -2959,6 +2963,7 @@
                     "confirm_delete": "Estàs segur que vols eliminar el token d'autenticació d'accés per {name}?",
                     "create": "Crea un token d'autenticació",
                     "create_failed": "No s'ha pogut crear el token d'autenticació d'accés.",
+                    "created": "Creat el {date}",
                     "created_at": "Creat el {date}",
                     "delete_failed": "No s'ha pogut eliminar el token d'autenticació d'accés.",
                     "description": "Crea tokens d'autenticació d'accés de llarga durada per permetre als teus programes/scripts interactuar amb la instància de Home Assistant. Cada token és vàlid durant deu anys després de la seva creació. Els següents tokens d'autenticació d'accés de llarga durada estan actius actualment.",
@@ -2966,9 +2971,10 @@
                     "header": "Tokens d'autenticació d'accés de llarga durada",
                     "last_used": "Darrer ús el {date} des de {location}",
                     "learn_auth_requests": "Aprèn a fer sol·licituds autenticades.",
+                    "name": "Nom",
                     "not_used": "Mai no s'ha utilitzat",
                     "prompt_copy_token": "Copia't el token d'autenticació d'accés. No es tornarà a mostrar més endavant.",
-                    "prompt_name": "Nom?"
+                    "prompt_name": "Posa un nom al token"
                 },
                 "mfa_setup": {
                     "close": "Tanca",

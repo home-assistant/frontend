@@ -1,5 +1,4 @@
 import "@material/mwc-icon-button";
-import { mdiPlayNetwork } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
@@ -46,9 +45,9 @@ class PanelMediaBrowser extends LitElement {
 
     const title =
       this._entityId === BROWSER_SOURCE
-        ? `${this.hass.localize("ui.components.media-browser.web-browser")} - `
+        ? `${this.hass.localize("ui.components.media-browser.web-browser")}`
         : stateObj?.attributes.friendly_name
-        ? `${stateObj?.attributes.friendly_name} - `
+        ? `${stateObj?.attributes.friendly_name}`
         : undefined;
 
     return html`
@@ -59,17 +58,17 @@ class PanelMediaBrowser extends LitElement {
               .hass=${this.hass}
               .narrow=${this.narrow}
             ></ha-menu-button>
-            <div main-title>
-              ${title || ""}${this.hass.localize(
-                "ui.components.media-browser.media-player-browser"
-              )}
-            </div>
-              <mwc-button @click=${this._showSelectMediaPlayerDialog}>
-                <ha-svg-icon .path=${mdiPlayNetwork}></ha-svg-icon>
+            <div main-title class="heading">
+              <div>
                 ${this.hass.localize(
-                  "ui.components.media-browser.choose_player"
+                  "ui.components.media-browser.media-player-browser"
                 )}
-              </mwc-button>
+              </div>
+              <div class="secondary">${title || ""}</div>
+            </div>
+            <mwc-button @click=${this._showSelectMediaPlayerDialog}>
+              ${this.hass.localize("ui.components.media-browser.choose_player")}
+            </mwc-button>
           </app-toolbar>
         </app-header>
         <div class="content">
@@ -134,8 +133,24 @@ class PanelMediaBrowser extends LitElement {
     return [
       haStyle,
       css`
+        :host {
+          --mdc-theme-primary: var(--app-header-text-color);
+        }
         ha-media-player-browse {
           height: calc(100vh - 84px);
+        }
+        :host([narrow]) app-toolbar mwc-button {
+          width: 65px;
+        }
+        .heading {
+          overflow: hidden;
+          white-space: nowrap;
+        }
+        .heading .secondary {
+          color: var(--secondary-text-color);
+          font-size: 14px;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
       `,
     ];
