@@ -6,7 +6,8 @@ const STATE_OFF = "off";
 export const getLogbookMessage = (
   state: string,
   stateObj: HassEntity,
-  domain: string
+  domain: string,
+  source?: string
 ): string => {
   switch (domain) {
     case "device_tracker":
@@ -111,6 +112,9 @@ export const getLogbookMessage = (
 
       break;
     }
+
+    case "automation":
+      return `has been triggered${source ? ` by ${source}` : ""}`;
   }
 
   if (state === STATE_ON) {
