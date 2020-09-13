@@ -44,7 +44,7 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
       :host {
         display: block;
         background-color: var(--error-color);
-        color: var(--on-error-color, white);
+        color: var(--color-on-error, white);
         padding: 8px;
         font-weight: 500;
         user-select: text;
