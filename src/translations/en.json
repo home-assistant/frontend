@@ -278,7 +278,8 @@
       "successfully_saved": "Successfully saved",
       "successfully_deleted": "Successfully deleted",
       "back": "Back",
-      "error_required": "Required"
+      "error_required": "Required",
+      "copied": "Copied"
     },
     "components": {
       "logbook": {
