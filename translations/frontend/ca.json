@@ -1943,7 +1943,7 @@
                         },
                         "introduction": "L'editor de scripts et permet crear i editar scripts. Vés a l'enllaç de sota per veure'n les instruccions i assegurar-te que has configurat Home Assistant correctament.",
                         "learn_more": "Més informació sobre els scripts",
-                        "no_scripts": "No hem trobat cap script editable",
+                        "no_scripts": "No s'ha pogut trobar cap script editable",
                         "show_info": "Mostra informació sobre l'script",
                         "trigger_script": "Dispara l'script"
                     }
@@ -2352,9 +2352,14 @@
                         "title": "Estats"
                     },
                     "templates": {
+                        "all_listeners": "Aquesta plantilla escolta a tots els esdeveniments de canvi d'estat.",
                         "description": "Les plantilles es renderitzen mitjançant el motor Jinja2 amb algunes extensions específiques de Home Assistant.",
+                        "domain": "Domini",
                         "editor": "Editor de plantilles",
+                        "entity": "Entitat",
                         "jinja_documentation": "Documentació sobre plantilles amb Jinja2",
+                        "listeners": "Aquesta plantilla escolta als següents esdeveniments de canvi d'estat:",
+                        "no_listeners": "Aquesta plantilla no escolta cap esdeveniment de canvi d'estat i no s'actualitza automàticament.",
                         "reset": "Restableix a la plantilla de demostració",
                         "template_extensions": "Extensions de plantilla de Home Assistant",
                         "title": "Plantilla",
@@ -2501,7 +2506,7 @@
                             "no_theme": "Sense tema",
                             "refresh_interval": "Interval d'actualització",
                             "search": "Cerca",
-                            "secondary_info_attribute": "Atribut d’informació secundària",
+                            "secondary_info_attribute": "Atribut d'informació secundària",
                             "show_icon": "Mostra icona?",
                             "show_name": "Mostra nom?",
                             "show_state": "Mostra estat?",
@@ -2941,6 +2946,11 @@
                     "submit": "Envia"
                 },
                 "current_user": "Has iniciat la sessió com a {fullName}.",
+                "customize_sidebar": {
+                    "button": "Edita",
+                    "description": "També pots mantenir premuda la capçalera de la barra lateral per activar el mode d'edició.",
+                    "header": "Canvia l'ordre i/o amaga elements de la barra lateral"
+                },
                 "dashboard": {
                     "description": "Tria un panell per defecte per a aquest dispositiu.",
                     "dropdown_label": "Panell",
@@ -3038,6 +3048,7 @@
             }
         },
         "sidebar": {
+            "done": "Fet",
             "external_app_configuration": "Configuració de l'aplicació",
             "sidebar_toggle": "Commutació de la barra lateral"
         }
