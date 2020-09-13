@@ -60,6 +60,7 @@ export class MoreInfoLogbook extends LitElement {
                 narrow
                 no-icon
                 no-name
+                relative-time
                 .hass=${this.hass}
                 .entries=${this._logbookEntries}
                 .userIdToName=${this._persons}

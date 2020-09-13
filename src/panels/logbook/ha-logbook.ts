@@ -20,6 +20,7 @@ import { stateIcon } from "../../common/entity/state_icon";
 import { computeRTL, emitRTLDirection } from "../../common/util/compute_rtl";
 import "../../components/ha-circular-progress";
 import "../../components/ha-icon";
+import "../../components/ha-relative-time";
 import { LogbookEntry } from "../../data/logbook";
 import { HomeAssistant } from "../../types";
 
@@ -45,6 +46,9 @@ class HaLogbook extends LitElement {
 
   @property({ type: Boolean, attribute: "no-name" })
   public noName = false;
+
+  @property({ type: Boolean, attribute: "relative-time" })
+  public relativeTime = false;
 
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
@@ -109,6 +113,7 @@ class HaLogbook extends LitElement {
     const state = item.entity_id ? this.hass.states[item.entity_id] : undefined;
     const item_username =
       item.context_user_id && this.userIdToName[item.context_user_id];
+
     return html`
       <div class="entry-container">
         ${index === 0 ||
@@ -123,10 +128,21 @@ class HaLogbook extends LitElement {
             `
           : html``}
 
-        <div class="entry">
-          <div class="time">
-            ${formatTimeWithSeconds(new Date(item.when), this.hass.language)}
-          </div>
+        <div
+          class="entry ${classMap({ "no-entity": !item.entity_id })}"
+          .entityId=${item.entity_id}
+          @click=${this._entityClicked}
+        >
+          ${!this.narrow
+            ? html`
+                <div class="time">
+                  ${formatTimeWithSeconds(
+                    new Date(item.when),
+                    this.hass.language
+                  )}
+                </div>
+              `
+            : ""}
           <div class="icon-message">
             ${!this.noIcon
               ? html`
@@ -135,46 +151,49 @@ class HaLogbook extends LitElement {
                   ></ha-icon>
                 `
               : ""}
-            <div class="message">
-              ${!this.noName
-                ? !item.entity_id
+            <div class="message-relative_time">
+              <div class="message">
+                ${!this.noName
                   ? html`<span class="name">${item.name}</span>`
-                  : html`
-                      <a
-                        href="#"
-                        @click=${this._entityClicked}
-                        .entityId=${item.entity_id}
-                        class="name"
-                        >${item.name}</a
-                      >
-                    `
-                : ""}
-              ${item.message}
-              ${item_username
-                ? ` by ${item_username}`
-                : !item.context_event_type
-                ? ""
-                : item.context_event_type === "call_service"
-                ? // Service Call
-                  ` by service
+                  : ""}
+                ${item.message}
+                ${item_username
+                  ? ` by ${item_username}`
+                  : !item.context_event_type
+                  ? ""
+                  : item.context_event_type === "call_service"
+                  ? // Service Call
+                    ` by service
                   ${item.context_domain}.${item.context_service}`
-                : item.context_entity_id === item.entity_id
-                ? // HomeKit or something that self references
-                  ` by
+                  : item.context_entity_id === item.entity_id
+                  ? // HomeKit or something that self references
+                    ` by
                   ${
                     item.context_name
                       ? item.context_name
                       : item.context_event_type
                   }`
-                : // Another entity such as an automation or script
-                  html` by
-                    <a
-                      href="#"
-                      @click=${this._entityClicked}
-                      .entityId=${item.context_entity_id}
-                      class="name"
-                      >${item.context_entity_id_name}</a
-                    >`}
+                  : // Another entity such as an automation or script
+                    html` by
+                      <a
+                        href="#"
+                        @click=${this._entityClicked}
+                        .entityId=${item.context_entity_id}
+                        class="name"
+                        >${item.context_entity_id_name}</a
+                      >`}
+              </div>
+              ${!this.narrow || this.relativeTime
+                ? html`
+                    <ha-relative-time
+                      .hass=${this.hass}
+                      .datetime=${item.when}
+                    ></ha-relative-time>
+                  `
+                : formatTimeWithSeconds(
+                    new Date(item.when),
+                    this.hass.language
+                  )}
             </div>
           </div>
         </div>
@@ -188,9 +207,15 @@ class HaLogbook extends LitElement {
   }
 
   private _entityClicked(ev: Event) {
+    const entityId = (ev.currentTarget as any).entityId;
+    if (!entityId) {
+      return;
+    }
+
     ev.preventDefault();
+    ev.stopPropagation();
     fireEvent(this, "hass-more-info", {
-      entityId: (ev.target as any).entityId,
+      entityId: entityId,
     });
   }
 
@@ -217,6 +242,16 @@ class HaLogbook extends LitElement {
         box-sizing: border-box;
         border-top: 1px solid
           var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
+        cursor: pointer;
+      }
+
+      .entry.no-entity,
+      .no-name .entry {
+        cursor: default;
+      }
+
+      .entry:hover {
+        background-color: rgba(var(--rgb-primary-text-color), 0.04);
       }
 
       .time {
@@ -227,6 +262,26 @@ class HaLogbook extends LitElement {
         flex-shrink: 0;
         font-size: 12px;
         color: var(--secondary-text-color);
+      }
+
+      .narrow .time {
+        margin-top: 4px;
+        width: auto;
+      }
+
+      .narrow:not(.no-icon) .time {
+        margin-left: 32px;
+      }
+
+      .message-relative_time {
+        display: flex;
+        flex-direction: column;
+      }
+
+      ha-relative-time {
+        font-size: 12px;
+        color: var(--secondary-text-color);
+        line-height: 1.7;
       }
 
       .date {
@@ -255,7 +310,7 @@ class HaLogbook extends LitElement {
       ha-icon {
         margin: 0 8px 0 16px;
         flex-shrink: 0;
-        color: var(--primary-text-color);
+        color: var(--state-icon-color);
       }
 
       .message {
@@ -283,7 +338,6 @@ class HaLogbook extends LitElement {
       }
 
       .narrow .entry {
-        flex-direction: column;
         line-height: 1.5;
         padding: 8px;
       }
