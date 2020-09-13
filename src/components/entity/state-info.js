@@ -72,22 +72,23 @@ class StateInfo extends PolymerElement {
         <div class="name" in-dialog$="[[inDialog]]">
           [[computeStateName(stateObj)]]
         </div>
-
         <template is="dom-if" if="[[inDialog]]">
           <div class="time-ago">
-            <span>
+            <ha-relative-time
+              id="ha_relative_time_[[stateObj.context.id]]"
+              hass="[[hass]]"
+              datetime="[[stateObj.last_changed]]"
+            ></ha-relative-time>
+            <paper-tooltip
+              animation-delay="0"
+              for="ha_relative_time_[[stateObj.context.id]]"
+            >
+              [[localize('ui.dialogs.more_info_control.last_updated')]]:
               <ha-relative-time
                 hass="[[hass]]"
-                datetime="[[stateObj.last_changed]]"
+                datetime="[[stateObj.last_updated]]"
               ></ha-relative-time>
-              <paper-tooltip animation-delay="0">
-                [[localize('ui.dialogs.more_info_control.last_updated')]]:
-                <ha-relative-time
-                  hass="[[hass]]"
-                  datetime="[[stateObj.last_updated]]"
-                ></ha-relative-time>
-              </paper-tooltip>
-            </span>
+            </paper-tooltip>
           </div>
         </template>
         <template is="dom-if" if="[[!inDialog]]">
