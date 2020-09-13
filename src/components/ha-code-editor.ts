@@ -97,7 +97,7 @@ export class HaCodeEditor extends UpdatingElement {
       .CodeMirror {
         height: var(--code-mirror-height, auto);
         direction: var(--code-mirror-direction, ltr);
-        font-family: var(--paper-font-common-code_-_font-family);
+        font-family: var(--code-font-family, monospace);
       }
       .CodeMirror-scroll {
         max-height: var(--code-mirror-max-height, --code-mirror-height);
