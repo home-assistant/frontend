@@ -218,7 +218,6 @@ export class MoreInfoDialog extends LitElement {
                           .entityId=${this._entityId}
                         ></ha-more-info-history>
                         <ha-more-info-logbook
-                          class="padding-bottom"
                           .hass=${this.hass}
                           .entityId=${this._entityId}
                         ></ha-more-info-logbook>`}
