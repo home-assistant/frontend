@@ -31,7 +31,7 @@ class ZwaveUsercodes extends PolymerElement {
         }
 
         pre {
-          font-family: var(--code-font-family);
+          font-family: var(--code-font-family, monospace);
         }
       </style>
       <div class="content">
