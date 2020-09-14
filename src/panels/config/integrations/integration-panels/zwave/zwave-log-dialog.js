@@ -15,6 +15,11 @@ class ZwaveLogDialog extends EventsMixin(PolymerElement) {
         <h2>OpenZwave internal logfile</h2>
         <paper-dialog-scrollable>
           <pre>[[_ozwLog]]</pre>
+          <style>
+            pre {
+              font-family: var(--code-font-family);
+            }
+          </style>
         <paper-dialog-scrollable>
       </ha-paper-dialog>
       `;
