@@ -3,7 +3,7 @@ import { HomeAssistant } from "../types";
 export interface LogbookEntry {
   when: string;
   name: string;
-  message: string;
+  message?: string;
   entity_id?: string;
   domain: string;
   context_user_id?: string;
@@ -13,6 +13,7 @@ export interface LogbookEntry {
   context_entity_id?: string;
   context_entity_id_name?: string;
   context_name?: string;
+  state?: string;
 }
 
 const DATA_CACHE: {

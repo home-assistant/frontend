@@ -113,6 +113,9 @@ export const getLogbookMessage = (
       break;
     }
 
+    case "cover":
+      return state === "open" ? "was opened" : "was closed";
+
     case "automation":
       return `has been triggered${source ? ` by ${source}` : ""}`;
   }

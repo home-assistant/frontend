@@ -10,6 +10,7 @@ import {
   property,
   PropertyValues,
 } from "lit-element";
+import { computeDomain } from "../../common/entity/compute_domain";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/entity/ha-entity-picker";
 import "../../components/ha-circular-progress";
@@ -27,6 +28,7 @@ import { fetchUsers } from "../../data/user";
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
+import { getLogbookMessage } from "./get-logbook-message";
 import "./ha-logbook";
 
 @customElement("ha-panel-logbook")
@@ -268,6 +270,18 @@ export class HaPanelLogbook extends LitElement {
       ),
       this._fetchUserDone,
     ]);
+
+    for (const entry of entries) {
+      if (entry.state) {
+        entry.message = getLogbookMessage(
+          entry.state,
+          this.hass!.states[entry.entity_id!],
+          computeDomain(entry.entity_id!)
+        );
+      }
+    }
+    console.log(entries);
+
     // Fixed in TS 3.9 but upgrade out of scope for this PR.
     // @ts-ignore
     this._entries = entries;
