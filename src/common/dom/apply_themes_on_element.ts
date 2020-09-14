@@ -1,14 +1,14 @@
-import { derivedStyles, darkStyles } from "../../resources/styles";
+import { darkStyles, derivedStyles } from "../../resources/styles";
 import { HomeAssistant, Theme } from "../../types";
 import {
   hex2rgb,
+  lab2hex,
+  lab2rgb,
   rgb2hex,
   rgb2lab,
-  lab2rgb,
-  lab2hex,
 } from "../color/convert-color";
+import { labBrighten, labDarken } from "../color/lab";
 import { rgbContrast } from "../color/rgb";
-import { labDarken, labBrighten } from "../color/lab";
 
 interface ProcessedTheme {
   keys: { [key: string]: "" };
@@ -105,12 +105,12 @@ const processTheme = (
   const keys = {};
   for (const key of Object.keys(combinedTheme)) {
     const prefixedKey = `--${key}`;
-    const value = String(combinedTheme[key]!);
+    const value = String(combinedTheme[key]);
     styles[prefixedKey] = value;
     keys[prefixedKey] = "";
 
     // Try to create a rgb value for this key if it is not a var
-    if (value.startsWith("#")) {
+    if (!value.startsWith("#")) {
       // Can't convert non hex value
       continue;
     }
