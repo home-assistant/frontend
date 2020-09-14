@@ -61,7 +61,7 @@ class HaHLSPlayer extends LitElement {
     return html`
       <video
         ?autoplay=${this.autoPlay}
-        ?muted=${this.muted}
+        .muted=${this.muted}
         ?playsinline=${this.playsInline}
         ?controls=${this.controls}
         @loadeddata=${this._elementResized}
