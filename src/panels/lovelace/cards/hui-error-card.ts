@@ -51,7 +51,7 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
         cursor: default;
       }
       pre {
-        font-family: var(--code-font-family);
+        font-family: var(--code-font-family, monospace);
       }
     `;
   }
