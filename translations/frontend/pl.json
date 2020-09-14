@@ -19,6 +19,7 @@
         "logbook": "Dziennik",
         "mailbox": "Poczta",
         "map": "Mapa",
+        "media_browser": "Odtwarzacz mediów",
         "profile": "Profil",
         "shopping_list": "Lista zakupów",
         "states": "Przegląd"
@@ -553,6 +554,7 @@
             },
             "entity": {
                 "entity-attribute-picker": {
+                    "attribute": "Atrybut",
                     "show_attributes": "Pokaż atrybuty"
                 },
                 "entity-picker": {
@@ -565,10 +567,35 @@
                 "loading_history": "Ładowanie historii...",
                 "no_history_found": "Nie znaleziono historii."
             },
+            "logbook": {
+                "entries_not_found": "Nie znaleziono wpisów w dzienniku."
+            },
             "media-browser": {
                 "audio_not_supported": "Twoja przeglądarka nie obsługuje elementu audio.",
                 "choose_player": "Wybierz odtwarzacz",
                 "choose-source": "Wybierz źródło",
+                "class": {
+                    "album": "Album",
+                    "app": "Aplikacja",
+                    "artist": "Artysta",
+                    "channel": "Kanał",
+                    "composer": "Kompozytor",
+                    "contributing_artist": "Artysta współpracujący",
+                    "directory": "Biblioteka",
+                    "episode": "Odcinek",
+                    "game": "Gra",
+                    "genre": "Gatunek",
+                    "image": "Obraz",
+                    "movie": "Film",
+                    "music": "Muzyka",
+                    "playlist": "Playlista",
+                    "podcast": "Podcast",
+                    "season": "Sezon",
+                    "track": "Ścieżka",
+                    "tv_show": "Program telewizyjny",
+                    "url": "URL",
+                    "video": "Wideo"
+                },
                 "content-type": {
                     "album": "Album",
                     "artist": "Artysta",
@@ -576,6 +603,7 @@
                     "playlist": "Lista odtwarzania",
                     "server": "Serwer"
                 },
+                "media_browsing_error": "Błąd przeglądania multimediów",
                 "media_not_supported": "Przeglądarka odtwarzacza mediów nie obsługuje tego typu mediów",
                 "media_player": "Odtwarzacz mediów",
                 "media-player-browser": "Przeglądarka odtwarzacza mediów",
@@ -931,7 +959,13 @@
                                     "label": "Wywołanie usługi",
                                     "service_data": "Dane usługi"
                                 },
+                                "wait_for_trigger": {
+                                    "continue_timeout": "Kontynuuj po przekroczeniu limitu czasu",
+                                    "label": "Czekaj na wyzwalacz",
+                                    "timeout": "Limit czasu (opcjonalnie)"
+                                },
                                 "wait_template": {
+                                    "continue_timeout": "Kontynuuj po przekroczeniu limitu czasu",
                                     "label": "Oczekiwanie",
                                     "timeout": "Limit czasu (opcjonalnie)",
                                     "wait_template": "Szablon czekania"
@@ -995,7 +1029,9 @@
                                 "time": {
                                     "after": "Po",
                                     "before": "Przed",
-                                    "label": "Czas"
+                                    "label": "Czas",
+                                    "type_input": "Wartość pomocnika typu data/czas",
+                                    "type_value": "Ustalony czas"
                                 },
                                 "zone": {
                                     "entity": "Encja z lokalizacją",
@@ -1083,6 +1119,7 @@
                                     "value_template": "Szablon wartości (opcjonalnie)"
                                 },
                                 "state": {
+                                    "attribute": "Atrybut (opcjonalnie)",
                                     "for": "Przez",
                                     "from": "Z",
                                     "label": "Stan",
@@ -1110,7 +1147,9 @@
                                 },
                                 "time": {
                                     "at": "O",
-                                    "label": "Czas"
+                                    "label": "Czas",
+                                    "type_input": "Wartość pomocnika typu data/czas",
+                                    "type_value": "Ustalony czas"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -1134,7 +1173,7 @@
                         "delete_automation": "Usuń automatyzację",
                         "delete_confirm": "Czy na pewno chcesz usunąć tę automatyzację?",
                         "duplicate": "Duplikuj",
-                        "duplicate_automation": "Duplikat automatyzację",
+                        "duplicate_automation": "Duplikuj automatyzację",
                         "edit_automation": "Edytuj automatyzację",
                         "header": "Edytor automatyzacji",
                         "headers": {
@@ -1502,7 +1541,7 @@
                     },
                     "types": {
                         "input_boolean": "Przełącznik",
-                        "input_datetime": "Data i/lub godzina",
+                        "input_datetime": "Data i/lub czas",
                         "input_number": "Numer",
                         "input_select": "Pole wyboru",
                         "input_text": "Tekst"
@@ -1535,6 +1574,7 @@
                 },
                 "integrations": {
                     "add_integration": "Dodaj integrację",
+                    "attention": "Wymaga uwagi",
                     "caption": "Integracje",
                     "config_entry": {
                         "area": "obszar: {area}",
@@ -1937,7 +1977,7 @@
                         "reloading": {
                             "automation": "Automatyzacje",
                             "command_line": "Encje komponentu linia komend",
-                            "core": "Lokalizacja i dostosowywanie",
+                            "core": "Lokalizację i dostosowywanie",
                             "filesize": "Encje komponentu wielkość pliku",
                             "filter": "Encje komponentu filtr",
                             "generic": "Encje komponentu kamera IP generic",
@@ -2334,9 +2374,14 @@
                         "title": "Stany"
                     },
                     "templates": {
+                        "all_listeners": "Ten szablon nasłuchuje wszystkich zdarzeń zmiany stanu.",
                         "description": "Szablony są renderowane przy użyciu silnika szablonów Jinja2 z kilkoma specyficznymi rozszerzeniami Home Assistanta.",
+                        "domain": "Domena",
                         "editor": "Edytor szablonów",
+                        "entity": "Encja",
                         "jinja_documentation": "Dokumentacja szablonów Jinja2",
+                        "listeners": "Ten szablon nasłuchuje następujących zdarzeń zmiany stanu:",
+                        "no_listeners": "Ten szablon nie nasłuchuje żadnych zdarzeń zmiany stanu i nie zostanie zaktualizowany automatycznie.",
                         "reset": "Zresetuj do szablonu demonstracyjnego",
                         "template_extensions": "Rozszerzenia szablonów Home Assistanta",
                         "title": "Szablon",
@@ -2923,6 +2968,11 @@
                     "submit": "Zatwierdź"
                 },
                 "current_user": "Jesteś obecnie zalogowany jako {fullName}.",
+                "customize_sidebar": {
+                    "button": "Edytuj",
+                    "description": "Możesz także nacisnąć i przytrzymać nagłówek paska bocznego, aby aktywować tryb edycji.",
+                    "header": "Zmień kolejność i ukryj elementy na pasku bocznym"
+                },
                 "dashboard": {
                     "description": "Wybierz domyślny dashboard dla tego urządzenia.",
                     "dropdown_label": "Dashboard",
@@ -2945,6 +2995,7 @@
                     "confirm_delete": "Czy na pewno chcesz usunąć token dla {name}?",
                     "create": "Utwórz token",
                     "create_failed": "Nie udało się utworzyć tokena.",
+                    "created": "Utworzony {date}",
                     "created_at": "Utworzony {date}",
                     "delete_failed": "Nie udało się usunąć tokena.",
                     "description": "Długoterminowe tokeny dostępu umożliwiają skryptom interakcję z Home Assistantem. Każdy token będzie ważny przez 10 lat od utworzenia. Następujące tokeny są obecnie aktywne.",
@@ -3019,6 +3070,7 @@
             }
         },
         "sidebar": {
+            "done": "Gotowe",
             "external_app_configuration": "Konfiguracja aplikacji",
             "sidebar_toggle": "Przełącz pasek boczny"
         }
