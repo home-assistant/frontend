@@ -413,6 +413,9 @@ class HassioHostInfo extends LitElement {
         mwc-list-item ha-svg-icon {
           color: var(--secondary-text-color);
         }
+        pre {
+          font-family: var(--code-font-family, monospace);
+        }
       `,
     ];
   }
