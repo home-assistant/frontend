@@ -3,6 +3,7 @@ import "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
+import { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
 import {
   customElement,
   html,
@@ -31,10 +32,6 @@ export class HuiActionEditor extends LitElement {
 
   @property() protected hass?: HomeAssistant;
 
-  get _action(): string | undefined {
-    return this.config?.action;
-  }
-
   get _navigation_path(): string {
     const config = this.config as NavigateActionConfig;
     return config.navigation_path || "";
@@ -55,7 +52,6 @@ export class HuiActionEditor extends LitElement {
       return html``;
     }
 
-    const index = this._action ? this.actions.indexOf(this._action) : -2;
     return html`
       <paper-dropdown-menu
         .label="${this.label}"
@@ -64,15 +60,16 @@ export class HuiActionEditor extends LitElement {
       >
         <paper-listbox
           slot="dropdown-content"
-          .selected=${index === -2 ? 0 : index === -1 ? index : index + 1}
+          attr-for-selected="value"
+          .selected=${this.config?.action ?? "default"}
         >
           <paper-item .value=${"default"}>Default action</paper-item>
           ${this.actions.map((action) => {
-            return html` <paper-item .value=${action}>${action}</paper-item> `;
+            return html`<paper-item .value=${action}>${action}</paper-item>`;
           })}
         </paper-listbox>
       </paper-dropdown-menu>
-      ${this._action === "navigate"
+      ${this.config?.action === "navigate"
         ? html`
             <paper-input
               label="Navigation Path"
@@ -82,7 +79,7 @@ export class HuiActionEditor extends LitElement {
             ></paper-input>
           `
         : ""}
-      ${this._action === "url"
+      ${this.config?.action === "url"
         ? html`
             <paper-input
               label="Url Path"
@@ -92,7 +89,7 @@ export class HuiActionEditor extends LitElement {
             ></paper-input>
           `
         : ""}
-      ${this.config && this.config.action === "call-service"
+      ${this.config?.action === "call-service"
         ? html`
             <ha-service-picker
               .hass=${this.hass}
@@ -113,11 +110,16 @@ export class HuiActionEditor extends LitElement {
     }
     const item = ev.detail.item;
     const value = item.value;
-    if (this._action === value) {
+    if (this.config?.action === value) {
       return;
     }
     if (value === "default") {
       fireEvent(this, "value-changed", { value: undefined });
+      if (this.config?.action) {
+        (this.shadowRoot!.querySelector(
+          "paper-listbox"
+        ) as PaperListboxElement).select(this.config.action);
+      }
       return;
     }
     fireEvent(this, "value-changed", {
