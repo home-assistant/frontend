@@ -46,9 +46,9 @@ class MoreInfoCamera extends LitElement {
 
     return html`
       <ha-camera-stream
-        allowExoPlayer
         .hass=${this.hass}
         .stateObj=${this.stateObj}
+        allowexoplayer
         controls
       ></ha-camera-stream>
       ${this._cameraPrefs
