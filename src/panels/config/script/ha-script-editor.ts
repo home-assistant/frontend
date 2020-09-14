@@ -1,7 +1,10 @@
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import "@material/mwc-list/mwc-list-item";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-button-menu";
 import {
   css,
   CSSResult,
@@ -38,7 +41,7 @@ import { HaDeviceAction } from "../automation/action/types/ha-automation-action-
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "../../../components/ha-svg-icon";
-import { mdiContentSave } from "@mdi/js";
+import { mdiContentSave, mdiDotsVertical } from "@mdi/js";
 import { PaperListboxElement } from "@polymer/paper-listbox";
 import { slugify } from "../../../common/string/slugify";
 
@@ -63,6 +66,8 @@ export class HaScriptEditor extends LitElement {
 
   @internalProperty() private _errors?: string;
 
+  @internalProperty() private _yamlMode = false;
+
   protected render(): TemplateResult {
     return html`
       <hass-tabs-subpage
@@ -72,19 +77,46 @@ export class HaScriptEditor extends LitElement {
         .backCallback=${() => this._backTapped()}
         .tabs=${configSections.automation}
       >
-        ${!this.scriptEntityId
-          ? ""
-          : html`
-              <ha-icon-button
-                class="warning"
-                slot="toolbar-icon"
-                title="${this.hass.localize(
-                  "ui.panel.config.script.editor.delete_script"
-                )}"
-                icon="hass:delete"
-                @click=${this._deleteConfirm}
-              ></ha-icon-button>
-            `}
+        <ha-button-menu
+          corner="BOTTOM_START"
+          slot="toolbar-icon"
+          @action=${this._handleAction}
+        >
+          <mwc-icon-button
+            slot="trigger"
+            .title=${this.hass.localize("ui.common.menu")}
+            .label=${this.hass.localize("ui.common.overflow_menu")}
+            ><ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+          </mwc-icon-button>
+          <mwc-list-item
+            aria-label=${this._yamlMode
+              ? this.hass.localize("ui.panel.config.automation.editor.edit_ui")
+              : this.hass.localize(
+                  "ui.panel.config.automation.editor.edit_yaml"
+                )}
+          >
+            ${this._yamlMode
+              ? this.hass.localize("ui.panel.config.automation.editor.edit_ui")
+              : this.hass.localize(
+                  "ui.panel.config.automation.editor.edit_yaml"
+                )}
+          </mwc-list-item>
+          ${!this.scriptEntityId
+            ? ""
+            : html`
+                <mwc-list-item
+                  class="warning"
+                  aria-label=${this.hass.localize(
+                    "ui.panel.config.script.editor.delete_script"
+                  )}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.script.editor.delete_script"
+                  )}
+                </mwc-list-item>
+              `}
+        </ha-button-menu>
+
         ${this.narrow
           ? html` <span slot="header">${this._config?.alias}</span> `
           : ""}
@@ -98,151 +130,195 @@ export class HaScriptEditor extends LitElement {
             })}"
           >
             ${this._config
-              ? html`
-                  <ha-config-section .isWide=${this.isWide}>
-                    ${!this.narrow
-                      ? html` <span slot="header">${this._config.alias}</span> `
-                      : ""}
-                    <span slot="introduction">
-                      ${this.hass.localize(
-                        "ui.panel.config.script.editor.introduction"
-                      )}
-                    </span>
-                    <ha-card>
-                      <div class="card-content">
-                        <paper-input
-                          .label=${this.hass.localize(
-                            "ui.panel.config.script.editor.alias"
-                          )}
-                          name="alias"
-                          .value=${this._config.alias}
-                          @value-changed=${this._valueChanged}
-                          @change=${this._aliasChanged}
-                        >
-                        </paper-input>
-                        <ha-icon-input
-                          .label=${this.hass.localize(
-                            "ui.panel.config.script.editor.icon"
-                          )}
-                          .name=${"icon"}
-                          .value=${this._config.icon}
-                          @value-changed=${this._valueChanged}
-                        >
-                        </ha-icon-input>
-                        ${!this.scriptEntityId
-                          ? html` <paper-input
-                              .label=${this.hass.localize(
-                                "ui.panel.config.script.editor.id"
-                              )}
-                              .errorMessage=${this.hass.localize(
-                                "ui.panel.config.script.editor.id_already_exists"
-                              )}
-                              .invalid=${this._idError}
-                              .value=${this._entityId}
-                              @value-changed=${this._idChanged}
+              ? this._yamlMode
+                ? html`
+                    <ha-config-section .isWide=${false}>
+                      ${!this.narrow
+                        ? html`
+                            <span slot="header">${this._config.alias}</span>
+                          `
+                        : ""}
+                      <ha-card>
+                        <div class="card-content">
+                          <ha-yaml-editor
+                            .defaultValue=${this._config}
+                            @value-changed=${this._onYamlChange}
+                          ></ha-yaml-editor>
+                        </div>
+                        ${this.scriptEntityId
+                          ? html`
+                              <div
+                                class="card-actions layout horizontal justified center"
+                              >
+                                <span></span>
+                                <mwc-button
+                                  @click=${this._runScript}
+                                  title="${this.hass.localize(
+                                    "ui.panel.config.script.picker.activate_script"
+                                  )}"
+                                  ?disabled=${this._dirty}
+                                >
+                                  ${this.hass.localize(
+                                    "ui.card.script.execute"
+                                  )}
+                                </mwc-button>
+                              </div>
+                            `
+                          : ``}
+                      </ha-card>
+                    </ha-config-section>
+                  `
+                : html`
+                    <ha-config-section .isWide=${this.isWide}>
+                      ${!this.narrow
+                        ? html`
+                            <span slot="header">${this._config.alias}</span>
+                          `
+                        : ""}
+                      <span slot="introduction">
+                        ${this.hass.localize(
+                          "ui.panel.config.script.editor.introduction"
+                        )}
+                      </span>
+                      <ha-card>
+                        <div class="card-content">
+                          <paper-input
+                            .label=${this.hass.localize(
+                              "ui.panel.config.script.editor.alias"
+                            )}
+                            name="alias"
+                            .value=${this._config.alias}
+                            @value-changed=${this._valueChanged}
+                            @change=${this._aliasChanged}
+                          >
+                          </paper-input>
+                          <ha-icon-input
+                            .label=${this.hass.localize(
+                              "ui.panel.config.script.editor.icon"
+                            )}
+                            .name=${"icon"}
+                            .value=${this._config.icon}
+                            @value-changed=${this._valueChanged}
+                          >
+                          </ha-icon-input>
+                          ${!this.scriptEntityId
+                            ? html` <paper-input
+                                .label=${this.hass.localize(
+                                  "ui.panel.config.script.editor.id"
+                                )}
+                                .errorMessage=${this.hass.localize(
+                                  "ui.panel.config.script.editor.id_already_exists"
+                                )}
+                                .invalid=${this._idError}
+                                .value=${this._entityId}
+                                @value-changed=${this._idChanged}
+                              >
+                              </paper-input>`
+                            : ""}
+                          <p>
+                            ${this.hass.localize(
+                              "ui.panel.config.script.editor.modes.description",
+                              "documentation_link",
+                              html`<a
+                                href="https://www.home-assistant.io/integrations/script/#script-modes"
+                                target="_blank"
+                                rel="noreferrer"
+                                >${this.hass.localize(
+                                  "ui.panel.config.script.editor.modes.documentation"
+                                )}</a
+                              >`
+                            )}
+                          </p>
+                          <paper-dropdown-menu-light
+                            .label=${this.hass.localize(
+                              "ui.panel.config.script.editor.modes.label"
+                            )}
+                            no-animations
+                          >
+                            <paper-listbox
+                              slot="dropdown-content"
+                              .selected=${this._config.mode
+                                ? MODES.indexOf(this._config.mode)
+                                : 0}
+                              @iron-select=${this._modeChanged}
                             >
-                            </paper-input>`
-                          : ""}
+                              ${MODES.map(
+                                (mode) => html`
+                                  <paper-item .mode=${mode}>
+                                    ${this.hass.localize(
+                                      `ui.panel.config.script.editor.modes.${mode}`
+                                    ) || mode}
+                                  </paper-item>
+                                `
+                              )}
+                            </paper-listbox>
+                          </paper-dropdown-menu-light>
+                          ${this._config.mode &&
+                          MODES_MAX.includes(this._config.mode)
+                            ? html` <paper-input
+                                .label=${this.hass.localize(
+                                  `ui.panel.config.script.editor.max.${this._config.mode}`
+                                )}
+                                type="number"
+                                name="max"
+                                .value=${this._config.max || "10"}
+                                @value-changed=${this._valueChanged}
+                              >
+                              </paper-input>`
+                            : html``}
+                        </div>
+                        ${this.scriptEntityId
+                          ? html`
+                              <div
+                                class="card-actions layout horizontal justified center"
+                              >
+                                <span></span>
+                                <mwc-button
+                                  @click=${this._runScript}
+                                  title="${this.hass.localize(
+                                    "ui.panel.config.script.picker.activate_script"
+                                  )}"
+                                  ?disabled=${this._dirty}
+                                >
+                                  ${this.hass.localize(
+                                    "ui.card.script.execute"
+                                  )}
+                                </mwc-button>
+                              </div>
+                            `
+                          : ``}
+                      </ha-card>
+                    </ha-config-section>
+
+                    <ha-config-section .isWide=${this.isWide}>
+                      <span slot="header">
+                        ${this.hass.localize(
+                          "ui.panel.config.script.editor.sequence"
+                        )}
+                      </span>
+                      <span slot="introduction">
                         <p>
                           ${this.hass.localize(
-                            "ui.panel.config.script.editor.modes.description",
-                            "documentation_link",
-                            html`<a
-                              href="https://www.home-assistant.io/integrations/script/#script-modes"
-                              target="_blank"
-                              rel="noreferrer"
-                              >${this.hass.localize(
-                                "ui.panel.config.script.editor.modes.documentation"
-                              )}</a
-                            >`
+                            "ui.panel.config.script.editor.sequence_sentence"
                           )}
                         </p>
-                        <paper-dropdown-menu-light
-                          .label=${this.hass.localize(
-                            "ui.panel.config.script.editor.modes.label"
-                          )}
-                          no-animations
+                        <a
+                          href="https://home-assistant.io/docs/scripts/"
+                          target="_blank"
+                          rel="noreferrer"
                         >
-                          <paper-listbox
-                            slot="dropdown-content"
-                            .selected=${this._config.mode
-                              ? MODES.indexOf(this._config.mode)
-                              : 0}
-                            @iron-select=${this._modeChanged}
-                          >
-                            ${MODES.map(
-                              (mode) => html`
-                                <paper-item .mode=${mode}>
-                                  ${this.hass.localize(
-                                    `ui.panel.config.script.editor.modes.${mode}`
-                                  ) || mode}
-                                </paper-item>
-                              `
-                            )}
-                          </paper-listbox>
-                        </paper-dropdown-menu-light>
-                        ${this._config.mode &&
-                        MODES_MAX.includes(this._config.mode)
-                          ? html` <paper-input
-                              .label=${this.hass.localize(
-                                `ui.panel.config.script.editor.max.${this._config.mode}`
-                              )}
-                              type="number"
-                              name="max"
-                              .value=${this._config.max || "10"}
-                              @value-changed=${this._valueChanged}
-                            >
-                            </paper-input>`
-                          : html``}
-                      </div>
-                      ${this.scriptEntityId
-                        ? html`
-                          <div class="card-actions layout horizontal justified center">
-                            <span></span>
-                            <mwc-button
-                              @click=${this._runScript}
-                              title="${this.hass.localize(
-                                "ui.panel.config.script.picker.activate_script"
-                             )}"
-                             ?disabled=${this._dirty}
-                            >
-                              ${this.hass.localize("ui.card.script.execute")}
-                           </mwc-button>
-                         </div>
-                          `
-                        : ``}
-                    </ha-card>
-                  </ha-config-section>
-
-                  <ha-config-section .isWide=${this.isWide}>
-                    <span slot="header">
-                      ${this.hass.localize(
-                        "ui.panel.config.script.editor.sequence"
-                      )}
-                    </span>
-                    <span slot="introduction">
-                      <p>
-                        ${this.hass.localize(
-                          "ui.panel.config.script.editor.sequence_sentence"
-                        )}
-                      </p>
-                      <a
-                        href="https://home-assistant.io/docs/scripts/"
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        ${this.hass.localize(
-                          "ui.panel.config.script.editor.link_available_actions"
-                        )}
-                      </a>
-                    </span>
-                    <ha-automation-action
-                      .actions=${this._config.sequence}
-                      @value-changed=${this._sequenceChanged}
-                      .hass=${this.hass}
-                    ></ha-automation-action>
-                  </ha-config-section>
-                `
+                          ${this.hass.localize(
+                            "ui.panel.config.script.editor.link_available_actions"
+                          )}
+                        </a>
+                      </span>
+                      <ha-automation-action
+                        .actions=${this._config.sequence}
+                        @value-changed=${this._sequenceChanged}
+                        .hass=${this.hass}
+                      ></ha-automation-action>
+                    </ha-config-section>
+                  `
               : ""}
           </div>
         </div>
@@ -319,7 +395,7 @@ export class HaScriptEditor extends LitElement {
     }
   }
 
-  private async _runScript(ev) {
+  private async _runScript(ev: Event) {
     ev.stopPropagation();
     await triggerScript(this.hass, this.scriptEntityId);
     showToast(this, {
@@ -329,6 +405,21 @@ export class HaScriptEditor extends LitElement {
         this._config!.alias
       ),
     });
+  }
+
+  private _handleAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        this._switchYamlMode();
+        break;
+      case 1:
+        this._deleteConfirm();
+        break;
+    }
+  }
+
+  private _switchYamlMode() {
+    this._yamlMode = !this._yamlMode;
   }
 
   private _modeChanged(ev: CustomEvent) {
@@ -368,6 +459,15 @@ export class HaScriptEditor extends LitElement {
     } else {
       this._idError = false;
     }
+  }
+
+  private _onYamlChange(ev: CustomEvent) {
+    ev.stopPropagation();
+    if (!ev.detail.isValid) {
+      return;
+    }
+    this._config = ev.detail.value;
+    this._dirty = true;
   }
 
   private _valueChanged(ev: CustomEvent) {
