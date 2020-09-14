@@ -3,7 +3,7 @@ import "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
+import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
 import {
   customElement,
   html,
