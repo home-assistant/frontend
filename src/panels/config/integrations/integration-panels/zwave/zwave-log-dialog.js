@@ -17,7 +17,7 @@ class ZwaveLogDialog extends EventsMixin(PolymerElement) {
           <pre>[[_ozwLog]]</pre>
           <style>
             pre {
-              font-family: var(--code-font-family);
+              font-family: var(--code-font-family, monospace);
             }
           </style>
         <paper-dialog-scrollable>
