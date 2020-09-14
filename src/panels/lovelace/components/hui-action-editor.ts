@@ -31,8 +31,8 @@ export class HuiActionEditor extends LitElement {
 
   @property() protected hass?: HomeAssistant;
 
-  get _action(): string {
-    return this.config?.action || "";
+  get _action(): string | undefined {
+    return this.config?.action;
   }
 
   get _navigation_path(): string {
@@ -55,7 +55,7 @@ export class HuiActionEditor extends LitElement {
       return html``;
     }
 
-    const index = this.actions.indexOf(this._action);
+    const index = this._action ? this.actions.indexOf(this._action) : -2;
     return html`
       <paper-dropdown-menu
         .label="${this.label}"
@@ -64,7 +64,7 @@ export class HuiActionEditor extends LitElement {
       >
         <paper-listbox
           slot="dropdown-content"
-          .selected=${index === -1 ? 0 : index + 1}
+          .selected=${index === -2 ? 0 : index === -1 ? index : index + 1}
         >
           <paper-item .value=${"default"}>Default action</paper-item>
           ${this.actions.map((action) => {

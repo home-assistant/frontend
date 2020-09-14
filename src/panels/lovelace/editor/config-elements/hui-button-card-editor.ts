@@ -252,11 +252,12 @@ export class HuiButtonCardEditor extends LitElement
       return;
     }
 
-    this._config = {
-      ...this._config,
-      [target.configValue!]: value,
-    };
-    fireEvent(this, "config-changed", { config: this._config });
+    fireEvent(this, "config-changed", {
+      config: {
+        ...this._config,
+        [target.configValue!]: value,
+      },
+    });
   }
 
   private _valueChanged(ev: CustomEvent): void {
@@ -269,25 +270,22 @@ export class HuiButtonCardEditor extends LitElement
     if (this[`_${target.configValue}`] === value) {
       return;
     }
+    let newConfig;
     if (target.configValue) {
       if (value !== false && !value) {
-        this._config = { ...this._config };
-        delete this._config[target.configValue!];
+        newConfig = { ...this._config };
+        delete newConfig[target.configValue!];
       } else {
-        let newValue: string | undefined;
-        if (
-          target.configValue === "icon_height" &&
-          !isNaN(Number(target.value))
-        ) {
-          newValue = `${String(value)}px`;
-        }
-        this._config = {
+        newConfig = {
           ...this._config,
-          [target.configValue!]: newValue !== undefined ? newValue : value,
+          [target.configValue!]:
+            target.configValue === "icon_height" && !isNaN(Number(target.value))
+              ? `${String(value)}px`
+              : value,
         };
       }
     }
-    fireEvent(this, "config-changed", { config: this._config });
+    fireEvent(this, "config-changed", { config: newConfig });
   }
 }
 
