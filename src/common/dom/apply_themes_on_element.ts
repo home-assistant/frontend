@@ -105,12 +105,12 @@ const processTheme = (
   const keys = {};
   for (const key of Object.keys(combinedTheme)) {
     const prefixedKey = `--${key}`;
-    const value = combinedTheme[key]!;
+    const value = String(combinedTheme[key]!);
     styles[prefixedKey] = value;
     keys[prefixedKey] = "";
 
     // Try to create a rgb value for this key if it is not a var
-    if (!value.startsWith("#")) {
+    if (value.startsWith("#")) {
       // Can't convert non hex value
       continue;
     }
