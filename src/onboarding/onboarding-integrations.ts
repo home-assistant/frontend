@@ -164,7 +164,9 @@ class OnboardingIntegrations extends LitElement {
     // We filter out the config entry for the local weather.
     // It is one that we create automatically and it will confuse the user
     // if it starts showing up during onboarding.
-    this._entries = entries.filter((entry) => entry.domain !== "met");
+    this._entries = entries.filter(
+      (entry) => entry.domain !== "met" && entry.domain !== "rpi_power"
+    );
   }
 
   private async _finish() {
