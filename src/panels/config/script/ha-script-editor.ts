@@ -18,12 +18,14 @@ import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-input";
+import { showToast } from "../../../util/toast";
 import "@material/mwc-fab";
 import {
   Action,
   deleteScript,
   getScriptEditorInitData,
   ScriptConfig,
+  triggerScript,
   MODES,
   MODES_MAX,
 } from "../../../data/script";
@@ -193,6 +195,22 @@ export class HaScriptEditor extends LitElement {
                             </paper-input>`
                           : html``}
                       </div>
+                      ${this.scriptEntityId
+                        ? html`
+                          <div class="card-actions layout horizontal justified center">
+                            <span></span>
+                            <mwc-button
+                              @click=${this._runScript}
+                              title="${this.hass.localize(
+                                "ui.panel.config.script.picker.activate_script"
+                             )}"
+                             ?disabled=${this._dirty}
+                            >
+                              ${this.hass.localize("ui.card.script.execute")}
+                           </mwc-button>
+                         </div>
+                          `
+                        : ``}
                     </ha-card>
                   </ha-config-section>
 
@@ -299,6 +317,18 @@ export class HaScriptEditor extends LitElement {
         ...initData,
       };
     }
+  }
+
+  private async _runScript(ev) {
+    ev.stopPropagation();
+    await triggerScript(this.hass, this.scriptEntityId);
+    showToast(this, {
+      message: this.hass.localize(
+        "ui.notification_toast.triggered",
+        "name",
+        this._config!.alias
+      ),
+    });
   }
 
   private _modeChanged(ev: CustomEvent) {
