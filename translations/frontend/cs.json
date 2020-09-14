@@ -574,6 +574,28 @@
                 "audio_not_supported": "Váš prohlížeč nepodporuje element \"audio\".",
                 "choose_player": "Vyberte přehrávač",
                 "choose-source": "Zvolte zdroj",
+                "class": {
+                    "album": "Album",
+                    "app": "Aplikace",
+                    "artist": "Umělec",
+                    "channel": "Kanál",
+                    "composer": "Skladatel",
+                    "contributing_artist": "Přispívající umělec",
+                    "directory": "Knihovna",
+                    "episode": "Epizoda",
+                    "game": "Hra",
+                    "genre": "Žánr",
+                    "image": "Obrázek",
+                    "movie": "Film",
+                    "music": "Hudba",
+                    "playlist": "Seznam skladeb",
+                    "podcast": "Podcast",
+                    "season": "Sezóna",
+                    "track": "Stopa",
+                    "tv_show": "Televizní pořad",
+                    "url": "Url adresa",
+                    "video": "Video"
+                },
                 "content-type": {
                     "album": "Album",
                     "artist": "Umělec",
@@ -2352,9 +2374,14 @@
                         "title": "Stavy"
                     },
                     "templates": {
+                        "all_listeners": "Tato šablona naslouchá všem změnám stavu.",
                         "description": "Šablony jsou vykreslovány pomocí Jinja2 šablonového enginu s některými specifickými rozšířeními pro Home Assistant.",
+                        "domain": "Doména",
                         "editor": "Editor šablon",
+                        "entity": "Entita",
                         "jinja_documentation": "Dokumentace šablony Jinja2",
+                        "listeners": "Tato šablona naslouchá následujícím změnám stavu:",
+                        "no_listeners": "Tato šablona neposlouchá žádné změny stavu a nebude se automaticky aktualizovat.",
                         "reset": "Obnovit ukázkovou šablonu",
                         "template_extensions": "Rozšíření šablony Home Assistant",
                         "title": "Šablony",
@@ -2941,6 +2968,11 @@
                     "submit": "Odeslat"
                 },
                 "current_user": "Nyní jste přihlášeni jako {fullName}.",
+                "customize_sidebar": {
+                    "button": "Upravit",
+                    "description": "Režim úprav můžete aktivovat také stisknutím a podržením záhlaví postranního panelu.",
+                    "header": "Změna pořadí a skrytí položek postranního panelu"
+                },
                 "dashboard": {
                     "description": "Vyberte výchozí dashboard pro toto zařízení.",
                     "dropdown_label": "Dashboard",
@@ -3038,6 +3070,7 @@
             }
         },
         "sidebar": {
+            "done": "Hotovo",
             "external_app_configuration": "Konfigurace aplikace",
             "sidebar_toggle": "Přepínač postranního panelu"
         }

@@ -571,6 +571,15 @@
                 "audio_not_supported": "Tu navegador no es compatible con el elemento de audio.",
                 "choose_player": "Elige reproductor",
                 "choose-source": "Elige la fuente",
+                "class": {
+                    "playlist": "Lista de reproducción",
+                    "podcast": "Podcast",
+                    "season": "Temporada",
+                    "track": "Pista",
+                    "tv_show": "Programa de TV",
+                    "url": "Url",
+                    "video": "Vídeo"
+                },
                 "content-type": {
                     "album": "Álbum",
                     "artist": "Artista",
