@@ -1,4 +1,4 @@
-import "@material/mwc-button/mwc-button";
+import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiDelete } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
@@ -83,14 +83,14 @@ class HaRefreshTokens extends LitElement {
                         )}
                       </paper-tooltip>`
                     : ""}
-                  <mwc-button
+                  <mwc-icon-button
                     .token=${token}
                     .disabled=${token.is_current}
                     .title=${this.hass.localize(`ui.common.delete`)}
                     @click=${this._deleteToken}
                   >
                     <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
-                  </mwc-button>
+                  </mwc-icon-button>
                 </div>
               </ha-settings-row>`
             )
@@ -135,8 +135,8 @@ class HaRefreshTokens extends LitElement {
         ha-settings-row {
           padding: 0;
         }
-        mwc-button {
-          --mdc-theme-primary: var(--primary-color);
+        mwc-icon-button {
+          color: var(--primary-text-color);
         }
       `,
     ];
