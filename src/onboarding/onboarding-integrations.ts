@@ -161,7 +161,7 @@ class OnboardingIntegrations extends LitElement {
 
   private async _loadConfigEntries() {
     const entries = await getConfigEntries(this.hass!);
-    // We filter out the config entry for the local weather.
+    // We filter out the config entry for the local weather and rpi_powerEx.
     // It is one that we create automatically and it will confuse the user
     // if it starts showing up during onboarding.
     this._entries = entries.filter(
