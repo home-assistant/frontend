@@ -144,7 +144,7 @@ class EventSubscribeCard extends LitElement {
         border-bottom: 0;
       }
       pre {
-        font-family: var(--code-font-family);
+        font-family: var(--code-font-family, monospace);
       }
     `;
   }
