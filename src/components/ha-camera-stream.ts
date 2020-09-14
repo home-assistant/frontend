@@ -64,7 +64,7 @@ class HaCameraStream extends LitElement {
             <ha-hls-player
               autoplay
               playsinline
-              .allowExoplayer=${this.allowExoPlayer}
+              .allowExoPlayer=${this.allowExoPlayer}
               .muted=${this.muted}
               .controls=${this.controls}
               .hass=${this.hass}
