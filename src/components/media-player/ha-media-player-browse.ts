@@ -22,15 +22,15 @@ import { styleMap } from "lit-html/directives/style-map";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
+import type { MediaPlayerItem } from "../../data/media-player";
 import {
   browseLocalMediaPlayer,
   browseMediaPlayer,
-  BROWSER_SOURCE,
+  BROWSER_PLAYER,
   MediaClassBrowserSettings,
   MediaPickedEvent,
   MediaPlayerBrowseAction,
 } from "../../data/media-player";
-import type { MediaPlayerItem } from "../../data/media-player";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
 import { haStyle } from "../../resources/styles";
@@ -108,9 +108,11 @@ export class HaMediaPlayerBrowse extends LitElement {
           text: this._renderError(this._error),
         });
       } else {
-        return html`<div class="container">
-          ${this._renderError(this._error)}
-        </div>`;
+        return html`
+          <div class="container">
+            ${this._renderError(this._error)}
+          </div>
+        `;
       }
     }
 
@@ -235,7 +237,7 @@ export class HaMediaPlayerBrowse extends LitElement {
       </div>
       ${this._error
         ? html`
-            <div class="container error">
+            <div class="container">
               ${this._renderError(this._error)}
             </div>
           `
@@ -456,7 +458,7 @@ export class HaMediaPlayerBrowse extends LitElement {
     mediaContentType?: string
   ): Promise<MediaPlayerItem> {
     const itemData =
-      this.entityId !== BROWSER_SOURCE
+      this.entityId !== BROWSER_PLAYER
         ? await browseMediaPlayer(
             this.hass,
             this.entityId,
@@ -520,7 +522,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         </p>
       `;
     }
-    return html`<span class="error">err.message</span>`;
+    return html`<span class="error">${err.message}</span>`;
   }
 
   static get styles(): CSSResultArray {
