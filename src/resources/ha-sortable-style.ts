@@ -18,8 +18,22 @@ export const sortableStyles = css`
     animation-duration: 0.33s;
   }
 
+  #sortable a {
+    height: 48px;
+    display: flex;
+  }
+
   #sortable {
     outline: none;
+    display: block;
+  }
+
+  .hidden-panel {
+    display: flex;
+  }
+
+  .sortable-fallback {
+    display: none;
   }
 
   .sortable-ghost {
@@ -54,13 +68,25 @@ export const sortableStyles = css`
     }
   }
 
+  .show-panel,
   .hide-panel {
     display: none;
     position: absolute;
+    top: 0;
     right: 0;
+    --mdc-icon-button-size: 40px;
+  }
+
+  .hide-panel {
+    top: 4px;
+    right: 8px;
   }
 
   :host([expanded]) .hide-panel {
+    display: block;
+  }
+
+  :host([expanded]) .show-panel {
     display: inline-flex;
   }
 
