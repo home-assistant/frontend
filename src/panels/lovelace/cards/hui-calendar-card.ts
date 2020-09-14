@@ -3,34 +3,32 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   PropertyValues,
   TemplateResult,
-  internalProperty,
 } from "lit-element";
-
+import { HA_COLOR_PALETTE } from "../../../common/const";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
-import "../../calendar/ha-full-calendar";
-
+import { fetchCalendarEvents } from "../../../data/calendar";
 import type {
-  HomeAssistant,
-  CalendarEvent,
   Calendar,
+  CalendarEvent,
   CalendarViewChanged,
   FullCalendarView,
+  HomeAssistant,
 } from "../../../types";
+import "../../calendar/ha-full-calendar";
+import { findEntities } from "../common/find-entites";
+import { installResizeObserver } from "../common/install-resize-observer";
+import "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { CalendarCardConfig } from "./types";
-import { findEntities } from "../common/find-entites";
-import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import "../components/hui-warning";
-import { fetchCalendarEvents } from "../../../data/calendar";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
-import { HA_COLOR_PALETTE } from "../../../common/const";
-import { debounce } from "../../../common/util/debounce";
-import { installResizeObserver } from "../common/install-resize-observer";
 
 @customElement("hui-calendar-card")
 export class HuiCalendarCard extends LitElement implements LovelaceCard {
@@ -91,7 +89,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       };
     });
 
-    this._config = config;
+    this._config = { initial_view: "dayGridMonth", ...config };
   }
 
   public getCardSize(): number {
@@ -126,6 +124,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
           .events=${this._events}
           .hass=${this.hass}
           .views=${views}
+          .initialView=${this._config.initial_view!}
           @view-changed=${this._handleViewChanged}
         ></ha-full-calendar>
       </ha-card>
