@@ -26,10 +26,8 @@ import { navigate } from "../../common/navigate";
 import "../../components/ha-dialog";
 import "../../components/ha-header-bar";
 import "../../components/ha-svg-icon";
-import "../../components/state-history-charts";
 import { removeEntityRegistryEntry } from "../../data/entity_registry";
 import { showEntityEditorDialog } from "../../panels/config/entities/show-dialog-entity-editor";
-import "../../panels/logbook/ha-logbook";
 import { haStyleDialog } from "../../resources/styles";
 import "../../state-summary/state-card-content";
 import { HomeAssistant } from "../../types";
@@ -220,6 +218,7 @@ export class MoreInfoDialog extends LitElement {
                           .entityId=${this._entityId}
                         ></ha-more-info-history>
                         <ha-more-info-logbook
+                          class="padding-bottom"
                           .hass=${this.hass}
                           .entityId=${this._entityId}
                         ></ha-more-info-logbook>`}
@@ -394,7 +393,9 @@ export class MoreInfoDialog extends LitElement {
           --dialog-content-padding: 0;
         }
 
-        state-card-content {
+        state-card-content,
+        ha-more-info-history,
+        ha-more-info-logbook:not(:last-child) {
           display: block;
           margin-bottom: 16px;
         }
