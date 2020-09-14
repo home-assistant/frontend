@@ -245,7 +245,7 @@ class HAFullCalendar extends LitElement {
 
   private _handleView(ev): void {
     this._activeView = ev.detail.value;
-    this.calendar!.changeView(this._activeView);
+    this.calendar!.changeView(this._activeView!);
     this._fireViewChanged();
   }
 
