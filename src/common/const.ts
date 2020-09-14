@@ -68,6 +68,7 @@ export const DOMAINS_TOGGLE = new Set([
   "fan",
   "input_boolean",
   "light",
+  "script",
   "switch",
   "group",
   "automation",
