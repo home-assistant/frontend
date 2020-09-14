@@ -32,7 +32,7 @@ class HaCameraStream extends LitElement {
   @property({ type: Boolean, attribute: "muted" })
   public muted = false;
 
-  @property({ type: Boolean, attribute: "allowexoplayer" })
+  @property({ type: Boolean, attribute: "allow-exoplayer" })
   public allowExoPlayer = false;
 
   // We keep track if we should force MJPEG with a string
@@ -64,7 +64,7 @@ class HaCameraStream extends LitElement {
             <ha-hls-player
               autoplay
               playsinline
-              ?allowexoplayer=${this.allowExoPlayer}
+              .allowExoplayer=${this.allowExoPlayer}
               .muted=${this.muted}
               .controls=${this.controls}
               .hass=${this.hass}
