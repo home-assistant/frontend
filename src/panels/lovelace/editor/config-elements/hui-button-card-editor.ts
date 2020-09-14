@@ -38,6 +38,15 @@ const cardConfigStruct = object({
   show_state: optional(boolean()),
 });
 
+const actions = [
+  "more-info",
+  "toggle",
+  "navigate",
+  "url",
+  "call-service",
+  "none",
+];
+
 @customElement("hui-button-card-editor")
 export class HuiButtonCardEditor extends LitElement
   implements LovelaceCardEditor {
@@ -80,8 +89,8 @@ export class HuiButtonCardEditor extends LitElement
       : "";
   }
 
-  get _tap_action(): ActionConfig {
-    return this._config!.tap_action || { action: "toggle" };
+  get _tap_action(): ActionConfig | undefined {
+    return this._config!.tap_action;
   }
 
   get _hold_action(): ActionConfig {
@@ -97,14 +106,6 @@ export class HuiButtonCardEditor extends LitElement
       return html``;
     }
 
-    const actions = [
-      "more-info",
-      "toggle",
-      "navigate",
-      "url",
-      "call-service",
-      "none",
-    ];
     const dir = computeRTLDirection(this.hass!);
 
     return html`

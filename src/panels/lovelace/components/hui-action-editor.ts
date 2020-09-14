@@ -54,18 +54,21 @@ export class HuiActionEditor extends LitElement {
     if (!this.hass || !this.actions) {
       return html``;
     }
+
+    const index = this.actions.indexOf(this._action);
     return html`
       <paper-dropdown-menu
         .label="${this.label}"
         .configValue="${"action"}"
-        @value-changed="${this._valueChanged}"
+        @iron-select="${this._actionPicked}"
       >
         <paper-listbox
           slot="dropdown-content"
-          .selected="${this.actions.indexOf(this._action)}"
+          .selected=${index === -1 ? 0 : index + 1}
         >
+          <paper-item .value=${"default"}>Default action</paper-item>
           ${this.actions.map((action) => {
-            return html` <paper-item>${action}</paper-item> `;
+            return html` <paper-item .value=${action}>${action}</paper-item> `;
           })}
         </paper-listbox>
       </paper-dropdown-menu>
@@ -103,21 +106,39 @@ export class HuiActionEditor extends LitElement {
     `;
   }
 
-  private _valueChanged(ev: Event): void {
+  private _actionPicked(ev: CustomEvent): void {
+    ev.stopPropagation();
+    if (!this.hass) {
+      return;
+    }
+    const item = ev.detail.item;
+    const value = item.value;
+    if (this._action === value) {
+      return;
+    }
+    if (value === "default") {
+      fireEvent(this, "value-changed", { value: undefined });
+      return;
+    }
+    fireEvent(this, "value-changed", {
+      value: { action: value },
+    });
+  }
+
+  private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     if (!this.hass) {
       return;
     }
     const target = ev.target! as EditorTarget;
-    if (this[`_${target.configValue}`] === target.value) {
+    const value = ev.detail.value;
+    if (this[`_${target.configValue}`] === value) {
       return;
     }
     if (target.configValue) {
-      const newConfig =
-        target.configValue === "action"
-          ? { action: target.value }
-          : { ...this.config!, [target.configValue!]: target.value };
-      fireEvent(this, "value-changed", { value: newConfig });
+      fireEvent(this, "value-changed", {
+        value: { ...this.config!, [target.configValue!]: value },
+      });
     }
   }
 }
