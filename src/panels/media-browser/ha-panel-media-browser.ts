@@ -64,7 +64,7 @@ class PanelMediaBrowser extends LitElement {
                   "ui.components.media-browser.media-player-browser"
                 )}
               </div>
-              <div class="secondary">${title || ""}</div>
+              <div class="secondary-text">${title || ""}</div>
             </div>
             <mwc-button @click=${this._showSelectMediaPlayerDialog}>
               ${this.hass.localize("ui.components.media-browser.choose_player")}
@@ -146,8 +146,7 @@ class PanelMediaBrowser extends LitElement {
           overflow: hidden;
           white-space: nowrap;
         }
-        .heading .secondary {
-          color: var(--secondary-text-color);
+        .heading .secondary-text {
           font-size: 14px;
           overflow: hidden;
           text-overflow: ellipsis;
