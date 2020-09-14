@@ -64,8 +64,9 @@ export class HuiActionEditor extends LitElement {
           slot="dropdown-content"
           .selected="${this.actions.indexOf(this._action)}"
         >
+          <paper-item></paper-item>
           ${this.actions.map((action) => {
-            return html` <paper-item>${action}</paper-item> `;
+            return html`<paper-item>${action}</paper-item>`;
           })}
         </paper-listbox>
       </paper-dropdown-menu>
