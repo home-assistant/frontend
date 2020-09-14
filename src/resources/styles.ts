@@ -5,6 +5,7 @@ export const darkStyles = {
   "card-background-color": "#1c1c1c",
   "secondary-background-color": "#1e1e1e",
   "primary-text-color": "#e1e1e1",
+  "rgb-primary-text-color": "225, 225, 225",
   "secondary-text-color": "#9b9b9b",
   "disabled-text-color": "#6f6f6f",
   "app-header-text-color": "#e1e1e1",
