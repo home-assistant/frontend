@@ -11,7 +11,6 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { compare } from "../../common/string/compare";
@@ -64,9 +63,6 @@ export class HuiDialogSelectMediaPlayer extends LitElement {
             .map(
               (source) => html`
                 <mwc-list-item
-                  class=${classMap({
-                    disabled: UNAVAILABLE_STATES.includes(source.state),
-                  })}
                   .disabled=${UNAVAILABLE_STATES.includes(source.state)}
                   .player=${source.entity_id}
                   @click=${this._selectPlayer}
@@ -92,8 +88,8 @@ export class HuiDialogSelectMediaPlayer extends LitElement {
         ha-dialog {
           --dialog-content-padding: 0 24px 20px;
         }
-        mwc-list-item.disabled {
-          color: var(--disabled-text-color);
+        mwc-list-item[disabled] {
+          --mdc-theme-text-primary-on-background: var(--disabled-text-color);
         }
       `,
     ];
