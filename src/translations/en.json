@@ -278,7 +278,8 @@
       "successfully_saved": "Successfully saved",
       "successfully_deleted": "Successfully deleted",
       "back": "Back",
-      "error_required": "Required"
+      "error_required": "Required",
+      "copied": "Copied"
     },
     "components": {
       "logbook": {
@@ -373,6 +374,12 @@
         "video_not_supported": "Your browser does not support the video element.",
         "media_not_supported": "The Browser Media Player does not support this type of media",
         "media_browsing_error": "Media Browsing Error",
+        "learn_adding_local_media": "Learn more about adding media in the {documentation}.",
+        "local_media_files": "Place your video, audio and image files in the media directory to be able to browse and play them in the browser or on supported media players.",
+        "documentation": "documentation",
+        "no_local_media_found": "No local media found",
+        "no_media_folder": "It looks like you have not yet created a media directory.",
+        "setup_local_help": "Check the {documentation} on how to setup local media.",
         "class": {
           "album": "Album",
           "app": "App",
@@ -2149,7 +2156,7 @@
             "save": "Save",
             "unsaved_changes": "Unsaved changes",
             "saved": "Saved",
-            "confirm_remove_config_title": "Are you sure you want to remove your Lovelace UI configuration? We will automatically generate your Lovelace UI views with your areas and devices.",
+            "confirm_remove_config_title": "Are you sure you want to remove your Lovelace UI configuration?",
             "confirm_remove_config_text": "We will automatically generate your Lovelace UI views with your areas and devices if you remove your Lovelace UI configuration.",
             "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
             "confirm_unsaved_comments": "Your configuration contains comment(s), these will not be saved. Do you want to continue?",

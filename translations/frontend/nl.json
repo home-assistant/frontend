@@ -507,6 +507,7 @@
             "cancel": "Annuleren",
             "close": "Sluiten",
             "continue": "Ga verder",
+            "copied": "Gekopieerd",
             "delete": "Verwijderen",
             "error_required": "Verplicht",
             "loading": "Bezig met laden",
@@ -574,6 +575,28 @@
                 "audio_not_supported": "Uw browser ondersteunt het audio-element niet.",
                 "choose_player": "Kies speler",
                 "choose-source": "Kies bron",
+                "class": {
+                    "album": "Album",
+                    "app": "App",
+                    "artist": "Artiest",
+                    "channel": "Kanaal",
+                    "composer": "Componist",
+                    "contributing_artist": "Bijdragende artiest",
+                    "directory": "Bibliotheek",
+                    "episode": "Aflevering",
+                    "game": "Spel",
+                    "genre": "Genre",
+                    "image": "Afbeelding",
+                    "movie": "Film",
+                    "music": "Muziek",
+                    "playlist": "Afspeellijst",
+                    "podcast": "Podcast",
+                    "season": "Seizoen",
+                    "track": "Nummer",
+                    "tv_show": "TV-programma",
+                    "url": "Url",
+                    "video": "Video"
+                },
                 "content-type": {
                     "album": "Album",
                     "artist": "Artiest",
@@ -2352,9 +2375,14 @@
                         "title": "Toestanden"
                     },
                     "templates": {
+                        "all_listeners": "Deze template luistert naar alle gebeurtenissen met gewijzigde status.",
                         "description": "Sjablonen worden weergegeven met de Jinja2-sjabloonediter samen met enkele extensies van Home Assistant.",
+                        "domain": "Domein",
                         "editor": "Sjabloonediter",
+                        "entity": "Entiteit",
                         "jinja_documentation": "Jinja2-sjabloondocumentatie",
+                        "listeners": "Deze template luistert naar de volgende gebeurtenissen met gewijzigde status:",
+                        "no_listeners": "Deze template luistert niet naar gebeurtenissen met statuswijziging en wordt niet automatisch bijgewerkt.",
                         "reset": "Resetten naar demosjabloon",
                         "template_extensions": "Home Assistant sjabloon extensiesHome Assistant",
                         "title": "Sjablonen",
@@ -2941,6 +2969,11 @@
                     "submit": "Verzenden"
                 },
                 "current_user": "Je bent momenteel ingelogd als {fullName}.",
+                "customize_sidebar": {
+                    "button": "Bewerken",
+                    "description": "U kunt ook de koptekst van de zijbalk ingedrukt houden om de bewerkingsmodus te activeren.",
+                    "header": "Wijzig de volgorde en verberg items van de zijbalk"
+                },
                 "dashboard": {
                     "description": "Kies een standaard dashboard voor dit apparaat.",
                     "dropdown_label": "Dashboard",
@@ -2963,6 +2996,7 @@
                     "confirm_delete": "Weet je zeker dat je de toegangstoken voor {name} wilt verwijderen?",
                     "create": "Token aanmaken",
                     "create_failed": "De toegangstoken kon niet worden aangemaakt.",
+                    "created": "Gemaakt op {date}",
                     "created_at": "Gemaakt op {date}",
                     "delete_failed": "Verwijderen van de toegangstoken is mislukt.",
                     "description": "Maak toegangstokens met een lange levensduur zodat je scripts kunnen communiceren met je Home Assistant-instantie. Elk token is tien jaar geldig vanaf de aanmaakdatum. De volgende langlevende toegangstokens zijn momenteel actief.",
@@ -2970,9 +3004,10 @@
                     "header": "Toegangtokens met lange levensduur",
                     "last_used": "Laatst gebruikt op {date} vanaf {location}",
                     "learn_auth_requests": "Kom te weten hoe je geverifieerde verzoeken kunt maken",
+                    "name": "Naam",
                     "not_used": "Is nog nooit gebruikt",
                     "prompt_copy_token": "Kopieer je toegangstoken. Het wordt niet meer getoond.",
-                    "prompt_name": "Naam?"
+                    "prompt_name": "Geef het token een naam"
                 },
                 "mfa_setup": {
                     "close": "Sluiten",
@@ -3036,6 +3071,7 @@
             }
         },
         "sidebar": {
+            "done": "Gedaan",
             "external_app_configuration": "App configuratie",
             "sidebar_toggle": "Zijbalk in- en uitschakelen"
         }

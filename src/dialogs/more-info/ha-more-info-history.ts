@@ -1,5 +1,4 @@
 import {
-  css,
   customElement,
   html,
   internalProperty,
@@ -13,7 +12,6 @@ import { throttle } from "../../common/util/throttle";
 import "../../components/state-history-charts";
 import { getRecentWithCache } from "../../data/cached-history";
 import { HistoryResult } from "../../data/history";
-import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 
 @customElement("ha-more-info-history")
@@ -87,18 +85,6 @@ export class MoreInfoHistory extends LitElement {
       this.hass!.localize,
       this.hass!.language
     );
-  }
-
-  static get styles() {
-    return [
-      haStyle,
-      css`
-        state-history-charts {
-          display: block;
-          margin-bottom: 16px;
-        }
-      `,
-    ];
   }
 }
 

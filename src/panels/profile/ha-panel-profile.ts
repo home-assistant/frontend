@@ -201,7 +201,7 @@ class HaPanelProfile extends LitElement {
   }
 
   private _customizeSidebar() {
-    fireEvent(this, "hass-edit-sidebar");
+    fireEvent(this, "hass-edit-sidebar", { editMode: true });
   }
 
   private async _refreshRefreshTokens() {

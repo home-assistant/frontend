@@ -489,6 +489,7 @@
             "back": "Înapoi",
             "cancel": "Revocare",
             "close": "Închide",
+            "copied": "Copiat",
             "delete": "Șterge",
             "error_required": "Necesar",
             "loading": "Se încarcă",
@@ -543,6 +544,32 @@
             "history_charts": {
                 "loading_history": "Încărcarea istoricului de stare ...",
                 "no_history_found": "Nici un istoric de stare nu a fost găsit."
+            },
+            "logbook": {
+                "entries_not_found": "Nu s-au găsit intrări în jurnal."
+            },
+            "media-browser": {
+                "class": {
+                    "album": "Album",
+                    "app": "Aplicație",
+                    "artist": "Artist",
+                    "channel": "Canal",
+                    "composer": "Compozitor",
+                    "contributing_artist": "Artist contribuitor",
+                    "directory": "Bibliotecă",
+                    "episode": "Episod",
+                    "game": "Joc",
+                    "genre": "Gen",
+                    "image": "Imagine",
+                    "movie": "Film",
+                    "music": "Muzică",
+                    "playlist": "Playlist",
+                    "podcast": "Podcast",
+                    "season": "Sezon",
+                    "tv_show": "Emisiune TV",
+                    "url": "Url",
+                    "video": "Video"
+                }
             },
             "related-items": {
                 "area": "Zonă",
@@ -647,6 +674,7 @@
                 "yaml_not_editable": "Setările acestei entități nu se pot edita din interfața grafica. Numai entitățile configurate in interfața grafica sunt configurabile din interfața grafica."
             },
             "more_info_control": {
+                "details": "Detalii",
                 "dismiss": "Se respinge dialogul",
                 "edit": "Editează entitatea",
                 "person": {
@@ -850,7 +878,13 @@
                                     "label": "Cheama serviciu",
                                     "service_data": "Date serviciu"
                                 },
+                                "wait_for_trigger": {
+                                    "continue_timeout": "Continua la timeout",
+                                    "label": "Așteptați declanșatorul",
+                                    "timeout": "Timeout (optional)"
+                                },
                                 "wait_template": {
+                                    "continue_timeout": "Continuați la expirare",
                                     "label": "Asteptare",
                                     "timeout": "Timeout (opțional)",
                                     "wait_template": "Sablon Asteptare"
@@ -1260,6 +1294,7 @@
                 },
                 "integrations": {
                     "add_integration": "Adăugați integrare",
+                    "attention": "Atenție necesară",
                     "caption": "Integrări",
                     "config_entry": {
                         "delete": "Șterge",
@@ -1317,6 +1352,7 @@
                     "none": "Nimic nu a fost configurat încă",
                     "none_found": "Nu s-au găsit integrări",
                     "none_found_detail": "Ajustați criteriile de căutare.",
+                    "reconfigure": "Reconfigurați",
                     "rename_dialog": "Editați numele acestei intrări de configurare",
                     "rename_input_label": "Introdu nume",
                     "search": "Căutare integrari"
@@ -1848,9 +1884,14 @@
                         "title": "Status"
                     },
                     "templates": {
+                        "all_listeners": "Acest șablon ascultă următoarele evenimente modificate de stare:",
                         "description": "Șabloanele sunt redate utilizând motorul de șablon Jinja2 cu unele extensii specifice Home Assistant.",
+                        "domain": "Domeniu",
                         "editor": "Editor șabloane",
+                        "entity": "Entitate",
                         "jinja_documentation": "Șablon documentație Jinja2",
+                        "listeners": "Acest șablon ascultă următoarele evenimente modificate de stare:",
+                        "no_listeners": "Acest șablon ascultă următoarele evenimente modificate de stare:",
                         "template_extensions": "Șabloane de extensie pentru Home Assistant",
                         "title": "Sabloane",
                         "unknown_error_template": "Sa produs o eroare de randare necunoscută."
@@ -2353,6 +2394,11 @@
                     "submit": "Trimite"
                 },
                 "current_user": "În prezent sunteți conectat ca {fullName}.",
+                "customize_sidebar": {
+                    "button": "Editeaza",
+                    "description": "De asemenea, puteți apăsa și ține apăsat antetul barei laterale pentru a activa modul de editare.",
+                    "header": "Schimbați ordinea și ascundeți elementele din bara laterală"
+                },
                 "dashboard": {
                     "description": "Alegeți un tablou de bord implicit pentru acest dispozitiv.",
                     "dropdown_label": "Tablou de bord",
@@ -2375,6 +2421,7 @@
                     "confirm_delete": "Sigur doriti sa stergeti tokenul de acces pentru {name}?",
                     "create": "Creaza un Token",
                     "create_failed": "Crearea tokenului de acces eşuată",
+                    "created": "Creat in {data}",
                     "created_at": "Creat in {date}",
                     "delete_failed": "Ştergerea tokenului de acces eşuată",
                     "description": "Creați tokenuri de acces cu durată lungă de viață pentru a permite script-urilor dvs. să interacționeze cu instanța dvs. Home Assistant. Fiecare token va fi valabil timp de 10 ani de la creatie. Următoarele tokenuri de acces de lungă durată sunt active la ora actuala.",
@@ -2382,6 +2429,7 @@
                     "header": "Tokenuri de acces de lunga durata",
                     "last_used": "Ultima utilizare la {date} din {location}",
                     "learn_auth_requests": "Aflați cum să faceți cereri autentificate.",
+                    "name": "Nume",
                     "not_used": "Nu a fost utilizat niciodata",
                     "prompt_copy_token": "Copia token-ul de acces. Acesta nu va fi afișat din nou.",
                     "prompt_name": "Nume?"
@@ -2443,6 +2491,7 @@
             }
         },
         "sidebar": {
+            "done": "Terminat",
             "external_app_configuration": "Configurație aplicație",
             "sidebar_toggle": "Schimbati bara laterală"
         }

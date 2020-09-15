@@ -1,4 +1,5 @@
 import "@material/mwc-button/mwc-button";
+import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiDelete } from "@mdi/js";
 import {
   css,
@@ -80,14 +81,14 @@ class HaLongLivedTokens extends LitElement {
                       )
                     )}
                   </div>
-                  <mwc-button
+                  <mwc-icon-button
                     .token=${token}
                     .disabled=${token.is_current}
                     .title=${this.hass.localize(`ui.common.delete`)}
                     @click=${this._deleteToken}
                   >
                     <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
-                  </mwc-button>
+                  </mwc-icon-button>
                 </ha-settings-row>`
               )}
         </div>
@@ -184,6 +185,9 @@ class HaLongLivedTokens extends LitElement {
         }
         mwc-button {
           --mdc-theme-primary: var(--primary-color);
+        }
+        mwc-icon-button {
+          color: var(--primary-text-color);
         }
       `,
     ];

@@ -507,6 +507,7 @@
             "cancel": "Avbryt",
             "close": "Lukk",
             "continue": "Fortsette",
+            "copied": "Kopiert",
             "delete": "Slett",
             "error_required": "Nødvendig",
             "loading": "Laster",
@@ -574,6 +575,28 @@
                 "audio_not_supported": "Nettleseren din støtter ikke lydelementet.",
                 "choose_player": "Velg spiller",
                 "choose-source": "Velg kilde",
+                "class": {
+                    "album": "Album",
+                    "app": "App",
+                    "artist": "Artist",
+                    "channel": "Kanal",
+                    "composer": "Komponist",
+                    "contributing_artist": "Medvirkende artist",
+                    "directory": "Bibliotek",
+                    "episode": "Episode",
+                    "game": "Spill",
+                    "genre": "Sjanger",
+                    "image": "Bilde",
+                    "movie": "Film",
+                    "music": "Musikk",
+                    "playlist": "Spilleliste",
+                    "podcast": "Podcast",
+                    "season": "Sesong",
+                    "track": "Spor",
+                    "tv_show": "TV Serie",
+                    "url": "Url",
+                    "video": "Video"
+                },
                 "content-type": {
                     "album": "Album",
                     "artist": "Artist",
@@ -2352,9 +2375,14 @@
                         "title": "Tilstander"
                     },
                     "templates": {
+                        "all_listeners": "Denne malen lytter etter alle tilstandsfornede hendelser.",
                         "description": "Maler blir rendret ved hjelp av Jinja2-malmotoren med noen spesifikke utvidelser for Home Assistant.",
+                        "domain": "Domene",
                         "editor": "Maleditor",
+                        "entity": "Entitet",
                         "jinja_documentation": "Jinja2 mal dokumentasjon",
+                        "listeners": "Denne malen lytter etter følgende tilstandsfor endrede hendelser:",
+                        "no_listeners": "Denne malen lytter ikke etter eventuelle tilstandsfornedne hendelser og oppdateres ikke automatisk.",
                         "reset": "Tilbakestill til demomal",
                         "template_extensions": "Mal utvidelser for Home Assistant",
                         "title": "Mal",
@@ -2941,6 +2969,11 @@
                     "submit": "Send inn"
                 },
                 "current_user": "Du er logget inn som {fullName}.",
+                "customize_sidebar": {
+                    "button": "Redigere",
+                    "description": "Du kan også trykke på og holde nede overskriften på sidefeltet for å aktivere redigeringsmodus.",
+                    "header": "Endre rekkefølgen og skjul elementer fra sidepanelet"
+                },
                 "dashboard": {
                     "description": "Velg et standard instrumentbord for denne enheten.",
                     "dropdown_label": "",
@@ -2963,6 +2996,7 @@
                     "confirm_delete": "Er du sikker på at du vil slette tilgangstoken for {name}?",
                     "create": "Opprett Token",
                     "create_failed": "Kunne ikke opprette tilgangstoken.",
+                    "created": "Opprettet {date}",
                     "created_at": "Opprettet den {date}",
                     "delete_failed": "Kan ikke slette tilgangstokenet.",
                     "description": "Opprett langvarige tilgangstokener slik at skriptene dine kan samhandle med din Home Assistant instans. Hver token vil være gyldig i 10 år fra opprettelsen. Følgende langvarige tilgangstokener er for tiden aktive.",
@@ -2970,9 +3004,10 @@
                     "header": "Langvarige tilgangstokener",
                     "last_used": "Sist brukt den {date} fra {location}",
                     "learn_auth_requests": "Lær hvordan du lager godkjente forespørsler.",
+                    "name": "Navn",
                     "not_used": "Har aldri blitt brukt",
                     "prompt_copy_token": "Kopier tilgangstoken. Det blir ikke vist igjen.",
-                    "prompt_name": "Navn?"
+                    "prompt_name": "Gi tokenet et navn"
                 },
                 "mfa_setup": {
                     "close": "Lukk",
@@ -3036,6 +3071,7 @@
             }
         },
         "sidebar": {
+            "done": "Ferdig",
             "external_app_configuration": "Appkonfigurasjon",
             "sidebar_toggle": "Vis/Skjul sidepanel"
         }

@@ -25,6 +25,7 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
 
@@ -191,7 +192,7 @@ class HaSceneDashboard extends LitElement {
         ${this.hass.localize("ui.panel.config.scene.picker.introduction")}
         <p>
           <a
-            href="https://home-assistant.io/docs/scene/editor/"
+            href="${documentationUrl(this.hass, "/docs/scene/editor/")}"
             target="_blank"
             rel="noreferrer"
           >

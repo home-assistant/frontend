@@ -285,7 +285,7 @@ class HaLogbook extends LitElement {
       .narrow .entry {
         flex-direction: column;
         line-height: 1.5;
-        padding: 8px;
+        padding: 8px 0;
       }
 
       .narrow .icon-message ha-icon {
