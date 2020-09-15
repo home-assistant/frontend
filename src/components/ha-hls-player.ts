@@ -12,7 +12,6 @@ import {
 } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
 import { nextRender } from "../common/util/render-status";
-import { getExternalConfig } from "../external_app/external_config";
 import type { HomeAssistant } from "../types";
 
 type HLSModule = typeof import("hls.js");
