@@ -1,17 +1,16 @@
-import {
-  customElement,
-  html,
-  TemplateResult,
-  LitElement,
-  CSSResult,
-  css,
-  query,
-  property,
-} from "lit-element";
 import "@material/mwc-button";
 import "@material/mwc-menu";
-import type { Menu, Corner } from "@material/mwc-menu";
-
+import type { Corner, Menu } from "@material/mwc-menu";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  query,
+  TemplateResult,
+} from "lit-element";
 import "./ha-icon-button";
 
 @customElement("ha-button-menu")
@@ -21,6 +20,8 @@ export class HaButtonMenu extends LitElement {
   @property({ type: Boolean }) public multi = false;
 
   @property({ type: Boolean }) public activatable = false;
+
+  @property({ type: Boolean }) public disabled = false;
 
   @query("mwc-menu") private _menu?: Menu;
 
@@ -48,6 +49,9 @@ export class HaButtonMenu extends LitElement {
   }
 
   private _handleClick(): void {
+    if (this.disabled) {
+      return;
+    }
     this._menu!.anchor = this;
     this._menu!.show();
   }
