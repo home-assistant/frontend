@@ -1,6 +1,13 @@
 import { PolymerElement } from "@polymer/polymer";
+import {
+  STATE_NOT_RUNNING,
+  STATE_RUNNING,
+  STATE_STARTING,
+} from "home-assistant-js-websocket";
 import { customElement, property, PropertyValues } from "lit-element";
+import { deepActiveElement } from "../common/dom/deep-active-element";
 import { deepEqual } from "../common/util/deep-equal";
+import { CustomPanelInfo } from "../data/panel_custom";
 import { HomeAssistant, Panels } from "../types";
 import { removeInitSkeleton } from "../util/init-skeleton";
 import {
@@ -8,13 +15,6 @@ import {
   RouteOptions,
   RouterOptions,
 } from "./hass-router-page";
-import {
-  STATE_STARTING,
-  STATE_NOT_RUNNING,
-  STATE_RUNNING,
-} from "home-assistant-js-websocket";
-import { CustomPanelInfo } from "../data/panel_custom";
-import { deepActiveElement } from "../common/dom/deep-active-element";
 
 const CACHE_URL_PATHS = ["lovelace", "developer-tools"];
 const COMPONENTS = {
@@ -63,6 +63,10 @@ const COMPONENTS = {
   "shopping-list": () =>
     import(
       /* webpackChunkName: "panel-shopping-list" */ "../panels/shopping-list/ha-panel-shopping-list"
+    ),
+  "media-browser": () =>
+    import(
+      /* webpackChunkName: "panel-media-browser" */ "../panels/media-browser/ha-panel-media-browser"
     ),
 };
 

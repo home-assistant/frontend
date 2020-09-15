@@ -19,6 +19,7 @@
         "logbook": "Journal",
         "mailbox": "Boîtes aux lettres",
         "map": "Carte",
+        "media_browser": "Navigateur multimédia",
         "profile": "Profil",
         "shopping_list": "Liste de courses",
         "states": "Aperçu"
@@ -79,7 +80,7 @@
         "default": {
             "entity_not_found": "Entité introuvable",
             "error": "Erreur",
-            "unavailable": "Indisponible",
+            "unavailable": "Indispo.",
             "unknown": "Inconnu"
         },
         "device_tracker": {
@@ -170,7 +171,7 @@
                 "on": "Problème"
             },
             "safety": {
-                "off": "Sécurisé",
+                "off": "Sûr",
                 "on": "Dangereux"
             },
             "smoke": {
@@ -318,7 +319,7 @@
             "fog": "Brouillard",
             "hail": "Grêle",
             "lightning": "Orage",
-            "lightning-rainy": "Orage / Pluie",
+            "lightning-rainy": "Orage / Pluvieux",
             "partlycloudy": "Partiellement nuageux",
             "pouring": "Averses",
             "rainy": "Pluvieux",
@@ -351,7 +352,7 @@
             "alarm_control_panel": {
                 "arm_away": "Armer (absent)",
                 "arm_custom_bypass": "Bypass personnalisé",
-                "arm_home": "Armer (domicile)",
+                "arm_home": "Armer (présent)",
                 "arm_night": "Armer nuit",
                 "clear_code": "Effacer",
                 "code": "Code",
@@ -505,6 +506,8 @@
             "back": "Retour",
             "cancel": "Annuler",
             "close": "Fermer",
+            "continue": "Continuer",
+            "copied": "Copié",
             "delete": "Supprimer",
             "error_required": "Obligatoire",
             "loading": "Chargement",
@@ -551,6 +554,10 @@
                 "toggle": "Permuter"
             },
             "entity": {
+                "entity-attribute-picker": {
+                    "attribute": "Attribut",
+                    "show_attributes": "Afficher les attributs"
+                },
                 "entity-picker": {
                     "clear": "Effacer",
                     "entity": "Entité",
@@ -561,8 +568,35 @@
                 "loading_history": "Chargement de l'historique des valeurs ...",
                 "no_history_found": "Aucun historique des valeurs trouvé."
             },
+            "logbook": {
+                "entries_not_found": "Aucune entrée trouvée dans le journal."
+            },
             "media-browser": {
+                "audio_not_supported": "Votre navigateur ne prend pas en charge l'élément audio.",
+                "choose_player": "Choisissez le lecteur",
                 "choose-source": "Choisissez la source",
+                "class": {
+                    "album": "Album",
+                    "app": "App",
+                    "artist": "Artiste",
+                    "channel": "Canal",
+                    "composer": "Compositeur",
+                    "contributing_artist": "Artiste collaborateur",
+                    "directory": "Bibliothèque",
+                    "episode": "Épisode",
+                    "game": "Jeu",
+                    "genre": "Genre",
+                    "image": "Image",
+                    "movie": "Film",
+                    "music": "Musique",
+                    "playlist": "Liste de lecture",
+                    "podcast": "Podcast",
+                    "season": "Saison",
+                    "track": "Piste",
+                    "tv_show": "Émission de télévision",
+                    "url": "Url",
+                    "video": "Vidéo"
+                },
                 "content-type": {
                     "album": "Album",
                     "artist": "Artiste",
@@ -570,12 +604,17 @@
                     "playlist": "Liste de lecture",
                     "server": "Serveur"
                 },
+                "media_browsing_error": "Erreur de navigation multimédia",
+                "media_not_supported": "Le Browser Media Player ne prend pas en charge ce type de média",
+                "media_player": "Lecteur multimédia",
                 "media-player-browser": "Lecteur multimédia",
                 "no_items": "Aucun éléments",
                 "pick": "Choisir",
                 "pick-media": "Choisissez un média",
                 "play": "Lecture",
-                "play-media": "Lire le média"
+                "play-media": "Lire le média",
+                "video_not_supported": "Votre navigateur ne prend pas en charge l'élément vidéo.",
+                "web-browser": "Navigateur web"
             },
             "picture-upload": {
                 "label": "Image",
@@ -689,8 +728,11 @@
                 "crop": "Recadrer"
             },
             "more_info_control": {
+                "controls": "Contrôles",
+                "details": "Détails",
                 "dismiss": "Fermer la fenêtre de dialogue",
                 "edit": "Modifier l'entité",
+                "history": "Historique",
                 "person": {
                     "create_zone": "Créer une zone à partir de l'emplacement actuel"
                 },
@@ -918,7 +960,13 @@
                                     "label": "Appeler un service",
                                     "service_data": "Données du service"
                                 },
+                                "wait_for_trigger": {
+                                    "continue_timeout": "Continuer à l'expiration du délai",
+                                    "label": "Attendre le déclencheur",
+                                    "timeout": "Délai d'expiration (optionnel)"
+                                },
                                 "wait_template": {
+                                    "continue_timeout": "Continuer à l'expiration du délai",
                                     "label": "Attendre",
                                     "timeout": "Délai d'expiration (optionnel)",
                                     "wait_template": "Template d'attente"
@@ -982,7 +1030,9 @@
                                 "time": {
                                     "after": "Après",
                                     "before": "Avant",
-                                    "label": "Heure"
+                                    "label": "Heure",
+                                    "type_input": "Valeur d'une aide de date/heure",
+                                    "type_value": "Temps fixe"
                                 },
                                 "zone": {
                                     "entity": "Entité avec localisation",
@@ -1070,6 +1120,7 @@
                                     "value_template": "Contenu du template (optionnel)"
                                 },
                                 "state": {
+                                    "attribute": "Attribut (facultatif)",
                                     "for": "Pendant",
                                     "from": "De",
                                     "label": "État",
@@ -1097,7 +1148,9 @@
                                 },
                                 "time": {
                                     "at": "À",
-                                    "label": "Heure"
+                                    "label": "Heure",
+                                    "type_input": "Valeur d'une aide de date/heure",
+                                    "type_value": "Temps fixe"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -1120,6 +1173,8 @@
                         "add_automation": "Ajouter une automatisation",
                         "delete_automation": "Supprimer l'automatisation",
                         "delete_confirm": "Voulez-vous vraiment supprimer cette automatisation ?",
+                        "duplicate": "Dupliquer",
+                        "duplicate_automation": "Dupliquer l'automatisation",
                         "edit_automation": "Modifier l'automatisation",
                         "header": "Éditeur d'automatisation",
                         "headers": {
@@ -1442,7 +1497,7 @@
                             "name": "Nom",
                             "status": "Statut"
                         },
-                        "introduction": "Home Assistant tient un registre de chaque entité qu'il a déjà vu au moins une fois et qui peut être identifié de manière unique. Chacune de ces entités se verra attribuer un identifiant qui sera réservé à cette seule entité.",
+                        "introduction": "Home Assistant tient un registre de chaque entité qu'il a déjà vu au moins une fois et qui peut être identifiée de manière unique. Chacune de ces entités se verra attribuer un identifiant qui sera réservé à cette seule entité.",
                         "introduction2": "Utilisé le registre des entités pour remplacer le nom, modifier l'ID de l'entité ou supprimer l'entrée de Home Assistant.",
                         "remove_selected": {
                             "button": "Supprimer la sélection",
@@ -1520,6 +1575,7 @@
                 },
                 "integrations": {
                     "add_integration": "Ajouter l'intégration",
+                    "attention": "Attention requise",
                     "caption": "Intégrations",
                     "config_entry": {
                         "area": "Dans {area}",
@@ -1534,7 +1590,7 @@
                         "firmware": "Firmware: {version}",
                         "hub": "Connecté via",
                         "manuf": "par {manufacturer}",
-                        "no_area": "Pas de pièce",
+                        "no_area": "Pas de zone",
                         "no_device": "Entités sans appareils",
                         "no_devices": "Cette intégration n'a pas d'appareils.",
                         "options": "Options",
@@ -1543,6 +1599,7 @@
                         "reload_restart_confirm": "Redémarrer Home Assistant pour finaliser le rechargement de cette intégration",
                         "rename": "Renommer",
                         "restart_confirm": "Redémarrer Home Assistant pour terminer la suppression de cette intégration",
+                        "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
                         "settings_button": "Modifier les paramètres pour {integration}",
                         "system_options": "Options système",
                         "system_options_button": "Options système pour {integration}",
@@ -1589,6 +1646,7 @@
                     "none_found_detail": "Ajustez vos critères de recherche.",
                     "note_about_integrations": "Toutes les intégrations ne peuvent pas encore être configurées via l'interface utilisateur.",
                     "note_about_website_reference": "D'autres sont disponibles sur le ",
+                    "reconfigure": "Reconfigurer",
                     "rename_dialog": "Modifier le nom de cette entrée de configuration",
                     "rename_input_label": "Nom de l'entrée",
                     "search": "Chercher les intégrations"
@@ -1740,7 +1798,7 @@
                     },
                     "network": {
                         "header": "Gestion du réseau",
-                        "introduction": "Διαχείρηση λειτουργιών δικτύου",
+                        "introduction": "Gérez les fonctions de niveau réseau.",
                         "node_count": "{count} nœuds"
                     },
                     "node_query_stages": {
@@ -1762,8 +1820,21 @@
                         "versions": "Obtention d'informations sur les versions des microprogrammes et des classes de commande",
                         "wakeup": "Configuration de la prise en charge des files d'attente et des messages de réveil"
                     },
+                    "node": {
+                        "button": "Détails du nœud",
+                        "not_found": "Nœud introuvable"
+                    },
+                    "nodes_table": {
+                        "failed": "Echec",
+                        "id": "ID",
+                        "manufacturer": "Fabricant",
+                        "model": "Modèle",
+                        "query_stage": "Étape de requête",
+                        "zwave_plus": "Z-Wave Plus"
+                    },
                     "refresh_node": {
                         "battery_note": "Si le nœud est alimenté par batterie, assurez-vous de l'activer avant de continuer",
+                        "button": "Actualiser le nœud",
                         "complete": "Actualisation du nœud terminée",
                         "description": "Cela indiquera à OpenZWave de réinterroger le nœud et de le mettre à jour (commandes, possibilités et valeurs).",
                         "node_status": "État du nœud",
@@ -1912,7 +1983,7 @@
                             "filter": "Recharger les entités de filtre",
                             "generic": "Recharger les entités de caméra IP générique",
                             "generic_thermostat": "Recharger les entités de thermostat générique",
-                            "group": "Recharger les groupes",
+                            "group": "Recharger les groupes, les entités de groupe et notifier les services",
                             "heading": "Rechargement de la configuration",
                             "history_stats": "Recharger les entités des statistiques historiques",
                             "homekit": "Recharger HomeKit",
@@ -1923,12 +1994,17 @@
                             "input_text": "Recharger les entrées de texte (input text)",
                             "introduction": "Certaines parties de Home Assistant peuvent être rechargées sans nécessiter de redémarrage. Le fait de cliquer sur recharger déchargera leur configuration actuelle et chargera la nouvelle.",
                             "min_max": "Recharger les entités min/max",
+                            "mqtt": "Recharger les entités mqtt",
                             "person": "Recharger les personnes",
                             "ping": "Recharger les entités de capteur binaire ping",
-                            "rest": "Recharger les entités REST",
+                            "reload": "Recharger {domain}",
+                            "rest": "Recharger les entités REST et notifier les services",
+                            "rpi_gpio": "Recharger les entités GPIO du Raspberry Pi",
                             "scene": "Recharger les scènes",
                             "script": "Recharger les scripts",
+                            "smtp": "Recharger les services de notification smtp",
                             "statistics": "Recharger les entités de statistiques",
+                            "telegram": "Recharger les services de notification de telegram",
                             "template": "Recharger les entités modèles",
                             "trend": "Recharger les entités de tendance",
                             "universal": "Recharger les entités de lecteur média universel",
@@ -2017,7 +2093,7 @@
                             "system": "Système"
                         }
                     },
-                    "users_privileges_note": "Le groupe d'utilisateurs est en cours de développement. L'utilisateur ne pourra pas gérer l'instance via l'interface. Nous vérifions les entrées de l'interface de gestion pour assurer que les accès soient limités aux administrateurs."
+                    "users_privileges_note": "La fonctionnalité de groupe d'utilisateurs est en cours de développement. L'utilisateur ne pourra pas gérer l'instance via l'interface. Nous vérifions toujours tous les points terminaisons d'API pour assurer que les accès soient limités aux administrateurs."
                 },
                 "zha": {
                     "add_device_page": {
@@ -2055,7 +2131,7 @@
                     "clusters": {
                         "header": "Clusters",
                         "help_cluster_dropdown": "Sélectionnez un cluster pour afficher les attributs et les commandes.",
-                        "introduction": "Les clusters sont les blocs de construction de la fonctionnalité Zigbee. Ils séparent les fonctionnalités en unités logiques. Il existe des types de clients et de serveurs qui sont composés d'attributs et de commandes."
+                        "introduction": "Les grappes sont les éléments de construction de la fonctionnalité Zigbee. Ils séparent les fonctionnalités en unités logiques. Il en existe de types client et serveur et sont composés d'attributs et de commandes."
                     },
                     "common": {
                         "add_devices": "Ajouter des appareils",
@@ -2299,9 +2375,14 @@
                         "title": "États"
                     },
                     "templates": {
+                        "all_listeners": "Ce modèle écoute tous les événements de changement d'état.",
                         "description": "Les modèles sont rendus à l'aide du moteur de modèles Jinja2 avec certaines extensions spécifiques de Home Assistant.",
+                        "domain": "Domaine",
                         "editor": "Éditeur de modèles",
+                        "entity": "Entité",
                         "jinja_documentation": "Documentation de modèle Jinja2",
+                        "listeners": "Ce modèle écoute les événements de changement d'état suivants:",
+                        "no_listeners": "Ce modèle n'écoute aucun événement de changement d'état et ne sera pas mis à jour automatiquement.",
                         "reset": "Réinitialiser au modèle de démonstration",
                         "template_extensions": "Extensions de modèles de Home Assistant",
                         "title": "Modèle",
@@ -2496,7 +2577,7 @@
                         },
                         "markdown": {
                             "content": "Contenu",
-                            "description": "La carte Markdown est utilisée pour afficher du Markdown.",
+                            "description": "La carte Markdown est utilisée pour le rendu du Markdown.",
                             "name": "Markdown"
                         },
                         "media-control": {
@@ -2549,7 +2630,11 @@
                         }
                     },
                     "cardpicker": {
+                        "by_card": "Par carte",
+                        "by_entity": "Par entité",
                         "custom_card": "Personnalisé",
+                        "domain": "Domaine",
+                        "entity": "Entité",
                         "no_description": "Aucune description disponible."
                     },
                     "edit_card": {
@@ -2563,6 +2648,7 @@
                         "options": "Plus d'options",
                         "pick_card": "Quelle carte aimeriez-vous ajouter ?",
                         "pick_card_view_title": "Quelle carte souhaitez-vous ajouter à votre vue {name} ?",
+                        "search_cards": "Rechercher des cartes",
                         "show_code_editor": "Afficher l'éditeur de code",
                         "show_visual_editor": "Afficher l'éditeur visuel",
                         "toggle_editor": "Permuter l’éditeur",
@@ -2765,7 +2851,7 @@
                                     "data": {
                                         "code": "Code d'authentification à deux facteurs"
                                     },
-                                    "description": "Ouvrez le **{mfa_module_name}** sur votre appareil pour afficher votre code d'authentification à deux facteurs et vérifier votre identité:"
+                                    "description": "Ouvrez le ** {mfa_module_name} ** sur votre appareil pour afficher votre code d'authentification à deux facteurs et confirmer votre identité:"
                                 }
                             }
                         },
@@ -2785,7 +2871,7 @@
                         }
                     },
                     "start_over": "Recommencer",
-                    "unknown_error": "Quelque chose a mal tourné",
+                    "unknown_error": "Un problème est survenu",
                     "working": "Veuillez patienter"
                 },
                 "initializing": "Initialisation",
@@ -2883,6 +2969,11 @@
                     "submit": "Envoyer"
                 },
                 "current_user": "Vous êtes actuellement connecté en tant que {fullName}.",
+                "customize_sidebar": {
+                    "button": "Modifier",
+                    "description": "Vous pouvez également appuyer et maintenir l'en-tête de la barre latérale pour activer le mode d'édition.",
+                    "header": "Modifier l'ordre et masquer les éléments de la barre latérale"
+                },
                 "dashboard": {
                     "description": "Choisissez un tableau de bord par défaut pour cet appareil.",
                     "dropdown_label": "Tableau de bord",
@@ -2905,6 +2996,7 @@
                     "confirm_delete": "Êtes-vous sûr de vouloir supprimer le jeton d'accès de {name} ?",
                     "create": "Créer un jeton",
                     "create_failed": "Impossible de créer le jeton d'accès.",
+                    "created": "Créé le {date}",
                     "created_at": "Créé le {date}",
                     "delete_failed": "Impossible de supprimer le jeton d'accès.",
                     "description": "Créez des jetons d'accès de longue durée pour permettre à vos scripts d'interagir avec votre instance de Home Assistant. Chaque jeton sera valable 10 ans à compter de sa création. Les jetons d'accès longue durée suivants sont actuellement actifs.",
@@ -2912,6 +3004,7 @@
                     "header": "Jetons d'accès de longue durée",
                     "last_used": "Dernière utilisation le {date} à partir de {location}",
                     "learn_auth_requests": "Apprenez comment faire des demandes authentifiées.",
+                    "name": "Nom",
                     "not_used": "N'a jamais été utilisé",
                     "prompt_copy_token": "Copiez votre jeton d'accès. Il ne sera plus affiché à nouveau.",
                     "prompt_name": "Nom ?"
@@ -2978,6 +3071,7 @@
             }
         },
         "sidebar": {
+            "done": "Terminé",
             "external_app_configuration": "Configuration de l'application",
             "sidebar_toggle": "Activer la barre latérale"
         }

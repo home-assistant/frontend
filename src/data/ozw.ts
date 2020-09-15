@@ -14,6 +14,8 @@ export interface OZWDevice {
   is_zwave_plus: boolean;
   ozw_instance: number;
   event: string;
+  node_manufacturer_name: string;
+  node_product_name: string;
 }
 
 export interface OZWDeviceMetaDataResponse {
@@ -144,6 +146,15 @@ export const fetchOZWNetworkStatistics = (
 ): Promise<OZWNetworkStatistics> =>
   hass.callWS({
     type: "ozw/network_statistics",
+    ozw_instance: ozw_instance,
+  });
+
+export const fetchOZWNodes = (
+  hass: HomeAssistant,
+  ozw_instance: number
+): Promise<OZWDevice[]> =>
+  hass.callWS({
+    type: "ozw/get_nodes",
     ozw_instance: ozw_instance,
   });
 

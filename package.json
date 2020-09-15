@@ -79,6 +79,7 @@
     "@polymer/polymer": "3.1.0",
     "@thomasloven/round-slider": "0.5.0",
     "@types/chromecast-caf-sender": "^1.0.3",
+    "@types/sortablejs": "^1.10.6",
     "@vaadin/vaadin-combo-box": "^5.0.10",
     "@vaadin/vaadin-date-picker": "^4.0.7",
     "@vue/web-component-wrapper": "^1.2.0",

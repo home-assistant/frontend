@@ -15,6 +15,7 @@ import {
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-svg-icon";
 import { getSignedPath } from "../../../../src/data/auth";
+import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import {
   fetchHassioSnapshotInfo,
   HassioSnapshotDetail,
@@ -379,7 +380,7 @@ class HassioSnapshotDialog extends LitElement {
         `/api/hassio/snapshots/${this._snapshot!.slug}/download`
       );
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      alert(`Error: ${extractApiErrorMessage(err)}`);
       return;
     }
 

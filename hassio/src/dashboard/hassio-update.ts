@@ -5,27 +5,31 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-svg-icon";
+import {
+  extractApiErrorMessage,
+  HassioResponse,
+  ignoredStatusCodes,
+} from "../../../src/data/hassio/common";
 import { HassioHassOSInfo } from "../../../src/data/hassio/host";
 import {
   HassioHomeAssistantInfo,
   HassioSupervisorInfo,
 } from "../../../src/data/hassio/supervisor";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import { hassioStyle } from "../resources/hassio-style";
-import {
-  showConfirmationDialog,
-  showAlertDialog,
-} from "../../../src/dialogs/generic/show-dialog-box";
-import { HassioResponse } from "../../../src/data/hassio/common";
 
 @customElement("hassio-update")
 export class HassioUpdate extends LitElement {
@@ -145,11 +149,11 @@ export class HassioUpdate extends LitElement {
   }
 
   private async _confirmUpdate(ev): Promise<void> {
-    const item = ev.target;
+    const item = ev.currentTarget;
     item.progress = true;
     const confirmed = await showConfirmationDialog(this, {
       title: `Update ${item.name}`,
-      text: `Are you sure you want to upgrade ${item.name} to version ${item.version}?`,
+      text: `Are you sure you want to update ${item.name} to version ${item.version}?`,
       confirmText: "update",
       dismissText: "cancel",
     });
@@ -161,16 +165,12 @@ export class HassioUpdate extends LitElement {
     try {
       await this.hass.callApi<HassioResponse<void>>("POST", item.apiPath);
     } catch (err) {
-      // Only show an error if the status code was not 504, or no status at all (connection terminated)
-      if (err.status_code && err.status_code !== 504) {
+      // Only show an error if the status code was not expected (user behind proxy)
+      // or no status at all(connection terminated)
+      if (err.status_code && !ignoredStatusCodes.has(err.status_code)) {
         showAlertDialog(this, {
           title: "Update failed",
-          text:
-            typeof err === "object"
-              ? typeof err.body === "object"
-                ? err.body.message
-                : err.body || "Unkown error"
-              : err,
+          text: extractApiErrorMessage(err),
         });
       }
     }

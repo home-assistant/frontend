@@ -667,8 +667,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       entityId: this._config!.entity,
       mediaPickedCallback: (pickedMedia: MediaPickedEvent) =>
         this._playMedia(
-          pickedMedia.media_content_id,
-          pickedMedia.media_content_type
+          pickedMedia.item.media_content_id,
+          pickedMedia.item.media_content_type
         ),
     });
   }

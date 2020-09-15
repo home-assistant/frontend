@@ -19,6 +19,7 @@
         "logbook": "Logbook",
         "mailbox": "Mailbox",
         "map": "Map",
+        "media_browser": "Media Browser",
         "profile": "Profile",
         "shopping_list": "Shopping list",
         "states": "Overview"
@@ -505,6 +506,8 @@
             "back": "Back",
             "cancel": "Cancel",
             "close": "Close",
+            "continue": "Continue",
+            "copied": "Copied",
             "delete": "Delete",
             "error_required": "Required",
             "loading": "Loading",
@@ -551,6 +554,10 @@
                 "toggle": "Toggle"
             },
             "entity": {
+                "entity-attribute-picker": {
+                    "attribute": "Attribute",
+                    "show_attributes": "Show attributes"
+                },
                 "entity-picker": {
                     "clear": "Clear",
                     "entity": "Entity",
@@ -561,8 +568,35 @@
                 "loading_history": "Loading state history...",
                 "no_history_found": "No state history found."
             },
+            "logbook": {
+                "entries_not_found": "No logbook entries found."
+            },
             "media-browser": {
+                "audio_not_supported": "Your browser does not support the audio element.",
+                "choose_player": "Choose Player",
                 "choose-source": "Choose Source",
+                "class": {
+                    "album": "Album",
+                    "app": "App",
+                    "artist": "Artist",
+                    "channel": "Channel",
+                    "composer": "Composer",
+                    "contributing_artist": "Contributing Artist",
+                    "directory": "Library",
+                    "episode": "Episode",
+                    "game": "Game",
+                    "genre": "Genre",
+                    "image": "Image",
+                    "movie": "Movie",
+                    "music": "Music",
+                    "playlist": "Playlist",
+                    "podcast": "Podcast",
+                    "season": "Season",
+                    "track": "Track",
+                    "tv_show": "TV Show",
+                    "url": "Url",
+                    "video": "Video"
+                },
                 "content-type": {
                     "album": "Album",
                     "artist": "Artist",
@@ -570,12 +604,17 @@
                     "playlist": "Playlist",
                     "server": "Server"
                 },
+                "media_browsing_error": "Media Browsing Error",
+                "media_not_supported": "The Browser Media Player does not support this type of media",
+                "media_player": "Media Player",
                 "media-player-browser": "Media Player Browser",
                 "no_items": "No items",
                 "pick": "Pick",
                 "pick-media": "Pick Media",
                 "play": "Play",
-                "play-media": "Play Media"
+                "play-media": "Play Media",
+                "video_not_supported": "Your browser does not support the video element.",
+                "web-browser": "Web Browser"
             },
             "picture-upload": {
                 "label": "Picture",
@@ -633,7 +672,7 @@
                     "icon": "Icon Override",
                     "icon_error": "Icons should be in the format 'prefix:iconname', e.g. 'mdi:home'",
                     "name": "Name Override",
-                    "note": "Note: this might not work yet with all integrations.",
+                    "note": "Note: This might not work yet with all integrations.",
                     "unavailable": "This entity is not currently available.",
                     "update": "Update"
                 },
@@ -689,8 +728,11 @@
                 "crop": "Crop"
             },
             "more_info_control": {
+                "controls": "Controls",
+                "details": "Details",
                 "dismiss": "Dismiss dialog",
                 "edit": "Edit entity",
+                "history": "History",
                 "person": {
                     "create_zone": "Create zone from current location"
                 },
@@ -918,7 +960,13 @@
                                     "label": "Call service",
                                     "service_data": "Service data"
                                 },
+                                "wait_for_trigger": {
+                                    "continue_timeout": "Continue on timeout",
+                                    "label": "Wait for trigger",
+                                    "timeout": "Timeout (optional)"
+                                },
                                 "wait_template": {
+                                    "continue_timeout": "Continue on timeout",
                                     "label": "Wait",
                                     "timeout": "Timeout (optional)",
                                     "wait_template": "Wait Template"
@@ -982,7 +1030,9 @@
                                 "time": {
                                     "after": "After",
                                     "before": "Before",
-                                    "label": "Time"
+                                    "label": "Time",
+                                    "type_input": "Value of a date/time helper",
+                                    "type_value": "Fixed time"
                                 },
                                 "zone": {
                                     "entity": "Entity with location",
@@ -1070,6 +1120,7 @@
                                     "value_template": "Value template (optional)"
                                 },
                                 "state": {
+                                    "attribute": "Attribute (Optional)",
                                     "for": "For",
                                     "from": "From",
                                     "label": "State",
@@ -1096,8 +1147,10 @@
                                     "seconds": "Seconds"
                                 },
                                 "time": {
-                                    "at": "At",
-                                    "label": "Time"
+                                    "at": "At time",
+                                    "label": "Time",
+                                    "type_input": "Value of a date/time helper",
+                                    "type_value": "Fixed time"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -1120,6 +1173,8 @@
                         "add_automation": "Add automation",
                         "delete_automation": "Delete automation",
                         "delete_confirm": "Are you sure you want to delete this automation?",
+                        "duplicate": "Duplicate",
+                        "duplicate_automation": "Duplicate automation",
                         "edit_automation": "Edit automation",
                         "header": "Automation Editor",
                         "headers": {
@@ -1520,6 +1575,7 @@
                 },
                 "integrations": {
                     "add_integration": "Add integration",
+                    "attention": "Attention required",
                     "caption": "Integrations",
                     "config_entry": {
                         "area": "In {area}",
@@ -1543,6 +1599,7 @@
                         "reload_restart_confirm": "Restart Home Assistant to finish reloading this integration",
                         "rename": "Rename",
                         "restart_confirm": "Restart Home Assistant to finish removing this integration",
+                        "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
                         "settings_button": "Edit settings for {integration}",
                         "system_options": "System options",
                         "system_options_button": "System options for {integration}",
@@ -1589,6 +1646,7 @@
                     "none_found_detail": "Adjust your search criteria.",
                     "note_about_integrations": "Not all integrations can be configured via the UI yet.",
                     "note_about_website_reference": "More are available on the ",
+                    "reconfigure": "Reconfigure",
                     "rename_dialog": "Edit the name of this config entry",
                     "rename_input_label": "Entry name",
                     "search": "Search integrations"
@@ -1762,8 +1820,21 @@
                         "versions": "Obtaining information about firmware and command class versions",
                         "wakeup": "Setting up support for wakeup queues and messages"
                     },
+                    "node": {
+                        "button": "Node Details",
+                        "not_found": "Node not found"
+                    },
+                    "nodes_table": {
+                        "failed": "Failed",
+                        "id": "ID",
+                        "manufacturer": "Manufacturer",
+                        "model": "Model",
+                        "query_stage": "Query Stage",
+                        "zwave_plus": "Z-Wave Plus"
+                    },
                     "refresh_node": {
                         "battery_note": "If the node is battery powered, be sure to wake it before proceeding",
+                        "button": "Refresh Node",
                         "complete": "Node Refresh Complete",
                         "description": "This will tell OpenZWave to re-interview a node and update the node's command classes, capabilities, and values.",
                         "node_status": "Node Status",
@@ -1912,7 +1983,7 @@
                             "filter": "Reload filter entities",
                             "generic": "Reload generic IP camera entities",
                             "generic_thermostat": "Reload generic thermostat entities",
-                            "group": "Reload groups",
+                            "group": "Reload groups, group entities, and notify services",
                             "heading": "YAML configuration reloading",
                             "history_stats": "Reload history stats entities",
                             "homekit": "Reload HomeKit",
@@ -1923,12 +1994,17 @@
                             "input_text": "Reload input texts",
                             "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current YAML configuration and load the new one.",
                             "min_max": "Reload min/max entities",
+                            "mqtt": "Reload mqtt entities",
                             "person": "Reload persons",
                             "ping": "Reload ping binary sensor entities",
-                            "rest": "Reload rest entities",
+                            "reload": "Reload {domain}",
+                            "rest": "Reload rest entities and notify services",
+                            "rpi_gpio": "Reload Raspberry Pi GPIO entities",
                             "scene": "Reload scenes",
                             "script": "Reload scripts",
+                            "smtp": "Reload smtp notify services",
                             "statistics": "Reload statistics entities",
+                            "telegram": "Reload telegram notify services",
                             "template": "Reload template entities",
                             "trend": "Reload trend entities",
                             "universal": "Reload universal media player entities",
@@ -2017,7 +2093,7 @@
                             "system": "System"
                         }
                     },
-                    "users_privileges_note": "The users group is a work in progress. The user will be unable to administer the instance via the UI. We're still auditing all management API endpoints to ensure that they correctly limit access to administrators."
+                    "users_privileges_note": "The user group feature is a work in progress. The user will be unable to administer the instance via the UI. We're still auditing all management API endpoints to ensure that they correctly limit access to administrators."
                 },
                 "zha": {
                     "add_device_page": {
@@ -2055,7 +2131,7 @@
                     "clusters": {
                         "header": "Clusters",
                         "help_cluster_dropdown": "Select a cluster to view attributes and commands.",
-                        "introduction": "Clusters are the building blocks for Zigbee functionality. They seperate functionality into logical units. There are client and server types and that are comprised of attributes and commands."
+                        "introduction": "Clusters are the building blocks for Zigbee functionality. They separate functionality into logical units. There are client and server types and that are comprised of attributes and commands."
                     },
                     "common": {
                         "add_devices": "Add Devices",
@@ -2188,7 +2264,7 @@
                         "true": "True"
                     },
                     "node_management": {
-                        "add_to_group": "Add To Group",
+                        "add_to_group": "Add to Group",
                         "entities": "Entities of this node",
                         "entity_info": "Entity Information",
                         "exclude_entity": "Exclude this entity from Home Assistant",
@@ -2201,11 +2277,11 @@
                         "node_to_control": "Node to control",
                         "nodes": "Nodes",
                         "nodes_hint": "Select node to view per-node options",
-                        "nodes_in_group": "Other Nodes in this group:",
+                        "nodes_in_group": "Other nodes in this group:",
                         "pooling_intensity": "Polling intensity",
                         "protection": "Protection",
                         "remove_broadcast": "Remove Broadcast",
-                        "remove_from_group": "Remove From Group",
+                        "remove_from_group": "Remove from Group",
                         "set_protection": "Set Protection"
                     },
                     "ozw_log": {
@@ -2299,9 +2375,14 @@
                         "title": "States"
                     },
                     "templates": {
+                        "all_listeners": "This template listens for all state changed events.",
                         "description": "Templates are rendered using the Jinja2 template engine with some Home Assistant specific extensions.",
+                        "domain": "Domain",
                         "editor": "Template editor",
+                        "entity": "Entity",
                         "jinja_documentation": "Jinja2 template documentation",
+                        "listeners": "This template listens for the following state changed events:",
+                        "no_listeners": "This template does not listen for any state changed events and will not update automatically.",
                         "reset": "Reset to demo template",
                         "template_extensions": "Home Assistant template extensions",
                         "title": "Template",
@@ -2549,7 +2630,11 @@
                         }
                     },
                     "cardpicker": {
+                        "by_card": "By Card",
+                        "by_entity": "By Entity",
                         "custom_card": "Custom",
+                        "domain": "Domain",
+                        "entity": "Entity",
                         "no_description": "No description available."
                     },
                     "edit_card": {
@@ -2563,6 +2648,7 @@
                         "options": "More options",
                         "pick_card": "Which card would you like to add?",
                         "pick_card_view_title": "Which card would you like to add to your {name} view?",
+                        "search_cards": "Search cards",
                         "show_code_editor": "Show Code Editor",
                         "show_visual_editor": "Show Visual Editor",
                         "toggle_editor": "Toggle Editor",
@@ -2606,7 +2692,7 @@
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "We will automatically generate your Lovelace UI views with your areas and devices if you remove your Lovelace UI configuration.",
-                        "confirm_remove_config_title": "Are you sure you want to remove your Lovelace UI configuration? We will automatically generate your Lovelace UI views with your areas and devices.",
+                        "confirm_remove_config_title": "Are you sure you want to remove your Lovelace UI configuration?",
                         "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
                         "confirm_unsaved_comments": "Your configuration contains comment(s), these will not be saved. Do you want to continue?",
                         "error_invalid_config": "Your configuration is not valid: {error}",
@@ -2883,6 +2969,11 @@
                     "submit": "Submit"
                 },
                 "current_user": "You are currently logged in as {fullName}.",
+                "customize_sidebar": {
+                    "button": "Edit",
+                    "description": "You can also press and hold the header of the sidebar to activate edit mode.",
+                    "header": "Change the order and hide items from the sidebar"
+                },
                 "dashboard": {
                     "description": "Pick a default dashboard for this device.",
                     "dropdown_label": "Dashboard",
@@ -2905,6 +2996,7 @@
                     "confirm_delete": "Are you sure you want to delete the access token for {name}?",
                     "create": "Create Token",
                     "create_failed": "Failed to create the access token.",
+                    "created": "Created {date}",
                     "created_at": "Created at {date}",
                     "delete_failed": "Failed to delete the access token.",
                     "description": "Create long-lived access tokens to allow your scripts to interact with your Home Assistant instance. Each token will be valid for 10 years from creation. The following long-lived access tokens are currently active.",
@@ -2912,9 +3004,10 @@
                     "header": "Long-Lived Access Tokens",
                     "last_used": "Last used at {date} from {location}",
                     "learn_auth_requests": "Learn how to make authenticated requests.",
+                    "name": "Name",
                     "not_used": "Has never been used",
                     "prompt_copy_token": "Copy your access token. It will not be shown again.",
-                    "prompt_name": "Name?"
+                    "prompt_name": "Give the token a name"
                 },
                 "mfa_setup": {
                     "close": "Close",
@@ -2978,6 +3071,7 @@
             }
         },
         "sidebar": {
+            "done": "Done",
             "external_app_configuration": "App Configuration",
             "sidebar_toggle": "Sidebar Toggle"
         }

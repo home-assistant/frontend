@@ -1,12 +1,13 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
+import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import {
-  mdiDotsVertical,
-  mdiMicrophone,
-  mdiPlus,
   mdiClose,
-  mdiPencil,
+  mdiDotsVertical,
   mdiHelpCircle,
+  mdiMicrophone,
+  mdiPencil,
+  mdiPlus,
 } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-scroll-effects/effects/waterfall";
@@ -17,9 +18,9 @@ import {
   css,
   CSSResult,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -28,16 +29,17 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import scrollToTarget from "../../common/dom/scroll-to-target";
+import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
 import { afterNextRender } from "../../common/util/render-status";
 import "../../components/ha-button-menu";
 import "../../components/ha-icon";
-import "../../components/ha-svg-icon";
 import "../../components/ha-icon-button-arrow-next";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
+import "../../components/ha-svg-icon";
 import type {
   LovelaceConfig,
   LovelacePanelConfig,
@@ -51,6 +53,7 @@ import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
+import { documentationUrl } from "../../util/documentation-url";
 import { swapView } from "./editor/config-util";
 import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovelace-dialog";
 import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
@@ -58,8 +61,6 @@ import type { Lovelace } from "./types";
 import "./views/hui-panel-view";
 import type { HUIPanelView } from "./views/hui-panel-view";
 import { HUIView } from "./views/hui-view";
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
-import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 
 class HUIRoot extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -136,7 +137,7 @@ class HUIRoot extends LitElement {
                     </mwc-icon-button>
                   </div>
                   <a
-                    href="https://www.home-assistant.io/lovelace/"
+                    href="${documentationUrl(this.hass, "/lovelace/")}"
                     rel="noreferrer"
                     class="menu-link"
                     target="_blank"
@@ -266,7 +267,7 @@ class HUIRoot extends LitElement {
                         `
                       : ""}
                     <a
-                      href="https://www.home-assistant.io/lovelace/"
+                      href="${documentationUrl(this.hass, "/lovelace/")}"
                       rel="noreferrer"
                       class="menu-link"
                       target="_blank"
@@ -382,6 +383,15 @@ class HUIRoot extends LitElement {
     `;
   }
 
+  private _isVisible = (view: LovelaceViewConfig) =>
+    Boolean(
+      this._editMode ||
+        view.visible === undefined ||
+        view.visible === true ||
+        (Array.isArray(view.visible) &&
+          view.visible.some((show) => show.user === this.hass!.user?.id))
+    );
+
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
@@ -407,9 +417,14 @@ class HUIRoot extends LitElement {
 
     if (changedProperties.has("route")) {
       const views = this.config.views;
+
       if (!viewPath && views.length) {
-        navigate(this, `${this.route!.prefix}/${views[0].path || 0}`, true);
-        newSelectView = 0;
+        newSelectView = views.findIndex(this._isVisible);
+        navigate(
+          this,
+          `${this.route!.prefix}/${views[newSelectView].path || newSelectView}`,
+          true
+        );
       } else if (viewPath === "hass-unused-entities") {
         newSelectView = "hass-unused-entities";
       } else if (viewPath) {
@@ -449,8 +464,14 @@ class HUIRoot extends LitElement {
           this.lovelace!.mode === "storage" &&
           viewPath === "hass-unused-entities"
         ) {
-          navigate(this, `${this.route?.prefix}/${views[0]?.path || 0}`);
-          newSelectView = 0;
+          newSelectView = views.findIndex(this._isVisible);
+          navigate(
+            this,
+            `${this.route!.prefix}/${
+              views[newSelectView].path || newSelectView
+            }`,
+            true
+          );
         }
       }
 

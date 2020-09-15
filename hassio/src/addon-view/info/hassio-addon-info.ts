@@ -768,7 +768,7 @@ class HassioAddonInfo extends LitElement {
   }
 
   private async _installClicked(ev: CustomEvent): Promise<void> {
-    const button = ev.target as any;
+    const button = ev.currentTarget as any;
     button.progress = true;
 
     try {
@@ -833,7 +833,7 @@ class HassioAddonInfo extends LitElement {
   }
 
   private async _uninstallClicked(ev: CustomEvent): Promise<void> {
-    const button = ev.target as any;
+    const button = ev.currentTarget as any;
     button.progress = true;
 
     const confirmed = await showConfirmationDialog(this, {

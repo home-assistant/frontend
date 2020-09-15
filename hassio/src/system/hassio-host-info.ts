@@ -14,11 +14,14 @@ import {
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
-import { atLeastVersion } from "../../../src/common/config/version";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-settings-row";
+import {
+  extractApiErrorMessage,
+  ignoredStatusCodes,
+} from "../../../src/data/hassio/common";
 import { fetchHassioHardwareInfo } from "../../../src/data/hassio/hardware";
 import {
   changeHostOptions,
@@ -81,8 +84,7 @@ class HassioHostInfo extends LitElement {
                 </mwc-button>
               </ha-settings-row>`
             : ""}
-          ${this.hostInfo.features.includes("network") &&
-          atLeastVersion(this.hass.config.version, 0, 115)
+          ${this.hostInfo.features.includes("network")
             ? html` <ha-settings-row>
                 <span slot="heading">
                   IP address
@@ -220,14 +222,13 @@ class HassioHostInfo extends LitElement {
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to get Hardware list",
-        text:
-          typeof err === "object" ? err.body?.message || "Unkown error" : err,
+        text: extractApiErrorMessage(err),
       });
     }
   }
 
   private async _hostReboot(ev: CustomEvent): Promise<void> {
-    const button = ev.target as any;
+    const button = ev.currentTarget as any;
     button.progress = true;
 
     const confirmed = await showConfirmationDialog(this, {
@@ -245,17 +246,19 @@ class HassioHostInfo extends LitElement {
     try {
       await rebootHost(this.hass);
     } catch (err) {
-      showAlertDialog(this, {
-        title: "Failed to reboot",
-        text:
-          typeof err === "object" ? err.body?.message || "Unkown error" : err,
-      });
+      // Ignore connection errors, these are all expected
+      if (err.status_code && !ignoredStatusCodes.has(err.status_code)) {
+        showAlertDialog(this, {
+          title: "Failed to reboot",
+          text: extractApiErrorMessage(err),
+        });
+      }
     }
     button.progress = false;
   }
 
   private async _hostShutdown(ev: CustomEvent): Promise<void> {
-    const button = ev.target as any;
+    const button = ev.currentTarget as any;
     button.progress = true;
 
     const confirmed = await showConfirmationDialog(this, {
@@ -273,17 +276,19 @@ class HassioHostInfo extends LitElement {
     try {
       await shutdownHost(this.hass);
     } catch (err) {
-      showAlertDialog(this, {
-        title: "Failed to shutdown",
-        text:
-          typeof err === "object" ? err.body?.message || "Unkown error" : err,
-      });
+      // Ignore connection errors, these are all expected
+      if (err.status_code && !ignoredStatusCodes.has(err.status_code)) {
+        showAlertDialog(this, {
+          title: "Failed to shutdown",
+          text: extractApiErrorMessage(err),
+        });
+      }
     }
     button.progress = false;
   }
 
   private async _osUpdate(ev: CustomEvent): Promise<void> {
-    const button = ev.target as any;
+    const button = ev.currentTarget as any;
     button.progress = true;
 
     const confirmed = await showConfirmationDialog(this, {
@@ -303,8 +308,7 @@ class HassioHostInfo extends LitElement {
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to update",
-        text:
-          typeof err === "object" ? err.body?.message || "Unkown error" : err,
+        text: extractApiErrorMessage(err),
       });
     }
     button.progress = false;
@@ -333,8 +337,7 @@ class HassioHostInfo extends LitElement {
       } catch (err) {
         showAlertDialog(this, {
           title: "Setting hostname failed",
-          text:
-            typeof err === "object" ? err.body?.message || "Unkown error" : err,
+          text: extractApiErrorMessage(err),
         });
       }
     }
@@ -347,8 +350,7 @@ class HassioHostInfo extends LitElement {
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to import from USB",
-        text:
-          typeof err === "object" ? err.body?.message || "Unkown error" : err,
+        text: extractApiErrorMessage(err),
       });
     }
   }

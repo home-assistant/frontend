@@ -198,6 +198,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
           ? ""
           : html`
               <ha-icon-button
+                class="warning"
                 slot="toolbar-icon"
                 title="${this.hass.localize(
                   "ui.panel.config.scene.picker.delete_scene"

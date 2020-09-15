@@ -45,25 +45,28 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     }
 
     private _applyTheme(dark: boolean) {
+      if (!this.hass) {
+        return;
+      }
       const themeName =
-        this.hass!.selectedTheme?.theme ||
-        (dark && this.hass!.themes.default_dark_theme
-          ? this.hass!.themes.default_dark_theme!
-          : this.hass!.themes.default_theme);
+        this.hass.selectedTheme?.theme ||
+        (dark && this.hass.themes.default_dark_theme
+          ? this.hass.themes.default_dark_theme!
+          : this.hass.themes.default_theme);
 
       let options: Partial<HomeAssistant["selectedTheme"]> = this.hass!
         .selectedTheme;
 
       if (themeName === "default" && options?.dark === undefined) {
         options = {
-          ...this.hass!.selectedTheme!,
+          ...this.hass.selectedTheme!,
           dark,
         };
       }
 
       applyThemesOnElement(
         document.documentElement,
-        this.hass!.themes,
+        this.hass.themes,
         themeName,
         options
       );
@@ -71,11 +74,11 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       const darkMode =
         themeName === "default"
           ? !!options?.dark
-          : !!(dark && this.hass!.themes.default_dark_theme);
+          : !!(dark && this.hass.themes.default_dark_theme);
 
-      if (darkMode !== this.hass!.themes.darkMode) {
+      if (darkMode !== this.hass.themes.darkMode) {
         this._updateHass({
-          themes: { ...this.hass!.themes, darkMode },
+          themes: { ...this.hass.themes, darkMode },
         });
 
         const schemeMeta = document.querySelector("meta[name=color-scheme]");
@@ -88,9 +91,15 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
 
       const themeMeta = document.querySelector("meta[name=theme-color]");
-      const headerColor = getComputedStyle(
-        document.documentElement
-      ).getPropertyValue("--app-header-background-color");
+      const computedStyles = getComputedStyle(document.documentElement);
+      const headerColor = computedStyles.getPropertyValue(
+        "--app-header-background-color"
+      );
+
+      document.documentElement.style.backgroundColor = computedStyles.getPropertyValue(
+        "--primary-background-color"
+      );
+
       if (themeMeta) {
         if (!themeMeta.hasAttribute("default-content")) {
           themeMeta.setAttribute(

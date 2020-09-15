@@ -18,6 +18,7 @@ import {
   setSupervisorOption,
   SupervisorOptions,
   updateSupervisor,
+  fetchHassioSupervisorInfo,
 } from "../../../src/data/hassio/supervisor";
 import {
   showAlertDialog,
@@ -26,6 +27,7 @@ import {
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import { hassioStyle } from "../resources/hassio-style";
+import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 
 @customElement("hassio-supervisor-info")
 class HassioSupervisorInfo extends LitElement {
@@ -143,7 +145,7 @@ class HassioSupervisorInfo extends LitElement {
   }
 
   private async _toggleBeta(ev: CustomEvent): Promise<void> {
-    const button = ev.target as any;
+    const button = ev.currentTarget as any;
     button.progress = true;
 
     if (this.supervisorInfo.channel === "stable") {
@@ -175,43 +177,43 @@ class HassioSupervisorInfo extends LitElement {
 
     try {
       const data: Partial<SupervisorOptions> = {
-        channel: this.supervisorInfo.channel !== "stable" ? "beta" : "stable",
+        channel: this.supervisorInfo.channel === "stable" ? "beta" : "stable",
       };
       await setSupervisorOption(this.hass, data);
       await reloadSupervisor(this.hass);
+      this.supervisorInfo = await fetchHassioSupervisorInfo(this.hass);
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to set supervisor option",
-        text:
-          typeof err === "object" ? err.body?.message || "Unkown error" : err,
+        text: extractApiErrorMessage(err),
       });
     }
     button.progress = false;
   }
 
   private async _supervisorReload(ev: CustomEvent): Promise<void> {
-    const button = ev.target as any;
+    const button = ev.currentTarget as any;
     button.progress = true;
 
     try {
       await reloadSupervisor(this.hass);
+      this.supervisorInfo = await fetchHassioSupervisorInfo(this.hass);
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to reload the supervisor",
-        text:
-          typeof err === "object" ? err.body?.message || "Unkown error" : err,
+        text: extractApiErrorMessage(err),
       });
     }
     button.progress = false;
   }
 
   private async _supervisorUpdate(ev: CustomEvent): Promise<void> {
-    const button = ev.target as any;
+    const button = ev.currentTarget as any;
     button.progress = true;
 
     const confirmed = await showConfirmationDialog(this, {
       title: "Update supervisor",
-      text: `Are you sure you want to upgrade supervisor to version ${this.supervisorInfo.version_latest}?`,
+      text: `Are you sure you want to update supervisor to version ${this.supervisorInfo.version_latest}?`,
       confirmText: "update",
       dismissText: "cancel",
     });
@@ -226,8 +228,7 @@ class HassioSupervisorInfo extends LitElement {
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to update the supervisor",
-        text:
-          typeof err === "object" ? err.body.message || "Unkown error" : err,
+        text: extractApiErrorMessage(err),
       });
     }
     button.progress = false;
@@ -257,8 +258,7 @@ class HassioSupervisorInfo extends LitElement {
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to set supervisor option",
-        text:
-          typeof err === "object" ? err.body.message || "Unkown error" : err,
+        text: extractApiErrorMessage(err),
       });
     }
   }

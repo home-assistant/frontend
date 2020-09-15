@@ -5,14 +5,15 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   query,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
+import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../src/components/ha-yaml-editor";
@@ -21,8 +22,7 @@ import {
   HassioAddonSetOptionParams,
   setHassioAddonOption,
 } from "../../../../src/data/hassio/addon";
-import "../../../../src/components/buttons/ha-progress-button";
-
+import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import { showConfirmationDialog } from "../../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
@@ -113,9 +113,9 @@ class HassioAddonConfig extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this._error = `Failed to reset addon configuration, ${
-        err.body?.message || err
-      }`;
+      this._error = `Failed to reset addon configuration, ${extractApiErrorMessage(
+        err
+      )}`;
     }
     button.progress = false;
   }
@@ -147,9 +147,9 @@ class HassioAddonConfig extends LitElement {
         await suggestAddonRestart(this, this.hass, this.addon);
       }
     } catch (err) {
-      this._error = `Failed to save addon configuration, ${
-        err.body?.message || err
-      }`;
+      this._error = `Failed to save addon configuration, ${extractApiErrorMessage(
+        err
+      )}`;
     }
     button.progress = false;
   }

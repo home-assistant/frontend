@@ -23,7 +23,6 @@ import {
   LitElement,
   property,
   PropertyValues,
-  TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { guard } from "lit-html/directives/guard";
@@ -43,6 +42,7 @@ import {
   getExternalConfig,
 } from "../external_app/external_config";
 import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
+import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, PanelInfo } from "../types";
 import "./ha-icon";
 import "./ha-menu-button";
@@ -159,23 +159,21 @@ const computePanels = memoizeOne(
 
 let Sortable;
 
-let sortStyles: TemplateResult;
-
 @customElement("ha-sidebar")
 class HaSidebar extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
 
   @property({ type: Boolean }) public alwaysExpand = false;
 
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
+  @property({ type: Boolean }) public editMode = false;
+
   @internalProperty() private _externalConfig?: ExternalConfig;
 
   @internalProperty() private _notifications?: PersistentNotification[];
-
-  @internalProperty() private _editMode = false;
 
   // property used only in css
   // @ts-ignore
@@ -190,11 +188,15 @@ class HaSidebar extends LitElement {
   private _recentKeydownActiveUntil = 0;
 
   // @ts-ignore
-  @LocalStorage("sidebarPanelOrder")
+  @LocalStorage("sidebarPanelOrder", true, {
+    attribute: false,
+  })
   private _panelOrder: string[] = [];
 
   // @ts-ignore
-  @LocalStorage("sidebarHiddenPanels")
+  @LocalStorage("sidebarHiddenPanels", true, {
+    attribute: false,
+  })
   private _hiddenPanels: string[] = [];
 
   private _sortable?;
@@ -223,8 +225,14 @@ class HaSidebar extends LitElement {
     }
 
     return html`
-      ${this._editMode ? sortStyles : ""}
-      <div class="menu">
+      <div
+        class="menu"
+        @action=${this._handleAction}
+        .actionHandler=${actionHandler({
+          hasHold: !this.editMode,
+          disabled: this.editMode,
+        })}
+      >
         ${!this.narrow
           ? html`
               <mwc-icon-button
@@ -240,27 +248,23 @@ class HaSidebar extends LitElement {
             `
           : ""}
         <div class="title">
-          ${this._editMode
+          ${this.editMode
             ? html`<mwc-button outlined @click=${this._closeEditMode}>
-                DONE
+                ${hass.localize("ui.sidebar.done")}
               </mwc-button>`
             : "Home Assistant"}
         </div>
       </div>
       <paper-listbox
         attr-for-selected="data-panel"
+        class="ha-scrollbar"
         .selected=${hass.panelUrl}
         @focusin=${this._listboxFocusIn}
         @focusout=${this._listboxFocusOut}
         @scroll=${this._listboxScroll}
         @keydown=${this._listboxKeydown}
-        @action=${this._handleAction}
-        .actionHandler=${actionHandler({
-          hasHold: !this._editMode,
-          disabled: this._editMode,
-        })}
       >
-        ${this._editMode
+        ${this.editMode
           ? html`<div id="sortable">
               ${guard([this._hiddenPanels, this._renderEmptySortable], () =>
                 this._renderEmptySortable
@@ -270,31 +274,33 @@ class HaSidebar extends LitElement {
             </div>`
           : this._renderPanels(beforeSpacer)}
         <div class="spacer" disabled></div>
-        ${this._editMode && this._hiddenPanels.length
+        ${this.editMode && this._hiddenPanels.length
           ? html`
               ${this._hiddenPanels.map((url) => {
                 const panel = this.hass.panels[url];
+                if (!panel) {
+                  return "";
+                }
                 return html`<paper-icon-item
                   @click=${this._unhidePanel}
                   class="hidden-panel"
+                  .panel=${url}
                 >
                   <ha-icon
                     slot="item-icon"
-                    .icon=${panel.url_path === "lovelace"
+                    .icon=${panel.url_path === this.hass.defaultPanel
                       ? "mdi:view-dashboard"
                       : panel.icon}
                   ></ha-icon>
                   <span class="item-text"
-                    >${panel.url_path === "lovelace"
+                    >${panel.url_path === this.hass.defaultPanel
                       ? hass.localize("panel.states")
                       : hass.localize(`panel.${panel.title}`) ||
                         panel.title}</span
                   >
-                  <ha-svg-icon
-                    class="hide-panel"
-                    .panel=${url}
-                    .path=${mdiPlus}
-                  ></ha-svg-icon>
+                  <mwc-icon-button class="show-panel">
+                    <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
+                  </mwc-icon-button>
                 </paper-icon-item>`;
               })}
               <div class="spacer" disabled></div>
@@ -374,7 +380,11 @@ class HaSidebar extends LitElement {
         @mouseleave=${this._itemMouseLeave}
       >
         <paper-icon-item>
-          <ha-user-badge slot="item-icon" .user=${hass.user}></ha-user-badge>
+          <ha-user-badge
+            slot="item-icon"
+            .user=${hass.user}
+            .hass=${hass}
+          ></ha-user-badge>
 
           <span class="item-text">
             ${hass.user ? hass.user.name : ""}
@@ -393,8 +403,10 @@ class HaSidebar extends LitElement {
       changedProps.has("alwaysExpand") ||
       changedProps.has("_externalConfig") ||
       changedProps.has("_notifications") ||
-      changedProps.has("_editMode") ||
-      changedProps.has("_renderEmptySortable")
+      changedProps.has("editMode") ||
+      changedProps.has("_renderEmptySortable") ||
+      changedProps.has("_hiddenPanels") ||
+      (changedProps.has("_panelOrder") && !this.editMode)
     ) {
       return true;
     }
@@ -435,6 +447,13 @@ class HaSidebar extends LitElement {
     if (changedProps.has("alwaysExpand")) {
       this.expanded = this.alwaysExpand;
     }
+    if (changedProps.has("editMode")) {
+      if (this.editMode) {
+        this._activateEditMode();
+      } else {
+        this._deactivateEditMode();
+      }
+    }
     if (!changedProps.has("hass")) {
       return;
     }
@@ -460,24 +479,29 @@ class HaSidebar extends LitElement {
     return this.shadowRoot!.querySelector(".tooltip")! as HTMLDivElement;
   }
 
-  private async _handleAction(ev: CustomEvent<ActionHandlerDetail>) {
+  private _handleAction(ev: CustomEvent<ActionHandlerDetail>) {
     if (ev.detail.action !== "hold") {
       return;
     }
 
+    fireEvent(this, "hass-edit-sidebar", { editMode: true });
+  }
+
+  private async _activateEditMode() {
     if (!Sortable) {
       const [sortableImport, sortStylesImport] = await Promise.all([
         import("sortablejs/modular/sortable.core.esm"),
-        import("./ha-sidebar-sort-styles"),
+        import("../resources/ha-sortable-style"),
       ]);
 
-      sortStyles = sortStylesImport.sortStyles;
+      const style = document.createElement("style");
+      style.innerHTML = sortStylesImport.sortableStyles.cssText;
+      this.shadowRoot!.appendChild(style);
 
       Sortable = sortableImport.Sortable;
       Sortable.mount(sortableImport.OnSpill);
       Sortable.mount(sortableImport.AutoScroll());
     }
-    this._editMode = true;
 
     await this.updateComplete;
 
@@ -489,21 +513,25 @@ class HaSidebar extends LitElement {
       animation: 150,
       fallbackClass: "sortable-fallback",
       dataIdAttr: "data-panel",
+      handle: "paper-icon-item",
       onSort: async () => {
         this._panelOrder = this._sortable.toArray();
       },
     });
   }
 
-  private _closeEditMode() {
+  private _deactivateEditMode() {
     this._sortable?.destroy();
     this._sortable = undefined;
-    this._editMode = false;
+  }
+
+  private _closeEditMode() {
+    fireEvent(this, "hass-edit-sidebar", { editMode: false });
   }
 
   private async _hidePanel(ev: Event) {
     ev.preventDefault();
-    const panel = (ev.target as any).panel;
+    const panel = (ev.currentTarget as any).panel;
     if (this._hiddenPanels.includes(panel)) {
       return;
     }
@@ -516,7 +544,7 @@ class HaSidebar extends LitElement {
 
   private async _unhidePanel(ev: Event) {
     ev.preventDefault();
-    const index = this._hiddenPanels.indexOf((ev.target as any).panel);
+    const index = this._hiddenPanels.indexOf((ev.currentTarget as any).panel);
     if (index < 0) {
       return;
     }
@@ -628,11 +656,13 @@ class HaSidebar extends LitElement {
     return panels.map((panel) =>
       this._renderPanel(
         panel.url_path,
-        panel.url_path === "lovelace"
-          ? this.hass.localize("panel.states")
+        panel.url_path === this.hass.defaultPanel
+          ? panel.title || this.hass.localize("panel.states")
           : this.hass.localize(`panel.${panel.title}`) || panel.title,
-        panel.url_path === "lovelace" ? undefined : panel.icon,
-        panel.url_path === "lovelace" ? mdiViewDashboard : undefined
+        panel.icon,
+        panel.url_path === this.hass.defaultPanel && !panel.icon
+          ? mdiViewDashboard
+          : undefined
       )
     );
   }
@@ -646,8 +676,8 @@ class HaSidebar extends LitElement {
     return html`
       <a
         aria-role="option"
-        href="${`/${urlPath}`}"
-        data-panel="${urlPath}"
+        href=${`/${urlPath}`}
+        data-panel=${urlPath}
         tabindex="-1"
         @mouseenter=${this._itemMouseEnter}
         @mouseleave=${this._itemMouseLeave}
@@ -660,307 +690,305 @@ class HaSidebar extends LitElement {
               ></ha-svg-icon>`
             : html`<ha-icon slot="item-icon" .icon=${icon}></ha-icon>`}
           <span class="item-text">${title}</span>
-          ${this._editMode
-            ? html`<ha-svg-icon
-                class="hide-panel"
-                .panel=${urlPath}
-                @click=${this._hidePanel}
-                .path=${mdiClose}
-              ></ha-svg-icon>`
-            : ""}
         </paper-icon-item>
+        ${this.editMode
+          ? html`<mwc-icon-button
+              class="hide-panel"
+              .panel=${urlPath}
+              @click=${this._hidePanel}
+            >
+              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+            </mwc-icon-button>`
+          : ""}
       </a>
     `;
   }
 
-  static get styles(): CSSResult {
-    return css`
-      :host {
-        height: 100%;
-        display: block;
-        overflow: hidden;
-        -ms-user-select: none;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        border-right: 1px solid var(--divider-color);
-        background-color: var(--sidebar-background-color);
-        width: 64px;
-      }
-      :host([expanded]) {
-        width: calc(256px + env(safe-area-inset-left));
-      }
-      :host([rtl]) {
-        border-right: 0;
-        border-left: 1px solid var(--divider-color);
-      }
-      .menu {
-        box-sizing: border-box;
-        height: 65px;
-        display: flex;
-        padding: 0 8.5px;
-        border-bottom: 1px solid transparent;
-        white-space: nowrap;
-        font-weight: 400;
-        color: var(--primary-text-color);
-        border-bottom: 1px solid var(--divider-color);
-        background-color: var(--primary-background-color);
-        font-size: 20px;
-        align-items: center;
-        padding-left: calc(8.5px + env(safe-area-inset-left));
-      }
-      :host([rtl]) .menu {
-        padding-left: 8.5px;
-        padding-right: calc(8.5px + env(safe-area-inset-right));
-      }
-      :host([expanded]) .menu {
-        width: calc(256px + env(safe-area-inset-left));
-      }
-      :host([rtl][expanded]) .menu {
-        width: calc(256px + env(safe-area-inset-right));
-      }
-      .menu mwc-icon-button {
-        color: var(--sidebar-icon-color);
-      }
-      :host([expanded]) .menu mwc-icon-button {
-        margin-right: 23px;
-      }
-      :host([expanded][rtl]) .menu mwc-icon-button {
-        margin-right: 0px;
-        margin-left: 23px;
-      }
+  static get styles(): CSSResult[] {
+    return [
+      haStyleScrollbar,
+      css`
+        :host {
+          height: 100%;
+          display: block;
+          overflow: hidden;
+          -ms-user-select: none;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          border-right: 1px solid var(--divider-color);
+          background-color: var(--sidebar-background-color);
+          width: 64px;
+        }
+        :host([expanded]) {
+          width: calc(256px + env(safe-area-inset-left));
+        }
+        :host([rtl]) {
+          border-right: 0;
+          border-left: 1px solid var(--divider-color);
+        }
+        .menu {
+          box-sizing: border-box;
+          height: 65px;
+          display: flex;
+          padding: 0 8.5px;
+          border-bottom: 1px solid transparent;
+          white-space: nowrap;
+          font-weight: 400;
+          color: var(--primary-text-color);
+          border-bottom: 1px solid var(--divider-color);
+          background-color: var(--primary-background-color);
+          font-size: 20px;
+          align-items: center;
+          padding-left: calc(8.5px + env(safe-area-inset-left));
+        }
+        :host([rtl]) .menu {
+          padding-left: 8.5px;
+          padding-right: calc(8.5px + env(safe-area-inset-right));
+        }
+        :host([expanded]) .menu {
+          width: calc(256px + env(safe-area-inset-left));
+        }
+        :host([rtl][expanded]) .menu {
+          width: calc(256px + env(safe-area-inset-right));
+        }
+        .menu mwc-icon-button {
+          color: var(--sidebar-icon-color);
+        }
+        :host([expanded]) .menu mwc-icon-button {
+          margin-right: 23px;
+        }
+        :host([expanded][rtl]) .menu mwc-icon-button {
+          margin-right: 0px;
+          margin-left: 23px;
+        }
 
-      .title {
-        width: 100%;
-        display: none;
-      }
-      :host([expanded]) .title {
-        display: initial;
-      }
-      .title mwc-button {
-        width: 100%;
-      }
+        .title {
+          width: 100%;
+          display: none;
+        }
+        :host([narrow]) .title {
+          padding: 0 16px;
+        }
+        :host([expanded]) .title {
+          display: initial;
+        }
+        .title mwc-button {
+          width: 100%;
+        }
 
-      paper-listbox::-webkit-scrollbar {
-        width: 0.4rem;
-        height: 0.4rem;
-      }
+        #sortable,
+        .hidden-panel {
+          display: none;
+        }
 
-      paper-listbox::-webkit-scrollbar-thumb {
-        -webkit-border-radius: 4px;
-        border-radius: 4px;
-        background: var(--scrollbar-thumb-color);
-      }
+        paper-listbox {
+          padding: 4px 0;
+          display: flex;
+          flex-direction: column;
+          box-sizing: border-box;
+          height: calc(100% - 196px - env(safe-area-inset-bottom));
+          overflow-x: hidden;
+          background: none;
+          margin-left: env(safe-area-inset-left);
+        }
 
-      paper-listbox {
-        padding: 4px 0;
-        display: flex;
-        flex-direction: column;
-        box-sizing: border-box;
-        height: calc(100% - 196px - env(safe-area-inset-bottom));
-        overflow-y: auto;
-        overflow-x: hidden;
-        scrollbar-color: var(--scrollbar-thumb-color) transparent;
-        scrollbar-width: thin;
-        background: none;
-        margin-left: env(safe-area-inset-left);
-      }
+        :host([rtl]) paper-listbox {
+          margin-left: initial;
+          margin-right: env(safe-area-inset-right);
+        }
 
-      :host([rtl]) paper-listbox {
-        margin-left: initial;
-        margin-right: env(safe-area-inset-right);
-      }
+        a {
+          text-decoration: none;
+          color: var(--sidebar-text-color);
+          font-weight: 500;
+          font-size: 14px;
+          position: relative;
+          display: block;
+          outline: 0;
+        }
 
-      a {
-        text-decoration: none;
-        color: var(--sidebar-text-color);
-        font-weight: 500;
-        font-size: 14px;
-        position: relative;
-        display: block;
-        outline: 0;
-      }
+        paper-icon-item {
+          box-sizing: border-box;
+          margin: 4px 8px;
+          padding-left: 12px;
+          border-radius: 4px;
+          --paper-item-min-height: 40px;
+          width: 48px;
+        }
+        :host([expanded]) paper-icon-item {
+          width: 240px;
+        }
+        :host([rtl]) paper-icon-item {
+          padding-left: auto;
+          padding-right: 12px;
+        }
 
-      paper-icon-item {
-        box-sizing: border-box;
-        margin: 4px 8px;
-        padding-left: 12px;
-        border-radius: 4px;
-        --paper-item-min-height: 40px;
-        width: 48px;
-      }
-      :host([expanded]) paper-icon-item {
-        width: 240px;
-      }
-      :host([rtl]) paper-icon-item {
-        padding-left: auto;
-        padding-right: 12px;
-      }
+        ha-icon[slot="item-icon"],
+        ha-svg-icon[slot="item-icon"] {
+          color: var(--sidebar-icon-color);
+        }
 
-      ha-icon[slot="item-icon"],
-      ha-svg-icon[slot="item-icon"] {
-        color: var(--sidebar-icon-color);
-      }
+        .iron-selected paper-icon-item::before,
+        a:not(.iron-selected):focus::before {
+          border-radius: 4px;
+          position: absolute;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
+          pointer-events: none;
+          content: "";
+          transition: opacity 15ms linear;
+          will-change: opacity;
+        }
+        .iron-selected paper-icon-item::before {
+          background-color: var(--sidebar-selected-icon-color);
+          opacity: 0.12;
+        }
+        a:not(.iron-selected):focus::before {
+          background-color: currentColor;
+          opacity: var(--dark-divider-opacity);
+          margin: 4px 8px;
+        }
+        .iron-selected paper-icon-item:focus::before,
+        .iron-selected:focus paper-icon-item::before {
+          opacity: 0.2;
+        }
 
-      .iron-selected paper-icon-item::before,
-      a:not(.iron-selected):focus::before {
-        border-radius: 4px;
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        pointer-events: none;
-        content: "";
-        transition: opacity 15ms linear;
-        will-change: opacity;
-      }
-      .iron-selected paper-icon-item::before {
-        background-color: var(--sidebar-selected-icon-color);
-        opacity: 0.12;
-      }
-      a:not(.iron-selected):focus::before {
-        background-color: currentColor;
-        opacity: var(--dark-divider-opacity);
-        margin: 4px 8px;
-      }
-      .iron-selected paper-icon-item:focus::before,
-      .iron-selected:focus paper-icon-item::before {
-        opacity: 0.2;
-      }
+        .iron-selected paper-icon-item[pressed]:before {
+          opacity: 0.37;
+        }
 
-      .iron-selected paper-icon-item[pressed]:before {
-        opacity: 0.37;
-      }
+        paper-icon-item span {
+          color: var(--sidebar-text-color);
+          font-weight: 500;
+          font-size: 14px;
+        }
 
-      paper-icon-item span {
-        color: var(--sidebar-text-color);
-        font-weight: 500;
-        font-size: 14px;
-      }
+        a.iron-selected paper-icon-item ha-icon,
+        a.iron-selected paper-icon-item ha-svg-icon {
+          color: var(--sidebar-selected-icon-color);
+        }
 
-      a.iron-selected paper-icon-item ha-icon,
-      a.iron-selected paper-icon-item ha-svg-icon {
-        color: var(--sidebar-selected-icon-color);
-      }
+        a.iron-selected .item-text {
+          color: var(--sidebar-selected-text-color);
+        }
 
-      a.iron-selected .item-text {
-        color: var(--sidebar-selected-text-color);
-      }
+        paper-icon-item .item-text {
+          display: none;
+          max-width: calc(100% - 56px);
+        }
+        :host([expanded]) paper-icon-item .item-text {
+          display: block;
+        }
 
-      paper-icon-item .item-text {
-        display: none;
-        max-width: calc(100% - 56px);
-      }
-      :host([expanded]) paper-icon-item .item-text {
-        display: block;
-      }
+        .divider {
+          bottom: 112px;
+          padding: 10px 0;
+        }
+        .divider::before {
+          content: " ";
+          display: block;
+          height: 1px;
+          background-color: var(--divider-color);
+        }
+        .notifications-container {
+          display: flex;
+          margin-left: env(safe-area-inset-left);
+        }
+        :host([rtl]) .notifications-container {
+          margin-left: initial;
+          margin-right: env(safe-area-inset-right);
+        }
+        .notifications {
+          cursor: pointer;
+        }
+        .notifications .item-text {
+          flex: 1;
+        }
+        .profile {
+          margin-left: env(safe-area-inset-left);
+        }
+        :host([rtl]) .profile {
+          margin-left: initial;
+          margin-right: env(safe-area-inset-right);
+        }
+        .profile paper-icon-item {
+          padding-left: 4px;
+        }
+        :host([rtl]) .profile paper-icon-item {
+          padding-left: auto;
+          padding-right: 4px;
+        }
+        .profile .item-text {
+          margin-left: 8px;
+        }
+        :host([rtl]) .profile .item-text {
+          margin-right: 8px;
+        }
 
-      .divider {
-        bottom: 112px;
-        padding: 10px 0;
-      }
-      .divider::before {
-        content: " ";
-        display: block;
-        height: 1px;
-        background-color: var(--divider-color);
-      }
-      .notifications-container {
-        display: flex;
-        margin-left: env(safe-area-inset-left);
-      }
-      :host([rtl]) .notifications-container {
-        margin-left: initial;
-        margin-right: env(safe-area-inset-right);
-      }
-      .notifications {
-        cursor: pointer;
-      }
-      .notifications .item-text {
-        flex: 1;
-      }
-      .profile {
-        margin-left: env(safe-area-inset-left);
-      }
-      :host([rtl]) .profile {
-        margin-left: initial;
-        margin-right: env(safe-area-inset-right);
-      }
-      .profile paper-icon-item {
-        padding-left: 4px;
-      }
-      :host([rtl]) .profile paper-icon-item {
-        padding-left: auto;
-        padding-right: 4px;
-      }
-      .profile .item-text {
-        margin-left: 8px;
-      }
-      :host([rtl]) .profile .item-text {
-        margin-right: 8px;
-      }
+        .notification-badge {
+          min-width: 20px;
+          box-sizing: border-box;
+          border-radius: 50%;
+          font-weight: 400;
+          background-color: var(--accent-color);
+          line-height: 20px;
+          text-align: center;
+          padding: 0px 6px;
+          color: var(--text-accent-color, var(--text-primary-color));
+        }
+        ha-svg-icon + .notification-badge {
+          position: absolute;
+          bottom: 14px;
+          left: 26px;
+          font-size: 0.65em;
+        }
 
-      .notification-badge {
-        min-width: 20px;
-        box-sizing: border-box;
-        border-radius: 50%;
-        font-weight: 400;
-        background-color: var(--accent-color);
-        line-height: 20px;
-        text-align: center;
-        padding: 0px 6px;
-        color: var(--text-accent-color, var(--text-primary-color));
-      }
-      ha-svg-icon + .notification-badge {
-        position: absolute;
-        bottom: 14px;
-        left: 26px;
-        font-size: 0.65em;
-      }
+        .spacer {
+          flex: 1;
+          pointer-events: none;
+        }
 
-      .spacer {
-        flex: 1;
-        pointer-events: none;
-      }
+        .subheader {
+          color: var(--sidebar-text-color);
+          font-weight: 500;
+          font-size: 14px;
+          padding: 16px;
+          white-space: nowrap;
+        }
 
-      .subheader {
-        color: var(--sidebar-text-color);
-        font-weight: 500;
-        font-size: 14px;
-        padding: 16px;
-        white-space: nowrap;
-      }
+        .dev-tools {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          padding: 0 8px;
+          width: 256px;
+          box-sizing: border-box;
+        }
 
-      .dev-tools {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        padding: 0 8px;
-        width: 256px;
-        box-sizing: border-box;
-      }
+        .dev-tools a {
+          color: var(--sidebar-icon-color);
+        }
 
-      .dev-tools a {
-        color: var(--sidebar-icon-color);
-      }
+        .tooltip {
+          display: none;
+          position: absolute;
+          opacity: 0.9;
+          border-radius: 2px;
+          white-space: nowrap;
+          color: var(--sidebar-background-color);
+          background-color: var(--sidebar-text-color);
+          padding: 4px;
+          font-weight: 500;
+        }
 
-      .tooltip {
-        display: none;
-        position: absolute;
-        opacity: 0.9;
-        border-radius: 2px;
-        white-space: nowrap;
-        color: var(--sidebar-background-color);
-        background-color: var(--sidebar-text-color);
-        padding: 4px;
-        font-weight: 500;
-      }
-
-      :host([rtl]) .menu mwc-icon-button {
-        -webkit-transform: scaleX(-1);
-        transform: scaleX(-1);
-      }
-    `;
+        :host([rtl]) .menu mwc-icon-button {
+          -webkit-transform: scaleX(-1);
+          transform: scaleX(-1);
+        }
+      `,
+    ];
   }
 }
 

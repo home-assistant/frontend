@@ -9,6 +9,7 @@
     "mailbox": "Mailbox",
     "shopping_list": "Shopping list",
     "developer_tools": "Developer Tools",
+    "media_browser": "Media Browser",
     "profile": "Profile"
   },
   "state": {
@@ -260,6 +261,7 @@
     },
     "common": {
       "and": "and",
+      "continue": "Continue",
       "previous": "Previous",
       "loading": "Loading",
       "refresh": "Refresh",
@@ -276,14 +278,22 @@
       "successfully_saved": "Successfully saved",
       "successfully_deleted": "Successfully deleted",
       "back": "Back",
-      "error_required": "Required"
+      "error_required": "Required",
+      "copied": "Copied"
     },
     "components": {
+      "logbook": {
+        "entries_not_found": "No logbook entries found."
+      },
       "entity": {
         "entity-picker": {
           "entity": "Entity",
           "clear": "Clear",
           "show_entities": "Show entities"
+        },
+        "entity-attribute-picker": {
+          "attribute": "Attribute",
+          "show_attributes": "Show attributes"
         }
       },
       "device-picker": {
@@ -356,14 +366,41 @@
         "play-media": "Play Media",
         "pick-media": "Pick Media",
         "no_items": "No items",
-        "choose-source": "Choose Source",
+        "choose_player": "Choose Player",
         "media-player-browser": "Media Player Browser",
-        "content-type": {
-          "server": "Server",
-          "library": "Library",
-          "artist": "Artist",
+        "web-browser": "Web Browser",
+        "media_player": "Media Player",
+        "audio_not_supported": "Your browser does not support the audio element.",
+        "video_not_supported": "Your browser does not support the video element.",
+        "media_not_supported": "The Browser Media Player does not support this type of media",
+        "media_browsing_error": "Media Browsing Error",
+        "learn_adding_local_media": "Learn more about adding media in the {documentation}.",
+        "local_media_files": "Place your video, audio and image files in the media directory to be able to browse and play them in the browser or on supported media players.",
+        "documentation": "documentation",
+        "no_local_media_found": "No local media found",
+        "no_media_folder": "It looks like you have not yet created a media directory.",
+        "setup_local_help": "Check the {documentation} on how to setup local media.",
+        "class": {
           "album": "Album",
-          "playlist": "Playlist"
+          "app": "App",
+          "artist": "Artist",
+          "channel": "Channel",
+          "composer": "Composer",
+          "contributing_artist": "Contributing Artist",
+          "directory": "Library",
+          "episode": "Episode",
+          "game": "Game",
+          "genre": "Genre",
+          "image": "Image",
+          "movie": "Movie",
+          "music": "Music",
+          "playlist": "Playlist",
+          "podcast": "Podcast",
+          "season": "Season",
+          "track": "Track",
+          "tv_show": "TV Show",
+          "url": "Url",
+          "video": "Video"
         }
       }
     },
@@ -389,6 +426,8 @@
         "dismiss": "Dismiss dialog",
         "settings": "Entity settings",
         "edit": "Edit entity",
+        "details": "Details",
+        "history": "History",
         "script": {
           "last_action": "Last Action",
           "last_triggered": "Last Triggered"
@@ -442,7 +481,7 @@
           "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this entry?",
           "update": "Update",
-          "note": "Note: this might not work yet with all integrations."
+          "note": "Note: This might not work yet with all integrations."
         }
       },
       "helper_settings": {
@@ -568,7 +607,8 @@
     },
     "sidebar": {
       "external_app_configuration": "App Configuration",
-      "sidebar_toggle": "Sidebar Toggle"
+      "sidebar_toggle": "Sidebar Toggle",
+      "done": "Done"
     },
     "panel": {
       "calendar": {
@@ -904,6 +944,8 @@
             "show_info_automation": "Show info about automation",
             "delete_automation": "Delete automation",
             "delete_confirm": "Are you sure you want to delete this automation?",
+            "duplicate_automation": "Duplicate automation",
+            "duplicate": "Duplicate",
             "headers": {
               "name": "Name"
             }
@@ -974,6 +1016,7 @@
                 },
                 "state": {
                   "label": "State",
+                  "attribute": "Attribute (Optional)",
                   "from": "From",
                   "for": "For",
                   "to": "To"
@@ -1010,8 +1053,10 @@
                   "value_template": "Value template"
                 },
                 "time": {
+                  "type_value": "Fixed time",
+                  "type_input": "Value of a date/time helper",
                   "label": "Time",
-                  "at": "At"
+                  "at": "At time"
                 },
                 "time_pattern": {
                   "label": "Time Pattern",
@@ -1087,6 +1132,8 @@
                   "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::template::value_template%]"
                 },
                 "time": {
+                  "type_value": "[%key:ui::panel::config::automation::editor::triggers::type::time::type_value%]",
+                  "type_input": "[%key:ui::panel::config::automation::editor::triggers::type::time::type_input%]",
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::time::label%]",
                   "after": "After",
                   "before": "Before"
@@ -1121,7 +1168,13 @@
                 "wait_template": {
                   "label": "Wait",
                   "wait_template": "Wait Template",
-                  "timeout": "Timeout (optional)"
+                  "timeout": "Timeout (optional)",
+                  "continue_timeout": "Continue on timeout"
+                },
+                "wait_for_trigger": {
+                  "label": "Wait for trigger",
+                  "timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::timeout%]",
+                  "continue_timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::continue_timeout%]"
                 },
                 "condition": {
                   "label": "Condition"
@@ -1599,6 +1652,7 @@
           "description": "Manage integrations",
           "integration": "integration",
           "discovered": "Discovered",
+          "attention": "Attention required",
           "configured": "Configured",
           "new": "Set up a new integration",
           "add_integration": "Add integration",
@@ -1607,6 +1661,7 @@
           "note_about_website_reference": "More are available on the ",
           "home_assistant_website": "Home Assistant website",
           "configure": "Configure",
+          "reconfigure": "Reconfigure",
           "none": "Nothing configured yet",
           "none_found": "No integrations found",
           "none_found_detail": "Adjust your search criteria.",
@@ -1629,6 +1684,7 @@
           "config_entry": {
             "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
             "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
+            "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
             "rename": "Rename",
             "options": "Options",
             "system_options": "System options",
@@ -1667,7 +1723,7 @@
         "users": {
           "caption": "Users",
           "description": "Manage users",
-          "users_privileges_note": "The users group is a work in progress. The user will be unable to administer the instance via the UI. We're still auditing all management API endpoints to ensure that they correctly limit access to administrators.",
+          "users_privileges_note": "The user group feature is a work in progress. The user will be unable to administer the instance via the UI. We're still auditing all management API endpoints to ensure that they correctly limit access to administrators.",
           "picker": {
             "headers": {
               "name": "Name",
@@ -1755,6 +1811,7 @@
             "complete": "Interview process is complete"
           },
           "refresh_node": {
+            "button": "Refresh Node",
             "title": "Refresh Node Information",
             "complete": "Node Refresh Complete",
             "description": "This will tell OpenZWave to re-interview a node and update the node's command classes, capabilities, and values.",
@@ -1799,6 +1856,18 @@
             "header": "Network Management",
             "introduction": "Manage network-wide functions.",
             "node_count": "{count} nodes"
+          },
+          "nodes_table": {
+            "id": "ID",
+            "manufacturer": "Manufacturer",
+            "model": "Model",
+            "query_stage": "Query Stage",
+            "zwave_plus": "Z-Wave Plus",
+            "failed": "Failed"
+          },
+          "node": {
+            "button": "Node Details",
+            "not_found": "Node not found"
           },
           "services": {
             "add_node": "Add Node",
@@ -1845,7 +1914,7 @@
           "clusters": {
             "header": "Clusters",
             "help_cluster_dropdown": "Select a cluster to view attributes and commands.",
-            "introduction": "Clusters are the building blocks for Zigbee functionality. They seperate functionality into logical units. There are client and server types and that are comprised of attributes and commands."
+            "introduction": "Clusters are the building blocks for Zigbee functionality. They separate functionality into logical units. There are client and server types and that are comprised of attributes and commands."
           },
           "cluster_attributes": {
             "header": "Cluster Attributes",
@@ -1936,10 +2005,10 @@
             "node_group_associations": "Node group associations",
             "group": "Group",
             "node_to_control": "Node to control",
-            "nodes_in_group": "Other Nodes in this group:",
+            "nodes_in_group": "Other nodes in this group:",
             "max_associations": "Max Associations:",
-            "add_to_group": "Add To Group",
-            "remove_from_group": "Remove From Group",
+            "add_to_group": "Add to Group",
+            "remove_from_group": "Remove from Group",
             "remove_broadcast": "Remove Broadcast"
           },
           "ozw_log": {
@@ -2001,7 +2070,6 @@
         }
       },
       "logbook": {
-        "entries_not_found": "No logbook entries found.",
         "ranges": {
           "today": "Today",
           "yesterday": "Yesterday",
@@ -2087,7 +2155,7 @@
             "save": "Save",
             "unsaved_changes": "Unsaved changes",
             "saved": "Saved",
-            "confirm_remove_config_title": "Are you sure you want to remove your Lovelace UI configuration? We will automatically generate your Lovelace UI views with your areas and devices.",
+            "confirm_remove_config_title": "Are you sure you want to remove your Lovelace UI configuration?",
             "confirm_remove_config_text": "We will automatically generate your Lovelace UI views with your areas and devices if you remove your Lovelace UI configuration.",
             "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
             "confirm_unsaved_comments": "Your configuration contains comment(s), these will not be saved. Do you want to continue?",
@@ -2133,7 +2201,8 @@
             "delete": "Delete Card",
             "duplicate": "Duplicate Card",
             "move": "Move to View",
-            "options": "More options"
+            "options": "More options",
+            "search_cards": "Search cards"
           },
           "move_card": {
             "header": "Choose a view to move the card to"
@@ -2348,7 +2417,11 @@
           },
           "cardpicker": {
             "no_description": "No description available.",
-            "custom_card": "Custom"
+            "custom_card": "Custom",
+            "domain": "Domain",
+            "entity": "Entity",
+            "by_entity": "By Entity",
+            "by_card": "By Card"
           }
         },
         "warning": {
@@ -2379,6 +2452,11 @@
         "force_narrow": {
           "header": "Always hide the sidebar",
           "description": "This will hide the sidebar by default, similar to the mobile experience."
+        },
+        "customize_sidebar": {
+          "header": "Change the order and hide items from the sidebar",
+          "description": "You can also press and hold the header of the sidebar to activate edit mode.",
+          "button": "Edit"
         },
         "vibrate": {
           "header": "Vibrate",
@@ -2461,14 +2539,13 @@
           "header": "Long-Lived Access Tokens",
           "description": "Create long-lived access tokens to allow your scripts to interact with your Home Assistant instance. Each token will be valid for 10 years from creation. The following long-lived access tokens are currently active.",
           "learn_auth_requests": "Learn how to make authenticated requests.",
-          "created_at": "Created at {date}",
-          "last_used": "Last used at {date} from {location}",
-          "not_used": "Has never been used",
+          "created": "Created {date}",
           "confirm_delete": "Are you sure you want to delete the access token for {name}?",
           "delete_failed": "Failed to delete the access token.",
           "create": "Create Token",
           "create_failed": "Failed to create the access token.",
-          "prompt_name": "Name?",
+          "name": "Name",
+          "prompt_name": "Give the token a name",
           "prompt_copy_token": "Copy your access token. It will not be shown again.",
           "empty_state": "You have no long-lived access tokens yet."
         }
@@ -2679,7 +2756,12 @@
             "reset": "Reset to demo template",
             "jinja_documentation": "Jinja2 template documentation",
             "template_extensions": "Home Assistant template extensions",
-            "unknown_error_template": "Unknown error rendering template"
+            "unknown_error_template": "Unknown error rendering template",
+            "all_listeners": "This template listens for all state changed events.",
+            "no_listeners": "This template does not listen for any state changed events and will not update automatically.",
+            "listeners": "This template listens for the following state changed events:",
+            "entity": "Entity",
+            "domain": "Domain"
           }
         }
       },

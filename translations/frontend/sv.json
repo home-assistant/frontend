@@ -1145,7 +1145,8 @@
                             "manage_entities": "Hantera Entiteter",
                             "state_reporting_error": "Det går inte att {enable_disable} rapportera tillståndet.",
                             "sync_entities": "Synkronisera Entiteter",
-                            "sync_entities_error": "Det gick inte att synkronisera entiteter:"
+                            "sync_entities_error": "Det gick inte att synkronisera entiteter:",
+                            "title": ""
                         },
                         "connected": "Ansluten",
                         "connection_status": "Status för molnanslutning",
@@ -1193,14 +1194,16 @@
                             "no_hooks_yet": "Det verkar som du inte har några webhooks ännu. Kom igång genom att konfigurera en ",
                             "no_hooks_yet_link_automation": "webhook automation",
                             "no_hooks_yet_link_integration": "webhook-baserad integration",
-                            "no_hooks_yet2": " eller genom att skapa en "
+                            "no_hooks_yet2": " eller genom att skapa en ",
+                            "title": ""
                         }
                     },
                     "alexa": {
                         "banner": "Redigering av vilka entiteter som visas via det här användargränssnittet är inaktiverat eftersom du har konfigurerat entitetsfilter i configuration.yaml.",
                         "expose": "Exponera för Alexa",
                         "exposed_entities": "Exponerade entiteter",
-                        "not_exposed_entities": "Ej exponerade entiteter"
+                        "not_exposed_entities": "Ej exponerade entiteter",
+                        "title": ""
                     },
                     "caption": "Home Assistant Cloud",
                     "description_features": "Styra även när du inte är hemma, integrera med Alexa och Google Assistant.",
@@ -2375,6 +2378,8 @@
                             "image": "Bildsökväg",
                             "manual": "Manuell",
                             "manual_description": "Behöver du lägga till ett anpassat kort eller vill du bara skriva yaml manuellt?",
+                            "maximum": "",
+                            "minimum": "",
                             "name": "Namn",
                             "no_theme": "Inget tema",
                             "refresh_interval": "Uppdateringsintervall",

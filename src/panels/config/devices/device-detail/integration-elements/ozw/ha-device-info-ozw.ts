@@ -18,7 +18,6 @@ import {
   getIdentifiersFromDevice,
   OZWNodeIdentifiers,
 } from "../../../../../../data/ozw";
-import { showOZWRefreshNodeDialog } from "../../../../integrations/integration-panels/ozw/show-dialog-ozw-refresh-node";
 
 @customElement("ha-device-info-ozw")
 export class HaDeviceInfoOzw extends LitElement {
@@ -83,17 +82,7 @@ export class HaDeviceInfoOzw extends LitElement {
           ? this.hass.localize("ui.common.yes")
           : this.hass.localize("ui.common.no")}
       </div>
-      <mwc-button @click=${this._refreshNodeClicked}>
-        Refresh Node
-      </mwc-button>
     `;
-  }
-
-  private async _refreshNodeClicked() {
-    showOZWRefreshNodeDialog(this, {
-      node_id: this.node_id,
-      ozw_instance: this.ozw_instance,
-    });
   }
 
   static get styles(): CSSResult[] {

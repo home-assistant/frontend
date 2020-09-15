@@ -3,7 +3,7 @@ import {
   HassEntityBase,
 } from "home-assistant-js-websocket";
 import { navigate } from "../common/navigate";
-import { HomeAssistant, Context } from "../types";
+import { Context, HomeAssistant } from "../types";
 import { DeviceCondition, DeviceTrigger } from "./device_automation";
 import { Action } from "./script";
 
@@ -15,6 +15,7 @@ export interface AutomationEntity extends HassEntityBase {
 }
 
 export interface AutomationConfig {
+  id?: string;
   alias: string;
   description: string;
   trigger: Trigger[];
@@ -32,7 +33,8 @@ export interface ForDict {
 
 export interface StateTrigger {
   platform: "state";
-  entity_id?: string;
+  entity_id: string;
+  attribute?: string;
   from?: string | number;
   to?: string | number;
   for?: string | number | ForDict;
@@ -59,6 +61,7 @@ export interface HassTrigger {
 export interface NumericStateTrigger {
   platform: "numeric_state";
   entity_id: string;
+  attribute?: string;
   above?: number;
   below?: number;
   value_template?: string;
@@ -136,12 +139,14 @@ export interface LogicalCondition {
 export interface StateCondition {
   condition: "state";
   entity_id: string;
+  attribute?: string;
   state: string | number;
 }
 
 export interface NumericStateCondition {
   condition: "numeric_state";
   entity_id: string;
+  attribute?: string;
   above?: number;
   below?: number;
   value_template?: string;

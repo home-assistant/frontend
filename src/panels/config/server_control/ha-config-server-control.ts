@@ -14,6 +14,7 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { isServiceLoaded } from "../../../common/config/is_service_loaded";
+import { componentsWithService } from "../../../common/config/components_with_service";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-card";
 import { checkCoreConfig } from "../../../data/core";
@@ -51,11 +52,10 @@ export class HaConfigServerControl extends LitElement {
       changedProperties.has("hass") &&
       (!oldHass || oldHass.config.components !== this.hass.config.components)
     ) {
-      this._reloadableDomains = this.hass.config.components.filter(
-        (component) =>
-          !component.includes(".") &&
-          isServiceLoaded(this.hass, component, "reload")
-      );
+      this._reloadableDomains = componentsWithService(
+        this.hass,
+        "reload"
+      ).sort();
     }
   }
 

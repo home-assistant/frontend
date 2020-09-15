@@ -10,12 +10,13 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import memoizeOne from "memoize-one";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import "../../../common/search/search-input";
@@ -32,6 +33,7 @@ import {
   getConfigEntries,
 } from "../../../data/config_entries";
 import {
+  ATTENTION_SOURCES,
   DISCOVERY_SOURCES,
   getConfigFlowInProgressCollection,
   ignoreConfigFlow,
@@ -355,52 +357,67 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
             : ""}
           ${configEntriesInProgress.length
             ? configEntriesInProgress.map(
-                (flow: DataEntryFlowProgressExtended) => html`
-                  <ha-card outlined class="discovered">
-                    <div class="header">
-                      ${this.hass.localize(
-                        "ui.panel.config.integrations.discovered"
-                      )}
-                    </div>
-                    <div class="card-content">
-                      <div class="image">
-                        <img
-                          src="https://brands.home-assistant.io/${flow.handler}/logo.png"
-                          referrerpolicy="no-referrer"
-                          @error=${this._onImageError}
-                          @load=${this._onImageLoad}
-                        />
+                (flow: DataEntryFlowProgressExtended) => {
+                  const attention = ATTENTION_SOURCES.includes(
+                    flow.context.source
+                  );
+                  return html`
+                    <ha-card
+                      outlined
+                      class=${classMap({
+                        discovered: !attention,
+                        attention: attention,
+                      })}
+                    >
+                      <div class="header">
+                        ${this.hass.localize(
+                          `ui.panel.config.integrations.${
+                            attention ? "attention" : "discovered"
+                          }`
+                        )}
                       </div>
-                      <h2>
-                        ${flow.localized_title}
-                      </h2>
-                      <div>
-                        <mwc-button
-                          unelevated
-                          @click=${this._continueFlow}
-                          .flowId=${flow.flow_id}
-                        >
-                          ${this.hass.localize(
-                            "ui.panel.config.integrations.configure"
-                          )}
-                        </mwc-button>
-                        ${DISCOVERY_SOURCES.includes(flow.context.source) &&
-                        flow.context.unique_id
-                          ? html`
-                              <mwc-button
-                                @click=${this._ignoreFlow}
-                                .flow=${flow}
-                              >
-                                ${this.hass.localize(
-                                  "ui.panel.config.integrations.ignore.ignore"
-                                )}
-                              </mwc-button>
-                            `
-                          : ""}
+                      <div class="card-content">
+                        <div class="image">
+                          <img
+                            src="https://brands.home-assistant.io/${flow.handler}/logo.png"
+                            referrerpolicy="no-referrer"
+                            @error=${this._onImageError}
+                            @load=${this._onImageLoad}
+                          />
+                        </div>
+                        <h2>
+                          ${flow.localized_title}
+                        </h2>
+                        <div>
+                          <mwc-button
+                            unelevated
+                            @click=${this._continueFlow}
+                            .flowId=${flow.flow_id}
+                          >
+                            ${this.hass.localize(
+                              `ui.panel.config.integrations.${
+                                attention ? "reconfigure" : "configure"
+                              }`
+                            )}
+                          </mwc-button>
+                          ${DISCOVERY_SOURCES.includes(flow.context.source) &&
+                          flow.context.unique_id
+                            ? html`
+                                <mwc-button
+                                  @click=${this._ignoreFlow}
+                                  .flow=${flow}
+                                >
+                                  ${this.hass.localize(
+                                    "ui.panel.config.integrations.ignore.ignore"
+                                  )}
+                                </mwc-button>
+                              `
+                            : ""}
+                        </div>
                       </div>
-                    </div>
-                  </ha-card>
-                `
+                    </ha-card>
+                  `;
+                }
               )
             : ""}
           ${groupedConfigEntries.size
@@ -638,6 +655,18 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           display: flex;
           flex-direction: column;
           justify-content: space-between;
+        }
+        .attention {
+          --ha-card-border-color: var(--error-color);
+        }
+        .attention .header {
+          background: var(--error-color);
+          color: var(--text-primary-color);
+          padding: 8px;
+          text-align: center;
+        }
+        .attention mwc-button {
+          --mdc-theme-primary: var(--error-color);
         }
         .discovered {
           --ha-card-border-color: var(--primary-color);

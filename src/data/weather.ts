@@ -200,7 +200,7 @@ export const weatherSVGStyles = css`
     fill: var(--weather-icon-sun-color, #fdd93c);
   }
   .moon {
-    fill: var(--weather-icon-moon-color, #fdf9cc);
+    fill: var(--weather-icon-moon-color, #fcf497);
   }
   .cloud-back {
     fill: var(--weather-icon-cloud-back-color, #d4d4d4);
