@@ -7,6 +7,7 @@ import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { pushSupported } from "../../components/ha-push-notifications-toggle";
 import LocalizeMixin from "../../mixins/localize-mixin";
 import "../../components/ha-settings-row";
+import { documentationUrl } from "../../util/documentation-url";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -26,7 +27,7 @@ class HaPushNotificationsRow extends LocalizeMixin(PolymerElement) {
         <span slot="description">
           [[_description(_platformLoaded, _pushSupported)]]
           <a
-            href="https://www.home-assistant.io/integrations/html5"
+            href="[[_computeDocumentationUrl(hass)]]"
             target="_blank"
             rel="noreferrer"
             >[[localize('ui.panel.profile.push_notifications.link_promo')]]</a
@@ -57,6 +58,10 @@ class HaPushNotificationsRow extends LocalizeMixin(PolymerElement) {
         computed: "_compError(_platformLoaded, _pushSupported)",
       },
     };
+  }
+
+  _computeDocumentationUrl(hass) {
+    return documentationUrl(hass, "/integrations/html5");
   }
 
   _compPlatformLoaded(hass) {
