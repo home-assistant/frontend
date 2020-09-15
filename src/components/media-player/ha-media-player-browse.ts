@@ -22,6 +22,7 @@ import { styleMap } from "lit-html/directives/style-map";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
+import type { MediaPlayerItem } from "../../data/media-player";
 import {
   browseLocalMediaPlayer,
   browseMediaPlayer,
@@ -30,11 +31,11 @@ import {
   MediaPickedEvent,
   MediaPlayerBrowseAction,
 } from "../../data/media-player";
-import type { MediaPlayerItem } from "../../data/media-player";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
+import { documentationUrl } from "../../util/documentation-url";
 import "../entity/ha-entity-picker";
 import "../ha-button-menu";
 import "../ha-card";
@@ -511,7 +512,10 @@ export class HaMediaPlayerBrowse extends LitElement {
         <p>
           Check the
           <a
-            href="https://www.home-assistant.io/integrations/media_source/#local-media"
+            href="${documentationUrl(
+              this.hass,
+              "/integrations/media_source/#local-media"
+            )}"
             target="_blank"
             rel="noreferrer"
             >documentation</a
