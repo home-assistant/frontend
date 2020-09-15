@@ -1,6 +1,7 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { BINARY_STATE_OFF, BINARY_STATE_ON } from "../common/const";
 import { computeDomain } from "../common/entity/compute_domain";
+import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { HomeAssistant } from "../types";
 import { UNAVAILABLE_STATES } from "./entity";
 
@@ -255,5 +256,11 @@ export const getLogbookMessage = (
     return hass.localize(`${localizePath}.became_unavailable`);
   }
 
-  return hass.localize(`${localizePath}.changed_to_state`, "state", state);
+  return hass.localize(
+    `${localizePath}.changed_to_state`,
+    "state",
+    stateObj
+      ? computeStateDisplay(hass.localize, stateObj, hass.language, state)
+      : state
+  );
 };

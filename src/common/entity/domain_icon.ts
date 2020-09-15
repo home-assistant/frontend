@@ -18,7 +18,8 @@ export const domainIcon = (
   stateObj?: HassEntity,
   state?: string
 ): string => {
-  const compareState = state || stateObj?.state;
+  const compareState = state !== undefined ? state : stateObj?.state;
+
   switch (domain) {
     case "alarm_control_panel":
       switch (compareState) {
