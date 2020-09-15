@@ -776,7 +776,6 @@ class HaSidebar extends LitElement {
           width: 100%;
         }
 
-        #sortable,
         .hidden-panel {
           display: none;
         }
