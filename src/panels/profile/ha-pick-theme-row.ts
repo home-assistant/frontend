@@ -1,24 +1,25 @@
+import "@material/mwc-button/mwc-button";
+import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "../../components/ha-paper-dropdown-menu";
-import { TemplateResult, html } from "lit-html";
 import {
-  property,
+  css,
+  CSSResult,
+  customElement,
   internalProperty,
   LitElement,
-  customElement,
+  property,
   PropertyValues,
-  CSSResult,
-  css,
 } from "lit-element";
-import { HomeAssistant } from "../../types";
-import "../../components/ha-settings-row";
+import { html, TemplateResult } from "lit-html";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-formfield";
+import "../../components/ha-paper-dropdown-menu";
 import "../../components/ha-radio";
-import "@polymer/paper-input/paper-input";
 import type { HaRadio } from "../../components/ha-radio";
-import "@material/mwc-button/mwc-button";
+import "../../components/ha-settings-row";
+import { HomeAssistant } from "../../types";
+import { documentationUrl } from "../../util/documentation-url";
 
 @customElement("ha-pick-theme-row")
 export class HaPickThemeRow extends LitElement {
@@ -45,7 +46,10 @@ export class HaPickThemeRow extends LitElement {
             ? this.hass.localize("ui.panel.profile.themes.error_no_theme")
             : ""}
           <a
-            href="https://www.home-assistant.io/integrations/frontend/#defining-themes"
+            href="${documentationUrl(
+              this.hass!,
+              "/integrations/frontend/#defining-themes"
+            )}"
             target="_blank"
             rel="noreferrer"
           >

@@ -19,6 +19,7 @@ import {
 } from "../../../data/ws-templates";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
 
 const DEMO_TEMPLATE = `{## Imitate available variables: ##}
 {% set my_test_json = {
@@ -107,7 +108,10 @@ class HaPanelDevTemplate extends LitElement {
             </li>
             <li>
               <a
-                href="https://home-assistant.io/docs/configuration/templating/"
+                href="${documentationUrl(
+                  this.hass,
+                  "/docs/configuration/templating/"
+                )}"
                 target="_blank"
                 rel="noreferrer"
               >
