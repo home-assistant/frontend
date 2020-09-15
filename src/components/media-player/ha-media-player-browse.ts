@@ -5,6 +5,7 @@ import "@material/mwc-list/mwc-list-item";
 import { mdiArrowLeft, mdiClose, mdiPlay, mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
   CSSResultArray,
@@ -22,6 +23,7 @@ import { styleMap } from "lit-html/directives/style-map";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
+import type { MediaPlayerItem } from "../../data/media-player";
 import {
   browseLocalMediaPlayer,
   browseMediaPlayer,
@@ -30,7 +32,6 @@ import {
   MediaPickedEvent,
   MediaPlayerBrowseAction,
 } from "../../data/media-player";
-import type { MediaPlayerItem } from "../../data/media-player";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
 import { haStyle } from "../../resources/styles";
@@ -301,7 +302,16 @@ export class HaMediaPlayerBrowse extends LitElement {
                             `
                           : ""}
                       </div>
-                      <div class="title">${child.title}</div>
+                      <div class="title">
+                        ${child.title}
+                        <paper-tooltip
+                          fitToVisibleBounds
+                          position="top"
+                          offset="4"
+                          >${child.title}</paper-tooltip
+                        >
+                      </div>
+
                       <div class="type">
                         ${this.hass.localize(
                           `ui.components.media-browser.content-type.${child.media_content_type}`
@@ -770,6 +780,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           display: -webkit-box;
           -webkit-box-orient: vertical;
           -webkit-line-clamp: 2;
+          text-overflow: ellipsis;
         }
 
         .child .type {
