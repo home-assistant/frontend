@@ -29,6 +29,8 @@ import { HomeAssistant } from "../types";
 import "./action-badge";
 import "./integration-badge";
 
+const HIDDEN_DOMAINS = new Set(["met", "rpi_power"]);
+
 @customElement("onboarding-integrations")
 class OnboardingIntegrations extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -164,7 +166,6 @@ class OnboardingIntegrations extends LitElement {
     // We filter out the config entry for the local weather and rpi_power.
     // It is one that we create automatically and it will confuse the user
     // if it starts showing up during onboarding.
-    const HIDDEN_DOMAINS = new Set(["met", "rpi_power"]);
     this._entries = entries.filter(
       (entry) => !HIDDEN_DOMAINS.has(entry.domain)
     );
