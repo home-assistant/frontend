@@ -507,6 +507,7 @@
             "cancel": "取消",
             "close": "關閉",
             "continue": "繼續",
+            "copied": "已複製",
             "delete": "刪除",
             "error_required": "必填",
             "loading": "讀取中",
@@ -574,6 +575,28 @@
                 "audio_not_supported": "瀏覽器不支援音效元件。",
                 "choose_player": "選擇播放器",
                 "choose-source": "選擇來源",
+                "class": {
+                    "album": "專輯",
+                    "app": "App",
+                    "artist": "演唱者",
+                    "channel": "頻道",
+                    "composer": "作曲者",
+                    "contributing_artist": "參與藝術家",
+                    "directory": "媒體庫",
+                    "episode": "集",
+                    "game": "遊戲",
+                    "genre": "類型",
+                    "image": "圖像",
+                    "movie": "電影",
+                    "music": "音樂",
+                    "playlist": "播放列表",
+                    "podcast": "Podcast",
+                    "season": "季",
+                    "track": "音軌",
+                    "tv_show": "電視節目",
+                    "url": "網址",
+                    "video": "影片"
+                },
                 "content-type": {
                     "album": "專輯",
                     "artist": "演唱者",
@@ -1982,7 +2005,7 @@
                             "smtp": "重新載入 SMTP 通知服務",
                             "statistics": "重新載入統計資訊實體",
                             "telegram": "重新載入 Telegram 通知服務",
-                            "template": "重新載入範例實體",
+                            "template": "重新載入模板實體",
                             "trend": "重新載入趨勢實體",
                             "universal": "重新載入通用媒體播放器實體",
                             "zone": "重新載入區域"
@@ -2352,9 +2375,14 @@
                         "title": "狀態"
                     },
                     "templates": {
+                        "all_listeners": "此模板監聽所有狀態變更事件。",
                         "description": "模版使用 Jinja2 模板引擎及 Home Assistant 特殊擴充進行模板渲染。",
+                        "domain": "區域",
                         "editor": "模板編輯器",
+                        "entity": "實體",
                         "jinja_documentation": "Jinja2 模版文件",
+                        "listeners": "此模板監聽以下狀態變更事件：",
+                        "no_listeners": "此模板不監聽任何狀態變更事件，將不會自動更新。",
                         "reset": "重置示範範模板",
                         "template_extensions": "Home Assistant 模板擴充",
                         "title": "模板",
@@ -2941,6 +2969,11 @@
                     "submit": "傳送"
                 },
                 "current_user": "目前登入身份：{fullName}。",
+                "customize_sidebar": {
+                    "button": "編輯",
+                    "description": "同時也能長按側邊列的標題以啟動編輯模式。",
+                    "header": "自側邊列中變更順序或隱藏項目"
+                },
                 "dashboard": {
                     "description": "選擇此設備的預設主面板。",
                     "dropdown_label": "主面板",
@@ -2963,6 +2996,7 @@
                     "confirm_delete": "確定要刪除{name}存取密鑰嗎？",
                     "create": "創建密鑰",
                     "create_failed": "創建存取密鑰失敗。",
+                    "created": "新增日期：{date}",
                     "created_at": "於{date}創建",
                     "delete_failed": "刪除存取密鑰失敗。",
                     "description": "創建長效存取密鑰，可供運用腳本與 Home Assistant 實體進行互動。每個密鑰於創建後，有效期為十年。目前已啟用之永久有效密鑰如下。",
@@ -2970,9 +3004,10 @@
                     "header": "永久有效存取密鑰",
                     "last_used": "上次使用：於{date}、位置{location}",
                     "learn_auth_requests": "學習如何進行驗證請求。",
+                    "name": "名稱",
                     "not_used": "從未使用過",
                     "prompt_copy_token": "複製存取密鑰，將不會再次顯示。",
-                    "prompt_name": "名稱？"
+                    "prompt_name": "為密鑰命名"
                 },
                 "mfa_setup": {
                     "close": "關閉",
@@ -3036,6 +3071,7 @@
             }
         },
         "sidebar": {
+            "done": "完成",
             "external_app_configuration": "App 設定",
             "sidebar_toggle": "側邊欄開關"
         }

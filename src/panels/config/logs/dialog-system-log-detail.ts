@@ -1,14 +1,21 @@
+import "@material/mwc-icon-button/mwc-icon-button";
+import { mdiContentCopy } from "@mdi/js";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import "@polymer/paper-tooltip/paper-tooltip";
+import type { PaperTooltipElement } from "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
   CSSResult,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
+  query,
   TemplateResult,
 } from "lit-element";
+import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/dialog/ha-paper-dialog";
+import "../../../components/ha-svg-icon";
 import {
   domainToName,
   fetchIntegrationManifest,
@@ -16,12 +23,11 @@ import {
   IntegrationManifest,
 } from "../../../data/integration";
 import { getLoggedErrorIntegration } from "../../../data/system_log";
-import { PolymerChangedEvent } from "../../../polymer-types";
+import type { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
-import { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
+import type { HomeAssistant } from "../../../types";
+import type { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
 import { formatSystemLogTime } from "./util";
-import { fireEvent } from "../../../common/dom/fire_event";
 
 class DialogSystemLogDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -29,6 +35,8 @@ class DialogSystemLogDetail extends LitElement {
   @internalProperty() private _params?: SystemLogDetailDialogParams;
 
   @internalProperty() private _manifest?: IntegrationManifest;
+
+  @query("paper-tooltip") private _toolTip?: PaperTooltipElement;
 
   public async showDialog(params: SystemLogDetailDialogParams): Promise<void> {
     this._params = params;
@@ -66,13 +74,25 @@ class DialogSystemLogDetail extends LitElement {
         opened
         @opened-changed="${this._openedChanged}"
       >
-        <h2>
-          ${this.hass.localize(
-            "ui.panel.config.logs.details",
-            "level",
-            item.level
-          )}
-        </h2>
+        <div class="heading">
+          <h2>
+            ${this.hass.localize(
+              "ui.panel.config.logs.details",
+              "level",
+              item.level
+            )}
+          </h2>
+          <mwc-icon-button id="copy" @click=${this._copyLog}>
+            <ha-svg-icon .path=${mdiContentCopy}></ha-svg-icon>
+          </mwc-icon-button>
+          <paper-tooltip
+            manual-mode
+            for="copy"
+            position="top"
+            animation-delay="0"
+            >${this.hass.localize("ui.common.copied")}</paper-tooltip
+          >
+        </div>
         <paper-dialog-scrollable>
           <p>
             Logger: ${item.name}<br />
@@ -148,6 +168,25 @@ class DialogSystemLogDetail extends LitElement {
     }
   }
 
+  private _copyLog(): void {
+    const copyElement = this.shadowRoot?.querySelector(
+      "paper-dialog-scrollable"
+    ) as HTMLElement;
+
+    const selection = window.getSelection()!;
+    const range = document.createRange();
+
+    range.selectNodeContents(copyElement);
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    document.execCommand("copy");
+    window.getSelection()!.removeAllRanges();
+
+    this._toolTip!.show();
+    setTimeout(() => this._toolTip?.hide(), 3000);
+  }
+
   static get styles(): CSSResult[] {
     return [
       haStyleDialog,
@@ -163,6 +202,15 @@ class DialogSystemLogDetail extends LitElement {
         }
         pre {
           margin-bottom: 0;
+        }
+        .heading {
+          display: flex;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .heading ha-svg-icon {
+          cursor: pointer;
         }
       `,
     ];

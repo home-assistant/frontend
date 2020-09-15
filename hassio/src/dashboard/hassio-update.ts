@@ -153,7 +153,7 @@ export class HassioUpdate extends LitElement {
     item.progress = true;
     const confirmed = await showConfirmationDialog(this, {
       title: `Update ${item.name}`,
-      text: `Are you sure you want to upgrade ${item.name} to version ${item.version}?`,
+      text: `Are you sure you want to update ${item.name} to version ${item.version}?`,
       confirmText: "update",
       dismissText: "cancel",
     });

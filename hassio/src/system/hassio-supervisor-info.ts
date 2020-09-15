@@ -213,7 +213,7 @@ class HassioSupervisorInfo extends LitElement {
 
     const confirmed = await showConfirmationDialog(this, {
       title: "Update supervisor",
-      text: `Are you sure you want to upgrade supervisor to version ${this.supervisorInfo.version_latest}?`,
+      text: `Are you sure you want to update supervisor to version ${this.supervisorInfo.version_latest}?`,
       confirmText: "update",
       dismissText: "cancel",
     });

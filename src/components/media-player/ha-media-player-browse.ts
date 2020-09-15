@@ -25,7 +25,7 @@ import { debounce } from "../../common/util/debounce";
 import {
   browseLocalMediaPlayer,
   browseMediaPlayer,
-  BROWSER_SOURCE,
+  BROWSER_PLAYER,
   MediaClassBrowserSettings,
   MediaPickedEvent,
   MediaPlayerBrowseAction,
@@ -35,6 +35,7 @@ import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
+import { documentationUrl } from "../../util/documentation-url";
 import "../entity/ha-entity-picker";
 import "../ha-button-menu";
 import "../ha-card";
@@ -108,9 +109,11 @@ export class HaMediaPlayerBrowse extends LitElement {
           text: this._renderError(this._error),
         });
       } else {
-        return html`<div class="container">
-          ${this._renderError(this._error)}
-        </div>`;
+        return html`
+          <div class="container">
+            ${this._renderError(this._error)}
+          </div>
+        `;
       }
     }
 
@@ -235,7 +238,7 @@ export class HaMediaPlayerBrowse extends LitElement {
       </div>
       ${this._error
         ? html`
-            <div class="container error">
+            <div class="container">
               ${this._renderError(this._error)}
             </div>
           `
@@ -354,7 +357,31 @@ export class HaMediaPlayerBrowse extends LitElement {
             `
         : html`
             <div class="container">
-              ${this.hass.localize("ui.components.media-browser.no_items")}
+              ${this.hass.localize("ui.components.media-browser.no_items")}<br />
+
+              ${currentItem.media_content_id.startsWith(
+                "media-source://media_source/local_source"
+              )
+                ? html`${this.hass.localize(
+                      "ui.components.media-browser.learn_adding_local_media",
+                      "documentation",
+                      html`<a
+                        href="${documentationUrl(
+                          this.hass,
+                          "/more-info/local-media/add-media"
+                        )}"
+                        target="_blank"
+                        rel="noreferrer"
+                        >${this.hass.localize(
+                          "ui.components.media-browser.documentation"
+                        )}</a
+                      >`
+                    )}
+                    <br />
+                    ${this.hass.localize(
+                      "ui.components.media-browser.local_media_files"
+                    )}.`
+                : ""}
             </div>
           `}
     `;
@@ -456,7 +483,7 @@ export class HaMediaPlayerBrowse extends LitElement {
     mediaContentType?: string
   ): Promise<MediaPlayerItem> {
     const itemData =
-      this.entityId !== BROWSER_SOURCE
+      this.entityId !== BROWSER_PLAYER
         ? await browseMediaPlayer(
             this.hass,
             this.entityId,
@@ -498,29 +525,35 @@ export class HaMediaPlayerBrowse extends LitElement {
   private _renderError(err: { message: string; code: string }) {
     if (err.message === "Media directory does not exist.") {
       return html`
-        <h2>No local media found.</h2>
+        <h2>
+          ${this.hass.localize(
+            "ui.components.media-browser.no_local_media_found"
+          )}
+        </h2>
         <p>
-          It looks like you have not yet created a media directory.
-          <br />Create a directory with the name <b>"media"</b> in the
-          configuration directory of Home Assistant
-          (${this.hass.config.config_dir}). <br />Place your video, audio and
-          image files in this directory to be able to browse and play them in
-          the browser or on supported media players.
-        </p>
-
-        <p>
-          Check the
-          <a
-            href="https://www.home-assistant.io/integrations/media_source/#local-media"
-            target="_blank"
-            rel="noreferrer"
-            >documentation</a
-          >
-          for more info
+          ${this.hass.localize("ui.components.media-browser.no_media_folder")}
+          <br />
+          ${this.hass.localize(
+            "ui.components.media-browser.setup_local_help",
+            "documentation",
+            html`<a
+              href="${documentationUrl(
+                this.hass,
+                "/more-info/local-media/setup-media"
+              )}"
+              target="_blank"
+              rel="noreferrer"
+              >${this.hass.localize(
+                "ui.components.media-browser.documentation"
+              )}</a
+            >`
+          )}
+          <br />
+          ${this.hass.localize("ui.components.media-browser.local_media_files")}
         </p>
       `;
     }
-    return html`<span class="error">err.message</span>`;
+    return html`<span class="error">${err.message}</span>`;
   }
 
   static get styles(): CSSResultArray {
