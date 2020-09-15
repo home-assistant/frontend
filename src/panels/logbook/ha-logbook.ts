@@ -15,8 +15,8 @@ import { formatDate } from "../../common/datetime/format_date";
 import { formatTimeWithSeconds } from "../../common/datetime/format_time";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeDomain } from "../../common/entity/compute_domain";
 import { domainIcon } from "../../common/entity/domain_icon";
-import { stateIcon } from "../../common/entity/state_icon";
 import { computeRTL, emitRTLDirection } from "../../common/util/compute_rtl";
 import "../../components/ha-circular-progress";
 import "../../components/ha-icon";
@@ -144,10 +144,14 @@ class HaLogbook extends LitElement {
               `
             : ""}
           <div class="icon-message">
-            ${!this.noIcon
+            ${!this.noIcon && item.entity_id
               ? html`
                   <ha-icon
-                    .icon=${state ? stateIcon(state) : domainIcon(item.domain)}
+                    .icon=${domainIcon(
+                      computeDomain(item.entity_id),
+                      state,
+                      item.state
+                    )}
                   ></ha-icon>
                 `
               : ""}
