@@ -240,8 +240,14 @@ export const getLogbookMessage = (
         ? hass.localize(`${localizePath}.was_opened`)
         : hass.localize(`${localizePath}.was_closed`);
 
-    case "automation":
-      return `has been triggered${source ? ` by ${source}` : ""}`;
+    case "lock":
+      if (state === "unlocked") {
+        return hass.localize(`${localizePath}.was_unlocked`);
+      }
+      if (state === "locked") {
+        return hass.localize(`${localizePath}.was_locked`);
+      }
+      break;
   }
 
   if (state === BINARY_STATE_ON) {
