@@ -144,11 +144,13 @@ class HaLogbook extends LitElement {
               `
             : ""}
           <div class="icon-message">
-            ${!this.noIcon && item.entity_id
+            ${!this.noIcon
               ? html`
                   <ha-icon
                     .icon=${domainIcon(
-                      computeDomain(item.entity_id),
+                      item.entity_id
+                        ? computeDomain(item.entity_id)
+                        : item.domain,
                       state,
                       item.state
                     )}
