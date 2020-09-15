@@ -26,7 +26,7 @@ import type { MediaPlayerItem } from "../../data/media-player";
 import {
   browseLocalMediaPlayer,
   browseMediaPlayer,
-  BROWSER_SOURCE,
+  BROWSER_PLAYER,
   MediaClassBrowserSettings,
   MediaPickedEvent,
   MediaPlayerBrowseAction,
@@ -109,9 +109,11 @@ export class HaMediaPlayerBrowse extends LitElement {
           text: this._renderError(this._error),
         });
       } else {
-        return html`<div class="container">
-          ${this._renderError(this._error)}
-        </div>`;
+        return html`
+          <div class="container">
+            ${this._renderError(this._error)}
+          </div>
+        `;
       }
     }
 
@@ -236,7 +238,7 @@ export class HaMediaPlayerBrowse extends LitElement {
       </div>
       ${this._error
         ? html`
-            <div class="container error">
+            <div class="container">
               ${this._renderError(this._error)}
             </div>
           `
@@ -457,7 +459,7 @@ export class HaMediaPlayerBrowse extends LitElement {
     mediaContentType?: string
   ): Promise<MediaPlayerItem> {
     const itemData =
-      this.entityId !== BROWSER_SOURCE
+      this.entityId !== BROWSER_PLAYER
         ? await browseMediaPlayer(
             this.hass,
             this.entityId,
@@ -524,7 +526,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         </p>
       `;
     }
-    return html`<span class="error">err.message</span>`;
+    return html`<span class="error">${err.message}</span>`;
   }
 
   static get styles(): CSSResultArray {
