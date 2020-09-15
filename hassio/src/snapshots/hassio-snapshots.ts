@@ -241,7 +241,7 @@ class HassioSnapshots extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    this._updateSnapshots();
+    this.refreshData();
   }
 
   protected updated(changedProps: PropertyValues) {
