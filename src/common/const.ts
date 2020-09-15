@@ -63,6 +63,10 @@ export const DOMAINS_MORE_INFO_NO_HISTORY = ["camera", "configurator", "scene"];
 /** States that we consider "off". */
 export const STATES_OFF = ["closed", "locked", "off"];
 
+/** Binary States */
+export const BINARY_STATE_ON = "on";
+export const BINARY_STATE_OFF = "off";
+
 /** Domains where we allow toggle in Lovelace. */
 export const DOMAINS_TOGGLE = new Set([
   "fan",

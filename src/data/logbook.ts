@@ -1,4 +1,8 @@
+import { HassEntity } from "home-assistant-js-websocket";
+import { BINARY_STATE_OFF, BINARY_STATE_ON } from "../common/const";
+import { computeDomain } from "../common/entity/compute_domain";
 import { HomeAssistant } from "../types";
+import { UNAVAILABLE_STATES } from "./entity";
 
 export interface LogbookEntry {
   when: string;
@@ -20,7 +24,36 @@ const DATA_CACHE: {
   [cacheKey: string]: { [entityId: string]: Promise<LogbookEntry[]> };
 } = {};
 
-export const getLogbookData = (
+export const getLogbookData = async (
+  hass: HomeAssistant,
+  startDate: string,
+  endDate: string,
+  entityId?: string,
+  entity_matches_only?: boolean
+) => {
+  const logbookData = await getLogbookDataCache(
+    hass,
+    startDate,
+    endDate,
+    entityId,
+    entity_matches_only
+  );
+
+  for (const entry of logbookData) {
+    if (entry.state) {
+      entry.message = getLogbookMessage(
+        hass,
+        entry.state,
+        hass!.states[entry.entity_id!],
+        computeDomain(entry.entity_id!)
+      );
+    }
+  }
+
+  return logbookData;
+};
+
+export const getLogbookDataCache = async (
   hass: HomeAssistant,
   startDate: string,
   endDate: string,
@@ -44,9 +77,8 @@ export const getLogbookData = (
   }
 
   if (entityId !== ALL_ENTITIES && DATA_CACHE[cacheKey][ALL_ENTITIES]) {
-    return DATA_CACHE[cacheKey][ALL_ENTITIES].then((entities) =>
-      entities.filter((entity) => entity.entity_id === entityId)
-    );
+    const entities = await DATA_CACHE[cacheKey][ALL_ENTITIES];
+    return entities.filter((entity) => entity.entity_id === entityId);
   }
 
   DATA_CACHE[cacheKey][entityId] = getLogbookDataFromServer(
@@ -73,6 +105,155 @@ const getLogbookDataFromServer = async (
   return hass.callApi<LogbookEntry[]>("GET", url);
 };
 
-export const clearLogbookCache = (startDate, endDate) => {
+export const clearLogbookCache = (startDate: string, endDate: string) => {
   DATA_CACHE[`${startDate}${endDate}`] = {};
+};
+
+export const getLogbookMessage = (
+  hass: HomeAssistant,
+  state: string,
+  stateObj: HassEntity,
+  domain: string,
+  source?: string
+): string => {
+  const localizePath = "ui.components.logbook.messages";
+
+  switch (domain) {
+    case "device_tracker":
+    case "person":
+      return state === "not_home"
+        ? hass.localize(`${localizePath}.was_away`)
+        : hass.localize(`${localizePath}.was_at_state`, "state", state);
+
+    case "sun":
+      return state === "above_horizon"
+        ? hass.localize(`${localizePath}.rose`)
+        : hass.localize(`${localizePath}.set`);
+
+    case "binary_sensor": {
+      const isOn = state === BINARY_STATE_ON;
+      const isOff = state === BINARY_STATE_OFF;
+      const device_class = stateObj.attributes.device_class;
+
+      switch (device_class) {
+        case "battery":
+          if (isOn) {
+            return hass.localize(`${localizePath}.was_low`);
+          }
+          if (isOff) {
+            return hass.localize(`${localizePath}.was_normal`);
+          }
+          break;
+
+        case "connectivity":
+          if (isOn) {
+            return hass.localize(`${localizePath}.was_connected`);
+          }
+          if (isOff) {
+            return hass.localize(`${localizePath}.was_disconnected`);
+          }
+          break;
+
+        case "door":
+        case "garage_door":
+        case "opening":
+        case "window":
+          if (isOn) {
+            return hass.localize(`${localizePath}.was_opened`);
+          }
+          if (isOff) {
+            return hass.localize(`${localizePath}.was_closed`);
+          }
+          break;
+
+        case "lock":
+          if (isOn) {
+            return hass.localize(`${localizePath}.was_unlocked`);
+          }
+          if (isOff) {
+            return hass.localize(`${localizePath}.was_locked`);
+          }
+          break;
+
+        case "plug":
+          if (isOn) {
+            return hass.localize(`${localizePath}.was_plugged_in`);
+          }
+          if (isOff) {
+            return hass.localize(`${localizePath}.was_unplugged`);
+          }
+          break;
+
+        case "presence":
+          if (isOn) {
+            return hass.localize(`${localizePath}.was_at_home`);
+          }
+          if (isOff) {
+            return hass.localize(`${localizePath}.was_away`);
+          }
+          break;
+
+        case "safety":
+          if (isOn) {
+            return hass.localize(`${localizePath}.was_unsafe`);
+          }
+          if (isOff) {
+            return hass.localize(`${localizePath}.was_safe`);
+          }
+          break;
+
+        case "cold":
+        case "gas":
+        case "heat":
+        case "colightld":
+        case "moisture":
+        case "motion":
+        case "occupancy":
+        case "power":
+        case "problem":
+        case "smoke":
+        case "sound":
+        case "vibration":
+          if (isOn) {
+            return hass.localize(
+              `${localizePath}.detected_device_class`,
+              "device_class",
+              device_class
+            );
+          }
+          if (isOff) {
+            return hass.localize(
+              `${localizePath}.cleared_device_class`,
+              "device_class",
+              device_class
+            );
+          }
+          break;
+      }
+
+      break;
+    }
+
+    case "cover":
+      return state === "open"
+        ? hass.localize(`${localizePath}.was_opened`)
+        : hass.localize(`${localizePath}.was_closed`);
+
+    case "automation":
+      return `has been triggered${source ? ` by ${source}` : ""}`;
+  }
+
+  if (state === BINARY_STATE_ON) {
+    return hass.localize(`${localizePath}.turned_on`);
+  }
+
+  if (state === BINARY_STATE_OFF) {
+    return hass.localize(`${localizePath}.turned_off`);
+  }
+
+  if (UNAVAILABLE_STATES.includes(state)) {
+    return hass.localize(`${localizePath}.became_unavailable`);
+  }
+
+  return hass.localize(`${localizePath}.changed_to_state`, "state", state);
 };
