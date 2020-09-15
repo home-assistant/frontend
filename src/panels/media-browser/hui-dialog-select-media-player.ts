@@ -1,3 +1,5 @@
+import "@material/mwc-list/mwc-list";
+import "@material/mwc-list/mwc-list-item";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
@@ -13,7 +15,8 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { compare } from "../../common/string/compare";
 import { createCloseHeading } from "../../components/ha-dialog";
-import { BROWSER_SOURCE } from "../../data/media-player";
+import { UNAVAILABLE_STATES } from "../../data/entity";
+import { BROWSER_PLAYER } from "../../data/media-player";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import type { SelectMediaPlayerDialogParams } from "./show-select-media-source-dialog";
@@ -49,30 +52,31 @@ export class HuiDialogSelectMediaPlayer extends LitElement {
         )}
         @closed=${this.closeDialog}
       >
-        <paper-listbox
-          attr-for-selected="itemName"
-          @iron-select=${this._selectSource}
-          ><paper-item .itemName=${BROWSER_SOURCE}
+        <mwc-list>
+          <mwc-list-item .player=${BROWSER_PLAYER} @click=${this._selectPlayer}
             >${this.hass.localize(
               "ui.components.media-browser.web-browser"
-            )}</paper-item
+            )}</mwc-list-item
           >
           ${this._params.mediaSources
             .sort((a, b) => compare(computeStateName(a), computeStateName(b)))
             .map(
               (source) => html`
-                <paper-item .itemName=${source.entity_id}
-                  >${computeStateName(source)}</paper-item
+                <mwc-list-item
+                  .disabled=${UNAVAILABLE_STATES.includes(source.state)}
+                  .player=${source.entity_id}
+                  @click=${this._selectPlayer}
+                  >${computeStateName(source)}</mwc-list-item
                 >
               `
             )}
-        </paper-listbox>
+        </mwc-list>
       </ha-dialog>
     `;
   }
 
-  private _selectSource(ev: CustomEvent): void {
-    const entityId = ev.detail.item.itemName;
+  private _selectPlayer(ev: CustomEvent): void {
+    const entityId = (ev.currentTarget as any).player;
     this._params!.sourceSelectedCallback(entityId);
     this.closeDialog();
   }
@@ -84,8 +88,8 @@ export class HuiDialogSelectMediaPlayer extends LitElement {
         ha-dialog {
           --dialog-content-padding: 0 24px 20px;
         }
-        paper-item {
-          cursor: pointer;
+        mwc-list-item[disabled] {
+          --mdc-theme-text-primary-on-background: var(--disabled-text-color);
         }
       `,
     ];
