@@ -79,6 +79,7 @@ class HassioSnapshots extends LitElement {
     },
     { slug: "ssl", name: "SSL", checked: true },
     { slug: "share", name: "Share", checked: true },
+    { slug: "media", name: "Media", checked: true },
     { slug: "addons/local", name: "Local add-ons", checked: true },
   ];
 
