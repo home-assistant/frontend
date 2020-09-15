@@ -114,8 +114,7 @@ export const getLogbookMessage = (
   hass: HomeAssistant,
   state: string,
   stateObj: HassEntity,
-  domain: string,
-  source?: string
+  domain: string
 ): string => {
   const localizePath = "ui.components.logbook.messages";
 
