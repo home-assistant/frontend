@@ -94,11 +94,7 @@ class HaHLSPlayer extends LitElement {
   }
 
   private async _getUseExoPlayer(): Promise<boolean> {
-    if (!this.hass!.auth.external || !this.allowExoPlayer) {
-      return false;
-    }
-    const externalConfig = await getExternalConfig(this.hass!.auth.external);
-    return externalConfig && externalConfig.hasExoPlayer;
+    return false;
   }
 
   private async _startHls(): Promise<void> {
