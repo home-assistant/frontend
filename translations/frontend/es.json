@@ -507,6 +507,7 @@
             "cancel": "Cancelar",
             "close": "Cerrar",
             "continue": "Continuar",
+            "copied": "Copiado",
             "delete": "Eliminar",
             "error_required": "Obligatorio",
             "loading": "Cargando",
@@ -567,11 +568,27 @@
                 "loading_history": "Cargando historial de estado...",
                 "no_history_found": "No se encontró historial de estado."
             },
+            "logbook": {
+                "entries_not_found": "No se han encontrado entradas en el registro."
+            },
             "media-browser": {
                 "audio_not_supported": "Tu navegador no es compatible con el elemento de audio.",
                 "choose_player": "Elige reproductor",
                 "choose-source": "Elige la fuente",
                 "class": {
+                    "album": "Álbum",
+                    "app": "Aplicación",
+                    "artist": "Artista",
+                    "channel": "Canal",
+                    "composer": "Compositor",
+                    "contributing_artist": "Artista colaborador",
+                    "directory": "Biblioteca",
+                    "episode": "Episodio",
+                    "game": "Juego",
+                    "genre": "Género",
+                    "image": "Imagen",
+                    "movie": "Película",
+                    "music": "Música",
                     "playlist": "Lista de reproducción",
                     "podcast": "Podcast",
                     "season": "Temporada",
@@ -712,6 +729,7 @@
             },
             "more_info_control": {
                 "controls": "Controles",
+                "details": "Detalles",
                 "dismiss": "Descartar diálogo",
                 "edit": "Editar entidad",
                 "history": "Historial",
@@ -2357,9 +2375,14 @@
                         "title": "Estados"
                     },
                     "templates": {
+                        "all_listeners": "Esta plantilla escucha todos los eventos de cambio de estado.",
                         "description": "Las plantillas se muestran utilizando el motor de plantillas Jinja2 con algunas extensiones específicas de Home Assistant.",
+                        "domain": "Dominio",
                         "editor": "Editor de plantillas",
+                        "entity": "Entidad",
                         "jinja_documentation": "Documentación de plantilla Jinja2",
+                        "listeners": "Esta plantilla escucha los siguientes eventos de cambio de estado:",
+                        "no_listeners": "Esta plantilla no escucha ningún evento de cambio de estado y no se actualizará automáticamente.",
                         "reset": "Reiniciar a la plantilla de demostración",
                         "template_extensions": "Extensiones de plantilla de Home Assistant",
                         "title": "Plantillas",
@@ -2946,6 +2969,11 @@
                     "submit": "Enviar"
                 },
                 "current_user": "Has iniciado sesión como {fullName}.",
+                "customize_sidebar": {
+                    "button": "Editar",
+                    "description": "También puedes mantener pulsada la cabecera de la barra lateral para activar el modo de edición.",
+                    "header": "Cambiar el orden y ocultar elementos de la barra lateral"
+                },
                 "dashboard": {
                     "description": "Selecciona un panel de control predeterminado para este dispositivo.",
                     "dropdown_label": "Panel de control",
@@ -2968,6 +2996,7 @@
                     "confirm_delete": "¿Estás seguro de que quieres eliminar el token de acceso para {name}?",
                     "create": "Crear Token",
                     "create_failed": "No se ha podido crear el token de acceso.",
+                    "created": "Creado en {date}",
                     "created_at": "Creado el {date}",
                     "delete_failed": "Error al eliminar el token de acceso.",
                     "description": "Crea tokens de acceso de larga duración para permitir que tus scripts interactúen con tu instancia de Home Assistant. Cada token será válido por 10 años desde la creación. Los siguientes tokens de acceso de larga duración están actualmente activos.",
@@ -2975,9 +3004,10 @@
                     "header": "Tokens de acceso de larga duración",
                     "last_used": "Último uso el {date} desde {location}",
                     "learn_auth_requests": "Aprende cómo realizar solicitudes autenticadas.",
+                    "name": "Nombre",
                     "not_used": "Nunca ha sido usado",
                     "prompt_copy_token": "Copia tu token de acceso. No se mostrará de nuevo.",
-                    "prompt_name": "¿Nombre?"
+                    "prompt_name": "Dale un nombre al token"
                 },
                 "mfa_setup": {
                     "close": "Cerrar",
@@ -3041,6 +3071,7 @@
             }
         },
         "sidebar": {
+            "done": "Hecho",
             "external_app_configuration": "Configuración de la aplicación",
             "sidebar_toggle": "Alternar barra lateral"
         }
