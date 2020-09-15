@@ -507,6 +507,7 @@
             "cancel": "Annuler",
             "close": "Fermer",
             "continue": "Continuer",
+            "copied": "Copié",
             "delete": "Supprimer",
             "error_required": "Obligatoire",
             "loading": "Chargement",
@@ -567,10 +568,35 @@
                 "loading_history": "Chargement de l'historique des valeurs ...",
                 "no_history_found": "Aucun historique des valeurs trouvé."
             },
+            "logbook": {
+                "entries_not_found": "Aucune entrée trouvée dans le journal."
+            },
             "media-browser": {
                 "audio_not_supported": "Votre navigateur ne prend pas en charge l'élément audio.",
                 "choose_player": "Choisissez le lecteur",
                 "choose-source": "Choisissez la source",
+                "class": {
+                    "album": "Album",
+                    "app": "App",
+                    "artist": "Artiste",
+                    "channel": "Canal",
+                    "composer": "Compositeur",
+                    "contributing_artist": "Artiste collaborateur",
+                    "directory": "Bibliothèque",
+                    "episode": "Épisode",
+                    "game": "Jeu",
+                    "genre": "Genre",
+                    "image": "Image",
+                    "movie": "Film",
+                    "music": "Musique",
+                    "playlist": "Liste de lecture",
+                    "podcast": "Podcast",
+                    "season": "Saison",
+                    "track": "Piste",
+                    "tv_show": "Émission de télévision",
+                    "url": "Url",
+                    "video": "Vidéo"
+                },
                 "content-type": {
                     "album": "Album",
                     "artist": "Artiste",
@@ -703,6 +729,7 @@
             },
             "more_info_control": {
                 "controls": "Contrôles",
+                "details": "Détails",
                 "dismiss": "Fermer la fenêtre de dialogue",
                 "edit": "Modifier l'entité",
                 "history": "Historique",
@@ -934,9 +961,12 @@
                                     "service_data": "Données du service"
                                 },
                                 "wait_for_trigger": {
-                                    "label": "Attendre le déclencheur"
+                                    "continue_timeout": "Continuer à l'expiration du délai",
+                                    "label": "Attendre le déclencheur",
+                                    "timeout": "Délai d'expiration (optionnel)"
                                 },
                                 "wait_template": {
+                                    "continue_timeout": "Continuer à l'expiration du délai",
                                     "label": "Attendre",
                                     "timeout": "Délai d'expiration (optionnel)",
                                     "wait_template": "Template d'attente"
@@ -1000,7 +1030,9 @@
                                 "time": {
                                     "after": "Après",
                                     "before": "Avant",
-                                    "label": "Heure"
+                                    "label": "Heure",
+                                    "type_input": "Valeur d'une aide de date/heure",
+                                    "type_value": "Temps fixe"
                                 },
                                 "zone": {
                                     "entity": "Entité avec localisation",
@@ -1567,6 +1599,7 @@
                         "reload_restart_confirm": "Redémarrer Home Assistant pour finaliser le rechargement de cette intégration",
                         "rename": "Renommer",
                         "restart_confirm": "Redémarrer Home Assistant pour terminer la suppression de cette intégration",
+                        "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
                         "settings_button": "Modifier les paramètres pour {integration}",
                         "system_options": "Options système",
                         "system_options_button": "Options système pour {integration}",
@@ -2342,9 +2375,14 @@
                         "title": "États"
                     },
                     "templates": {
+                        "all_listeners": "Ce modèle écoute tous les événements de changement d'état.",
                         "description": "Les modèles sont rendus à l'aide du moteur de modèles Jinja2 avec certaines extensions spécifiques de Home Assistant.",
+                        "domain": "Domaine",
                         "editor": "Éditeur de modèles",
+                        "entity": "Entité",
                         "jinja_documentation": "Documentation de modèle Jinja2",
+                        "listeners": "Ce modèle écoute les événements de changement d'état suivants:",
+                        "no_listeners": "Ce modèle n'écoute aucun événement de changement d'état et ne sera pas mis à jour automatiquement.",
                         "reset": "Réinitialiser au modèle de démonstration",
                         "template_extensions": "Extensions de modèles de Home Assistant",
                         "title": "Modèle",
@@ -2931,6 +2969,11 @@
                     "submit": "Envoyer"
                 },
                 "current_user": "Vous êtes actuellement connecté en tant que {fullName}.",
+                "customize_sidebar": {
+                    "button": "Modifier",
+                    "description": "Vous pouvez également appuyer et maintenir l'en-tête de la barre latérale pour activer le mode d'édition.",
+                    "header": "Modifier l'ordre et masquer les éléments de la barre latérale"
+                },
                 "dashboard": {
                     "description": "Choisissez un tableau de bord par défaut pour cet appareil.",
                     "dropdown_label": "Tableau de bord",
@@ -2953,6 +2996,7 @@
                     "confirm_delete": "Êtes-vous sûr de vouloir supprimer le jeton d'accès de {name} ?",
                     "create": "Créer un jeton",
                     "create_failed": "Impossible de créer le jeton d'accès.",
+                    "created": "Créé le {date}",
                     "created_at": "Créé le {date}",
                     "delete_failed": "Impossible de supprimer le jeton d'accès.",
                     "description": "Créez des jetons d'accès de longue durée pour permettre à vos scripts d'interagir avec votre instance de Home Assistant. Chaque jeton sera valable 10 ans à compter de sa création. Les jetons d'accès longue durée suivants sont actuellement actifs.",
@@ -2960,6 +3004,7 @@
                     "header": "Jetons d'accès de longue durée",
                     "last_used": "Dernière utilisation le {date} à partir de {location}",
                     "learn_auth_requests": "Apprenez comment faire des demandes authentifiées.",
+                    "name": "Nom",
                     "not_used": "N'a jamais été utilisé",
                     "prompt_copy_token": "Copiez votre jeton d'accès. Il ne sera plus affiché à nouveau.",
                     "prompt_name": "Nom ?"
@@ -3026,6 +3071,7 @@
             }
         },
         "sidebar": {
+            "done": "Terminé",
             "external_app_configuration": "Configuration de l'application",
             "sidebar_toggle": "Activer la barre latérale"
         }

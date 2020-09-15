@@ -507,6 +507,7 @@
             "cancel": "Annuleren",
             "close": "Sluiten",
             "continue": "Ga verder",
+            "copied": "Gekopieerd",
             "delete": "Verwijderen",
             "error_required": "Verplicht",
             "loading": "Bezig met laden",
@@ -2374,11 +2375,14 @@
                         "title": "Toestanden"
                     },
                     "templates": {
+                        "all_listeners": "Deze template luistert naar alle gebeurtenissen met gewijzigde status.",
                         "description": "Sjablonen worden weergegeven met de Jinja2-sjabloonediter samen met enkele extensies van Home Assistant.",
                         "domain": "Domein",
                         "editor": "Sjabloonediter",
                         "entity": "Entiteit",
                         "jinja_documentation": "Jinja2-sjabloondocumentatie",
+                        "listeners": "Deze template luistert naar de volgende gebeurtenissen met gewijzigde status:",
+                        "no_listeners": "Deze template luistert niet naar gebeurtenissen met statuswijziging en wordt niet automatisch bijgewerkt.",
                         "reset": "Resetten naar demosjabloon",
                         "template_extensions": "Home Assistant sjabloon extensiesHome Assistant",
                         "title": "Sjablonen",
@@ -3003,7 +3007,7 @@
                     "name": "Naam",
                     "not_used": "Is nog nooit gebruikt",
                     "prompt_copy_token": "Kopieer je toegangstoken. Het wordt niet meer getoond.",
-                    "prompt_name": "Naam?"
+                    "prompt_name": "Geef het token een naam"
                 },
                 "mfa_setup": {
                     "close": "Sluiten",
