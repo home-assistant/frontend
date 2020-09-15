@@ -164,8 +164,9 @@ class OnboardingIntegrations extends LitElement {
     // We filter out the config entry for the local weather and rpi_power.
     // It is one that we create automatically and it will confuse the user
     // if it starts showing up during onboarding.
+    const HIDDEN_DOMAINS = new Set(["met", "rpi_power"]);
     this._entries = entries.filter(
-      (entry) => entry.domain !== "met" && entry.domain !== "rpi_power"
+      (entry) => !HIDDEN_DOMAINS.has(entry.domain)
     );
   }
 
