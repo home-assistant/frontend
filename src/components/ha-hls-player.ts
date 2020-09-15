@@ -140,7 +140,10 @@ class HaHLSPlayer extends LitElement {
     this._videoEl.style.visibility = "hidden";
     await this.hass!.auth.external!.sendMessage({
       type: "exoplayer/play_hls",
-      payload: new URL(url, window.location.href).toString(),
+      payload: {
+        url: new URL(url, window.location.href).toString(),
+        muted: this.muted,
+      },
     });
   }
 
