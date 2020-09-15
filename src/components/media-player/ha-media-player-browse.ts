@@ -22,7 +22,6 @@ import { styleMap } from "lit-html/directives/style-map";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
-import type { MediaPlayerItem } from "../../data/media-player";
 import {
   browseLocalMediaPlayer,
   browseMediaPlayer,
@@ -31,6 +30,7 @@ import {
   MediaPickedEvent,
   MediaPlayerBrowseAction,
 } from "../../data/media-player";
+import type { MediaPlayerItem } from "../../data/media-player";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
 import { haStyle } from "../../resources/styles";
@@ -357,7 +357,31 @@ export class HaMediaPlayerBrowse extends LitElement {
             `
         : html`
             <div class="container">
-              ${this.hass.localize("ui.components.media-browser.no_items")}
+              ${this.hass.localize("ui.components.media-browser.no_items")}<br />
+
+              ${currentItem.media_content_id.startsWith(
+                "media-source://media_source/local_source"
+              )
+                ? html`${this.hass.localize(
+                      "ui.components.media-browser.learn_adding_local_media",
+                      "documentation",
+                      html`<a
+                        href="${documentationUrl(
+                          this.hass,
+                          "/more-info/local-media/add-media"
+                        )}"
+                        target="_blank"
+                        rel="noreferrer"
+                        >${this.hass.localize(
+                          "ui.components.media-browser.documentation"
+                        )}</a
+                      >`
+                    )}
+                    <br />
+                    ${this.hass.localize(
+                      "ui.components.media-browser.local_media_files"
+                    )}.`
+                : ""}
             </div>
           `}
     `;
@@ -501,28 +525,31 @@ export class HaMediaPlayerBrowse extends LitElement {
   private _renderError(err: { message: string; code: string }) {
     if (err.message === "Media directory does not exist.") {
       return html`
-        <h2>No local media found.</h2>
+        <h2>
+          ${this.hass.localize(
+            "ui.components.media-browser.no_local_media_found"
+          )}
+        </h2>
         <p>
-          It looks like you have not yet created a media directory.
-          <br />Create a directory with the name <b>"media"</b> in the
-          configuration directory of Home Assistant
-          (${this.hass.config.config_dir}). <br />Place your video, audio and
-          image files in this directory to be able to browse and play them in
-          the browser or on supported media players.
-        </p>
-
-        <p>
-          Check the
-          <a
-            href="${documentationUrl(
-              this.hass,
-              "/integrations/media_source/#local-media"
-            )}"
-            target="_blank"
-            rel="noreferrer"
-            >documentation</a
-          >
-          for more info
+          ${this.hass.localize("ui.components.media-browser.no_media_folder")}
+          <br />
+          ${this.hass.localize(
+            "ui.components.media-browser.setup_local_help",
+            "documentation",
+            html`<a
+              href="${documentationUrl(
+                this.hass,
+                "/more-info/local-media/setup-media"
+              )}"
+              target="_blank"
+              rel="noreferrer"
+              >${this.hass.localize(
+                "ui.components.media-browser.documentation"
+              )}</a
+            >`
+          )}
+          <br />
+          ${this.hass.localize("ui.components.media-browser.local_media_files")}
         </p>
       `;
     }
