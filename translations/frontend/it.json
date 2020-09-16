@@ -507,6 +507,7 @@
             "cancel": "Annulla",
             "close": "Chiudi",
             "continue": "Continua",
+            "copied": "Copiato",
             "delete": "Elimina",
             "error_required": "Necessario",
             "loading": "Caricamento",
@@ -574,6 +575,12 @@
                 "audio_not_supported": "Il tuo browser non supporta l'elemento audio.",
                 "choose_player": "Scegli il lettore",
                 "choose-source": "Scegli origine",
+                "class": {
+                    "movie": "Film",
+                    "music": "Musica",
+                    "season": "Stagione",
+                    "track": "Traccia dispositivo"
+                },
                 "content-type": {
                     "album": "Album",
                     "artist": "Artista",

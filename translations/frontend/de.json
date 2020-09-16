@@ -574,6 +574,8 @@
                     "game": "Spiel",
                     "movie": "Film",
                     "music": "Musik",
+                    "playlist": "Wiedergabeliste",
+                    "podcast": "Podcast",
                     "season": "Episode",
                     "url": "URL",
                     "video": "Video"

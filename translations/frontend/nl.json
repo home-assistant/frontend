@@ -2692,7 +2692,7 @@
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "We zullen je Lovelace gebruikersinterface automatisch genereren met je gebieden en apparaten als je de huidige Lovelace gebruikersinterface verwijdert.",
-                        "confirm_remove_config_title": "Weet je zeker dat je de huidige Lovelace gebruikersinterface wilt verwijderen? We zullen automatisch een nieuwe Lovelace gebruikersinterface genereren op basis van je gebieden en apparaten.",
+                        "confirm_remove_config_title": "Weet u zeker dat u uw Lovelace UI-configuratie wilt verwijderen?",
                         "confirm_unsaved_changes": "Er zijn nog niet-opgeslagen wijzigingen, weet je zeker dat je wilt afsluiten?",
                         "confirm_unsaved_comments": "Uw configuratie bevat opmerkingen, deze worden niet opgeslagen. Wil je doorgaan?",
                         "error_invalid_config": "Uw configuratie is niet geldig: {error}",
