@@ -105,7 +105,7 @@ export class HaIcon extends LitElement {
       const deprecatedIcon = mdiDeprecatedIcons[iconName];
       let message: string;
 
-      if (deprecatedIcon.change == "renamed") {
+      if (deprecatedIcon.change === "renamed") {
         message = `Icon ${iconPrefix}:${iconName} was renamed to ${iconPrefix}:${deprecatedIcon.newName}, please change your config, it will be removed in version ${deprecatedIcon.removeIn}.`;
         iconName = deprecatedIcon.newName!;
       } else {
