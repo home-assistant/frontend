@@ -137,7 +137,7 @@ class PanelMediaBrowser extends LitElement {
           --mdc-theme-primary: var(--app-header-text-color);
         }
         ha-media-player-browse {
-          height: calc(100vh - 84px);
+          height: calc(100vh - 64px);
         }
         :host([narrow]) app-toolbar mwc-button {
           width: 65px;
