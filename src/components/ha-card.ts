@@ -32,7 +32,10 @@ export class HaCard extends LitElement {
         display: block;
         transition: all 0.3s ease-out;
         position: relative;
-        margin: var(--ha-card-margin, 0px);
+        margin: var(
+         --ha-card-margin, 
+         var(--card-margin, 0px)
+        );
       }
 
       :host([outlined]) {
