@@ -775,7 +775,6 @@ class HaSidebar extends LitElement {
         .title mwc-button {
           width: 100%;
         }
-
         #sortable,
         .hidden-panel {
           display: none;

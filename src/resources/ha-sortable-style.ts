@@ -25,11 +25,11 @@ export const sortableStyles = css`
 
   #sortable {
     outline: none;
-    display: block;
+    display: block !important;
   }
 
   .hidden-panel {
-    display: flex;
+    display: flex !important;
   }
 
   .sortable-fallback {
