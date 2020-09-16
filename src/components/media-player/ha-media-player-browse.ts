@@ -520,7 +520,7 @@ export class HaMediaPlayerBrowse extends LitElement {
       return;
     }
 
-    this.scrollTo(0, 0);
+    this._content?.scrollTo(0, 0);
     this._mediaPlayerItems = [...this._mediaPlayerItems, itemData];
   }
 
