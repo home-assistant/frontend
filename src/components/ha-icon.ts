@@ -106,7 +106,7 @@ export class HaIcon extends LitElement {
       let message: string;
 
       if (deprecatedIcon.change == "renamed") {
-        message = `Icon ${iconPrefix}:${iconName} was renamed to ${iconPrefix}:${deprecatedIcon.newName}, please change your config, this warning will be removed in version ${deprecatedIcon.removeIn}.`;
+        message = `Icon ${iconPrefix}:${iconName} was renamed to ${iconPrefix}:${deprecatedIcon.newName}, please change your config, it will be removed in version ${deprecatedIcon.removeIn}.`;
         iconName = deprecatedIcon.newName!;
       } else {
         message = `Icon ${iconPrefix}:${iconName} was removed from MDI, please replace this icon with an other icon in your config, it will be removed in version ${deprecatedIcon.removeIn}.`;
