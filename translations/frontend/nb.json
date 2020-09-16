@@ -911,7 +911,7 @@
                                     "add_option": "Legg til alternativ",
                                     "conditions": "Betingelser",
                                     "default": "Standard handlinger",
-                                    "label": "Velge",
+                                    "label": "Velg",
                                     "option": "Alternativ {number}",
                                     "remove_option": "Fjern alternativ",
                                     "sequence": "Handlinger"
@@ -944,11 +944,11 @@
                                             "label": "Antall"
                                         },
                                         "until": {
-                                            "conditions": "Inntil forholdene",
-                                            "label": "Før"
+                                            "conditions": "Inntil betingelser",
+                                            "label": "Til"
                                         },
                                         "while": {
-                                            "conditions": "Mens forholdene",
+                                            "conditions": "Mens betingelser",
                                             "label": "Mens"
                                         }
                                     }
@@ -2044,7 +2044,7 @@
                         "tag_id_placeholder": "Automatisk generert når den er tom",
                         "update": "Oppdater"
                     },
-                    "edit": "Redigere",
+                    "edit": "Rediger",
                     "headers": {
                         "last_scanned": "Sist skannet",
                         "name": "Navn"
@@ -2375,14 +2375,14 @@
                         "title": "Tilstander"
                     },
                     "templates": {
-                        "all_listeners": "Denne malen lytter etter alle tilstandsfornede hendelser.",
+                        "all_listeners": "Denne malen lytter etter alle tilstand endret hendelser.",
                         "description": "Maler blir rendret ved hjelp av Jinja2-malmotoren med noen spesifikke utvidelser for Home Assistant.",
                         "domain": "Domene",
                         "editor": "Maleditor",
                         "entity": "Entitet",
                         "jinja_documentation": "Jinja2 mal dokumentasjon",
-                        "listeners": "Denne malen lytter etter følgende tilstandsfor endrede hendelser:",
-                        "no_listeners": "Denne malen lytter ikke etter eventuelle tilstandsfornedne hendelser og oppdateres ikke automatisk.",
+                        "listeners": "Denne malen lytter etter følgende tilstand endret hendelser:",
+                        "no_listeners": "Denne malen lytter ikke etter noen tilstand endret hendelser og oppdateres ikke automatisk.",
                         "reset": "Tilbakestill til demomal",
                         "template_extensions": "Mal utvidelser for Home Assistant",
                         "title": "Mal",
@@ -2630,7 +2630,7 @@
                         }
                     },
                     "cardpicker": {
-                        "by_card": "Med kort",
+                        "by_card": "Etter kort",
                         "by_entity": "Etter entitet",
                         "custom_card": "Tilpasset",
                         "domain": "Domene",
@@ -2692,7 +2692,7 @@
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "Vi vil automatisk opprette Lovelace-visningene dine med områdene og enhetene dine hvis du fjerner Lovelace-konfigurasjonen.",
-                        "confirm_remove_config_title": "Er du sikker på at du vil fjerne Lovelace-konfigurasjonen? Vi vil automatisk opprette Lovelace-visningene dine med områdene og enhetene dine.",
+                        "confirm_remove_config_title": "Er du sikker på at du vil fjerne Lovelace UI-konfigurasjonen?",
                         "confirm_unsaved_changes": "Du har ulagrede endringer, er du sikker på at du vil avslutte?",
                         "confirm_unsaved_comments": "Konfigurasjonen din inneholder kommentarer, disse vil ikke bli lagret. Vil du fortsette?",
                         "error_invalid_config": "Konfigurasjonen din er ikke gyldig: {error}",
@@ -2970,8 +2970,8 @@
                 },
                 "current_user": "Du er logget inn som {fullName}.",
                 "customize_sidebar": {
-                    "button": "Redigere",
-                    "description": "Du kan også trykke på og holde nede overskriften på sidefeltet for å aktivere redigeringsmodus.",
+                    "button": "Rediger",
+                    "description": "Du kan også trykke på og holde nede overskriften på sidepanelet for å aktivere redigeringsmodus.",
                     "header": "Endre rekkefølgen og skjul elementer fra sidepanelet"
                 },
                 "dashboard": {
