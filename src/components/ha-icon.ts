@@ -26,14 +26,14 @@ import { fireEvent } from "../common/dom/fire_event";
 
 interface DeprecatedIcon {
   [key: string]: {
-    change: "removed" | "renamed";
     removeIn: string;
+    renamed?: boolean;
     newName?: string;
   };
 }
 
 const mdiDeprecatedIcons: DeprecatedIcon = {
-  scooter: { change: "renamed", removeIn: "117", newName: "human-scooter" },
+  scooter: { renamed: true, removeIn: "117", newName: "human-scooter" },
 };
 
 const chunks: Chunks = {};
@@ -105,7 +105,7 @@ export class HaIcon extends LitElement {
       const deprecatedIcon = mdiDeprecatedIcons[iconName];
       let message: string;
 
-      if (deprecatedIcon.change === "renamed") {
+      if (deprecatedIcon.renamed) {
         message = `Icon ${iconPrefix}:${iconName} was renamed to ${iconPrefix}:${deprecatedIcon.newName}, please change your config, it will be removed in version ${deprecatedIcon.removeIn}.`;
         iconName = deprecatedIcon.newName!;
       } else {
