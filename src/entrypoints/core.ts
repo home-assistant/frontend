@@ -1,5 +1,4 @@
 // Compat needs to be first import
-import "../resources/compatibility";
 import {
   Auth,
   Connection,
@@ -23,6 +22,7 @@ import { subscribePanels } from "../data/ws-panels";
 import { subscribeThemes } from "../data/ws-themes";
 import { subscribeUser } from "../data/ws-user";
 import type { ExternalAuth } from "../external_app/external_auth";
+import "../resources/compatibility";
 import { HomeAssistant } from "../types";
 
 declare global {
@@ -30,6 +30,20 @@ declare global {
     hassConnection: Promise<{ auth: Auth; conn: Connection }>;
     hassConnectionReady?: (hassConnection: Window["hassConnection"]) => void;
   }
+}
+
+const isSafari14 = /^((?!chrome|android).)*version\/14\.0.*safari/i.test(
+  navigator.userAgent
+);
+
+if (isSafari14) {
+  const origAttachShadow = window.Element.prototype.attachShadow;
+  window.Element.prototype.attachShadow = function (init) {
+    if (init && init.delegatesFocus) {
+      delete init.delegatesFocus;
+    }
+    return origAttachShadow.apply(this, [init]);
+  };
 }
 
 const authProm = isExternal
