@@ -576,10 +576,26 @@
                 "choose_player": "Scegli il lettore",
                 "choose-source": "Scegli origine",
                 "class": {
+                    "album": "Album",
+                    "app": "App",
+                    "artist": "Artista",
+                    "channel": "Canale",
+                    "composer": "Compositore",
+                    "contributing_artist": "Artista collaboratore",
+                    "directory": "Libreria",
+                    "episode": "Episodio",
+                    "game": "Gioco",
+                    "genre": "Genere",
+                    "image": "Immagine",
                     "movie": "Film",
                     "music": "Musica",
+                    "playlist": "Elenco di riproduzione",
+                    "podcast": "Podcast",
                     "season": "Stagione",
-                    "track": "Traccia dispositivo"
+                    "track": "Traccia dispositivo",
+                    "tv_show": "Programma televisivo",
+                    "url": "Url",
+                    "video": "Video"
                 },
                 "content-type": {
                     "album": "Album",
@@ -588,15 +604,21 @@
                     "playlist": "Elenco di riproduzione",
                     "server": "Server"
                 },
+                "documentation": "documentazione",
+                "learn_adding_local_media": "Ulteriori informazioni sull'aggiunta di file multimediali nella {documentation}.",
+                "local_media_files": "Posizionare i file video, audio e immagine nella cartella multimediale per poterli sfogliare e riprodurli nel browser o sui lettori multimediali supportati.",
                 "media_browsing_error": "Errore di navigazione multimediale",
                 "media_not_supported": "Il Browser Media Player non supporta questo tipo di file multimediali",
                 "media_player": "Lettore multimediale",
                 "media-player-browser": "Lettore multimediale",
                 "no_items": "Nessun elemento",
+                "no_local_media_found": "Nessun media locale trovato",
+                "no_media_folder": "Sembra che ancora non sia stata creata una cartella multimediale.",
                 "pick": "Scegli",
                 "pick-media": "Seleziona file multimediali",
                 "play": "Riproduci",
                 "play-media": "Riproduci file multimediali",
+                "setup_local_help": "Controllare la {documentation} su come impostare i media locali.",
                 "video_not_supported": "Il tuo browser non supporta l'elemento video.",
                 "web-browser": "Web Browser"
             },
@@ -2359,9 +2381,14 @@
                         "title": "Stati"
                     },
                     "templates": {
+                        "all_listeners": "Questo modello è in ascolto di tutti gli eventi di stato modificato.",
                         "description": "Il rendering dei modelli viene eseguito utilizzando il motore di modelli Jinja2 con alcune estensioni specifiche di Home Assistant.",
+                        "domain": "Dominio",
                         "editor": "Editor di modelli",
+                        "entity": "Entità",
                         "jinja_documentation": "Documentazione del modello Jinja2",
+                        "listeners": "Questo modello è in ascolto dei seguenti eventi di modifica dello stato:",
+                        "no_listeners": "Questo modello non è in ascolto di alcun evento di modifica dello stato e non verrà aggiornato automaticamente.",
                         "reset": "Ripristina il modello di esempio",
                         "template_extensions": "Estensioni del modello Home Assistant",
                         "title": "Modelli",
@@ -2671,7 +2698,7 @@
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "Genereremo automaticamente le tue viste dell'Interfaccia utente di Lovelace con le tue aree e dispositivi se rimuovi la tua configurazione dell'interfaccia utente di Lovelace.",
-                        "confirm_remove_config_title": "Sei sicuro di voler rimuovere la tua configurazione dell'interfaccia utente di Lovelace? Genereremo automaticamente le tue viste Lovelace con le tue aree e dispositivi.",
+                        "confirm_remove_config_title": "Sei sicuro di voler rimuovere la tua configurazione dell'Interfaccia Utente di Lovelace?",
                         "confirm_unsaved_changes": "Hai delle modifiche non salvate, sei sicuro di voler uscire?",
                         "confirm_unsaved_comments": "La tua configurazione contiene commenti, questi non verranno salvati. Vuoi continuare?",
                         "error_invalid_config": "La tua configurazione non è valida: {error}",
@@ -2948,6 +2975,11 @@
                     "submit": "Invia"
                 },
                 "current_user": "Sei attualmente connesso come {fullName}.",
+                "customize_sidebar": {
+                    "button": "Modifica",
+                    "description": "Puoi anche tenere premuta l'intestazione della barra laterale per attivare la modalità di modifica.",
+                    "header": "Modifica l'ordine e nascondi gli elementi dalla barra laterale"
+                },
                 "dashboard": {
                     "description": "Scegliere una plancia di default per questo dispositivo.",
                     "dropdown_label": "Plancia",
@@ -2970,6 +3002,7 @@
                     "confirm_delete": "Sei sicuro di voler eliminare il token di accesso per {name} ?",
                     "create": "Crea token",
                     "create_failed": "Impossibile creare il token di accesso.",
+                    "created": "Creato {date}",
                     "created_at": "Creato il {date}",
                     "delete_failed": "Impossibile eliminare il token di accesso.",
                     "description": "Crea token di accesso di lunga durata per consentire agli script di interagire con l'istanza di Home Assistant. Ogni token sarà valido per 10 anni dalla creazione. I seguenti token di accesso a vita lunga sono attualmente attivi.",
@@ -2977,9 +3010,10 @@
                     "header": "Token di accesso a lunga vita",
                     "last_used": "Utilizzato l'ultima volta il {date} da {location}",
                     "learn_auth_requests": "Scopri come effettuare richieste autenticate.",
+                    "name": "Nome",
                     "not_used": "Non è mai stato usato",
                     "prompt_copy_token": "Copia il tuo token di accesso. Non verrà più mostrato.",
-                    "prompt_name": "Nome?"
+                    "prompt_name": "Assegnare un nome al token"
                 },
                 "mfa_setup": {
                     "close": "Chiudi",
@@ -3043,6 +3077,7 @@
             }
         },
         "sidebar": {
+            "done": "Fatto",
             "external_app_configuration": "Configurazione App",
             "sidebar_toggle": "Attiva/disattiva la barra laterale"
         }
