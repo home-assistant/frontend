@@ -1,4 +1,5 @@
 import "../resources/compatibility";
+import "../resources/safari-14-attachshadow-patch";
 import { PolymerElement } from "@polymer/polymer";
 import { fireEvent } from "../common/dom/fire_event";
 import { loadJS } from "../common/dom/load_resource";

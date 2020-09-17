@@ -1,5 +1,6 @@
 // Compat needs to be first import
 import "../resources/compatibility";
+import "../resources/safari-14-attachshadow-patch";
 import "@polymer/polymer/lib/elements/dom-if";
 import "@polymer/polymer/lib/elements/dom-repeat";
 import "../auth/ha-authorize";
