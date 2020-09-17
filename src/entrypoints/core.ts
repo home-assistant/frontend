@@ -1,3 +1,4 @@
+import "../resources/compatibility";
 // Compat needs to be first import
 import {
   Auth,
@@ -22,7 +23,6 @@ import { subscribePanels } from "../data/ws-panels";
 import { subscribeThemes } from "../data/ws-themes";
 import { subscribeUser } from "../data/ws-user";
 import type { ExternalAuth } from "../external_app/external_auth";
-import "../resources/compatibility";
 import { HomeAssistant } from "../types";
 
 declare global {
