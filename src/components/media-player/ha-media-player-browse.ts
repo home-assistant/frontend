@@ -357,12 +357,10 @@ export class HaMediaPlayerBrowse extends LitElement {
             `
         : html`
             <div class="container">
-              ${this.hass.localize("ui.components.media-browser.no_items")}<br />
-
-              ${currentItem.media_content_id.startsWith(
-                "media-source://media_source/local_source"
-              )
-                ? html`${this.hass.localize(
+              ${this.hass.localize("ui.components.media-browser.no_items")}
+              ${currentItem.media_content_id ===
+              "media-source://media_source/local/."
+                ? html`<br />${this.hass.localize(
                       "ui.components.media-browser.learn_adding_local_media",
                       "documentation",
                       html`<a
