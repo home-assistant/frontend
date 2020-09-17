@@ -1,5 +1,6 @@
-import "../resources/compatibility";
 // Compat needs to be first import
+import "../resources/compatibility";
+import "../resources/safari-14-attachshadow-patch";
 import {
   Auth,
   Connection,
@@ -30,20 +31,6 @@ declare global {
     hassConnection: Promise<{ auth: Auth; conn: Connection }>;
     hassConnectionReady?: (hassConnection: Window["hassConnection"]) => void;
   }
-}
-
-// https://github.com/home-assistant/frontend/pull/7031
-const isSafari14 = /^((?!chrome|android).)*version\/14\.0.*safari/i.test(
-  navigator.userAgent
-);
-if (isSafari14) {
-  const origAttachShadow = window.Element.prototype.attachShadow;
-  window.Element.prototype.attachShadow = function (init) {
-    if (init && init.delegatesFocus) {
-      delete init.delegatesFocus;
-    }
-    return origAttachShadow.apply(this, [init]);
-  };
 }
 
 const authProm = isExternal
