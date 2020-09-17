@@ -43,16 +43,16 @@ class PersonBadge extends LitElement {
         display: contents;
       }
       .picture {
-        width: 40px;
-        height: 40px;
+        width: var(--person-picture-size, 40px);
+        height: var(--person-picture-size, 40px);
         background-size: cover;
         border-radius: 50%;
       }
       .initials {
         display: inline-block;
         box-sizing: border-box;
-        width: 40px;
-        line-height: 40px;
+        width: var(--person-picture-size, 40px);
+        line-height: var(--person-picture-size, 40px);
         border-radius: 50%;
         text-align: center;
         background-color: var(--light-primary-color);
