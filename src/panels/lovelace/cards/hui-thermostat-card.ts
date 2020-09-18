@@ -19,6 +19,7 @@ import { UNIT_F } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
 import type { HaCard } from "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -30,8 +31,10 @@ import {
 } from "../../../data/climate";
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
+import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entites";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { installResizeObserver } from "../common/install-resize-observer";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { ThermostatCardConfig } from "./types";
@@ -81,7 +84,22 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
   @internalProperty() private _lastSetMode?: number;
 
+  @internalProperty() private _narrow = false;
+
   @query("ha-card") private _card?: HaCard;
+
+  private _resizeObserver?: ResizeObserver;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this.updateComplete.then(() => this._attachObserver());
+  }
+
+  public disconnectedCallback(): void {
+    if (this._resizeObserver) {
+      this._resizeObserver.disconnect();
+    }
+  }
 
   public getCardSize(): number {
     return 5;
@@ -216,6 +234,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       <ha-card
         class=${classMap({
           [mode]: true,
+          narrow: this._narrow,
         })}
       >
         <mwc-icon-button
@@ -239,34 +258,40 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
             </div>
           </div>
           <div id="info">
-            <div class="step-icons">
-              <ha-icon-button
-                class="minus step-icon ${classMap({
-                  disabled: Array.isArray(this._setTemp) && !this._lastSetMode,
-                })}"
-                icon="hass:minus"
-                @action=${this._handleStepAction}
-                .actionHandler=${actionHandler()}
-                tempDiff="-1"
-                tabindex="0"
-              ></ha-icon-button
-              ><ha-icon-button
-                class="plus step-icon ${classMap({
-                  disabled: Array.isArray(this._setTemp) && !this._lastSetMode,
-                })}"
-                icon="hass:plus"
-                @action=${this._handleStepAction}
-                .actionHandler=${actionHandler()}
-                tabindex="0"
-                tempDiff="1"
-              ></ha-icon-button>
-            </div>
-            <div id="modes">
-              ${(stateObj.attributes.hvac_modes || [])
-                .concat()
-                .sort(compareClimateHvacModes)
-                .map((modeItem) => this._renderIcon(modeItem, mode))}
-            </div>
+            ${!this._narrow
+              ? html`
+                  <div class="step-icons">
+                    <ha-icon-button
+                      class="minus step-icon ${classMap({
+                        disabled:
+                          Array.isArray(this._setTemp) && !this._lastSetMode,
+                      })}"
+                      icon="hass:minus"
+                      @action=${this._handleStepAction}
+                      .actionHandler=${actionHandler()}
+                      tempDiff="-1"
+                      tabindex="0"
+                    ></ha-icon-button
+                    ><ha-icon-button
+                      class="plus step-icon ${classMap({
+                        disabled:
+                          Array.isArray(this._setTemp) && !this._lastSetMode,
+                      })}"
+                      icon="hass:plus"
+                      @action=${this._handleStepAction}
+                      .actionHandler=${actionHandler()}
+                      tabindex="0"
+                      tempDiff="1"
+                    ></ha-icon-button>
+                  </div>
+                  <div id="modes">
+                    ${(stateObj.attributes.hvac_modes || [])
+                      .concat()
+                      .sort(compareClimateHvacModes)
+                      .map((modeItem) => this._renderIcon(modeItem, mode))}
+                  </div>
+                `
+              : ""}
             ${name}
           </div>
         </div>
@@ -276,6 +301,11 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
+  }
+
+  protected firstUpdated(): void {
+    this._measureCard();
+    this._attachObserver();
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -454,6 +484,29 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     }
   }
 
+  private async _attachObserver(): Promise<void> {
+    if (!this._resizeObserver) {
+      await installResizeObserver();
+      this._resizeObserver = new ResizeObserver(
+        debounce(() => this._measureCard(), 250, false)
+      );
+    }
+    const card = this.shadowRoot!.querySelector("ha-card");
+    // If we show an error or warning there is no ha-card
+    if (!card) {
+      return;
+    }
+    this._resizeObserver.observe(card);
+  }
+
+  private _measureCard() {
+    if (!this.isConnected) {
+      return;
+    }
+
+    this._narrow = this.offsetWidth < 174;
+  }
+
   static get styles(): CSSResult {
     return css`
       :host {
@@ -592,6 +645,19 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         font-size: var(--name-font-size);
       }
 
+      .narrow #info {
+        margin-top: -40px;
+      }
+
+      #modes {
+        --mdc-icon-button-size: 32px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        width: 100%;
+        padding-top: 8px;
+      }
+
       #modes > * {
         color: var(--disabled-text-color);
         cursor: pointer;
@@ -615,7 +681,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       }
 
       .step-icon {
-        --mdc-icon-button-size: 32px;
+        --mdc-icon-button-size: 28px;
         --mdc-icon-size: 18px;
         border-radius: 50%;
         border: 1px solid;
