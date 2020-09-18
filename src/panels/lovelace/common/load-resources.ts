@@ -30,12 +30,6 @@ export const loadLovelaceResources = (
         loadModule(normalizedUrl);
         break;
 
-      case "html":
-        import(
-          /* webpackChunkName: "import-href-polyfill" */ "../../../resources/html-import/import-href"
-        ).then(({ importHref }) => importHref(normalizedUrl));
-        break;
-
       default:
         // eslint-disable-next-line
         console.warn(`Unknown resource type specified: ${resource.type}`);

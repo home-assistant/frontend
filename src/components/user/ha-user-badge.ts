@@ -104,6 +104,9 @@ class UserBadge extends LitElement {
 
   static get styles(): CSSResult {
     return css`
+      :host {
+        display: contents;
+      }
       .picture {
         width: 40px;
         height: 40px;

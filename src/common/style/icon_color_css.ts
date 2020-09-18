@@ -24,8 +24,7 @@ export const iconColorCSS = css`
   ha-icon[data-domain="group"][data-state="home"],
   ha-icon[data-domain="group"][data-state="open"],
   ha-icon[data-domain="group"][data-state="locked"],
-  ha-icon[data-domain="group"][data-state="problem"]   
-  {
+  ha-icon[data-domain="group"][data-state="problem"] {
     color: var(--paper-item-icon-active-color, #fdd835);
   }
 

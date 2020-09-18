@@ -2,11 +2,12 @@ import "@polymer/paper-input/paper-input";
 import {
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
+import { assert, object, optional, string } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { stateIcon } from "../../../../common/entity/state_icon";
 import "../../../../components/ha-icon-input";
@@ -23,7 +24,6 @@ import {
   EntitiesEditorEvent,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import { string, object, optional, assert } from "superstruct";
 
 const cardConfigStruct = object({
   type: string(),
@@ -66,11 +66,11 @@ export class HuiLightCardEditor extends LitElement
   }
 
   get _hold_action(): ActionConfig {
-    return this._config!.hold_action || { action: "none" };
+    return this._config!.hold_action || { action: "more-info" };
   }
 
-  get _double_tap_action(): ActionConfig {
-    return this._config!.double_tap_action || { action: "none" };
+  get _double_tap_action(): ActionConfig | undefined {
+    return this._config!.double_tap_action;
   }
 
   protected render(): TemplateResult {
@@ -100,7 +100,7 @@ export class HuiLightCardEditor extends LitElement
           .value=${this._entity}
           .configValue=${"entity"}
           .includeDomains=${includeDomains}
-          @change=${this._valueChanged}
+          @value-changed=${this._valueChanged}
           allow-custom-entity
         ></ha-entity-picker>
         <div class="side-by-side">
@@ -145,7 +145,7 @@ export class HuiLightCardEditor extends LitElement
           .config=${this._hold_action}
           .actions=${actions}
           .configValue=${"hold_action"}
-          @action-changed=${this._valueChanged}
+          @value-changed=${this._valueChanged}
         ></hui-action-editor>
 
         <hui-action-editor
@@ -158,7 +158,7 @@ export class HuiLightCardEditor extends LitElement
           .config=${this._double_tap_action}
           .actions=${actions}
           .configValue=${"double_tap_action"}
-          @action-changed=${this._valueChanged}
+          @value-changed=${this._valueChanged}
         ></hui-action-editor>
       </div>
     `;
@@ -169,21 +169,19 @@ export class HuiLightCardEditor extends LitElement
       return;
     }
     const target = ev.target! as EditorTarget;
+    const value = ev.detail.value;
 
-    if (
-      this[`_${target.configValue}`] === target.value ||
-      this[`_${target.configValue}`] === target.config
-    ) {
+    if (this[`_${target.configValue}`] === value) {
       return;
     }
     if (target.configValue) {
-      if (target.value === "") {
+      if (value !== false && !value) {
         this._config = { ...this._config };
         delete this._config[target.configValue!];
       } else {
         this._config = {
           ...this._config,
-          [target.configValue!]: target.value ? target.value : target.config,
+          [target.configValue!]: value,
         };
       }
     }

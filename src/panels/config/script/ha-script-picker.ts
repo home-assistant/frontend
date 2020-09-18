@@ -25,6 +25,7 @@ import { configSections } from "../ha-panel-config";
 import "../../../components/ha-svg-icon";
 import { mdiPlus } from "@mdi/js";
 import { stateIcon } from "../../../common/entity/state_icon";
+import { documentationUrl } from "../../../util/documentation-url";
 
 @customElement("ha-script-picker")
 class HaScriptPicker extends LitElement {
@@ -187,7 +188,7 @@ class HaScriptPicker extends LitElement {
         ${this.hass.localize("ui.panel.config.script.picker.introduction")}
         <p>
           <a
-            href="https://home-assistant.io/docs/scripts/editor/"
+            href="${documentationUrl(this.hass, "/docs/scripts/editor/")}"
             target="_blank"
             rel="noreferrer"
           >

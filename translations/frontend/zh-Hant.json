@@ -19,6 +19,7 @@
         "logbook": "日誌",
         "mailbox": "郵箱",
         "map": "地圖",
+        "media_browser": "媒體瀏覽器",
         "profile": "個人設定",
         "shopping_list": "購物清單",
         "states": "總覽"
@@ -506,6 +507,7 @@
             "cancel": "取消",
             "close": "關閉",
             "continue": "繼續",
+            "copied": "已複製",
             "delete": "刪除",
             "error_required": "必填",
             "loading": "讀取中",
@@ -552,6 +554,10 @@
                 "toggle": "觸發"
             },
             "entity": {
+                "entity-attribute-picker": {
+                    "attribute": "屬性",
+                    "show_attributes": "顯示屬性"
+                },
                 "entity-picker": {
                     "clear": "清除",
                     "entity": "實體",
@@ -562,8 +568,35 @@
                 "loading_history": "正在載入狀態歷史...",
                 "no_history_found": "找不到狀態歷史。"
             },
+            "logbook": {
+                "entries_not_found": "找不到實體日誌。"
+            },
             "media-browser": {
+                "audio_not_supported": "瀏覽器不支援音效元件。",
+                "choose_player": "選擇播放器",
                 "choose-source": "選擇來源",
+                "class": {
+                    "album": "專輯",
+                    "app": "App",
+                    "artist": "演唱者",
+                    "channel": "頻道",
+                    "composer": "作曲者",
+                    "contributing_artist": "參與藝術家",
+                    "directory": "媒體庫",
+                    "episode": "集",
+                    "game": "遊戲",
+                    "genre": "類型",
+                    "image": "圖像",
+                    "movie": "電影",
+                    "music": "音樂",
+                    "playlist": "播放列表",
+                    "podcast": "Podcast",
+                    "season": "季",
+                    "track": "音軌",
+                    "tv_show": "電視節目",
+                    "url": "網址",
+                    "video": "影片"
+                },
                 "content-type": {
                     "album": "專輯",
                     "artist": "演唱者",
@@ -571,12 +604,23 @@
                     "playlist": "播放列表",
                     "server": "伺服器"
                 },
+                "documentation": "相關文件",
+                "learn_adding_local_media": "詳細了解如何新增媒體{documentation}。",
+                "local_media_files": "將影片、音效及影像檔案放置於媒體資料夾、將可以透過瀏覽器或支援的媒體播放器進行瀏覽與播放。",
+                "media_browsing_error": "媒體瀏覽錯誤",
+                "media_not_supported": "瀏覽器媒體播放器不支援此類型媒體",
+                "media_player": "媒體播放器",
                 "media-player-browser": "媒體播放器瀏覽器",
                 "no_items": "沒有項目",
+                "no_local_media_found": "找不到本地端媒體",
+                "no_media_folder": "看起來您還沒有建立任何媒體資料夾。",
                 "pick": "選擇",
                 "pick-media": "選擇媒體",
                 "play": "播放",
-                "play-media": "播放媒體"
+                "play-media": "播放媒體",
+                "setup_local_help": "請參閱{documentation}以了解如何設定本地端媒體。",
+                "video_not_supported": "瀏覽器不支援影片元件。",
+                "web-browser": "網頁瀏覽器"
             },
             "picture-upload": {
                 "label": "照片",
@@ -691,6 +735,7 @@
             },
             "more_info_control": {
                 "controls": "控制",
+                "details": "詳細資訊",
                 "dismiss": "忽略對話",
                 "edit": "編輯實體",
                 "history": "歷史",
@@ -921,7 +966,13 @@
                                     "label": "執行服務",
                                     "service_data": "服務資料"
                                 },
+                                "wait_for_trigger": {
+                                    "continue_timeout": "繼續逾時計算",
+                                    "label": "等候觸發",
+                                    "timeout": "超時（選項）"
+                                },
                                 "wait_template": {
+                                    "continue_timeout": "繼續逾時計算",
                                     "label": "等待",
                                     "timeout": "超時（選項）",
                                     "wait_template": "等待模板"
@@ -985,7 +1036,9 @@
                                 "time": {
                                     "after": "在...之後",
                                     "before": "在...之前",
-                                    "label": "時間"
+                                    "label": "時間",
+                                    "type_input": "日期/時間協助數值",
+                                    "type_value": "固定時間"
                                 },
                                 "zone": {
                                     "entity": "區域實體",
@@ -1073,6 +1126,7 @@
                                     "value_template": "數值模板（選項）"
                                 },
                                 "state": {
+                                    "attribute": "屬性（選項）",
                                     "for": "持續",
                                     "from": "從...狀態",
                                     "label": "狀態",
@@ -1099,8 +1153,10 @@
                                     "seconds": "秒鐘"
                                 },
                                 "time": {
-                                    "at": "在...時間",
-                                    "label": "時間"
+                                    "at": "時間於",
+                                    "label": "時間",
+                                    "type_input": "日期/時間協助數值",
+                                    "type_value": "固定時間"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -1123,6 +1179,8 @@
                         "add_automation": "新增一個自動化",
                         "delete_automation": "刪除自動化",
                         "delete_confirm": "確定要刪除此自動化？",
+                        "duplicate": "複製",
+                        "duplicate_automation": "複製自動化",
                         "edit_automation": "編輯自動化",
                         "header": "自動化編輯器",
                         "headers": {
@@ -1523,6 +1581,7 @@
                 },
                 "integrations": {
                     "add_integration": "新增整合",
+                    "attention": "需要注意",
                     "caption": "整合",
                     "config_entry": {
                         "area": "於 {area}",
@@ -1546,6 +1605,7 @@
                         "reload_restart_confirm": "重啟 Home Assistant 以為重整合重新載入",
                         "rename": "重新命名",
                         "restart_confirm": "重啟 Home Assistant 以完成此整合移動",
+                        "services": "{count} {count, plural,\n  one {項服務}\n  other {項服務}\n}",
                         "settings_button": "編輯 {integration} 設定",
                         "system_options": "系統選項",
                         "system_options_button": "{integration} 系統選項",
@@ -1592,6 +1652,7 @@
                     "none_found_detail": "調整搜尋條件。",
                     "note_about_integrations": "目前並非所有整合皆可以透過 UI 進行設定。",
                     "note_about_website_reference": "更多資訊請參閱",
+                    "reconfigure": "重新設定",
                     "rename_dialog": "編輯設定實體名稱",
                     "rename_input_label": "實體名稱",
                     "search": "搜尋整合"
@@ -1765,8 +1826,21 @@
                         "versions": "獲得韌體與命令 Class 版本資訊",
                         "wakeup": "設定喚醒序列與訊息之支援"
                     },
+                    "node": {
+                        "button": "節點詳細資訊",
+                        "not_found": "找不到節點"
+                    },
+                    "nodes_table": {
+                        "failed": "失敗",
+                        "id": "ID",
+                        "manufacturer": "廠牌",
+                        "model": "型號",
+                        "query_stage": "查詢階段",
+                        "zwave_plus": "Z-Wave Plus"
+                    },
                     "refresh_node": {
                         "battery_note": "假如節點為電池供電、請確定先行喚醒以繼續",
+                        "button": "更新節點",
                         "complete": "節點更新完成",
                         "description": "將會通知 OpenZWave 重新探訪節點並更新節點命令 Class、相容性與數值。",
                         "node_status": "節點狀態",
@@ -1937,7 +2011,7 @@
                             "smtp": "重新載入 SMTP 通知服務",
                             "statistics": "重新載入統計資訊實體",
                             "telegram": "重新載入 Telegram 通知服務",
-                            "template": "重新載入範例實體",
+                            "template": "重新載入模板實體",
                             "trend": "重新載入趨勢實體",
                             "universal": "重新載入通用媒體播放器實體",
                             "zone": "重新載入區域"
@@ -2025,7 +2099,7 @@
                             "system": "系統"
                         }
                     },
-                    "users_privileges_note": "使用者群組功能進行中。將無法透過 UI 進行使用者管理，仍在檢視所有管理  API Endpoint 以確保能夠正確符合管理員存取需求。"
+                    "users_privileges_note": "使用者群組功能仍在開發中。將無法透過 UI 進行使用者管理，仍在檢視所有管理  API Endpoint 以確保能夠正確符合管理員存取需求。"
                 },
                 "zha": {
                     "add_device_page": {
@@ -2307,9 +2381,14 @@
                         "title": "狀態"
                     },
                     "templates": {
+                        "all_listeners": "此模板監聽所有狀態變更事件。",
                         "description": "模版使用 Jinja2 模板引擎及 Home Assistant 特殊擴充進行模板渲染。",
+                        "domain": "區域",
                         "editor": "模板編輯器",
+                        "entity": "實體",
                         "jinja_documentation": "Jinja2 模版文件",
+                        "listeners": "此模板監聽以下狀態變更事件：",
+                        "no_listeners": "此模板不監聽任何狀態變更事件，將不會自動更新。",
                         "reset": "重置示範範模板",
                         "template_extensions": "Home Assistant 模板擴充",
                         "title": "模板",
@@ -2575,6 +2654,7 @@
                         "options": "更多選項",
                         "pick_card": "選擇所要新增的面板？",
                         "pick_card_view_title": "要加入 {name} 視圖的面板？",
+                        "search_cards": "搜尋面板",
                         "show_code_editor": "顯示編碼編輯器",
                         "show_visual_editor": "顯示視覺編輯器",
                         "toggle_editor": "切換編輯器",
@@ -2618,7 +2698,7 @@
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "假如移除 Lovelace UI 設定的話，將自動以區域與設備產生 Lovelace UI 視圖。",
-                        "confirm_remove_config_title": "確定要移除 Lovelace UI 設定？將依據區域與設備自動產生 Lovelace UI 視圖。",
+                        "confirm_remove_config_title": "確定要移除 Lovelace UI 設定？",
                         "confirm_unsaved_changes": "變更尚未儲存，確定要退出？",
                         "confirm_unsaved_comments": "設定包含命令、將不會被儲存。是否要繼續？",
                         "error_invalid_config": "設定無效：{error}",
@@ -2895,6 +2975,11 @@
                     "submit": "傳送"
                 },
                 "current_user": "目前登入身份：{fullName}。",
+                "customize_sidebar": {
+                    "button": "編輯",
+                    "description": "同時也能長按側邊列的標題以啟動編輯模式。",
+                    "header": "自側邊列中變更順序或隱藏項目"
+                },
                 "dashboard": {
                     "description": "選擇此設備的預設主面板。",
                     "dropdown_label": "主面板",
@@ -2917,6 +3002,7 @@
                     "confirm_delete": "確定要刪除{name}存取密鑰嗎？",
                     "create": "創建密鑰",
                     "create_failed": "創建存取密鑰失敗。",
+                    "created": "新增日期：{date}",
                     "created_at": "於{date}創建",
                     "delete_failed": "刪除存取密鑰失敗。",
                     "description": "創建長效存取密鑰，可供運用腳本與 Home Assistant 實體進行互動。每個密鑰於創建後，有效期為十年。目前已啟用之永久有效密鑰如下。",
@@ -2924,9 +3010,10 @@
                     "header": "永久有效存取密鑰",
                     "last_used": "上次使用：於{date}、位置{location}",
                     "learn_auth_requests": "學習如何進行驗證請求。",
+                    "name": "名稱",
                     "not_used": "從未使用過",
                     "prompt_copy_token": "複製存取密鑰，將不會再次顯示。",
-                    "prompt_name": "名稱？"
+                    "prompt_name": "為密鑰命名"
                 },
                 "mfa_setup": {
                     "close": "關閉",
@@ -2990,6 +3077,7 @@
             }
         },
         "sidebar": {
+            "done": "完成",
             "external_app_configuration": "App 設定",
             "sidebar_toggle": "側邊欄開關"
         }

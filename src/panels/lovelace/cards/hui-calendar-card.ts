@@ -76,11 +76,11 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   private _resizeObserver?: ResizeObserver;
 
   public setConfig(config: CalendarCardConfig): void {
-    if (!config.entities) {
+    if (!config.entities?.length) {
       throw new Error("Entities must be defined");
     }
 
-    if (config.entities && !Array.isArray(config.entities)) {
+    if (!Array.isArray(config.entities)) {
       throw new Error("Entities need to be an array");
     }
 

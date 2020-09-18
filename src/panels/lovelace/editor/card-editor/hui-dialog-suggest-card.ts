@@ -140,6 +140,7 @@ export class HuiDialogSuggestCard extends LitElement {
         }
         ha-paper-dialog {
           max-width: 845px;
+          --dialog-z-index: 5;
         }
         mwc-button ha-circular-progress {
           width: 14px;

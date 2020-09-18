@@ -18,6 +18,7 @@ import {
   setSupervisorOption,
   SupervisorOptions,
   updateSupervisor,
+  fetchHassioSupervisorInfo,
 } from "../../../src/data/hassio/supervisor";
 import {
   showAlertDialog,
@@ -176,10 +177,11 @@ class HassioSupervisorInfo extends LitElement {
 
     try {
       const data: Partial<SupervisorOptions> = {
-        channel: this.supervisorInfo.channel !== "stable" ? "beta" : "stable",
+        channel: this.supervisorInfo.channel === "stable" ? "beta" : "stable",
       };
       await setSupervisorOption(this.hass, data);
       await reloadSupervisor(this.hass);
+      this.supervisorInfo = await fetchHassioSupervisorInfo(this.hass);
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to set supervisor option",
@@ -195,6 +197,7 @@ class HassioSupervisorInfo extends LitElement {
 
     try {
       await reloadSupervisor(this.hass);
+      this.supervisorInfo = await fetchHassioSupervisorInfo(this.hass);
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to reload the supervisor",
@@ -210,7 +213,7 @@ class HassioSupervisorInfo extends LitElement {
 
     const confirmed = await showConfirmationDialog(this, {
       title: "Update supervisor",
-      text: `Are you sure you want to upgrade supervisor to version ${this.supervisorInfo.version_latest}?`,
+      text: `Are you sure you want to update supervisor to version ${this.supervisorInfo.version_latest}?`,
       confirmText: "update",
       dismissText: "cancel",
     });

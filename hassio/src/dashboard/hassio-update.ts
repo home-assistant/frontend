@@ -16,6 +16,7 @@ import "../../../src/components/ha-svg-icon";
 import {
   extractApiErrorMessage,
   HassioResponse,
+  ignoredStatusCodes,
 } from "../../../src/data/hassio/common";
 import { HassioHassOSInfo } from "../../../src/data/hassio/host";
 import {
@@ -152,7 +153,7 @@ export class HassioUpdate extends LitElement {
     item.progress = true;
     const confirmed = await showConfirmationDialog(this, {
       title: `Update ${item.name}`,
-      text: `Are you sure you want to upgrade ${item.name} to version ${item.version}?`,
+      text: `Are you sure you want to update ${item.name} to version ${item.version}?`,
       confirmText: "update",
       dismissText: "cancel",
     });
@@ -164,8 +165,9 @@ export class HassioUpdate extends LitElement {
     try {
       await this.hass.callApi<HassioResponse<void>>("POST", item.apiPath);
     } catch (err) {
-      // Only show an error if the status code was not 504, or no status at all (connection terminated)
-      if (err.status_code && err.status_code !== 504) {
+      // Only show an error if the status code was not expected (user behind proxy)
+      // or no status at all(connection terminated)
+      if (err.status_code && !ignoredStatusCodes.has(err.status_code)) {
         showAlertDialog(this, {
           title: "Update failed",
           text: extractApiErrorMessage(err),
