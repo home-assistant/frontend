@@ -539,17 +539,25 @@ class HaSidebar extends LitElement {
     this._hiddenPanels = [...this._hiddenPanels, panel];
     this._renderEmptySortable = true;
     await this.updateComplete;
+    const container = this.shadowRoot!.getElementById("sortable")!;
+    while (container.lastElementChild) {
+      container.removeChild(container.lastElementChild);
+    }
     this._renderEmptySortable = false;
   }
 
   private async _unhidePanel(ev: Event) {
     ev.preventDefault();
     const panel = (ev.currentTarget as any).panel;
-    this._renderEmptySortable = true;
-    await this.updateComplete;
     this._hiddenPanels = this._hiddenPanels.filter(
       (hidden) => hidden !== panel
     );
+    this._renderEmptySortable = true;
+    await this.updateComplete;
+    const container = this.shadowRoot!.getElementById("sortable")!;
+    while (container.lastElementChild) {
+      container.removeChild(container.lastElementChild);
+    }
     this._renderEmptySortable = false;
   }
 
