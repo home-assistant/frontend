@@ -1,13 +1,13 @@
+import { boolean, object, optional, string, union } from "superstruct";
 import {
   ActionConfig,
   LovelaceCardConfig,
   LovelaceViewConfig,
   ShowViewConfig,
 } from "../../../data/lovelace";
-import { EntityConfig } from "../entity-rows/types";
-import { optional, string, object, union, boolean } from "superstruct";
 import { EntityId } from "../common/structs/is-entity-id";
 import { Icon } from "../common/structs/is-icon";
+import { EntityConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 
 export interface YamlChangedEvent extends Event {
@@ -44,6 +44,7 @@ export interface ConfigError {
 export interface EntitiesEditorEvent {
   entities?: EntityConfig[];
   config?: LovelaceHeaderFooterConfig;
+  value?: any;
 }
 
 export interface EditorTarget extends EventTarget {
