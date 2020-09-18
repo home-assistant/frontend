@@ -7,12 +7,13 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-import { fireEvent } from "../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../common/dom/fire_event";
 import { listenMediaQuery } from "../common/dom/media_query";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { showNotificationDrawer } from "../dialogs/notifications/show-notification-drawer";
@@ -24,10 +25,17 @@ const NON_SWIPABLE_PANELS = ["map"];
 declare global {
   // for fire event
   interface HASSDomEvents {
-    "hass-open-menu": undefined;
     "hass-toggle-menu": undefined;
+    "hass-edit-sidebar": EditSideBarEvent;
     "hass-show-notifications": undefined;
   }
+  interface HTMLElementEventMap {
+    "hass-edit-sidebar": HASSDomEvent<EditSideBarEvent>;
+  }
+}
+
+interface EditSideBarEvent {
+  editMode: boolean;
 }
 
 @customElement("home-assistant-main")
@@ -36,7 +44,9 @@ class HomeAssistantMain extends LitElement {
 
   @property() public route?: Route;
 
-  @property({ type: Boolean }) private narrow?: boolean;
+  @property({ type: Boolean }) public narrow?: boolean;
+
+  @internalProperty() private _sidebarEditMode = false;
 
   protected render(): TemplateResult {
     const hass = this.hass;
@@ -48,7 +58,9 @@ class HomeAssistantMain extends LitElement {
     const sidebarNarrow = this._sidebarNarrow;
 
     const disableSwipe =
-      !sidebarNarrow || NON_SWIPABLE_PANELS.indexOf(hass.panelUrl) !== -1;
+      this._sidebarEditMode ||
+      !sidebarNarrow ||
+      NON_SWIPABLE_PANELS.indexOf(hass.panelUrl) !== -1;
 
     // Style block in render because of the mixin that is not supported
     return html`
@@ -76,6 +88,7 @@ class HomeAssistantMain extends LitElement {
           <ha-sidebar
             .hass=${hass}
             .narrow=${sidebarNarrow}
+            .editMode=${this._sidebarEditMode}
             .alwaysExpand=${sidebarNarrow ||
             this.hass.dockedSidebar === "docked"}
           ></ha-sidebar>
@@ -93,18 +106,28 @@ class HomeAssistantMain extends LitElement {
   protected firstUpdated() {
     import(/* webpackChunkName: "ha-sidebar" */ "../components/ha-sidebar");
 
-    this.addEventListener("hass-open-menu", () => {
-      if (this._sidebarNarrow) {
-        this.drawer.open();
-      } else {
-        fireEvent(this, "hass-dock-sidebar", {
-          dock: "docked",
-        });
-        setTimeout(() => this.appLayout.resetLayout());
+    this.addEventListener(
+      "hass-edit-sidebar",
+      (ev: HASSDomEvent<EditSideBarEvent>) => {
+        this._sidebarEditMode = ev.detail.editMode;
+
+        if (this._sidebarEditMode) {
+          if (this._sidebarNarrow) {
+            this.drawer.open();
+          } else {
+            fireEvent(this, "hass-dock-sidebar", {
+              dock: "docked",
+            });
+            setTimeout(() => this.appLayout.resetLayout());
+          }
+        }
       }
-    });
+    );
 
     this.addEventListener("hass-toggle-menu", () => {
+      if (this._sidebarEditMode) {
+        return;
+      }
       if (this._sidebarNarrow) {
         if (this.drawer.opened) {
           this.drawer.close();
