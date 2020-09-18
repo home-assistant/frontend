@@ -4,6 +4,7 @@ import {
   LitElement,
   property,
   TemplateResult,
+  internalProperty,
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { processConfigEntities } from "../common/process-config-entities";
@@ -21,15 +22,20 @@ export class HuiButtonsHeaderFooter extends LitElement
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  private _configEntities?: EntityConfig[];
+  @internalProperty() private _configEntities?: EntityConfig[];
 
   public getCardSize(): number {
     return 1;
   }
 
   public setConfig(config: ButtonsHeaderFooterConfig): void {
-    this._configEntities = processConfigEntities(config.entities);
-    this.requestUpdate();
+    this._configEntities = processConfigEntities(config.entities).map(
+      (entityConfig) => ({
+        tap_action: { action: "toggle" },
+        hold_action: { action: "more-info" },
+        ...entityConfig,
+      })
+    );
   }
 
   protected render(): TemplateResult | void {
