@@ -1478,22 +1478,22 @@
                 },
                 "entities": {
                     "caption": "Entiteter",
-                    "description": "Administrer kjente enheter",
+                    "description": "Administrer kjente entiteter",
                     "picker": {
                         "disable_selected": {
                             "button": "Deaktiver valgte",
                             "confirm_text": "Deaktiverte entiteter vil ikke bli lagt til i Home Assistant.",
-                            "confirm_title": "Vil du deaktivere {number} enheter?"
+                            "confirm_title": "Vil du deaktivere {number} entiteter?"
                         },
                         "enable_selected": {
                             "button": "Aktiver valgte",
                             "confirm_text": "Dette vil gjøre dem tilgjengelige i Home Assistant igjen hvis de nå er deaktivert.",
-                            "confirm_title": "Vil du aktivere {number} enheter?"
+                            "confirm_title": "Vil du aktivere {number} entiteter?"
                         },
                         "filter": {
                             "filter": "",
                             "show_disabled": "Vis deaktiverte entiteter",
-                            "show_readonly": "Vis skrivebeskyttede enheter",
+                            "show_readonly": "Vis skrivebeskyttede entiteter",
                             "show_unavailable": "Vis utilgjengelige entiteter"
                         },
                         "header": "Entiteter",
@@ -1510,7 +1510,7 @@
                             "confirm_partly_text": "Du kan bare fjerne {removable} av de valgte {selected} enhetene. Enheter kan bare fjernes når integrasjonen ikke lenger leverer enhetene. Noen ganger må du starte Home Assistant på nytt før du kan fjerne enhetene til en fjernet integrasjon. Er du sikker på at du vil fjerne de flyttbare enhetene?",
                             "confirm_partly_title": "Bare {number} valgte enheter kan fjernes.",
                             "confirm_text": "Du bør fjerne dem fra Lovelace-konfigurasjonen og automasjoner hvis de inneholder disse entitetene.",
-                            "confirm_title": "Vil du fjerne {number} enheter?"
+                            "confirm_title": "Vil du fjerne {number} entiteter?"
                         },
                         "search": "Søk entiteter",
                         "selected": "{number} valgte",
@@ -2575,7 +2575,7 @@
                         "map": {
                             "dark_mode": "Mørk modus?",
                             "default_zoom": "Standard zoom",
-                            "description": "Kartkortet som lar deg vise enheter på et kart.",
+                            "description": "Kartkortet som lar deg vise entiteter på et kart.",
                             "geo_location_sources": "Kilder for geolokasjon",
                             "hours_to_show": "Timer som skal vises",
                             "name": "Kart",
@@ -2587,7 +2587,7 @@
                             "name": ""
                         },
                         "media-control": {
-                            "description": "Mediekontroll kortet brukes til å vise mediespillerenheter på et grensesnitt med brukervennlige kontroller.",
+                            "description": "Mediekontroll kortet brukes til å vise mediespiller entiteter på et grensesnitt med brukervennlige kontroller.",
                             "name": "Mediekontroll"
                         },
                         "picture-elements": {

@@ -338,7 +338,7 @@
             },
             "query_stage": {
                 "dead": "martwy ({query_stage})",
-                "initializing": "Inicjowanie ({query_stage})"
+                "initializing": "inicjalizacja ({query_stage})"
             }
         }
     },
@@ -2874,7 +2874,7 @@
                     "unknown_error": "Coś poszło nie tak",
                     "working": "Proszę czekać"
                 },
-                "initializing": "Inicjowanie",
+                "initializing": "inicjalizacja",
                 "logging_in_with": "Logowanie za pomocą **{authProviderName}**.",
                 "pick_auth_provider": "Lub zaloguj się za pomocą"
             },
