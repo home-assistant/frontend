@@ -604,15 +604,21 @@
                     "playlist": "Afspeellijst",
                     "server": "Server"
                 },
+                "documentation": "documentatie",
+                "learn_adding_local_media": "Leer meer over media toevoegen in de {documentatie}.",
+                "local_media_files": "Plaats je video, audio en foto bestanden in de media map om bestanden te kunnen doorzoeken en afspelen in de browser of op ondersteunde mediaspelers.",
                 "media_browsing_error": "Fout bij bladeren door media",
                 "media_not_supported": "De Browser Media Player ondersteunt dit type media niet",
                 "media_player": "Mediaspeler",
                 "media-player-browser": "Mediaspeler-browser",
                 "no_items": "Niets gevonden",
+                "no_local_media_found": "Geen lokale media gevonden",
+                "no_media_folder": "Het lijkt erop dat je nog geen media map hebt gemaakt.",
                 "pick": "Kies",
                 "pick-media": "Kies Media",
                 "play": "Speel",
                 "play-media": "Media afspelen",
+                "setup_local_help": "Raadpleeg de {documentatie} voor het instellen van lokale media.",
                 "video_not_supported": "Uw browser ondersteunt het video-element niet.",
                 "web-browser": "Webbrowser"
             },
@@ -3071,7 +3077,7 @@
             }
         },
         "sidebar": {
-            "done": "Gedaan",
+            "done": "Klaar",
             "external_app_configuration": "App configuratie",
             "sidebar_toggle": "Zijbalk in- en uitschakelen"
         }

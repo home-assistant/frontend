@@ -662,8 +662,8 @@
                 "update": "Обновить"
             },
             "domain_toggler": {
-                "reset_entities": "Сбросить настройки доступа объектов",
-                "title": "Переключить домены"
+                "reset_entities": "Сброс настроек",
+                "title": "Управление доменами"
             },
             "entity_registry": {
                 "control": "Управление",
