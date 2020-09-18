@@ -1,17 +1,19 @@
-import "@polymer/paper-item/paper-item";
+import { mdiPlus } from "@mdi/js";
+import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 import {
   css,
   CSSResult,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { compare } from "../../../common/string/compare";
 import "../../../components/ha-card";
-import "@material/mwc-fab";
+import "../../../components/ha-svg-icon";
+import "../../../components/user/ha-person-badge";
 import {
   createPerson,
   deletePerson,
@@ -30,8 +32,6 @@ import {
   loadPersonDetailDialog,
   showPersonDetailDialog,
 } from "./show-dialog-person-detail";
-import "../../../components/ha-svg-icon";
-import { mdiPlus } from "@mdi/js";
 
 class HaConfigPerson extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -84,11 +84,15 @@ class HaConfigPerson extends LitElement {
           <ha-card class="storage">
             ${this._storageItems.map((entry) => {
               return html`
-                <paper-item @click=${this._openEditEntry} .entry=${entry}>
+                <paper-icon-item @click=${this._openEditEntry} .entry=${entry}>
+                  <ha-person-badge
+                    slot="item-icon"
+                    .person=${entry}
+                  ></ha-person-badge>
                   <paper-item-body>
                     ${entry.name}
                   </paper-item-body>
-                </paper-item>
+                </paper-icon-item>
               `;
             })}
             ${this._storageItems.length === 0
@@ -111,11 +115,15 @@ class HaConfigPerson extends LitElement {
                 <ha-card header="Configuration.yaml persons">
                   ${this._configItems.map((entry) => {
                     return html`
-                      <paper-item>
+                      <paper-icon-item>
+                        <ha-person-badge
+                          slot="item-icon"
+                          .person=${entry}
+                        ></ha-person-badge>
                         <paper-item-body>
                           ${entry.name}
                         </paper-item-body>
-                      </paper-item>
+                      </paper-icon-item>
                     `;
                   })}
                 </ha-card>
@@ -232,11 +240,11 @@ class HaConfigPerson extends LitElement {
         text-align: center;
         padding: 8px;
       }
-      paper-item {
+      paper-icon-item {
         padding-top: 4px;
         padding-bottom: 4px;
       }
-      ha-card.storage paper-item {
+      ha-card.storage paper-icon-item {
         cursor: pointer;
       }
     `;

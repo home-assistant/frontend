@@ -1,21 +1,22 @@
 import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "../../components/ha-icon-button";
-import "../../components/ha-circular-progress";
-import "@polymer/paper-tooltip/paper-tooltip";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultArray,
   customElement,
   html,
-  LitElement,
   internalProperty,
+  LitElement,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import { fireEvent } from "../../common/dom/fire_event";
+import { computeRTL } from "../../common/util/compute_rtl";
+import "../../components/ha-circular-progress";
 import "../../components/ha-dialog";
 import "../../components/ha-form/ha-form";
+import "../../components/ha-icon-button";
 import "../../components/ha-markdown";
 import {
   AreaRegistryEntry,
@@ -35,8 +36,6 @@ import "./step-flow-external";
 import "./step-flow-form";
 import "./step-flow-loading";
 import "./step-flow-pick-handler";
-import { fireEvent } from "../../common/dom/fire_event";
-import { computeRTL } from "../../common/util/compute_rtl";
 
 let instance = 0;
 

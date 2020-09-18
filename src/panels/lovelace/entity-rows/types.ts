@@ -17,7 +17,7 @@ export interface EntityFilterEntityConfig extends EntityConfig {
 }
 export interface DividerConfig {
   type: "divider";
-  style: string;
+  style: { [key: string]: string };
 }
 export interface SectionConfig {
   type: "section";

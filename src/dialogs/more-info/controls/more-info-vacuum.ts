@@ -68,7 +68,7 @@ const VACUUM_COMMANDS: VacuumCommand[] = [
   },
   {
     translationKey: "clean_spot",
-    icon: "hass:broom",
+    icon: "hass:target-variant",
     serviceName: "clean_spot",
     isVisible: (stateObj) =>
       supportsFeature(stateObj, VACUUM_SUPPORT_CLEAN_SPOT),

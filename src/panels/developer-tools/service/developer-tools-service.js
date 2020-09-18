@@ -1,8 +1,9 @@
-import "@material/mwc-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { safeDump, safeLoad } from "js-yaml";
+import { computeRTL } from "../../../common/util/compute_rtl";
+import "../../../components/buttons/ha-progress-button";
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-code-editor";
 import "../../../components/ha-service-picker";
@@ -11,7 +12,6 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import "../../../styles/polymer-ha-style";
 import "../../../util/app-localstorage-document";
-import { computeRTL } from "../../../common/util/compute_rtl";
 
 const ERROR_SENTINEL = {};
 /*
@@ -34,7 +34,7 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
           max-width: 400px;
         }
 
-        mwc-button {
+        ha-progress-button {
           margin-top: 8px;
         }
 
@@ -136,9 +136,13 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
             error="[[!validJSON]]"
             on-value-changed="_yamlChanged"
           ></ha-code-editor>
-          <mwc-button on-click="_callService" raised disabled="[[!validJSON]]">
+          <ha-progress-button
+            on-click="_callService"
+            raised
+            disabled="[[!validJSON]]"
+          >
             [[localize('ui.panel.developer-tools.tabs.services.call_service')]]
-          </mwc-button>
+          </ha-progress-button>
         </div>
 
         <template is="dom-if" if="[[!domainService]]">
@@ -307,7 +311,8 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
     return ENTITY_COMPONENT_DOMAINS.includes(domain) ? [domain] : null;
   }
 
-  _callService() {
+  _callService(ev) {
+    const button = ev.target;
     if (this.parsedJSON === ERROR_SENTINEL) {
       showAlertDialog(this, {
         text: this.hass.localize(
@@ -316,10 +321,17 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
           this.serviceData
         ),
       });
+      button.actionError();
       return;
     }
-
-    this.hass.callService(this._domain, this._service, this.parsedJSON);
+    this.hass
+      .callService(this._domain, this._service, this.parsedJSON)
+      .then(() => {
+        button.actionSuccess();
+      })
+      .catch(() => {
+        button.actionError();
+      });
   }
 
   _fillExampleData() {

@@ -1,12 +1,13 @@
-import "../../../components/ha-icon-button";
+import "@material/mwc-fab";
+import { mdiPlus } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
+  CSSResult,
   customElement,
   html,
   LitElement,
   property,
   TemplateResult,
-  CSSResult,
 } from "lit-element";
 import { ifDefined } from "lit-html/directives/if-defined";
 import memoizeOne from "memoize-one";
@@ -16,28 +17,28 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import "../../../components/entity/ha-entity-toggle";
-import "@material/mwc-fab";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-svg-icon";
 import {
   AutomationConfig,
   AutomationEntity,
   showAutomationEditor,
   triggerAutomation,
 } from "../../../data/automation";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { showThingtalkDialog } from "./show-dialog-thingtalk";
-import "../../../components/ha-svg-icon";
-import { mdiPlus } from "@mdi/js";
 
 @customElement("ha-automation-picker")
 class HaAutomationPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide!: boolean;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow!: boolean;
 
   @property() public route!: Route;
 
@@ -58,7 +59,7 @@ class HaAutomationPicker extends LitElement {
         toggle: {
           title: "",
           type: "icon",
-          template: (_toggle, automation) =>
+          template: (_toggle, automation: any) =>
             html`
               <ha-entity-toggle
                 .hass=${this.hass}
@@ -91,10 +92,11 @@ class HaAutomationPicker extends LitElement {
       if (!narrow) {
         columns.execute = {
           title: "",
-          template: (_info, automation) => html`
+          template: (_info, automation: any) => html`
             <mwc-button
               .automation=${automation}
               @click=${(ev) => this._execute(ev)}
+              .disabled=${UNAVAILABLE_STATES.includes(automation.state)}
             >
               ${this.hass.localize("ui.card.automation.trigger")}
             </mwc-button>
@@ -138,7 +140,7 @@ class HaAutomationPicker extends LitElement {
           </a>
           ${!automation.attributes.id
             ? html`
-                <paper-tooltip position="left">
+                <paper-tooltip animation-delay="0" position="left">
                   ${this.hass.localize(
                     "ui.panel.config.automation.picker.only_editable"
                   )}

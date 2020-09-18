@@ -7,6 +7,12 @@ export interface LogbookEntry {
   entity_id?: string;
   domain: string;
   context_user_id?: string;
+  context_event_type?: string;
+  context_domain?: string;
+  context_service?: string;
+  context_entity_id?: string;
+  context_entity_id_name?: string;
+  context_name?: string;
 }
 
 const DATA_CACHE: {
@@ -17,7 +23,8 @@ export const getLogbookData = (
   hass: HomeAssistant,
   startDate: string,
   endDate: string,
-  entityId?: string
+  entityId?: string,
+  entity_matches_only?: boolean
 ) => {
   const ALL_ENTITIES = "*";
 
@@ -45,7 +52,8 @@ export const getLogbookData = (
     hass,
     startDate,
     endDate,
-    entityId !== ALL_ENTITIES ? entityId : undefined
+    entityId !== ALL_ENTITIES ? entityId : undefined,
+    entity_matches_only
   ).then((entries) => entries.reverse());
   return DATA_CACHE[cacheKey][entityId];
 };
@@ -54,11 +62,13 @@ const getLogbookDataFromServer = async (
   hass: HomeAssistant,
   startDate: string,
   endDate: string,
-  entityId?: string
+  entityId?: string,
+  entity_matches_only?: boolean
 ) => {
   const url = `logbook/${startDate}?end_time=${endDate}${
     entityId ? `&entity=${entityId}` : ""
-  }`;
+  }${entity_matches_only ? `&entity_matches_only` : ""}`;
+
   return hass.callApi<LogbookEntry[]>("GET", url);
 };
 

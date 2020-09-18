@@ -11,9 +11,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   query,
   TemplateResult,
@@ -198,7 +198,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                             : mdiPencilOff}
                         ></ha-svg-icon>
                       </mwc-icon-button>
-                      <paper-tooltip position="left">
+                      <paper-tooltip animation-delay="0" position="left">
                         ${state.entity_id === "zone.home"
                           ? this.hass.localize(
                               `ui.panel.config.zone.${

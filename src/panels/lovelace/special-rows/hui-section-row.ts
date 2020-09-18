@@ -3,8 +3,8 @@ import {
   CSSResult,
   customElement,
   html,
-  LitElement,
   internalProperty,
+  LitElement,
   TemplateResult,
 } from "lit-element";
 import "../../../components/ha-icon";
@@ -48,7 +48,7 @@ class HuiSectionRow extends LitElement implements LovelaceRow {
       }
       .divider {
         height: 1px;
-        background-color: var(--divider-color);
+        background-color: var(--entities-divider-color, var(--divider-color));
         margin-left: -16px;
         margin-right: -16px;
         margin-top: 8px;

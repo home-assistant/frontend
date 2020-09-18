@@ -3,18 +3,19 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
+import "../../../../src/components/ha-circular-progress";
 import "../../../../src/components/ha-markdown";
 import {
   fetchHassioAddonDocumentation,
   HassioAddonDetails,
 } from "../../../../src/data/hassio/addon";
+import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import "../../../../src/layouts/hass-loading-screen";
-import "../../../../src/components/ha-circular-progress";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import { hassioStyle } from "../../resources/hassio-style";
@@ -80,9 +81,9 @@ class HassioAddonDocumentationDashboard extends LitElement {
         this.addon!.slug
       );
     } catch (err) {
-      this._error = `Failed to get addon documentation, ${
-        err.body?.message || err
-      }`;
+      this._error = `Failed to get addon documentation, ${extractApiErrorMessage(
+        err
+      )}`;
     }
   }
 }

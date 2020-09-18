@@ -7,18 +7,20 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-svg-icon";
 import { getSignedPath } from "../../../../src/data/auth";
+import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import {
   fetchHassioSnapshotInfo,
   HassioSnapshotDetail,
 } from "../../../../src/data/hassio/snapshot";
+import { showConfirmationDialog } from "../../../../src/dialogs/generic/show-dialog-box";
 import { PolymerChangedEvent } from "../../../../src/polymer-types";
 import { haStyleDialog } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
@@ -266,8 +268,12 @@ class HassioSnapshotDialog extends LitElement {
     this._snapshotPassword = ev.detail.value;
   }
 
-  private _partialRestoreClicked() {
-    if (!confirm("Are you sure you want to restore this snapshot?")) {
+  private async _partialRestoreClicked() {
+    if (
+      !(await showConfirmationDialog(this, {
+        title: "Are you sure you want partially to restore this snapshot?",
+      }))
+    ) {
       return;
     }
 
@@ -312,8 +318,13 @@ class HassioSnapshotDialog extends LitElement {
       );
   }
 
-  private _fullRestoreClicked() {
-    if (!confirm("Are you sure you want to restore this snapshot?")) {
+  private async _fullRestoreClicked() {
+    if (
+      !(await showConfirmationDialog(this, {
+        title:
+          "Are you sure you want to wipe your system and restore this snapshot?",
+      }))
+    ) {
       return;
     }
 
@@ -338,8 +349,12 @@ class HassioSnapshotDialog extends LitElement {
       );
   }
 
-  private _deleteClicked() {
-    if (!confirm("Are you sure you want to delete this snapshot?")) {
+  private async _deleteClicked() {
+    if (
+      !(await showConfirmationDialog(this, {
+        title: "Are you sure you want to delete this snapshot?",
+      }))
+    ) {
       return;
     }
 
@@ -365,7 +380,7 @@ class HassioSnapshotDialog extends LitElement {
         `/api/hassio/snapshots/${this._snapshot!.slug}/download`
       );
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      alert(`Error: ${extractApiErrorMessage(err)}`);
       return;
     }
 

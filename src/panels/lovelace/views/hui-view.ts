@@ -23,11 +23,11 @@ import { computeCardSize } from "../common/compute-card-size";
 import { processConfigEntities } from "../common/process-config-entities";
 import { createBadgeElement } from "../create-element/create-badge-element";
 import { createCardElement } from "../create-element/create-card-element";
-import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
 import "../../../components/ha-svg-icon";
 import { mdiPlus } from "@mdi/js";
 import { nextRender } from "../../../common/util/render-status";
+import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 
 let editCodeLoaded = false;
 
@@ -186,7 +186,7 @@ export class HUIView extends LitElement {
   }
 
   private _addCard(): void {
-    showEditCardDialog(this, {
+    showCreateCardDialog(this, {
       lovelaceConfig: this.lovelace!.config,
       saveConfig: this.lovelace!.saveConfig,
       path: [this.index!],
@@ -392,18 +392,6 @@ export class HUIView extends LitElement {
         float: left;
         right: auto;
         left: calc(16px + env(safe-area-inset-left));
-      }
-
-      @media (max-width: 500px) {
-        :host {
-          padding-left: 0;
-          padding-right: 0;
-        }
-
-        .column > * {
-          margin-left: 0;
-          margin-right: 0;
-        }
       }
 
       @media (max-width: 599px) {

@@ -1,6 +1,6 @@
-import { customElement, LitElement, html, unsafeCSS, css } from "lit-element";
 // @ts-ignore
 import topAppBarStyles from "@material/top-app-bar/dist/mdc.top-app-bar.min.css";
+import { css, customElement, html, LitElement, unsafeCSS } from "lit-element";
 
 @customElement("ha-header-bar")
 export class HaHeaderBar extends LitElement {

@@ -4,14 +4,16 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
+import { assert, number, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-switch";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-formfield";
+import "../../../../components/ha-switch";
 import { HomeAssistant } from "../../../../types";
 import { GaugeCardConfig, SeverityConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
@@ -19,8 +21,6 @@ import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
-import { assert, object, string, optional, number } from "superstruct";
 
 const cardConfigStruct = object({
   type: string(),
@@ -222,12 +222,16 @@ export class HuiGaugeCardEditor extends LitElement
     }
 
     if ((ev.target as EditorTarget).checked) {
-      this._config.severity = {
-        green: 0,
-        yellow: 0,
-        red: 0,
+      this._config = {
+        ...this._config,
+        severity: {
+          green: 0,
+          yellow: 0,
+          red: 0,
+        },
       };
     } else {
+      this._config = { ...this._config };
       delete this._config.severity;
     }
     fireEvent(this, "config-changed", { config: this._config });

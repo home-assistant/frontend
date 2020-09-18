@@ -1,16 +1,17 @@
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "../../src/components/ha-icon-button";
-import "../../src/components/ha-icon";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../src/components/ha-card";
+import "../../src/components/ha-icon";
+import "../../src/components/ha-icon-button";
 import "../../src/managers/notification-manager";
 import "../../src/styles/polymer-ha-style";
+// eslint-disable-next-line import/extensions
 import { DEMOS } from "../build/import-demos";
 
 const fixPath = (path) => path.substr(2, path.length - 5);

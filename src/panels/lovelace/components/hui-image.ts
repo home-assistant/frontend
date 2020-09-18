@@ -3,9 +3,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   query,
   TemplateResult,
@@ -16,6 +16,7 @@ import { STATES_OFF } from "../../../common/const";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-camera-stream";
 import { fetchThumbnailUrlWithCache } from "../../../data/camera";
+import { UNAVAILABLE } from "../../../data/entity";
 import { CameraEntity, HomeAssistant } from "../../../types";
 
 const UPDATE_INTERVAL = 10000;
@@ -73,7 +74,7 @@ export class HuiImage extends LitElement {
     }
     const ratio = this.aspectRatio ? parseAspectRatio(this.aspectRatio) : null;
     const stateObj = this.entity ? this.hass.states[this.entity] : undefined;
-    const state = stateObj ? stateObj.state : "unavailable";
+    const state = stateObj ? stateObj.state : UNAVAILABLE;
 
     // Figure out image source to use
     let imageSrc: string | undefined;
@@ -131,8 +132,9 @@ export class HuiImage extends LitElement {
         ${this.cameraImage && this.cameraView === "live"
           ? html`
               <ha-camera-stream
+                muted
                 .hass=${this.hass}
-                .stateObj="${cameraObj}"
+                .stateObj=${cameraObj}
               ></ha-camera-stream>
             `
           : html`
@@ -159,7 +161,19 @@ export class HuiImage extends LitElement {
   }
 
   protected updated(changedProps: PropertyValues): void {
-    if (changedProps.has("cameraImage") && this.cameraView !== "live") {
+    if (changedProps.has("hass")) {
+      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+      if (!oldHass || oldHass.connected !== this.hass!.connected) {
+        if (this.hass!.connected && this.cameraView !== "live") {
+          this._updateCameraImageSrc();
+          this._startUpdateCameraInterval();
+        } else if (!this.hass!.connected) {
+          this._stopUpdateCameraInterval();
+          this._cameraImageSrc = undefined;
+          this._loadError = true;
+        }
+      }
+    } else if (changedProps.has("cameraImage") && this.cameraView !== "live") {
       this._updateCameraImageSrc();
       this._startUpdateCameraInterval();
     }

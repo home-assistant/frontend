@@ -35,6 +35,14 @@ export interface SupervisorOptions {
   addons_repositories?: string[];
 }
 
+export const reloadSupervisor = async (hass: HomeAssistant) => {
+  await hass.callApi<HassioResponse<void>>("POST", `hassio/supervisor/reload`);
+};
+
+export const updateSupervisor = async (hass: HomeAssistant) => {
+  await hass.callApi<HassioResponse<void>>("POST", `hassio/supervisor/update`);
+};
+
 export const fetchHassioHomeAssistantInfo = async (hass: HomeAssistant) => {
   return hassioApiResultExtractor(
     await hass.callApi<HassioResponse<HassioHomeAssistantInfo>>(
@@ -71,7 +79,11 @@ export const createHassioSession = async (hass: HomeAssistant) => {
     "POST",
     "hassio/ingress/session"
   );
-  document.cookie = `ingress_session=${response.data.session};path=/api/hassio_ingress/`;
+  document.cookie = `ingress_session=${
+    response.data.session
+  };path=/api/hassio_ingress/;SameSite=Strict${
+    location.protocol === "https:" ? ";Secure" : ""
+  }`;
 };
 
 export const setSupervisorOption = async (

@@ -9,6 +9,7 @@ import "../../../components/ha-code-editor";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
+import { documentationUrl } from "../../../util/documentation-url";
 import "../../../styles/polymer-ha-style";
 import "./event-subscribe-card";
 import "./events-list";
@@ -61,7 +62,7 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
           <p>
             [[localize( 'ui.panel.developer-tools.tabs.events.description' )]]
             <a
-              href="https://www.home-assistant.io/docs/configuration/events/"
+              href="[[_computeDocumentationUrl(hass)]]"
               target="_blank"
               rel="noreferrer"
             >
@@ -147,6 +148,10 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
     } catch (err) {
       return ERROR_SENTINEL;
     }
+  }
+
+  _computeDocumentationUrl(hass) {
+    return documentationUrl(hass, "/docs/configuration/events/");
   }
 
   _computeValidJSON(parsedJSON) {

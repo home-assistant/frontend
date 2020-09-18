@@ -3,6 +3,7 @@ import {
   HassioAddonDetails,
   restartHassioAddon,
 } from "../../../src/data/hassio/addon";
+import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -26,7 +27,7 @@ export const suggestAddonRestart = async (
     } catch (err) {
       showAlertDialog(element, {
         title: "Failed to restart",
-        text: err.body.message,
+        text: extractApiErrorMessage(err),
       });
     }
   }

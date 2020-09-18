@@ -28,15 +28,7 @@ export class HassioMain extends urlSyncMixin(ProvideHassLitMixin(LitElement)) {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
 
-    applyThemesOnElement(
-      this.parentElement,
-      this.hass.themes,
-      (atLeastVersion(this.hass.config.version, 0, 114)
-        ? this.hass.selectedTheme?.theme
-        : ((this.hass.selectedTheme as unknown) as string)) ||
-        this.hass.themes.default_theme,
-      this.hass.selectedTheme
-    );
+    this._applyTheme();
 
     // Paulus - March 17, 2019
     // We went to a single hass-toggle-menu event in HA 0.90. However, the
@@ -73,6 +65,17 @@ export class HassioMain extends urlSyncMixin(ProvideHassLitMixin(LitElement)) {
     makeDialogManager(this, this.shadowRoot!);
   }
 
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (!oldHass) {
+      return;
+    }
+    if (oldHass.themes !== this.hass.themes) {
+      this._applyTheme();
+    }
+  }
+
   protected render() {
     return html`
       <hassio-router
@@ -82,6 +85,38 @@ export class HassioMain extends urlSyncMixin(ProvideHassLitMixin(LitElement)) {
         .narrow=${this.narrow}
       ></hassio-router>
     `;
+  }
+
+  private _applyTheme() {
+    let themeName: string;
+    let options: Partial<HomeAssistant["selectedTheme"]> | undefined;
+
+    if (atLeastVersion(this.hass.config.version, 0, 114)) {
+      themeName =
+        this.hass.selectedTheme?.theme ||
+        (this.hass.themes.darkMode && this.hass.themes.default_dark_theme
+          ? this.hass.themes.default_dark_theme!
+          : this.hass.themes.default_theme);
+
+      options = this.hass.selectedTheme;
+      if (themeName === "default" && options?.dark === undefined) {
+        options = {
+          ...this.hass.selectedTheme,
+          dark: this.hass.themes.darkMode,
+        };
+      }
+    } else {
+      themeName =
+        ((this.hass.selectedTheme as unknown) as string) ||
+        this.hass.themes.default_theme;
+    }
+
+    applyThemesOnElement(
+      this.parentElement,
+      this.hass.themes,
+      themeName,
+      options
+    );
   }
 }
 

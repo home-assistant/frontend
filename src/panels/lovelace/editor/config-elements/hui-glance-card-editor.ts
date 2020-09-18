@@ -47,6 +47,7 @@ const cardConfigStruct = object({
   show_name: optional(boolean()),
   show_state: optional(boolean()),
   show_icon: optional(boolean()),
+  state_color: optional(boolean()),
   entities: array(entitiesConfigStruct),
 });
 
@@ -89,6 +90,10 @@ export class HuiGlanceCardEditor extends LitElement
     return this._config!.show_state || true;
   }
 
+  get _state_color(): boolean {
+    return this._config!.state_color ?? true;
+  }
+
   protected render(): TemplateResult {
     if (!this.hass || !this._config) {
       return html``;
@@ -105,16 +110,16 @@ export class HuiGlanceCardEditor extends LitElement
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
-          .value="${this._title}"
-          .configValue="${"title"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._title}
+          .configValue=${"title"}
+          @value-changed=${this._valueChanged}
         ></paper-input>
         <div class="side-by-side">
           <hui-theme-select-editor
             .hass=${this.hass}
-            .value="${this._theme}"
-            .configValue="${"theme"}"
-            @value-changed="${this._valueChanged}"
+            .value=${this._theme}
+            .configValue=${"theme"}
+            @value-changed=${this._valueChanged}
           ></hui-theme-select-editor>
           <paper-input
             .label="${this.hass.localize(
@@ -123,9 +128,9 @@ export class HuiGlanceCardEditor extends LitElement
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             type="number"
-            .value="${this._columns}"
-            .configValue="${"columns"}"
-            @value-changed="${this._valueChanged}"
+            .value=${this._columns}
+            .configValue=${"columns"}
+            @value-changed=${this._valueChanged}
           ></paper-input>
         </div>
         <div class="side-by-side">
@@ -138,8 +143,8 @@ export class HuiGlanceCardEditor extends LitElement
             >
               <ha-switch
                 .checked=${this._config!.show_name !== false}
-                .configValue="${"show_name"}"
-                @change="${this._valueChanged}"
+                .configValue=${"show_name"}
+                @change=${this._valueChanged}
               ></ha-switch>
             </ha-formfield>
           </div>
@@ -152,8 +157,8 @@ export class HuiGlanceCardEditor extends LitElement
             >
               <ha-switch
                 .checked=${this._config!.show_icon !== false}
-                .configValue="${"show_icon"}"
-                @change="${this._valueChanged}"
+                .configValue=${"show_icon"}
+                @change=${this._valueChanged}
               >
               </ha-switch>
             </ha-formfield>
@@ -167,18 +172,30 @@ export class HuiGlanceCardEditor extends LitElement
             >
               <ha-switch
                 .checked=${this._config!.show_state !== false}
-                .configValue="${"show_state"}"
-                @change="${this._valueChanged}"
+                .configValue=${"show_state"}
+                @change=${this._valueChanged}
               >
               </ha-switch>
             </ha-formfield>
           </div>
         </div>
+        <ha-formfield
+          .label=${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.state_color"
+          )}
+          .dir=${computeRTLDirection(this.hass)}
+        >
+          <ha-switch
+            .checked=${this._config!.state_color}
+            .configValue=${"state_color"}
+            @change=${this._valueChanged}
+          ></ha-switch>
+        </ha-formfield>
       </div>
       <hui-entity-editor
         .hass=${this.hass}
-        .entities="${this._configEntities}"
-        @entities-changed="${this._valueChanged}"
+        .entities=${this._configEntities}
+        @entities-changed=${this._valueChanged}
       ></hui-entity-editor>
     `;
   }

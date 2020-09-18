@@ -8,6 +8,7 @@ import {
 } from "lit-element";
 import { html } from "lit-html";
 import memoizeOne from "memoize-one";
+import { any, assert, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../../../common/entity/compute_object_id";
@@ -18,14 +19,13 @@ import type { HaYamlEditor } from "../../../../../components/ha-yaml-editor";
 import { ServiceAction } from "../../../../../data/script";
 import type { PolymerChangedEvent } from "../../../../../polymer-types";
 import type { HomeAssistant } from "../../../../../types";
-import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
-import { assert, optional, object, string } from "superstruct";
 import { EntityId } from "../../../../lovelace/common/structs/is-entity-id";
+import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
 
 const actionStruct = object({
   service: optional(string()),
   entity_id: optional(EntityId),
-  data: optional(object()),
+  data: optional(any()),
 });
 
 @customElement("ha-automation-action-service")

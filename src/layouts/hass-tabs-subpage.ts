@@ -3,26 +3,26 @@ import {
   css,
   CSSResult,
   customElement,
+  eventOptions,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
-  eventOptions,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
-import { navigate } from "../common/navigate";
-import "../components/ha-menu-button";
-import "../components/ha-icon-button-arrow-prev";
-import { HomeAssistant, Route } from "../types";
-import "../components/ha-svg-icon";
-import "../components/ha-icon";
-import "../components/ha-tab";
 import { restoreScroll } from "../common/decorators/restore-scroll";
+import { navigate } from "../common/navigate";
 import { computeRTL } from "../common/util/compute_rtl";
+import "../components/ha-icon";
+import "../components/ha-icon-button-arrow-prev";
+import "../components/ha-menu-button";
+import "../components/ha-svg-icon";
+import "../components/ha-tab";
+import { HomeAssistant, Route } from "../types";
 
 export interface PageNavigation {
   path: string;
@@ -132,7 +132,7 @@ class HassTabsSubpage extends LitElement {
       this.hass.language,
       this.narrow
     );
-
+    const showTabs = tabs.length > 1 || !this.narrow;
     return html`
       <div class="toolbar">
         ${this.mainPage
@@ -152,7 +152,7 @@ class HassTabsSubpage extends LitElement {
         ${this.narrow
           ? html` <div class="main-title"><slot name="header"></slot></div> `
           : ""}
-        ${tabs.length > 1 || !this.narrow
+        ${showTabs
           ? html`
               <div id="tabbar" class=${classMap({ "bottom-bar": this.narrow })}>
                 ${tabs}
@@ -163,10 +163,15 @@ class HassTabsSubpage extends LitElement {
           <slot name="toolbar-icon"></slot>
         </div>
       </div>
-      <div class="content" @scroll=${this._saveScrollPos}>
+      <div
+        class="content ${classMap({ tabs: showTabs })}"
+        @scroll=${this._saveScrollPos}
+      >
         <slot></slot>
       </div>
-      <div id="fab"><slot name="fab"></slot></div>
+      <div id="fab" class="${classMap({ tabs: showTabs })}">
+        <slot name="fab"></slot>
+      </div>
     `;
   }
 
@@ -274,12 +279,13 @@ class HassTabsSubpage extends LitElement {
         margin-left: env(safe-area-inset-left);
         margin-right: env(safe-area-inset-right);
         height: calc(100% - 65px);
+        height: calc(100% - 65px - env(safe-area-inset-bottom));
         overflow-y: auto;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
       }
 
-      :host([narrow]) .content {
+      :host([narrow]) .content.tabs {
         height: calc(100% - 128px);
         height: calc(100% - 128px - env(safe-area-inset-bottom));
       }
@@ -290,7 +296,7 @@ class HassTabsSubpage extends LitElement {
         bottom: calc(16px + env(safe-area-inset-bottom));
         z-index: 1;
       }
-      :host([narrow]) #fab {
+      :host([narrow]) #fab.tabs {
         bottom: calc(84px + env(safe-area-inset-bottom));
       }
       #fab[is-wide] {

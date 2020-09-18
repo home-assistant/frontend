@@ -44,3 +44,14 @@ export const createAuthForUser = async (
     username,
     password,
   });
+
+export const adminChangePassword = async (
+  hass: HomeAssistant,
+  userId: string,
+  password: string
+) =>
+  hass.callWS<void>({
+    type: "config/auth_provider/homeassistant/admin_change_password",
+    user_id: userId,
+    password,
+  });
