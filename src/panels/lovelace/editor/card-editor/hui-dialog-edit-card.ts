@@ -115,7 +115,10 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
     const oldConfig = changedProps.get("_cardConfig") as LovelaceCardConfig;
 
     if (oldConfig?.type !== this._cardConfig!.type) {
-      this._documentationURL = getCardDocumentationURL(this._cardConfig!.type);
+      this._documentationURL = getCardDocumentationURL(
+        this.hass,
+        this._cardConfig!.type
+      );
     }
   }
 
@@ -366,6 +369,7 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
 
         ha-dialog {
           --mdc-dialog-max-width: 845px;
+          --dialog-z-index: 5;
         }
 
         ha-header-bar {

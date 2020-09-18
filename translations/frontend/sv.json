@@ -505,6 +505,7 @@
             "back": "Tillbaka",
             "cancel": "Avbryt",
             "close": "Stäng",
+            "continue": "Fortsätt",
             "delete": "Radera",
             "error_required": "Krävs",
             "loading": "Läser in",
@@ -688,8 +689,11 @@
                 "crop": "Beskär"
             },
             "more_info_control": {
+                "controls": "Kontroller",
+                "details": "Detaljer",
                 "dismiss": "Avfärda",
                 "edit": "Redigera entitet",
+                "history": "Historik",
                 "person": {
                     "create_zone": "Skapa zon från aktuell plats"
                 },
@@ -1145,7 +1149,8 @@
                             "manage_entities": "Hantera Entiteter",
                             "state_reporting_error": "Det går inte att {enable_disable} rapportera tillståndet.",
                             "sync_entities": "Synkronisera Entiteter",
-                            "sync_entities_error": "Det gick inte att synkronisera entiteter:"
+                            "sync_entities_error": "Det gick inte att synkronisera entiteter:",
+                            "title": ""
                         },
                         "connected": "Ansluten",
                         "connection_status": "Status för molnanslutning",
@@ -1193,14 +1198,16 @@
                             "no_hooks_yet": "Det verkar som du inte har några webhooks ännu. Kom igång genom att konfigurera en ",
                             "no_hooks_yet_link_automation": "webhook automation",
                             "no_hooks_yet_link_integration": "webhook-baserad integration",
-                            "no_hooks_yet2": " eller genom att skapa en "
+                            "no_hooks_yet2": " eller genom att skapa en ",
+                            "title": ""
                         }
                     },
                     "alexa": {
                         "banner": "Redigering av vilka entiteter som visas via det här användargränssnittet är inaktiverat eftersom du har konfigurerat entitetsfilter i configuration.yaml.",
                         "expose": "Exponera för Alexa",
                         "exposed_entities": "Exponerade entiteter",
-                        "not_exposed_entities": "Ej exponerade entiteter"
+                        "not_exposed_entities": "Ej exponerade entiteter",
+                        "title": ""
                     },
                     "caption": "Home Assistant Cloud",
                     "description_features": "Styra även när du inte är hemma, integrera med Alexa och Google Assistant.",
@@ -1571,6 +1578,7 @@
                     "none_found_detail": "Justera dina sökkriterier.",
                     "note_about_integrations": "Inte alla integrationer kan konfigureras via användargränssnittet ännu.",
                     "note_about_website_reference": "Fler finns på ",
+                    "reconfigure": "Konfigurera om",
                     "rename_dialog": "Redigera namnet på den här konfigurationsposten",
                     "rename_input_label": "Ange namn",
                     "search": "Sök integrationer"
@@ -1720,6 +1728,9 @@
                         "probe": "Kontrollera om noden är vaken / levande",
                         "session": "Hämtar värden som sällan ändras från noden",
                         "static": "Hämtar statiska värden från enheten"
+                    },
+                    "nodes_table": {
+                        "id": "ID"
                     },
                     "refresh_node": {
                         "complete": "Uppdatering av noden klar",
@@ -1872,6 +1883,7 @@
                             "input_text": "Ladda om inmatningstext",
                             "introduction": "Vissa delar av Home Assistant kan laddas om utan att en omstart krävs. Att trycka på \"ladda om\" innebär att den nuvarande konfiguration inaktiveras och den nya laddas.",
                             "person": "Ladda om personer",
+                            "rpi_gpio": "Ladda om Raspberry Pi GPIO-entiteter",
                             "scene": "Ladda om scenarier",
                             "script": "Ladda om skript",
                             "template": "Ladda om mallar för entiteter",
@@ -1920,6 +1932,8 @@
                         "create": "Skapa",
                         "name": "Namn",
                         "password": "Lösenord",
+                        "password_confirm": "Bekräfta lösenord",
+                        "password_not_match": "Lösenorden överensstämmer inte",
                         "username": "Användarnamn"
                     },
                     "caption": "Användare",
@@ -1936,7 +1950,9 @@
                         "group": "Grupp",
                         "id": "ID",
                         "name": "Namn",
+                        "new_password": "Nytt lösenord",
                         "owner": "Ägare",
+                        "password_changed": "Lösenordet har ändrats!",
                         "system_generated": "Skapad av systemet",
                         "system_generated_users_not_editable": "Det gick inte att uppdatera systemgenererade användare.",
                         "system_generated_users_not_removable": "Det går inte att ta bort användare som skapats av systemet.",
@@ -2375,6 +2391,8 @@
                             "image": "Bildsökväg",
                             "manual": "Manuell",
                             "manual_description": "Behöver du lägga till ett anpassat kort eller vill du bara skriva yaml manuellt?",
+                            "maximum": "",
+                            "minimum": "",
                             "name": "Namn",
                             "no_theme": "Inget tema",
                             "refresh_interval": "Uppdateringsintervall",
@@ -2480,6 +2498,8 @@
                     },
                     "cardpicker": {
                         "custom_card": "Anpassad",
+                        "domain": "Domän",
+                        "entity": "Entitet",
                         "no_description": "Ingen beskrivning finns tillgänglig."
                     },
                     "edit_card": {
@@ -2813,6 +2833,9 @@
                     "submit": "Skicka"
                 },
                 "current_user": "Du är inloggad som {fullName}.",
+                "customize_sidebar": {
+                    "button": "Redigera"
+                },
                 "dashboard": {
                     "description": "Välj en standardpanel för den här enheten.",
                     "dropdown_label": "Instrumentpanel",

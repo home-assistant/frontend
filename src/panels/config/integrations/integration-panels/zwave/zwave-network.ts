@@ -1,20 +1,20 @@
-import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-circular-progress";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../../../../components/buttons/ha-call-api-button";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-circular-progress";
 import "../../../../../components/ha-icon";
+import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-service-description";
 import {
   fetchNetworkStatus,
@@ -26,6 +26,7 @@ import {
 } from "../../../../../data/zwave";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
+import { documentationUrl } from "../../../../../util/documentation-url";
 import "../../../ha-config-section";
 
 @customElement("zwave-network")
@@ -71,7 +72,10 @@ export class ZwaveNetwork extends LitElement {
           )}
           <p>
             <a
-              href="https://www.home-assistant.io/docs/z-wave/control-panel/"
+              href="${documentationUrl(
+                this.hass,
+                "/docs/z-wave/control-panel/"
+              )}"
               target="_blank"
               rel="noreferrer"
             >

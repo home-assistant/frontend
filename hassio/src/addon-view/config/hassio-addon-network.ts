@@ -88,8 +88,8 @@ class HassioAddonNetwork extends LitElement {
         </div>
         <div class="card-actions">
           <ha-progress-button class="warning" @click=${this._resetTapped}>
-            Reset to defaults </ha-progress-button
-          >>
+            Reset to defaults
+          </ha-progress-button>
           <ha-progress-button @click=${this._saveTapped}>
             Save
           </ha-progress-button>

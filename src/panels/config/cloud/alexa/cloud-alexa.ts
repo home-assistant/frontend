@@ -103,7 +103,9 @@ class CloudAlexa extends LitElement {
 
     this._entities.forEach((entity) => {
       const stateObj = this.hass.states[entity.entity_id];
-      const config = this._entityConfigs[entity.entity_id] || {};
+      const config = this._entityConfigs[entity.entity_id] || {
+        should_expose: null,
+      };
       const isExposed = emptyFilter
         ? this._configIsExposed(entity.entity_id, config)
         : filterFunc(entity.entity_id);
@@ -122,6 +124,26 @@ class CloudAlexa extends LitElement {
         ? exposedCards
         : notExposedCards;
 
+      const iconButton = html`<mwc-icon-button
+        slot="trigger"
+        class=${classMap({
+          exposed: isExposed!,
+          "not-exposed": !isExposed,
+        })}
+        .disabled=${!emptyFilter}
+        .title=${this.hass!.localize("ui.panel.config.cloud.google.expose")}
+      >
+        <ha-svg-icon
+          .path=${config.should_expose !== null
+            ? isExposed
+              ? mdiCheckboxMarked
+              : mdiCloseBox
+            : isDomainExposed
+            ? mdiCheckboxMultipleMarked
+            : mdiCloseBoxMultiple}
+        ></ha-svg-icon>
+      </mwc-icon-button>`;
+
       target.push(html`
         <ha-card>
           <div class="card-content">
@@ -137,67 +159,50 @@ class CloudAlexa extends LitElement {
                   .map((ifc) => ifc.replace(/(Alexa.|Controller)/g, ""))
                   .join(", ")}
               </state-info>
-              <ha-button-menu
-                corner="BOTTOM_START"
-                .entityId=${stateObj.entity_id}
-                @action=${this._exposeChanged}
-              >
-                <mwc-icon-button
-                  slot="trigger"
-                  class=${classMap({
-                    exposed: isExposed!,
-                    "not-exposed": !isExposed,
-                  })}
-                  .title=${this.hass!.localize(
-                    "ui.panel.config.cloud.alexa.expose"
-                  )}
-                >
-                  <ha-svg-icon
-                    .path=${config.should_expose !== null
-                      ? isExposed
-                        ? mdiCheckboxMarked
-                        : mdiCloseBox
-                      : isDomainExposed
-                      ? mdiCheckboxMultipleMarked
-                      : mdiCloseBoxMultiple}
-                  ></ha-svg-icon>
-                </mwc-icon-button>
-                <mwc-list-item hasMeta>
-                  ${this.hass!.localize(
-                    "ui.panel.config.cloud.alexa.expose_entity"
-                  )}
-                  <ha-svg-icon
-                    class="exposed"
-                    slot="meta"
-                    .path=${mdiCheckboxMarked}
-                  ></ha-svg-icon>
-                </mwc-list-item>
-                <mwc-list-item hasMeta>
-                  ${this.hass!.localize(
-                    "ui.panel.config.cloud.alexa.dont_expose_entity"
-                  )}
-                  <ha-svg-icon
-                    class="not-exposed"
-                    slot="meta"
-                    .path=${mdiCloseBox}
-                  ></ha-svg-icon>
-                </mwc-list-item>
-                <mwc-list-item hasMeta>
-                  ${this.hass!.localize(
-                    "ui.panel.config.cloud.alexa.follow_domain"
-                  )}
-                  <ha-svg-icon
-                    class=${classMap({
-                      exposed: isDomainExposed,
-                      "not-exposed": !isDomainExposed,
-                    })}
-                    slot="meta"
-                    .path=${isDomainExposed
-                      ? mdiCheckboxMultipleMarked
-                      : mdiCloseBoxMultiple}
-                  ></ha-svg-icon>
-                </mwc-list-item>
-              </ha-button-menu>
+              ${!emptyFilter
+                ? html`${iconButton}`
+                : html`<ha-button-menu
+                    corner="BOTTOM_START"
+                    .entityId=${stateObj.entity_id}
+                    @action=${this._exposeChanged}
+                  >
+                    ${iconButton}
+                    <mwc-list-item hasMeta>
+                      ${this.hass!.localize(
+                        "ui.panel.config.cloud.google.expose_entity"
+                      )}
+                      <ha-svg-icon
+                        class="exposed"
+                        slot="meta"
+                        .path=${mdiCheckboxMarked}
+                      ></ha-svg-icon>
+                    </mwc-list-item>
+                    <mwc-list-item hasMeta>
+                      ${this.hass!.localize(
+                        "ui.panel.config.cloud.google.dont_expose_entity"
+                      )}
+                      <ha-svg-icon
+                        class="not-exposed"
+                        slot="meta"
+                        .path=${mdiCloseBox}
+                      ></ha-svg-icon>
+                    </mwc-list-item>
+                    <mwc-list-item hasMeta>
+                      ${this.hass!.localize(
+                        "ui.panel.config.cloud.google.follow_domain"
+                      )}
+                      <ha-svg-icon
+                        class=${classMap({
+                          exposed: isDomainExposed,
+                          "not-exposed": !isDomainExposed,
+                        })}
+                        slot="meta"
+                        .path=${isDomainExposed
+                          ? mdiCheckboxMultipleMarked
+                          : mdiCloseBoxMultiple}
+                      ></ha-svg-icon>
+                    </mwc-list-item>
+                  </ha-button-menu>`}
             </div>
           </div>
         </ha-card>
@@ -319,9 +324,7 @@ class CloudAlexa extends LitElement {
   }
 
   private _configIsExposed(entityId: string, config: AlexaEntityConfig) {
-    return config.should_expose === null
-      ? this._configIsDomainExposed(entityId)
-      : config.should_expose;
+    return config.should_expose ?? this._configIsDomainExposed(entityId);
   }
 
   private async _exposeChanged(ev: CustomEvent<ActionDetail>) {

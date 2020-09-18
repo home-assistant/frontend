@@ -1,3 +1,4 @@
+import "@polymer/paper-item/paper-item-body";
 import {
   css,
   CSSResult,
@@ -7,7 +8,6 @@ import {
   property,
   SVGTemplateResult,
 } from "lit-element";
-import "@polymer/paper-item/paper-item-body";
 
 @customElement("ha-settings-row")
 export class HaSettingsRow extends LitElement {
@@ -48,6 +48,9 @@ export class HaSettingsRow extends LitElement {
         flex-direction: column;
         border-top: 1px solid var(--divider-color);
         padding-bottom: 8px;
+      }
+      ::slotted(ha-switch) {
+        padding: 16px 0;
       }
     `;
   }

@@ -159,11 +159,13 @@ class OZWNetworkDashboard extends LitElement {
   }
 
   private _generateServiceButton(service: string) {
+    const serviceData = { instance_id: this.ozwInstance };
     return html`
       <ha-call-service-button
         .hass=${this.hass}
         domain="ozw"
         .service=${service}
+        .serviceData=${serviceData}
       >
         ${this.hass!.localize(`ui.panel.config.ozw.services.${service}`)}
       </ha-call-service-button>

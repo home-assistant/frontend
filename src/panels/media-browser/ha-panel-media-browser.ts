@@ -1,5 +1,4 @@
 import "@material/mwc-icon-button";
-import { mdiPlayNetwork } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
@@ -18,7 +17,7 @@ import { supportsFeature } from "../../common/entity/supports-feature";
 import "../../components/ha-menu-button";
 import "../../components/media-player/ha-media-player-browse";
 import {
-  BROWSER_SOURCE,
+  BROWSER_PLAYER,
   MediaPickedEvent,
   SUPPORT_BROWSE_MEDIA,
 } from "../../data/media-player";
@@ -37,7 +36,7 @@ class PanelMediaBrowser extends LitElement {
 
   // @ts-ignore
   @LocalStorage("mediaBrowseEntityId", true)
-  private _entityId = BROWSER_SOURCE;
+  private _entityId = BROWSER_PLAYER;
 
   protected render(): TemplateResult {
     const stateObj = this._entityId
@@ -45,10 +44,10 @@ class PanelMediaBrowser extends LitElement {
       : undefined;
 
     const title =
-      this._entityId === BROWSER_SOURCE
-        ? `${this.hass.localize("ui.components.media-browser.web-browser")} - `
+      this._entityId === BROWSER_PLAYER
+        ? `${this.hass.localize("ui.components.media-browser.web-browser")}`
         : stateObj?.attributes.friendly_name
-        ? `${stateObj?.attributes.friendly_name} - `
+        ? `${stateObj?.attributes.friendly_name}`
         : undefined;
 
     return html`
@@ -59,19 +58,17 @@ class PanelMediaBrowser extends LitElement {
               .hass=${this.hass}
               .narrow=${this.narrow}
             ></ha-menu-button>
-            <div main-title>
-              ${title || ""}${this.hass.localize(
-                "ui.components.media-browser.media-player-browser"
-              )}
+            <div main-title class="heading">
+              <div>
+                ${this.hass.localize(
+                  "ui.components.media-browser.media-player-browser"
+                )}
+              </div>
+              <div class="secondary-text">${title || ""}</div>
             </div>
-            <mwc-icon-button
-              .label=${this.hass.localize(
-                "ui.components.media-browser.choose-player"
-              )}
-              @click=${this._showSelectMediaPlayerDialog}
-            >
-              <ha-svg-icon .path=${mdiPlayNetwork}></ha-svg-icon>
-            </mwc-icon-button>
+            <mwc-button @click=${this._showSelectMediaPlayerDialog}>
+              ${this.hass.localize("ui.components.media-browser.choose_player")}
+            </mwc-button>
           </app-toolbar>
         </app-header>
         <div class="content">
@@ -98,7 +95,7 @@ class PanelMediaBrowser extends LitElement {
     ev: HASSDomEvent<MediaPickedEvent>
   ): Promise<void> {
     const item = ev.detail.item;
-    if (this._entityId === BROWSER_SOURCE) {
+    if (this._entityId === BROWSER_PLAYER) {
       const resolvedUrl: any = await this.hass.callWS({
         type: "media_source/resolve_media",
         media_content_id: item.media_content_id,
@@ -136,8 +133,23 @@ class PanelMediaBrowser extends LitElement {
     return [
       haStyle,
       css`
+        :host {
+          --mdc-theme-primary: var(--app-header-text-color);
+        }
         ha-media-player-browse {
           height: calc(100vh - 84px);
+        }
+        :host([narrow]) app-toolbar mwc-button {
+          width: 65px;
+        }
+        .heading {
+          overflow: hidden;
+          white-space: nowrap;
+        }
+        .heading .secondary-text {
+          font-size: 14px;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
       `,
     ];

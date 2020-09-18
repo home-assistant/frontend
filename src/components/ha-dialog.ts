@@ -64,6 +64,7 @@ export class HaDialog extends MwcDialog {
         }
         .mdc-dialog .mdc-dialog__surface {
           position: var(--dialog-surface-position, relative);
+          top: var(--dialog-surface-top);
           min-height: var(--mdc-dialog-min-height, auto);
         }
         :host([flexContent]) .mdc-dialog .mdc-dialog__content {
