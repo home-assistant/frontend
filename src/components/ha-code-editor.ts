@@ -190,7 +190,7 @@ export class HaCodeEditor extends UpdatingElement {
       }
       
       .cm-s-default .cm-meta {
-        color: var(--codemirror-meta, #000);
+        color: var(--codemirror-meta, var(--primary-text-color, #000));
       }
       
       .cm-s-default .cm-attribute {
