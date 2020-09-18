@@ -22,6 +22,7 @@ import { styleMap } from "lit-html/directives/style-map";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
+import type { MediaPlayerItem } from "../../data/media-player";
 import {
   browseLocalMediaPlayer,
   browseMediaPlayer,
@@ -30,7 +31,6 @@ import {
   MediaPickedEvent,
   MediaPlayerBrowseAction,
 } from "../../data/media-player";
-import type { MediaPlayerItem } from "../../data/media-player";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
 import { haStyle } from "../../resources/styles";
@@ -480,6 +480,7 @@ export class HaMediaPlayerBrowse extends LitElement {
     mediaContentId?: string,
     mediaContentType?: string
   ): Promise<MediaPlayerItem> {
+    this._loading = true;
     const itemData =
       this.entityId !== BROWSER_PLAYER
         ? await browseMediaPlayer(
@@ -490,6 +491,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           )
         : await browseLocalMediaPlayer(this.hass, mediaContentId);
 
+    this._loading = false;
     return itemData;
   }
 
@@ -564,6 +566,13 @@ export class HaMediaPlayerBrowse extends LitElement {
           display: flex;
           padding: 0px 0px 20px;
           flex-direction: column;
+        }
+
+        ha-circular-progress {
+          --mdc-theme-primary: var(--primary-color);
+          display: flex;
+          justify-content: center;
+          margin-top: 40px;
         }
 
         .container {
