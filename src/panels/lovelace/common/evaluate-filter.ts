@@ -27,7 +27,7 @@ export const evaluateFilter = (stateObj: HassEntity, filter: any): boolean => {
       return false;
     case "not in":
       if (Array.isArray(value) || typeof value === "string") {
-        return !value.includes(states);
+        return !value.includes(state);
       }
       return false;
     case "regex": {
