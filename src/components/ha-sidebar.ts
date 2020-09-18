@@ -237,7 +237,7 @@ class HaSidebar extends LitElement {
           ? html`
               <mwc-icon-button
                 .label=${hass.localize("ui.sidebar.sidebar_toggle")}
-                @click=${this._toggleSidebar}
+                @action=${this._toggleSidebar}
               >
                 <ha-svg-icon
                   .path=${hass.dockedSidebar === "docked"
@@ -544,15 +544,12 @@ class HaSidebar extends LitElement {
 
   private async _unhidePanel(ev: Event) {
     ev.preventDefault();
-    const index = this._hiddenPanels.indexOf((ev.currentTarget as any).panel);
-    if (index < 0) {
-      return;
-    }
-    this._hiddenPanels.splice(index, 1);
-    // Make a copy for Memoize
-    this._hiddenPanels = [...this._hiddenPanels];
+    const panel = (ev.currentTarget as any).panel;
     this._renderEmptySortable = true;
     await this.updateComplete;
+    this._hiddenPanels = this._hiddenPanels.filter(
+      (hidden) => hidden !== panel
+    );
     this._renderEmptySortable = false;
   }
 
@@ -648,7 +645,10 @@ class HaSidebar extends LitElement {
     });
   }
 
-  private _toggleSidebar() {
+  private _toggleSidebar(ev: CustomEvent) {
+    if (ev.detail.action !== "tap") {
+      return;
+    }
     fireEvent(this, "hass-toggle-menu");
   }
 
