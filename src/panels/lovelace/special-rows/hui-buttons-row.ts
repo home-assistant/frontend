@@ -4,6 +4,7 @@ import {
   LitElement,
   property,
   TemplateResult,
+  internalProperty,
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { processConfigEntities } from "../common/process-config-entities";
@@ -22,11 +23,16 @@ export class HuiButtonsRow extends LitElement implements LovelaceRow {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  private _configEntities?: EntityConfig[];
+  @internalProperty() private _configEntities?: EntityConfig[];
 
   public setConfig(config: ButtonsRowConfig): void {
-    this._configEntities = processConfigEntities(config.entities);
-    this.requestUpdate();
+    this._configEntities = processConfigEntities(config.entities).map(
+      (entityConfig) => ({
+        tap_action: { action: "toggle" },
+        hold_action: { action: "more-info" },
+        ...entityConfig,
+      })
+    );
   }
 
   protected render(): TemplateResult | void {
