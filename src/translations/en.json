@@ -283,6 +283,8 @@
     "components": {
       "logbook": {
         "entries_not_found": "No logbook entries found.",
+        "by": "by",
+        "by_service": "by service",
         "messages": {
           "was_away": "was away",
           "was_at_state": "was at {state}",

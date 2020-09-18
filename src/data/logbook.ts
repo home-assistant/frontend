@@ -5,6 +5,8 @@ import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { HomeAssistant } from "../types";
 import { UNAVAILABLE_STATES } from "./entity";
 
+const LOGBOOK_LOCALIZE_PATH = "ui.components.logbook.messages";
+
 export interface LogbookEntry {
   when: string;
   name: string;
@@ -116,19 +118,21 @@ export const getLogbookMessage = (
   stateObj: HassEntity,
   domain: string
 ): string => {
-  const localizePath = "ui.components.logbook.messages";
-
   switch (domain) {
     case "device_tracker":
     case "person":
       return state === "not_home"
-        ? hass.localize(`${localizePath}.was_away`)
-        : hass.localize(`${localizePath}.was_at_state`, "state", state);
+        ? hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_away`)
+        : hass.localize(
+            `${LOGBOOK_LOCALIZE_PATH}.was_at_state`,
+            "state",
+            state
+          );
 
     case "sun":
       return state === "above_horizon"
-        ? hass.localize(`${localizePath}.rose`)
-        : hass.localize(`${localizePath}.set`);
+        ? hass.localize(`${LOGBOOK_LOCALIZE_PATH}.rose`)
+        : hass.localize(`${LOGBOOK_LOCALIZE_PATH}.set`);
 
     case "binary_sensor": {
       const isOn = state === BINARY_STATE_ON;
@@ -138,19 +142,19 @@ export const getLogbookMessage = (
       switch (device_class) {
         case "battery":
           if (isOn) {
-            return hass.localize(`${localizePath}.was_low`);
+            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_low`);
           }
           if (isOff) {
-            return hass.localize(`${localizePath}.was_normal`);
+            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_normal`);
           }
           break;
 
         case "connectivity":
           if (isOn) {
-            return hass.localize(`${localizePath}.was_connected`);
+            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_connected`);
           }
           if (isOff) {
-            return hass.localize(`${localizePath}.was_disconnected`);
+            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_disconnected`);
           }
           break;
 
@@ -159,46 +163,46 @@ export const getLogbookMessage = (
         case "opening":
         case "window":
           if (isOn) {
-            return hass.localize(`${localizePath}.was_opened`);
+            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_opened`);
           }
           if (isOff) {
-            return hass.localize(`${localizePath}.was_closed`);
+            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_closed`);
           }
           break;
 
         case "lock":
           if (isOn) {
-            return hass.localize(`${localizePath}.was_unlocked`);
+            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_unlocked`);
           }
           if (isOff) {
-            return hass.localize(`${localizePath}.was_locked`);
+            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_locked`);
           }
           break;
 
         case "plug":
           if (isOn) {
-            return hass.localize(`${localizePath}.was_plugged_in`);
+            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_plugged_in`);
           }
           if (isOff) {
-            return hass.localize(`${localizePath}.was_unplugged`);
+            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_unplugged`);
           }
           break;
 
         case "presence":
           if (isOn) {
-            return hass.localize(`${localizePath}.was_at_home`);
+            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_at_home`);
           }
           if (isOff) {
-            return hass.localize(`${localizePath}.was_away`);
+            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_away`);
           }
           break;
 
         case "safety":
           if (isOn) {
-            return hass.localize(`${localizePath}.was_unsafe`);
+            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_unsafe`);
           }
           if (isOff) {
-            return hass.localize(`${localizePath}.was_safe`);
+            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_safe`);
           }
           break;
 
@@ -216,14 +220,14 @@ export const getLogbookMessage = (
         case "vibration":
           if (isOn) {
             return hass.localize(
-              `${localizePath}.detected_device_class`,
+              `${LOGBOOK_LOCALIZE_PATH}.detected_device_class`,
               "device_class",
               device_class
             );
           }
           if (isOff) {
             return hass.localize(
-              `${localizePath}.cleared_device_class`,
+              `${LOGBOOK_LOCALIZE_PATH}.cleared_device_class`,
               "device_class",
               device_class
             );
@@ -236,33 +240,33 @@ export const getLogbookMessage = (
 
     case "cover":
       return state === "open"
-        ? hass.localize(`${localizePath}.was_opened`)
-        : hass.localize(`${localizePath}.was_closed`);
+        ? hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_opened`)
+        : hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_closed`);
 
     case "lock":
       if (state === "unlocked") {
-        return hass.localize(`${localizePath}.was_unlocked`);
+        return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_unlocked`);
       }
       if (state === "locked") {
-        return hass.localize(`${localizePath}.was_locked`);
+        return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_locked`);
       }
       break;
   }
 
   if (state === BINARY_STATE_ON) {
-    return hass.localize(`${localizePath}.turned_on`);
+    return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.turned_on`);
   }
 
   if (state === BINARY_STATE_OFF) {
-    return hass.localize(`${localizePath}.turned_off`);
+    return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.turned_off`);
   }
 
   if (UNAVAILABLE_STATES.includes(state)) {
-    return hass.localize(`${localizePath}.became_unavailable`);
+    return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.became_unavailable`);
   }
 
   return hass.localize(
-    `${localizePath}.changed_to_state`,
+    `${LOGBOOK_LOCALIZE_PATH}.changed_to_state`,
     "state",
     stateObj
       ? computeStateDisplay(hass.localize, stateObj, hass.language, state)

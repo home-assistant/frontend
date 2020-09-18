@@ -1,6 +1,6 @@
 import {
   css,
-  CSSResult,
+  CSSResultArray,
   customElement,
   eventOptions,
   html,
@@ -22,6 +22,7 @@ import "../../components/ha-circular-progress";
 import "../../components/ha-icon";
 import "../../components/ha-relative-time";
 import { LogbookEntry } from "../../data/logbook";
+import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 
 @customElement("ha-logbook")
@@ -133,16 +134,6 @@ class HaLogbook extends LitElement {
           .entityId=${item.entity_id}
           @click=${this._entityClicked}
         >
-          ${!this.narrow
-            ? html`
-                <div class="time">
-                  ${formatTimeWithSeconds(
-                    new Date(item.when),
-                    this.hass.language
-                  )}
-                </div>
-              `
-            : ""}
           <div class="icon-message">
             ${!this.noIcon
               ? html`
@@ -164,23 +155,25 @@ class HaLogbook extends LitElement {
                   : ""}
                 ${item.message}
                 ${item_username
-                  ? ` by ${item_username}`
+                  ? ` ${this.hass.localize(
+                      "ui.components.logbook.by"
+                    )} ${item_username}`
                   : !item.context_event_type
                   ? ""
                   : item.context_event_type === "call_service"
                   ? // Service Call
-                    ` by service
+                    ` ${this.hass.localize("ui.components.logbook.by_service")}
                   ${item.context_domain}.${item.context_service}`
                   : item.context_entity_id === item.entity_id
                   ? // HomeKit or something that self references
-                    ` by
+                    ` ${this.hass.localize("ui.components.logbook.by")}
                   ${
                     item.context_name
                       ? item.context_name
                       : item.context_event_type
                   }`
                   : // Another entity such as an automation or script
-                    html` by
+                    html` ${this.hass.localize("ui.components.logbook.by")}
                       <a
                         href="#"
                         @click=${this._entityClicked}
@@ -189,17 +182,19 @@ class HaLogbook extends LitElement {
                         >${item.context_entity_id_name}</a
                       >`}
               </div>
-              ${!this.narrow || this.relativeTime
-                ? html`
-                    <ha-relative-time
-                      .hass=${this.hass}
-                      .datetime=${item.when}
-                    ></ha-relative-time>
-                  `
-                : formatTimeWithSeconds(
+              <div class="secondary">
+                <ha-relative-time
+                  .hass=${this.hass}
+                  .datetime=${item.when}
+                ></ha-relative-time>
+                -
+                <span
+                  >${formatTimeWithSeconds(
                     new Date(item.when),
                     this.hass.language
-                  )}
+                  )}</span
+                >
+              </div>
             </div>
           </div>
         </div>
@@ -225,133 +220,119 @@ class HaLogbook extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
-    return css`
-      :host {
-        display: block;
-        height: 100%;
-      }
+  static get styles(): CSSResultArray {
+    return [
+      haStyle,
+      css`
+        :host {
+          display: block;
+          height: 100%;
+        }
 
-      .rtl {
-        direction: ltr;
-      }
+        .rtl {
+          direction: ltr;
+        }
 
-      .entry-container {
-        width: 100%;
-      }
+        .entry-container {
+          width: 100%;
+        }
 
-      .entry {
-        display: flex;
-        width: 100%;
-        line-height: 2em;
-        padding: 8px 16px;
-        box-sizing: border-box;
-        border-top: 1px solid
-          var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
-        cursor: pointer;
-      }
+        .entry {
+          display: flex;
+          width: 100%;
+          line-height: 2em;
+          padding: 8px 16px;
+          box-sizing: border-box;
+          border-top: 1px solid
+            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
+          cursor: pointer;
+        }
 
-      .entry.no-entity,
-      .no-name .entry {
-        cursor: default;
-      }
+        .entry.no-entity,
+        .no-name .entry {
+          cursor: default;
+        }
 
-      .entry:hover {
-        background-color: rgba(var(--rgb-primary-text-color), 0.04);
-      }
+        .entry:hover {
+          background-color: rgba(var(--rgb-primary-text-color), 0.04);
+        }
 
-      .time {
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
-        width: 75px;
-        flex-shrink: 0;
-        font-size: 12px;
-        color: var(--secondary-text-color);
-      }
+        .narrow:not(.no-icon) .time {
+          margin-left: 32px;
+        }
 
-      .narrow .time {
-        margin-top: 4px;
-        width: auto;
-      }
+        .message-relative_time {
+          display: flex;
+          flex-direction: column;
+        }
 
-      .narrow:not(.no-icon) .time {
-        margin-left: 32px;
-      }
+        .secondary {
+          font-size: 12px;
+          line-height: 1.7;
+        }
 
-      .message-relative_time {
-        display: flex;
-        flex-direction: column;
-      }
+        .date {
+          margin: 8px 0;
+          padding: 0 16px;
+        }
 
-      ha-relative-time {
-        font-size: 12px;
-        color: var(--secondary-text-color);
-        line-height: 1.7;
-      }
+        .narrow .date {
+          padding: 0 8px;
+        }
 
-      .date {
-        margin: 8px 0;
-        padding: 0 16px;
-      }
+        .rtl .date {
+          direction: rtl;
+        }
 
-      .narrow .date {
-        padding: 0 8px;
-      }
+        .icon-message {
+          display: flex;
+        }
 
-      .rtl .date {
-        direction: rtl;
-      }
+        .no-entries {
+          text-align: center;
+          color: var(--secondary-text-color);
+        }
 
-      .icon-message {
-        display: flex;
-        align-items: center;
-      }
+        ha-icon {
+          margin: 4px 8px 0 0;
+          flex-shrink: 0;
+          color: var(--state-icon-color);
+        }
 
-      .no-entries {
-        text-align: center;
-        color: var(--secondary-text-color);
-      }
+        .message {
+          color: var(--primary-text-color);
+        }
 
-      ha-icon {
-        margin: 0 8px 0 16px;
-        flex-shrink: 0;
-        color: var(--state-icon-color);
-      }
+        .no-name .message:first-letter {
+          text-transform: capitalize;
+        }
 
-      .message {
-        color: var(--primary-text-color);
-      }
+        a {
+          color: var(--primary-color);
+        }
 
-      .no-name .message:first-letter {
-        text-transform: capitalize;
-      }
+        .uni-virtualizer-host {
+          display: block;
+          position: relative;
+          contain: strict;
+          height: 100%;
+          overflow: auto;
+        }
 
-      a {
-        color: var(--primary-color);
-      }
+        .uni-virtualizer-host > * {
+          box-sizing: border-box;
+        }
 
-      .uni-virtualizer-host {
-        display: block;
-        position: relative;
-        contain: strict;
-        height: 100%;
-        overflow: auto;
-      }
+        .narrow .entry {
+          line-height: 1.5;
+          padding: 8px;
+        }
 
-      .uni-virtualizer-host > * {
-        box-sizing: border-box;
-      }
-
-      .narrow .entry {
-        line-height: 1.5;
-        padding: 8px;
-      }
-
-      .narrow .icon-message ha-icon {
-        margin-left: 0;
-      }
-    `;
+        .narrow .icon-message ha-icon {
+          margin-left: 0;
+        }
+      `,
+    ];
   }
 }
 
