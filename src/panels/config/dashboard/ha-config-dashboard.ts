@@ -1,3 +1,4 @@
+import { memoize } from "@fullcalendar/core";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiChevronRight } from "@mdi/js";
@@ -37,7 +38,13 @@ import {
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
 import { domainToName } from "../../../data/integration";
+import {
+  fetchDashboards,
+  LovelaceDashboard,
+  LovelacePanelConfig,
+} from "../../../data/lovelace";
 import { fetchPersons, Person } from "../../../data/person";
+import { fetchTags, Tag } from "../../../data/tag";
 import "../../../layouts/ha-app-layout";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
@@ -68,6 +75,10 @@ class HaConfigDashboard extends LitElement {
 
   @internalProperty()
   private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
+
+  @internalProperty() private _tags: Tag[] = [];
+
+  @internalProperty() private _dashboards: LovelaceDashboard[] = [];
 
   protected render(): TemplateResult {
     return html`
@@ -112,6 +123,7 @@ class HaConfigDashboard extends LitElement {
                   <span>Remote UI</span>
                   <span slot="secondary">Connected</span>
                   <ha-svg-icon
+                    class="meta-icon"
                     slot="meta"
                     .path=${mdiChevronRight}
                   ></ha-svg-icon>
@@ -120,6 +132,7 @@ class HaConfigDashboard extends LitElement {
                   <span>Google Assistant</span>
                   <span slot="secondary">Enabled</span>
                   <ha-svg-icon
+                    class="meta-icon"
                     slot="meta"
                     .path=${mdiChevronRight}
                   ></ha-svg-icon>
@@ -128,6 +141,7 @@ class HaConfigDashboard extends LitElement {
                   <span>Amazon Alexa</span>
                   <span slot="secondary">Disabled</span>
                   <ha-svg-icon
+                    class="meta-icon"
                     slot="meta"
                     .path=${mdiChevronRight}
                   ></ha-svg-icon>
@@ -136,6 +150,7 @@ class HaConfigDashboard extends LitElement {
                   <span>Webhooks</span>
                   <span slot="secondary">3 active</span>
                   <ha-svg-icon
+                    class="meta-icon"
                     slot="meta"
                     .path=${mdiChevronRight}
                   ></ha-svg-icon>
@@ -151,6 +166,7 @@ class HaConfigDashboard extends LitElement {
                   <span>Location Settings</span>
                   <span slot="secondary">Unit system, timezone, etc</span>
                   <ha-svg-icon
+                    class="meta-icon"
                     slot="meta"
                     .path=${mdiChevronRight}
                   ></ha-svg-icon>
@@ -159,6 +175,7 @@ class HaConfigDashboard extends LitElement {
                   <span>Server Control</span>
                   <span slot="secondary">Stop and Start Home Assistant</span>
                   <ha-svg-icon
+                    class="meta-icon"
                     slot="meta"
                     .path=${mdiChevronRight}
                   ></ha-svg-icon>
@@ -167,6 +184,7 @@ class HaConfigDashboard extends LitElement {
                   <span>Logs</span>
                   <span slot="secondary">Server Logs</span>
                   <ha-svg-icon
+                    class="meta-icon"
                     slot="meta"
                     .path=${mdiChevronRight}
                   ></ha-svg-icon>
@@ -175,6 +193,7 @@ class HaConfigDashboard extends LitElement {
                   <span>Add-ons</span>
                   <span slot="secondary">Manage Addons</span>
                   <ha-svg-icon
+                    class="meta-icon"
                     slot="meta"
                     .path=${mdiChevronRight}
                   ></ha-svg-icon>
@@ -183,6 +202,7 @@ class HaConfigDashboard extends LitElement {
                   <span>About</span>
                   <span slot="secondary">Info about the server</span>
                   <ha-svg-icon
+                    class="meta-icon"
                     slot="meta"
                     .path=${mdiChevronRight}
                   ></ha-svg-icon>
@@ -277,6 +297,7 @@ class HaConfigDashboard extends LitElement {
                       </span>
                     </mwc-list-item>
                     <ha-svg-icon
+                      class="meta-icon"
                       slot="meta"
                       .path=${mdiChevronRight}
                     ></ha-svg-icon>
@@ -290,16 +311,16 @@ class HaConfigDashboard extends LitElement {
             <ha-card outlined id="ScriptCard" .header=${"Scripts"}>
               <mwc-list>
                 ${this._getScripts(this.hass.states).map(
-                  (automation) => html`
+                  (script) => html`
                     <mwc-list-item twoline hasMeta>
-                      <span>${automation.attributes.friendly_name}</span>
+                      <span>${script.attributes.friendly_name}</span>
                       <span slot="secondary"
                         >${this.hass.localize(
                           "ui.card.automation.last_triggered"
                         )}:
-                        ${automation.attributes.last_triggered
+                        ${script.attributes.last_triggered
                           ? formatDateTime(
-                              new Date(automation.attributes.last_triggered),
+                              new Date(script.attributes.last_triggered),
                               this.hass.language
                             )
                           : this.hass.localize(
@@ -308,6 +329,7 @@ class HaConfigDashboard extends LitElement {
                       </span>
                     </mwc-list-item>
                     <ha-svg-icon
+                      class="meta-icon"
                       slot="meta"
                       .path=${mdiChevronRight}
                     ></ha-svg-icon>
@@ -321,16 +343,16 @@ class HaConfigDashboard extends LitElement {
             <ha-card outlined id="SceneCard" .header=${"Scenes"}>
               <mwc-list>
                 ${this._getScenes(this.hass.states).map(
-                  (automation) => html`
+                  (scene) => html`
                     <mwc-list-item twoline hasMeta>
-                      <span>${automation.attributes.friendly_name}</span>
+                      <span>${scene.attributes.friendly_name}</span>
                       <span slot="secondary"
                         >${this.hass.localize(
                           "ui.card.automation.last_triggered"
                         )}:
-                        ${automation.attributes.last_triggered
+                        ${scene.attributes.last_triggered
                           ? formatDateTime(
-                              new Date(automation.attributes.last_triggered),
+                              new Date(scene.attributes.last_triggered),
                               this.hass.language
                             )
                           : this.hass.localize(
@@ -339,6 +361,7 @@ class HaConfigDashboard extends LitElement {
                       </span>
                     </mwc-list-item>
                     <ha-svg-icon
+                      class="meta-icon"
                       slot="meta"
                       .path=${mdiChevronRight}
                     ></ha-svg-icon>
@@ -352,16 +375,16 @@ class HaConfigDashboard extends LitElement {
             <ha-card outlined id="HelperCard" .header=${"Helpers"}>
               <mwc-list>
                 ${this._getHelpers(this.hass.states).map(
-                  (automation) => html`
+                  (helper) => html`
                     <mwc-list-item twoline hasMeta>
-                      <span>${automation.attributes.friendly_name}</span>
+                      <span>${helper.attributes.friendly_name}</span>
                       <span slot="secondary"
                         >${this.hass.localize(
                           "ui.card.automation.last_triggered"
                         )}:
-                        ${automation.attributes.last_triggered
+                        ${helper.attributes.last_triggered
                           ? formatDateTime(
-                              new Date(automation.attributes.last_triggered),
+                              new Date(helper.attributes.last_triggered),
                               this.hass.language
                             )
                           : this.hass.localize(
@@ -370,6 +393,7 @@ class HaConfigDashboard extends LitElement {
                       </span>
                     </mwc-list-item>
                     <ha-svg-icon
+                      class="meta-icon"
                       slot="meta"
                       .path=${mdiChevronRight}
                     ></ha-svg-icon>
@@ -378,6 +402,73 @@ class HaConfigDashboard extends LitElement {
               </mwc-list>
               <div class="footer">
                 <mwc-button>Manage Helpers</mwc-button>
+              </div>
+            </ha-card>
+            <ha-card outlined id="TagsCard" .header=${"Tags"}>
+              <mwc-list>
+                ${this._tags.map(
+                  (tag) => html`
+                    <mwc-list-item twoline hasMeta>
+                      <span>${tag.name}</span>
+                      <span slot="secondary"
+                        >${this.hass.localize(
+                          "ui.panel.config.tags.headers.last_scanned"
+                        )}:
+                        ${tag.last_scanned
+                          ? html`
+                              <ha-relative-time
+                                .hass=${this.hass}
+                                .datetimeObj=${tag.last_scanned
+                                  ? new Date(tag.last_scanned)
+                                  : null}
+                              ></ha-relative-time>
+                            `
+                          : this.hass.localize(
+                              "ui.panel.config.tags.never_scanned"
+                            )}
+                      </span>
+                    </mwc-list-item>
+                    <ha-svg-icon
+                      class="meta-icon"
+                      slot="meta"
+                      .path=${mdiChevronRight}
+                    ></ha-svg-icon>
+                  `
+                )}
+              </mwc-list>
+              <div class="footer">
+                <mwc-button>Manage Tags</mwc-button>
+              </div>
+            </ha-card>
+            <ha-card
+              outlined
+              id="LovelaceCard"
+              .header=${"Lovelace Dashboards"}
+            >
+              <mwc-list>
+                ${this._getDasboards(this._dashboards).map(
+                  (dashboard) => html`
+                    <mwc-list-item graphic="avatar" twoline hasMeta>
+                      <ha-icon slot="graphic" .icon=${dashboard.icon}></ha-icon>
+                      <span>${dashboard.title}</span>
+                      <span slot="secondary">
+                        ${this.hass.localize(
+                          `ui.panel.config.lovelace.dashboards.conf_mode.${dashboard.mode}`
+                        )}${dashboard.filename
+                          ? html` - ${dashboard.filename} `
+                          : ""}
+                      </span>
+                    </mwc-list-item>
+                    <ha-svg-icon
+                      class="meta-icon"
+                      slot="meta"
+                      .path=${mdiChevronRight}
+                    ></ha-svg-icon>
+                  `
+                )}
+              </mwc-list>
+              <div class="footer">
+                <mwc-button>Manage Lovelace Dashboards & Resources</mwc-button>
               </div>
             </ha-card>
           </div>
@@ -390,6 +481,8 @@ class HaConfigDashboard extends LitElement {
     super.firstUpdated(changedProps);
     this._fetchPersonData();
     this._fetchIntegrationData();
+    this._fetchTags();
+    this._fetchDasboards();
     subscribeEntityRegistry(this.hass.connection, (entries) => {
       this._entityRegistryEntries = entries;
     });
@@ -495,6 +588,40 @@ class HaConfigDashboard extends LitElement {
         .slice(0, 2) as AutomationEntity[];
     }
   );
+
+  private async _fetchTags() {
+    this._tags = await fetchTags(this.hass);
+  }
+
+  private async _fetchDasboards() {
+    this._dashboards = await fetchDashboards(this.hass);
+  }
+
+  private _getDasboards = memoize((dashboards: LovelaceDashboard[]) => {
+    const defaultMode = (this.hass.panels?.lovelace
+      ?.config as LovelacePanelConfig).mode;
+    const defaultUrlPath = this.hass.defaultPanel;
+    const isDefault = defaultUrlPath === "lovelace";
+    return [
+      {
+        icon: "hass:view-dashboard",
+        title: this.hass.localize("panel.states"),
+        default: isDefault,
+        sidebar: isDefault,
+        require_admin: false,
+        url_path: "lovelace",
+        mode: defaultMode,
+        filename: defaultMode === "yaml" ? "ui-lovelace.yaml" : "",
+      },
+      ...dashboards.map((dashboard) => {
+        return {
+          filename: "",
+          ...dashboard,
+          default: defaultUrlPath === dashboard.url_path,
+        };
+      }),
+    ].slice(0, 2);
+  });
 
   static get styles(): CSSResultArray {
     return [
@@ -606,6 +733,21 @@ class HaConfigDashboard extends LitElement {
           grid-area: Scene;
         }
 
+        #HelperCard {
+          display: flex;
+          flex-direction: column;
+        }
+
+        #TagsCard {
+          display: flex;
+          flex-direction: column;
+        }
+
+        #LovelaceCard {
+          display: flex;
+          flex-direction: column;
+        }
+
         .footer {
           width: 100%;
           min-height: 35px;
@@ -616,6 +758,10 @@ class HaConfigDashboard extends LitElement {
         .secondary {
           font-size: 14px;
           line-height: 1.2;
+        }
+
+        .meta-icon {
+          color: var(--secondary-text-color);
         }
       `,
     ];
