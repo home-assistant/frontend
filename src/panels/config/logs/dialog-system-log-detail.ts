@@ -88,8 +88,9 @@ class DialogSystemLogDetail extends LitElement {
           <paper-tooltip
             manual-mode
             for="copy"
-            position="top"
+            position="left"
             animation-delay="0"
+            offset="4"
             >${this.hass.localize("ui.common.copied")}</paper-tooltip
           >
         </div>
