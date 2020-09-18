@@ -2698,7 +2698,7 @@
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "Nous générerons automatiquement vos vues Lovelace UI avec vos zones et appareils si vous supprimez votre configuration Lovelace UI.",
-                        "confirm_remove_config_title": "Êtes-vous sûr de vouloir supprimer votre configuration Lovelace UI? Nous générerons automatiquement vos vues Lovelace UI avec vos zones et vos appareils.",
+                        "confirm_remove_config_title": "Êtes-vous sûr de vouloir supprimer votre configuration Lovelace UI ?",
                         "confirm_unsaved_changes": "Vous avez des changements non enregistrés. Êtes-vous sûr de vouloir quitter?",
                         "confirm_unsaved_comments": "Votre configuration contient des commentaires, ceux-ci ne seront pas sauvegardés. Voulez-vous continuer?",
                         "error_invalid_config": "Votre configuration n'est pas valide : {error}",
@@ -3013,7 +3013,7 @@
                     "name": "Nom",
                     "not_used": "N'a jamais été utilisé",
                     "prompt_copy_token": "Copiez votre jeton d'accès. Il ne sera plus affiché à nouveau.",
-                    "prompt_name": "Nom ?"
+                    "prompt_name": "Donnez un nom au jeton"
                 },
                 "mfa_setup": {
                     "close": "Fermer",

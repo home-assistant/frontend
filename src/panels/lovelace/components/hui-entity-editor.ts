@@ -123,6 +123,10 @@ export class HuiEntityEditor extends LitElement {
   private async _handleEntitiesChanged() {
     this._renderEmptySortable = true;
     await this.updateComplete;
+    const container = this.shadowRoot!.querySelector(".entities")!;
+    while (container.lastElementChild) {
+      container.removeChild(container.lastElementChild);
+    }
     this._renderEmptySortable = false;
   }
 
