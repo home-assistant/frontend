@@ -80,7 +80,13 @@ class HaConfigDashboard extends LitElement {
 
   @internalProperty() private _dashboards: LovelaceDashboard[] = [];
 
+  @internalProperty() private _width: number;
+
+  @internalProperty() private mqls?: MediaQueryList[];
+
   protected render(): TemplateResult {
+    const integrationsToShow =
+      this._width === 4 ? 6 : this._width === 3 ? 4 : this.narrow ? 2 : 6;
     return html`
       <ha-app-layout>
         <app-header fixed slot="header">
@@ -216,61 +222,63 @@ class HaConfigDashboard extends LitElement {
           <div class="main">
             <ha-card outlined id="IntegrationCard">
               <div class="integrations">
-                ${this._configEntries?.map((entry) => {
-                  const devices = this._getDevices(entry);
-                  const services = this._getServices(entry);
-                  const entities = this._getEntities(entry);
+                ${this._configEntries
+                  ?.slice(0, integrationsToShow)
+                  .map((entry) => {
+                    const devices = this._getDevices(entry);
+                    const services = this._getServices(entry);
+                    const entities = this._getEntities(entry);
 
-                  return html`
-                    <div class="card-content">
-                      <div class="image">
-                        <img
-                          src="https://brands.home-assistant.io/${entry.domain}/logo.png"
-                          referrerpolicy="no-referrer"
-                        />
+                    return html`
+                      <div class="card-content">
+                        <div class="image">
+                          <img
+                            src="https://brands.home-assistant.io/${entry.domain}/logo.png"
+                            referrerpolicy="no-referrer"
+                          />
+                        </div>
+                        <h2>
+                          ${entry.localized_domain_name}
+                        </h2>
+                        <h3>
+                          ${entry.localized_domain_name === entry.title
+                            ? ""
+                            : entry.title}
+                        </h3>
+                        ${devices.length || services.length || entities.length
+                          ? html`
+                              <div class="secondary">
+                                ${devices.length
+                                  ? html`${this.hass.localize(
+                                      "ui.panel.config.integrations.config_entry.devices",
+                                      "count",
+                                      devices.length
+                                    )}${services.length ? "," : ""}`
+                                  : ""}
+                                ${services.length
+                                  ? html`${this.hass.localize(
+                                      "ui.panel.config.integrations.config_entry.services",
+                                      "count",
+                                      services.length
+                                    )}`
+                                  : ""}
+                                ${(devices.length || services.length) &&
+                                entities.length
+                                  ? this.hass.localize("ui.common.and")
+                                  : ""}
+                                ${entities.length
+                                  ? html`${this.hass.localize(
+                                      "ui.panel.config.integrations.config_entry.entities",
+                                      "count",
+                                      entities.length
+                                    )}`
+                                  : ""}
+                              </div>
+                            `
+                          : ""}
                       </div>
-                      <h2>
-                        ${entry.localized_domain_name}
-                      </h2>
-                      <h3>
-                        ${entry.localized_domain_name === entry.title
-                          ? ""
-                          : entry.title}
-                      </h3>
-                      ${devices.length || services.length || entities.length
-                        ? html`
-                            <div class="secondary">
-                              ${devices.length
-                                ? html`${this.hass.localize(
-                                    "ui.panel.config.integrations.config_entry.devices",
-                                    "count",
-                                    devices.length
-                                  )}${services.length ? "," : ""}`
-                                : ""}
-                              ${services.length
-                                ? html`${this.hass.localize(
-                                    "ui.panel.config.integrations.config_entry.services",
-                                    "count",
-                                    services.length
-                                  )}`
-                                : ""}
-                              ${(devices.length || services.length) &&
-                              entities.length
-                                ? this.hass.localize("ui.common.and")
-                                : ""}
-                              ${entities.length
-                                ? html`${this.hass.localize(
-                                    "ui.panel.config.integrations.config_entry.entities",
-                                    "count",
-                                    entities.length
-                                  )}`
-                                : ""}
-                            </div>
-                          `
-                        : ""}
-                    </div>
-                  `;
-                })}
+                    `;
+                  })}
               </div>
               <div class="footer">
                 <mwc-button>Manage integrations</mwc-button>
@@ -489,6 +497,20 @@ class HaConfigDashboard extends LitElement {
     subscribeDeviceRegistry(this.hass.connection, (entries) => {
       this._deviceRegistryEntries = entries;
     });
+    this.mqls = [300, 600, 900, 1525].map((width) => {
+      const mql = matchMedia(`(min-width: ${width}px)`);
+      mql.addEventListener("change", () => {
+        this._width = this.mqls!.reduce(
+          (cols, _mql) => cols + Number(_mql.matches),
+          0
+        );
+      });
+      return mql;
+    });
+    this._width = this.mqls!.reduce(
+      (cols, _mql) => cols + Number(_mql.matches),
+      0
+    );
   }
 
   private async _fetchPersonData() {
@@ -507,7 +529,6 @@ class HaConfigDashboard extends LitElement {
   private async _fetchIntegrationData() {
     getConfigEntries(this.hass).then((configEntries) => {
       this._configEntries = configEntries
-        .slice(0, 6)
         .map(
           (entry: ConfigEntry): ConfigEntryExtended => ({
             ...entry,
@@ -652,7 +673,8 @@ class HaConfigDashboard extends LitElement {
           grid-template-areas:
             "Integration Integration Integration"
             "Integration Integration Integration"
-            "Automation Script Scene";
+            "Automation Script Scene"
+            "Helper Tag Dashboard";
           grid-area: Main;
         }
 
@@ -736,16 +758,19 @@ class HaConfigDashboard extends LitElement {
         #HelperCard {
           display: flex;
           flex-direction: column;
+          grid-area: Helper;
         }
 
         #TagsCard {
           display: flex;
           flex-direction: column;
+          grid-area: Tag;
         }
 
         #LovelaceCard {
           display: flex;
           flex-direction: column;
+          grid-area: Dashboard;
         }
 
         .footer {
@@ -762,6 +787,94 @@ class HaConfigDashboard extends LitElement {
 
         .meta-icon {
           color: var(--secondary-text-color);
+        }
+
+        @media (max-width: 1525px) {
+          .content {
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            grid-template-rows: 0.8fr;
+            grid-template-areas: "Left Main Main Main";
+          }
+
+          .main {
+            grid-template-columns: 1fr 1fr;
+            grid-auto-rows: minmax(min-content, max-content);
+            grid-template-areas:
+              "Integration Integration"
+              "Integration Integration"
+              "Automation Script"
+              "Scene Helper"
+              "Tag Dashboard";
+          }
+
+          .left {
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-auto-rows: minmax(min-content, max-content);
+            grid-template-areas:
+              "Person Person Person"
+              "Cloud Cloud Cloud"
+              "Server Server Server";
+          }
+
+          .integrations {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 1px 1px;
+          }
+        }
+
+        @media (max-width: 1250px) {
+          .content {
+            grid-template-columns: 1fr;
+            grid-template-areas: "Left" "Main";
+          }
+
+          .left {
+            grid-template-columns: 1fr 1fr;
+            grid-template-areas:
+              "Person Person"
+              "Cloud Server";
+          }
+        }
+
+        @media (max-width: 925px) {
+        }
+
+        :host([narrow]) .content {
+          grid-template-columns: 1fr;
+          grid-template-areas: "Left" "Main";
+        }
+
+        :host([narrow]) .left {
+          grid-template-columns: 1fr 1fr;
+          grid-template-areas:
+            "Person Person"
+            "Cloud Server";
+        }
+
+        :host([narrow]) .integrations {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-around;
+        }
+
+        @media (max-width: 675px) {
+          .left {
+            display: flex;
+            flex-direction: column;
+          }
+
+          .main {
+            grid-template-columns: 1fr;
+            grid-auto-rows: minmax(min-content, max-content);
+            grid-template-areas:
+              "Integration"
+              "Integration"
+              "Automation" "Script"
+              "Scene" "Helper"
+              "Tag" "Dashboard";
+          }
         }
       `,
     ];
