@@ -99,7 +99,7 @@ export const getRecentWithCache = (
   let toFetchStartTime = startTime;
   let appendingToCache = false;
 
-  let cache = stateHistoryCache[cacheKey + `${cacheConfig.hoursToShow}`];
+  let cache = stateHistoryCache[cacheKey + `_${cacheConfig.hoursToShow}`];
   if (
     cache &&
     toFetchStartTime >= cache.startTime &&
