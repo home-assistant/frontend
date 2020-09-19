@@ -170,6 +170,7 @@ export class DialogEntityEditor extends LitElement {
         }
         return html`
           <div class="content">
+            <div class="entity-id">Entity ID: ${this._params!.entity_id}</div>
             ${this.hass.localize("ui.dialogs.entity_registry.no_unique_id")}
           </div>
         `;
@@ -193,9 +194,12 @@ export class DialogEntityEditor extends LitElement {
         this.hass,
         this._params!.entity_id
       );
+      console.log(this._entry);
+
       this._loadPlatformSettingTabs();
     } catch {
-      this._entry = null;
+      this._entry = { entity_id: this._params!.entity_id };
+      this._loadPlatformSettingTabs();
     }
   }
 

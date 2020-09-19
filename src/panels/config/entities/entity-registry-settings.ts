@@ -6,14 +6,15 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { domainIcon } from "../../../common/entity/domain_icon";
 import "../../../components/ha-icon-input";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
@@ -86,15 +87,18 @@ export class EntityRegistrySettings extends LitElement {
           .value=${this._name}
           @value-changed=${this._nameChanged}
           .label=${this.hass.localize("ui.dialogs.entity_registry.editor.name")}
-          .placeholder=${this.entry.original_name}
-          .disabled=${this._submitting}
+          .placeholder=${this.entry.original_name ||
+          stateObj.attributes.friendly_name}
+          .disabled=${this._submitting || !this.entry.config_entry_id}
         ></paper-input>
         <ha-icon-input
           .value=${this._icon}
           @value-changed=${this._iconChanged}
           .label=${this.hass.localize("ui.dialogs.entity_registry.editor.icon")}
-          .placeholder=${this.entry.original_icon}
-          .disabled=${this._submitting}
+          .placeholder=${this.entry.original_icon ||
+          stateObj.attributes.icon ||
+          domainIcon(computeDomain(this.entry.entity_id))}
+          .disabled=${this._submitting || !this.entry.config_entry_id}
           .errorMessage=${this.hass.localize(
             "ui.dialogs.entity_registry.editor.icon_error"
           )}
@@ -107,52 +111,58 @@ export class EntityRegistrySettings extends LitElement {
           )}
           error-message="Domain needs to stay the same"
           .invalid=${invalidDomainUpdate}
-          .disabled=${this._submitting}
+          .disabled=${this._submitting || !this.entry.config_entry_id}
         ></paper-input>
-        <div class="row">
-          <ha-switch
-            .checked=${!this._disabledBy}
-            @change=${this._disabledByChanged}
-          >
-          </ha-switch>
-          <div>
-            <div>
-              ${this.hass.localize(
-                "ui.dialogs.entity_registry.editor.enabled_label"
-              )}
-            </div>
-            <div class="secondary">
-              ${this._disabledBy && this._disabledBy !== "user"
-                ? this.hass.localize(
-                    "ui.dialogs.entity_registry.editor.enabled_cause",
-                    "cause",
-                    this.hass.localize(
-                      `config_entry.disabled_by.${this._disabledBy}`
-                    )
-                  )
-                : ""}
-              ${this.hass.localize(
-                "ui.dialogs.entity_registry.editor.enabled_description"
-              )}
-              <br />${this.hass.localize(
-                "ui.dialogs.entity_registry.editor.note"
-              )}
-            </div>
-          </div>
-        </div>
+        ${this.entry.config_entry_id
+          ? html`
+              <div class="row">
+                <ha-switch
+                  .checked=${!this._disabledBy}
+                  @change=${this._disabledByChanged}
+                >
+                </ha-switch>
+                <div>
+                  <div>
+                    ${this.hass.localize(
+                      "ui.dialogs.entity_registry.editor.enabled_label"
+                    )}
+                  </div>
+                  <div class="secondary">
+                    ${this._disabledBy && this._disabledBy !== "user"
+                      ? this.hass.localize(
+                          "ui.dialogs.entity_registry.editor.enabled_cause",
+                          "cause",
+                          this.hass.localize(
+                            `config_entry.disabled_by.${this._disabledBy}`
+                          )
+                        )
+                      : ""}
+                    ${this.hass.localize(
+                      "ui.dialogs.entity_registry.editor.enabled_description"
+                    )}
+                    <br />${this.hass.localize(
+                      "ui.dialogs.entity_registry.editor.note"
+                    )}
+                  </div>
+                </div>
+              </div>
+            `
+          : ""}
       </div>
       <div class="buttons">
         <mwc-button
           class="warning"
-          @click="${this._confirmDeleteEntry}"
+          @click=${this._confirmDeleteEntry}
           .disabled=${this._submitting ||
           !(stateObj && stateObj.attributes.restored)}
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.delete")}
         </mwc-button>
         <mwc-button
-          @click="${this._updateEntry}"
-          .disabled=${invalidDomainUpdate || this._submitting}
+          @click=${this._updateEntry}
+          .disabled=${invalidDomainUpdate ||
+          this._submitting ||
+          !this.entry.config_entry_id}
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.update")}
         </mwc-button>
