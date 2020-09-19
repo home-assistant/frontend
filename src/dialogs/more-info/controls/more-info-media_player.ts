@@ -1,4 +1,5 @@
 import "@material/mwc-button/mwc-button";
+import { mdiPlayBoxMultiple } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -75,14 +76,14 @@ class MoreInfoMediaPlayer extends LitElement {
               </div>
               ${supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA)
                 ? html`
-                    <ha-icon-button
-                      icon="hass:folder-multiple"
+                    <mwc-icon-button
+                      class="browse-media"
                       .title=${this.hass.localize(
                         "ui.card.media_player.browse_media"
                       )}
                       @click=${this._showBrowseMedia}
-                    >
-                    </ha-icon-button>
+                      ><ha-svg-icon .path=${mdiPlayBoxMultiple}></ha-svg-icon
+                    ></mwc-icon-button>
                   `
                 : ""}
             </div>
