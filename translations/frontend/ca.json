@@ -3006,7 +3006,7 @@
                     "created_at": "Creat el {date}",
                     "delete_failed": "No s'ha pogut eliminar el token d'autenticació d'accés.",
                     "description": "Crea tokens d'autenticació d'accés de llarga durada per permetre als teus programes/scripts interactuar amb la instància de Home Assistant. Cada token és vàlid durant deu anys després de la seva creació. Els següents tokens d'autenticació d'accés de llarga durada estan actius actualment.",
-                    "empty_state": "Encara no tens tokens d'autenticaciós d'accés de llarga durada.",
+                    "empty_state": "Encara no tens tokens d'autenticació d'accés de llarga durada.",
                     "header": "Tokens d'autenticació d'accés de llarga durada",
                     "last_used": "Darrer ús el {date} des de {location}",
                     "learn_auth_requests": "Aprèn a fer sol·licituds autenticades.",
