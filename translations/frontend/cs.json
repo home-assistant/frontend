@@ -2292,7 +2292,7 @@
                     },
                     "ozw_log": {
                         "header": "Protokol OZW",
-                        "introduction": "Zobrazit protokol. 0 je minimum (načte celý protokol) a 1000 je maximum. Načíst zobrazí statický protokol a tail automaticky aktualizuje protokol s naposledy zvoleným počtem řádků.",
+                        "introduction": "Zobrazit protokol. 0 je minimum (načte celý protokol) a 1000 je maximum. Načíst zobrazí statický protokol a Konec automaticky aktualizuje protokol s naposledy zvoleným počtem řádků.",
                         "last_log_lines": "Počet řádků posledního protokolu",
                         "load": "Načíst",
                         "tail": "Konec"

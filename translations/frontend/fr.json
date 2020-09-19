@@ -1530,7 +1530,7 @@
                 "header": "Configurer Home Assistant",
                 "helpers": {
                     "caption": "Entrées",
-                    "description": "Gérez les éléments qui peuvent aident à créer des automatisations",
+                    "description": "Gérer les éléments qui peuvent aider à créer des automatisations",
                     "dialog": {
                         "add_helper": "Ajouter une entrée",
                         "add_platform": "Ajouter {platform}",
@@ -1804,7 +1804,7 @@
                     },
                     "network": {
                         "header": "Gestion du réseau",
-                        "introduction": "Gérez les fonctions de niveau réseau.",
+                        "introduction": "Gérer les fonctions de niveau réseau.",
                         "node_count": "{count} nœuds"
                     },
                     "node_query_stages": {
@@ -2212,7 +2212,7 @@
                     "configured_in_yaml": "Les zones configurées via configuration.yaml ne peuvent pas être modifiées via l'interface utilisateur.",
                     "confirm_delete": "Êtes-vous sûr de vouloir supprimer cette zone ?",
                     "create_zone": "Créer une zone",
-                    "description": "Gérez les zones dans lesquelles vous voulez suivre les personnes.",
+                    "description": "Gérer les zones dans lesquelles vous voulez suivre les personnes.",
                     "detail": {
                         "create": "Créer",
                         "delete": "Effacer",

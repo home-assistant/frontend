@@ -1415,7 +1415,7 @@
                 },
                 "entities": {
                     "caption": "Entitäten",
-                    "description": "Überblick aller bekannten Elemente.",
+                    "description": "Bekannte Entitäten verwalten",
                     "picker": {
                         "disable_selected": {
                             "button": "Ausgewählte deaktivieren",
@@ -1859,7 +1859,7 @@
                         "reloading": {
                             "automation": "Automatisierungen neu laden",
                             "core": "Ort & Anpassungen neu laden",
-                            "group": "Gruppen neu laden",
+                            "group": "Gruppen, Gruppenentitäten und Benachrichtigungsdienste neu laden",
                             "heading": "Neuladen der YAML-Konfiguration",
                             "homekit": "HomeKit neu laden",
                             "input_boolean": "Eingabe-Booleans neu laden",
@@ -1869,6 +1869,7 @@
                             "input_text": "Eingabetexte neu laden",
                             "introduction": "Einige Komponenten von Home Assistant können ohne einen Neustart neu geladen werden. \"Neu laden\" entlädt dabei die aktuelle Konfiguration und lädt die neue Konfiguration.",
                             "person": "Personen neu laden",
+                            "rest": "Rest Entitäten und Benachrichtigungsdienste neu laden",
                             "scene": "Szenen neu laden",
                             "script": "Skripte neu laden",
                             "telegram": "Telegram-Benachrichtigungsdienste neu laden",

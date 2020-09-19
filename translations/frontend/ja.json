@@ -900,7 +900,7 @@
                                     "label": "シーンをアクティブにする"
                                 },
                                 "service": {
-                                    "label": "通話サービス",
+                                    "label": "サービスを呼びだし",
                                     "service_data": "サービスのデータ"
                                 },
                                 "wait_template": {
