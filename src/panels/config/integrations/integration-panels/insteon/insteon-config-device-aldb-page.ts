@@ -298,6 +298,15 @@ class InsteonConfigDeviceALDBPage extends LitElement {
     });
   }
 
+  private async _handleDialogResponse(text: string) {
+    await showConfirmationDialog(this, {
+      title: "The title",
+      text: text,
+      confirmText: "We good",
+      dismissText: "We not good",
+    });
+  }
+
   private async _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
     const id = ev.detail.id;
     const record = this._records!.find((rec) => rec.mem_addr === id);

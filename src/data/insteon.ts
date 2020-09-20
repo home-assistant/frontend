@@ -151,3 +151,12 @@ export const addDefaultLinks = (
     type: "insteon/aldb/add_default_links",
     device_id: id,
   });
+
+export const changeALDBRecord = (
+  hass: HomeAssistant,
+  record: ALDBRecord
+): Promise<ALDBRecord> =>
+  hass.callWS({
+    type: "insteon/aldb/change",
+    record: record,
+  });
