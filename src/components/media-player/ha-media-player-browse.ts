@@ -5,6 +5,7 @@ import "@material/mwc-list/mwc-list-item";
 import { mdiArrowLeft, mdiClose, mdiPlay, mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
   CSSResultArray,
@@ -301,7 +302,16 @@ export class HaMediaPlayerBrowse extends LitElement {
                             `
                           : ""}
                       </div>
-                      <div class="title">${child.title}</div>
+                      <div class="title">
+                        ${child.title}
+                        <paper-tooltip
+                          fitToVisibleBounds
+                          position="top"
+                          offset="4"
+                          >${child.title}</paper-tooltip
+                        >
+                      </div>
+
                       <div class="type">
                         ${this.hass.localize(
                           `ui.components.media-browser.content-type.${child.media_content_type}`
@@ -777,6 +787,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           display: -webkit-box;
           -webkit-box-orient: vertical;
           -webkit-line-clamp: 2;
+          text-overflow: ellipsis;
         }
 
         .child .type {
