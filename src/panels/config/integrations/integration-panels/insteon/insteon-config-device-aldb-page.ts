@@ -79,6 +79,10 @@ class InsteonConfigDeviceALDBPage extends LitElement {
         this._records = this._filterRecords(aldbInfo.records, this._showUnused);
         this._schema = aldbInfo.schema;
       });
+      fetchInsteonALDB(this.hass, this._device_id!).then((aldbInfo) => {
+        this._records = aldbInfo.records;
+        this._schema = aldbInfo.schema;
+      });
     }
   }
 
@@ -334,6 +338,15 @@ class InsteonConfigDeviceALDBPage extends LitElement {
     createALDBRecord(this.hass, this.deviceId!, record);
     fetchInsteonALDB(this.hass, this.deviceId!).then((aldbInfo) => {
       this._records = this._filterRecords(aldbInfo.records, this._showUnused);
+    });
+  }
+
+  private async _handleDialogResponse(text: string) {
+    await showConfirmationDialog(this, {
+      title: "The title",
+      text: text,
+      confirmText: "We good",
+      dismissText: "We not good",
     });
   }
 
