@@ -17,8 +17,7 @@ import {
   fetchInsteonDevice,
 } from "../../../../../../data/insteon";
 import { navigate } from "../../../../../../common/navigate";
-import { showInsteonDeviceALDBDialog } from "../../../../integrations/integration-panels/insteon/show-dialog-insteon-device-aldb";
-import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
+import "@material/mwc-button/mwc-button";
 
 @customElement("ha-device-actions-insteon")
 export class HaDeviceActionsInsteon extends LitElement {
@@ -64,5 +63,11 @@ export class HaDeviceActionsInsteon extends LitElement {
         }
       `,
     ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-device-actions-insteon": HaDeviceActionsInsteon;
   }
 }
