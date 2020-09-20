@@ -1,13 +1,13 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
+import type { HaFormSchema } from "../components/ha-form/ha-form";
+import { HassioHomeAssistantInfo } from "./hassio/supervisor";
 
 export interface InsteonDevice {
   name: string;
   address: string;
   is_battery: boolean;
   aldb_status: string;
-  aldb: ALDBRecord[];
-  default_links: DefaultLink[];
 }
 
 export interface DefaultLink {
@@ -22,7 +22,7 @@ export interface DefaultLink {
 }
 
 export interface ALDBRecord {
-  id: number;
+  mem_addr: number;
   in_use: boolean;
   mode: string;
   highwater: boolean;
@@ -32,6 +32,12 @@ export interface ALDBRecord {
   data1: number;
   data2: number;
   data3: number;
+  is_dirty: boolean;
+}
+
+export interface ALDBInfo {
+  schema: HaFormSchema;
+  records: ALDBRecord[];
 }
 
 export const fetchInsteonDevice = (
@@ -39,6 +45,24 @@ export const fetchInsteonDevice = (
   id: string
 ): Promise<InsteonDevice> =>
   hass.callWS({
-    type: "insteon/device",
+    type: "insteon/device/get",
     device_id: id,
+  });
+
+export const fetchInsteonALDB = (
+  hass: HomeAssistant,
+  id: string
+): Promise<ALDBInfo> =>
+  hass.callWS({
+    type: "insteon/aldb/get",
+    device_id: id,
+  });
+
+export const changeALDBRecord = (
+  hass: HomeAssistant,
+  record: ALDBRecord
+): Promise<ALDBRecord> =>
+  hass.callWS({
+    type: "insteon/aldb/change",
+    record: record,
   });
