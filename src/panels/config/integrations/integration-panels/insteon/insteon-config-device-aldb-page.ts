@@ -75,6 +75,10 @@ class InsteonConfigDeviceALDBPage extends LitElement {
         this._device = device;
         this._getRecords();
       });
+      fetchInsteonALDB(this.hass, this._device_id!).then((aldbInfo) => {
+        this._records = aldbInfo.records;
+        this._schema = aldbInfo.schema;
+      });
     }
   }
 
@@ -311,6 +315,15 @@ class InsteonConfigDeviceALDBPage extends LitElement {
   private async _handleRecordCreate(record: ALDBRecord) {
     createALDBRecord(this.hass, this._device!.address, record);
     this._getRecords();
+  }
+
+  private async _handleDialogResponse(text: string) {
+    await showConfirmationDialog(this, {
+      title: "The title",
+      text: text,
+      confirmText: "We good",
+      dismissText: "We not good",
+    });
   }
 
   private async _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
