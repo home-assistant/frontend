@@ -38,7 +38,7 @@ export class InsteonALDBDataTable extends LitElement {
     outputRecords = outputRecords.map((record) => {
       return {
         ...record,
-        record_id: record.id,
+        record_id: record.mem_addr,
       };
     });
 
@@ -77,7 +77,7 @@ export class InsteonALDBDataTable extends LitElement {
             },
           }
         : {
-            id: {
+            mem_addr: {
               title: "ID",
               sortable: true,
               direction: "desc",
