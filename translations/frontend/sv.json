@@ -19,6 +19,7 @@
         "logbook": "Loggbok",
         "mailbox": "Brevlåda",
         "map": "Karta",
+        "media_browser": "Mediabläddrare",
         "profile": "Profil",
         "shopping_list": "Inköpslista",
         "states": "Översikt"
@@ -606,6 +607,7 @@
                 "learn_adding_local_media": "Läs mer om hur du lägger till media i {documentation} .",
                 "local_media_files": "Placera dina video-, ljud- och bildfiler i mediekatalogen för att kunna bläddra och spela upp dem i webbläsaren eller på mediaspelare som stöds.",
                 "media_browsing_error": "Fel vid mediebläddring",
+                "media_not_supported": "Mediaspelaren i webbläsaren stödjer inte denna typ av media",
                 "media_player": "Mediaspelare",
                 "media-player-browser": "Bläddrare för mediaspelare",
                 "no_items": "Inga objekt",
@@ -1033,6 +1035,7 @@
                                     "after": "Efter",
                                     "before": "Före",
                                     "label": "Tid",
+                                    "type_input": "Värde för en datum-/tidhjälpare",
                                     "type_value": "Satt tid"
                                 },
                                 "zone": {
@@ -1150,6 +1153,7 @@
                                 "time": {
                                     "at": "Tid",
                                     "label": "Tid",
+                                    "type_input": "Värde för en datum-/tidhjälpare",
                                     "type_value": "Satt tid"
                                 },
                                 "webhook": {
@@ -1174,6 +1178,7 @@
                         "delete_automation": "Radera automation",
                         "delete_confirm": "Är du säker på att du vill radera denna automatisering?",
                         "duplicate": "Dublett",
+                        "duplicate_automation": "Dubblett av en automatisering",
                         "edit_automation": "Redigera automation",
                         "header": "Automatiseringseditor",
                         "headers": {
@@ -1255,9 +1260,12 @@
                     },
                     "alexa": {
                         "banner": "Redigering av vilka entiteter som visas via det här användargränssnittet är inaktiverat eftersom du har konfigurerat entitetsfilter i configuration.yaml.",
+                        "dont_expose_entity": "Visa inte entitet",
                         "expose": "Exponera för Alexa",
+                        "expose_entity": "Visa entitet",
                         "exposed_entities": "Exponerade entiteter",
                         "follow_domain": "Följ domän",
+                        "manage_domains": "Hantera domäner",
                         "not_exposed_entities": "Ej exponerade entiteter",
                         "title": ""
                     },
@@ -1295,9 +1303,14 @@
                     "google": {
                         "banner": "Redigera vilka entiteter som visas via det här användargränssnittet är inaktiverat eftersom du har konfigurerat entitetsfilter i configuration.yaml.",
                         "disable_2FA": "Inaktivera tvåfaktorautentisering",
+                        "dont_expose_entity": "Visa inte entitet",
                         "expose": "Exponera för Google Assistant",
+                        "expose_entity": "Visa entitet",
+                        "exposed": "{selected} är exponerad",
                         "exposed_entities": "Exponerade entiteter",
                         "follow_domain": "Följ domän",
+                        "manage_domains": "Hantera domäner",
+                        "not_exposed": "{selected} är inte exponerad",
                         "not_exposed_entities": "Ej exponerade entiteter",
                         "sync_to_google": "Synkroniserar ändringar till Google.",
                         "title": "Google Assistant"
@@ -1399,6 +1412,7 @@
                     }
                 },
                 "devices": {
+                    "add_prompt": "Inget {namn} har lagts till med hjälp av den här enheten ännu. Du kan lägga till en genom att klicka på + knappen ovan.",
                     "automation": {
                         "actions": {
                             "caption": "När något utlöses..."
@@ -1418,6 +1432,7 @@
                     "caption": "Enheter",
                     "confirm_delete": "Är du säker på att du vill ta bort den här enheten?",
                     "confirm_rename_entity_ids": "Vill du också byta namn på entitetens ID för dina enheter?",
+                    "confirm_rename_entity_ids_warning": "Detta kommer inte att ändra någon konfiguration (som automatiseringar, skript, scener, Lovelace) som för närvarande använder dessa entiteter, du måste uppdatera dem själv.",
                     "data_table": {
                         "area": "Område",
                         "battery": "Batteri",
@@ -1586,6 +1601,7 @@
                         "reload_restart_confirm": "Starta om Home Assistant för att slutföra omladdningen av denna integration",
                         "rename": "Döp om",
                         "restart_confirm": "Starta om Home Assistant för att slutföra borttagningen av denna integration",
+                        "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
                         "settings_button": "Redigera inställningar för {integration}",
                         "system_options": "Systemalternativ",
                         "system_options_button": "Systeminställningar för {integration}",
@@ -1785,13 +1801,16 @@
                         "node_count": "{count} noder"
                     },
                     "node_query_stages": {
+                        "complete": "Intervjuprocessen är klar",
                         "configuration": "Hämtar konfigurationsvärden från noden",
                         "dynamic": "Hämtar värden som ofta ändras från noden",
+                        "instances": "Inhämtar detaljer om vilka instanser eller kanaler en enhet stöder",
                         "neighbors": "Hämtar en lista av nodens grannar",
                         "nodeplusinfo": "Hämtar Z-Wave+-information från noden",
                         "probe": "Kontrollera om noden är vaken / levande",
                         "session": "Hämtar värden som sällan ändras från noden",
-                        "static": "Hämtar statiska värden från enheten"
+                        "static": "Hämtar statiska värden från enheten",
+                        "versions": "Inhämtar information om firmware och kommandoklassversioner"
                     },
                     "node": {
                         "button": "Noddetaljer",
@@ -1805,10 +1824,12 @@
                         "zwave_plus": "Z-Wave Plus"
                     },
                     "refresh_node": {
+                        "battery_note": "Om noden är batteridriven, se till att väcka den innan du fortsätter",
                         "button": "Uppdatera nod",
                         "complete": "Uppdatering av noden klar",
                         "node_status": "Nodstatus",
                         "refreshing_description": "Uppdaterar information om noderna...",
+                        "start_refresh_button": "Starta uppdatering",
                         "step": "Steg",
                         "title": "Uppdatera information om noderna",
                         "wakeup_header": "Väckningsinstruktioner för",
@@ -1986,6 +2007,7 @@
                     "add_tag": "Lägg till etikett",
                     "automation_title": "Taggen {name} är skannad",
                     "caption": "Etiketter",
+                    "create_automation": "Skapa automatisering med tagg",
                     "description": "Hantera etiketter",
                     "detail": {
                         "create": "Skapa",
@@ -1993,6 +2015,7 @@
                         "delete": "Ta bort",
                         "description": "Beskrivning",
                         "name": "Namn",
+                        "new_tag": "Ny tagg",
                         "tag_id": "Etikett-ID",
                         "tag_id_placeholder": "Autogenereras när det lämnas tomt",
                         "update": "Uppdatera"
@@ -2487,6 +2510,7 @@
                             "show_name": "Visa namn?",
                             "show_state": "Visa tillstånd?",
                             "state": "Tillstånd",
+                            "state_color": "Färg på ikon baserat på läge?",
                             "tap_action": "Händelse vid klick",
                             "theme": "Tema",
                             "title": "Rubrik",
@@ -2582,6 +2606,7 @@
                         }
                     },
                     "cardpicker": {
+                        "by_card": "Efter Kort",
                         "by_entity": "Efter entitet",
                         "custom_card": "Anpassad",
                         "domain": "Domän",
