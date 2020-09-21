@@ -14,8 +14,6 @@ import { classMap } from "lit-html/directives/class-map";
 
 @customElement("ha-expansion-panel")
 class HaExpansionPanel extends LitElement {
-  @property({ type: String }) title = "";
-
   @property({ type: Boolean }) expanded = false;
 
   protected render(): TemplateResult {
