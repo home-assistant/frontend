@@ -25,16 +25,14 @@ class HaExpansionPanel extends LitElement {
         @click=${this._togglePanel}
       >
         <div class="summary-content">
-          <span class="summary-title">
-            ${this.title}
-          </span>
+          <slot name="title"></slot>
         </div>
         <div class="summary-icon">
           <ha-svg-icon .path=${mdiChevronDown}></ha-svg-icon>
         </div>
       </div>
       <div class="container ${classMap({ expanded: this.expanded })}">
-        <slot></slot>
+        <slot name="content"></slot>
       </div>
     `;
   }
@@ -48,7 +46,6 @@ class HaExpansionPanel extends LitElement {
     return css`
       :host {
         display: block;
-        width: 100%;
         box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2),
           0px 1px 1px 0px rgba(0, 0, 0, 0.14),
           0px 1px 3px 0px rgba(0, 0, 0, 0.12);
@@ -76,10 +73,8 @@ class HaExpansionPanel extends LitElement {
         overflow: hidden;
       }
 
-      .summary-title {
-        margin: 0;
-        line-height: 1.2;
-        overflow: hidden;
+      ::slotted([slot="title"]) {
+        display: flex;
       }
 
       .summary-icon {
@@ -101,9 +96,8 @@ class HaExpansionPanel extends LitElement {
         height: auto;
       }
 
-      slot {
-        display: block;
-        padding: 8px 16px 16px;
+      ::slotted([slot="content"]) {
+        padding: 8px;
       }
     `;
   }
