@@ -587,7 +587,11 @@
                     "playlist": "Playlist",
                     "server": "Server"
                 },
+                "documentation": "Dokumentation",
+                "local_media_files": "Platziere deine Video-, Audio- und Bilddateien im Medienverzeichnis, um sie im Browser oder auf unterstützten Mediaplayern durchsuchen und abspielen zu können.",
                 "no_items": "Keine Einträge",
+                "no_local_media_found": "Keine lokalen Medien gefunden",
+                "no_media_folder": "Es sieht so aus, als hätten Sie noch kein Medienverzeichnis erstellt.",
                 "play": "Abspielen",
                 "video_not_supported": "Ihr Browser unterstützt das Videoelement nicht."
             },
@@ -2839,7 +2843,7 @@
                     "name": "Name",
                     "not_used": "Wurde noch nie benutzt",
                     "prompt_copy_token": "Kopiere deinen Zugangs-Token. Er wird nicht wieder angezeigt werden.",
-                    "prompt_name": "Name?"
+                    "prompt_name": "Gib den Token einen Namen"
                 },
                 "mfa_setup": {
                     "close": "Schließen",
