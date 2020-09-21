@@ -29,7 +29,7 @@ class HaExpansionPanel extends LitElement {
           </span>
         </div>
         <div class="summary-icon ${this.expanded ? "expanded" : ""}">
-          <ha-svg-icon path=${mdiChevronDown}></ha-svg-icon>
+          <ha-svg-icon .path=${mdiChevronDown}></ha-svg-icon>
         </div>
       </div>
       <div class="container ${this.expanded ? "expanded" : ""}">
