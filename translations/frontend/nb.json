@@ -576,26 +576,26 @@
                 "choose_player": "Velg spiller",
                 "choose-source": "Velg kilde",
                 "class": {
-                    "album": "Album",
-                    "app": "App",
-                    "artist": "Artist",
+                    "album": "",
+                    "app": "",
+                    "artist": "",
                     "channel": "Kanal",
                     "composer": "Komponist",
                     "contributing_artist": "Medvirkende artist",
                     "directory": "Bibliotek",
-                    "episode": "Episode",
+                    "episode": "",
                     "game": "Spill",
                     "genre": "Sjanger",
                     "image": "Bilde",
                     "movie": "Film",
                     "music": "Musikk",
                     "playlist": "Spilleliste",
-                    "podcast": "Podcast",
+                    "podcast": "",
                     "season": "Sesong",
                     "track": "Spor",
                     "tv_show": "TV Serie",
-                    "url": "Url",
-                    "video": "Video"
+                    "url": "",
+                    "video": ""
                 },
                 "content-type": {
                     "album": "Album",
@@ -605,7 +605,7 @@
                     "server": "Server"
                 },
                 "documentation": "dokumentasjon",
-                "learn_adding_local_media": "Lær mer om å legge til medier i {documentation} .",
+                "learn_adding_local_media": "Lær mer om å legge til medier i {documentation}.",
                 "local_media_files": "Plasser video-, lyd- og bildefilene dine i mediekatalogen for å kunne bla gjennom og spille dem av i nettleseren eller på støttede mediaspillere.",
                 "media_browsing_error": "Feil ved medievisning",
                 "media_not_supported": "Browser Media Player støtter ikke denne typen medier",
@@ -1601,11 +1601,11 @@
                         "no_devices": "Denne integrasjonen har ingen enheter.",
                         "options": "Alternativer",
                         "reload": "Last inn på nytt",
-                        "reload_confirm": "integrasjonen ble lastet på nytt",
+                        "reload_confirm": "Integrasjonen ble lastet på nytt",
                         "reload_restart_confirm": "Start Home Assistant på nytt for å fullføre omlastingen av denne integrasjonen",
                         "rename": "Gi nytt navn",
                         "restart_confirm": "Start Home Assistant på nytt for å fullføre fjerningen av denne integrasjonen",
-                        "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
+                        "services": "{count} {count, plural,\n  one {tjeneste}\n  other {tjenester}\n}",
                         "settings_button": "Rediger innstillinger for {integration}",
                         "system_options": "Systemalternativer",
                         "system_options_button": "Systemalternativer for {integration}",
@@ -1827,16 +1827,16 @@
                         "wakeup": "Sette opp støtte for vekkingskøer og meldinger"
                     },
                     "node": {
-                        "button": "Node Detaljer",
+                        "button": "Node detaljer",
                         "not_found": "Finner ikke noden"
                     },
                     "nodes_table": {
                         "failed": "Mislyktes",
-                        "id": "ID",
+                        "id": "",
                         "manufacturer": "Produsent",
                         "model": "Modell",
                         "query_stage": "Spørringsstadiet",
-                        "zwave_plus": "Z-Wave Plus"
+                        "zwave_plus": "Z-Wave Pluss"
                     },
                     "refresh_node": {
                         "battery_note": "Hvis noden er batteridrevet, må du passe på å vekke den før du fortsetter",
@@ -1987,8 +1987,8 @@
                             "core": "Last inn lokasjon og spesialtilpassinger på nytt",
                             "filesize": "Last inn filstørrelse entiteter på nytt",
                             "filter": "Last inn filter entiteter på nytt",
-                            "generic": "Last inn generiske IP-kamera entiteter på nytt",
-                            "generic_thermostat": "Last inn generiske termostat entiteter på nytt",
+                            "generic": "Last inn generisk IP-kamera entiteter på nytt",
+                            "generic_thermostat": "Last inn generisk termostat entiteter på nytt",
                             "group": "Laste inn grupper, gruppere enheter og varsle tjenester på nytt",
                             "heading": "YAML -Konfigurasjon lastes på nytt",
                             "history_stats": "Last inn historiske tilstander på nytt",

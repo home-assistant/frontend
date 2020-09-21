@@ -587,7 +587,11 @@
                     "playlist": "Playlist",
                     "server": "Server"
                 },
+                "documentation": "Dokumentation",
+                "local_media_files": "Platziere deine Video-, Audio- und Bilddateien im Medienverzeichnis, um sie im Browser oder auf unterstützten Mediaplayern durchsuchen und abspielen zu können.",
                 "no_items": "Keine Einträge",
+                "no_local_media_found": "Keine lokalen Medien gefunden",
+                "no_media_folder": "Es sieht so aus, als hätten Sie noch kein Medienverzeichnis erstellt.",
                 "play": "Abspielen",
                 "video_not_supported": "Ihr Browser unterstützt das Videoelement nicht."
             },
@@ -1415,7 +1419,7 @@
                 },
                 "entities": {
                     "caption": "Entitäten",
-                    "description": "Überblick aller bekannten Elemente.",
+                    "description": "Bekannte Entitäten verwalten",
                     "picker": {
                         "disable_selected": {
                             "button": "Ausgewählte deaktivieren",
@@ -1859,7 +1863,7 @@
                         "reloading": {
                             "automation": "Automatisierungen neu laden",
                             "core": "Ort & Anpassungen neu laden",
-                            "group": "Gruppen neu laden",
+                            "group": "Gruppen, Gruppenentitäten und Benachrichtigungsdienste neu laden",
                             "heading": "Neuladen der YAML-Konfiguration",
                             "homekit": "HomeKit neu laden",
                             "input_boolean": "Eingabe-Booleans neu laden",
@@ -1869,6 +1873,7 @@
                             "input_text": "Eingabetexte neu laden",
                             "introduction": "Einige Komponenten von Home Assistant können ohne einen Neustart neu geladen werden. \"Neu laden\" entlädt dabei die aktuelle Konfiguration und lädt die neue Konfiguration.",
                             "person": "Personen neu laden",
+                            "rest": "Rest Entitäten und Benachrichtigungsdienste neu laden",
                             "scene": "Szenen neu laden",
                             "script": "Skripte neu laden",
                             "telegram": "Telegram-Benachrichtigungsdienste neu laden",
@@ -2838,7 +2843,7 @@
                     "name": "Name",
                     "not_used": "Wurde noch nie benutzt",
                     "prompt_copy_token": "Kopiere deinen Zugangs-Token. Er wird nicht wieder angezeigt werden.",
-                    "prompt_name": "Name?"
+                    "prompt_name": "Gib den Token einen Namen"
                 },
                 "mfa_setup": {
                     "close": "Schließen",

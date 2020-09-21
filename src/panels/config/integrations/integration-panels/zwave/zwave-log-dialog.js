@@ -10,6 +10,9 @@ class ZwaveLogDialog extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="ha-style-dialog">
+      pre {
+        font-family: var(--code-font-family, monospace);
+      }
     </style>
       <ha-paper-dialog id="pwaDialog" with-backdrop="" opened="{{_opened}}">
         <h2>OpenZwave internal logfile</h2>

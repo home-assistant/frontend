@@ -91,6 +91,9 @@ export const entitiesConfigStruct = union([
     secondary_info: optional(string()),
     format: optional(string()),
     state_color: optional(boolean()),
+    tap_action: optional(actionConfigStruct),
+    hold_action: optional(actionConfigStruct),
+    double_tap_action: optional(actionConfigStruct),
   }),
   EntityId,
 ]);
