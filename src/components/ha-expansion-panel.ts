@@ -60,22 +60,9 @@ class HaExpansionPanel extends LitElement {
         min-height: 48px;
         transition: min-height 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
           background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-        color: inherit;
-        border: 0;
-        cursor: pointer;
-        margin: 0;
-        outline: 0;
         position: relative;
         align-items: center;
-        user-select: none;
-        border-radius: 0;
-        vertical-align: middle;
-        -moz-appearance: none;
-        justify-content: center;
-        text-decoration: none;
-        background-color: transparent;
-        -webkit-appearance: none;
-        -webkit-tap-highlight-color: transparent;
+        cursor: pointer;
       }
       .summary.expanded {
         min-height: 64px;
