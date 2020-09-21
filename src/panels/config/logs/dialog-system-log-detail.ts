@@ -203,6 +203,7 @@ class DialogSystemLogDetail extends LitElement {
         }
         pre {
           margin-bottom: 0;
+          font-family: var(--code-font-family, monospace);
         }
         .heading {
           display: flex;

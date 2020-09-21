@@ -29,6 +29,10 @@ class ZwaveUsercodes extends PolymerElement {
           padding-right: 24px;
           padding-bottom: 24px;
         }
+
+        pre {
+          font-family: var(--code-font-family, monospace);
+        }
       </style>
       <div class="content">
         <ha-card header="Node user codes">
