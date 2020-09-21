@@ -1,29 +1,26 @@
 import {
   customElement,
-  property,
   internalProperty,
+  property,
   PropertyValues,
   UpdatingElement,
 } from "lit-element";
-
-import { getLovelaceViewElement } from "./get-view";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { processConfigEntities } from "../common/process-config-entities";
-import { createBadgeElement } from "../create-element/create-badge-element";
-import { createCardElement } from "../create-element/create-card-element";
-
-import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
-import type { HomeAssistant } from "../../../types";
-import type { HuiErrorCard } from "../cards/hui-error-card";
+import "../../../components/entity/ha-state-label-badge";
+import "../../../components/ha-svg-icon";
 import type {
   LovelaceBadgeConfig,
   LovelaceCardConfig,
   LovelaceViewConfig,
   LovelaceViewElement,
 } from "../../../data/lovelace";
-
-import "../../../components/entity/ha-state-label-badge";
-import "../../../components/ha-svg-icon";
+import type { HomeAssistant } from "../../../types";
+import type { HuiErrorCard } from "../cards/hui-error-card";
+import { processConfigEntities } from "../common/process-config-entities";
+import { createBadgeElement } from "../create-element/create-badge-element";
+import { createCardElement } from "../create-element/create-card-element";
+import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
+import { getLovelaceViewElement } from "./get-view";
 
 const DEFAULT_VIEW_LAYOUT = "masonry";
 const PANEL_VIEW_LAYOUT = "panel";
@@ -78,7 +75,13 @@ export class HUIView extends UpdatingElement {
 
     const hass = this.hass!;
     const lovelace = this.lovelace!;
-    const viewConfig = lovelace.config.views[this.index!];
+    let viewConfig = lovelace.config.views[this.index!];
+    viewConfig = {
+      ...viewConfig,
+      type: viewConfig.panel
+        ? PANEL_VIEW_LAYOUT
+        : viewConfig.type || DEFAULT_VIEW_LAYOUT,
+    };
     const hassChanged = changedProperties.has("hass");
     const oldLovelace = changedProperties.get("lovelace") as Lovelace;
 
@@ -94,11 +97,9 @@ export class HUIView extends UpdatingElement {
     }
 
     if (configChanged && !this._layoutElement) {
-      this._layoutElement = getLovelaceViewElement(
-        viewConfig.panel
-          ? PANEL_VIEW_LAYOUT
-          : viewConfig.layout || DEFAULT_VIEW_LAYOUT
-      );
+      this._layoutElement = getLovelaceViewElement({
+        ...viewConfig,
+      });
     }
 
     if (configChanged) {

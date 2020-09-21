@@ -4,13 +4,13 @@ import {
   HassEventBase,
 } from "home-assistant-js-websocket";
 import { HASSDomEvent } from "../common/dom/fire_event";
-import { HomeAssistant } from "../types";
-import {
-  LovelaceCard,
-  LovelaceBadge,
-  Lovelace,
-} from "../panels/lovelace/types";
 import { HuiErrorCard } from "../panels/lovelace/cards/hui-error-card";
+import {
+  Lovelace,
+  LovelaceBadge,
+  LovelaceCard,
+} from "../panels/lovelace/types";
+import { HomeAssistant } from "../types";
 
 export interface LovelacePanelConfig {
   mode: "yaml" | "storage";
@@ -75,7 +75,7 @@ export interface LovelaceDashboardCreateParams
 export interface LovelaceViewConfig {
   index?: number;
   title?: string;
-  layout?: string;
+  type?: string;
   badges?: Array<string | LovelaceBadgeConfig>;
   cards?: LovelaceCardConfig[];
   path?: string;

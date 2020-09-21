@@ -1,22 +1,23 @@
+import { mdiPlus } from "@mdi/js";
 import {
+  css,
+  CSSResult,
+  html,
+  LitElement,
   property,
   PropertyValues,
   TemplateResult,
-  html,
-  LitElement,
-  css,
-  CSSResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
-import { mdiPlus } from "@mdi/js";
-
-import type { HomeAssistant } from "../../../types";
-import type { Lovelace, LovelaceCard } from "../types";
-import type { LovelaceViewElement } from "../../../data/lovelace";
-
-import { HuiErrorCard } from "../cards/hui-error-card";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import type {
+  LovelaceViewConfig,
+  LovelaceViewElement,
+} from "../../../data/lovelace";
+import type { HomeAssistant } from "../../../types";
+import { HuiErrorCard } from "../cards/hui-error-card";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
+import type { Lovelace, LovelaceCard } from "../types";
 
 let editCodeLoaded = false;
 
@@ -39,6 +40,8 @@ export class PanelView extends LitElement implements LovelaceViewElement {
     super();
     this.style.setProperty("background", "var(--lovelace-background)");
   }
+
+  public setConfig(_config: LovelaceViewConfig): void {}
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
@@ -138,8 +141,8 @@ export class PanelView extends LitElement implements LovelaceViewElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ll-view-panel": PanelView;
+    "hui-panel-view": PanelView;
   }
 }
 
-customElements.define("ll-view-panel", PanelView);
+customElements.define("hui-panel-view", PanelView);

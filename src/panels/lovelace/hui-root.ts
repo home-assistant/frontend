@@ -58,6 +58,7 @@ import { swapView } from "./editor/config-util";
 import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovelace-dialog";
 import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import type { Lovelace } from "./types";
+import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
 
 class HUIRoot extends LitElement {
@@ -665,7 +666,6 @@ class HUIRoot extends LitElement {
     } else {
       view = document.createElement("hui-view");
       view.index = viewIndex;
-      // view.columns = this.columns;
       this._viewCache![viewIndex] = view;
     }
 

@@ -1,27 +1,27 @@
+import { mdiPlus } from "@mdi/js";
 import {
+  css,
+  CSSResult,
   html,
   LitElement,
   property,
   PropertyValues,
   TemplateResult,
-  CSSResult,
-  css,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
-import { mdiPlus } from "@mdi/js";
-
 import { computeRTL } from "../../../common/util/compute_rtl";
-import { computeCardSize } from "../common/compute-card-size";
 import { nextRender } from "../../../common/util/render-status";
-import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-
-import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
-import type { LovelaceViewElement } from "../../../data/lovelace";
+import "../../../components/entity/ha-state-label-badge";
+import "../../../components/ha-svg-icon";
+import type {
+  LovelaceViewConfig,
+  LovelaceViewElement,
+} from "../../../data/lovelace";
 import type { HomeAssistant } from "../../../types";
 import type { HuiErrorCard } from "../cards/hui-error-card";
-
-import "../../../components/ha-svg-icon";
-import "../../../components/entity/ha-state-label-badge";
+import { computeCardSize } from "../common/compute-card-size";
+import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
+import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
 
 let editCodeLoaded = false;
 
@@ -69,6 +69,8 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     this.addEventListener("iron-resize", (ev: Event) => ev.stopPropagation());
   }
 
+  public setConfig(_config: LovelaceViewConfig): void {}
+
   protected render(): TemplateResult {
     return html`
       <div
@@ -99,7 +101,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
   protected firstUpdated(): void {
     this._mqls = [300, 600, 900, 1200].map((width) => {
       const mql = matchMedia(`(min-width: ${width}px)`);
-      mql.addListener(this._updateColumns);
+      mql.addEventListener("change", this._updateColumns);
       return mql;
     });
   }
@@ -300,8 +302,8 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ll-view-masonry": MasonryView;
+    "hui-masonry-view": MasonryView;
   }
 }
 
-customElements.define("ll-view-masonry", MasonryView);
+customElements.define("hui-masonry-view", MasonryView);
