@@ -505,6 +505,7 @@
             "back": "Tillbaka",
             "cancel": "Avbryt",
             "close": "Stäng",
+            "continue": "Fortsätt",
             "delete": "Radera",
             "error_required": "Krävs",
             "loading": "Läser in",
@@ -688,8 +689,11 @@
                 "crop": "Beskär"
             },
             "more_info_control": {
+                "controls": "Kontroller",
+                "details": "Detaljer",
                 "dismiss": "Avfärda",
                 "edit": "Redigera entitet",
+                "history": "Historik",
                 "person": {
                     "create_zone": "Skapa zon från aktuell plats"
                 },
@@ -1574,6 +1578,7 @@
                     "none_found_detail": "Justera dina sökkriterier.",
                     "note_about_integrations": "Inte alla integrationer kan konfigureras via användargränssnittet ännu.",
                     "note_about_website_reference": "Fler finns på ",
+                    "reconfigure": "Konfigurera om",
                     "rename_dialog": "Redigera namnet på den här konfigurationsposten",
                     "rename_input_label": "Ange namn",
                     "search": "Sök integrationer"
@@ -1723,6 +1728,9 @@
                         "probe": "Kontrollera om noden är vaken / levande",
                         "session": "Hämtar värden som sällan ändras från noden",
                         "static": "Hämtar statiska värden från enheten"
+                    },
+                    "nodes_table": {
+                        "id": "ID"
                     },
                     "refresh_node": {
                         "complete": "Uppdatering av noden klar",
@@ -1875,6 +1883,7 @@
                             "input_text": "Ladda om inmatningstext",
                             "introduction": "Vissa delar av Home Assistant kan laddas om utan att en omstart krävs. Att trycka på \"ladda om\" innebär att den nuvarande konfiguration inaktiveras och den nya laddas.",
                             "person": "Ladda om personer",
+                            "rpi_gpio": "Ladda om Raspberry Pi GPIO-entiteter",
                             "scene": "Ladda om scenarier",
                             "script": "Ladda om skript",
                             "template": "Ladda om mallar för entiteter",
@@ -1923,6 +1932,8 @@
                         "create": "Skapa",
                         "name": "Namn",
                         "password": "Lösenord",
+                        "password_confirm": "Bekräfta lösenord",
+                        "password_not_match": "Lösenorden överensstämmer inte",
                         "username": "Användarnamn"
                     },
                     "caption": "Användare",
@@ -1939,7 +1950,9 @@
                         "group": "Grupp",
                         "id": "ID",
                         "name": "Namn",
+                        "new_password": "Nytt lösenord",
                         "owner": "Ägare",
+                        "password_changed": "Lösenordet har ändrats!",
                         "system_generated": "Skapad av systemet",
                         "system_generated_users_not_editable": "Det gick inte att uppdatera systemgenererade användare.",
                         "system_generated_users_not_removable": "Det går inte att ta bort användare som skapats av systemet.",
@@ -2485,6 +2498,8 @@
                     },
                     "cardpicker": {
                         "custom_card": "Anpassad",
+                        "domain": "Domän",
+                        "entity": "Entitet",
                         "no_description": "Ingen beskrivning finns tillgänglig."
                     },
                     "edit_card": {
@@ -2818,6 +2833,9 @@
                     "submit": "Skicka"
                 },
                 "current_user": "Du är inloggad som {fullName}.",
+                "customize_sidebar": {
+                    "button": "Redigera"
+                },
                 "dashboard": {
                     "description": "Välj en standardpanel för den här enheten.",
                     "dropdown_label": "Instrumentpanel",

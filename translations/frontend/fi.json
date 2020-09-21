@@ -505,6 +505,8 @@
             "back": "Takaisin",
             "cancel": "Peruuta",
             "close": "Sulje",
+            "continue": "Jatka",
+            "copied": "Kopioitu",
             "delete": "Poista",
             "error_required": "Pakollinen",
             "loading": "Ladataan",
@@ -551,6 +553,10 @@
                 "toggle": "Vaihda"
             },
             "entity": {
+                "entity-attribute-picker": {
+                    "attribute": "Määrite",
+                    "show_attributes": "Näytä määritteet"
+                },
                 "entity-picker": {
                     "clear": "Tyhjennä",
                     "entity": "Kohde",
@@ -562,7 +568,27 @@
                 "no_history_found": "Tilahistoriaa ei löydetty"
             },
             "media-browser": {
+                "audio_not_supported": "Selaimesi ei tue audioelementtiä.",
+                "choose_player": "Valitse soitin",
                 "choose-source": "Valitse lähde",
+                "class": {
+                    "album": "Albumi",
+                    "app": "Sovellus",
+                    "artist": "Artisti",
+                    "channel": "Kanava",
+                    "directory": "Kirjasto",
+                    "episode": "Jakso",
+                    "game": "Peli",
+                    "genre": "Genre",
+                    "image": "Kuva",
+                    "movie": "Elokuva",
+                    "music": "Musiikki",
+                    "playlist": "Soittolista",
+                    "season": "Kausi",
+                    "tv_show": "TV-ohjelma",
+                    "url": "URL",
+                    "video": "Video"
+                },
                 "content-type": {
                     "album": "Albumi",
                     "artist": "Artisti",
@@ -570,12 +596,15 @@
                     "playlist": "Soittolista",
                     "server": "Palvelin"
                 },
+                "media_player": "Mediatoistin",
                 "media-player-browser": "Media Player -selain",
                 "no_items": "Ei kohteita",
                 "pick": "Valitse",
                 "pick-media": "Valitse media",
                 "play": "Toista",
-                "play-media": "Toista media"
+                "play-media": "Toista media",
+                "video_not_supported": "Selaimesi ei tue videoelementtiä.",
+                "web-browser": "Selain"
             },
             "related-items": {
                 "area": "Alue",
@@ -681,8 +710,10 @@
                 "yaml_not_editable": "Tämän kohteen asetuksia ei voi muokata käyttöliittymästä. Vain käyttöliittymästä määritetyt kohteet ovat määritettävissä käyttöliittymästä."
             },
             "more_info_control": {
+                "details": "Yksityiskohdat",
                 "dismiss": "Sulje ikkuna",
                 "edit": "Muokkaa kohdetta",
+                "history": "Historia",
                 "person": {
                     "create_zone": "Luo vyöhyke nykyisestä sijainnista"
                 },
@@ -1192,6 +1223,7 @@
                         "banner": "Tämän käyttöliittymän kautta näkyvien kohteiden muokkaaminen on poistettu käytöstä, koska olet määrittänyt kohdesuodattimet kohteessa configuration.yaml.",
                         "expose": "Julkista Alexalle",
                         "exposed_entities": "Julkistetut kohteet",
+                        "manage_domains": "Hallitse toimialueita",
                         "not_exposed_entities": "eJulk",
                         "title": "Alexa"
                     },
@@ -1231,6 +1263,7 @@
                         "disable_2FA": "Poista kaksivaiheinen tunnistautuminen",
                         "expose": "Julkista Google Assistantille",
                         "exposed_entities": "Julkistetut kohteet",
+                        "manage_domains": "Hallitse toimialueita",
                         "not_exposed_entities": "Julkistamattomat kohteet",
                         "sync_to_google": "Synkronoidaan muutokset Googleen.",
                         "title": "Google Assistant"
@@ -1563,6 +1596,7 @@
                     "none_found_detail": "Muokkaa haku ehtojasi",
                     "note_about_integrations": "Kaikkia integraatioita ei voi vielä määrittää käyttöliittymän kautta.",
                     "note_about_website_reference": "Lisää saatavilla",
+                    "reconfigure": "Määritä uudelleen",
                     "rename_dialog": "Muokkaa tämän määritysmerkinnän nimeä",
                     "rename_input_label": "Merkinnän nimi",
                     "search": "Etsi integraatioita"
@@ -1676,6 +1710,8 @@
                     "button": "Määrittele",
                     "common": {
                         "controller": "Ohjain",
+                        "instance": "Instanssi",
+                        "network": "Verkko",
                         "node_id": "Solmun tunnus",
                         "ozw_instance": "OpenZWave-instanssi",
                         "zwave": "Z-Wave"
@@ -1686,10 +1722,13 @@
                         "zwave_info": "Z-Wave-tiedot"
                     },
                     "navigation": {
-                        "nodes": "Solmut"
+                        "network": "Verkko",
+                        "nodes": "Solmut",
+                        "select_instance": "Valitse instanssi"
                     },
                     "network_status": {
                         "details": {
+                            "ready": "Valmis yhdistämään",
                             "started": "Yhdistetty MQTT:hen",
                             "starting": "Yhdistetään MQTT:hen",
                             "stopped": "OpenZWave pysähtyi"
@@ -1700,7 +1739,18 @@
                         "unknown": "Tuntematon"
                     },
                     "network": {
-                        "header": "Verkon hallinta"
+                        "header": "Verkon hallinta",
+                        "node_count": "{count} solmua"
+                    },
+                    "nodes_table": {
+                        "failed": "Epäonnistui",
+                        "id": "ID",
+                        "manufacturer": "Valmistaja",
+                        "model": "Malli",
+                        "zwave_plus": "Z-Wave Plus"
+                    },
+                    "refresh_node": {
+                        "button": "Päivitä solmu"
                     },
                     "select_instance": {
                         "header": "Valitse OpenZWave"
@@ -2201,7 +2251,9 @@
                     },
                     "templates": {
                         "description": "Mallit tehdään Jinja2-mallimoottorilla, joissa on joitain Home Assistant -kohtaisia laajennuksia.",
+                        "domain": "Toimialue",
                         "editor": "Mallieditori",
+                        "entity": "Kohde",
                         "jinja_documentation": "Jinja2-mallin dokumentaatio",
                         "template_extensions": "Home Assistant -mallilaajennukset",
                         "title": "Malli",
@@ -2449,6 +2501,7 @@
                     },
                     "cardpicker": {
                         "custom_card": "Mukautettu",
+                        "domain": "Toimialue",
                         "no_description": "Ei kuvausta saatavilla."
                     },
                     "edit_card": {
@@ -2781,6 +2834,10 @@
                     "submit": "Lähetä"
                 },
                 "current_user": "Olet tällä hetkellä kirjautuneena tunnuksella {fullName}.",
+                "customize_sidebar": {
+                    "button": "Muokkaa",
+                    "header": "Muuta järjestystä ja piiloita kohteita sivupalkista"
+                },
                 "dashboard": {
                     "description": "Valitse oletuskojelauta tälle laitteelle",
                     "dropdown_label": "Kojelauta",
@@ -2803,6 +2860,7 @@
                     "confirm_delete": "Haluatko varmasti poistaa {name} käyttöoikeustunnuksen?",
                     "create": "Luo token",
                     "create_failed": "Käyttötunnussanoman luominen epäonnistui.",
+                    "created": "Luotu {date}",
                     "created_at": "Luotu {date}",
                     "delete_failed": "Käyttötunnussanoman poistaminen epäonnistui.",
                     "description": "Luo pitkäikäisiä käyttöoikeustunnuksia, jotta komentosarjasi voivat vuorovaikuttaa Home Assistantin kanssa. Jokainen tunnus on voimassa 10 vuotta luomisesta. Seuraavat pitkäikäiset käyttöoikeustunnukset ovat tällä hetkellä käytössä.",
@@ -2810,6 +2868,7 @@
                     "header": "Pitkäaikaiset käyttötunnussanomat",
                     "last_used": "Viimeksi käytetty {date} sijainnista {location}",
                     "learn_auth_requests": "Opi tekemään tunnistautuneita kutsuja.",
+                    "name": "Nimi",
                     "not_used": "Ei ole koskaan käytetty",
                     "prompt_copy_token": "Kopioi käyttöoikeuskoodi. Sitä ei näytetä uudelleen.",
                     "prompt_name": "Nimi?"
@@ -2876,6 +2935,7 @@
             }
         },
         "sidebar": {
+            "done": "Valmis",
             "external_app_configuration": "Sovelluksen määritykset",
             "sidebar_toggle": "Sivupalkin kytkin"
         }

@@ -507,6 +507,7 @@
             "cancel": "Annuleren",
             "close": "Sluiten",
             "continue": "Ga verder",
+            "copied": "Gekopieerd",
             "delete": "Verwijderen",
             "error_required": "Verplicht",
             "loading": "Bezig met laden",
@@ -574,6 +575,28 @@
                 "audio_not_supported": "Uw browser ondersteunt het audio-element niet.",
                 "choose_player": "Kies speler",
                 "choose-source": "Kies bron",
+                "class": {
+                    "album": "Album",
+                    "app": "App",
+                    "artist": "Artiest",
+                    "channel": "Kanaal",
+                    "composer": "Componist",
+                    "contributing_artist": "Bijdragende artiest",
+                    "directory": "Bibliotheek",
+                    "episode": "Aflevering",
+                    "game": "Spel",
+                    "genre": "Genre",
+                    "image": "Afbeelding",
+                    "movie": "Film",
+                    "music": "Muziek",
+                    "playlist": "Afspeellijst",
+                    "podcast": "Podcast",
+                    "season": "Seizoen",
+                    "track": "Nummer",
+                    "tv_show": "TV-programma",
+                    "url": "Url",
+                    "video": "Video"
+                },
                 "content-type": {
                     "album": "Album",
                     "artist": "Artiest",
@@ -581,15 +604,21 @@
                     "playlist": "Afspeellijst",
                     "server": "Server"
                 },
+                "documentation": "documentatie",
+                "learn_adding_local_media": "Leer meer over media toevoegen in de {documentatie}.",
+                "local_media_files": "Plaats je video, audio en foto bestanden in de media map om bestanden te kunnen doorzoeken en afspelen in de browser of op ondersteunde mediaspelers.",
                 "media_browsing_error": "Fout bij bladeren door media",
                 "media_not_supported": "De Browser Media Player ondersteunt dit type media niet",
                 "media_player": "Mediaspeler",
                 "media-player-browser": "Mediaspeler-browser",
                 "no_items": "Niets gevonden",
+                "no_local_media_found": "Geen lokale media gevonden",
+                "no_media_folder": "Het lijkt erop dat je nog geen media map hebt gemaakt.",
                 "pick": "Kies",
                 "pick-media": "Kies Media",
                 "play": "Speel",
                 "play-media": "Media afspelen",
+                "setup_local_help": "Raadpleeg de {documentatie} voor het instellen van lokale media.",
                 "video_not_supported": "Uw browser ondersteunt het video-element niet.",
                 "web-browser": "Webbrowser"
             },
@@ -2352,9 +2381,14 @@
                         "title": "Toestanden"
                     },
                     "templates": {
+                        "all_listeners": "Deze template luistert naar alle gebeurtenissen met gewijzigde status.",
                         "description": "Sjablonen worden weergegeven met de Jinja2-sjabloonediter samen met enkele extensies van Home Assistant.",
+                        "domain": "Domein",
                         "editor": "Sjabloonediter",
+                        "entity": "Entiteit",
                         "jinja_documentation": "Jinja2-sjabloondocumentatie",
+                        "listeners": "Deze template luistert naar de volgende gebeurtenissen met gewijzigde status:",
+                        "no_listeners": "Deze template luistert niet naar gebeurtenissen met statuswijziging en wordt niet automatisch bijgewerkt.",
                         "reset": "Resetten naar demosjabloon",
                         "template_extensions": "Home Assistant sjabloon extensiesHome Assistant",
                         "title": "Sjablonen",
@@ -2664,7 +2698,7 @@
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "We zullen je Lovelace gebruikersinterface automatisch genereren met je gebieden en apparaten als je de huidige Lovelace gebruikersinterface verwijdert.",
-                        "confirm_remove_config_title": "Weet je zeker dat je de huidige Lovelace gebruikersinterface wilt verwijderen? We zullen automatisch een nieuwe Lovelace gebruikersinterface genereren op basis van je gebieden en apparaten.",
+                        "confirm_remove_config_title": "Weet u zeker dat u uw Lovelace UI-configuratie wilt verwijderen?",
                         "confirm_unsaved_changes": "Er zijn nog niet-opgeslagen wijzigingen, weet je zeker dat je wilt afsluiten?",
                         "confirm_unsaved_comments": "Uw configuratie bevat opmerkingen, deze worden niet opgeslagen. Wil je doorgaan?",
                         "error_invalid_config": "Uw configuratie is niet geldig: {error}",
@@ -2941,6 +2975,11 @@
                     "submit": "Verzenden"
                 },
                 "current_user": "Je bent momenteel ingelogd als {fullName}.",
+                "customize_sidebar": {
+                    "button": "Bewerken",
+                    "description": "U kunt ook de koptekst van de zijbalk ingedrukt houden om de bewerkingsmodus te activeren.",
+                    "header": "Wijzig de volgorde en verberg items van de zijbalk"
+                },
                 "dashboard": {
                     "description": "Kies een standaard dashboard voor dit apparaat.",
                     "dropdown_label": "Dashboard",
@@ -2963,6 +3002,7 @@
                     "confirm_delete": "Weet je zeker dat je de toegangstoken voor {name} wilt verwijderen?",
                     "create": "Token aanmaken",
                     "create_failed": "De toegangstoken kon niet worden aangemaakt.",
+                    "created": "Gemaakt op {date}",
                     "created_at": "Gemaakt op {date}",
                     "delete_failed": "Verwijderen van de toegangstoken is mislukt.",
                     "description": "Maak toegangstokens met een lange levensduur zodat je scripts kunnen communiceren met je Home Assistant-instantie. Elk token is tien jaar geldig vanaf de aanmaakdatum. De volgende langlevende toegangstokens zijn momenteel actief.",
@@ -2970,9 +3010,10 @@
                     "header": "Toegangtokens met lange levensduur",
                     "last_used": "Laatst gebruikt op {date} vanaf {location}",
                     "learn_auth_requests": "Kom te weten hoe je geverifieerde verzoeken kunt maken",
+                    "name": "Naam",
                     "not_used": "Is nog nooit gebruikt",
                     "prompt_copy_token": "Kopieer je toegangstoken. Het wordt niet meer getoond.",
-                    "prompt_name": "Naam?"
+                    "prompt_name": "Geef het token een naam"
                 },
                 "mfa_setup": {
                     "close": "Sluiten",
@@ -3036,6 +3077,7 @@
             }
         },
         "sidebar": {
+            "done": "Klaar",
             "external_app_configuration": "App configuratie",
             "sidebar_toggle": "Zijbalk in- en uitschakelen"
         }

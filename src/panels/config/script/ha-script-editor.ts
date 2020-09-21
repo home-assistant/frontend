@@ -1,44 +1,47 @@
+import "@material/mwc-fab";
+import { mdiContentSave } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "../../../components/ha-icon-button";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
+import { PaperListboxElement } from "@polymer/paper-listbox";
 import {
   css,
   CSSResult,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { navigate } from "../../../common/navigate";
+import { slugify } from "../../../common/string/slugify";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-card";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-input";
-import "@material/mwc-fab";
+import "../../../components/ha-svg-icon";
 import {
   Action,
   deleteScript,
   getScriptEditorInitData,
-  ScriptConfig,
   MODES,
   MODES_MAX,
+  ScriptConfig,
+  triggerScript,
 } from "../../../data/script";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/ha-app-layout";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
+import { showToast } from "../../../util/toast";
 import "../automation/action/ha-automation-action";
 import { HaDeviceAction } from "../automation/action/types/ha-automation-action-device_id";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
-import "../../../components/ha-svg-icon";
-import { mdiContentSave } from "@mdi/js";
-import { PaperListboxElement } from "@polymer/paper-listbox";
-import { slugify } from "../../../common/string/slugify";
 
 export class HaScriptEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -146,7 +149,10 @@ export class HaScriptEditor extends LitElement {
                             "ui.panel.config.script.editor.modes.description",
                             "documentation_link",
                             html`<a
-                              href="https://www.home-assistant.io/integrations/script/#script-modes"
+                              href="${documentationUrl(
+                                this.hass,
+                                "/integrations/script/#script-modes"
+                              )}"
                               target="_blank"
                               rel="noreferrer"
                               >${this.hass.localize(
@@ -193,6 +199,24 @@ export class HaScriptEditor extends LitElement {
                             </paper-input>`
                           : html``}
                       </div>
+                      ${this.scriptEntityId
+                        ? html`
+                            <div
+                              class="card-actions layout horizontal justified center"
+                            >
+                              <span></span>
+                              <mwc-button
+                                @click=${this._runScript}
+                                title="${this.hass.localize(
+                                  "ui.panel.config.script.picker.activate_script"
+                                )}"
+                                ?disabled=${this._dirty}
+                              >
+                                ${this.hass.localize("ui.card.script.execute")}
+                              </mwc-button>
+                            </div>
+                          `
+                        : ``}
                     </ha-card>
                   </ha-config-section>
 
@@ -209,7 +233,7 @@ export class HaScriptEditor extends LitElement {
                         )}
                       </p>
                       <a
-                        href="https://home-assistant.io/docs/scripts/"
+                        href="${documentationUrl(this.hass, "/docs/scripts/")}"
                         target="_blank"
                         rel="noreferrer"
                       >
@@ -299,6 +323,18 @@ export class HaScriptEditor extends LitElement {
         ...initData,
       };
     }
+  }
+
+  private async _runScript(ev) {
+    ev.stopPropagation();
+    await triggerScript(this.hass, this.scriptEntityId);
+    showToast(this, {
+      message: this.hass.localize(
+        "ui.notification_toast.triggered",
+        "name",
+        this._config!.alias
+      ),
+    });
   }
 
   private _modeChanged(ev: CustomEvent) {

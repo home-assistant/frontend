@@ -12,7 +12,6 @@ import {
 } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
 import { nextRender } from "../common/util/render-status";
-import { getExternalConfig } from "../external_app/external_config";
 import type { HomeAssistant } from "../types";
 
 type HLSModule = typeof import("hls.js");
@@ -34,6 +33,9 @@ class HaHLSPlayer extends LitElement {
 
   @property({ type: Boolean, attribute: "playsinline" })
   public playsInline = false;
+
+  @property({ type: Boolean, attribute: "allow-exoplayer" })
+  public allowExoPlayer = false;
 
   @query("video") private _videoEl!: HTMLVideoElement;
 
@@ -61,7 +63,7 @@ class HaHLSPlayer extends LitElement {
     return html`
       <video
         ?autoplay=${this.autoPlay}
-        ?muted=${this.muted}
+        .muted=${this.muted}
         ?playsinline=${this.playsInline}
         ?controls=${this.controls}
         @loadeddata=${this._elementResized}
@@ -91,11 +93,7 @@ class HaHLSPlayer extends LitElement {
   }
 
   private async _getUseExoPlayer(): Promise<boolean> {
-    if (!this.hass!.auth.external) {
-      return false;
-    }
-    const externalConfig = await getExternalConfig(this.hass!.auth.external);
-    return externalConfig && externalConfig.hasExoPlayer;
+    return false;
   }
 
   private async _startHls(): Promise<void> {
@@ -137,7 +135,10 @@ class HaHLSPlayer extends LitElement {
     this._videoEl.style.visibility = "hidden";
     await this.hass!.auth.external!.sendMessage({
       type: "exoplayer/play_hls",
-      payload: new URL(url, window.location.href).toString(),
+      payload: {
+        url: new URL(url, window.location.href).toString(),
+        muted: this.muted,
+      },
     });
   }
 

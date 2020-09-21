@@ -53,6 +53,7 @@ import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
+import { documentationUrl } from "../../util/documentation-url";
 import { swapView } from "./editor/config-util";
 import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovelace-dialog";
 import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
@@ -136,7 +137,7 @@ class HUIRoot extends LitElement {
                     </mwc-icon-button>
                   </div>
                   <a
-                    href="https://www.home-assistant.io/lovelace/"
+                    href="${documentationUrl(this.hass, "/lovelace/")}"
                     rel="noreferrer"
                     class="menu-link"
                     target="_blank"
@@ -266,7 +267,7 @@ class HUIRoot extends LitElement {
                         `
                       : ""}
                     <a
-                      href="https://www.home-assistant.io/lovelace/"
+                      href="${documentationUrl(this.hass, "/lovelace/")}"
                       rel="noreferrer"
                       class="menu-link"
                       target="_blank"

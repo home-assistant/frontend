@@ -507,6 +507,7 @@
             "cancel": "Avbryt",
             "close": "Lukk",
             "continue": "Fortsette",
+            "copied": "Kopiert",
             "delete": "Slett",
             "error_required": "Nødvendig",
             "loading": "Laster",
@@ -574,6 +575,28 @@
                 "audio_not_supported": "Nettleseren din støtter ikke lydelementet.",
                 "choose_player": "Velg spiller",
                 "choose-source": "Velg kilde",
+                "class": {
+                    "album": "Album",
+                    "app": "App",
+                    "artist": "Artist",
+                    "channel": "Kanal",
+                    "composer": "Komponist",
+                    "contributing_artist": "Medvirkende artist",
+                    "directory": "Bibliotek",
+                    "episode": "Episode",
+                    "game": "Spill",
+                    "genre": "Sjanger",
+                    "image": "Bilde",
+                    "movie": "Film",
+                    "music": "Musikk",
+                    "playlist": "Spilleliste",
+                    "podcast": "Podcast",
+                    "season": "Sesong",
+                    "track": "Spor",
+                    "tv_show": "TV Serie",
+                    "url": "Url",
+                    "video": "Video"
+                },
                 "content-type": {
                     "album": "Album",
                     "artist": "Artist",
@@ -581,15 +604,21 @@
                     "playlist": "Spilleliste",
                     "server": "Server"
                 },
+                "documentation": "dokumentasjon",
+                "learn_adding_local_media": "Lær mer om å legge til medier i {documentation} .",
+                "local_media_files": "Plasser video-, lyd- og bildefilene dine i mediekatalogen for å kunne bla gjennom og spille dem av i nettleseren eller på støttede mediaspillere.",
                 "media_browsing_error": "Feil ved medievisning",
                 "media_not_supported": "Browser Media Player støtter ikke denne typen medier",
                 "media_player": "Mediaspiller",
                 "media-player-browser": "Nettleser for Mediespiller",
                 "no_items": "Ingen elementer",
+                "no_local_media_found": "Ingen lokale medier funnet",
+                "no_media_folder": "Det ser ut til at du ennå ikke har opprettet en mediekatalog.",
                 "pick": "Velg",
                 "pick-media": "Velg Media",
                 "play": "Spill av",
                 "play-media": "Spill media",
+                "setup_local_help": "Sjekk {documentation} om hvordan du konfigurerer lokale medier.",
                 "video_not_supported": "Nettleseren din støtter ikke videoelementet.",
                 "web-browser": "Nettleser"
             },
@@ -888,7 +917,7 @@
                                     "add_option": "Legg til alternativ",
                                     "conditions": "Betingelser",
                                     "default": "Standard handlinger",
-                                    "label": "Velge",
+                                    "label": "Velg",
                                     "option": "Alternativ {number}",
                                     "remove_option": "Fjern alternativ",
                                     "sequence": "Handlinger"
@@ -921,11 +950,11 @@
                                             "label": "Antall"
                                         },
                                         "until": {
-                                            "conditions": "Inntil forholdene",
-                                            "label": "Før"
+                                            "conditions": "Inntil betingelser",
+                                            "label": "Til"
                                         },
                                         "while": {
-                                            "conditions": "Mens forholdene",
+                                            "conditions": "Mens betingelser",
                                             "label": "Mens"
                                         }
                                     }
@@ -1449,22 +1478,22 @@
                 },
                 "entities": {
                     "caption": "Entiteter",
-                    "description": "Administrer kjente enheter",
+                    "description": "Administrer kjente entiteter",
                     "picker": {
                         "disable_selected": {
                             "button": "Deaktiver valgte",
                             "confirm_text": "Deaktiverte entiteter vil ikke bli lagt til i Home Assistant.",
-                            "confirm_title": "Vil du deaktivere {number} enheter?"
+                            "confirm_title": "Vil du deaktivere {number} entiteter?"
                         },
                         "enable_selected": {
                             "button": "Aktiver valgte",
                             "confirm_text": "Dette vil gjøre dem tilgjengelige i Home Assistant igjen hvis de nå er deaktivert.",
-                            "confirm_title": "Vil du aktivere {number} enheter?"
+                            "confirm_title": "Vil du aktivere {number} entiteter?"
                         },
                         "filter": {
                             "filter": "",
                             "show_disabled": "Vis deaktiverte entiteter",
-                            "show_readonly": "Vis skrivebeskyttede enheter",
+                            "show_readonly": "Vis skrivebeskyttede entiteter",
                             "show_unavailable": "Vis utilgjengelige entiteter"
                         },
                         "header": "Entiteter",
@@ -1481,7 +1510,7 @@
                             "confirm_partly_text": "Du kan bare fjerne {removable} av de valgte {selected} enhetene. Enheter kan bare fjernes når integrasjonen ikke lenger leverer enhetene. Noen ganger må du starte Home Assistant på nytt før du kan fjerne enhetene til en fjernet integrasjon. Er du sikker på at du vil fjerne de flyttbare enhetene?",
                             "confirm_partly_title": "Bare {number} valgte enheter kan fjernes.",
                             "confirm_text": "Du bør fjerne dem fra Lovelace-konfigurasjonen og automasjoner hvis de inneholder disse entitetene.",
-                            "confirm_title": "Vil du fjerne {number} enheter?"
+                            "confirm_title": "Vil du fjerne {number} entiteter?"
                         },
                         "search": "Søk entiteter",
                         "selected": "{number} valgte",
@@ -2021,7 +2050,7 @@
                         "tag_id_placeholder": "Automatisk generert når den er tom",
                         "update": "Oppdater"
                     },
-                    "edit": "Redigere",
+                    "edit": "Rediger",
                     "headers": {
                         "last_scanned": "Sist skannet",
                         "name": "Navn"
@@ -2352,9 +2381,14 @@
                         "title": "Tilstander"
                     },
                     "templates": {
+                        "all_listeners": "Denne malen lytter etter alle tilstand endret hendelser.",
                         "description": "Maler blir rendret ved hjelp av Jinja2-malmotoren med noen spesifikke utvidelser for Home Assistant.",
+                        "domain": "Domene",
                         "editor": "Maleditor",
+                        "entity": "Entitet",
                         "jinja_documentation": "Jinja2 mal dokumentasjon",
+                        "listeners": "Denne malen lytter etter følgende tilstand endret hendelser:",
+                        "no_listeners": "Denne malen lytter ikke etter noen tilstand endret hendelser og oppdateres ikke automatisk.",
                         "reset": "Tilbakestill til demomal",
                         "template_extensions": "Mal utvidelser for Home Assistant",
                         "title": "Mal",
@@ -2541,7 +2575,7 @@
                         "map": {
                             "dark_mode": "Mørk modus?",
                             "default_zoom": "Standard zoom",
-                            "description": "Kartkortet som lar deg vise enheter på et kart.",
+                            "description": "Kartkortet som lar deg vise entiteter på et kart.",
                             "geo_location_sources": "Kilder for geolokasjon",
                             "hours_to_show": "Timer som skal vises",
                             "name": "Kart",
@@ -2553,7 +2587,7 @@
                             "name": ""
                         },
                         "media-control": {
-                            "description": "Mediekontroll kortet brukes til å vise mediespillerenheter på et grensesnitt med brukervennlige kontroller.",
+                            "description": "Mediekontroll kortet brukes til å vise mediespiller entiteter på et grensesnitt med brukervennlige kontroller.",
                             "name": "Mediekontroll"
                         },
                         "picture-elements": {
@@ -2602,7 +2636,7 @@
                         }
                     },
                     "cardpicker": {
-                        "by_card": "Med kort",
+                        "by_card": "Etter kort",
                         "by_entity": "Etter entitet",
                         "custom_card": "Tilpasset",
                         "domain": "Domene",
@@ -2664,7 +2698,7 @@
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "Vi vil automatisk opprette Lovelace-visningene dine med områdene og enhetene dine hvis du fjerner Lovelace-konfigurasjonen.",
-                        "confirm_remove_config_title": "Er du sikker på at du vil fjerne Lovelace-konfigurasjonen? Vi vil automatisk opprette Lovelace-visningene dine med områdene og enhetene dine.",
+                        "confirm_remove_config_title": "Er du sikker på at du vil fjerne Lovelace UI-konfigurasjonen?",
                         "confirm_unsaved_changes": "Du har ulagrede endringer, er du sikker på at du vil avslutte?",
                         "confirm_unsaved_comments": "Konfigurasjonen din inneholder kommentarer, disse vil ikke bli lagret. Vil du fortsette?",
                         "error_invalid_config": "Konfigurasjonen din er ikke gyldig: {error}",
@@ -2941,6 +2975,11 @@
                     "submit": "Send inn"
                 },
                 "current_user": "Du er logget inn som {fullName}.",
+                "customize_sidebar": {
+                    "button": "Rediger",
+                    "description": "Du kan også trykke på og holde nede overskriften på sidepanelet for å aktivere redigeringsmodus.",
+                    "header": "Endre rekkefølgen og skjul elementer fra sidepanelet"
+                },
                 "dashboard": {
                     "description": "Velg et standard instrumentbord for denne enheten.",
                     "dropdown_label": "",
@@ -2963,6 +3002,7 @@
                     "confirm_delete": "Er du sikker på at du vil slette tilgangstoken for {name}?",
                     "create": "Opprett Token",
                     "create_failed": "Kunne ikke opprette tilgangstoken.",
+                    "created": "Opprettet {date}",
                     "created_at": "Opprettet den {date}",
                     "delete_failed": "Kan ikke slette tilgangstokenet.",
                     "description": "Opprett langvarige tilgangstokener slik at skriptene dine kan samhandle med din Home Assistant instans. Hver token vil være gyldig i 10 år fra opprettelsen. Følgende langvarige tilgangstokener er for tiden aktive.",
@@ -2970,9 +3010,10 @@
                     "header": "Langvarige tilgangstokener",
                     "last_used": "Sist brukt den {date} fra {location}",
                     "learn_auth_requests": "Lær hvordan du lager godkjente forespørsler.",
+                    "name": "Navn",
                     "not_used": "Har aldri blitt brukt",
                     "prompt_copy_token": "Kopier tilgangstoken. Det blir ikke vist igjen.",
-                    "prompt_name": "Navn?"
+                    "prompt_name": "Gi tokenet et navn"
                 },
                 "mfa_setup": {
                     "close": "Lukk",
@@ -3036,6 +3077,7 @@
             }
         },
         "sidebar": {
+            "done": "Ferdig",
             "external_app_configuration": "Appkonfigurasjon",
             "sidebar_toggle": "Vis/Skjul sidepanel"
         }

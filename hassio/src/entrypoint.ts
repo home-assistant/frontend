@@ -1,4 +1,5 @@
 import "../../src/resources/compatibility";
+import "../../src/resources/safari-14-attachshadow-patch";
 import "../../src/resources/roboto";
 import "./hassio-main";
 

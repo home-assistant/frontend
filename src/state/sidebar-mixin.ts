@@ -16,13 +16,11 @@ declare global {
   interface HASSDomEvents {
     "hass-dock-sidebar": DockSidebarParams;
     "hass-default-panel": DefaultPanelParams;
-    "hass-edit-sidebar": undefined;
   }
   // for add event listener
   interface HTMLElementEventMap {
     "hass-dock-sidebar": HASSDomEvent<DockSidebarParams>;
     "hass-default-panel": HASSDomEvent<DefaultPanelParams>;
-    "hass-edit-sidebar": undefined;
   }
 }
 

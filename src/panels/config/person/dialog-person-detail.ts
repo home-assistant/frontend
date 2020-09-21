@@ -4,23 +4,24 @@ import {
   css,
   CSSResult,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
-import "../../../components/ha-picture-upload";
-import type { HaPictureUpload } from "../../../components/ha-picture-upload";
 import "../../../components/entity/ha-entities-picker";
 import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-picture-upload";
+import type { HaPictureUpload } from "../../../components/ha-picture-upload";
 import "../../../components/user/ha-user-picker";
 import { PersonMutableParams } from "../../../data/person";
+import { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
 import { PersonDetailDialogParams } from "./show-dialog-person-detail";
-import { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 
 const includeDomains = ["device_tracker"];
 
@@ -153,7 +154,10 @@ class DialogPersonDetail extends LitElement {
                   <ul>
                     <li>
                       <a
-                        href="https://www.home-assistant.io/integrations/#presence-detection"
+                        href="${documentationUrl(
+                          this.hass,
+                          "/integrations/#presence-detection"
+                        )}"
                         target="_blank"
                         rel="noreferrer"
                         >${this.hass!.localize(

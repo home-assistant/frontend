@@ -97,6 +97,7 @@ export class HaCodeEditor extends UpdatingElement {
       .CodeMirror {
         height: var(--code-mirror-height, auto);
         direction: var(--code-mirror-direction, ltr);
+        font-family: var(--code-font-family, monospace);
       }
       .CodeMirror-scroll {
         max-height: var(--code-mirror-max-height, --code-mirror-height);
@@ -189,7 +190,7 @@ export class HaCodeEditor extends UpdatingElement {
       }
       
       .cm-s-default .cm-meta {
-        color: var(--codemirror-meta, #000);
+        color: var(--codemirror-meta, var(--primary-text-color));
       }
       
       .cm-s-default .cm-attribute {
