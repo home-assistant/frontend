@@ -6,21 +6,21 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
-import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+import { array, assert, object, optional, string } from "superstruct";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-icon";
 import { HomeAssistant } from "../../../../types";
 import { AlarmPanelCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
-import { EditorTarget, EntitiesEditorEvent } from "../types";
+import { EditorTarget } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import { assert, object, string, optional, array } from "superstruct";
 
 const cardConfigStruct = object({
   type: string(),
@@ -146,7 +146,7 @@ export class HuiAlarmPanelCardEditor extends LitElement
     `;
   }
 
-  private _stateRemoved(ev: HASSDomEvent<EntitiesEditorEvent>): void {
+  private _stateRemoved(ev: CustomEvent): void {
     if (!this._config || !this._states || !this.hass) {
       return;
     }
@@ -165,7 +165,7 @@ export class HuiAlarmPanelCardEditor extends LitElement
     }
   }
 
-  private _stateAdded(ev: HASSDomEvent<EntitiesEditorEvent>): void {
+  private _stateAdded(ev: CustomEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
@@ -184,7 +184,7 @@ export class HuiAlarmPanelCardEditor extends LitElement
     });
   }
 
-  private _valueChanged(ev: HASSDomEvent<EntitiesEditorEvent>): void {
+  private _valueChanged(ev: CustomEvent): void {
     if (!this._config || !this.hass) {
       return;
     }

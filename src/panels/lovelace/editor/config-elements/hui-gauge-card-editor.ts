@@ -10,7 +10,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { assert, number, object, optional, string } from "superstruct";
-import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-switch";
@@ -19,7 +19,7 @@ import { GaugeCardConfig, SeverityConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
-import { EditorTarget, EntitiesEditorEvent } from "../types";
+import { EditorTarget } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = object({
@@ -216,7 +216,7 @@ export class HuiGaugeCardEditor extends LitElement
     `;
   }
 
-  private _toggleSeverity(ev: HASSDomEvent<EntitiesEditorEvent>): void {
+  private _toggleSeverity(ev: CustomEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
@@ -237,7 +237,7 @@ export class HuiGaugeCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _severityChanged(ev: HASSDomEvent<EntitiesEditorEvent>): void {
+  private _severityChanged(ev: CustomEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
@@ -253,7 +253,7 @@ export class HuiGaugeCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _valueChanged(ev: HASSDomEvent<EntitiesEditorEvent>): void {
+  private _valueChanged(ev: CustomEvent): void {
     if (!this._config || !this.hass) {
       return;
     }

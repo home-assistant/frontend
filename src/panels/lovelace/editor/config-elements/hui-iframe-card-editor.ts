@@ -2,18 +2,18 @@ import "@polymer/paper-input/paper-input";
 import {
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
-import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+import { assert, object, optional, string } from "superstruct";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../types";
 import { IframeCardConfig } from "../../cards/types";
 import { LovelaceCardEditor } from "../../types";
-import { EditorTarget, EntitiesEditorEvent } from "../types";
+import { EditorTarget } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import { string, assert, object, optional } from "superstruct";
 
 const cardConfigStruct = object({
   type: string(),
@@ -90,7 +90,7 @@ export class HuiIframeCardEditor extends LitElement
     `;
   }
 
-  private _valueChanged(ev: HASSDomEvent<EntitiesEditorEvent>): void {
+  private _valueChanged(ev: CustomEvent): void {
     if (!this._config || !this.hass) {
       return;
     }

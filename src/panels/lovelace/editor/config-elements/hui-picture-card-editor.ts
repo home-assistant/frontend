@@ -8,18 +8,14 @@ import {
   TemplateResult,
 } from "lit-element";
 import { assert, object, optional, string } from "superstruct";
-import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { ActionConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import { PictureCardConfig } from "../../cards/types";
 import "../../components/hui-action-editor";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
-import {
-  actionConfigStruct,
-  EditorTarget,
-  EntitiesEditorEvent,
-} from "../types";
+import { actionConfigStruct, EditorTarget } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = object({
@@ -114,7 +110,7 @@ export class HuiPictureCardEditor extends LitElement
     `;
   }
 
-  private _valueChanged(ev: HASSDomEvent<EntitiesEditorEvent>): void {
+  private _valueChanged(ev: CustomEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
