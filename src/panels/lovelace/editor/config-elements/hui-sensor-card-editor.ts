@@ -142,7 +142,7 @@ export class HuiSensorCardEditor extends LitElement
               .selected=${graphs.indexOf(this._graph)}
             >
               ${graphs.map((graph) => {
-                return html` <paper-item>${graph}</paper-item> `;
+                return html`<paper-item>${graph}</paper-item>`;
               })}
             </paper-listbox>
           </paper-dropdown-menu>
@@ -158,7 +158,11 @@ export class HuiSensorCardEditor extends LitElement
             .configValue=${"unit"}
             @value-changed=${this._valueChanged}
           ></paper-input>
-          <ha-formfield label="Show more detail">
+          <ha-formfield
+            label=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.sensor.show_more_detail"
+            )}
+          >
             <ha-switch
               .checked=${this._detail === 2}
               .configValue=${"detail"}
@@ -194,17 +198,17 @@ export class HuiSensorCardEditor extends LitElement
       return;
     }
 
-    const target = ev.target! as EditorTarget;
-    const value = target.checked ? 2 : 1;
+    const value = (ev.target! as EditorTarget).checked ? 2 : 1;
 
-    if (this[`_${target.configValue}`] === value) {
+    if (this._detail === value) {
       return;
     }
 
     this._config = {
       ...this._config,
-      [target.configValue!]: value,
+      detail: value,
     };
+
     fireEvent(this, "config-changed", { config: this._config });
   }
 

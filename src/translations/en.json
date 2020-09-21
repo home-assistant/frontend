@@ -2386,7 +2386,7 @@
             },
             "sensor": {
               "name": "Sensor",
-              "graph_detail": "Graph Detail",
+              "show_more_detail": "Show more detail",
               "graph_type": "Graph Type",
               "description": "The Sensor card gives you a quick overview of your sensors state with an optional graph to visualize change over time."
             },
