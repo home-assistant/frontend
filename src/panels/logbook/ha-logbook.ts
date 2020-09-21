@@ -183,17 +183,17 @@ class HaLogbook extends LitElement {
                       >`}
               </div>
               <div class="secondary">
-                <ha-relative-time
-                  .hass=${this.hass}
-                  .datetime=${item.when}
-                ></ha-relative-time>
-                -
                 <span
                   >${formatTimeWithSeconds(
                     new Date(item.when),
                     this.hass.language
                   )}</span
                 >
+                -
+                <ha-relative-time
+                  .hass=${this.hass}
+                  .datetime=${item.when}
+                ></ha-relative-time>
               </div>
             </div>
           </div>
