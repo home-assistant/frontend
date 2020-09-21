@@ -21,6 +21,8 @@ import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { TagDetailDialogParams } from "./show-dialog-tag-detail";
 
+import QRCode from "qrcode";
+
 @customElement("dialog-tag-detail")
 class DialogTagDetail extends LitElement
   implements HassDialog<TagDetailDialogParams> {
@@ -41,6 +43,7 @@ class DialogTagDetail extends LitElement
     this._error = undefined;
     if (this._params.entry) {
       this._name = this._params.entry.name || "";
+      this._generateQR();
     } else {
       this._id = "";
       this._name = "";
@@ -107,6 +110,7 @@ class DialogTagDetail extends LitElement
                 ></paper-input>`
               : ""}
           </div>
+          <div id="qr"></div>
         </div>
         ${this._params.entry
           ? html`
@@ -192,12 +196,42 @@ class DialogTagDetail extends LitElement
     }
   }
 
+  private async _generateQR() {
+    let canvas = await QRCode.toCanvas(
+      `https://home-assistant.io/tag/${this._params?.entry?.id}`,
+      {
+        width: 180,
+        errorCorrectionLevel: "Q",
+      }
+    );
+    let context = canvas.getContext("2d");
+
+    let imageObj = new Image();
+    imageObj.src = "/static/icons/favicon-192x192.png";
+    await new Promise((resolve) => (imageObj.onload = resolve));
+    context.drawImage(
+      imageObj,
+      canvas.width / 3,
+      canvas.height / 3,
+      canvas.width / 3,
+      canvas.height / 3
+    );
+
+    const image = document.createElement("img");
+    image.src = canvas.toDataURL();
+
+    this.shadowRoot!.querySelector("#qr")!.appendChild(image);
+  }
+
   static get styles(): CSSResult[] {
     return [
       haStyleDialog,
       css`
         a {
           color: var(--primary-color);
+        }
+        #qr {
+          text-align: center;
         }
       `,
     ];
