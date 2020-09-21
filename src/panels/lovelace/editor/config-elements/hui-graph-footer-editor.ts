@@ -3,24 +3,24 @@ import "@polymer/paper-input/paper-input";
 import {
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
-import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
-import { configElementStyle } from "./config-elements-style";
 import { assert } from "superstruct";
-
+import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/entity/ha-entity-picker";
+import "../../../../components/ha-formfield";
+import "../../../../components/ha-switch";
+import type { HomeAssistant } from "../../../../types";
 import {
   GraphHeaderFooterConfig,
   graphHeaderFooterConfigStruct,
 } from "../../header-footer/types";
-import type { EditorTarget, EntitiesEditorEvent } from "../types";
-import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCardEditor } from "../../types";
-
-import "../../../../components/entity/ha-entity-picker";
+import type { EditorTarget, EntitiesEditorEvent } from "../types";
+import { configElementStyle } from "./config-elements-style";
 
 const includeDomains = ["sensor"];
 
@@ -41,7 +41,7 @@ export class HuiGraphFooterEditor extends LitElement
   }
 
   get _detail(): number {
-    return this._config!.detail || 1;
+    return this._config!.detail ?? 1;
   }
 
   get _hours_to_show(): number {
@@ -70,17 +70,17 @@ export class HuiGraphFooterEditor extends LitElement
           @change=${this._valueChanged}
         ></ha-entity-picker>
         <div class="side-by-side">
-          <paper-input
-            type="number"
-            .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.sensor.graph_detail"
-            )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            )})"
-            .value=${this._detail}
-            .configValue=${"detail"}
-            @value-changed=${this._valueChanged}
-          ></paper-input>
+          <ha-formfield
+            label=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.sensor.show_more_detail"
+            )}
+          >
+            <ha-switch
+              .checked=${this._detail === 2}
+              .configValue=${"detail"}
+              @change=${this._change}
+            ></ha-switch>
+          </ha-formfield>
           <paper-input
             type="number"
             .label="${this.hass.localize(
@@ -95,6 +95,25 @@ export class HuiGraphFooterEditor extends LitElement
         </div>
       </div>
     `;
+  }
+
+  private _change(ev: Event) {
+    if (!this._config || !this.hass) {
+      return;
+    }
+
+    const value = (ev.target! as EditorTarget).checked ? 2 : 1;
+
+    if (this._detail === value) {
+      return;
+    }
+
+    this._config = {
+      ...this._config,
+      detail: value,
+    };
+
+    fireEvent(this, "config-changed", { config: this._config });
   }
 
   private _valueChanged(ev: HASSDomEvent<EntitiesEditorEvent>): void {
