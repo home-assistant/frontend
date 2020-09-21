@@ -14,7 +14,9 @@ import { classMap } from "lit-html/directives/class-map";
 
 @customElement("ha-expansion-panel")
 class HaExpansionPanel extends LitElement {
-  @property({ type: Boolean }) expanded = false;
+  @property({ type: Boolean, reflect: true }) expanded = false;
+
+  @property({ type: Boolean, reflect: true }) outlined = false;
 
   protected render(): TemplateResult {
     return html`
@@ -44,9 +46,16 @@ class HaExpansionPanel extends LitElement {
     return css`
       :host {
         display: block;
-        box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2),
-          0px 1px 1px 0px rgba(0, 0, 0, 0.14),
-          0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+      }
+
+      :host([outlined]) {
+        box-shadow: none;
+        border-width: 1px;
+        border-style: solid;
+        border-color: var(
+          --ha-card-border-color,
+          var(--divider-color, #e0e0e0)
+        );
       }
 
       .summary {
