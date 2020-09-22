@@ -83,7 +83,9 @@ export class HuiEntitiesCardRowEditor extends LitElement {
                                 )}
                               </span>
                               <span class="secondary"
-                                >Edit row using the code editor</span
+                                >${this.hass!.localize(
+                                  "ui.panel.lovelace.editor.card.entities.edit_special_row"
+                                )}</span
                               >
                             </div>
                             <mwc-icon-button
