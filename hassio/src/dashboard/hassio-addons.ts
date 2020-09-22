@@ -10,6 +10,7 @@ import {
 } from "lit-element";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { navigate } from "../../../src/common/navigate";
+import { compare } from "../../../src/common/string/compare";
 import "../../../src/components/ha-card";
 import { HassioAddonInfo } from "../../../src/data/hassio/addon";
 import { haStyle } from "../../../src/resources/styles";
@@ -21,25 +22,27 @@ import { hassioStyle } from "../resources/hassio-style";
 class HassioAddons extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public addons?: HassioAddonInfo[];
+  @property({ attribute: false }) public addons?: HassioAddonInfo[];
 
   protected render(): TemplateResult {
     return html`
       <div class="content">
         <h1>Add-ons</h1>
         <div class="card-group">
-          ${!this.addons
+          ${!this.addons?.length
             ? html`
                 <ha-card>
                   <div class="card-content">
                     You don't have any add-ons installed yet. Head over to
-                    <a href="#" @click=${this._openStore}>the add-on store</a>
+                    <button class="link" @click=${this._openStore}>
+                      the add-on store
+                    </button>
                     to get started!
                   </div>
                 </ha-card>
               `
             : this.addons
-                .sort((a, b) => (a.name > b.name ? 1 : -1))
+                .sort((a, b) => compare(a.name, b.name))
                 .map(
                   (addon) => html`
                     <ha-card .addon=${addon} @click=${this._addonTapped}>
