@@ -5,6 +5,8 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
 import {
+  css,
+  CSSResult,
   customElement,
   html,
   LitElement,
@@ -12,6 +14,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-help-tooltip";
 import "../../../components/ha-service-picker";
 import {
   ActionConfig,
@@ -53,39 +56,58 @@ export class HuiActionEditor extends LitElement {
     }
 
     return html`
-      <paper-dropdown-menu
-        .label="${this.label}"
-        .configValue="${"action"}"
-        @iron-select="${this._actionPicked}"
-      >
-        <paper-listbox
-          slot="dropdown-content"
-          attr-for-selected="value"
-          .selected=${this.config?.action ?? "default"}
+      <div class="dropdown">
+        <paper-dropdown-menu
+          .label=${this.label}
+          .configValue=${"action"}
+          @iron-select=${this._actionPicked}
         >
-          <paper-item .value=${"default"}>Default action</paper-item>
-          ${this.actions.map((action) => {
-            return html`<paper-item .value=${action}>${action}</paper-item>`;
-          })}
-        </paper-listbox>
-      </paper-dropdown-menu>
+          <paper-listbox
+            slot="dropdown-content"
+            attr-for-selected="value"
+            .selected=${this.config?.action ?? "default"}
+          >
+            <paper-item .value=${"default"}
+              >${this.hass!.localize(
+                "ui.panel.lovelace.editor.action-editor.actions.default_action"
+              )}</paper-item
+            >
+            ${this.actions.map((action) => {
+              return html`
+                <paper-item .value=${action}
+                  >${this.hass!.localize(
+                    `ui.panel.lovelace.editor.action-editor.actions.${action}`
+                  )}</paper-item
+                >
+              `;
+            })}
+          </paper-listbox>
+        </paper-dropdown-menu>
+        <ha-help-tooltip
+          .label=${"Default action is defaulted to the domain action."}
+        ></ha-help-tooltip>
+      </div>
       ${this.config?.action === "navigate"
         ? html`
             <paper-input
-              label="Navigation Path"
-              .value="${this._navigation_path}"
-              .configValue="${"navigation_path"}"
-              @value-changed="${this._valueChanged}"
+              label=${this.hass!.localize(
+                "ui.panel.lovelace.editor.action-editor.navigation_path"
+              )}
+              .value=${this._navigation_path}
+              .configValue=${"navigation_path"}
+              @value-changed=${this._valueChanged}
             ></paper-input>
           `
         : ""}
       ${this.config?.action === "url"
         ? html`
             <paper-input
-              label="Url Path"
-              .value="${this._url_path}"
-              .configValue="${"url_path"}"
-              @value-changed="${this._valueChanged}"
+              label=${this.hass!.localize(
+                "ui.panel.lovelace.editor.action-editor.url_path"
+              )}
+              .value=${this._url_path}
+              .configValue=${"url_path"}
+              @value-changed=${this._valueChanged}
             ></paper-input>
           `
         : ""}
@@ -93,11 +115,15 @@ export class HuiActionEditor extends LitElement {
         ? html`
             <ha-service-picker
               .hass=${this.hass}
-              .value="${this._service}"
-              .configValue="${"service"}"
-              @value-changed="${this._valueChanged}"
+              .value=${this._service}
+              .configValue=${"service"}
+              @value-changed=${this._valueChanged}
             ></ha-service-picker>
-            <b>Service data can only be entered in the code editor</b>
+            <b>
+              ${this.hass!.localize(
+                "ui.panel.lovelace.editor.action-editor.editor_service_data"
+              )}
+            </b>
           `
         : ""}
     `;
@@ -142,6 +168,14 @@ export class HuiActionEditor extends LitElement {
         value: { ...this.config!, [target.configValue!]: value },
       });
     }
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      .dropdown {
+        display: flex;
+      }
+    `;
   }
 }
 
