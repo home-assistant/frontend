@@ -53,12 +53,16 @@ class HuiHumidifierEntityRow extends LitElement implements LovelaceRow {
         .hass=${this.hass}
         .config=${this._config}
         .secondaryText=${stateObj.attributes.humidity
-          ? html`${this.hass!.localize("ui.card.humidifier.humidity")}:
-            ${stateObj.attributes.humidity}%${stateObj.attributes.mode
-              ? html` (${this.hass!.localize(
-                  `state_attributes.humidifier.mode.${stateObj.attributes.mode}`
-                ) || stateObj.attributes.mode})`
-              : ""}`
+          ? `${this.hass!.localize("ui.card.humidifier.humidity")}:
+            ${stateObj.attributes.humidity}%${
+              stateObj.attributes.mode
+                ? ` (${
+                    this.hass!.localize(
+                      `state_attributes.humidifier.mode.${stateObj.attributes.mode}`
+                    ) || stateObj.attributes.mode
+                  })`
+                : ""
+            }`
           : ""}
       >
         <ha-entity-toggle
