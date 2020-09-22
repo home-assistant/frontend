@@ -66,7 +66,7 @@ class HassioSystemMetrics extends LitElement {
       <ha-card header="System metrics">
         <div class="card-content">
           ${metrics.map((metric) =>
-            this._renderMetric(metric.description, metric.value!)
+            this._renderMetric(metric.description, metric.value ?? 0)
           )}
         </div>
       </ha-card>
@@ -78,7 +78,7 @@ class HassioSystemMetrics extends LitElement {
   }
 
   private _renderMetric(description: string, value: number): TemplateResult {
-    const roundedValue = this._roundOrNull(value);
+    const roundedValue = roundWithOneDecimal(value);
     return html`<ha-settings-row>
       <span slot="heading">
         ${description}
@@ -96,10 +96,6 @@ class HassioSystemMetrics extends LitElement {
         ></ha-bar>
       </div>
     </ha-settings-row>`;
-  }
-
-  private _roundOrNull(value: number): number {
-    return roundWithOneDecimal(value) || 0;
   }
 
   private _getUsedSpace = memoizeOne((hostInfo: HassioHostInfo) =>
