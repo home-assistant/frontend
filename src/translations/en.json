@@ -2233,7 +2233,7 @@
             "navigation_path": "Navigation Path",
             "url_path": "Url Path",
             "editor_service_data": "Service data can only be entered in the code editor",
-            "default_action_help": "The default action depends on the entity capabilities, it will be either toggled or the more info will be shown.",
+            "default_action_help": "The default action depends on the entity's capabilities, it will either be toggled or the more info will be shown.",
             "actions": {
               "default_action": "Default Action",
               "call-service": "Call Service",
