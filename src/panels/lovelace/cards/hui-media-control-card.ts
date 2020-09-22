@@ -818,7 +818,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         position: absolute;
         right: 0;
         height: 100%;
-        background-image: url("../static/images/card_media_player_bg.png");
+        background-image: url("/static/images/card_media_player_bg.png");
         width: 50%;
         transition: opacity 0.8s, background-color 0.8s;
       }
