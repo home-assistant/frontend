@@ -1,6 +1,4 @@
 import {
-  css,
-  CSSResult,
   customElement,
   html,
   LitElement,
