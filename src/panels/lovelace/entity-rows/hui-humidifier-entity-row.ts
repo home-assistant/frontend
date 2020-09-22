@@ -8,7 +8,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-import "../../../components/entity/ha-entity-humidifier";
+import "../../../components/entity/ha-entity-toggle";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
@@ -49,11 +49,22 @@ class HuiHumidifierEntityRow extends LitElement implements LovelaceRow {
     }
 
     return html`
-      <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
-        <ha-entity-humidifier
+      <hui-generic-entity-row
+        .hass=${this.hass}
+        .config=${this._config}
+        .secondaryText=${stateObj.attributes.humidity
+          ? html`${this.hass!.localize("ui.card.humidifier.humidity")}:
+            ${stateObj.attributes.humidity}%${stateObj.attributes.mode
+              ? html` (${this.hass!.localize(
+                  `state_attributes.humidifier.mode.${stateObj.attributes.mode}`
+                ) || stateObj.attributes.mode})`
+              : ""}`
+          : ""}
+      >
+        <ha-entity-toggle
           .hass=${this.hass}
           .stateObj=${stateObj}
-        ></ha-entity-humidifier>
+        ></ha-entity-toggle>
       </hui-generic-entity-row>
     `;
   }
