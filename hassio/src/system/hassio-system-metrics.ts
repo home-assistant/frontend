@@ -137,19 +137,19 @@ class HassioSystemMetrics extends LitElement {
         }
         ha-bar {
           --ha-bar-primary-color: var(
-            --hassio-bar-low-color,
+            --hassio-bar-ok-color,
             var(--success-color)
           );
         }
         .target-warning {
           --ha-bar-primary-color: var(
-            --hassio-bar-mid-color,
+            --hassio-bar-warning-color,
             var(--warning-color)
           );
         }
         .target-critical {
           --ha-bar-primary-color: var(
-            --hassio-bar-high-color,
+            --hassio-bar-critical-color,
             var(--error-color)
           );
         }
