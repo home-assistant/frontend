@@ -23,6 +23,7 @@ import { hassioStyle } from "../resources/hassio-style";
 import "./hassio-host-info";
 import "./hassio-supervisor-info";
 import "./hassio-supervisor-log";
+import "./hassio-system-metrics";
 
 @customElement("hassio-system")
 class HassioSystem extends LitElement {
@@ -64,6 +65,10 @@ class HassioSystem extends LitElement {
               .hostInfo=${this.hostInfo}
               .hassOsInfo=${this.hassOsInfo}
             ></hassio-host-info>
+            <hassio-system-metrics
+              .hass=${this.hass}
+              .hostInfo=${this.hostInfo}
+            ></hassio-system-metrics>
           </div>
           <hassio-supervisor-log .hass=${this.hass}></hassio-supervisor-log>
         </div>
