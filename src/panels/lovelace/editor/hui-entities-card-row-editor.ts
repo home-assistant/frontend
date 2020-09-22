@@ -1,4 +1,4 @@
-import { mdiDrag } from "@mdi/js";
+import { mdiClose, mdiDrag } from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -56,10 +56,11 @@ export class HuiEntitiesCardRowEditor extends LitElement {
     return html`
       <h3>
         ${this.label ||
-        this.hass!.localize("ui.panel.lovelace.editor.card.generic.entities") +
-          " (" +
-          this.hass!.localize("ui.panel.lovelace.editor.card.config.required") +
-          ")"}
+        `${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.generic.entities"
+        )} (${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.config.required"
+        )})`}
       </h3>
       <div class="entities">
         ${guard([this.entities, this._renderEmptySortable], () =>
@@ -67,31 +68,44 @@ export class HuiEntitiesCardRowEditor extends LitElement {
             ? ""
             : this.entities!.map((entityConf, index) => {
                 return html`
-                  <div
-                    class="entity"
-                    data-entity-id=${"entity" in entityConf
-                      ? entityConf.entity
-                      : entityConf.type}
-                  >
-                    <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                  <div class="entity">
+                    <ha-svg-icon class="handle" .path=${mdiDrag}></ha-svg-icon>
                     ${entityConf.type
                       ? html`
                           <div class="special-row">
-                            ${this.hass!.localize(
-                              `ui.panel.lovelace.editor.card.entities.entity_row.${entityConf.type}`
-                            )}
-                            ${this.hass!.localize(
-                              "ui.panel.lovelace.editor.card.entities.special_row"
-                            )}
+                            <div>
+                              <span>
+                                ${this.hass!.localize(
+                                  `ui.panel.lovelace.editor.card.entities.entity_row.${entityConf.type}`
+                                )}
+                                ${this.hass!.localize(
+                                  "ui.panel.lovelace.editor.card.entities.special_row"
+                                )}
+                              </span>
+                              <span class="secondary"
+                                >Edit row using the code editor</span
+                              >
+                            </div>
+                            <mwc-icon-button
+                              aria-label=${this.hass!.localize(
+                                "ui.components.entity.entity-picker.clear"
+                              )}
+                              index=${index}
+                              .index=${index}
+                              .value=${""}
+                              @click=${this._removeSpecialRow}
+                            >
+                              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+                            </mwc-icon-button>
                           </div>
                         `
                       : html`
                           <ha-entity-picker
+                            allow-custom-entity
                             .hass=${this.hass}
                             .value=${(entityConf as EntityConfig).entity}
                             .index=${index}
                             @value-changed=${this._valueChanged}
-                            allow-custom-entity
                           ></ha-entity-picker>
                         `}
                   </div>
@@ -152,8 +166,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
     this._sortable = new Sortable(this.shadowRoot!.querySelector(".entities"), {
       animation: 150,
       fallbackClass: "sortable-fallback",
-      handle: "ha-svg-icon",
-      dataIdAttr: "data-entity-id",
+      handle: ".handle",
       onEnd: async (evt: SortableEvent) => this._entityMoved(evt),
     });
   }
@@ -182,6 +195,15 @@ export class HuiEntitiesCardRowEditor extends LitElement {
     fireEvent(this, "entities-changed", { entities: newEntities });
   }
 
+  private _removeSpecialRow(ev: CustomEvent): void {
+    const index = (ev.currentTarget as any).index;
+    const newConfigEntities = this.entities!.concat();
+
+    newConfigEntities.splice(index, 1);
+
+    fireEvent(this, "entities-changed", { entities: newConfigEntities });
+  }
+
   private _valueChanged(ev: CustomEvent): void {
     const value = ev.detail.value;
     const index = (ev.target as any).index;
@@ -207,7 +229,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
           display: flex;
           align-items: center;
         }
-        .entity ha-svg-icon {
+        .entity .handle {
           padding-right: 8px;
           cursor: move;
         }
@@ -219,6 +241,23 @@ export class HuiEntitiesCardRowEditor extends LitElement {
           font-size: 16px;
           display: flex;
           align-items: center;
+          justify-content: space-between;
+          flex-grow: 1;
+        }
+
+        .special-row div {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .special-row mwc-icon-button {
+          --mdc-icon-button-size: 36px;
+          color: var(--secondary-text-color);
+        }
+
+        .secondary {
+          font-size: 12px;
+          color: var(--secondary-text-color);
         }
       `,
     ];
