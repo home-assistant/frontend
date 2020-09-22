@@ -48,6 +48,11 @@ export class HaTimePatternTrigger extends LitElement implements TriggerElement {
   }
 
   private _valueChanged(ev: CustomEvent): void {
+    // Convert to integers unless we have a leading slash
+    // (used for divisible time pattern specification)
+    if (ev.detail.value.charAt(0) !== "/")
+      ev.detail.value = parseInt(ev.detail.value);
+
     handleChangeEvent(this, ev);
   }
 }
