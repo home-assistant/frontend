@@ -72,14 +72,6 @@ class HuiHumidifierEntityRow extends LitElement implements LovelaceRow {
       </hui-generic-entity-row>
     `;
   }
-
-  static get styles(): CSSResult {
-    return css`
-      ha-humidifier-state {
-        text-align: right;
-      }
-    `;
-  }
 }
 
 declare global {
