@@ -1507,7 +1507,7 @@
                         "introduction2": "구성요소 레지스트리를 사용하여 이름을 대체하거나 구성요소 ID 변경 또는 Home Assistant 에서 항목을 제거할 수 있습니다.",
                         "remove_selected": {
                             "button": "선택된 구성요소 제거",
-                            "confirm_partly_text": "선택한 {selected} 구성요소 중 {removable} 만 제거할 수 있습니다. 통합 구성요소가 더 이상 구성요소를 제공하지 않는 경우에만 구성요소를 제거할 수 있으며, 제거된 통합 구성요소의 구성요소를 제거하기 전에 Home Assistant 를 다시 시작해야 할 수 있습니다. 제거 가능한 구성요소를 제거하시겠습니까?",
+                            "confirm_partly_text": "선택한 {selected} 개의 구성요소 중 {removable} 개의 구성요소를 제거할 수 있습니다. 통합 구성요소가 더 이상 구성요소를 제공하지 않는 경우에만 구성요소를 제거할 수 있으며, 제거된 통합 구성요소의 구성요소를 제거하기 전에 Home Assistant 를 다시 시작해야 할 수 있습니다. 제거 가능한 구성요소를 제거하시겠습니까?",
                             "confirm_partly_title": "선택된 {number} 개의 구성요소만 제거할 수 있습니다.",
                             "confirm_text": "이러한 구성요소가 포함된 경우 Lovelace 구성 및 자동화에서 제거해야 합니다.",
                             "confirm_title": "{number} 개의 구성요소를 제거하시겠습니까?"

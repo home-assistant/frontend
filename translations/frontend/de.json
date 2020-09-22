@@ -550,6 +550,10 @@
                 "toggle": "Umschalten"
             },
             "entity": {
+                "entity-attribute-picker": {
+                    "attribute": "Attribut",
+                    "show_attributes": "Attribute anzeigen"
+                },
                 "entity-picker": {
                     "clear": "Löschen",
                     "entity": "Entität",
@@ -593,7 +597,8 @@
                 "no_local_media_found": "Keine lokalen Medien gefunden",
                 "no_media_folder": "Es sieht so aus, als hätten Sie noch kein Medienverzeichnis erstellt.",
                 "play": "Abspielen",
-                "video_not_supported": "Ihr Browser unterstützt das Videoelement nicht."
+                "video_not_supported": "Ihr Browser unterstützt das Videoelement nicht.",
+                "web-browser": "Webbrowser"
             },
             "picture-upload": {
                 "label": "Bild",
@@ -1733,6 +1738,7 @@
                     },
                     "nodes_table": {
                         "failed": "Fehlgeschlagen",
+                        "id": "ID",
                         "manufacturer": "Hersteller"
                     },
                     "refresh_node": {
@@ -1873,6 +1879,7 @@
                             "input_text": "Eingabetexte neu laden",
                             "introduction": "Einige Komponenten von Home Assistant können ohne einen Neustart neu geladen werden. \"Neu laden\" entlädt dabei die aktuelle Konfiguration und lädt die neue Konfiguration.",
                             "person": "Personen neu laden",
+                            "reload": "Neu laden {domain}",
                             "rest": "Rest Entitäten und Benachrichtigungsdienste neu laden",
                             "scene": "Szenen neu laden",
                             "script": "Skripte neu laden",

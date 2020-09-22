@@ -1661,7 +1661,7 @@
                     "details": "Logi üksikasjad ({level})",
                     "load_full_log": "Lae kogu Home Assistant'i logi",
                     "loading_log": "Laadin vigade logi...",
-                    "multiple_messages": "teavitus esines esmakordselt kell {time} ja iesines {counter} korda",
+                    "multiple_messages": "teavitus esines esmakordselt kell {time} ja on ilmnenud {counter} korda",
                     "no_errors": "Vigadest pole teatatud.",
                     "no_issues": "Uusi probleeme pole!",
                     "refresh": "Värskenda",
