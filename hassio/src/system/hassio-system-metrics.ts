@@ -17,7 +17,7 @@ import "../../../src/components/ha-bar";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-settings-row";
-import { fetchHassioStats } from "../../../src/data/hassio/common";
+import { fetchHassioStats, HassioStats } from "../../../src/data/hassio/common";
 import { HassioHostInfo } from "../../../src/data/hassio/host";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
@@ -27,100 +27,47 @@ import {
 } from "../../../src/util/calculate";
 import { hassioStyle } from "../resources/hassio-style";
 
-const TARGET = 85;
-
 @customElement("hassio-system-metrics")
 class HassioSystemMetrics extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public hostInfo!: HassioHostInfo;
 
-  @internalProperty() private _supervisorMetrics?: any;
+  @internalProperty() private _supervisorMetrics?: HassioStats;
 
-  @internalProperty() private _coreMetrics?: any;
+  @internalProperty() private _coreMetrics?: HassioStats;
 
   protected render(): TemplateResult | void {
     const usedSpace = this._getUsedSpace(this.hostInfo);
+    const metrics = [
+      {
+        description: "Core CPU usage",
+        value: this._coreMetrics?.cpu_percent,
+      },
+      {
+        description: "Core RAM usage",
+        value: this._coreMetrics?.memory_percent,
+      },
+      {
+        description: "Supervisor CPU usage",
+        value: this._supervisorMetrics?.cpu_percent,
+      },
+      {
+        description: "Supervisor RAM usage",
+        value: this._supervisorMetrics?.memory_percent,
+      },
+      {
+        description: "Used space",
+        value: usedSpace,
+      },
+    ];
 
     return html`
       <ha-card header="System metrics">
         <div class="card-content">
-          <ha-settings-row>
-            <span slot="heading">
-              Core CPU usage
-            </span>
-            <div slot="description">
-              <span class="value">
-                ${this._roundOrNull(this._coreMetrics?.cpu_percent)}%
-              </span>
-              <ha-bar
-                class="${classMap({
-                  target: this._coreMetrics?.cpu_percent > TARGET,
-                })}"
-                .value=${this._coreMetrics?.cpu_percent}
-              ></ha-bar>
-            </div>
-          </ha-settings-row>
-          <ha-settings-row>
-            <span slot="heading">
-              Core RAM usage
-            </span>
-            <div slot="description">
-              <span class="value">
-                ${this._roundOrNull(this._coreMetrics?.memory_percent)}%
-              </span>
-              <ha-bar
-                class="${classMap({
-                  target: this._coreMetrics?.memory_percent > TARGET,
-                })}"
-                .value=${this._coreMetrics?.memory_percent}
-              ></ha-bar>
-            </div>
-          </ha-settings-row>
-          <ha-settings-row>
-            <span slot="heading">
-              Supervisor CPU usage
-            </span>
-            <div slot="description">
-              <span class="value">
-                ${this._roundOrNull(this._supervisorMetrics?.cpu_percent)}%
-              </span>
-              <ha-bar
-                class="${classMap({
-                  target: this._supervisorMetrics?.cpu_percent > TARGET,
-                })}"
-                .value=${this._supervisorMetrics?.cpu_percent}
-              ></ha-bar>
-            </div>
-          </ha-settings-row>
-          <ha-settings-row>
-            <span slot="heading">
-              Supervisor RAM usage
-            </span>
-            <div slot="description">
-              <span class="value">
-                ${this._roundOrNull(this._supervisorMetrics?.memory_percent)}%
-              </span>
-              <ha-bar
-                class="${classMap({
-                  target: this._supervisorMetrics?.memory_percent > TARGET,
-                })}"
-                .value=${this._supervisorMetrics?.memory_percent}
-              ></ha-bar>
-            </div>
-          </ha-settings-row>
-          <ha-settings-row>
-            <span slot="heading">
-              Used space
-            </span>
-            <div slot="description">
-              <span class="value">${usedSpace}%</span>
-              <ha-bar
-                class="${classMap({ target: usedSpace > TARGET })}"
-                .value=${usedSpace}
-              ></ha-bar>
-            </div>
-          </ha-settings-row>
+          ${metrics.map((metric) =>
+            this._renderMetric(metric.description, metric.value!)
+          )}
         </div>
       </ha-card>
     `;
@@ -128,6 +75,27 @@ class HassioSystemMetrics extends LitElement {
 
   protected firstUpdated(): void {
     this._loadData();
+  }
+
+  private _renderMetric(description: string, value: number): TemplateResult {
+    const roundedValue = this._roundOrNull(value);
+    return html`<ha-settings-row>
+      <span slot="heading">
+        ${description}
+      </span>
+      <div slot="description">
+        <span class="value">
+          ${roundedValue}%
+        </span>
+        <ha-bar
+          class="${classMap({
+            "target-warning": roundedValue > 50,
+            "target-critical": roundedValue > 85,
+          })}"
+          .value=${value}
+        ></ha-bar>
+      </div>
+    </ha-settings-row>`;
   }
 
   private _roundOrNull(value: number): number {
@@ -171,8 +139,23 @@ class HassioSystemMetrics extends LitElement {
           display: flex;
           justify-content: space-between;
         }
-        .target {
-          --ha-bar-primary-color: var(--error-color);
+        ha-bar {
+          --ha-bar-primary-color: var(
+            --hassio-bar-low-color,
+            var(--success-color)
+          );
+        }
+        .target-warning {
+          --ha-bar-primary-color: var(
+            --hassio-bar-mid-color,
+            var(--warning-color)
+          );
+        }
+        .target-critical {
+          --ha-bar-primary-color: var(
+            --hassio-bar-high-color,
+            var(--error-color)
+          );
         }
         .value {
           width: 42px;
