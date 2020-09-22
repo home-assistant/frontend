@@ -10,6 +10,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import QRCode from "qrcode";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
@@ -21,7 +22,7 @@ import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { TagDetailDialogParams } from "./show-dialog-tag-detail";
 
-import QRCode from "qrcode";
+const QR_LOGO_URL = "/static/icons/favicon-192x192.png";
 
 @customElement("dialog-tag-detail")
 class DialogTagDetail extends LitElement
@@ -197,18 +198,20 @@ class DialogTagDetail extends LitElement
   }
 
   private async _generateQR() {
-    let canvas = await QRCode.toCanvas(
+    const canvas = await QRCode.toCanvas(
       `https://home-assistant.io/tag/${this._params?.entry?.id}`,
       {
         width: 180,
         errorCorrectionLevel: "Q",
       }
     );
-    let context = canvas.getContext("2d");
+    const context = canvas.getContext("2d");
 
-    let imageObj = new Image();
-    imageObj.src = "/static/icons/favicon-192x192.png";
-    await new Promise((resolve) => (imageObj.onload = resolve));
+    const imageObj = new Image();
+    imageObj.src = QR_LOGO_URL;
+    await new Promise((resolve) => {
+      imageObj.onload = resolve;
+    });
     context.drawImage(
       imageObj,
       canvas.width / 3,
