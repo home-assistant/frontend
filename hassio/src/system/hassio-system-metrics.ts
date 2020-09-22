@@ -165,9 +165,6 @@ class HassioSystemMetrics extends LitElement {
           height: 54px;
           width: 100%;
         }
-        ha-settings-row[three-line] {
-          height: 74px;
-        }
         ha-settings-row > div[slot="description"] {
           white-space: normal;
           color: var(--secondary-text-color);
