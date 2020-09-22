@@ -1,4 +1,12 @@
-import { boolean, object, optional, string, union } from "superstruct";
+import {
+  any,
+  array,
+  boolean,
+  object,
+  optional,
+  string,
+  union,
+} from "superstruct";
 import {
   ActionConfig,
   LovelaceCardConfig,
@@ -76,6 +84,86 @@ export const actionConfigStruct = object({
   service_data: optional(object()),
 });
 
+const buttonEntitiesRowConfigStruct = object({
+  type: string(),
+  name: string(),
+  action_name: optional(string()),
+  tap_action: actionConfigStruct,
+  hold_action: optional(actionConfigStruct),
+  double_tap_action: optional(actionConfigStruct),
+});
+
+const castEntitiesRowConfigStruct = object({
+  type: string(),
+  view: string(),
+  dashboard: optional(string()),
+  name: optional(string()),
+  icon: optional(string()),
+  hide_if_unavailable: optional(string()),
+});
+
+const callServiceEntitiesRowConfigStruct = object({
+  type: string(),
+  name: string(),
+  icon: optional(string()),
+  action_name: optional(string()),
+  service: string(),
+  service_data: optional(any()),
+});
+
+const conditionalEntitiesRowConfigStruct = object({
+  type: string(),
+  row: any(),
+  conditions: array(
+    object({
+      entity: string(),
+      state: optional(string()),
+      state_not: optional(string()),
+    })
+  ),
+});
+
+const dividerEntitiesRowConfigStruct = object({
+  type: string(),
+  style: optional(any()),
+});
+
+const sectionEntitiesRowConfigStruct = object({
+  type: string(),
+  label: optional(string()),
+});
+
+const webLinkEntitiesRowConfigStruct = object({
+  type: string(),
+  url: string(),
+  name: optional(string()),
+  icon: optional(string()),
+});
+
+const buttonsEntitiesRowConfigStruct = object({
+  type: string(),
+  entities: array(
+    union([
+      object({
+        entity: string(),
+        icon: optional(string()),
+        image: optional(string()),
+        name: optional(string()),
+      }),
+      EntityId,
+    ])
+  ),
+});
+
+const attributeEntitiesRowConfigStruct = object({
+  type: string(),
+  entity: string(),
+  attribute: string(),
+  prefix: optional(string()),
+  suffix: optional(string()),
+  name: optional(string()),
+});
+
 export const entitiesConfigStruct = union([
   object({
     entity: EntityId,
@@ -90,4 +178,13 @@ export const entitiesConfigStruct = union([
     double_tap_action: optional(actionConfigStruct),
   }),
   EntityId,
+  buttonEntitiesRowConfigStruct,
+  castEntitiesRowConfigStruct,
+  conditionalEntitiesRowConfigStruct,
+  dividerEntitiesRowConfigStruct,
+  sectionEntitiesRowConfigStruct,
+  webLinkEntitiesRowConfigStruct,
+  buttonsEntitiesRowConfigStruct,
+  attributeEntitiesRowConfigStruct,
+  callServiceEntitiesRowConfigStruct,
 ]);
