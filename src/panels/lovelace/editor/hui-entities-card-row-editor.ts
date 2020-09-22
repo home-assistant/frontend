@@ -92,9 +92,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
                               aria-label=${this.hass!.localize(
                                 "ui.components.entity.entity-picker.clear"
                               )}
-                              index=${index}
                               .index=${index}
-                              .value=${""}
                               @click=${this._removeSpecialRow}
                             >
                               <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
