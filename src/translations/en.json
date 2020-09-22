@@ -1760,7 +1760,6 @@
             "password": "Password",
             "password_confirm": "Confirm Password",
             "password_not_match": "Passwords don't match",
-            "password_changed": "Password changed successfully",
             "create": "Create"
           }
         },
