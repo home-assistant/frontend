@@ -18,8 +18,11 @@ export class HaHelpTooltip extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-svg-icon id="HelpIcon" .path=${mdiHelpCircle}></ha-svg-icon>
-      <paper-tooltip for="HelpIcon" offset="4" .position=${this.position}
+      <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
+      <paper-tooltip
+        offset="4"
+        .position=${this.position}
+        .fitToVisibleBounds=${true}
         >${this.label}</paper-tooltip
       >
     `;

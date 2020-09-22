@@ -84,7 +84,9 @@ export class HuiActionEditor extends LitElement {
           </paper-listbox>
         </paper-dropdown-menu>
         <ha-help-tooltip
-          .label=${"Default action is defaulted to the domain action."}
+          .label=${this.hass!.localize(
+            "ui.panel.lovelace.editor.action-editor.default_action_help"
+          )}
         ></ha-help-tooltip>
       </div>
       ${this.config?.action === "navigate"
