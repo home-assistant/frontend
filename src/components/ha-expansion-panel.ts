@@ -93,14 +93,13 @@ class HaExpansionPanel extends LitElement {
       }
 
       .container {
-        height: 0;
         overflow: hidden;
-        transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-        min-height: 0px;
+        transition: max-height 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+        max-height: 0px;
       }
 
       .container.expanded {
-        height: auto;
+        max-height: 1000px;
       }
 
       ::slotted([slot="content"]) {
