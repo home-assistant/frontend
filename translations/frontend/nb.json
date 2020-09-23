@@ -618,7 +618,7 @@
                 "pick-media": "Velg Media",
                 "play": "Spill av",
                 "play-media": "Spill media",
-                "setup_local_help": "Sjekk {documentation} om hvordan du konfigurerer lokale medier.",
+                "setup_local_help": "Sjekk {documentation} for hvordan du konfigurerer lokale medier.",
                 "video_not_supported": "Nettleseren din støtter ikke videoelementet.",
                 "web-browser": "Nettleser"
             },
