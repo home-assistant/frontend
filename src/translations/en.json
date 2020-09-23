@@ -770,7 +770,9 @@
             "delete": "Delete",
             "update": "Update",
             "create": "Create",
-            "create_and_write": "Create and Write"
+            "create_and_write": "Create and Write",
+            "usage_instructions": "Use a smart phone with the Home Assistant Companion app to write this tag to a programmable NFC tag. When scanning the NFC tag with your phone, any automations associated to this tag will be triggered.",
+            "usage_instructions_qr": "You can also print this QR code and scan it with the phones camera."
           }
         },
         "helpers": {

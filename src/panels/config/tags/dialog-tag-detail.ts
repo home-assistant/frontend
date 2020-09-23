@@ -77,12 +77,14 @@ class DialogTagDetail extends LitElement
         <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           <div class="form">
-            ${this._params.entry
-              ? html`${this.hass!.localize(
-                  "ui.panel.config.tags.detail.tag_id"
-                )}:
-                ${this._params.entry.id}`
-              : ""}
+            ${
+              this._params.entry
+                ? html`${this.hass!.localize(
+                    "ui.panel.config.tags.detail.tag_id"
+                  )}:
+                  ${this._params.entry.id}`
+                : ""
+            }
             <paper-input
               dialogInitialFocus
               .value=${this._name}
@@ -97,54 +99,79 @@ class DialogTagDetail extends LitElement
               required
               auto-validate
             ></paper-input>
-            ${!this._params.entry
-              ? html` <paper-input
-                  .value=${this._id}
-                  .configValue=${"id"}
-                  @value-changed=${this._valueChanged}
-                  .label=${this.hass!.localize(
-                    "ui.panel.config.tags.detail.tag_id"
-                  )}
-                  .placeholder=${this.hass!.localize(
-                    "ui.panel.config.tags.detail.tag_id_placeholder"
-                  )}
-                ></paper-input>`
-              : ""}
+            ${
+              !this._params.entry
+                ? html` <paper-input
+                    .value=${this._id}
+                    .configValue=${"id"}
+                    @value-changed=${this._valueChanged}
+                    .label=${this.hass!.localize(
+                      "ui.panel.config.tags.detail.tag_id"
+                    )}
+                    .placeholder=${this.hass!.localize(
+                      "ui.panel.config.tags.detail.tag_id_placeholder"
+                    )}
+                  ></paper-input>`
+                : ""
+            }
           </div>
-          <div id="qr"></div>
+          <div id="qr">
+            <p>
+              ${this.hass!.localize(
+                "ui.panel.config.tags.detail.usage_instructions"
+              )}
+            </p>
+              ${this.hass!.localize(
+                "ui.panel.config.tags.detail.usage_instructions_qr"
+              )}
+            </p>
+            <p>
+              <a
+                href="https://companion.home-assistant.io/"
+                target="_blank"
+                rel="noreferrer"
+              >Home Assistant Companion</a>
+            </p>
+          </div>
         </div>
-        ${this._params.entry
-          ? html`
-              <mwc-button
-                slot="secondaryAction"
-                class="warning"
-                @click="${this._deleteEntry}"
-                .disabled=${this._submitting}
-              >
-                ${this.hass!.localize("ui.panel.config.tags.detail.delete")}
-              </mwc-button>
-            `
-          : html``}
+        ${
+          this._params.entry
+            ? html`
+                <mwc-button
+                  slot="secondaryAction"
+                  class="warning"
+                  @click="${this._deleteEntry}"
+                  .disabled=${this._submitting}
+                >
+                  ${this.hass!.localize("ui.panel.config.tags.detail.delete")}
+                </mwc-button>
+              `
+            : html``
+        }
         <mwc-button
           slot="primaryAction"
           @click="${this._updateEntry}"
           .disabled=${this._submitting}
         >
-          ${this._params.entry
-            ? this.hass!.localize("ui.panel.config.tags.detail.update")
-            : this.hass!.localize("ui.panel.config.tags.detail.create")}
+          ${
+            this._params.entry
+              ? this.hass!.localize("ui.panel.config.tags.detail.update")
+              : this.hass!.localize("ui.panel.config.tags.detail.create")
+          }
         </mwc-button>
-        ${this._params.openWrite && !this._params.entry
-          ? html` <mwc-button
-              slot="primaryAction"
-              @click="${this._updateWriteEntry}"
-              .disabled=${this._submitting}
-            >
-              ${this.hass!.localize(
-                "ui.panel.config.tags.detail.create_and_write"
-              )}
-            </mwc-button>`
-          : ""}
+        ${
+          this._params.openWrite && !this._params.entry
+            ? html` <mwc-button
+                slot="primaryAction"
+                @click="${this._updateWriteEntry}"
+                .disabled=${this._submitting}
+              >
+                ${this.hass!.localize(
+                  "ui.panel.config.tags.detail.create_and_write"
+                )}
+              </mwc-button>`
+            : ""
+        }
       </ha-dialog>
     `;
   }
