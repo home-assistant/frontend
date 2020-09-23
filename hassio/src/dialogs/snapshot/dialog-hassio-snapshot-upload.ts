@@ -1,7 +1,3 @@
-import "@material/mwc-button/mwc-button";
-import "@material/mwc-icon-button";
-import "@material/mwc-tab";
-import "@material/mwc-tab-bar";
 import {
   CSSResult,
   customElement,
@@ -12,13 +8,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
-import "../../../../src/components/ha-circular-progress";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
-import "../../../../src/components/ha-formfield";
-import "../../../../src/components/ha-header-bar";
-import "../../../../src/components/ha-radio";
-import "../../../../src/components/ha-related-items";
-import "../../../../src/components/ha-svg-icon";
 import { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
