@@ -2614,7 +2614,8 @@
                             "description": "The Sensor card gives you a quick overview of your sensors state with an optional graph to visualize change over time.",
                             "graph_detail": "Graph Detail",
                             "graph_type": "Graph Type",
-                            "name": "Sensor"
+                            "name": "Sensor",
+                            "show_more_detail": "Show more detail"
                         },
                         "shopping-list": {
                             "description": "The Shopping List card allows you to add, edit, check-off, and clear items from your shopping list.",

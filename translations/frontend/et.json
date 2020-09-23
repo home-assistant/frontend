@@ -1453,6 +1453,7 @@
                     "device_not_found": "Seadet ei leitud.",
                     "entities": {
                         "add_entities_lovelace": "Lisa Lovelace'i",
+                        "disabled_entities": "{count} {count, plural,\n  one {keelatudolem}\n  other {keelatudolemit}\n}",
                         "entities": "Olemid",
                         "hide_disabled": "Peida keelatud",
                         "none": "Sellel seadmel pole olemeid"
@@ -1588,7 +1589,9 @@
                         "delete_button": "Kustuta {integration}",
                         "delete_confirm": "Oled kindel, et soovid selle sidumise kustutada?",
                         "device_unavailable": "seade pole saadaval",
+                        "devices": "{count} {count, plural,\n  one {seade}\n  other {seadet}\n}",
                         "documentation": "Vaata dokumentatsiooni",
+                        "entities": "{count} {count, plural,\n  one {olemid}\n  other{olemit}\n}",
                         "entity_unavailable": "olem pole saadaval",
                         "firmware": "Püsivara: {version}",
                         "hub": "Ühendatud",
@@ -1602,6 +1605,7 @@
                         "reload_restart_confirm": "Taaskäivita Home Assistant, et lõpetada selle sidumise taaslaadimine",
                         "rename": "Nimeta ümber",
                         "restart_confirm": "Selle sidumise lõplikuks eemaldamiseks taaskäivita Home Assistant",
+                        "services": "{count} {count, plural,\n one {teenus}\n other {teenust}\n}",
                         "settings_button": "Muuda {integration} seadeid",
                         "system_options": "Süsteemisuvandid",
                         "system_options_button": "{integration} süsteemisuvandid",
@@ -1979,7 +1983,7 @@
                     "section": {
                         "reloading": {
                             "automation": "Taaslae automatiseeringud",
-                            "command_line": "TASLAE KÄSUREA OLEMID",
+                            "command_line": "TAASLAE KÄSUREA OLEMID",
                             "core": "Taaslae tuum",
                             "filesize": "TAASLAE FAILSUURUSE OLEMID",
                             "filter": "TAASLAE FILTREERITUD OLEMID",
@@ -2001,7 +2005,7 @@
                             "ping": "TAASLAE PING BINAARANDURI OLEMID",
                             "reload": "Laadi {domain} uuesti",
                             "rest": "Taaslae REST olemid ja teavitusteenused",
-                            "rpi_gpio": "Laadige Raspberry Pi GPIO üksused uuesti",
+                            "rpi_gpio": "Taaslae Raspberry Pi GPIO üksused",
                             "scene": "Taaslae stseenid",
                             "script": "Taaslae skriptid",
                             "smtp": "TAASLAE SMTP TEAVITUSED",
