@@ -14,6 +14,7 @@ const fixedDeviceClassIcons = {
   power: "hass:flash",
   power_factor: "hass:angle-acute",
   signal_strength: "hass:wifi",
+  timestamp: "hass:clock",
   voltage: "hass:sine-wave",
 };
 
