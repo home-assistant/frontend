@@ -1737,7 +1737,7 @@
             "name": "Name",
             "change_password": "Change password",
             "new_password": "New Password",
-            "password_changed": "The password is changed!",
+            "password_changed": "Password was changed successfully",
             "activate_user": "Activate user",
             "deactivate_user": "Deactivate user",
             "delete_user": "Delete user",
