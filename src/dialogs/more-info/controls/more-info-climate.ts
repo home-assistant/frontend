@@ -16,7 +16,7 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-climate-control";
 import "../../../components/ha-paper-dropdown-menu";
-import "../../../components/ha-paper-slider";
+import "../../../components/ha-slider";
 import "../../../components/ha-switch";
 import {
   ClimateEntity,
@@ -148,7 +148,7 @@ class MoreInfoClimate extends LitElement {
                   <div class="target-humidity">
                     ${stateObj.attributes.humidity} %
                   </div>
-                  <ha-paper-slider
+                  <ha-slider
                     class="humidity"
                     step="1"
                     pin
@@ -160,7 +160,7 @@ class MoreInfoClimate extends LitElement {
                     .value=${stateObj.attributes.humidity}
                     @change=${this._targetHumiditySliderChanged}
                   >
-                  </ha-paper-slider>
+                  </ha-slider>
                 </div>
               </div>
             `
@@ -451,7 +451,7 @@ class MoreInfoClimate extends LitElement {
         cursor: pointer;
       }
 
-      ha-paper-slider {
+      ha-slider {
         width: 100%;
       }
 
