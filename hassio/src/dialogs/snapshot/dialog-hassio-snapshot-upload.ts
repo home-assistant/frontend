@@ -13,7 +13,6 @@ import {
 } from "lit-element";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-circular-progress";
-import "../../../../src/components/ha-dialog";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-formfield";
 import "../../../../src/components/ha-header-bar";
