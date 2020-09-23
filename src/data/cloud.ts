@@ -58,6 +58,7 @@ export type CloudStatus = CloudStatusBase | CloudStatusLoggedIn;
 
 export interface SubscriptionInfo {
   human_description: string;
+  provider: string;
 }
 
 export interface CloudWebhook {

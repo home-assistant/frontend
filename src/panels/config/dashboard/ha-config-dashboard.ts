@@ -17,6 +17,7 @@ import {
 } from "lit-element";
 import memoizeOne from "memoize-one";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
+import { listenMediaQuery } from "../../../common/dom/media_query";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import {
   caseInsensitiveCompare,
@@ -27,7 +28,13 @@ import "../../../components/ha-icon-next";
 import "../../../components/ha-menu-button";
 import "../../../components/user/ha-person-badge";
 import { AutomationEntity } from "../../../data/automation";
-import { CloudStatus } from "../../../data/cloud";
+import {
+  CloudStatus,
+  CloudStatusLoggedIn,
+  fetchCloudStatus,
+  fetchCloudSubscriptionInfo,
+  SubscriptionInfo,
+} from "../../../data/cloud";
 import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
 import {
   DeviceRegistryEntry,
@@ -45,6 +52,7 @@ import {
 } from "../../../data/lovelace";
 import { fetchPersons, Person } from "../../../data/person";
 import { fetchTags, Tag } from "../../../data/tag";
+import { fetchWebhooks, Webhook } from "../../../data/webhook";
 import "../../../layouts/ha-app-layout";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
@@ -60,11 +68,11 @@ class HaConfigDashboard extends LitElement {
   @property({ type: Boolean, reflect: true })
   public narrow!: boolean;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide!: boolean;
 
-  @property() public cloudStatus?: CloudStatus;
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
-  @property() public showAdvanced!: boolean;
+  @property({ type: Boolean }) public showAdvanced!: boolean;
 
   @internalProperty() private _persons?: Person[];
 
@@ -80,13 +88,34 @@ class HaConfigDashboard extends LitElement {
 
   @internalProperty() private _dashboards: LovelaceDashboard[] = [];
 
-  @internalProperty() private _width: number;
+  @internalProperty() private _veryWide = false;
 
-  @internalProperty() private mqls?: MediaQueryList[];
+  @internalProperty() private _cloudStatus?: CloudStatus;
+
+  @internalProperty() private _subscription?: SubscriptionInfo;
+
+  @internalProperty() private _localHooks?: Webhook[];
+
+  private _listeners: Array<() => void> = [];
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._listeners.push(
+      listenMediaQuery("(min-width: 1525px)", (matches) => {
+        this._veryWide = matches;
+      })
+    );
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    while (this._listeners.length) {
+      this._listeners.pop()!();
+    }
+  }
 
   protected render(): TemplateResult {
-    const integrationsToShow =
-      this._width === 4 ? 6 : this._width === 3 ? 4 : this.narrow ? 2 : 6;
+    const integrationsToShow = this._veryWide ? 6 : this.narrow ? 2 : 4;
     return html`
       <ha-app-layout>
         <app-header fixed slot="header">
@@ -116,18 +145,37 @@ class HaConfigDashboard extends LitElement {
                 )}
               </mwc-list>
               <div class="footer">
-                <mwc-button>Manage Persons, Users & Zones</mwc-button>
+                <a class="config-link" href="/config/person">
+                  <mwc-button>Manage Persons, Users & Zones</mwc-button>
+                </a>
               </div>
             </ha-card>
             <ha-card outlined id="CloudCard">
               <div class="card-header">
                 <div class="header">Cloud</div>
-                <div class="secondary">zackbarett@hey.com</div>
+                ${this._cloudStatus && "email" in this._cloudStatus
+                  ? html`
+                      <div class="secondary">
+                        ${this._cloudStatus.email}
+                      </div>
+                    `
+                  : ""}
               </div>
               <mwc-list>
                 <mwc-list-item twoline hasMeta>
                   <span>Remote UI</span>
-                  <span slot="secondary">Connected</span>
+                  <span slot="secondary"
+                    >${this._cloudStatus &&
+                    "remote_connected" in this._cloudStatus
+                      ? this._cloudStatus?.remote_connected
+                        ? this.hass.localize(
+                            "ui.panel.config.cloud.account.connected"
+                          )
+                        : this.hass.localize(
+                            "ui.panel.config.cloud.account.not_connected"
+                          )
+                      : ""}</span
+                  >
                   <ha-svg-icon
                     class="meta-icon"
                     slot="meta"
@@ -136,7 +184,15 @@ class HaConfigDashboard extends LitElement {
                 </mwc-list-item>
                 <mwc-list-item twoline hasMeta>
                   <span>Google Assistant</span>
-                  <span slot="secondary">Enabled</span>
+                  <span slot="secondary"
+                    >${this._cloudStatus &&
+                    (this._cloudStatus as CloudStatusLoggedIn).prefs
+                      .google_enabled
+                      ? this.hass.localize("ui.panel.config.cloud.enabled")
+                      : this.hass.localize(
+                          "ui.panel.config.cloud.disabled"
+                        )}</span
+                  >
                   <ha-svg-icon
                     class="meta-icon"
                     slot="meta"
@@ -145,7 +201,15 @@ class HaConfigDashboard extends LitElement {
                 </mwc-list-item>
                 <mwc-list-item twoline hasMeta>
                   <span>Amazon Alexa</span>
-                  <span slot="secondary">Disabled</span>
+                  <span slot="secondary"
+                    >${this._cloudStatus &&
+                    (this._cloudStatus as CloudStatusLoggedIn).prefs
+                      .alexa_enabled
+                      ? this.hass.localize("ui.panel.config.cloud.enabled")
+                      : this.hass.localize(
+                          "ui.panel.config.cloud.disabled"
+                        )}</span
+                  >
                   <ha-svg-icon
                     class="meta-icon"
                     slot="meta"
@@ -154,7 +218,9 @@ class HaConfigDashboard extends LitElement {
                 </mwc-list-item>
                 <mwc-list-item twoline hasMeta>
                   <span>Webhooks</span>
-                  <span slot="secondary">3 active</span>
+                  <span slot="secondary"
+                    >${this._localHooks?.length} active</span
+                  >
                   <ha-svg-icon
                     class="meta-icon"
                     slot="meta"
@@ -163,59 +229,74 @@ class HaConfigDashboard extends LitElement {
                 </mwc-list-item>
               </mwc-list>
               <div class="footer">
-                <mwc-button>Manage Cloud Services</mwc-button>
+                <a class="config-link" href="/config/cloud">
+                  <mwc-button>Manage Cloud Services</mwc-button></a
+                >
               </div>
             </ha-card>
             <ha-card outlined id="ServerCard" .header=${"Server"}>
               <mwc-list>
-                <mwc-list-item twoline hasMeta>
-                  <span>Location Settings</span>
-                  <span slot="secondary">Unit system, timezone, etc</span>
-                  <ha-svg-icon
-                    class="meta-icon"
-                    slot="meta"
-                    .path=${mdiChevronRight}
-                  ></ha-svg-icon>
-                </mwc-list-item>
-                <mwc-list-item twoline hasMeta>
-                  <span>Server Control</span>
-                  <span slot="secondary">Stop and Start Home Assistant</span>
-                  <ha-svg-icon
-                    class="meta-icon"
-                    slot="meta"
-                    .path=${mdiChevronRight}
-                  ></ha-svg-icon>
-                </mwc-list-item>
-                <mwc-list-item twoline hasMeta>
-                  <span>Logs</span>
-                  <span slot="secondary">Server Logs</span>
-                  <ha-svg-icon
-                    class="meta-icon"
-                    slot="meta"
-                    .path=${mdiChevronRight}
-                  ></ha-svg-icon>
-                </mwc-list-item>
-                <mwc-list-item twoline hasMeta>
-                  <span>Add-ons</span>
-                  <span slot="secondary">Manage Addons</span>
-                  <ha-svg-icon
-                    class="meta-icon"
-                    slot="meta"
-                    .path=${mdiChevronRight}
-                  ></ha-svg-icon>
-                </mwc-list-item>
-                <mwc-list-item twoline hasMeta>
-                  <span>About</span>
-                  <span slot="secondary">Info about the server</span>
-                  <ha-svg-icon
-                    class="meta-icon"
-                    slot="meta"
-                    .path=${mdiChevronRight}
-                  ></ha-svg-icon>
-                </mwc-list-item>
+                <a class="config-link" href="/config/core">
+                  <mwc-list-item twoline hasMeta>
+                    <span>Location Settings</span>
+                    <span slot="secondary">Unit system, timezone, etc</span>
+                    <ha-svg-icon
+                      class="meta-icon"
+                      slot="meta"
+                      .path=${mdiChevronRight}
+                    ></ha-svg-icon>
+                  </mwc-list-item>
+                </a>
+                <a class="config-link" href="/config/server_control">
+                  <mwc-list-item twoline hasMeta>
+                    <span>Server Control</span>
+                    <span slot="secondary">Stop and Start Home Assistant</span>
+                    <ha-svg-icon
+                      class="meta-icon"
+                      slot="meta"
+                      .path=${mdiChevronRight}
+                    ></ha-svg-icon>
+                  </mwc-list-item>
+                </a>
+                <a class="config-link" href="/config/logs">
+                  <mwc-list-item twoline hasMeta>
+                    <span>Logs</span>
+                    <span slot="secondary">Server Logs</span>
+                    <ha-svg-icon
+                      class="meta-icon"
+                      slot="meta"
+                      .path=${mdiChevronRight}
+                    ></ha-svg-icon>
+                  </mwc-list-item>
+                </a>
+
+                <a class="config-link" href="/config/customize">
+                  <mwc-list-item twoline hasMeta>
+                    <span>Customizations</span>
+                    <span slot="secondary">Manage Customizations</span>
+                    <ha-svg-icon
+                      class="meta-icon"
+                      slot="meta"
+                      .path=${mdiChevronRight}
+                    ></ha-svg-icon>
+                  </mwc-list-item>
+                </a>
+                <a class="config-link" href="/config/info">
+                  <mwc-list-item twoline hasMeta>
+                    <span>About</span>
+                    <span slot="secondary">Info about the server</span>
+                    <ha-svg-icon
+                      class="meta-icon"
+                      slot="meta"
+                      .path=${mdiChevronRight}
+                    ></ha-svg-icon>
+                  </mwc-list-item>
+                </a>
               </mwc-list>
               <div class="footer">
-                <mwc-button>Manage Server</mwc-button>
+                <a class="config-link" href="/config/core">
+                  <mwc-button>Manage Server</mwc-button>
+                </a>
               </div>
             </ha-card>
           </div>
@@ -281,103 +362,126 @@ class HaConfigDashboard extends LitElement {
                   })}
               </div>
               <div class="footer">
-                <mwc-button>Manage integrations</mwc-button>
+                <a class="config-link" href="/config/integrations">
+                  <mwc-button>Manage integrations</mwc-button>
+                </a>
               </div>
             </ha-card>
             <ha-card outlined id="AutomationCard" .header=${"Automations"}>
               <mwc-list>
                 ${this._getAutomations(this.hass.states).map(
                   (automation) => html`
-                    <mwc-list-item twoline hasMeta>
-                      <span>${automation.attributes.friendly_name}</span>
-                      <span slot="secondary"
-                        >${this.hass.localize(
-                          "ui.card.automation.last_triggered"
-                        )}:
-                        ${automation.attributes.last_triggered
-                          ? formatDateTime(
-                              new Date(automation.attributes.last_triggered),
-                              this.hass.language
-                            )
-                          : this.hass.localize(
-                              "ui.components.relative_time.never"
-                            )}
-                      </span>
-                    </mwc-list-item>
-                    <ha-svg-icon
-                      class="meta-icon"
-                      slot="meta"
-                      .path=${mdiChevronRight}
-                    ></ha-svg-icon>
+                    <a
+                      class="config-link"
+                      href=${`/config/automation/edit/${automation.attributes.id}`}
+                    >
+                      <mwc-list-item twoline hasMeta>
+                        <span>${automation.attributes.friendly_name}</span>
+                        <span slot="secondary"
+                          >${this.hass.localize(
+                            "ui.card.automation.last_triggered"
+                          )}:
+                          ${automation.attributes.last_triggered
+                            ? formatDateTime(
+                                new Date(automation.attributes.last_triggered),
+                                this.hass.language
+                              )
+                            : this.hass.localize(
+                                "ui.components.relative_time.never"
+                              )}
+                        </span>
+                        <ha-svg-icon
+                          class="meta-icon"
+                          slot="meta"
+                          .path=${mdiChevronRight}
+                        ></ha-svg-icon>
+                      </mwc-list-item>
+                    </a>
                   `
                 )}
               </mwc-list>
               <div class="footer">
-                <mwc-button>Manage Automations</mwc-button>
+                <a class="config-link" href="/config/automation">
+                  <mwc-button>Manage Automations</mwc-button>
+                </a>
               </div>
             </ha-card>
             <ha-card outlined id="ScriptCard" .header=${"Scripts"}>
               <mwc-list>
                 ${this._getScripts(this.hass.states).map(
                   (script) => html`
-                    <mwc-list-item twoline hasMeta>
-                      <span>${script.attributes.friendly_name}</span>
-                      <span slot="secondary"
-                        >${this.hass.localize(
-                          "ui.card.automation.last_triggered"
-                        )}:
-                        ${script.attributes.last_triggered
-                          ? formatDateTime(
-                              new Date(script.attributes.last_triggered),
-                              this.hass.language
-                            )
-                          : this.hass.localize(
-                              "ui.components.relative_time.never"
-                            )}
-                      </span>
-                    </mwc-list-item>
-                    <ha-svg-icon
-                      class="meta-icon"
-                      slot="meta"
-                      .path=${mdiChevronRight}
-                    ></ha-svg-icon>
+                    <a
+                      class="config-link"
+                      href=${`/config/script/edit/${script.entity_id}`}
+                    >
+                      <mwc-list-item twoline hasMeta>
+                        <span>${script.attributes.friendly_name}</span>
+                        <span slot="secondary"
+                          >${this.hass.localize(
+                            "ui.card.automation.last_triggered"
+                          )}:
+                          ${script.attributes.last_triggered
+                            ? formatDateTime(
+                                new Date(script.attributes.last_triggered),
+                                this.hass.language
+                              )
+                            : this.hass.localize(
+                                "ui.components.relative_time.never"
+                              )}
+                        </span>
+                        <ha-svg-icon
+                          class="meta-icon"
+                          slot="meta"
+                          .path=${mdiChevronRight}
+                        ></ha-svg-icon>
+                      </mwc-list-item>
+                    </a>
                   `
                 )}
               </mwc-list>
               <div class="footer">
-                <mwc-button>Manage Scripts</mwc-button>
+                <a class="config-link" href="/config/script">
+                  <mwc-button>Manage Scripts</mwc-button>
+                </a>
               </div>
             </ha-card>
             <ha-card outlined id="SceneCard" .header=${"Scenes"}>
               <mwc-list>
                 ${this._getScenes(this.hass.states).map(
                   (scene) => html`
-                    <mwc-list-item twoline hasMeta>
-                      <span>${scene.attributes.friendly_name}</span>
-                      <span slot="secondary"
-                        >${this.hass.localize(
-                          "ui.card.automation.last_triggered"
-                        )}:
-                        ${scene.attributes.last_triggered
-                          ? formatDateTime(
-                              new Date(scene.attributes.last_triggered),
-                              this.hass.language
-                            )
-                          : this.hass.localize(
-                              "ui.components.relative_time.never"
-                            )}
-                      </span>
-                    </mwc-list-item>
-                    <ha-svg-icon
-                      class="meta-icon"
-                      slot="meta"
-                      .path=${mdiChevronRight}
-                    ></ha-svg-icon>
+                    <a
+                      class="config-link"
+                      href=${`/config/scene/edit/${scene.attributes.id}`}
+                    >
+                      <mwc-list-item twoline hasMeta>
+                        <span>${scene.attributes.friendly_name}</span>
+                        <span slot="secondary"
+                          >${this.hass.localize(
+                            "ui.card.automation.last_triggered"
+                          )}:
+                          ${scene.attributes.last_triggered
+                            ? formatDateTime(
+                                new Date(scene.attributes.last_triggered),
+                                this.hass.language
+                              )
+                            : this.hass.localize(
+                                "ui.components.relative_time.never"
+                              )}
+                        </span>
+                        <ha-svg-icon
+                          class="meta-icon"
+                          slot="meta"
+                          .path=${mdiChevronRight}
+                        ></ha-svg-icon>
+                      </mwc-list-item>
+                    </a>
                   `
                 )}
               </mwc-list>
               <div class="footer">
-                <mwc-button>Manage Scenes</mwc-button>
+                <a class="config-link" href="/config/scene">
+                  <mwc-button>Manage Scenes</mwc-button>
+                </a>
               </div>
             </ha-card>
             <ha-card outlined id="HelperCard" .header=${"Helpers"}>
@@ -399,17 +503,19 @@ class HaConfigDashboard extends LitElement {
                               "ui.components.relative_time.never"
                             )}
                       </span>
+                      <ha-svg-icon
+                        class="meta-icon"
+                        slot="meta"
+                        .path=${mdiChevronRight}
+                      ></ha-svg-icon>
                     </mwc-list-item>
-                    <ha-svg-icon
-                      class="meta-icon"
-                      slot="meta"
-                      .path=${mdiChevronRight}
-                    ></ha-svg-icon>
                   `
                 )}
               </mwc-list>
               <div class="footer">
-                <mwc-button>Manage Helpers</mwc-button>
+                <a class="config-link" href="/config/helpers">
+                  <mwc-button>Manage Helpers</mwc-button>
+                </a>
               </div>
             </ha-card>
             <ha-card outlined id="TagsCard" .header=${"Tags"}>
@@ -435,17 +541,19 @@ class HaConfigDashboard extends LitElement {
                               "ui.panel.config.tags.never_scanned"
                             )}
                       </span>
+                      <ha-svg-icon
+                        class="meta-icon"
+                        slot="meta"
+                        .path=${mdiChevronRight}
+                      ></ha-svg-icon>
                     </mwc-list-item>
-                    <ha-svg-icon
-                      class="meta-icon"
-                      slot="meta"
-                      .path=${mdiChevronRight}
-                    ></ha-svg-icon>
                   `
                 )}
               </mwc-list>
               <div class="footer">
-                <mwc-button>Manage Tags</mwc-button>
+                <a class="config-link" href="/config/tags">
+                  <mwc-button>Manage Tags</mwc-button>
+                </a>
               </div>
             </ha-card>
             <ha-card
@@ -466,17 +574,21 @@ class HaConfigDashboard extends LitElement {
                           ? html` - ${dashboard.filename} `
                           : ""}
                       </span>
+                      <ha-svg-icon
+                        class="meta-icon"
+                        slot="meta"
+                        .path=${mdiChevronRight}
+                      ></ha-svg-icon>
                     </mwc-list-item>
-                    <ha-svg-icon
-                      class="meta-icon"
-                      slot="meta"
-                      .path=${mdiChevronRight}
-                    ></ha-svg-icon>
                   `
                 )}
               </mwc-list>
               <div class="footer">
-                <mwc-button>Manage Lovelace Dashboards & Resources</mwc-button>
+                <a class="config-link" href="/config/lovelace">
+                  <mwc-button
+                    >Manage Lovelace Dashboards & Resources</mwc-button
+                  >
+                </a>
               </div>
             </ha-card>
           </div>
@@ -491,26 +603,40 @@ class HaConfigDashboard extends LitElement {
     this._fetchIntegrationData();
     this._fetchTags();
     this._fetchDasboards();
+    this._fetchSubscriptionInfo();
+    this._updateCloudStatus();
+    this._fetchWebhooks();
     subscribeEntityRegistry(this.hass.connection, (entries) => {
       this._entityRegistryEntries = entries;
     });
     subscribeDeviceRegistry(this.hass.connection, (entries) => {
       this._deviceRegistryEntries = entries;
     });
-    this.mqls = [300, 600, 900, 1525].map((width) => {
-      const mql = matchMedia(`(min-width: ${width}px)`);
-      mql.addEventListener("change", () => {
-        this._width = this.mqls!.reduce(
-          (cols, _mql) => cols + Number(_mql.matches),
-          0
-        );
-      });
-      return mql;
-    });
-    this._width = this.mqls!.reduce(
-      (cols, _mql) => cols + Number(_mql.matches),
-      0
-    );
+  }
+
+  private async _fetchSubscriptionInfo() {
+    this._subscription = await fetchCloudSubscriptionInfo(this.hass);
+    if (
+      this._subscription.provider &&
+      this.cloudStatus &&
+      this.cloudStatus.cloud !== "connected"
+    ) {
+      this._updateCloudStatus();
+    }
+  }
+
+  private async _updateCloudStatus() {
+    this._cloudStatus = await fetchCloudStatus(this.hass);
+
+    if (this._cloudStatus.cloud === "connecting") {
+      setTimeout(() => this._updateCloudStatus(), 5000);
+    }
+  }
+
+  private async _fetchWebhooks() {
+    this._localHooks = this.hass!.config.components.includes("webhook")
+      ? await fetchWebhooks(this.hass!)
+      : [];
   }
 
   private async _fetchPersonData() {
@@ -783,6 +909,10 @@ class HaConfigDashboard extends LitElement {
         .secondary {
           font-size: 14px;
           line-height: 1.2;
+        }
+
+        .config-link {
+          text-decoration: none;
         }
 
         .meta-icon {
