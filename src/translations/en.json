@@ -254,6 +254,8 @@
           "wnw": "WNW",
           "wsw": "WSW"
         },
+        "day": "Day",
+        "night": "Night",
         "forecast": "Forecast",
         "high": "High",
         "low": "Low"
