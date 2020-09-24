@@ -1,3 +1,4 @@
+import "@material/mwc-icon-button";
 import "../../../components/ha-icon-button";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
@@ -23,7 +24,7 @@ import { HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
 import "../../../components/ha-svg-icon";
-import { mdiPlus } from "@mdi/js";
+import { mdiPlus, mdiHelpCircle } from "@mdi/js";
 import { stateIcon } from "../../../common/entity/state_icon";
 import { documentationUrl } from "../../../util/documentation-url";
 
@@ -141,11 +142,9 @@ class HaScriptPicker extends LitElement {
         )}
         hasFab
       >
-        <ha-icon-button
-          slot="toolbar-icon"
-          icon="hass:help-circle"
-          @click=${this._showHelp}
-        ></ha-icon-button>
+        <mwc-icon-button slot="toolbar-icon" @click=${this._showHelp}>
+          <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
+        </mwc-icon-button>
         <a href="/config/script/edit/new" slot="fab">
           <mwc-fab
             ?is-wide=${this.isWide}
