@@ -151,7 +151,12 @@ class HaLogbook extends LitElement {
             <div class="message-relative_time">
               <div class="message">
                 ${!this.noName
-                  ? html`<span class="name">${item.name}</span>`
+                  ? html`<a
+                      href="#"
+                      @click=${this._entityClicked}
+                      .entityId=${item.entity_id}
+                      ><span class="name">${item.name}</span></a
+                    >`
                   : ""}
                 ${item.message}
                 ${item_username
@@ -245,7 +250,6 @@ class HaLogbook extends LitElement {
           box-sizing: border-box;
           border-top: 1px solid
             var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
-          cursor: pointer;
         }
 
         .entry.no-entity,
