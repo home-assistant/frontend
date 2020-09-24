@@ -33,6 +33,8 @@ export class HuiActionEditor extends LitElement {
 
   @property() public actions?: string[];
 
+  @property() public tooltipText?: string;
+
   @property() protected hass?: HomeAssistant;
 
   get _navigation_path(): string {
@@ -83,11 +85,11 @@ export class HuiActionEditor extends LitElement {
             })}
           </paper-listbox>
         </paper-dropdown-menu>
-        <ha-help-tooltip
-          .label=${this.hass!.localize(
-            "ui.panel.lovelace.editor.action-editor.default_action_help"
-          )}
-        ></ha-help-tooltip>
+        ${this.tooltipText
+          ? html`
+              <ha-help-tooltip .label=${this.tooltipText}></ha-help-tooltip>
+            `
+          : ""}
       </div>
       ${this.config?.action === "navigate"
         ? html`

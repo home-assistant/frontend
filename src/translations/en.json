@@ -2233,7 +2233,6 @@
             "navigation_path": "Navigation Path",
             "url_path": "Url Path",
             "editor_service_data": "Service data can only be entered in the code editor",
-            "default_action_help": "The default action depends on the entity's capabilities, it will either be toggled or the more info will be shown.",
             "actions": {
               "default_action": "Default Action",
               "call-service": "Call Service",
@@ -2281,7 +2280,8 @@
             },
             "button": {
               "name": "Button",
-              "description": "The Button card allows you to add buttons to perform tasks."
+              "description": "The Button card allows you to add buttons to perform tasks.",
+              "default_action_help": "The default action depends on the entity's capabilities, it will either be toggled or the more info will be shown."
             },
             "entity-filter": {
               "name": "Entity Filter",
