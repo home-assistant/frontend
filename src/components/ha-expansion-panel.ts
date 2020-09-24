@@ -36,7 +36,7 @@ class HaExpansionPanel extends LitElement {
 
   private _toggleContainer(): void {
     this.expanded = !this.expanded;
-    fireEvent(this, this.expanded ? "expanded" : "collapsed");
+    fireEvent(this, "expanded-changed", { expanded: this.expanded });
   }
 
   static get styles(): CSSResult {
