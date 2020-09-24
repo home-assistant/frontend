@@ -83,7 +83,7 @@ export const createHassioPartialSnapshot = async (
 export const uploadSnapshot = async (
   hass: HomeAssistant,
   file: File
-): Promise<HassioSnapshot> => {
+): Promise<HassioResponse<HassioSnapshot>> => {
   const fd = new FormData();
   fd.append("file", file);
   const resp = await hass.fetchWithAuth("/api/hassio/snapshots/new/upload", {
