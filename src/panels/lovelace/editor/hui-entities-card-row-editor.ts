@@ -78,9 +78,6 @@ export class HuiEntitiesCardRowEditor extends LitElement {
                                 ${this.hass!.localize(
                                   `ui.panel.lovelace.editor.card.entities.entity_row.${entityConf.type}`
                                 )}
-                                ${this.hass!.localize(
-                                  "ui.panel.lovelace.editor.card.entities.special_row"
-                                )}
                               </span>
                               <span class="secondary"
                                 >${this.hass!.localize(

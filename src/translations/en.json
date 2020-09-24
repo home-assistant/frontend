@@ -2272,7 +2272,7 @@
                 "call-service": "Call Service",
                 "section": "Section",
                 "weblink": "Web Link",
-                "Attribute": "Attribute",
+                "attribute": "Attribute",
                 "buttons": "Buttons",
                 "conditional": "Conditional",
                 "cast": "Cast",
