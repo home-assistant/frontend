@@ -43,13 +43,13 @@ export class HassioUploadSnapshot extends LitElement {
         .icon=${mdiFolderUpload}
         accept="application/x-tar"
         label="Upload snapshot"
-        @file-added=${this._uploadFile}
+        @file-picked=${this._uploadFile}
       ></ha-file-upload>
     `;
   }
 
   private async _uploadFile(ev) {
-    const file = ev.detail.file;
+    const file = ev.detail.files[0];
 
     if (!["application/x-tar"].includes(file.type)) {
       showAlertDialog(this, {

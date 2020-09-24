@@ -20,7 +20,7 @@ import "./ha-svg-icon";
 
 declare global {
   interface HASSDomEvents {
-    "file-added": { file: File };
+    "file-picked": { files: FileList };
   }
 }
 
@@ -102,7 +102,7 @@ export class HaFileUpload extends LitElement {
     ev.preventDefault();
     ev.stopPropagation();
     if (ev.dataTransfer?.files) {
-      fireEvent(this, "file-added", { file: ev.dataTransfer.files[0] });
+      fireEvent(this, "file-picked", { files: ev.dataTransfer.files });
     }
     this._drag = false;
   }
@@ -120,7 +120,7 @@ export class HaFileUpload extends LitElement {
   }
 
   private _handleFilePicked(ev) {
-    fireEvent(this, "file-added", { file: ev.target.files[0] });
+    fireEvent(this, "file-picked", { files: ev.target.files });
   }
 
   private _clearValue(ev: Event) {

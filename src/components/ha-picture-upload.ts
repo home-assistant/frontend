@@ -47,14 +47,14 @@ export class HaPictureUpload extends LitElement {
         this.hass.localize("ui.components.picture-upload.label")}
         .uploading=${this._uploading}
         .value=${this.value ? html`<img .src=${this.value} />` : ""}
-        @file-added=${this._handleFilePicked}
+        @file-picked=${this._handleFilePicked}
         accept="image/png, image/jpeg, image/gif"
       ></ha-file-upload>
     `;
   }
 
   private async _handleFilePicked(ev) {
-    const file = ev.detail.file;
+    const file = ev.detail.files[0];
     if (this.crop) {
       this._cropFile(file);
     } else {
