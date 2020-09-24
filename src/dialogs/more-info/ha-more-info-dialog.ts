@@ -35,35 +35,32 @@ import { showConfirmationDialog } from "../generic/show-dialog-box";
 import "./ha-more-info-history";
 import "./ha-more-info-logbook";
 
+import "./controls/more-info-alarm_control_panel";
+import "./controls/more-info-automation";
+import "./controls/more-info-camera";
+import "./controls/more-info-climate";
+import "./controls/more-info-configurator";
+import "./controls/more-info-counter";
+import "./controls/more-info-cover";
+import "./controls/more-info-fan";
+import "./controls/more-info-group";
+import "./controls/more-info-humidifier";
+import "./controls/more-info-input_datetime";
+import "./controls/more-info-light";
+import "./controls/more-info-lock";
+import "./controls/more-info-media_player";
+import "./controls/more-info-person";
+import "./controls/more-info-script";
+import "./controls/more-info-sun";
+import "./controls/more-info-timer";
+import "./controls/more-info-vacuum";
+import "./controls/more-info-water_heater";
+import "./controls/more-info-weather";
+import "./controls/more-info-default";
+
 const DOMAINS_NO_INFO = ["camera", "configurator"];
 const EDITABLE_DOMAINS_WITH_ID = ["scene", "automation"];
 const EDITABLE_DOMAINS = ["script"];
-
-const MORE_INFO_CONTROL_IMPORT = {
-  alarm_control_panel: () => import("./controls/more-info-alarm_control_panel"),
-  automation: () => import("./controls/more-info-automation"),
-  camera: () => import("./controls/more-info-camera"),
-  climate: () => import("./controls/more-info-climate"),
-  configurator: () => import("./controls/more-info-configurator"),
-  counter: () => import("./controls/more-info-counter"),
-  cover: () => import("./controls/more-info-cover"),
-  fan: () => import("./controls/more-info-fan"),
-  group: () => import("./controls/more-info-group"),
-  humidifier: () => import("./controls/more-info-humidifier"),
-  input_datetime: () => import("./controls/more-info-input_datetime"),
-  light: () => import("./controls/more-info-light"),
-  lock: () => import("./controls/more-info-lock"),
-  media_player: () => import("./controls/more-info-media_player"),
-  person: () => import("./controls/more-info-person"),
-  script: () => import("./controls/more-info-script"),
-  sun: () => import("./controls/more-info-sun"),
-  timer: () => import("./controls/more-info-timer"),
-  vacuum: () => import("./controls/more-info-vacuum"),
-  water_heater: () => import("./controls/more-info-water_heater"),
-  weather: () => import("./controls/more-info-weather"),
-  hidden: () => {},
-  default: () => import("./controls/more-info-default"),
-};
 
 export interface MoreInfoDialogParams {
   entityId: string | null;
@@ -108,7 +105,6 @@ export class MoreInfoDialog extends LitElement {
     } else {
       const type = stateMoreInfoType(stateObj);
       this._moreInfoType = `more-info-${type}`;
-      MORE_INFO_CONTROL_IMPORT[type]();
     }
   }
 
