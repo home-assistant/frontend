@@ -21,9 +21,12 @@ export interface StateLabelBadgeConfig extends LovelaceBadgeConfig {
   double_tap_action?: ActionConfig;
 }
 
-export interface LightsBadgeConfig extends LovelaceBadgeConfig {
+export interface SummaryBadgeConfig extends LovelaceBadgeConfig {
   icon?: string;
   image?: string;
   exclude?: string[];
   show_always?: boolean;
+  domain?: string;
+  state?: string;
+  name?: string;
 }

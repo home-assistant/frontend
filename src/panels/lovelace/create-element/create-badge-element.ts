@@ -5,7 +5,7 @@ import { createLovelaceElement } from "./create-element-base";
 const ALWAYS_LOADED_TYPES = new Set(["error", "state-label"]);
 const LAZY_LOAD_TYPES = {
   "entity-filter": () => import("../badges/hui-entity-filter-badge"),
-  lights: () => import("../badges/hui-lights.badge"),
+  summary: () => import("../badges/hui-summary-badge"),
 };
 
 export const createBadgeElement = (config: LovelaceBadgeConfig) =>

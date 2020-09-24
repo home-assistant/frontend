@@ -131,6 +131,7 @@ class HaLabelBadge extends LitElement {
           overflow: hidden;
           text-overflow: ellipsis;
           line-height: normal;
+          text-transform: capitalize;
         }
       `,
     ];

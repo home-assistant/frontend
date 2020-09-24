@@ -9,16 +9,21 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-label-badge";
 import { HomeAssistant } from "../../../types";
 import { LovelaceBadge } from "../types";
-import { LightsBadgeConfig } from "./types";
+import { SummaryBadgeConfig } from "./types";
 
-@customElement("hui-lights-badge")
-export class HuiLightsBadge extends LitElement implements LovelaceBadge {
+@customElement("hui-summary-badge")
+export class HuiSummaryBadge extends LitElement implements LovelaceBadge {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() protected _config?: LightsBadgeConfig;
+  @property() protected _config?: SummaryBadgeConfig;
 
-  public setConfig(config: LightsBadgeConfig): void {
-    this._config = { icon: "hass:lightbulb-group", ...config };
+  public setConfig(config: SummaryBadgeConfig): void {
+    this._config = {
+      icon: "hass:lightbulb-group",
+      domain: "light",
+      state: "on",
+      ...config,
+    };
   }
 
   protected render(): TemplateResult {
@@ -31,8 +36,8 @@ export class HuiLightsBadge extends LitElement implements LovelaceBadge {
     for (const entity of Object.keys(this.hass.states)) {
       if (
         (!this._config.exclude || !this._config.exclude.includes(entity)) &&
-        computeDomain(entity) === "light" &&
-        this.hass.states[entity].state === "on"
+        computeDomain(entity) === this._config.domain &&
+        this.hass.states[entity].state === this._config.state
       )
         states.push(entity);
     }
@@ -44,7 +49,9 @@ export class HuiLightsBadge extends LitElement implements LovelaceBadge {
     return html`
       <ha-label-badge
         .icon=${this._config.icon}
-        .description="${states.length} Lights On"
+        .description="${states.length} ${this._config.name ||
+        this._config.domain}${states.length !== 1 ? "s" : ""} ${this._config
+          .state}"
         .image=${this._config.image}
       ></ha-label-badge>
     `;
@@ -53,6 +60,6 @@ export class HuiLightsBadge extends LitElement implements LovelaceBadge {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-lights-badge": HuiLightsBadge;
+    "hui-summary-badge": HuiSummaryBadge;
   }
 }
