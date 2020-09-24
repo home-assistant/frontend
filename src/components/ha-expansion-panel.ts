@@ -107,7 +107,8 @@ declare global {
 
   // for fire event
   interface HASSDomEvents {
-    expanded: undefined;
-    collapsed: undefined;
+    "expanded-changed": {
+      expanded: boolean;
+    };
   }
 }
