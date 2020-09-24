@@ -29,7 +29,7 @@ class HaExpansionPanel extends LitElement {
         </div>
       </div>
       <div class="container ${classMap({ expanded: this.expanded })}">
-        <slot name="content"></slot>
+        <slot></slot>
       </div>
     `;
   }
