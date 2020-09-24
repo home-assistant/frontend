@@ -21,9 +21,7 @@ class HaExpansionPanel extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="summary" @click=${this._toggleContainer}>
-        <div class="summary-content">
-          <slot name="title"></slot>
-        </div>
+        <slot name="title"></slot>
         <ha-svg-icon
           .path=${mdiChevronDown}
           class="summary-icon ${classMap({ expanded: this.expanded })}"
@@ -61,20 +59,14 @@ class HaExpansionPanel extends LitElement {
         display: flex;
         padding: 0px 16px;
         min-height: 48px;
-        position: relative;
         align-items: center;
         cursor: pointer;
-      }
-
-      .summary-content {
-        margin: 12px 0;
-        display: flex;
-        flex-grow: 1;
         overflow: hidden;
       }
 
       .summary-icon {
         transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+        margin-left: auto;
       }
 
       .summary-icon.expanded {
