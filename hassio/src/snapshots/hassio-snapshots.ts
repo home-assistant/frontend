@@ -394,7 +394,12 @@ class HassioSnapshots extends LitElement {
 
   private _showUploadSnapshotDialog() {
     showSnapshotUploadDialog(this, {
-      loadData: () => this.refreshData(),
+      showSnapshot: (slug: string) =>
+        showHassioSnapshotDialog(this, {
+          slug,
+          onDelete: () => this._updateSnapshots(),
+        }),
+      reloadSnapshot: () => this.refreshData(),
     });
   }
 
