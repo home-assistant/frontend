@@ -22,7 +22,6 @@ const fixedIcons = {
   group: "hass:google-circles-communities",
   homeassistant: "hass:home-assistant",
   homekit: "hass:home-automation",
-  humidifier: "hass:air-humidifier",
   image_processing: "hass:image-filter-frames",
   input_boolean: "hass:toggle-switch-outline",
   input_datetime: "hass:calendar-clock",
@@ -87,6 +86,11 @@ export const domainIcon = (domain: string, state?: string): string => {
         default:
           return "hass:window-open";
       }
+
+    case "humidifier":
+      return state && state === "off"
+        ? "hass:air-humidifier-off"
+        : "hass:air-humidifier";
 
     case "lock":
       return state && state === "unlocked" ? "hass:lock-open" : "hass:lock";
