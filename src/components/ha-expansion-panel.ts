@@ -20,14 +20,11 @@ class HaExpansionPanel extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <div
-        class="summary ${classMap({ expanded: this.expanded })}"
-        @click=${this._togglePanel}
-      >
+      <div class="summary" @click=${this._toggleContainer}>
         <div class="summary-content">
           <slot name="title"></slot>
         </div>
-        <div class="summary-icon">
+        <div class="summary-icon ${classMap({ expanded: this.expanded })}">
           <ha-svg-icon .path=${mdiChevronDown}></ha-svg-icon>
         </div>
       </div>
@@ -37,7 +34,7 @@ class HaExpansionPanel extends LitElement {
     `;
   }
 
-  private _togglePanel(): void {
+  private _toggleContainer(): void {
     this.expanded = !this.expanded;
     fireEvent(this, this.expanded ? "expanded" : "collapsed");
   }
@@ -62,21 +59,15 @@ class HaExpansionPanel extends LitElement {
         display: flex;
         padding: 0px 16px;
         min-height: 48px;
-        transition: min-height 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
-          background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
         position: relative;
         align-items: center;
         cursor: pointer;
-      }
-      .summary.expanded {
-        min-height: 64px;
       }
 
       .summary-content {
         margin: 12px 0;
         display: flex;
         flex-grow: 1;
-        transition: margin 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
         overflow: hidden;
       }
 
@@ -85,16 +76,16 @@ class HaExpansionPanel extends LitElement {
       }
 
       .summary-icon {
-        transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+        transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
       }
 
-      .summary.expanded .summary-icon {
+      .summary-icon.expanded {
         transform: rotate(180deg);
       }
 
       .container {
         overflow: hidden;
-        transition: max-height 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+        transition: max-height 200ms cubic-bezier(0.4, 0, 0.2, 1);
         max-height: 0px;
       }
 
