@@ -24,7 +24,6 @@
     "filesToIgnore": [
       "**/*.html",
       "**/src/panels/config/js/**/*.js",
-      "**/ha-paper-slider.js",
       "**/ha-iconset-svg.js",
       "**/ha-script-editor.js",
       "**/ha-automation-editor.js",
