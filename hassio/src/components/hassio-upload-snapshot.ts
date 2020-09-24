@@ -54,7 +54,7 @@ export class HassioUploadSnapshot extends LitElement {
     if (!["application/x-tar"].includes(file.type)) {
       showAlertDialog(this, {
         title: "Unsupported file format",
-        text: " Please choose a tar file.",
+        text: "Please choose a Home Assistant snapshot file (.tar)",
       });
       return;
     }
