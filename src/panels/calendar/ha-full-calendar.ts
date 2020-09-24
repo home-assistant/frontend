@@ -192,9 +192,9 @@ class HAFullCalendar extends LitElement {
     const config: CalendarOptions = {
       ...defaultFullCalendarConfig,
       locale: this.hass.language,
+      initialView: this.initialView,
     };
 
-    config.initialView = this.initialView;
     this._activeView = this.initialView;
 
     config.dateClick = (info) => this._handleDateClick(info);
