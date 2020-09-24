@@ -900,7 +900,7 @@
                 },
                 "automation": {
                     "caption": "Automatyzacje",
-                    "description": "Twórz i edytuj automatyzacje",
+                    "description": "Zarządzaj automatyzacjami",
                     "editor": {
                         "actions": {
                             "add": "Dodaj akcję",
@@ -2614,7 +2614,8 @@
                             "description": "Karta sensor zapewnia szybki przegląd stanu sensorów z opcjonalnym wykresem, aby wizualizować zmiany w czasie.",
                             "graph_detail": "Szczegół wykresu",
                             "graph_type": "Rodzaj wykresu",
-                            "name": "Sensor"
+                            "name": "Sensor",
+                            "show_more_detail": "Pokaż więcej informacji"
                         },
                         "shopping-list": {
                             "description": "Karta lista zakupów umożliwia dodawanie, edytowanie, zaznaczanie i usuwanie pozycji z listy zakupów.",

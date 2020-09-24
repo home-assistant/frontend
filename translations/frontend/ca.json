@@ -2614,7 +2614,8 @@
                             "description": "La targeta sensor mostra una visió ràpida d'un dels teus sensors. En mostra l'estat i opcionalment un gràfic amb els canvis al llarg del temps.",
                             "graph_detail": "Detall del gràfic",
                             "graph_type": "Tipus de gràfic",
-                            "name": "Sensor"
+                            "name": "Sensor",
+                            "show_more_detail": "Mostra més detalls"
                         },
                         "shopping-list": {
                             "description": "La targeta de llista de compres et permet afegir, editar, marcar i borrar elements de la teva llista de compres.",

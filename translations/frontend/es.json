@@ -2614,7 +2614,8 @@
                             "description": "La tarjeta Sensor te ofrece una visión general rápida del estado de tus sensores con un gráfico opcional para visualizar los cambios a lo largo del tiempo.",
                             "graph_detail": "Detalle del gráfico",
                             "graph_type": "Tipo de gráfico",
-                            "name": "Sensor"
+                            "name": "Sensor",
+                            "show_more_detail": "Mostrar más detalles"
                         },
                         "shopping-list": {
                             "description": "La tarjeta Lista de la Compra le permite agregar, editar, marcar y borrar artículos de tu lista de compras.",

@@ -2614,7 +2614,8 @@
                             "description": "La carte Capteur vous donne un aperçu rapide de l'état de vos capteurs avec un graphique en option pour visualiser les changements au fil du temps.",
                             "graph_detail": "Détail du graphique",
                             "graph_type": "Type de graphique",
-                            "name": "Capteur"
+                            "name": "Capteur",
+                            "show_more_detail": "Afficher plus de détails"
                         },
                         "shopping-list": {
                             "description": "La carte Liste d'achats vous permet d'ajouter, de modifier, de valider et d'effacer des articles de votre liste d'achats.",
