@@ -2614,7 +2614,8 @@
                             "description": "Karta Sensor poskytuje rychlý přehled o stavu senzorů s volitelným grafem pro vizualizaci změn v průběhu času.",
                             "graph_detail": "Detail grafu",
                             "graph_type": "Typ grafu",
-                            "name": "Senzor"
+                            "name": "Senzor",
+                            "show_more_detail": "Zobrazit více podrobností"
                         },
                         "shopping-list": {
                             "description": "Karta Nákupní seznam umožňuje přidávat, upravovat, odškrtávat a mazat položky z nákupního seznamu.",

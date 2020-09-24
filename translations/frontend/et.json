@@ -406,7 +406,7 @@
                 "humidity": "Soovitud niiskusemäär",
                 "mode": "Režiim",
                 "on_entity": "{name} sisse",
-                "target_humidity_entity": "Soovitud niiskusemäär"
+                "target_humidity_entity": "{name} soovitud niiskusemäär"
             },
             "light": {
                 "brightness": "Heledus",
@@ -781,7 +781,7 @@
                 "no_entities": "Olemid puuduvad",
                 "no_triggers": "Päästikud puuduvad",
                 "payload_display": "Väärtuste kuvamine",
-                "recent_messages": "{n} viimati vastu võetud teavitust",
+                "recent_messages": "{n} viimati vastu võetud teavitus(t)",
                 "show_as_yaml": "Kuva YAMLina",
                 "title": "{device} silumisinfo",
                 "triggers": "Päästikud"
@@ -917,7 +917,7 @@
                                     "add_option": "Lisa valik",
                                     "conditions": "Tingimused",
                                     "default": "Vaiketoimingud",
-                                    "label": "Vali ",
+                                    "label": "Vali",
                                     "option": "Valik {number}",
                                     "remove_option": "Eemalda suvand",
                                     "sequence": "Tegevused"
@@ -1753,7 +1753,7 @@
                     "description_listen": "Kuula teemat",
                     "description_publish": "Avaldage pakett",
                     "listening_to": "Kuulamas",
-                    "message_received": "Teavitus {id} vastu võetud {topic} kell {aeg}:",
+                    "message_received": "Teavitus {id} vastu võetud {topic} kell {time}:",
                     "payload": "Väärtus (mall lubatud)",
                     "publish": "Avalda",
                     "start_listening": "Alusta kuulamist",
@@ -1984,7 +1984,7 @@
                         "reloading": {
                             "automation": "Taaslae automatiseeringud",
                             "command_line": "TAASLAE KÄSUREA OLEMID",
-                            "core": "Taaslae tuum",
+                            "core": "Taaslae asukohad ja kohandamised",
                             "filesize": "TAASLAE FAILSUURUSE OLEMID",
                             "filter": "TAASLAE FILTREERITUD OLEMID",
                             "generic": "TAASLAE IP KAAMERAD",
@@ -2104,7 +2104,7 @@
                 "zha": {
                     "add_device_page": {
                         "discovered_text": "Seadmed ilmuvad siia  kui avastatakse.",
-                        "discovery_text": "Leitud seadmed kuvatakse siin. Järgige seadme(te) juhiseid ja pange seade sidumisrežiimile.",
+                        "discovery_text": "Leitud seadmed kuvatakse siin. Järgige seadme(te) juhiseid ja pange seade või seadmed sidumisrežiimile.",
                         "header": "Zigbee Home Automation - seadmete lisamine",
                         "no_devices_found": "Seadmeid ei leitud. Veenduge, et need on paaritamise režiimis ja hoidke neid ärkvel, kui avastamine käib.",
                         "pairing_mode": "Veenduge, et teie seadmed oleksid sidumisrežiimis. Kuidas seda teha vaadake oma seadme juhiseid.",
@@ -2614,7 +2614,8 @@
                             "description": "Anduri kaart annab teile kiire ülevaate andurite olekust koos valikulise graafikuga, et visualiseerida muutusi ajas.",
                             "graph_detail": "Graafiku üksikasjad",
                             "graph_type": "Graafiku tüüp",
-                            "name": "Andur"
+                            "name": "Andur",
+                            "show_more_detail": "Kuva rohkem üksikasju"
                         },
                         "shopping-list": {
                             "description": "Ostunimekirja kaart võimaldab teil lisada, muuta, registreerida ja tühistada oma ostunimekirja üksusi.",
@@ -2658,7 +2659,7 @@
                         "show_code_editor": "Kuva koodiredaktor",
                         "show_visual_editor": "Kuva visuaalne redaktor",
                         "toggle_editor": "Lülita redaktor sisse/välja",
-                        "typed_header": "Kaardi seadistamine",
+                        "typed_header": "{type} kaardi seadistamine",
                         "unsaved_changes": "Teil on salvestamata muudatusi"
                     },
                     "edit_lovelace": {

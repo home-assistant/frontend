@@ -2614,7 +2614,8 @@
                             "description": "傳感器面板、可供以選項圖像方式檢視傳感器時間變化與狀態。",
                             "graph_detail": "圖像精細度",
                             "graph_type": "圖像類型",
-                            "name": "傳感器面板"
+                            "name": "傳感器面板",
+                            "show_more_detail": "顯示更多資訊"
                         },
                         "shopping-list": {
                             "description": "購物清單面板、可供新增、編輯、勾選或清除購物清單項目。",

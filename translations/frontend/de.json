@@ -592,11 +592,13 @@
                     "server": "Server"
                 },
                 "documentation": "Dokumentation",
+                "learn_adding_local_media": "Erfahre mehr über das Hinzufügen von Medien in der {documentation}.",
                 "local_media_files": "Platziere deine Video-, Audio- und Bilddateien im Medienverzeichnis, um sie im Browser oder auf unterstützten Mediaplayern durchsuchen und abspielen zu können.",
                 "no_items": "Keine Einträge",
                 "no_local_media_found": "Keine lokalen Medien gefunden",
                 "no_media_folder": "Es sieht so aus, als hätten Sie noch kein Medienverzeichnis erstellt.",
                 "play": "Abspielen",
+                "setup_local_help": "Lese die {documentation} über die Einrichtung lokaler Medien.",
                 "video_not_supported": "Ihr Browser unterstützt das Videoelement nicht.",
                 "web-browser": "Webbrowser"
             },
@@ -2465,7 +2467,8 @@
                             "description": "Die Sensorkarte gibt dir einen schnellen Überblick über Ihren Sensorstatus mit einem optionalen Diagramm, um Änderungen im Zeitverlauf zu visualisieren.",
                             "graph_detail": "Diagrammdetail",
                             "graph_type": "Typ",
-                            "name": "Sensor"
+                            "name": "Sensor",
+                            "show_more_detail": "Weitere Details anzeigen"
                         },
                         "shopping-list": {
                             "description": "Mit der Einkaufslistenkarte kannst du Artikel zu deiner Einkaufsliste hinzufügen, bearbeiten, abhaken und löschen.",
