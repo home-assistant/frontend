@@ -25,7 +25,6 @@ export const FIXED_DOMAIN_ICONS = {
   group: "hass:google-circles-communities",
   homeassistant: "hass:home-assistant",
   homekit: "hass:home-automation",
-  humidifier: "hass:air-humidifier",
   image_processing: "hass:image-filter-frames",
   input_boolean: "hass:toggle-switch-outline",
   input_datetime: "hass:calendar-clock",
@@ -64,6 +63,7 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   power: "hass:flash",
   power_factor: "hass:angle-acute",
   signal_strength: "hass:wifi",
+  timestamp: "hass:clock",
   voltage: "hass:sine-wave",
 };
 
