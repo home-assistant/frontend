@@ -30,7 +30,7 @@ export class DialogHassioSnapshotUpload extends LitElement
   }
 
   public closeDialog(): void {
-    this._params!.loadData();
+    this._params?.reloadSnapshot();
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -50,11 +50,17 @@ export class DialogHassioSnapshotUpload extends LitElement
         .heading=${createCloseHeading(this.hass, "Upload snapshot")}
       >
         <hassio-upload-snapshot
-          @snapshot-uploaded=${this.closeDialog}
+          @snapshot-uploaded=${this._snapshotUploaded}
           .hass=${this.hass}
         ></hassio-upload-snapshot>
       </ha-dialog>
     `;
+  }
+
+  private _snapshotUploaded(ev) {
+    const snapshot = ev.detail.snapshot;
+    this._params?.showSnapshot(snapshot.slug);
+    this.closeDialog();
   }
 
   static get styles(): CSSResult {

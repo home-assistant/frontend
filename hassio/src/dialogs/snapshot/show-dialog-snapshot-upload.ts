@@ -2,7 +2,8 @@ import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "./dialog-hassio-snapshot-upload";
 
 export interface HassioSnapshotUploadDialogParams {
-  loadData: () => Promise<void>;
+  showSnapshot: (slug: string) => void;
+  reloadSnapshot: () => Promise<void>;
 }
 
 export const showSnapshotUploadDialog = (
