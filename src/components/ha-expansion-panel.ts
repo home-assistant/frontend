@@ -24,9 +24,10 @@ class HaExpansionPanel extends LitElement {
         <div class="summary-content">
           <slot name="title"></slot>
         </div>
-        <div class="summary-icon ${classMap({ expanded: this.expanded })}">
-          <ha-svg-icon .path=${mdiChevronDown}></ha-svg-icon>
-        </div>
+        <ha-svg-icon
+          .path=${mdiChevronDown}
+          class="summary-icon ${classMap({ expanded: this.expanded })}"
+        ></ha-svg-icon>
       </div>
       <div class="container ${classMap({ expanded: this.expanded })}">
         <slot></slot>
@@ -53,6 +54,7 @@ class HaExpansionPanel extends LitElement {
           --ha-card-border-color,
           var(--divider-color, #e0e0e0)
         );
+        border-radius: var(--ha-card-border-radius, 4px);
       }
 
       .summary {
@@ -91,10 +93,6 @@ class HaExpansionPanel extends LitElement {
 
       .container.expanded {
         max-height: 1000px;
-      }
-
-      ::slotted([slot="content"]) {
-        padding: 8px;
       }
     `;
   }
