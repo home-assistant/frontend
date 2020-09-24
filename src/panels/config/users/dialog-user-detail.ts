@@ -133,7 +133,9 @@ class DialogUserDetail extends LitElement {
           <mwc-button
             class="warning"
             @click=${this._deleteEntry}
-            .disabled=${this._submitting || user.system_generated}
+            .disabled=${this._submitting ||
+            user.system_generated ||
+            user.is_owner}
           >
             ${this.hass!.localize("ui.panel.config.users.editor.delete_user")}
           </mwc-button>
