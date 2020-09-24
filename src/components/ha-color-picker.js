@@ -176,6 +176,11 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
     this.drawColorWheel();
     this.drawMarker();
 
+    if (this.desiredHsColor) {
+      this.setMarkerOnColor(this.desiredHsColor);
+      this.applyColorToCanvas(this.desiredHsColor);
+    }
+
     this.interactionLayer.addEventListener("mousedown", (ev) =>
       this.onMouseDown(ev)
     );
@@ -319,6 +324,9 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
 
   // set marker position to the given color
   setMarkerOnColor(hs) {
+    if (!this.marker || !this.tooltip) {
+      return;
+    }
     const dist = hs.s * this.radius;
     const theta = ((hs.h - 180) / 180) * Math.PI;
     const markerdX = -dist * Math.cos(theta);
@@ -330,6 +338,9 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
 
   // apply given color to interface elements
   applyColorToCanvas(hs) {
+    if (!this.interactionLayer) {
+      return;
+    }
     // we're not really converting hs to hsl here, but we keep it cheap
     // setting the color on the interactionLayer, the svg elements can inherit
     this.interactionLayer.style.color = `hsl(${hs.h}, 100%, ${

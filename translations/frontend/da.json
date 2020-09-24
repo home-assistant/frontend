@@ -498,6 +498,8 @@
             "back": "Tilbage",
             "cancel": "Annuller",
             "close": "Luk",
+            "continue": "Fortsæt",
+            "copied": "Kopieret",
             "delete": "Slet",
             "error_required": "Påkrævet",
             "loading": "Indlæser",
@@ -544,6 +546,9 @@
                 "toggle": "Til/fra"
             },
             "entity": {
+                "entity-attribute-picker": {
+                    "show_attributes": "Vis attributter"
+                },
                 "entity-picker": {
                     "clear": "Ryd",
                     "entity": "Entitet",
@@ -553,6 +558,39 @@
             "history_charts": {
                 "loading_history": "Indlæser tilstandshistorik...",
                 "no_history_found": "Ingen tilstandshistorik fundet."
+            },
+            "media-browser": {
+                "choose_player": "Vælg afspiller",
+                "class": {
+                    "album": "Album",
+                    "app": "App",
+                    "artist": "Kunstner",
+                    "channel": "Kanal",
+                    "composer": "Komponist",
+                    "contributing_artist": "Bidragende kunstner",
+                    "directory": "Bibliotek",
+                    "episode": "Episode",
+                    "game": "Spil",
+                    "genre": "Genre",
+                    "image": "Billede",
+                    "movie": "Film",
+                    "music": "Musik",
+                    "playlist": "Playlist",
+                    "podcast": "Podcast",
+                    "season": "Sæson",
+                    "track": "Spor",
+                    "tv_show": "TV show",
+                    "url": "Url",
+                    "video": "Video"
+                },
+                "documentation": "Dokumentation",
+                "learn_adding_local_media": "Få flere oplysninger om tilføjelse af medier i {documentation} .",
+                "local_media_files": "Placer dine video-, lyd- og billedfiler i mediekataloget for at kunne gennemse og afspille dem i browseren eller på understøttede medieafspillere.",
+                "media_player": "Medieafspiller",
+                "no_local_media_found": "Ingen lokale medier fundet",
+                "no_media_folder": "Det ser ud til, at du ikke har oprettet medie katalog endnu.",
+                "setup_local_help": "Se {documentation} for, hvordan du opsætter lokale medier.",
+                "web-browser": "Webbrowser"
             },
             "related-items": {
                 "area": "Område",
@@ -657,8 +695,10 @@
                 "yaml_not_editable": "Indstillingerne for denne entitet kan ikke redigeres fra brugerfladen. Det er kun entiteter, der er konfigureret fra brugerfladen, der kan konfigureres herfra."
             },
             "more_info_control": {
+                "details": "Detaljer",
                 "dismiss": "Afvis dialog",
                 "edit": "Rediger entitet",
+                "history": "Historik",
                 "person": {
                     "create_zone": "Opret zone fra den aktuelle lokalitet"
                 },
@@ -1062,7 +1102,8 @@
                                 },
                                 "time": {
                                     "at": "Klokken",
-                                    "label": "Tid"
+                                    "label": "Tid",
+                                    "type_value": "Fast tid"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -1085,6 +1126,8 @@
                         "add_automation": "Tilføj automatisering",
                         "delete_automation": "Slet automatisering",
                         "delete_confirm": "Er du sikker på, at du vil slette denne automatisering?",
+                        "duplicate": "Kopier",
+                        "duplicate_automation": "Kopier automatisering",
                         "edit_automation": "Rediger automatisering",
                         "header": "Automatiserings-editor",
                         "headers": {
@@ -1537,6 +1580,7 @@
                     "none_found_detail": "Juster dine søgekriterier.",
                     "note_about_integrations": "Ikke alle integrationer kan konfigureres via brugerfladen endnu.",
                     "note_about_website_reference": "Flere er tilgængelige på ",
+                    "reconfigure": "Omkonfigurere",
                     "rename_dialog": "Rediger navnet på denne konfigurationspost",
                     "rename_input_label": "Navn på post",
                     "search": "Søg i integrationer"
@@ -1648,6 +1692,7 @@
                 },
                 "ozw": {
                     "common": {
+                        "network": "Netværk",
                         "node_id": "knudepunkts-id",
                         "ozw_instance": "OpenZWave-instans",
                         "zwave": "Z-Wave"
@@ -1656,6 +1701,17 @@
                         "node_failed": "Problematisk knudepunkt",
                         "stage": "Fase",
                         "zwave_info": "Z-Wave-info"
+                    },
+                    "network_status": {
+                        "details": {
+                            "ready": "Klar til at oprette forbindelse",
+                            "started": "Forbundet til MQTT",
+                            "stopped": "OpenZWave stoppet"
+                        }
+                    },
+                    "nodes_table": {
+                        "failed": "Mislykkedes",
+                        "zwave_plus": "Z-Wave Plus"
                     }
                 },
                 "person": {
@@ -1818,6 +1874,7 @@
                         "create": "Opret",
                         "name": "Navn",
                         "password": "Adgangskode",
+                        "password_not_match": "Adgangskoderne er ikke ens",
                         "username": "Brugernavn"
                     },
                     "caption": "Brugere",
@@ -1834,7 +1891,9 @@
                         "group": "Gruppe",
                         "id": "Id",
                         "name": "Navn",
+                        "new_password": "Ny Adgangskode",
                         "owner": "Ejer",
+                        "password_changed": "Adgangskoden er ændret!",
                         "system_generated": "Systemgenereret",
                         "system_generated_users_not_editable": "Systemoprettede brugere kan ikke opdateres.",
                         "system_generated_users_not_removable": "Kan ikke fjerne systemgenererede brugere.",
@@ -2213,6 +2272,9 @@
                         "button": {
                             "description": "Med knapkortet kan du tilføje knapper til at udføre opgaver.",
                             "name": "Knap"
+                        },
+                        "calendar": {
+                            "name": "Kalender"
                         },
                         "conditional": {
                             "card": "Kort",
@@ -2707,6 +2769,9 @@
                     "submit": "Indsend"
                 },
                 "current_user": "Du er logget ind som {fullName}.",
+                "customize_sidebar": {
+                    "button": "Rediger"
+                },
                 "dashboard": {
                     "description": "Vælg et standardbetjeningspanel for denne enhed.",
                     "dropdown_label": "Betjeningspanel",
@@ -2736,6 +2801,7 @@
                     "header": "Langlivede adgangstokens",
                     "last_used": "Sidst anvendt den {date} fra {location}",
                     "learn_auth_requests": "Lær, hvordan du laver godkendte forespørgsler.",
+                    "name": "Navn",
                     "not_used": "Har aldrig været brugt",
                     "prompt_copy_token": "Kopier din adgangstoken. Den vil ikke blive vist igen.",
                     "prompt_name": "Navn?"
@@ -2802,6 +2868,7 @@
             }
         },
         "sidebar": {
+            "done": "Færdig",
             "external_app_configuration": "App-konfiguration",
             "sidebar_toggle": "Vis/skjul sidebjælke"
         }

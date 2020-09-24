@@ -19,6 +19,7 @@
         "logbook": "Diari de registre",
         "mailbox": "Bústia",
         "map": "Mapa",
+        "media_browser": "Navegador multimèdia",
         "profile": "Perfil",
         "shopping_list": "Llista de compres",
         "states": "Visualització general"
@@ -505,6 +506,8 @@
             "back": "Torna",
             "cancel": "Cancel·la",
             "close": "Tanca",
+            "continue": "Continua",
+            "copied": "Copiat",
             "delete": "Elimina",
             "error_required": "Obligatori",
             "loading": "Carregant",
@@ -551,6 +554,10 @@
                 "toggle": "Commuta"
             },
             "entity": {
+                "entity-attribute-picker": {
+                    "attribute": "Atribut",
+                    "show_attributes": "Mostra els atributs"
+                },
                 "entity-picker": {
                     "clear": "Esborra",
                     "entity": "Entitat",
@@ -561,8 +568,35 @@
                 "loading_history": "Carregant historial d'estats...",
                 "no_history_found": "No s'ha trobat cap historial d'estats."
             },
+            "logbook": {
+                "entries_not_found": "No s'han trobat entrades al registre."
+            },
             "media-browser": {
+                "audio_not_supported": "El teu navegador no és compatible amb l'element d'àudio.",
+                "choose_player": "Tria reproductor",
                 "choose-source": "Tria la font",
+                "class": {
+                    "album": "Àlbum",
+                    "app": "Aplicació",
+                    "artist": "Artista",
+                    "channel": "Canal",
+                    "composer": "Compositor",
+                    "contributing_artist": "Artista col·laborador",
+                    "directory": "Biblioteca",
+                    "episode": "Episodi",
+                    "game": "Joc",
+                    "genre": "Gènere",
+                    "image": "Imatge",
+                    "movie": "Pel·lícula",
+                    "music": "Música",
+                    "playlist": "Llista de reproducció",
+                    "podcast": "Podcast",
+                    "season": "Temporada",
+                    "track": "Pista",
+                    "tv_show": "Programa de TV",
+                    "url": "URL",
+                    "video": "Vídeo"
+                },
                 "content-type": {
                     "album": "Àlbum",
                     "artist": "Artista",
@@ -570,12 +604,23 @@
                     "playlist": "Llista de reproducció",
                     "server": "Servidor"
                 },
-                "media-player-browser": "Navegador del reproductor multimèdia",
+                "documentation": "documentació",
+                "learn_adding_local_media": "Més informació sobre com afegir contingut multimèdia a la {documentation}.",
+                "local_media_files": "Col·loca els fitxers de vídeo, àudio i imatge al directori multimèdia i podràs navegar-hi i reproduir-los des del navegador o els reproductors multimèdia compatibles.",
+                "media_browsing_error": "Error de navegació multimèdia",
+                "media_not_supported": "El reproductor multimèdia de navegador no és compatible amb aquest tipus de mitjà",
+                "media_player": "Reproductor multimèdia",
+                "media-player-browser": "Navegador multimèdia",
                 "no_items": "Sense elements",
+                "no_local_media_found": "No s'ha trobat cap mitjà local",
+                "no_media_folder": "Sembla que encara no has creat cap directori multimèdia.",
                 "pick": "Escull",
                 "pick-media": "Tria mitjans",
                 "play": "Reprodueix",
-                "play-media": "Reprodueix mitjans"
+                "play-media": "Reprodueix mitjans",
+                "setup_local_help": "Consulta la {documentation} per saber com configurar el contingut multimèdia local.",
+                "video_not_supported": "El teu navegador no és compatible amb l'element de vídeo.",
+                "web-browser": "Navegador web"
             },
             "picture-upload": {
                 "label": "Imatge",
@@ -611,7 +656,7 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "Si està desactivat, les entitats descobertes recentment per a {integration} no s'afegiran automàticament a Home Assistant.",
+                "enable_new_entities_description": "Si es desactiva, les entitats descobertes recentment per a {integration} no s'afegiran automàticament a Home Assistant.",
                 "enable_new_entities_label": "Activa entitats afegides recentment.",
                 "title": "Opcions del sistema per a {integration}",
                 "update": "Actualitza"
@@ -689,8 +734,11 @@
                 "crop": "Retalla"
             },
             "more_info_control": {
+                "controls": "Controls",
+                "details": "Detalls",
                 "dismiss": "Desestimar el diàleg",
                 "edit": "Edita entitat",
+                "history": "Historial",
                 "person": {
                     "create_zone": "Crea una zona a partir de la ubicació actual"
                 },
@@ -918,7 +966,13 @@
                                     "label": "Crida servei",
                                     "service_data": "Dades de servei"
                                 },
+                                "wait_for_trigger": {
+                                    "continue_timeout": "Continua amb temps d'espera",
+                                    "label": "Espera disparador",
+                                    "timeout": "Temps màxim d'espera (opcional)"
+                                },
                                 "wait_template": {
+                                    "continue_timeout": "Continua amb temps d'espera",
                                     "label": "Espera",
                                     "timeout": "Temps màxim d'espera (opcional)",
                                     "wait_template": "Plantilla d'espera"
@@ -982,7 +1036,9 @@
                                 "time": {
                                     "after": "Després",
                                     "before": "Abans",
-                                    "label": "Temporal"
+                                    "label": "Temporal",
+                                    "type_input": "Valor d'un ajudant de data/hora",
+                                    "type_value": "Temps fix"
                                 },
                                 "zone": {
                                     "entity": "Entitat amb ubicació",
@@ -1070,6 +1126,7 @@
                                     "value_template": "Plantilla de valor (opcional)"
                                 },
                                 "state": {
+                                    "attribute": "Atribut (opcional)",
                                     "for": "Durant",
                                     "from": "Des de",
                                     "label": "Estat",
@@ -1097,7 +1154,9 @@
                                 },
                                 "time": {
                                     "at": "A les",
-                                    "label": "Temporal"
+                                    "label": "Temporal",
+                                    "type_input": "Valor d'un ajudant de data/hora",
+                                    "type_value": "Temps fix"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -1120,6 +1179,8 @@
                         "add_automation": "Afegeix automatització",
                         "delete_automation": "Elimina l'automatització",
                         "delete_confirm": "Estàs segur que vols eliminar aquesta automatització?",
+                        "duplicate": "Duplica",
+                        "duplicate_automation": "Duplica l'automatització",
                         "edit_automation": "Edita automatització",
                         "header": "Editor d'automatitzacions",
                         "headers": {
@@ -1520,6 +1581,7 @@
                 },
                 "integrations": {
                     "add_integration": "Afegeix integració",
+                    "attention": "Cal atenció",
                     "caption": "Integracions",
                     "config_entry": {
                         "area": "A {area}",
@@ -1543,6 +1605,7 @@
                         "reload_restart_confirm": "Reinicia Home Assistant per acabar de carregar aquesta integració",
                         "rename": "Canvia el nom",
                         "restart_confirm": "Reinicia Home Assistant per acabar d'eliminar aquesta integració",
+                        "services": "{count} {count, plural,\n  one {servei}\n  other {serveis}\n}",
                         "settings_button": "Edita la configuració de {integration}",
                         "system_options": "Opcions de sistema",
                         "system_options_button": "Opcions de sistema de {integration}",
@@ -1589,6 +1652,7 @@
                     "none_found_detail": "Ajusta els paràmetres de cerca.",
                     "note_about_integrations": "Encara no es poden configurar totes les integracions a través de la UI.",
                     "note_about_website_reference": "N'hi ha més disponibles al ",
+                    "reconfigure": "Reconfigura",
                     "rename_dialog": "Edita el nom de l'entrada de configuració",
                     "rename_input_label": "Nom de l'entrada",
                     "search": "Cerca integracions"
@@ -1762,8 +1826,21 @@
                         "versions": "Obtenint informació de programari i versions de classes de comandes",
                         "wakeup": "Configurant el suport per a cues i missatges"
                     },
+                    "node": {
+                        "button": "Detalls del node",
+                        "not_found": "No s'ha trobat el node"
+                    },
+                    "nodes_table": {
+                        "failed": "Ha fallat",
+                        "id": "ID",
+                        "manufacturer": "Fabricant",
+                        "model": "Model",
+                        "query_stage": "Fase de consulta",
+                        "zwave_plus": "Z-Wave Plus"
+                    },
                     "refresh_node": {
                         "battery_note": "Si el node funciona amb bateria, assegura't de que estigui actiu abans de continuar",
+                        "button": "Actualitza node",
                         "complete": "Actualització del node completa",
                         "description": "Això farà que OpenZWave torni a consultar el node i n'actualitzi les classes de comandes, funcions i valors.",
                         "node_status": "Estat del node",
@@ -1895,7 +1972,7 @@
                         },
                         "introduction": "L'editor de scripts et permet crear i editar scripts. Vés a l'enllaç de sota per veure'n les instruccions i assegurar-te que has configurat Home Assistant correctament.",
                         "learn_more": "Més informació sobre els scripts",
-                        "no_scripts": "No hem trobat cap script editable",
+                        "no_scripts": "No s'ha pogut trobar cap script editable",
                         "show_info": "Mostra informació sobre l'script",
                         "trigger_script": "Dispara l'script"
                     }
@@ -1906,32 +1983,37 @@
                     "section": {
                         "reloading": {
                             "automation": "Actualitza automatitzacions",
-                            "command_line": "Torna a carregar entitats de comandes",
+                            "command_line": "Actualitza entitats de comandes",
                             "core": "Actualitza ubicació i personalitzacions",
-                            "filesize": "Torna a carregar entitats de mida de fitxer",
-                            "filter": "Torna a carregar entitats de filtre",
-                            "generic": "Torna a carregar entitats genèriques de càmera IP",
-                            "generic_thermostat": "Torna a carregar entitats genèriques de termòstat",
-                            "group": "Actualitza grups",
-                            "heading": "Tornant a carregar la configuració",
-                            "history_stats": "Torna a carregar entitats d'estadístiques històriques",
-                            "homekit": "Torna a carregar HomeKit",
+                            "filesize": "Actualitza entitats de mida de fitxer",
+                            "filter": "Actualitza entitats de filtre",
+                            "generic": "Actualitza entitats genèriques de càmera IP",
+                            "generic_thermostat": "Actualitza entitats genèriques de termòstat",
+                            "group": "Actualitza grups, grups d'entitats i serveis de notificació",
+                            "heading": "Torna a carregar les configuracions YAML",
+                            "history_stats": "Actualitza entitats d'estadístiques històriques",
+                            "homekit": "Actualitza HomeKit",
                             "input_boolean": "Actualitza entrades booleanes",
                             "input_datetime": "Actualitza entrades de data i hora",
                             "input_number": "Actualitza entrades numèriques",
                             "input_select": "Actualitza entrades de selecció",
                             "input_text": "Actualitza entrades de text",
                             "introduction": "Algunes parts de Home Assistant es poden actualitzar sense necessitat reiniciar-lo. Si prems actualitza s'esborrarà la configuració YAML actual i se'n carregarà la nova.",
-                            "min_max": "Torna a carregar entitats min/max",
+                            "min_max": "Actualitza entitats min/max",
+                            "mqtt": "Actualitza entitats MQTT",
                             "person": "Actualitza persones",
-                            "ping": "Torna a carregar entitats de sensors binaris de ping",
-                            "rest": "Torna a carregar entitats de repòs",
+                            "ping": "Actualitza entitats de sensors binaris de ping",
+                            "reload": "Actualitza {domain}",
+                            "rest": "Actualitza entitats de repòs i serveis de notificació",
+                            "rpi_gpio": "Actualitza entitats GPIO de la Raspberry Pi",
                             "scene": "Actualitza escenes",
                             "script": "Actualitza programes",
-                            "statistics": "Torna a carregar entitats estadístiques",
-                            "template": "Torna a carregar entitats de plantilla",
-                            "trend": "Torna a carregar entitats de tendència",
-                            "universal": "Torna a carregar entitats del reproductor universal",
+                            "smtp": "Actualitza serveis de notificació SMTP",
+                            "statistics": "Actualitza entitats estadístiques",
+                            "telegram": "Actualitza serveis de notificació de Telegram",
+                            "template": "Actualitza entitats de plantilla",
+                            "trend": "Actualitza entitats de tendència",
+                            "universal": "Actualitza entitats del reproductor universal",
                             "zone": "Actualitza zones"
                         },
                         "server_management": {
@@ -1954,7 +2036,7 @@
                 "tags": {
                     "add_tag": "Afegeix etiqueta",
                     "automation_title": "S'escanegi l'etiqueta {name}",
-                    "caption": "Etiquetes",
+                    "caption": "Etiquetes (NFC/RFID)",
                     "create_automation": "Crea una automatització amb una etiqueta",
                     "description": "Gestiona les etiquetes",
                     "detail": {
@@ -2299,9 +2381,14 @@
                         "title": "Estats"
                     },
                     "templates": {
+                        "all_listeners": "Aquesta plantilla escolta a tots els esdeveniments de canvi d'estat.",
                         "description": "Les plantilles es renderitzen mitjançant el motor Jinja2 amb algunes extensions específiques de Home Assistant.",
+                        "domain": "Domini",
                         "editor": "Editor de plantilles",
+                        "entity": "Entitat",
                         "jinja_documentation": "Documentació sobre plantilles amb Jinja2",
+                        "listeners": "Aquesta plantilla escolta als següents esdeveniments de canvi d'estat:",
+                        "no_listeners": "Aquesta plantilla no escolta cap esdeveniment de canvi d'estat i no s'actualitza automàticament.",
                         "reset": "Restableix a la plantilla de demostració",
                         "template_extensions": "Extensions de plantilla de Home Assistant",
                         "title": "Plantilla",
@@ -2448,7 +2535,7 @@
                             "no_theme": "Sense tema",
                             "refresh_interval": "Interval d'actualització",
                             "search": "Cerca",
-                            "secondary_info_attribute": "Atribut d’informació secundària",
+                            "secondary_info_attribute": "Atribut d'informació secundària",
                             "show_icon": "Mostra icona?",
                             "show_name": "Mostra nom?",
                             "show_state": "Mostra estat?",
@@ -2527,7 +2614,8 @@
                             "description": "La targeta sensor mostra una visió ràpida d'un dels teus sensors. En mostra l'estat i opcionalment un gràfic amb els canvis al llarg del temps.",
                             "graph_detail": "Detall del gràfic",
                             "graph_type": "Tipus de gràfic",
-                            "name": "Sensor"
+                            "name": "Sensor",
+                            "show_more_detail": "Mostra més detalls"
                         },
                         "shopping-list": {
                             "description": "La targeta de llista de compres et permet afegir, editar, marcar i borrar elements de la teva llista de compres.",
@@ -2549,7 +2637,11 @@
                         }
                     },
                     "cardpicker": {
+                        "by_card": "Per targeta",
+                        "by_entity": "Per entitat",
                         "custom_card": "Personalitzada",
+                        "domain": "Domini",
+                        "entity": "Entitat",
                         "no_description": "No hi ha cap descripció disponible."
                     },
                     "edit_card": {
@@ -2563,6 +2655,7 @@
                         "options": "Més opcions",
                         "pick_card": "Quina targeta vols afegir?",
                         "pick_card_view_title": "Quina targeta vols afegir a la visualització {name}?",
+                        "search_cards": "Cerca targetes",
                         "show_code_editor": "Mostra l'editor de codi",
                         "show_visual_editor": "Mostra l'editor visual",
                         "toggle_editor": "Commutar l'editor",
@@ -2606,7 +2699,7 @@
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "Si elimines la configuració de la interfície d'usuari Lovelace es generaran automàticament les visualitzacions de Lovelace amb les teves àrees i dispositius.",
-                        "confirm_remove_config_title": "Estàs segur que vols eliminar la configuració de la interfície d'usuari Lovelace? Es generaran automàticament les visualitzacions de Lovelace amb les teves àrees i dispositius.",
+                        "confirm_remove_config_title": "Estàs segur que vols eliminar la configuració de la interfície d'usuari Lovelace?",
                         "confirm_unsaved_changes": "Hi han canvis no desats. Segur que vols sortir?",
                         "confirm_unsaved_comments": "La configuració conté comentaris que es descartaran. Vols continuar?",
                         "error_invalid_config": "La configuració no és vàlida: {error}",
@@ -2883,6 +2976,11 @@
                     "submit": "Envia"
                 },
                 "current_user": "Has iniciat la sessió com a {fullName}.",
+                "customize_sidebar": {
+                    "button": "Edita",
+                    "description": "També pots mantenir premuda la capçalera de la barra lateral per activar el mode d'edició.",
+                    "header": "Canvia l'ordre i/o amaga elements de la barra lateral"
+                },
                 "dashboard": {
                     "description": "Tria un panell per defecte per a aquest dispositiu.",
                     "dropdown_label": "Panell",
@@ -2905,16 +3003,18 @@
                     "confirm_delete": "Estàs segur que vols eliminar el token d'autenticació d'accés per {name}?",
                     "create": "Crea un token d'autenticació",
                     "create_failed": "No s'ha pogut crear el token d'autenticació d'accés.",
+                    "created": "Creat el {date}",
                     "created_at": "Creat el {date}",
                     "delete_failed": "No s'ha pogut eliminar el token d'autenticació d'accés.",
                     "description": "Crea tokens d'autenticació d'accés de llarga durada per permetre als teus programes/scripts interactuar amb la instància de Home Assistant. Cada token és vàlid durant deu anys després de la seva creació. Els següents tokens d'autenticació d'accés de llarga durada estan actius actualment.",
-                    "empty_state": "Encara no tens tokens d'autenticaciós d'accés de llarga durada.",
+                    "empty_state": "Encara no tens tokens d'autenticació d'accés de llarga durada.",
                     "header": "Tokens d'autenticació d'accés de llarga durada",
                     "last_used": "Darrer ús el {date} des de {location}",
                     "learn_auth_requests": "Aprèn a fer sol·licituds autenticades.",
+                    "name": "Nom",
                     "not_used": "Mai no s'ha utilitzat",
                     "prompt_copy_token": "Copia't el token d'autenticació d'accés. No es tornarà a mostrar més endavant.",
-                    "prompt_name": "Nom?"
+                    "prompt_name": "Posa un nom al token"
                 },
                 "mfa_setup": {
                     "close": "Tanca",
@@ -2978,6 +3078,7 @@
             }
         },
         "sidebar": {
+            "done": "Fet",
             "external_app_configuration": "Configuració de l'aplicació",
             "sidebar_toggle": "Commutació de la barra lateral"
         }

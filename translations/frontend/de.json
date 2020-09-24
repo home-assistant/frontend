@@ -419,6 +419,7 @@
                 "unlock": "Entriegeln"
             },
             "media_player": {
+                "media_next_track": "Weiter",
                 "media_play": "Abspielen",
                 "sound_mode": "Sound-Modus",
                 "source": "Quelle",
@@ -501,6 +502,8 @@
             "back": "Zurück",
             "cancel": "Abbrechen",
             "close": "Schließen",
+            "continue": "Weiter",
+            "copied": "Kopiert",
             "delete": "Löschen",
             "error_required": "Benötigt",
             "loading": "Laden",
@@ -547,6 +550,10 @@
                 "toggle": "Umschalten"
             },
             "entity": {
+                "entity-attribute-picker": {
+                    "attribute": "Attribut",
+                    "show_attributes": "Attribute anzeigen"
+                },
                 "entity-picker": {
                     "clear": "Löschen",
                     "entity": "Entität",
@@ -557,8 +564,26 @@
                 "loading_history": "Lade Zustandsverlauf...",
                 "no_history_found": "Kein Zustandsverlauf gefunden."
             },
+            "logbook": {
+                "entries_not_found": "Keine Logbucheinträge gefunden."
+            },
             "media-browser": {
+                "audio_not_supported": "Ihr Browser unterstützt das Audioelement nicht.",
                 "choose-source": "Quelle wählen",
+                "class": {
+                    "album": "Album",
+                    "app": "App",
+                    "directory": "Bibliothek",
+                    "episode": "Episode",
+                    "game": "Spiel",
+                    "movie": "Film",
+                    "music": "Musik",
+                    "playlist": "Wiedergabeliste",
+                    "podcast": "Podcast",
+                    "season": "Episode",
+                    "url": "URL",
+                    "video": "Video"
+                },
                 "content-type": {
                     "album": "Album",
                     "artist": "Künstler",
@@ -566,7 +591,20 @@
                     "playlist": "Playlist",
                     "server": "Server"
                 },
-                "play": "Abspielen"
+                "documentation": "Dokumentation",
+                "learn_adding_local_media": "Erfahre mehr über das Hinzufügen von Medien in der {documentation}.",
+                "local_media_files": "Platziere deine Video-, Audio- und Bilddateien im Medienverzeichnis, um sie im Browser oder auf unterstützten Mediaplayern durchsuchen und abspielen zu können.",
+                "no_items": "Keine Einträge",
+                "no_local_media_found": "Keine lokalen Medien gefunden",
+                "no_media_folder": "Es sieht so aus, als hätten Sie noch kein Medienverzeichnis erstellt.",
+                "play": "Abspielen",
+                "setup_local_help": "Lese die {documentation} über die Einrichtung lokaler Medien.",
+                "video_not_supported": "Ihr Browser unterstützt das Videoelement nicht.",
+                "web-browser": "Webbrowser"
+            },
+            "picture-upload": {
+                "label": "Bild",
+                "unsupported_format": "Nicht unterstütztes Format, bitte wähle ein JPEG-, PNG- oder GIF-Bild."
             },
             "related-items": {
                 "area": "Bereich",
@@ -672,8 +710,10 @@
                 "yaml_not_editable": "Die Einstellungen dieser Entität können nicht über die Benutzeroberfläche bearbeitet werden. Nur über die Benutzeroberfläche eingerichtete Entitäten können über die Benutzeroberfläche konfiguriert werden."
             },
             "more_info_control": {
+                "details": "Details",
                 "dismiss": "Dialog ausblenden",
                 "edit": "Entität bearbeiten",
+                "history": "Verlauf",
                 "person": {
                     "create_zone": "Zone vom aktuellen Standort erstellen"
                 },
@@ -849,7 +889,13 @@
                             "type_select": "Aktionstyp",
                             "type": {
                                 "choose": {
-                                    "label": "Auswählen"
+                                    "add_option": "Option hinzufügen",
+                                    "conditions": "Bedingungen",
+                                    "default": "Standard-Aktionen",
+                                    "label": "Auswählen",
+                                    "option": "Option {number}",
+                                    "remove_option": "Option entfernen",
+                                    "sequence": "Aktionen"
                                 },
                                 "condition": {
                                     "label": "Bedingung"
@@ -872,6 +918,7 @@
                                 },
                                 "repeat": {
                                     "label": "Wiederholen",
+                                    "sequence": "Aktionen",
                                     "type_select": "Wiederholungstyp",
                                     "type": {
                                         "count": {
@@ -1044,6 +1091,7 @@
                                     "value_template": "Wert-Template (optional)"
                                 },
                                 "state": {
+                                    "attribute": "Attribut (Optional)",
                                     "for": "Für",
                                     "from": "Von",
                                     "label": "Zustand",
@@ -1068,7 +1116,8 @@
                                 },
                                 "time": {
                                     "at": "Um",
-                                    "label": "Zeit"
+                                    "label": "Zeit",
+                                    "type_value": "Feste Zeit"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -1091,6 +1140,8 @@
                         "add_automation": "Automatisierung hinzufügen",
                         "delete_automation": "Automatisierung löschen",
                         "delete_confirm": "Bist du sicher, dass du diese Automatisierung löschen möchtest?",
+                        "duplicate": "Duplizieren",
+                        "duplicate_automation": "Automatisierung kopieren",
                         "edit_automation": "Automatisierung bearbeiten",
                         "header": "Automatisierungseditor",
                         "headers": {
@@ -1314,6 +1365,7 @@
                     }
                 },
                 "devices": {
+                    "add_prompt": "Mit diesem Gerät wurden noch keine {name} hinzugefügt. Du kannst eins hinzufügen, indem du auf den + Knopf drückst.",
                     "automation": {
                         "actions": {
                             "caption": "Wenn etwas ausgelöst wird ..."
@@ -1374,7 +1426,7 @@
                 },
                 "entities": {
                     "caption": "Entitäten",
-                    "description": "Überblick aller bekannten Elemente.",
+                    "description": "Bekannte Entitäten verwalten",
                     "picker": {
                         "disable_selected": {
                             "button": "Ausgewählte deaktivieren",
@@ -1477,6 +1529,7 @@
                 },
                 "integrations": {
                     "add_integration": "Integration hinzufügen",
+                    "attention": "Aufmerksamkeit erforderlich",
                     "caption": "Integrationen",
                     "config_entry": {
                         "area": "In {area}",
@@ -1495,6 +1548,8 @@
                         "no_device": "Entitäten ohne Geräte",
                         "no_devices": "Diese Integration hat keine Geräte.",
                         "options": "Optionen",
+                        "reload": "Neu laden",
+                        "reload_confirm": "Die Integration wurde neu geladen",
                         "rename": "Umbenennen",
                         "restart_confirm": "Starte Home Assistant neu, um das Entfernen dieser Integration abzuschließen",
                         "settings_button": "Einstellungen für {integration} bearbeiten",
@@ -1543,6 +1598,7 @@
                     "none_found_detail": "Passe deine Suchkriterien an.",
                     "note_about_integrations": "Nicht alle Integrationen können über die Benutzeroberfläche konfiguriert werden.",
                     "note_about_website_reference": "Weitere Informationen findest du auf der ",
+                    "reconfigure": "Neu konfigurieren",
                     "rename_dialog": "Bearbeite den Namen dieses Konfigurationseintrags",
                     "rename_input_label": "Eintragsname",
                     "search": "Such-Integrationen"
@@ -1653,8 +1709,11 @@
                     "topic": "Topic"
                 },
                 "ozw": {
+                    "button": "Konfigurieren",
                     "common": {
-                        "instance": "Instanz"
+                        "instance": "Instanz",
+                        "network": "Netzwerk",
+                        "zwave": "Z-Wave"
                     },
                     "device_info": {
                         "zwave_info": "Z-Wave Infos"
@@ -1664,12 +1723,28 @@
                         "select_instance": "Instanz auswählen"
                     },
                     "network_status": {
+                        "details": {
+                            "driverremoved": "Der Treiber wurde entfernt",
+                            "driverreset": "Der Treiber wurde zurückgesetzt",
+                            "ready": "Bereit zum Verbinden",
+                            "started": "Verbindung mit MQTT hergestellt",
+                            "starting": "Verbinde zu MQTT"
+                        },
                         "offline": "Offline",
                         "online": "Online",
+                        "starting": "Startet",
                         "unknown": "Unbekannt"
                     },
                     "network": {
                         "header": "Netzwerkverwaltung"
+                    },
+                    "nodes_table": {
+                        "failed": "Fehlgeschlagen",
+                        "id": "ID",
+                        "manufacturer": "Hersteller"
+                    },
+                    "refresh_node": {
+                        "start_refresh_button": "Aktualisierung starten"
                     }
                 },
                 "person": {
@@ -1796,8 +1871,9 @@
                         "reloading": {
                             "automation": "Automatisierungen neu laden",
                             "core": "Ort & Anpassungen neu laden",
-                            "group": "Gruppen neu laden",
+                            "group": "Gruppen, Gruppenentitäten und Benachrichtigungsdienste neu laden",
                             "heading": "Neuladen der YAML-Konfiguration",
+                            "homekit": "HomeKit neu laden",
                             "input_boolean": "Eingabe-Booleans neu laden",
                             "input_datetime": "Eingabe-Datums- und Zeitfelder neu laden",
                             "input_number": "Eingabenummern neu laden",
@@ -1805,8 +1881,11 @@
                             "input_text": "Eingabetexte neu laden",
                             "introduction": "Einige Komponenten von Home Assistant können ohne einen Neustart neu geladen werden. \"Neu laden\" entlädt dabei die aktuelle Konfiguration und lädt die neue Konfiguration.",
                             "person": "Personen neu laden",
+                            "reload": "Neu laden {domain}",
+                            "rest": "Rest Entitäten und Benachrichtigungsdienste neu laden",
                             "scene": "Szenen neu laden",
                             "script": "Skripte neu laden",
+                            "telegram": "Telegram-Benachrichtigungsdienste neu laden",
                             "zone": "Zonen neu laden"
                         },
                         "server_management": {
@@ -1828,12 +1907,18 @@
                 },
                 "tags": {
                     "detail": {
-                        "name": "Name"
+                        "delete": "Löschen",
+                        "description": "Beschreibung",
+                        "name": "Name",
+                        "update": "Aktualisieren"
                     },
+                    "edit": "Bearbeiten",
                     "headers": {
+                        "last_scanned": "Zuletzt gescannt",
                         "name": "Name"
                     },
-                    "never_scanned": "Nie gescannt"
+                    "never_scanned": "Nie gescannt",
+                    "write": "Schreiben"
                 },
                 "users": {
                     "add_user": {
@@ -1841,6 +1926,7 @@
                         "create": "Benutzerkonto anlegen",
                         "name": "Name",
                         "password": "Passwort",
+                        "password_confirm": "Passwort bestätigen",
                         "username": "Benutzername"
                     },
                     "caption": "Benutzer",
@@ -1857,7 +1943,9 @@
                         "group": "Gruppe",
                         "id": "ID",
                         "name": "Name",
+                        "new_password": "Neues Passwort",
                         "owner": "Besitzer",
+                        "password_changed": "Das Passwort wurde geändert!",
                         "system_generated": "System generiert",
                         "system_generated_users_not_editable": "Systemgenerierte Benutzer können nicht aktualisiert werden.",
                         "system_generated_users_not_removable": "Vom System generierte Benutzer können nicht entfernt werden.",
@@ -2379,7 +2467,8 @@
                             "description": "Die Sensorkarte gibt dir einen schnellen Überblick über Ihren Sensorstatus mit einem optionalen Diagramm, um Änderungen im Zeitverlauf zu visualisieren.",
                             "graph_detail": "Diagrammdetail",
                             "graph_type": "Typ",
-                            "name": "Sensor"
+                            "name": "Sensor",
+                            "show_more_detail": "Weitere Details anzeigen"
                         },
                         "shopping-list": {
                             "description": "Mit der Einkaufslistenkarte kannst du Artikel zu deiner Einkaufsliste hinzufügen, bearbeiten, abhaken und löschen.",
@@ -2728,6 +2817,9 @@
                     "submit": "Absenden"
                 },
                 "current_user": "Sie sind derzeit als {fullName} angemeldet.",
+                "customize_sidebar": {
+                    "button": "Bearbeiten"
+                },
                 "dashboard": {
                     "description": "Wähle ein Standard-Dashboard für dieses Gerät.",
                     "dropdown_label": "Dashboard",
@@ -2750,6 +2842,7 @@
                     "confirm_delete": "Möchten Sie den Zugriffs-Token für {name} wirklich löschen?",
                     "create": "Token erstellen",
                     "create_failed": "Das Zugriffs-Token konnte nicht erstellt werden.",
+                    "created": "Erstellt am {date}",
                     "created_at": "Erstellt am {date}",
                     "delete_failed": "Fehler beim Löschen des Zugriffs-Tokens.",
                     "description": "Erstelle langlebige Zugriffstoken, damit deine Skripte mit deiner Home Assistant-Instanz interagieren können. Jedes Token ist ab der Erstellung für 10 Jahre gültig. Die folgenden langlebigen Zugriffstoken sind derzeit aktiv.",
@@ -2757,9 +2850,10 @@
                     "header": "Langlebige Zugangs-Token",
                     "last_used": "Zuletzt verwendet am {date} in {location}",
                     "learn_auth_requests": "Erfahre, wie du authentifizierte Anfragen stellen kannst.",
+                    "name": "Name",
                     "not_used": "Wurde noch nie benutzt",
                     "prompt_copy_token": "Kopiere deinen Zugangs-Token. Er wird nicht wieder angezeigt werden.",
-                    "prompt_name": "Name?"
+                    "prompt_name": "Gib den Token einen Namen"
                 },
                 "mfa_setup": {
                     "close": "Schließen",
@@ -2808,7 +2902,8 @@
                     "error_no_theme": "Keine Themen verfügbar.",
                     "header": "Thema",
                     "link_promo": "Erfahre mehr über Themen",
-                    "primary_color": "Primärfarbe"
+                    "primary_color": "Primärfarbe",
+                    "reset": "zurücksetzen"
                 },
                 "vibrate": {
                     "description": "Aktiviere oder deaktiviere die Vibration an diesem Gerät, wenn du Geräte steuerst.",
@@ -2822,6 +2917,7 @@
             }
         },
         "sidebar": {
+            "done": "fertig",
             "external_app_configuration": "App-Konfiguration",
             "sidebar_toggle": "Seitenleiste umschalten"
         }

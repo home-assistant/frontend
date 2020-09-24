@@ -254,6 +254,8 @@
           "wnw": "WNW",
           "wsw": "WSW"
         },
+        "day": "Day",
+        "night": "Night",
         "forecast": "Forecast",
         "high": "High",
         "low": "Low"
@@ -278,9 +280,13 @@
       "successfully_saved": "Successfully saved",
       "successfully_deleted": "Successfully deleted",
       "back": "Back",
-      "error_required": "Required"
+      "error_required": "Required",
+      "copied": "Copied"
     },
     "components": {
+      "logbook": {
+        "entries_not_found": "No logbook entries found."
+      },
       "entity": {
         "entity-picker": {
           "entity": "Entity",
@@ -370,12 +376,33 @@
         "video_not_supported": "Your browser does not support the video element.",
         "media_not_supported": "The Browser Media Player does not support this type of media",
         "media_browsing_error": "Media Browsing Error",
-        "content-type": {
-          "server": "Server",
-          "library": "Library",
-          "artist": "Artist",
+        "learn_adding_local_media": "Learn more about adding media in the {documentation}.",
+        "local_media_files": "Place your video, audio and image files in the media directory to be able to browse and play them in the browser or on supported media players.",
+        "documentation": "documentation",
+        "no_local_media_found": "No local media found",
+        "no_media_folder": "It looks like you have not yet created a media directory.",
+        "setup_local_help": "Check the {documentation} on how to setup local media.",
+        "class": {
           "album": "Album",
-          "playlist": "Playlist"
+          "app": "App",
+          "artist": "Artist",
+          "channel": "Channel",
+          "composer": "Composer",
+          "contributing_artist": "Contributing Artist",
+          "directory": "Library",
+          "episode": "Episode",
+          "game": "Game",
+          "genre": "Genre",
+          "image": "Image",
+          "movie": "Movie",
+          "music": "Music",
+          "playlist": "Playlist",
+          "podcast": "Podcast",
+          "season": "Season",
+          "track": "Track",
+          "tv_show": "TV Show",
+          "url": "Url",
+          "video": "Video"
         }
       }
     },
@@ -401,7 +428,7 @@
         "dismiss": "Dismiss dialog",
         "settings": "Entity settings",
         "edit": "Edit entity",
-        "controls": "Controls",
+        "details": "Details",
         "history": "History",
         "script": {
           "last_action": "Last Action",
@@ -582,7 +609,8 @@
     },
     "sidebar": {
       "external_app_configuration": "App Configuration",
-      "sidebar_toggle": "Sidebar Toggle"
+      "sidebar_toggle": "Sidebar Toggle",
+      "done": "Done"
     },
     "panel": {
       "calendar": {
@@ -1711,7 +1739,7 @@
             "name": "Name",
             "change_password": "Change password",
             "new_password": "New Password",
-            "password_changed": "The password is changed!",
+            "password_changed": "Password was changed successfully",
             "activate_user": "Activate user",
             "deactivate_user": "Deactivate user",
             "delete_user": "Delete user",
@@ -2045,7 +2073,6 @@
         }
       },
       "logbook": {
-        "entries_not_found": "No logbook entries found.",
         "ranges": {
           "today": "Today",
           "yesterday": "Yesterday",
@@ -2131,7 +2158,7 @@
             "save": "Save",
             "unsaved_changes": "Unsaved changes",
             "saved": "Saved",
-            "confirm_remove_config_title": "Are you sure you want to remove your Lovelace UI configuration? We will automatically generate your Lovelace UI views with your areas and devices.",
+            "confirm_remove_config_title": "Are you sure you want to remove your Lovelace UI configuration?",
             "confirm_remove_config_text": "We will automatically generate your Lovelace UI views with your areas and devices if you remove your Lovelace UI configuration.",
             "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
             "confirm_unsaved_comments": "Your configuration contains comment(s), these will not be saved. Do you want to continue?",
@@ -2239,7 +2266,20 @@
               "name": "Entities",
               "show_header_toggle": "Show Header Toggle?",
               "toggle": "Toggle entities.",
-              "description": "The Entities card is the most common type of card. It groups items together into lists."
+              "description": "The Entities card is the most common type of card. It groups items together into lists.",
+              "special_row": "special row",
+              "edit_special_row": "Edit row using the code editor",
+              "entity_row": {
+                "divider": "Divider",
+                "call-service": "Call Service",
+                "section": "Section",
+                "weblink": "Web Link",
+                "attribute": "Attribute",
+                "buttons": "Buttons",
+                "conditional": "Conditional",
+                "cast": "Cast",
+                "button": "Button"
+              }
             },
             "entity": {
               "name": "Entity",
@@ -2361,7 +2401,7 @@
             },
             "sensor": {
               "name": "Sensor",
-              "graph_detail": "Graph Detail",
+              "show_more_detail": "Show more detail",
               "graph_type": "Graph Type",
               "description": "The Sensor card gives you a quick overview of your sensors state with an optional graph to visualize change over time."
             },
@@ -2428,6 +2468,11 @@
         "force_narrow": {
           "header": "Always hide the sidebar",
           "description": "This will hide the sidebar by default, similar to the mobile experience."
+        },
+        "customize_sidebar": {
+          "header": "Change the order and hide items from the sidebar",
+          "description": "You can also press and hold the header of the sidebar to activate edit mode.",
+          "button": "Edit"
         },
         "vibrate": {
           "header": "Vibrate",
@@ -2510,14 +2555,13 @@
           "header": "Long-Lived Access Tokens",
           "description": "Create long-lived access tokens to allow your scripts to interact with your Home Assistant instance. Each token will be valid for 10 years from creation. The following long-lived access tokens are currently active.",
           "learn_auth_requests": "Learn how to make authenticated requests.",
-          "created_at": "Created at {date}",
-          "last_used": "Last used at {date} from {location}",
-          "not_used": "Has never been used",
+          "created": "Created {date}",
           "confirm_delete": "Are you sure you want to delete the access token for {name}?",
           "delete_failed": "Failed to delete the access token.",
           "create": "Create Token",
           "create_failed": "Failed to create the access token.",
-          "prompt_name": "Name?",
+          "name": "Name",
+          "prompt_name": "Give the token a name",
           "prompt_copy_token": "Copy your access token. It will not be shown again.",
           "empty_state": "You have no long-lived access tokens yet."
         }
@@ -2728,7 +2772,12 @@
             "reset": "Reset to demo template",
             "jinja_documentation": "Jinja2 template documentation",
             "template_extensions": "Home Assistant template extensions",
-            "unknown_error_template": "Unknown error rendering template"
+            "unknown_error_template": "Unknown error rendering template",
+            "all_listeners": "This template listens for all state changed events.",
+            "no_listeners": "This template does not listen for any state changed events and will not update automatically.",
+            "listeners": "This template listens for the following state changed events:",
+            "entity": "Entity",
+            "domain": "Domain"
           }
         }
       },

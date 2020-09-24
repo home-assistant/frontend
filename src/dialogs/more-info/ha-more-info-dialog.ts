@@ -13,23 +13,50 @@ import {
 } from "lit-element";
 import { cache } from "lit-html/directives/cache";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { DOMAINS_MORE_INFO_NO_HISTORY } from "../../common/const";
+import {
+  DOMAINS_MORE_INFO_NO_HISTORY,
+  DOMAINS_WITH_MORE_INFO,
+} from "../../common/const";
+import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
+import { stateMoreInfoType } from "../../common/entity/state_more_info_type";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-dialog";
 import "../../components/ha-header-bar";
 import "../../components/ha-svg-icon";
-import "../../components/state-history-charts";
 import { removeEntityRegistryEntry } from "../../data/entity_registry";
 import { showEntityEditorDialog } from "../../panels/config/entities/show-dialog-entity-editor";
-import "../../panels/logbook/ha-logbook";
 import { haStyleDialog } from "../../resources/styles";
 import "../../state-summary/state-card-content";
 import { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
-import "./more-info-content";
+import "./ha-more-info-history";
+import "./ha-more-info-logbook";
+
+import "./controls/more-info-alarm_control_panel";
+import "./controls/more-info-automation";
+import "./controls/more-info-camera";
+import "./controls/more-info-climate";
+import "./controls/more-info-configurator";
+import "./controls/more-info-counter";
+import "./controls/more-info-cover";
+import "./controls/more-info-fan";
+import "./controls/more-info-group";
+import "./controls/more-info-humidifier";
+import "./controls/more-info-input_datetime";
+import "./controls/more-info-light";
+import "./controls/more-info-lock";
+import "./controls/more-info-media_player";
+import "./controls/more-info-person";
+import "./controls/more-info-script";
+import "./controls/more-info-sun";
+import "./controls/more-info-timer";
+import "./controls/more-info-vacuum";
+import "./controls/more-info-water_heater";
+import "./controls/more-info-weather";
+import "./controls/more-info-default";
 
 const DOMAINS_NO_INFO = ["camera", "configurator"];
 const EDITABLE_DOMAINS_WITH_ID = ["scene", "automation"];
@@ -47,6 +74,8 @@ export class MoreInfoDialog extends LitElement {
 
   @internalProperty() private _entityId?: string | null;
 
+  @internalProperty() private _moreInfoType?: string;
+
   @internalProperty() private _currTabIndex = 0;
 
   public showDialog(params: MoreInfoDialogParams) {
@@ -61,6 +90,22 @@ export class MoreInfoDialog extends LitElement {
     this._entityId = undefined;
     this._currTabIndex = 0;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  protected updated(changedProperties) {
+    if (!this.hass || !this._entityId || !changedProperties.has("_entityId")) {
+      return;
+    }
+    const stateObj = this.hass.states[this._entityId];
+    if (!stateObj) {
+      return;
+    }
+    if (stateObj.attributes && "custom_ui_more_info" in stateObj.attributes) {
+      this._moreInfoType = stateObj.attributes.custom_ui_more_info;
+    } else {
+      const type = stateMoreInfoType(stateObj);
+      this._moreInfoType = `more-info-${type}`;
+    }
   }
 
   protected render() {
@@ -127,7 +172,8 @@ export class MoreInfoDialog extends LitElement {
                 `
               : ""}
           </ha-header-bar>
-          ${this._computeShowHistoryComponent(entityId)
+          ${DOMAINS_WITH_MORE_INFO.includes(domain) &&
+          this._computeShowHistoryComponent(entityId)
             ? html`
                 <mwc-tab-bar
                   .activeIndex=${this._currTabIndex}
@@ -135,7 +181,7 @@ export class MoreInfoDialog extends LitElement {
                 >
                   <mwc-tab
                     .label=${this.hass.localize(
-                      "ui.dialogs.more_info_control.controls"
+                      "ui.dialogs.more_info_control.details"
                     )}
                   ></mwc-tab>
                   <mwc-tab
@@ -160,10 +206,23 @@ export class MoreInfoDialog extends LitElement {
                           .hass=${this.hass}
                         ></state-card-content>
                       `}
-                  <more-info-content
-                    .stateObj=${stateObj}
-                    .hass=${this.hass}
-                  ></more-info-content>
+                  ${DOMAINS_WITH_MORE_INFO.includes(domain) ||
+                  !this._computeShowHistoryComponent(entityId)
+                    ? ""
+                    : html`<ha-more-info-history
+                          .hass=${this.hass}
+                          .entityId=${this._entityId}
+                        ></ha-more-info-history>
+                        <ha-more-info-logbook
+                          .hass=${this.hass}
+                          .entityId=${this._entityId}
+                        ></ha-more-info-logbook>`}
+                  ${this._moreInfoType
+                    ? dynamicElement(this._moreInfoType, {
+                        hass: this.hass,
+                        stateObj,
+                      })
+                    : ""}
                   ${stateObj.attributes.restored
                     ? html`
                         <p>
@@ -188,19 +247,19 @@ export class MoreInfoDialog extends LitElement {
                     : ""}
                 `
               : html`
-                  <ha-more-info-tab-history
+                  <ha-more-info-history
                     .hass=${this.hass}
                     .entityId=${this._entityId}
-                  ></ha-more-info-tab-history>
+                  ></ha-more-info-history>
+                  <ha-more-info-logbook
+                    .hass=${this.hass}
+                    .entityId=${this._entityId}
+                  ></ha-more-info-logbook>
                 `
           )}
         </div>
       </ha-dialog>
     `;
-  }
-
-  protected firstUpdated(): void {
-    import("./ha-more-info-tab-history");
   }
 
   private _enlarge() {
@@ -209,7 +268,8 @@ export class MoreInfoDialog extends LitElement {
 
   private _computeShowHistoryComponent(entityId) {
     return (
-      isComponentLoaded(this.hass, "history") &&
+      (isComponentLoaded(this.hass, "history") ||
+        isComponentLoaded(this.hass, "logbook")) &&
       !DOMAINS_MORE_INFO_NO_HISTORY.includes(computeDomain(entityId))
     );
   }
@@ -274,6 +334,7 @@ export class MoreInfoDialog extends LitElement {
           --mdc-theme-on-primary: var(--primary-text-color);
           --mdc-theme-primary: var(--mdc-theme-surface);
           flex-shrink: 0;
+          display: block;
         }
 
         @media all and (max-width: 450px), all and (max-height: 500px) {
@@ -327,7 +388,9 @@ export class MoreInfoDialog extends LitElement {
           --dialog-content-padding: 0;
         }
 
-        state-card-content {
+        state-card-content,
+        ha-more-info-history,
+        ha-more-info-logbook:not(:last-child) {
           display: block;
           margin-bottom: 16px;
         }

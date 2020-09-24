@@ -341,6 +341,7 @@ interface ForecastAttribute {
   precipitation_probability?: number;
   humidity?: number;
   condition?: string;
+  daytime?: boolean;
 }
 
 export type WeatherEntity = HassEntityBase & {

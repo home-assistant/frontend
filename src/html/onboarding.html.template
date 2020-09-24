@@ -11,7 +11,12 @@
       @media (prefers-color-scheme: dark) {
         html {
           background-color: #111111;
-          color: var(--primary-text-color, #e1e1e1);
+          color: #e1e1e1;
+        }
+        ha-onboarding {
+          --primary-text-color: #e1e1e1;
+          --secondary-text-color: #9b9b9b;
+          --disabled-text-color: #6f6f6f;
         }
       }
       .content {

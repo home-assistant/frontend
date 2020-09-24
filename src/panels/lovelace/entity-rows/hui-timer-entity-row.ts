@@ -2,9 +2,9 @@ import { HassEntity } from "home-assistant-js-websocket";
 import {
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -125,7 +125,9 @@ class HuiTimerEntityRow extends LitElement {
     }
 
     if (stateObj.state === "idle" || this._timeRemaining === 0) {
-      return this.hass!.localize("state.timer." + stateObj.state);
+      return (
+        this.hass!.localize(`state.timer.${stateObj.state}`) || stateObj.state
+      );
     }
 
     let display = secondsToDuration(this._timeRemaining || 0);

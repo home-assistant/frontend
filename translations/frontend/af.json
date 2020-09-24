@@ -440,6 +440,7 @@
         "common": {
             "cancel": "Kanselleer",
             "close": "Sluit",
+            "copied": "Copiato",
             "loading": "Laai tans",
             "save": "Stoor"
         },
@@ -469,6 +470,25 @@
             "history_charts": {
                 "loading_history": "Laai tans toestandsgeskiedenis ...",
                 "no_history_found": "Geen toestandsgeskiedenis gevind nie."
+            },
+            "media-browser": {
+                "class": {
+                    "composer": "Compositore",
+                    "directory": "Libreria",
+                    "episode": "Episodio",
+                    "game": "Gioco",
+                    "genre": "Genere",
+                    "image": "Immagine",
+                    "movie": "Film",
+                    "music": "Musica",
+                    "playlist": "Playlist",
+                    "podcast": "Podcast",
+                    "season": "Stagione",
+                    "track": "Traccia",
+                    "tv_show": "Programma televisivo",
+                    "url": "Url",
+                    "video": "Video"
+                }
             },
             "related-items": {
                 "area": "Area",

@@ -19,6 +19,7 @@
         "logbook": "Záznamy",
         "mailbox": "Schránka",
         "map": "Mapa",
+        "media_browser": "Prohlížeč médií",
         "profile": "Profil",
         "shopping_list": "Nákupní seznam",
         "states": "Přehled"
@@ -506,6 +507,7 @@
             "cancel": "Zrušit",
             "close": "Zavřít",
             "continue": "Pokračovat",
+            "copied": "Zkopírováno",
             "delete": "Smazat",
             "error_required": "Povinné",
             "loading": "Načítání",
@@ -552,6 +554,10 @@
                 "toggle": "Přepnout"
             },
             "entity": {
+                "entity-attribute-picker": {
+                    "attribute": "Atribut",
+                    "show_attributes": "Zobrazit atributy"
+                },
                 "entity-picker": {
                     "clear": "Zrušit",
                     "entity": "Entita",
@@ -562,10 +568,35 @@
                 "loading_history": "Historie stavu se načítá...",
                 "no_history_found": "Historie stavu chybí."
             },
+            "logbook": {
+                "entries_not_found": "Nenalezeny žádné záznamy."
+            },
             "media-browser": {
                 "audio_not_supported": "Váš prohlížeč nepodporuje element \"audio\".",
                 "choose_player": "Vyberte přehrávač",
                 "choose-source": "Zvolte zdroj",
+                "class": {
+                    "album": "Album",
+                    "app": "Aplikace",
+                    "artist": "Umělec",
+                    "channel": "Kanál",
+                    "composer": "Skladatel",
+                    "contributing_artist": "Přispívající umělec",
+                    "directory": "Knihovna",
+                    "episode": "Epizoda",
+                    "game": "Hra",
+                    "genre": "Žánr",
+                    "image": "Obrázek",
+                    "movie": "Film",
+                    "music": "Hudba",
+                    "playlist": "Seznam skladeb",
+                    "podcast": "Podcast",
+                    "season": "Sezóna",
+                    "track": "Stopa",
+                    "tv_show": "Televizní pořad",
+                    "url": "Url adresa",
+                    "video": "Video"
+                },
                 "content-type": {
                     "album": "Album",
                     "artist": "Umělec",
@@ -573,14 +604,21 @@
                     "playlist": "Seznam skladeb",
                     "server": "Server"
                 },
+                "documentation": "dokumentace",
+                "learn_adding_local_media": "Další informace o přidávání médií naleznete v {documentation}.",
+                "local_media_files": "Umístěte svá videa, zvukové či obrazové soubory do adresáře médií, abyste je mohli procházet a přehrávat v prohlížeči nebo na podporovaných přehrávačích médií.",
+                "media_browsing_error": "Chyba při procházení médií",
                 "media_not_supported": "Přehrávač médií v prohlížeči nepodporuje tento typ média",
                 "media_player": "Přehrávač médií",
                 "media-player-browser": "Prohlížeč přehrávače médií",
                 "no_items": "Žádné položky",
+                "no_local_media_found": "Nebyla nalezena žádná místní média",
+                "no_media_folder": "Vypadá to, že jste dosud nevytvořili adresář médií.",
                 "pick": "Vybrat",
                 "pick-media": "Vybrat média",
                 "play": "Přehrát",
                 "play-media": "Přehrát média",
+                "setup_local_help": "Pokyny k nastavení místních médií najdete v {documentation}.",
                 "video_not_supported": "Váš prohlížeč nepodporuje element \"video\".",
                 "web-browser": "Webový prohlížeč"
             },
@@ -697,6 +735,7 @@
             },
             "more_info_control": {
                 "controls": "Ovládací prvky",
+                "details": "Podrobnosti",
                 "dismiss": "Zavřít dialog",
                 "edit": "Upravit entitu",
                 "history": "Historie",
@@ -783,7 +822,7 @@
                 "services": {
                     "reconfigure": "Překonfigurovat zařízení ZHA (opravit zařízení). Použijte, pokud se zařízením máte problémy. Je-li dotyčné zařízení napájené bateriemi, ujistěte se prosím, že je při používání této služby spuštěné a přijímá příkazy.",
                     "remove": "Odebrat zařízení ze sítě Zigbee.",
-                    "updateDeviceName": "Nastavte vlastní název tohoto zařízení v registru zařízení.",
+                    "updateDeviceName": "Nastavte vlastní název tohoto zařízení v seznamu zařízení.",
                     "zigbee_information": "Zobrazit Zigbee informace zařízení."
                 },
                 "unknown": "Neznámý",
@@ -927,7 +966,13 @@
                                     "label": "Zavolat službu",
                                     "service_data": "Data služby"
                                 },
+                                "wait_for_trigger": {
+                                    "continue_timeout": "Pokračovat po časovém limitu",
+                                    "label": "Počkat na spouštěč",
+                                    "timeout": "Časový limit (volitelný)"
+                                },
                                 "wait_template": {
+                                    "continue_timeout": "Pokračovat po časovém limitu",
                                     "label": "Čekání",
                                     "timeout": "Časový limit (volitelné)",
                                     "wait_template": "Šablona pro čekání"
@@ -991,7 +1036,9 @@
                                 "time": {
                                     "after": "Po",
                                     "before": "Před",
-                                    "label": "Čas"
+                                    "label": "Čas",
+                                    "type_input": "Hodnota pomocníka \"Datum a/nebo čas\"",
+                                    "type_value": "Pevný čas"
                                 },
                                 "zone": {
                                     "entity": "Entita s umístěním",
@@ -1079,6 +1126,7 @@
                                     "value_template": "Šablona hodnoty (volitelné)"
                                 },
                                 "state": {
+                                    "attribute": "Atribut (volitelný)",
                                     "for": "Po dobu",
                                     "from": "Z",
                                     "label": "Stav",
@@ -1106,7 +1154,9 @@
                                 },
                                 "time": {
                                     "at": "V",
-                                    "label": "Čas"
+                                    "label": "Čas",
+                                    "type_input": "Hodnota pomocníka \"Datum a/nebo čas\"",
+                                    "type_value": "Pevný čas"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -1129,6 +1179,8 @@
                         "add_automation": "Přidat automatizaci",
                         "delete_automation": "Odstranit automatizaci",
                         "delete_confirm": "Opravdu chcete odstranit tuto automatizaci?",
+                        "duplicate": "Duplikát",
+                        "duplicate_automation": "Duplikovat automatizaci",
                         "edit_automation": "Upravit automatizaci",
                         "header": "Editor automatizací",
                         "headers": {
@@ -1451,8 +1503,8 @@
                             "name": "Název",
                             "status": "Stav"
                         },
-                        "introduction": "Homa Assistant uchovává registr všech entit, které kdy viděl a mohou být jednoznačně identifikovány. Každá z těchto entit bude mít přiděleno ID, které bude rezervováno pouze pro tuto entitu.",
-                        "introduction2": "Pomocí registru entit můžete přepsat název, změnit identifikátor entity nebo odebrat entitu.",
+                        "introduction": "Homa Assistant uchovává záznam o každé entitě, kterou kdy viděl a která může být jednoznačně identifikována. Každá z těchto entit bude mít přiděleno ID, které bude rezervováno pouze pro tuto entitu.",
+                        "introduction2": "Entitě můžete přepsat název, změnit její identifikátor nebo ji odebrat z Home Assistant.",
                         "remove_selected": {
                             "button": "Odstranit vybrané",
                             "confirm_partly_text": "Můžete odebrat pouze {removable} z vybraných {selected} entit. Entity lze odebrat pouze v případě, že integrace již entity neposkytuje. Občas je třeba restartovat Home Assistant před tím, než je možné odstranit entity ze smazané integrace. Opravdu chcete odebrat odstranitelné entity?",
@@ -1478,7 +1530,7 @@
                 "header": "Konfigurace Home Assistant",
                 "helpers": {
                     "caption": "Pomocníci",
-                    "description": "Prvky, které mohou pomoci při vytváření automatizací.",
+                    "description": "Správa prvků, které mohou pomoci při vytváření automatizací",
                     "dialog": {
                         "add_helper": "Přidat pomocníka",
                         "add_platform": "Přidat {platform}",
@@ -1529,6 +1581,7 @@
                 },
                 "integrations": {
                     "add_integration": "Přidat integraci",
+                    "attention": "Vyžadována pozornost",
                     "caption": "Integrace",
                     "config_entry": {
                         "area": "V {area}",
@@ -1599,6 +1652,7 @@
                     "none_found_detail": "Upravte kritéria vyhledávání.",
                     "note_about_integrations": "Ne všechny integrace lze prozatím konfigurovat prostřednictvím uživatelského rozhraní.",
                     "note_about_website_reference": "Další jsou k dispozici na ",
+                    "reconfigure": "Překonfigurovat",
                     "rename_dialog": "Upravit název této položky nastavení",
                     "rename_input_label": "Název položky",
                     "search": "Hledat integraci"
@@ -1607,7 +1661,7 @@
                 "logs": {
                     "caption": "Logy",
                     "clear": "Zrušit",
-                    "description": "Zobrazit log Home Assistant",
+                    "description": "Zobrazení logů Home Assistant",
                     "details": "Detaily protokolu ({level})",
                     "load_full_log": "Načíst úplný protokol Home Assistanta",
                     "loading_log": "Načítání protokolu chyb...",
@@ -1925,7 +1979,7 @@
                 },
                 "server_control": {
                     "caption": "Ovládání serveru",
-                    "description": "Restart a zastavení serveru Home Asistent",
+                    "description": "Restartování a zastavení serveru Home Asistent",
                     "section": {
                         "reloading": {
                             "automation": "Nově načíst automatizace",
@@ -2158,7 +2212,7 @@
                     "configured_in_yaml": "Zóny konfigurované pomocí configuration.yaml nelze upravovat pomocí UI.",
                     "confirm_delete": "Opravdu chcete tuto zónu smazat?",
                     "create_zone": "Vytvořit zónu",
-                    "description": "Spravujte zóny, ve kterých chcete sledovat osoby.",
+                    "description": "Spravá zón, ve kterých chcete sledovat osoby",
                     "detail": {
                         "create": "Vytvořit",
                         "delete": "Smazat",
@@ -2238,7 +2292,7 @@
                     },
                     "ozw_log": {
                         "header": "Protokol OZW",
-                        "introduction": "Zobrazit protokol. 0 je minimum (načte celý protokol) a 1000 je maximum. Načíst zobrazí statický protokol a tail automaticky aktualizuje protokol s naposledy zvoleným počtem řádků.",
+                        "introduction": "Zobrazit protokol. 0 je minimum (načte celý protokol) a 1000 je maximum. Načíst zobrazí statický protokol a Konec automaticky aktualizuje protokol s naposledy zvoleným počtem řádků.",
                         "last_log_lines": "Počet řádků posledního protokolu",
                         "load": "Načíst",
                         "tail": "Konec"
@@ -2327,9 +2381,14 @@
                         "title": "Stavy"
                     },
                     "templates": {
+                        "all_listeners": "Tato šablona naslouchá všem změnám stavu.",
                         "description": "Šablony jsou vykreslovány pomocí Jinja2 šablonového enginu s některými specifickými rozšířeními pro Home Assistant.",
+                        "domain": "Doména",
                         "editor": "Editor šablon",
+                        "entity": "Entita",
                         "jinja_documentation": "Dokumentace šablony Jinja2",
+                        "listeners": "Tato šablona naslouchá následujícím změnám stavu:",
+                        "no_listeners": "Tato šablona neposlouchá žádné změny stavu a nebude se automaticky aktualizovat.",
                         "reset": "Obnovit ukázkovou šablonu",
                         "template_extensions": "Rozšíření šablony Home Assistant",
                         "title": "Šablony",
@@ -2555,7 +2614,8 @@
                             "description": "Karta Sensor poskytuje rychlý přehled o stavu senzorů s volitelným grafem pro vizualizaci změn v průběhu času.",
                             "graph_detail": "Detail grafu",
                             "graph_type": "Typ grafu",
-                            "name": "Senzor"
+                            "name": "Senzor",
+                            "show_more_detail": "Zobrazit více podrobností"
                         },
                         "shopping-list": {
                             "description": "Karta Nákupní seznam umožňuje přidávat, upravovat, odškrtávat a mazat položky z nákupního seznamu.",
@@ -2639,7 +2699,7 @@
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "Pokud odeberete konfiguraci uživatelského rozhraní Lovelace, automaticky vygenerujeme pohledy Lovelace s vašimi oblastmi a zařízeními.",
-                        "confirm_remove_config_title": "Opravdu chcete odstranit nastavení Lovelace? Automaticky vygenerujeme vaše zobrazení Lovelace s vašimi oblastmi a zařízeními.",
+                        "confirm_remove_config_title": "Opravdu chcete odstranit nastavení uživatelského rozhraní Lovelace?",
                         "confirm_unsaved_changes": "Máte neuložené změny. Opravdu chcete odejít?",
                         "confirm_unsaved_comments": "Vaše konfigurace obsahuje komentáře, které se neuloží. Chcete pokračovat?",
                         "error_invalid_config": "Vaše konfigurace není platná: {error}",
@@ -2916,6 +2976,11 @@
                     "submit": "Odeslat"
                 },
                 "current_user": "Nyní jste přihlášeni jako {fullName}.",
+                "customize_sidebar": {
+                    "button": "Upravit",
+                    "description": "Režim úprav můžete aktivovat také stisknutím a podržením záhlaví postranního panelu.",
+                    "header": "Změna pořadí a skrytí položek postranního panelu"
+                },
                 "dashboard": {
                     "description": "Vyberte výchozí dashboard pro toto zařízení.",
                     "dropdown_label": "Dashboard",
@@ -2938,6 +3003,7 @@
                     "confirm_delete": "Opravdu chcete smazat přístupový token pro {name} ?",
                     "create": "Vytvořte token",
                     "create_failed": "Nepodařilo se vytvořit přístupový token.",
+                    "created": "Vytvořeno {date}",
                     "created_at": "Vytvořeno {date}",
                     "delete_failed": "Nepodařilo se odstranit přístupový token.",
                     "description": "Vytvořte přístupové tokeny s dlouhou životností, aby vaše skripty mohly komunikovat s instancí Home Assistant. Každý token bude platný po dobu 10 let od vytvoření. Tyto tokeny s dlouhou životností jsou v současné době aktivní.",
@@ -2945,9 +3011,10 @@
                     "header": "Tokeny s dlouhou životností",
                     "last_used": "Naposledy použito {date} z {location}",
                     "learn_auth_requests": "Naučte se, jak posílat ověřené požadavky.",
+                    "name": "Název",
                     "not_used": "Nikdy nebylo použito",
                     "prompt_copy_token": "Zkopírujte přístupový token. Už nikdy nebude znovu zobrazen.",
-                    "prompt_name": "Název?"
+                    "prompt_name": "Pojmenujte token"
                 },
                 "mfa_setup": {
                     "close": "Zavřít",
@@ -3011,6 +3078,7 @@
             }
         },
         "sidebar": {
+            "done": "Hotovo",
             "external_app_configuration": "Konfigurace aplikace",
             "sidebar_toggle": "Přepínač postranního panelu"
         }

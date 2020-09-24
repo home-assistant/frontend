@@ -19,6 +19,7 @@
         "logbook": "日志",
         "mailbox": "邮箱",
         "map": "地图",
+        "media_browser": "媒体浏览器",
         "profile": "用户资料",
         "shopping_list": "购物清单",
         "states": "概览"
@@ -506,6 +507,7 @@
             "cancel": "取消",
             "close": "关闭",
             "continue": "继续",
+            "copied": "已复制",
             "delete": "删除",
             "error_required": "必填",
             "loading": "加载中",
@@ -552,6 +554,10 @@
                 "toggle": "切换"
             },
             "entity": {
+                "entity-attribute-picker": {
+                    "attribute": "属性",
+                    "show_attributes": "显示属性"
+                },
                 "entity-picker": {
                     "clear": "清除",
                     "entity": "实体",
@@ -562,10 +568,35 @@
                 "loading_history": "正在加载历史状态...",
                 "no_history_found": "没有找到历史状态。"
             },
+            "logbook": {
+                "entries_not_found": "未找到日志条目。"
+            },
             "media-browser": {
                 "audio_not_supported": "您的浏览器不支持音频元素。",
                 "choose_player": "选择播放器",
                 "choose-source": "选择媒体源",
+                "class": {
+                    "album": "专辑",
+                    "app": "应用",
+                    "artist": "艺术家",
+                    "channel": "频道",
+                    "composer": "作曲家",
+                    "contributing_artist": "参与创作者",
+                    "directory": "媒体库",
+                    "episode": "分集",
+                    "game": "游戏",
+                    "genre": "体裁",
+                    "image": "图片",
+                    "movie": "电影",
+                    "music": "音乐",
+                    "playlist": "播放列表",
+                    "podcast": "播客",
+                    "season": "播出季",
+                    "track": "音轨",
+                    "tv_show": "电视节目",
+                    "url": "网址",
+                    "video": "视频"
+                },
                 "content-type": {
                     "album": "专辑",
                     "artist": "艺术家",
@@ -573,14 +604,21 @@
                     "playlist": "播放列表",
                     "server": "服务器"
                 },
+                "documentation": "文档",
+                "learn_adding_local_media": "请参阅{documentation}以了解更多关于添加媒体的信息。",
+                "local_media_files": "将视频、音频和图像文件放在媒体目录中，以便在浏览器或支持的媒体播放器上浏览和播放这些文件。",
+                "media_browsing_error": "媒体浏览错误",
                 "media_not_supported": "浏览器媒体播放器不支持此类型的媒体",
                 "media_player": "媒体播放器",
                 "media-player-browser": "媒体播放浏览器",
                 "no_items": "没有项目",
+                "no_local_media_found": "未找到本地媒体",
+                "no_media_folder": "您还没有创建媒体目录。",
                 "pick": "选定",
                 "pick-media": "选定媒体",
                 "play": "播放",
                 "play-media": "播放媒体",
+                "setup_local_help": "请参阅{documentation}以了解如何设置本地媒体。",
                 "video_not_supported": "您的浏览器不支持视频元素。",
                 "web-browser": "网页浏览器"
             },
@@ -697,6 +735,7 @@
             },
             "more_info_control": {
                 "controls": "控制项",
+                "details": "详情",
                 "dismiss": "关闭对话框",
                 "edit": "编辑实体",
                 "history": "历史",
@@ -927,7 +966,13 @@
                                     "label": "调用服务",
                                     "service_data": "服务数据"
                                 },
+                                "wait_for_trigger": {
+                                    "continue_timeout": "超时继续",
+                                    "label": "等待触发",
+                                    "timeout": "超时（可选）"
+                                },
                                 "wait_template": {
+                                    "continue_timeout": "超时继续",
                                     "label": "等待",
                                     "timeout": "超时（可选）",
                                     "wait_template": "等待模板"
@@ -991,7 +1036,9 @@
                                 "time": {
                                     "after": "晚于",
                                     "before": "早于",
-                                    "label": "时间"
+                                    "label": "时间",
+                                    "type_input": "“日期/时间”辅助元素的值",
+                                    "type_value": "固定时间"
                                 },
                                 "zone": {
                                     "entity": "位置追踪设备",
@@ -1079,6 +1126,7 @@
                                     "value_template": "自定义值（可选）"
                                 },
                                 "state": {
+                                    "attribute": "属性（可选）",
                                     "for": "持续",
                                     "from": "从",
                                     "label": "状态",
@@ -1105,8 +1153,10 @@
                                     "seconds": "秒"
                                 },
                                 "time": {
-                                    "at": "当",
-                                    "label": "时间"
+                                    "at": "时间为",
+                                    "label": "时间",
+                                    "type_input": "“日期/时间”辅助元素的值",
+                                    "type_value": "固定时间"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -1129,6 +1179,8 @@
                         "add_automation": "添加自动化",
                         "delete_automation": "删除自动化",
                         "delete_confirm": "您确定要删除此自动化吗？",
+                        "duplicate": "制作副本",
+                        "duplicate_automation": "复制自动化",
                         "edit_automation": "编辑自动化",
                         "header": "自动化编辑器",
                         "headers": {
@@ -1529,6 +1581,7 @@
                 },
                 "integrations": {
                     "add_integration": "添加集成",
+                    "attention": "需要注意",
                     "caption": "集成",
                     "config_entry": {
                         "area": "位于：{area}",
@@ -1552,6 +1605,7 @@
                         "reload_restart_confirm": "重启 Home Assistant 以完成此集成的重载",
                         "rename": "重命名",
                         "restart_confirm": "重启 Home Assistant 以完成此集成的删除",
+                        "services": "{count} {count, plural,\n  one {个服务}\n  other {个服务}\n}",
                         "settings_button": "编辑{integration}设置",
                         "system_options": "系统选项",
                         "system_options_button": "{integration}系统选项",
@@ -1598,6 +1652,7 @@
                     "none_found_detail": "请调整搜索条件。",
                     "note_about_integrations": "并非所有集成都可以通过 UI 进行配置。",
                     "note_about_website_reference": "更多可用信息，尽在 ",
+                    "reconfigure": "重新配置",
                     "rename_dialog": "编辑此配置项的名称",
                     "rename_input_label": "条目名称",
                     "search": "搜索集成"
@@ -2326,9 +2381,14 @@
                         "title": "状态"
                     },
                     "templates": {
+                        "all_listeners": "此模板监听所有的状态改变事件。",
                         "description": "模板使用 jinja2 模板引擎和一些 Home Assistant 特定的插件进行渲染。",
+                        "domain": "域",
                         "editor": "模板编辑器",
+                        "entity": "实体",
                         "jinja_documentation": "Jinja2 模板文档",
+                        "listeners": "此模板监听以下状态改变事件：",
+                        "no_listeners": "此模板不监听任何状态改变事件，并且不会自动更新。",
                         "reset": "重置为演示模板",
                         "template_extensions": "Home Assistant 模板插件",
                         "title": "模板",
@@ -2554,7 +2614,8 @@
                             "description": "“传感器”卡片供您快速了解传感器的状态，还提供可选的图表来表示其随时间的变化。",
                             "graph_detail": "图形详细信息",
                             "graph_type": "图形类型",
-                            "name": "传感器"
+                            "name": "传感器",
+                            "show_more_detail": "显示更多信息"
                         },
                         "shopping-list": {
                             "description": "“购物清单”卡片供您向购物清单中添加、编辑、划掉、删除商品。",
@@ -2638,7 +2699,7 @@
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "如果您删除了 Lovelace 配置，我们将通过您的区域和设备自动生成 Lovelace 视图。",
-                        "confirm_remove_config_title": "您确定要删除 Lovelace 配置吗？我们将通过您的区域和设备自动生成 Lovelace 视图。",
+                        "confirm_remove_config_title": "您确定要删除 Lovelace 配置吗？",
                         "confirm_unsaved_changes": "您有未保存的更改，确定要退出吗？",
                         "confirm_unsaved_comments": "您的配置包含注释，这些注释将不会保存。是否继续？",
                         "error_invalid_config": "您的配置无效：{error}",
@@ -2915,6 +2976,11 @@
                     "submit": "提交"
                 },
                 "current_user": "您目前以 {fullName} 的身份登录。",
+                "customize_sidebar": {
+                    "button": "编辑",
+                    "description": "您也可以长按侧边栏标题来进入编辑模式。",
+                    "header": "排序和隐藏侧边栏中的项目"
+                },
                 "dashboard": {
                     "description": "选择此设备的默认仪表盘。",
                     "dropdown_label": "仪表盘",
@@ -2937,6 +3003,7 @@
                     "confirm_delete": "确定要删除 {name} 的访问令牌吗？",
                     "create": "创建令牌",
                     "create_failed": "无法创建访问令牌。",
+                    "created": "创建于 {date}",
                     "created_at": "创建于 {date}",
                     "delete_failed": "无法删除访问令牌。",
                     "description": "创建长期访问令牌以允许脚本与 Home Assistant 实例进行交互。每个令牌在创建后有效期为 10 年。以下是处于激活状态的长期访问令牌。",
@@ -2944,9 +3011,10 @@
                     "header": "长期访问令牌",
                     "last_used": "上次使用于 {date} 来自 {location}",
                     "learn_auth_requests": "了解如何创建经过身份验证的请求。",
+                    "name": "名称",
                     "not_used": "从未使用过",
                     "prompt_copy_token": "请复制您的访问令牌。它不会再显示出来。",
-                    "prompt_name": "名称？"
+                    "prompt_name": "为令牌指定名称"
                 },
                 "mfa_setup": {
                     "close": "关闭",
@@ -3010,6 +3078,7 @@
             }
         },
         "sidebar": {
+            "done": "完成",
             "external_app_configuration": "应用配置",
             "sidebar_toggle": "侧边栏切换"
         }

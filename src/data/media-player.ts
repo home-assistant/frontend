@@ -1,3 +1,21 @@
+import {
+  mdiAccountMusic,
+  mdiAccountMusicOutline,
+  mdiAlbum,
+  mdiApplication,
+  mdiDramaMasks,
+  mdiFileMusic,
+  mdiFolder,
+  mdiGamepadVariant,
+  mdiImage,
+  mdiMovie,
+  mdiMusic,
+  mdiPlaylistMusic,
+  mdiPodcast,
+  mdiTelevisionClassic,
+  mdiVideo,
+  mdiWeb,
+} from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../types";
 
@@ -20,7 +38,67 @@ export const CONTRAST_RATIO = 4.5;
 
 export type MediaPlayerBrowseAction = "pick" | "play";
 
-export const BROWSER_SOURCE = "browser";
+export const BROWSER_PLAYER = "browser";
+
+export type MediaClassBrowserSetting = {
+  icon: string;
+  thumbnail_ratio?: string;
+  layout?: string;
+  show_list_images?: boolean;
+};
+
+export const MediaClassBrowserSettings: {
+  [type: string]: MediaClassBrowserSetting;
+} = {
+  album: { icon: mdiAlbum, layout: "grid" },
+  app: { icon: mdiApplication, layout: "grid" },
+  artist: { icon: mdiAccountMusic, layout: "grid", show_list_images: true },
+  channel: {
+    icon: mdiTelevisionClassic,
+    thumbnail_ratio: "portrait",
+    layout: "grid",
+  },
+  composer: {
+    icon: mdiAccountMusicOutline,
+    layout: "grid",
+    show_list_images: true,
+  },
+  contributing_artist: {
+    icon: mdiAccountMusic,
+    layout: "grid",
+    show_list_images: true,
+  },
+  directory: { icon: mdiFolder, layout: "grid", show_list_images: true },
+  episode: {
+    icon: mdiTelevisionClassic,
+    layout: "grid",
+    thumbnail_ratio: "portrait",
+  },
+  game: {
+    icon: mdiGamepadVariant,
+    layout: "grid",
+    thumbnail_ratio: "portrait",
+  },
+  genre: { icon: mdiDramaMasks, layout: "grid", show_list_images: true },
+  image: { icon: mdiImage, layout: "grid" },
+  movie: { icon: mdiMovie, thumbnail_ratio: "portrait", layout: "grid" },
+  music: { icon: mdiMusic },
+  playlist: { icon: mdiPlaylistMusic, layout: "grid", show_list_images: true },
+  podcast: { icon: mdiPodcast, layout: "grid" },
+  season: {
+    icon: mdiTelevisionClassic,
+    layout: "grid",
+    thumbnail_ratio: "portrait",
+  },
+  track: { icon: mdiFileMusic },
+  tv_show: {
+    icon: mdiTelevisionClassic,
+    layout: "grid",
+    thumbnail_ratio: "portrait",
+  },
+  url: { icon: mdiWeb },
+  video: { icon: mdiVideo, layout: "grid" },
+};
 
 export interface MediaPickedEvent {
   item: MediaPlayerItem;
@@ -40,6 +118,8 @@ export interface MediaPlayerItem {
   title: string;
   media_content_type: string;
   media_content_id: string;
+  media_class: string;
+  children_media_class: string;
   can_play: boolean;
   can_expand: boolean;
   thumbnail?: string;

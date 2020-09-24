@@ -39,6 +39,7 @@ import "../../../layouts/ha-app-layout";
 import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "./action/ha-automation-action";
@@ -104,6 +105,7 @@ export class HaAutomationEditor extends LitElement {
                 <ha-svg-icon .path=${mdiContentDuplicate}></ha-svg-icon>
               </mwc-icon-button>
               <mwc-icon-button
+                class="warning"
                 slot="toolbar-icon"
                 title="${this.hass.localize(
                   "ui.panel.config.automation.picker.delete_automation"
@@ -158,7 +160,10 @@ export class HaAutomationEditor extends LitElement {
                           "ui.panel.config.automation.editor.modes.description",
                           "documentation_link",
                           html`<a
-                            href="https://www.home-assistant.io/integrations/automation/#automation-modes"
+                            href="${documentationUrl(
+                              this.hass,
+                              "/integrations/automation/#automation-modes"
+                            )}"
                             target="_blank"
                             rel="noreferrer"
                             >${this.hass.localize(
@@ -246,7 +251,10 @@ export class HaAutomationEditor extends LitElement {
                       )}
                     </p>
                     <a
-                      href="https://home-assistant.io/docs/automation/trigger/"
+                      href="${documentationUrl(
+                        this.hass,
+                        "/docs/automation/trigger/"
+                      )}"
                       target="_blank"
                       rel="noreferrer"
                     >
@@ -275,7 +283,10 @@ export class HaAutomationEditor extends LitElement {
                       )}
                     </p>
                     <a
-                      href="https://home-assistant.io/docs/scripts/conditions/"
+                      href="${documentationUrl(
+                        this.hass,
+                        "/docs/scripts/conditions/"
+                      )}"
                       target="_blank"
                       rel="noreferrer"
                     >
@@ -304,7 +315,10 @@ export class HaAutomationEditor extends LitElement {
                       )}
                     </p>
                     <a
-                      href="https://home-assistant.io/docs/automation/action/"
+                      href="${documentationUrl(
+                        this.hass,
+                        "/docs/automation/action/"
+                      )}"
                       target="_blank"
                       rel="noreferrer"
                     >

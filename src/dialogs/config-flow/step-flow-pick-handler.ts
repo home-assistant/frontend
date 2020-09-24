@@ -20,6 +20,7 @@ import { LocalizeFunc } from "../../common/translations/localize";
 import "../../components/ha-icon-next";
 import { domainToName } from "../../data/integration";
 import { HomeAssistant } from "../../types";
+import { documentationUrl } from "../../util/documentation-url";
 import { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
 
@@ -122,7 +123,7 @@ class StepFlowPickHandler extends LitElement {
               ${this.hass.localize(
                 "ui.panel.config.integrations.note_about_website_reference"
               )}<a
-                href="https://www.home-assistant.io/integrations/"
+                href="${documentationUrl(this.hass, "/integrations/")}"
                 target="_blank"
                 rel="noreferrer"
                 >${this.hass.localize(

@@ -154,6 +154,7 @@ class ActionHandler extends HTMLElement implements ActionHandler {
       if (["touchend", "touchcancel"].includes(ev.type) && this.cancelled) {
         return;
       }
+      const target = ev.target as HTMLElement;
       // Prevent mouse event if touch event
       if (ev.cancelable) {
         ev.preventDefault();
@@ -164,7 +165,7 @@ class ActionHandler extends HTMLElement implements ActionHandler {
         this.timer = undefined;
       }
       if (options.hasHold && this.held) {
-        fireEvent(element, "action", { action: "hold" });
+        fireEvent(target, "action", { action: "hold" });
       } else if (options.hasDoubleClick) {
         if (
           (ev.type === "click" && (ev as MouseEvent).detail < 2) ||
@@ -172,15 +173,15 @@ class ActionHandler extends HTMLElement implements ActionHandler {
         ) {
           this.dblClickTimeout = window.setTimeout(() => {
             this.dblClickTimeout = undefined;
-            fireEvent(element, "action", { action: "tap" });
+            fireEvent(target, "action", { action: "tap" });
           }, 250);
         } else {
           clearTimeout(this.dblClickTimeout);
           this.dblClickTimeout = undefined;
-          fireEvent(element, "action", { action: "double_tap" });
+          fireEvent(target, "action", { action: "double_tap" });
         }
       } else {
-        fireEvent(element, "action", { action: "tap" });
+        fireEvent(target, "action", { action: "tap" });
       }
     };
 

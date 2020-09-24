@@ -1,1 +1,19 @@
-{}
+{
+    "ui": {
+        "panel": {
+            "config": {
+                "automation": {
+                    "editor": {
+                        "triggers": {
+                            "type": {
+                                "mqtt": {
+                                    "label": ""
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

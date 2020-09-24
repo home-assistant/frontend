@@ -75,6 +75,7 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
 
         pre {
           margin: 0;
+          font-family: var(--code-font-family, monospace);
         }
 
         h1 {

@@ -4,26 +4,36 @@ import "@polymer/paper-listbox/paper-listbox";
 import {
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
+import {
+  array,
+  assert,
+  boolean,
+  object,
+  optional,
+  string,
+  union,
+} from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/entity/state-badge";
 import "../../../../components/ha-card";
+import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-switch";
-import "../../../../components/ha-formfield";
 import { HomeAssistant } from "../../../../types";
 import {
   EntitiesCardConfig,
   EntitiesCardEntityConfig,
 } from "../../cards/types";
-import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
 import { headerFooterConfigStructs } from "../../header-footer/types";
 import { LovelaceCardEditor } from "../../types";
+import "../hui-entities-card-row-editor";
 import { processEditorEntities } from "../process-editor-entities";
 import {
   EditorTarget,
@@ -31,16 +41,6 @@ import {
   EntitiesEditorEvent,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
-import {
-  string,
-  optional,
-  object,
-  boolean,
-  array,
-  union,
-  assert,
-} from "superstruct";
 
 const cardConfigStruct = object({
   type: string(),
@@ -127,11 +127,12 @@ export class HuiEntitiesCardEditor extends LitElement
           </ha-formfield>
         </div>
       </div>
-      <hui-entity-editor
+
+      <hui-entities-card-row-editor
         .hass=${this.hass}
         .entities=${this._configEntities}
         @entities-changed=${this._valueChanged}
-      ></hui-entity-editor>
+      ></hui-entities-card-row-editor>
     `;
   }
 

@@ -6,9 +6,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -48,12 +48,12 @@ class HaInputNumberForm extends LitElement {
       this._max = item.max ?? 100;
       this._min = item.min ?? 0;
       this._mode = item.mode || "slider";
-      this._step = item.step || 1;
+      this._step = item.step ?? 1;
       this._unit_of_measurement = item.unit_of_measurement;
     } else {
       this._item = {
         min: 0,
-        max: 0,
+        max: 100,
       };
       this._name = "";
       this._icon = "";
@@ -176,8 +176,10 @@ class HaInputNumberForm extends LitElement {
       return;
     }
     ev.stopPropagation();
-    const configValue = (ev.target as any).configValue;
-    const value = ev.detail.value;
+    const target = ev.target as any;
+    const configValue = target.configValue;
+    const value =
+      target.type === "number" ? Number(ev.detail.value) : ev.detail.value;
     if (this[`_${configValue}`] === value) {
       return;
     }
