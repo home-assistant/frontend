@@ -129,11 +129,7 @@ class HaLogbook extends LitElement {
             `
           : html``}
 
-        <div
-          class="entry ${classMap({ "no-entity": !item.entity_id })}"
-          .entityId=${item.entity_id}
-          @click=${this._entityClicked}
-        >
+        <div class="entry ${classMap({ "no-entity": !item.entity_id })}">
           <div class="icon-message">
             ${!this.noIcon
               ? html`
