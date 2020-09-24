@@ -50,8 +50,9 @@ export const domainIcon = (
           return is_off ? "hass:door-closed" : "hass:door-open";
         case "garage_door":
           return is_off ? "hass:garage" : "hass:garage-open";
-        case "gas":
         case "power":
+          return is_off ? "hass:power-off" : "hass:power-on";
+        case "gas":
         case "problem":
         case "safety":
         case "smoke":
@@ -161,6 +162,11 @@ export const domainIcon = (
           return "hass:window-open";
       }
     }
+
+    case "humidifier":
+      return state && state === "off"
+        ? "hass:air-humidifier-off"
+        : "hass:air-humidifier";
 
     case "lock":
       return compareState === "unlocked" ? "hass:lock-open" : "hass:lock";

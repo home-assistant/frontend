@@ -133,7 +133,9 @@ class DialogUserDetail extends LitElement {
           <mwc-button
             class="warning"
             @click=${this._deleteEntry}
-            .disabled=${this._submitting || user.system_generated}
+            .disabled=${this._submitting ||
+            user.system_generated ||
+            user.is_owner}
           >
             ${this.hass!.localize("ui.panel.config.users.editor.delete_user")}
           </mwc-button>
@@ -256,7 +258,7 @@ class DialogUserDetail extends LitElement {
     await adminChangePassword(this.hass, this._params!.entry.id, newPassword);
     showAlertDialog(this, {
       title: this.hass.localize(
-        "ui.panel.config.users.add_user.password_changed"
+        "ui.panel.config.users.editor.password_changed"
       ),
     });
   }

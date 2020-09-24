@@ -406,7 +406,7 @@
                 "humidity": "Soovitud niiskusemäär",
                 "mode": "Režiim",
                 "on_entity": "{name} sisse",
-                "target_humidity_entity": "Soovitud niiskusemäär"
+                "target_humidity_entity": "{name} soovitud niiskusemäär"
             },
             "light": {
                 "brightness": "Heledus",
@@ -781,7 +781,7 @@
                 "no_entities": "Olemid puuduvad",
                 "no_triggers": "Päästikud puuduvad",
                 "payload_display": "Väärtuste kuvamine",
-                "recent_messages": "{n} viimati vastu võetud teavitust",
+                "recent_messages": "{n} viimati vastu võetud teavitus(t)",
                 "show_as_yaml": "Kuva YAMLina",
                 "title": "{device} silumisinfo",
                 "triggers": "Päästikud"
@@ -917,7 +917,7 @@
                                     "add_option": "Lisa valik",
                                     "conditions": "Tingimused",
                                     "default": "Vaiketoimingud",
-                                    "label": "Vali ",
+                                    "label": "Vali",
                                     "option": "Valik {number}",
                                     "remove_option": "Eemalda suvand",
                                     "sequence": "Tegevused"
@@ -1253,7 +1253,7 @@
                             "link_learn_more": "Lisateave veebihaagi abil töötavate automaatiseeringute loomise kohta.",
                             "loading": "Laadin ...",
                             "manage": "Halda",
-                            "no_hooks_yet": "Paistab, et Teil pole veel loodud webhooke. Alustamiseks konfigureerige ",
+                            "no_hooks_yet": "Paistab, et Teil pole veel loodud veebihaake. Alustamiseks konfigureerige ",
                             "no_hooks_yet_link_automation": "veebihaagi automatiseering",
                             "no_hooks_yet_link_integration": "veebihaagipõhine sidumine",
                             "no_hooks_yet2": " või luues ",
@@ -1453,6 +1453,7 @@
                     "device_not_found": "Seadet ei leitud.",
                     "entities": {
                         "add_entities_lovelace": "Lisa Lovelace'i",
+                        "disabled_entities": "{count} {count, plural,\n  one {keelatudolem}\n  other {keelatudolemit}\n}",
                         "entities": "Olemid",
                         "hide_disabled": "Peida keelatud",
                         "none": "Sellel seadmel pole olemeid"
@@ -1588,7 +1589,9 @@
                         "delete_button": "Kustuta {integration}",
                         "delete_confirm": "Oled kindel, et soovid selle sidumise kustutada?",
                         "device_unavailable": "seade pole saadaval",
+                        "devices": "{count} {count, plural,\n  one {seade}\n  other {seadet}\n}",
                         "documentation": "Vaata dokumentatsiooni",
+                        "entities": "{count} {count, plural,\n  one {olemid}\n  other{olemit}\n}",
                         "entity_unavailable": "olem pole saadaval",
                         "firmware": "Püsivara: {version}",
                         "hub": "Ühendatud",
@@ -1602,6 +1605,7 @@
                         "reload_restart_confirm": "Taaskäivita Home Assistant, et lõpetada selle sidumise taaslaadimine",
                         "rename": "Nimeta ümber",
                         "restart_confirm": "Selle sidumise lõplikuks eemaldamiseks taaskäivita Home Assistant",
+                        "services": "{count} {count, plural,\n one {teenus}\n other {teenust}\n}",
                         "settings_button": "Muuda {integration} seadeid",
                         "system_options": "Süsteemisuvandid",
                         "system_options_button": "{integration} süsteemisuvandid",
@@ -1661,7 +1665,7 @@
                     "details": "Logi üksikasjad ({level})",
                     "load_full_log": "Lae kogu Home Assistant'i logi",
                     "loading_log": "Laadin vigade logi...",
-                    "multiple_messages": "teavitus esines esmakordselt kell {time} ja iesines {counter} korda",
+                    "multiple_messages": "teavitus esines esmakordselt kell {time} ja on ilmnenud {counter} korda",
                     "no_errors": "Vigadest pole teatatud.",
                     "no_issues": "Uusi probleeme pole!",
                     "refresh": "Värskenda",
@@ -1749,7 +1753,7 @@
                     "description_listen": "Kuula teemat",
                     "description_publish": "Avaldage pakett",
                     "listening_to": "Kuulamas",
-                    "message_received": "Teavitus {id} vastu võetud {topic} kell {aeg}:",
+                    "message_received": "Teavitus {id} vastu võetud {topic} kell {time}:",
                     "payload": "Väärtus (mall lubatud)",
                     "publish": "Avalda",
                     "start_listening": "Alusta kuulamist",
@@ -1979,8 +1983,8 @@
                     "section": {
                         "reloading": {
                             "automation": "Taaslae automatiseeringud",
-                            "command_line": "TASLAE KÄSUREA OLEMID",
-                            "core": "Taaslae tuum",
+                            "command_line": "TAASLAE KÄSUREA OLEMID",
+                            "core": "Taaslae asukohad ja kohandamised",
                             "filesize": "TAASLAE FAILSUURUSE OLEMID",
                             "filter": "TAASLAE FILTREERITUD OLEMID",
                             "generic": "TAASLAE IP KAAMERAD",
@@ -2001,7 +2005,7 @@
                             "ping": "TAASLAE PING BINAARANDURI OLEMID",
                             "reload": "Laadi {domain} uuesti",
                             "rest": "Taaslae REST olemid ja teavitusteenused",
-                            "rpi_gpio": "Laadige Raspberry Pi GPIO üksused uuesti",
+                            "rpi_gpio": "Taaslae Raspberry Pi GPIO üksused",
                             "scene": "Taaslae stseenid",
                             "script": "Taaslae skriptid",
                             "smtp": "TAASLAE SMTP TEAVITUSED",
@@ -2100,7 +2104,7 @@
                 "zha": {
                     "add_device_page": {
                         "discovered_text": "Seadmed ilmuvad siia  kui avastatakse.",
-                        "discovery_text": "Leitud seadmed kuvatakse siin. Järgige seadme(te) juhiseid ja pange seade sidumisrežiimile.",
+                        "discovery_text": "Leitud seadmed kuvatakse siin. Järgige seadme(te) juhiseid ja pange seade või seadmed sidumisrežiimile.",
                         "header": "Zigbee Home Automation - seadmete lisamine",
                         "no_devices_found": "Seadmeid ei leitud. Veenduge, et need on paaritamise režiimis ja hoidke neid ärkvel, kui avastamine käib.",
                         "pairing_mode": "Veenduge, et teie seadmed oleksid sidumisrežiimis. Kuidas seda teha vaadake oma seadme juhiseid.",
@@ -2610,7 +2614,8 @@
                             "description": "Anduri kaart annab teile kiire ülevaate andurite olekust koos valikulise graafikuga, et visualiseerida muutusi ajas.",
                             "graph_detail": "Graafiku üksikasjad",
                             "graph_type": "Graafiku tüüp",
-                            "name": "Andur"
+                            "name": "Andur",
+                            "show_more_detail": "Kuva rohkem üksikasju"
                         },
                         "shopping-list": {
                             "description": "Ostunimekirja kaart võimaldab teil lisada, muuta, registreerida ja tühistada oma ostunimekirja üksusi.",
@@ -2654,7 +2659,7 @@
                         "show_code_editor": "Kuva koodiredaktor",
                         "show_visual_editor": "Kuva visuaalne redaktor",
                         "toggle_editor": "Lülita redaktor sisse/välja",
-                        "typed_header": "Kaardi seadistamine",
+                        "typed_header": "{type} kaardi seadistamine",
                         "unsaved_changes": "Teil on salvestamata muudatusi"
                     },
                     "edit_lovelace": {

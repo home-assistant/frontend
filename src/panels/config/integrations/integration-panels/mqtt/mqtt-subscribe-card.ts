@@ -155,6 +155,9 @@ class MqttSubscribeCard extends LitElement {
         font-size: 80%;
         color: var(--secondary-text-color);
       }
+      pre {
+        font-family: var(--code-font-family, monospace);
+      }
     `;
   }
 }

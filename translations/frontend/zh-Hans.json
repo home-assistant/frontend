@@ -2614,7 +2614,8 @@
                             "description": "“传感器”卡片供您快速了解传感器的状态，还提供可选的图表来表示其随时间的变化。",
                             "graph_detail": "图形详细信息",
                             "graph_type": "图形类型",
-                            "name": "传感器"
+                            "name": "传感器",
+                            "show_more_detail": "显示更多信息"
                         },
                         "shopping-list": {
                             "description": "“购物清单”卡片供您向购物清单中添加、编辑、划掉、删除商品。",

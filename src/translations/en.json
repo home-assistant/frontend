@@ -254,6 +254,8 @@
           "wnw": "WNW",
           "wsw": "WSW"
         },
+        "day": "Day",
+        "night": "Night",
         "forecast": "Forecast",
         "high": "High",
         "low": "Low"
@@ -1764,7 +1766,7 @@
             "name": "Name",
             "change_password": "Change password",
             "new_password": "New Password",
-            "password_changed": "The password is changed!",
+            "password_changed": "Password was changed successfully",
             "activate_user": "Activate user",
             "deactivate_user": "Deactivate user",
             "delete_user": "Delete user",
@@ -2291,7 +2293,20 @@
               "name": "Entities",
               "show_header_toggle": "Show Header Toggle?",
               "toggle": "Toggle entities.",
-              "description": "The Entities card is the most common type of card. It groups items together into lists."
+              "description": "The Entities card is the most common type of card. It groups items together into lists.",
+              "special_row": "special row",
+              "edit_special_row": "Edit row using the code editor",
+              "entity_row": {
+                "divider": "Divider",
+                "call-service": "Call Service",
+                "section": "Section",
+                "weblink": "Web Link",
+                "attribute": "Attribute",
+                "buttons": "Buttons",
+                "conditional": "Conditional",
+                "cast": "Cast",
+                "button": "Button"
+              }
             },
             "entity": {
               "name": "Entity",
@@ -2413,7 +2428,7 @@
             },
             "sensor": {
               "name": "Sensor",
-              "graph_detail": "Graph Detail",
+              "show_more_detail": "Show more detail",
               "graph_type": "Graph Type",
               "description": "The Sensor card gives you a quick overview of your sensors state with an optional graph to visualize change over time."
             },

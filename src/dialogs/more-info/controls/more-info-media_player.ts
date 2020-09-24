@@ -1,4 +1,6 @@
 import "@material/mwc-button/mwc-button";
+import "@material/mwc-icon-button";
+import { mdiPlayBoxMultiple } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -19,6 +21,7 @@ import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-paper-dropdown-menu";
 import "../../../components/ha-slider";
+import "../../../components/ha-svg-icon";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
 import { UNAVAILABLE, UNAVAILABLE_STATES, UNKNOWN } from "../../../data/entity";
 import {
@@ -75,14 +78,13 @@ class MoreInfoMediaPlayer extends LitElement {
               </div>
               ${supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA)
                 ? html`
-                    <ha-icon-button
-                      icon="hass:folder-multiple"
+                    <mwc-icon-button
                       .title=${this.hass.localize(
                         "ui.card.media_player.browse_media"
                       )}
                       @click=${this._showBrowseMedia}
-                    >
-                    </ha-icon-button>
+                      ><ha-svg-icon .path=${mdiPlayBoxMultiple}></ha-svg-icon
+                    ></mwc-icon-button>
                   `
                 : ""}
             </div>

@@ -83,6 +83,7 @@ class MQTTDiscoveryPayload extends LitElement {
         font-size: 0.9em;
         padding-left: 4px;
         padding-right: 4px;
+        font-family: var(--code-font-family, monospace);
       }
     `;
   }

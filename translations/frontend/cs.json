@@ -1179,7 +1179,7 @@
                         "add_automation": "Přidat automatizaci",
                         "delete_automation": "Odstranit automatizaci",
                         "delete_confirm": "Opravdu chcete odstranit tuto automatizaci?",
-                        "duplicate": "Duplikovat",
+                        "duplicate": "Duplikát",
                         "duplicate_automation": "Duplikovat automatizaci",
                         "edit_automation": "Upravit automatizaci",
                         "header": "Editor automatizací",
@@ -2292,7 +2292,7 @@
                     },
                     "ozw_log": {
                         "header": "Protokol OZW",
-                        "introduction": "Zobrazit protokol. 0 je minimum (načte celý protokol) a 1000 je maximum. Načíst zobrazí statický protokol a tail automaticky aktualizuje protokol s naposledy zvoleným počtem řádků.",
+                        "introduction": "Zobrazit protokol. 0 je minimum (načte celý protokol) a 1000 je maximum. Načíst zobrazí statický protokol a Konec automaticky aktualizuje protokol s naposledy zvoleným počtem řádků.",
                         "last_log_lines": "Počet řádků posledního protokolu",
                         "load": "Načíst",
                         "tail": "Konec"
@@ -2614,7 +2614,8 @@
                             "description": "Karta Sensor poskytuje rychlý přehled o stavu senzorů s volitelným grafem pro vizualizaci změn v průběhu času.",
                             "graph_detail": "Detail grafu",
                             "graph_type": "Typ grafu",
-                            "name": "Senzor"
+                            "name": "Senzor",
+                            "show_more_detail": "Zobrazit více podrobností"
                         },
                         "shopping-list": {
                             "description": "Karta Nákupní seznam umožňuje přidávat, upravovat, odškrtávat a mazat položky z nákupního seznamu.",

@@ -24,7 +24,7 @@ import type {
 import type { HomeAssistant } from "../../../../types";
 import { handleStructError } from "../../common/structs/handle-errors";
 import { getCardElementClass } from "../../create-element/create-card-element";
-import type { EntityConfig } from "../../entity-rows/types";
+import type { LovelaceRowConfig } from "../../entity-rows/types";
 import type { LovelaceCardEditor } from "../../types";
 import { GUISupportError } from "../gui-support-error";
 import type { GUIModeChangedEvent } from "../types";
@@ -38,7 +38,7 @@ export interface ConfigChangedEvent {
 declare global {
   interface HASSDomEvents {
     "entities-changed": {
-      entities: EntityConfig[];
+      entities: LovelaceRowConfig[];
     };
     "config-changed": ConfigChangedEvent;
     "GUImode-changed": GUIModeChangedEvent;

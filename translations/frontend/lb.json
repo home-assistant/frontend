@@ -551,6 +551,10 @@
                 "toggle": "Ëmschalten"
             },
             "entity": {
+                "entity-attribute-picker": {
+                    "attribute": "Attribut",
+                    "show_attributes": "Attributer uweisen"
+                },
                 "entity-picker": {
                     "clear": "Läschen",
                     "entity": "Entitéit",
@@ -563,6 +567,19 @@
             },
             "media-browser": {
                 "choose-source": "Quell auswielen",
+                "class": {
+                    "album": "Album",
+                    "artist": "Artist",
+                    "channel": "Kanal",
+                    "episode": "Episode",
+                    "game": "Spill",
+                    "genre": "Genre",
+                    "image": "Bild",
+                    "movie": "Film",
+                    "music": "Musek",
+                    "podcast": "Podcast",
+                    "season": "Saison"
+                },
                 "content-type": {
                     "album": "Album",
                     "artist": "Artist",
@@ -917,7 +934,11 @@
                                     "label": "Service opruffen",
                                     "service_data": "Service-Donnéeën"
                                 },
+                                "wait_for_trigger": {
+                                    "label": "Op Ausléiser waarden"
+                                },
                                 "wait_template": {
+                                    "continue_timeout": "Bei Zäit Iwwerschreidung wéiderfueren",
                                     "label": "Waart",
                                     "timeout": "Zäitiwwerschreidung (optional)",
                                     "wait_template": "Waardenzäit Modell"
@@ -1069,6 +1090,7 @@
                                     "value_template": "Wäerte Modell (optional)"
                                 },
                                 "state": {
+                                    "attribute": "Attribut (Optionell)",
                                     "for": "Fir",
                                     "from": "Vun",
                                     "label": "Zoustand",
@@ -2253,6 +2275,7 @@
                     "templates": {
                         "description": "Modeller ginn mëttels Jinja2 template engine duergestallt mat e puer Home Assistant spezifesch Erweiderungen.",
                         "editor": "Modell Editeur",
+                        "entity": "Entitéit",
                         "jinja_documentation": "Jinja2 Modell Dokumentatioun",
                         "reset": "Op Demo Modell zeréck setzen",
                         "template_extensions": "Home Assistant Modell Erweiderungen",
@@ -2501,6 +2524,7 @@
                     },
                     "cardpicker": {
                         "custom_card": "Personnaliséiert",
+                        "domain": "Domain",
                         "no_description": "Keng Beschreiwung verfügbar"
                     },
                     "edit_card": {
