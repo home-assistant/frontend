@@ -40,8 +40,6 @@ export class HaFileUpload extends LitElement {
 
   @internalProperty() private _drag = false;
 
-  @internalProperty() private _error = "";
-
   protected updated(changedProperties: PropertyValues) {
     if (changedProperties.has("_drag") && !this.uploading) {
       (this.shadowRoot!.querySelector(
@@ -59,7 +57,6 @@ export class HaFileUpload extends LitElement {
             active
           ></ha-circular-progress>`
         : html`
-            ${this._error ? html`<div class="error">${this._error}</div>` : ""}
             <label for="input">
               <paper-input-container
                 .alwaysFloatLabel=${Boolean(this.value)}
@@ -129,15 +126,11 @@ export class HaFileUpload extends LitElement {
   private _clearValue(ev: Event) {
     ev.preventDefault();
     this.value = null;
-    this._error = "";
     fireEvent(this, "change");
   }
 
   static get styles() {
     return css`
-      .error {
-        color: var(--error-color);
-      }
       paper-input-container {
         position: relative;
         padding: 8px;
