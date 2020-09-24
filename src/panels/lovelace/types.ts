@@ -4,6 +4,7 @@ import {
   LovelaceConfig,
 } from "../../data/lovelace";
 import { Constructor, HomeAssistant } from "../../types";
+import { LovelaceRowConfig } from "./entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "./header-footer/types";
 
 declare global {
@@ -58,5 +59,12 @@ export interface LovelaceCardEditor extends HTMLElement {
   hass?: HomeAssistant;
   lovelace?: LovelaceConfig;
   setConfig(config: LovelaceCardConfig): void;
+  refreshYamlEditor?: (focus: boolean) => void;
+}
+
+export interface LovelaceRowEditor extends HTMLElement {
+  hass?: HomeAssistant;
+  lovelace?: LovelaceConfig;
+  setConfig(config: LovelaceRowConfig): void;
   refreshYamlEditor?: (focus: boolean) => void;
 }

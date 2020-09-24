@@ -361,6 +361,8 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
         @media all and (min-width: 850px) {
           ha-dialog {
             --mdc-dialog-min-width: 845px;
+            --dialog-surface-top: 40px;
+            --mdc-dialog-max-height: calc(100% - 72px);
           }
         }
 
@@ -399,6 +401,9 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
           ha-dialog {
             --mdc-dialog-max-width: calc(100% - 32px);
             --mdc-dialog-min-width: 1000px;
+            --dialog-surface-position: fixed;
+            --dialog-surface-top: 40px;
+            --mdc-dialog-max-height: calc(100% - 72px);
           }
 
           .content {
