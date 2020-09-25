@@ -198,10 +198,8 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
 
     days.sort((a: string, b: string) => DAYS[a] - DAYS[b]);
 
-    this.condition.weekday = days;
-
     fireEvent(this, "value-changed", {
-      value: this.condition,
+      value: { ...this.condition, weekday: days },
     });
   }
 
