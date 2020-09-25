@@ -159,8 +159,6 @@ export class HuiCalendarCardEditor extends LitElement
   }
 
   private _viewChanged(ev: CustomEvent): void {
-    console.log(ev.detail.item.view);
-
     if (!this._config || !this.hass) {
       return;
     }
