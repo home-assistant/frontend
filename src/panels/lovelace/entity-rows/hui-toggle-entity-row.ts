@@ -1,9 +1,9 @@
 import {
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -14,6 +14,7 @@ import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
+import { LovelaceRowEditor } from "../types";
 import { EntityConfig, LovelaceRow } from "./types";
 
 @customElement("hui-toggle-entity-row")
@@ -21,6 +22,13 @@ class HuiToggleEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @internalProperty() private _config?: EntityConfig;
+
+  public static async getConfigElement(): Promise<LovelaceRowEditor> {
+    await import(
+      /* webpackChunkName: "hui-generic-entity-row-editor" */ "../editor/config-elements/hui-generic-entity-row-editor"
+    );
+    return document.createElement("hui-generic-entity-row-editor");
+  }
 
   public setConfig(config: EntityConfig): void {
     if (!config) {

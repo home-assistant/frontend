@@ -27,6 +27,7 @@ import {
 import { configElementStyle } from "./config-elements-style";
 
 const SecondaryInfoValues = [
+  "",
   "entity-id",
   "last-changed",
   "last-triggered",
@@ -55,6 +56,14 @@ export class HuiGenericEntityRowEditor extends LitElement
     return this._config!.name || "";
   }
 
+  get _icon(): string {
+    return this._config!.icon || "";
+  }
+
+  get _secondary_info(): string {
+    return this._config!.secondary_info || "";
+  }
+
   protected render(): TemplateResult {
     if (!this.hass || !this._config) {
       return html``;
@@ -64,49 +73,41 @@ export class HuiGenericEntityRowEditor extends LitElement
       ${configElementStyle}
       <div class="card-config">
         <ha-entity-picker
-          .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.generic.entity"
-          )} (${this.hass.localize(
-            "ui.panel.lovelace.editor.card.config.optional"
-          )})"
-          .hass=${this.hass}
-          .value="${this._entity}"
-          .configValue=${"entity"}
-          @change="${this._valueChanged}"
-          allow-custom-entity
-        ></ha-entity-picker>
-        <ha-entity-picker
           .hass=${this.hass}
           .value=${this._config.entity}
           @change=${this._valueChanged}
+          .configValue=${"entity"}
           allow-custom-entity
         ></ha-entity-picker>
-        <paper-input
-          .label=${this.hass!.localize(
-            "ui.panel.lovelace.editor.card.generic.name"
-          )}
-          .value=${this._config.name}
-          .configValue=${"name"}
-        ></paper-input>
-        <ha-icon-input
-          .label=${this.hass!.localize(
-            "ui.panel.lovelace.editor.card.generic.icon"
-          )}
-          .value=${this._config.icon}
-          .placeholder=${stateIcon(this.hass!.states[this._config.entity])}
-          .configValue=${"icon"}
-        ></ha-icon-input>
-
-        <paper-dropdown-menu
-          .label=${"Secondary Info"}
-          .configValue="${"secondary_info"}"
-        >
+        <div class="side-by-side">
+          <paper-input
+            .label=${this.hass!.localize(
+              "ui.panel.lovelace.editor.card.generic.name"
+            )}
+            .value=${this._config.name}
+            .configValue=${"name"}
+            @value-changed=${this._valueChanged}
+          ></paper-input>
+          <ha-icon-input
+            .label=${this.hass!.localize(
+              "ui.panel.lovelace.editor.card.generic.icon"
+            )}
+            .value=${this._config.icon}
+            .placeholder=${stateIcon(this.hass!.states[this._config.entity])}
+            .configValue=${"icon"}
+            @value-changed=${this._valueChanged}
+          ></ha-icon-input>
+        </div>
+        <paper-dropdown-menu .label=${"Secondary Info"}>
           <paper-listbox
             slot="dropdown-content"
             .selected=${this._config.secondary_info}
+            attr-for-selected="value"
+            .configValue=${"secondary_info"}
+            @iron-select=${this._valueChanged}
           >
             ${SecondaryInfoValues.map((info) => {
-              return html`<paper-item>${info}</paper-item> `;
+              return html`<paper-item .value=${info}>${info}</paper-item> `;
             })}
           </paper-listbox>
         </paper-dropdown-menu>
@@ -119,39 +120,26 @@ export class HuiGenericEntityRowEditor extends LitElement
       return;
     }
     const target = ev.target! as EditorTarget;
+    const value = target.value || ev.detail?.item?.value;
 
-    if (
-      this[`_${target.configValue}`] === target.value ||
-      this[`_${target.configValue}`] === target.config
-    ) {
+    if (this[`_${target.configValue}`] === value) {
       return;
     }
+
     if (target.configValue) {
-      if (target.value === "") {
+      if (value === "" || !value) {
         this._config = { ...this._config };
         delete this._config[target.configValue!];
       } else {
-        let newValue: string | undefined;
-        if (
-          target.configValue === "icon_height" &&
-          !isNaN(Number(target.value))
-        ) {
-          newValue = `${String(target.value)}px`;
-        }
         this._config = {
           ...this._config,
           [target.configValue!]:
-            target.checked !== undefined
-              ? target.checked
-              : newValue !== undefined
-              ? newValue
-              : target.value
-              ? target.value
-              : target.config,
+            target.checked !== undefined ? target.checked : value,
         };
       }
     }
-    fireEvent(this, "config-changed", { config: this._config });
+
+    fireEvent(this, "row-config-changed", { config: this._config });
   }
 }
 

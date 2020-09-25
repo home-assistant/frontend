@@ -8,7 +8,10 @@ import { EntityConfig } from "../entity-rows/types";
 import "../special-rows/hui-attribute-row";
 import "../special-rows/hui-button-row";
 import "../special-rows/hui-call-service-row";
-import { createLovelaceElement } from "./create-element-base";
+import {
+  createLovelaceElement,
+  getLovelaceElementClass,
+} from "./create-element-base";
 
 const ALWAYS_LOADED_TYPES = new Set([
   "media-player-entity",
@@ -44,7 +47,7 @@ const LAZY_LOAD_TYPES = {
   attribute: () => import("../special-rows/hui-attribute-row"),
   text: () => import("../special-rows/hui-text-row"),
 };
-const DOMAIN_TO_ELEMENT_TYPE = {
+export const DOMAIN_TO_ELEMENT_TYPE = {
   _domain_not_found: "text",
   alert: "toggle",
   automation: "toggle",
@@ -83,3 +86,12 @@ export const createRowElement = (config: EntityConfig) =>
     DOMAIN_TO_ELEMENT_TYPE,
     undefined
   );
+
+export const getRowElementClass = (type: string) => {
+  return getLovelaceElementClass(
+    type,
+    "row",
+    ALWAYS_LOADED_TYPES,
+    LAZY_LOAD_TYPES
+  );
+};

@@ -14,7 +14,6 @@ import {
   ShowViewConfig,
 } from "../../../data/lovelace";
 import { EntityId } from "../common/structs/is-entity-id";
-import { Icon } from "../common/structs/is-icon";
 import { EntityConfig } from "../entity-rows/types";
 
 export interface YamlChangedEvent extends Event {
@@ -51,6 +50,7 @@ export interface ConfigError {
 export interface EntitiesEditorEvent {
   detail?: {
     entities?: EntityConfig[];
+    item?: any;
   };
   target?: EventTarget;
 }
@@ -168,7 +168,7 @@ export const entitiesConfigStruct = union([
   object({
     entity: EntityId,
     name: optional(string()),
-    icon: optional(Icon),
+    icon: optional(string()),
     image: optional(string()),
     secondary_info: optional(string()),
     format: optional(string()),

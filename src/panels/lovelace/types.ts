@@ -4,7 +4,7 @@ import {
   LovelaceConfig,
 } from "../../data/lovelace";
 import { Constructor, HomeAssistant } from "../../types";
-import { LovelaceRowConfig } from "./entity-rows/types";
+import { LovelaceRow, LovelaceRowConfig } from "./entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "./header-footer/types";
 
 declare global {
@@ -47,6 +47,10 @@ export interface LovelaceCardConstructor extends Constructor<LovelaceCard> {
     entitiesFallback: string[]
   ) => LovelaceCardConfig;
   getConfigElement?: () => LovelaceCardEditor;
+}
+
+export interface LovelaceRowConstructor extends Constructor<LovelaceRow> {
+  getConfigElement?: () => LovelaceRowEditor;
 }
 
 export interface LovelaceHeaderFooter extends HTMLElement {
