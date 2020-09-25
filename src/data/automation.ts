@@ -168,9 +168,9 @@ export interface ZoneCondition {
 
 export interface TimeCondition {
   condition: "time";
-  after: string;
-  before: string;
-  weekday: string[];
+  after?: string;
+  before?: string;
+  weekday?: string | string[];
 }
 
 export interface TemplateCondition {
