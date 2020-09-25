@@ -160,7 +160,7 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
           >
             <ha-switch
               .day=${day}
-              .checked=${!weekday || weekday?.includes(day)}
+              .checked=${!weekday || weekday.includes(day)}
               @change=${this._dayValueChanged}
             >
             </ha-switch>
