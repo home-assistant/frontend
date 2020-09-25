@@ -38,7 +38,6 @@ export class HassioUploadSnapshot extends LitElement {
   public render(): TemplateResult {
     return html`
       <ha-file-upload
-        .hass=${this.hass}
         .uploading=${this._uploading}
         .icon=${mdiFolderUpload}
         accept="application/x-tar"

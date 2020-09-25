@@ -41,7 +41,6 @@ export class HaPictureUpload extends LitElement {
   public render(): TemplateResult {
     return html`
       <ha-file-upload
-        .hass=${this.hass}
         .icon=${mdiImagePlus}
         .label=${this.label ||
         this.hass.localize("ui.components.picture-upload.label")}
