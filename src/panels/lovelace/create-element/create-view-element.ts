@@ -2,16 +2,16 @@ import {
   LovelaceViewConfig,
   LovelaceViewElement,
 } from "../../../data/lovelace";
-import { createLovelaceElement } from "../create-element/create-element-base";
-import "./hui-masonry-view";
+import "../views/hui-masonry-view";
+import { createLovelaceElement } from "./create-element-base";
 
 const ALWAYS_LOADED_LAYOUTS = new Set(["masonry"]);
 
 const LAZY_LOAD_LAYOUTS = {
-  panel: () => import("./hui-panel-view"),
+  panel: () => import("../views/hui-panel-view"),
 };
 
-export const getLovelaceViewElement = (
+export const createViewElement = (
   config: LovelaceViewConfig
 ): LovelaceViewElement => {
   return createLovelaceElement(

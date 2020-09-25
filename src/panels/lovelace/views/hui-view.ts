@@ -19,8 +19,8 @@ import type { HuiErrorCard } from "../cards/hui-error-card";
 import { processConfigEntities } from "../common/process-config-entities";
 import { createBadgeElement } from "../create-element/create-badge-element";
 import { createCardElement } from "../create-element/create-card-element";
+import { createViewElement } from "../create-element/create-view-element";
 import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
-import { getLovelaceViewElement } from "./get-view";
 
 const DEFAULT_VIEW_LAYOUT = "masonry";
 const PANEL_VIEW_LAYOUT = "panel";
@@ -97,7 +97,7 @@ export class HUIView extends UpdatingElement {
     }
 
     if (configChanged && !this._layoutElement) {
-      this._layoutElement = getLovelaceViewElement({
+      this._layoutElement = createViewElement({
         ...viewConfig,
       });
     }

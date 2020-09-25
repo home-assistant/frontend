@@ -3,6 +3,7 @@ import {
   css,
   CSSResult,
   html,
+  internalProperty,
   LitElement,
   property,
   PropertyValues,
@@ -56,13 +57,11 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
   @property({ attribute: false }) public badges: LovelaceBadge[] = [];
 
+  @internalProperty() private _columns?: number;
+
   private _createColumnsIteration = 0;
 
-  private _columns?: number;
-
   private _mqls?: MediaQueryList[];
-
-  private _narrow?: boolean;
 
   public constructor() {
     super();
@@ -129,7 +128,15 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
       this._updateColumns();
     }
 
-    this._createColumns();
+    const oldLovelace = changedProperties.get("lovelace") as Lovelace;
+
+    if (
+      changedProperties.has("cards") ||
+      oldLovelace?.editMode !== this.lovelace?.editMode ||
+      changedProperties.has("_columns")
+    ) {
+      this._createColumns();
+    }
   }
 
   private _addCard(): void {
@@ -235,8 +242,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     // Do -1 column if the menu is docked and open
     this._columns = Math.max(
       1,
-      matchColumns -
-        Number(!this._narrow && this.hass!.dockedSidebar === "docked")
+      matchColumns - Number(this.hass!.dockedSidebar === "docked")
     );
   }
 
