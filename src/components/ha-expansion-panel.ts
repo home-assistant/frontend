@@ -33,9 +33,50 @@ class HaExpansionPanel extends LitElement {
     `;
   }
 
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+
+    const container: HTMLDivElement = this.shadowRoot!.querySelector(
+      ".container"
+    )! as HTMLDivElement;
+
+    if (this.expanded) {
+      setTimeout(() => {
+        const scrollHeight = container.scrollHeight;
+        const animationDuration = this.getAutoHeightDuration(scrollHeight);
+        container.style.height = `${scrollHeight}px`;
+        container.style.transitionDuration = `${animationDuration}ms`;
+      }, 0);
+    }
+  }
+
   private _toggleContainer(): void {
+    const container: HTMLDivElement = this.shadowRoot!.querySelector(
+      ".container"
+    )! as HTMLDivElement;
     this.expanded = !this.expanded;
+
+    if (this.expanded) {
+      const scrollHeight = container.scrollHeight;
+      const animationDuration = this.getAutoHeightDuration(scrollHeight);
+      container.style.height = `${scrollHeight}px`;
+      container.style.transitionDuration = `${animationDuration}ms`;
+    } else {
+      container.style.height = "0px";
+    }
+
     fireEvent(this, "expanded-changed", { expanded: this.expanded });
+  }
+
+  private getAutoHeightDuration(height: number) {
+    if (!height) {
+      return 0;
+    }
+
+    const constant = height / 36;
+
+    // https://www.wolframalpha.com/input/?i=(4+%2B+15+*+(x+%2F+36+)+**+0.25+%2B+(x+%2F+36)+%2F+5)+*+10
+    return Math.round((4 + 15 * constant ** 0.25 + constant / 5) * 10);
   }
 
   static get styles(): CSSResult {
@@ -75,12 +116,12 @@ class HaExpansionPanel extends LitElement {
 
       .container {
         overflow: hidden;
-        transition: max-height 200ms cubic-bezier(0.4, 0, 0.2, 1);
-        max-height: 0px;
+        transition: height 200ms cubic-bezier(0.4, 0, 0.2, 1);
+        height: 0px;
       }
 
       .container.expanded {
-        max-height: 1000px;
+        height: auto;
       }
     `;
   }
