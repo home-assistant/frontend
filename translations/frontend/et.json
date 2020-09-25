@@ -2085,7 +2085,7 @@
                         "name": "Nimi",
                         "new_password": "Uus salasõna",
                         "owner": "Omanik",
-                        "password_changed": "Parool on muudetud!",
+                        "password_changed": "Parooli muutmine õnnestus",
                         "system_generated": "Süsteemi genereeritud",
                         "system_generated_users_not_editable": "Süsteemi loodud kasutajaid ei saa värskendada.",
                         "system_generated_users_not_removable": "Süsteemi loodud kasutajaid ei saa eemaldada.",

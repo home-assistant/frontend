@@ -2085,7 +2085,7 @@
                         "name": "Nombre",
                         "new_password": "Nueva contraseña",
                         "owner": "Propietario",
-                        "password_changed": "¡La contraseña ha cambiado!",
+                        "password_changed": "La contraseña se ha cambiado correctamente",
                         "system_generated": "Generado por el sistema",
                         "system_generated_users_not_editable": "No se pueden actualizar los usuarios generados por el sistema.",
                         "system_generated_users_not_removable": "No se pueden eliminar los usuarios generados por el sistema.",
