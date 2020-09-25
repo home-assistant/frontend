@@ -160,7 +160,7 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
           >
             <ha-switch
               .day=${day}
-              .checked=${weekday?.includes(day)}
+              .checked=${!weekday || weekday?.includes(day)}
               @change=${this._dayValueChanged}
             >
             </ha-switch>
@@ -188,7 +188,7 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
 
     const daySwitch = ev.currentTarget as WeekdayHaSwitch;
 
-    let days = this.condition.weekday || [];
+    let days = this.condition.weekday || Object.keys(DAYS);
 
     if (daySwitch.checked) {
       days.push(daySwitch.day);
