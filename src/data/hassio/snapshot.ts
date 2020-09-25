@@ -79,3 +79,21 @@ export const createHassioPartialSnapshot = async (
     data
   );
 };
+
+export const uploadSnapshot = async (
+  hass: HomeAssistant,
+  file: File
+): Promise<HassioResponse<HassioSnapshot>> => {
+  const fd = new FormData();
+  fd.append("file", file);
+  const resp = await hass.fetchWithAuth("/api/hassio/snapshots/new/upload", {
+    method: "POST",
+    body: fd,
+  });
+  if (resp.status === 413) {
+    throw new Error("Uploaded snapshot is too large");
+  } else if (resp.status !== 200) {
+    throw new Error("Unknown error");
+  }
+  return await resp.json();
+};
