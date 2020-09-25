@@ -1,4 +1,5 @@
 import { ActionConfig, LovelaceCardConfig } from "../../../data/lovelace";
+import { FullCalendarView } from "../../../types";
 import { Condition } from "../common/validate-condition";
 import { HuiImage } from "../components/hui-image";
 import { LovelaceElementConfig } from "../elements/types";
@@ -14,6 +15,7 @@ export interface AlarmPanelCardConfig extends LovelaceCardConfig {
 
 export interface CalendarCardConfig extends LovelaceCardConfig {
   entities: string[];
+  initial_view?: FullCalendarView;
   title?: string;
   theme?: string;
 }
