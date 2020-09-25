@@ -31,18 +31,18 @@ export class HuiGraphBase extends LitElement {
                 d="${this._path} L 500, 100 L 0, 100 z"
               />
             </mask>
-            <rect height="100%" width="100%" id="fill-rect" fill="var(--accent-color)" mask="url(#fill)"></rect>
+            <rect height="100%" width="100%" id="fill-rect" fill="var(--graph-color, var(--accent-color))" mask="url(#fill)"></rect>
             <mask id="line">
               <path
                 fill="none"
-                stroke="var(--accent-color)"
+                stroke="var(--graph-color, var(--accent-color))"
                 stroke-width="${strokeWidth}"
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 d=${this._path}
               ></path>
             </mask>
-            <rect height="100%" width="100%" id="rect" fill="var(--accent-color)" mask="url(#line)"></rect>
+            <rect height="100%" width="100%" id="rect" fill="var(--graph-color, var(--accent-color))" mask="url(#line)"></rect>
           </g>
         </svg>`
         : svg`<svg width="100%" height="100%" viewBox="0 0 500 100"></svg>`}
