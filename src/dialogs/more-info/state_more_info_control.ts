@@ -1,12 +1,11 @@
-import { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import {
   DOMAINS_HIDE_MORE_INFO,
   DOMAINS_WITH_MORE_INFO,
 } from "../../common/const";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import "./controls/more-info-default";
 
-const MORE_INFO_CONTROL_IMPORT = {
+const LAZY_LOADED_MORE_INFO_CONTROL = {
   alarm_control_panel: () => import("./controls/more-info-alarm_control_panel"),
   automation: () => import("./controls/more-info-automation"),
   camera: () => import("./controls/more-info-camera"),
@@ -43,8 +42,8 @@ export const stateMoreInfoType = (stateObj: HassEntity): string => {
 };
 
 export const importMoreInfoControl = (type: string) => {
-  if (!(type in MORE_INFO_CONTROL_IMPORT)) {
+  if (!(type in LAZY_LOADED_MORE_INFO_CONTROL)) {
     return;
   }
-  MORE_INFO_CONTROL_IMPORT[type]();
+  LAZY_LOADED_MORE_INFO_CONTROL[type]();
 };

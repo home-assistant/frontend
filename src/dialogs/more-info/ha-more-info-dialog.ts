@@ -37,6 +37,7 @@ import { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import "./ha-more-info-history";
 import "./ha-more-info-logbook";
+import "./controls/more-info-default";
 
 const DOMAINS_NO_INFO = ["camera", "configurator"];
 const EDITABLE_DOMAINS_WITH_ID = ["scene", "automation"];
