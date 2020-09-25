@@ -82,11 +82,9 @@ export class HuiCalendarCardEditor extends LitElement
             @value-changed=${this._valueChanged}
           ></paper-input>
           <paper-dropdown-menu
-            .label="${this.hass.localize(
+            .label=${this.hass.localize(
               "ui.panel.lovelace.editor.card.calendar.inital_view"
-            )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            )})"
+            )}
           >
             <paper-listbox
               slot="dropdown-content"
