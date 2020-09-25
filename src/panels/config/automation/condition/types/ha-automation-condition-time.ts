@@ -184,8 +184,6 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
   }
 
   private _dayValueChanged(ev: CustomEvent): void {
-    ev.stopPropagation();
-
     const daySwitch = ev.currentTarget as WeekdayHaSwitch;
 
     let days = this.condition.weekday || Object.keys(DAYS);
