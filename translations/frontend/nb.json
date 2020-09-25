@@ -675,7 +675,7 @@
                     "enabled_description": "Deaktiverte entiteter vil ikke bli lagt til i Home Assistant.",
                     "enabled_label": "Aktiver entitet",
                     "entity_id": "Entitets-ID",
-                    "icon": "Overstyring av ikon",
+                    "icon": "Overstyr ikon",
                     "icon_error": "Ikoner bør være i formatet 'prefiks:ikonnavn', f.eks 'mdi:home'",
                     "name": "Overstyr Navn",
                     "note": "Merk: Dette fungerer kanskje ikke ennå med alle integrasjoner.",
@@ -704,7 +704,7 @@
                     "time": "Tid"
                 },
                 "input_number": {
-                    "box": "Inndatafelt",
+                    "box": "Innputt felt",
                     "max": "Maksimal verdi",
                     "min": "Minimum verdi",
                     "mode": "Visningsmodus",
@@ -747,7 +747,7 @@
                     "confirm_remove_title": "Vil du fjerne entiteten?",
                     "not_provided": "Denne entiteten er ikke tilgjengelig for øyeblikket og er foreldreløs til en fjernet, endret eller ikke-fungerende integrasjon eller enhet.",
                     "remove_action": "Fjern entitet",
-                    "remove_intro": "Hvis entiteten ikke lenger er i bruk, kan du rense den opp ved å fjerne den."
+                    "remove_intro": "Hvis entiteten ikke lenger er i bruk, kan du rense opp ved å fjerne den."
                 },
                 "script": {
                     "last_action": "Siste handling",
@@ -1037,7 +1037,7 @@
                                     "after": "Etter",
                                     "before": "Før",
                                     "label": "Tid",
-                                    "type_input": "Verdien til en tid/dato hjelper",
+                                    "type_input": "Verdien til en dato/tid hjelper",
                                     "type_value": "Bestemt tid"
                                 },
                                 "zone": {
@@ -1155,7 +1155,7 @@
                                 "time": {
                                     "at": "På tidspunktet",
                                     "label": "Tid",
-                                    "type_input": "Verdien til en tid/dato hjelper",
+                                    "type_input": "Verdien til en dato/tid hjelper",
                                     "type_value": "Bestemt tid"
                                 },
                                 "webhook": {
@@ -1262,7 +1262,7 @@
                     },
                     "alexa": {
                         "banner": "Redigere hvilke entiteter som vises via dette grensesnittet er deaktivert fordi du har konfigurert entitetsfilter i configuration.yaml.",
-                        "dont_expose_entity": "Ikke eksponer entiteten",
+                        "dont_expose_entity": "Ikke eksponer entitet",
                         "expose": "Eksponer til Alexa",
                         "expose_entity": "Eksponer entitet",
                         "exposed": "{selected} eksponert",
@@ -1307,9 +1307,9 @@
                     "google": {
                         "banner": "Redigere hvilke entiteter som vises via dette grensesnittet er deaktivert fordi du har konfigurert entitetsfilter i configuration.yaml.",
                         "disable_2FA": "Deaktiver totrinnsbekreftelse",
-                        "dont_expose_entity": "Ikke eksponer entiteten",
+                        "dont_expose_entity": "Ikke eksponer entitet",
                         "expose": "Eksponer til Google Assistant",
-                        "expose_entity": "Eksponer entiteten",
+                        "expose_entity": "Eksponer entitet",
                         "exposed": "{selected} eksponert",
                         "exposed_entities": "Eksponerte entiteter",
                         "follow_domain": "Følg domenet",
@@ -1993,11 +1993,11 @@
                             "heading": "YAML konfigurasjon lastes på nytt",
                             "history_stats": "Last inn historisk tilstand entiteter på nytt",
                             "homekit": "Last inn HomeKit på nytt",
-                            "input_boolean": "Last inn inndata boolsk på nytt",
-                            "input_datetime": "Last inn inndata datotid på nytt",
-                            "input_number": "Last inn inndata numerisk på nytt",
-                            "input_select": "Last inn inndata valg på nytt",
-                            "input_text": "Last inn inndata tekst på nytt",
+                            "input_boolean": "Last inn innputt boolske på nytt",
+                            "input_datetime": "Last inn innputt dato tider på nytt",
+                            "input_number": "Last inn innputt numeriske på nytt",
+                            "input_select": "Last inn innputt valg på nytt",
+                            "input_text": "Last inn innputt tekster på nytt",
                             "introduction": "Noen deler av Home Assistant kan laste inn uten å kreve omstart. Hvis du trykker last på nytt, vil du bytte den nåværende konfigurasjonen med den nye.",
                             "min_max": "Last inn min/maks entiteter på nytt",
                             "mqtt": "Last inn MQTT entiteter på nytt",
@@ -2085,7 +2085,7 @@
                         "name": "Navn",
                         "new_password": "Nytt passord",
                         "owner": "Eier",
-                        "password_changed": "Passordet er endret!",
+                        "password_changed": "Passordet ble endret",
                         "system_generated": "System opprettet",
                         "system_generated_users_not_editable": "Kan ikke oppdatere systemopprettede brukere.",
                         "system_generated_users_not_removable": "Kan ikke fjerne systemopprettede brukere.",

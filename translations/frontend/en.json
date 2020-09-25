@@ -496,9 +496,11 @@
                     "wnw": "WNW",
                     "wsw": "WSW"
                 },
+                "day": "Day",
                 "forecast": "Forecast",
                 "high": "High",
-                "low": "Low"
+                "low": "Low",
+                "night": "Night"
             }
         },
         "common": {
@@ -2492,8 +2494,21 @@
                         },
                         "entities": {
                             "description": "The Entities card is the most common type of card. It groups items together into lists.",
+                            "edit_special_row": "Edit row using the code editor",
+                            "entity_row": {
+                                "attribute": "Attribute",
+                                "button": "Button",
+                                "buttons": "Buttons",
+                                "call-service": "Call Service",
+                                "cast": "Cast",
+                                "conditional": "Conditional",
+                                "divider": "Divider",
+                                "section": "Section",
+                                "weblink": "Web Link"
+                            },
                             "name": "Entities",
                             "show_header_toggle": "Show Header Toggle?",
+                            "special_row": "special row",
                             "toggle": "Toggle entities."
                         },
                         "entity-filter": {

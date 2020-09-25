@@ -2085,7 +2085,7 @@
                         "name": "名称",
                         "new_password": "新密码",
                         "owner": "所有者",
-                        "password_changed": "密码已更改！",
+                        "password_changed": "密码修改成功",
                         "system_generated": "系统生成",
                         "system_generated_users_not_editable": "无法更新系统生成的用户。",
                         "system_generated_users_not_removable": "无法删除系统生成的用户。",
