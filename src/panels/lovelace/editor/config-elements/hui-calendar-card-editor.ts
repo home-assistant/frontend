@@ -87,13 +87,13 @@ export class HuiCalendarCardEditor extends LitElement
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .configValue=${"initial_view"}
-            @value-changed=${this._valueChanged}
           >
             <paper-listbox
               slot="dropdown-content"
               attr-for-selected="view"
-              .selected=${views.indexOf(this._initial_view)}
+              .selected=${this._initial_view}
+              .configValue=${"initial_view"}
+              @iron-select=${this._viewChanged}
             >
               ${views.map((view) => {
                 return html`
@@ -157,6 +157,25 @@ export class HuiCalendarCardEditor extends LitElement
       }
     }
 
+    fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  private _viewChanged(ev: CustomEvent): void {
+    console.log(ev.detail.item.view);
+
+    if (!this._config || !this.hass) {
+      return;
+    }
+
+    if (ev.detail.item.view === "") {
+      this._config = { ...this._config };
+      delete this._config.initial_view;
+    } else {
+      this._config = {
+        ...this._config,
+        initial_view: ev.detail.item.view,
+      };
+    }
     fireEvent(this, "config-changed", { config: this._config });
   }
 }
