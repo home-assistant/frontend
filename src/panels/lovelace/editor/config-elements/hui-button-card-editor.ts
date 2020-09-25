@@ -211,7 +211,7 @@ export class HuiButtonCardEditor extends LitElement
             @value-changed=${this._valueChanged}
           ></hui-theme-select-editor>
         </div>
-        <div class="side-by-side">
+        <div>
           <hui-action-editor
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.tap_action"
@@ -227,6 +227,8 @@ export class HuiButtonCardEditor extends LitElement
             )}
             @value-changed=${this._valueChanged}
           ></hui-action-editor>
+        </div>
+        <div>
           <hui-action-editor
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.hold_action"

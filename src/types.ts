@@ -351,3 +351,9 @@ export type WeatherEntity = HassEntityBase & {
     forecast?: ForecastAttribute[];
   };
 };
+
+export interface ServiceAttribute {
+  key: string;
+  description: any;
+  example: any;
+}

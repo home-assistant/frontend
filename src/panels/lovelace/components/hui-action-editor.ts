@@ -1,3 +1,4 @@
+import "../../../components/ha-yaml-editor";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
@@ -15,6 +16,7 @@ import {
 } from "lit-element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-help-tooltip";
+import { computeServiceDescription } from "../../../common/service/compute_service_description";
 import "../../../components/ha-service-picker";
 import {
   ActionConfig,
@@ -24,6 +26,8 @@ import {
 } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { EditorTarget } from "../editor/types";
+import { computeServiceAttributes } from "../../../common/service/compute_service_attributes";
+import { repeat } from "lit-html/directives/repeat";
 
 @customElement("hui-action-editor")
 export class HuiActionEditor extends LitElement {
@@ -50,6 +54,14 @@ export class HuiActionEditor extends LitElement {
   get _service(): string {
     const config = this.config as CallServiceActionConfig;
     return config.service || "";
+  }
+
+  get _service_data(): {
+    entity_id?: string | [string];
+    [key: string]: any;
+  } {
+    const config = this.config as CallServiceActionConfig;
+    return config.service_data || {};
   }
 
   protected render(): TemplateResult {
@@ -123,11 +135,51 @@ export class HuiActionEditor extends LitElement {
               .configValue=${"service"}
               @value-changed=${this._valueChanged}
             ></ha-service-picker>
-            <b>
-              ${this.hass!.localize(
-                "ui.panel.lovelace.editor.action-editor.editor_service_data"
-              )}
-            </b>
+            ${this._service
+              ? html`<div class="secondary">
+                    ${computeServiceDescription(
+                      this.hass,
+                      this._service.split(".", 2)[0],
+                      this._service.split(".", 2)[1]
+                    )}
+                  </div>
+                  <div class="service-data-editor">
+                    <ha-yaml-editor
+                      .defaultValue=${this._service_data}
+                      .configValue=${"service_data"}
+                      @value-changed=${this._valueChanged}
+                    ></ha-yaml-editor>
+                  </div>
+                  <table class="attributes">
+                    <tr>
+                      <th>
+                        Parameter
+                      </th>
+                      <th>
+                        Description
+                      </th>
+                      <th>
+                        Example
+                      </th>
+                    </tr>
+                    ${repeat(
+                      computeServiceAttributes(
+                        this.hass,
+                        this._service.split(".", 2)[0],
+                        this._service.split(".", 2)[1]
+                      ),
+                      (attribute) => attribute.key,
+                      (attribute) =>
+                        html`
+                          <tr>
+                            <td><pre>${attribute.key}</pre></td>
+                            <td>${attribute.description}</td>
+                            <td>${attribute.example}</td>
+                          </tr>
+                        `
+                    )}
+                  </table>`
+              : ""}
           `
         : ""}
     `;
@@ -178,6 +230,45 @@ export class HuiActionEditor extends LitElement {
     return css`
       .dropdown {
         display: flex;
+      }
+
+      .secondary {
+        color: var(--secondary-text-color);
+      }
+
+      .attributes th {
+        text-align: left;
+      }
+
+      :host([rtl]) .attributes th {
+        text-align: right;
+      }
+
+      .attributes tr {
+        vertical-align: top;
+        direction: ltr;
+      }
+
+      .attributes tr:nth-child(odd) {
+        background-color: var(--table-row-background-color, #eee);
+      }
+
+      .attributes tr:nth-child(even) {
+        background-color: var(--table-row-alternative-background-color, #eee);
+      }
+
+      .attributes td:nth-child(3) {
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      pre {
+        margin: 0;
+        font-family: var(--code-font-family, monospace);
+      }
+
+      td {
+        padding: 4px;
       }
     `;
   }
