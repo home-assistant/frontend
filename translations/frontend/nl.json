@@ -496,9 +496,11 @@
                     "wnw": "WNW",
                     "wsw": "WZW"
                 },
+                "day": "Dag",
                 "forecast": "Verwachting",
                 "high": "Hoog",
-                "low": "Laag"
+                "low": "Laag",
+                "night": "Nacht"
             }
         },
         "common": {
@@ -2492,8 +2494,21 @@
                         },
                         "entities": {
                             "description": "De Entities-kaart is het meest voorkomende type kaart. Het groepeert items samen in lijsten.",
+                            "edit_special_row": "Bewerk rij met behulp van de code-editor",
+                            "entity_row": {
+                                "attribute": "Attribuut",
+                                "button": "Knop",
+                                "buttons": "Knoppen",
+                                "call-service": "Aanroepen service",
+                                "cast": "Cast",
+                                "conditional": "Conditioneel",
+                                "divider": "Verdeler",
+                                "section": "Sectie",
+                                "weblink": "Web link"
+                            },
                             "name": "Entiteiten",
                             "show_header_toggle": "Titel schakelaar weergeven?",
+                            "special_row": "speciale rij",
                             "toggle": "Entiteiten in- en uitschakelen"
                         },
                         "entity-filter": {

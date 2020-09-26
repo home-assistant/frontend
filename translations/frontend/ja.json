@@ -900,7 +900,7 @@
                                     "label": "シーンをアクティブにする"
                                 },
                                 "service": {
-                                    "label": "サービスを呼びだし",
+                                    "label": "サービスの呼び出し",
                                     "service_data": "サービスのデータ"
                                 },
                                 "wait_template": {
@@ -2242,7 +2242,7 @@
                     },
                     "services": {
                         "alert_parsing_yaml": "YAMLの解析エラー: {error}",
-                        "call_service": "サービスを呼ぶ",
+                        "call_service": "サービスの呼び出し",
                         "column_description": "説明",
                         "column_example": "例",
                         "column_parameter": "パラメータ",
@@ -2320,7 +2320,7 @@
                         "never_triggered": "トリガーされたことがない"
                     },
                     "picture-elements": {
-                        "call_service": "サービス{name}電話",
+                        "call_service": "サービス{name}の呼び出し",
                         "hold": "保持：",
                         "more_info": "詳細を表示： {name}",
                         "navigate_to": "{location}に移動",
