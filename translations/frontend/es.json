@@ -496,9 +496,11 @@
                     "wnw": "ONO",
                     "wsw": "OSO"
                 },
+                "day": "Día",
                 "forecast": "Pronóstico",
                 "high": "Máxima",
-                "low": "Mínima"
+                "low": "Mínima",
+                "night": "Noche"
             }
         },
         "common": {
@@ -2492,8 +2494,21 @@
                         },
                         "entities": {
                             "description": "La tarjeta Entidades es el tipo de tarjeta más común. Agrupa los elementos en listas.",
+                            "edit_special_row": "Editar fila usando el editor de código",
+                            "entity_row": {
+                                "attribute": "Atributo",
+                                "button": "Botón",
+                                "buttons": "Botones",
+                                "call-service": "Llamar servicio",
+                                "cast": "Emitir",
+                                "conditional": "Condicional",
+                                "divider": "Divisor",
+                                "section": "Sección",
+                                "weblink": "Enlace web"
+                            },
                             "name": "Entidades",
                             "show_header_toggle": "¿Mostrar interruptor en encabezado?",
+                            "special_row": "fila especial",
                             "toggle": "Alternar entidades."
                         },
                         "entity-filter": {

@@ -496,9 +496,11 @@
                     "wnw": "西北西",
                     "wsw": "西南西"
                 },
+                "day": "白天",
                 "forecast": "預報",
                 "high": "高",
-                "low": "低"
+                "low": "低",
+                "night": "夜晚"
             }
         },
         "common": {
@@ -2492,8 +2494,21 @@
                         },
                         "entities": {
                             "description": "實體列表面板為最常用的面板。將實體分組為列表使用。",
+                            "edit_special_row": "使用編碼編輯器編輯",
+                            "entity_row": {
+                                "attribute": "屬性",
+                                "button": "按鈕",
+                                "buttons": "按鈕",
+                                "call-service": "執行服務",
+                                "cast": "Cast",
+                                "conditional": "條件式",
+                                "divider": "分配",
+                                "section": "部分",
+                                "weblink": "網站連結"
+                            },
                             "name": "實體",
                             "show_header_toggle": "於頁首顯示開關？",
+                            "special_row": "特殊列",
                             "toggle": "切換實體。"
                         },
                         "entity-filter": {
