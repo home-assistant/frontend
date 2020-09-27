@@ -2494,11 +2494,21 @@
                         },
                         "entities": {
                             "description": "“实体”卡片是最常见的卡片。它将项目汇聚成列表。",
+                            "edit_special_row": "使用代码编辑器编辑行",
                             "entity_row": {
-                                "button": "按钮"
+                                "attribute": "属性",
+                                "button": "按钮",
+                                "buttons": "按钮",
+                                "call-service": "调用服务",
+                                "cast": "投射",
+                                "conditional": "条件",
+                                "divider": "分隔线",
+                                "section": "部分",
+                                "weblink": "网页链接"
                             },
                             "name": "实体",
                             "show_header_toggle": "显示标题旁的开关？",
+                            "special_row": "特殊行",
                             "toggle": "切换实体。"
                         },
                         "entity-filter": {

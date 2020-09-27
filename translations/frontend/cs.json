@@ -496,9 +496,11 @@
                     "wnw": "ZSZ",
                     "wsw": "ZJZ"
                 },
+                "day": "Den",
                 "forecast": "Předpověď",
                 "high": "Vysoká",
-                "low": "Nízká"
+                "low": "Nízká",
+                "night": "Noc"
             }
         },
         "common": {
@@ -2492,8 +2494,20 @@
                         },
                         "entities": {
                             "description": "Karta Entity je nejběžnějším typem karty. Seskupuje položky do seznamů.",
+                            "edit_special_row": "Upravte řádek pomocí editoru kódu",
+                            "entity_row": {
+                                "attribute": "Atribut",
+                                "button": "Tlačítko",
+                                "buttons": "Tlačítka",
+                                "call-service": "Volání služby",
+                                "conditional": "Podmínka",
+                                "divider": "Oddělovač",
+                                "section": "Sekce",
+                                "weblink": "Webový odkaz"
+                            },
                             "name": "Entity",
                             "show_header_toggle": "Zobrazit přepínač záhlaví?",
+                            "special_row": "speciální řádek",
                             "toggle": "Přepnout entity."
                         },
                         "entity-filter": {
