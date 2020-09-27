@@ -1399,6 +1399,32 @@
                         }
                     }
                 },
+                "tags": {
+                    "add_tag": "Pievienot birku",
+                    "automation_title": "Birka {name} ir noskenēta",
+                    "caption": "Birkas",
+                    "create_automation": "Izveidot automatizāciju ar birku",
+                    "description": "Pārvaldīt birkas",
+                    "detail": {
+                        "create": "Izveidot",
+                        "create_and_write": "Izveidot un rakstīt",
+                        "delete": "Dzēst",
+                        "description": "Apraksts",
+                        "name": "Nosaukums",
+                        "new_tag": "Jauna birka",
+                        "tag_id": "Birkas id",
+                        "tag_id_placeholder": "Autoģenerēts, ja nav ievadīts",
+                        "update": "Atjaunināt"
+                    },
+                    "edit": "Rediģēt",
+                    "headers": {
+                        "last_scanned": "Pēdējo reizi skenēts",
+                        "name": "Nosaukums"
+                    },
+                    "never_scanned": "Nekad nav skenēts",
+                    "no_tags": "Nav nevienas birkas",
+                    "write": "Rakstīt"
+                },
                 "users": {
                     "add_user": {
                         "caption": "Lietotāja pievienošana",
@@ -1956,6 +1982,16 @@
                     "submit": "Iesniegt"
                 },
                 "current_user": "Jūs šobrīd esat pieteicies kā {fullName}.",
+                "customize_sidebar": {
+                    "button": "Rediģēt",
+                    "description": "Varat arī nospiest un turēt sānjoslas galveni, lai aktivizētu rediģēšanas režīmu.",
+                    "header": "Mainīt secību un slēpt sānjoslas vienumus"
+                },
+                "dashboard": {
+                    "description": "Izvēlēties noklusējuma infopaneli šai ierīcei",
+                    "dropdown_label": "Infopanelis",
+                    "header": "Infopanelis"
+                },
                 "force_narrow": {
                     "description": "Sānjosla pēc noklusējuma tiks slēpta, līdzīgi kā mobilajās ierīcēs.",
                     "header": "Vienmēr slēpt sānjoslu"
@@ -1967,20 +2003,24 @@
                     "link_promo": "Palīdziet tulkot"
                 },
                 "logout": "Iziet",
+                "logout_text": "Vai tiešām vēlaties iziet?",
+                "logout_title": "Iziet?",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Vai tiešām vēlaties dzēst piekļuves pilnvaru {name}?",
                     "create": "Izveidot pilnvaru",
                     "create_failed": "Neizdevās izveidot piekļuves pilnvaru.",
-                    "created_at": "Izveidots {date}",
+                    "created": "Izveidota {date}",
+                    "created_at": "Izveidota {date}",
                     "delete_failed": "Neizdevās dzēst piekļuves pilnvaru.",
                     "description": "Izveidojiet ilgtermiņa piekļuves pilnvaras, lai ļautu jūsu skriptiem mijiedarboties ar jūsu Home Assistant instanci. Katra pilnvara būs derīga 10 gadus pēc tās izveidošanas. Pašlaik ir aktīvas sekojošas ilgtermiņa piekļuves pilvaras.",
                     "empty_state": "Jums vēl nav ilgtermiņa piekļuves pilnvaru.",
                     "header": "Ilgtermiņas piekļuves pilnvaras",
-                    "last_used": "Pēdējoreiz izmantots {date} no {location}",
+                    "last_used": "Pēdējo reizi izmantota {date} no {location}",
                     "learn_auth_requests": "Uzziniet, kā veikt autentificētus pieprasījumus.",
+                    "name": "Nosaukums",
                     "not_used": "Nekad nav izmantots",
                     "prompt_copy_token": "Kopējiet savu piekļuves pilnvaru. Tas vairs netiks rādīts.",
-                    "prompt_name": "Nosaukums?"
+                    "prompt_name": "Pilnvaras nosaukums"
                 },
                 "mfa_setup": {
                     "close": "Aizvērt",
@@ -2005,12 +2045,12 @@
                 },
                 "refresh_tokens": {
                     "confirm_delete": "Vai tiešām vēlaties dzēst piekļuves pilnvaru {name}?",
-                    "created_at": "Izveidots {date}",
+                    "created_at": "Izveidota {date}",
                     "current_token_tooltip": "Nevar izdzēst pašreizējo atsvaidzināšanas pilnvaru",
                     "delete_failed": "Neizdevās dzēst atsvaidzināšanas pilnvaru.",
                     "description": "Katra atsvaidzināšanas pilvara apzīmē pieteikšanās sesiju. Atsvaidzināšanas pilvaras tiks automātiski noņemtas, kad Jūs izrakstīsieties. Jūsu kontam šobrīd aktīvas ir sekojošas atsvaidzināšanas pilvaras.",
                     "header": "Atsvaidzināšanas pilnvaras",
-                    "last_used": "Pēdējoreiz izmantots {date} no {location}",
+                    "last_used": "Pēdējo reizi izmantota {date} no {location}",
                     "not_used": "Nekad nav izmantots",
                     "token_title": "{clientId} atsvaidzināšanas pilnvara"
                 },
@@ -2019,10 +2059,18 @@
                     "header": "Automātiski pārtraukt savienojumu"
                 },
                 "themes": {
+                    "accent_color": "Akcenta krāsa",
+                    "dark_mode": {
+                        "auto": "Auto",
+                        "dark": "Tumša",
+                        "light": "Gaiša"
+                    },
                     "dropdown_label": "Tēma",
                     "error_no_theme": "Nav nevienas tēmas",
                     "header": "Tēma",
-                    "link_promo": "Uzziniet par tēmām"
+                    "link_promo": "Uzziniet par tēmām",
+                    "primary_color": "Galvenā krāsa",
+                    "reset": "Atiestatīt"
                 },
                 "vibrate": {
                     "description": "Iespējot vai atspējot vibrāciju šajā ierīcē, kontrolējot ierīces.",

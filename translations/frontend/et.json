@@ -496,9 +496,11 @@
                     "wnw": "WNW",
                     "wsw": "WSW"
                 },
+                "day": "Päev",
                 "forecast": "Ennustus",
                 "high": "Kõrge",
-                "low": "Madal"
+                "low": "Madal",
+                "night": "Öö"
             }
         },
         "common": {
@@ -2492,8 +2494,21 @@
                         },
                         "entities": {
                             "description": "Olemite kaart  on kõige levinum kaarditüüp. See rühmitabolemid loenditeks.",
+                            "edit_special_row": "Redigeeri rida koodiredaktori abil",
+                            "entity_row": {
+                                "attribute": "Atribuut",
+                                "button": "Nupp",
+                                "buttons": "Nupud",
+                                "call-service": "Kutsu teenus",
+                                "cast": "Voogedasta",
+                                "conditional": "Tingimuslik",
+                                "divider": "Eraldaja",
+                                "section": "Sektsioon",
+                                "weblink": "Veebilink"
+                            },
                             "name": "Olemid",
                             "show_header_toggle": "Kas näidata päise vahetamist?",
+                            "special_row": "eriline rida",
                             "toggle": "Vaheta olemeid."
                         },
                         "entity-filter": {
