@@ -32,8 +32,8 @@ export class DialogHassioSnapshotUpload extends LitElement
   }
 
   public closeDialog(): void {
-    if (!this._params?.onboarding) {
-      if (this._params?.reloadSnapshot) {
+    if (this._params && !this._params.onboarding) {
+      if (this._params.reloadSnapshot) {
         this._params.reloadSnapshot();
       }
     }
