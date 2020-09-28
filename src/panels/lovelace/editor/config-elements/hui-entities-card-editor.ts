@@ -82,7 +82,7 @@ export class HuiEntitiesCardEditor extends LitElement
 
   @internalProperty() private _editRowGuiModeAvailable? = true;
 
-  @internalProperty() private _editRowGuiMode = true;
+  @internalProperty() private _editRowGuiMode? = true;
 
   @query("hui-element-editor") private _cardEditorEl?: HuiElementEditor;
 
@@ -110,7 +110,7 @@ export class HuiEntitiesCardEditor extends LitElement
         <hui-detail-editor-base
           .hass=${this.hass}
           .guiModeAvailable=${this._editRowGuiModeAvailable}
-          .guiMode=${!this._cardEditorEl || this._editRowGuiMode}
+          .guiMode=${this._editRowGuiMode}
           @toggle-gui-mode=${this._toggleMode}
           @go-back=${this._goBack}
         >
@@ -229,6 +229,7 @@ export class HuiEntitiesCardEditor extends LitElement
   }
 
   private _handleEntityRowConfigChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
     const value = ev.detail.config as LovelaceRowConfig;
     this._editRowGuiModeAvailable = ev.detail.guiModeAvailable;
 

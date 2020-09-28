@@ -7,6 +7,7 @@ import {
   customElement,
   html,
   LitElement,
+  property,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -24,9 +25,9 @@ declare global {
 export class HuiDetailEditorBase extends LitElement {
   public hass!: HomeAssistant;
 
-  public guiModeAvailable? = true;
+  @property({ type: Boolean }) public guiModeAvailable? = true;
 
-  public guiMode = true;
+  @property({ type: Boolean }) public guiMode? = true;
 
   protected render(): TemplateResult {
     return html`

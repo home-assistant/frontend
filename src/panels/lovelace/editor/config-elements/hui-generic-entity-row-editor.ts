@@ -139,7 +139,7 @@ export class HuiGenericEntityRowEditor extends LitElement
       }
     }
 
-    fireEvent(this, "row-config-changed", { config: this._config });
+    fireEvent(this, "config-changed", { config: this._config });
   }
 
   static get styles(): CSSResult {

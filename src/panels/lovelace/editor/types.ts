@@ -166,7 +166,7 @@ const attributeEntitiesRowConfigStruct = object({
 
 export const entitiesConfigStruct = union([
   object({
-    entity: EntityId,
+    entity: string(),
     name: optional(string()),
     icon: optional(string()),
     image: optional(string()),
@@ -177,7 +177,7 @@ export const entitiesConfigStruct = union([
     hold_action: optional(actionConfigStruct),
     double_tap_action: optional(actionConfigStruct),
   }),
-  EntityId,
+  string(),
   buttonEntitiesRowConfigStruct,
   castEntitiesRowConfigStruct,
   conditionalEntitiesRowConfigStruct,
