@@ -16,6 +16,7 @@ import "./ha-form-positive_time_period_dict";
 import "./ha-form-select";
 import "./ha-form-string";
 import "./ha-form-constant";
+import "./ha-form-dictionary";
 
 export type HaFormSchema =
   | HaFormConstantSchema
@@ -25,7 +26,8 @@ export type HaFormSchema =
   | HaFormBooleanSchema
   | HaFormSelectSchema
   | HaFormMultiSelectSchema
-  | HaFormTimeSchema;
+  | HaFormTimeSchema
+  | HaFormDictionarySchema;
 
 export interface HaFormBaseSchema {
   name: string;
@@ -74,6 +76,11 @@ export interface HaFormTimeSchema extends HaFormBaseSchema {
   type: "time";
 }
 
+export interface HaFormDictionarySchema extends HaFormBaseSchema {
+  type: "dictionary";
+  dictionary?: HaFormSchema[];
+}
+
 export interface HaFormDataContainer {
   [key: string]: HaFormData;
 }
@@ -85,7 +92,8 @@ export type HaFormData =
   | HaFormBooleanData
   | HaFormSelectData
   | HaFormMultiSelectData
-  | HaFormTimeData;
+  | HaFormTimeData
+  | HaFormDictionaryData;
 
 export type HaFormStringData = string;
 export type HaFormIntegerData = number;
@@ -93,6 +101,7 @@ export type HaFormFloatData = number;
 export type HaFormBooleanData = boolean;
 export type HaFormSelectData = string;
 export type HaFormMultiSelectData = string[];
+export type HaFormDictionaryData = Map<string, HaFormData>;
 export interface HaFormTimeData {
   hours?: number;
   minutes?: number;
@@ -104,6 +113,9 @@ export interface HaFormElement extends LitElement {
   data?: HaFormDataContainer | HaFormData;
   label?: string;
   suffix?: string;
+  // computeError?: (schema: HaFormSchema, error) => string;
+  // computeLabel?: (nesting: string) => string;
+  // computeSuffix?: (schema: HaFormSchema) => string;
 }
 
 @customElement("ha-form")
@@ -116,9 +128,11 @@ export class HaForm extends LitElement implements HaFormElement {
 
   @property() public computeError?: (schema: HaFormSchema, error) => string;
 
-  @property() public computeLabel?: (schema: HaFormSchema) => string;
+  @property() public computeLabel?: (nesting: string) => string;
 
   @property() public computeSuffix?: (schema: HaFormSchema) => string;
+
+  @property() public nesting = "";
 
   public focus() {
     const input =
@@ -131,6 +145,11 @@ export class HaForm extends LitElement implements HaFormElement {
   }
 
   protected render() {
+    console.log(
+      "XXX form nesting=%s schema=%s",
+      JSON.stringify(this.nesting),
+      JSON.stringify(this.schema)
+    );
     if (Array.isArray(this.schema)) {
       return html`
         ${this.error && this.error.base
@@ -150,6 +169,7 @@ export class HaForm extends LitElement implements HaFormElement {
               .computeError=${this.computeError}
               .computeLabel=${this.computeLabel}
               .computeSuffix=${this.computeSuffix}
+              .nesting=${this._addNesting(this.nesting, item)}
             ></ha-form>
           `
         )}
@@ -167,19 +187,24 @@ export class HaForm extends LitElement implements HaFormElement {
       ${dynamicElement(`ha-form-${this.schema.type}`, {
         schema: this.schema,
         data: this.data,
-        label: this._computeLabel(this.schema),
+        label: this._computeLabel(this.nesting),
         suffix: this._computeSuffix(this.schema),
         id: "child-form",
+        // computeError: this.computeError,
+        // computeLabel: this.computeLabel,
+        // computeSuffix: this.computeSuffix,
+        nesting: this.nesting,
       })}
     `;
   }
 
-  private _computeLabel(schema: HaFormSchema) {
-    return this.computeLabel
-      ? this.computeLabel(schema)
-      : schema
-      ? schema.name
-      : "";
+  private _addNesting(nesting: string, schema: HaFormSchema) {
+    return nesting ? `${this.nesting}.${schema.name}` : schema.name;
+  }
+
+  private _computeLabel(nesting: string) {
+    console.log("XXX _computeLabel");
+    return this.computeLabel ? this.computeLabel(nesting) : nesting || "";
   }
 
   private _computeSuffix(schema: HaFormSchema) {
@@ -202,13 +227,19 @@ export class HaForm extends LitElement implements HaFormElement {
   }
 
   private _valueChanged(ev: CustomEvent) {
+    console.log("XXX A %s ---", JSON.stringify(this.schema));
     ev.stopPropagation();
+    console.log("XXX A1");
     const schema = (ev.target as HaFormElement).schema as HaFormSchema;
+    console.log("XXX A2");
     const data = this.data as HaFormDataContainer;
+    console.log("XXX A3 schema.name=%s value=", schema.name, ev.detail.value);
     data[schema.name] = ev.detail.value;
+    console.log("XXX A4");
     fireEvent(this, "value-changed", {
       value: { ...data },
     });
+    console.log("XXX A5");
   }
 
   static get styles(): CSSResult {

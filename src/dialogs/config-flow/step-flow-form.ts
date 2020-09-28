@@ -13,7 +13,6 @@ import {
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-circular-progress";
 import "../../components/ha-form/ha-form";
-import type { HaFormSchema } from "../../components/ha-form/ha-form";
 import "../../components/ha-markdown";
 import type { DataEntryFlowStepForm } from "../../data/data_entry_flow";
 import type { HomeAssistant } from "../../types";
@@ -177,8 +176,8 @@ class StepFlowForm extends LitElement {
     this._stepData = ev.detail.value;
   }
 
-  private _labelCallback = (field: HaFormSchema): string =>
-    this.flowConfig.renderShowFormStepFieldLabel(this.hass, this.step, field);
+  private _labelCallback = (nesting: string): string =>
+    this.flowConfig.renderShowFormStepFieldLabel(this.hass, this.step, nesting);
 
   private _errorCallback = (error: string) =>
     this.flowConfig.renderShowFormStepFieldError(this.hass, this.step, error);

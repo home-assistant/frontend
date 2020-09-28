@@ -1,6 +1,5 @@
 import { TemplateResult } from "lit-html";
 import { fireEvent } from "../../common/dom/fire_event";
-import { HaFormSchema } from "../../components/ha-form/ha-form";
 import {
   DataEntryFlowStep,
   DataEntryFlowStepAbort,
@@ -45,7 +44,7 @@ export interface FlowConfig {
   renderShowFormStepFieldLabel(
     hass: HomeAssistant,
     step: DataEntryFlowStepForm,
-    field: HaFormSchema
+    nesting: string
   ): string;
 
   renderShowFormStepFieldError(
