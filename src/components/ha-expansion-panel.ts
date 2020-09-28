@@ -47,7 +47,7 @@ class HaExpansionPanel extends LitElement {
   }
 
   private _toggleContainer(): void {
-    const container: HTMLDivElement = this.shadowRoot!.querySelector(
+    const container = this.shadowRoot!.querySelector(
       ".container"
     )! as HTMLDivElement;
 
