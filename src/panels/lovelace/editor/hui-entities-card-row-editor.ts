@@ -24,7 +24,6 @@ import "../../../components/ha-svg-icon";
 import { sortableStyles } from "../../../resources/ha-sortable-style";
 import { HomeAssistant } from "../../../types";
 import { EntityConfig, LovelaceRowConfig } from "../entity-rows/types";
-import "./hui-entity-row-editor";
 
 @customElement("hui-entities-card-row-editor")
 export class HuiEntitiesCardRowEditor extends LitElement {

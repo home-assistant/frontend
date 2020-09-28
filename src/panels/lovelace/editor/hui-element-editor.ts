@@ -1,52 +1,81 @@
+import "@material/mwc-button";
 import { safeDump, safeLoad } from "js-yaml";
 import {
   css,
   CSSResult,
   customElement,
+  html,
   internalProperty,
   LitElement,
   property,
   query,
+  TemplateResult,
 } from "lit-element";
-import { html, TemplateResult } from "lit-html";
-import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-code-editor";
 import type { HaCodeEditor } from "../../../components/ha-code-editor";
-import { HomeAssistant } from "../../../types";
+import type {
+  LovelaceCardConfig,
+  LovelaceConfig,
+} from "../../../data/lovelace";
+import type { HomeAssistant } from "../../../types";
 import { handleStructError } from "../common/structs/handle-errors";
+import { getCardElementClass } from "../create-element/create-card-element";
 import {
   DOMAIN_TO_ELEMENT_TYPE,
   getRowElementClass,
 } from "../create-element/create-row-element";
-import { LovelaceRowConfig } from "../entity-rows/types";
-import { LovelaceRowEditor } from "../types";
+import type { LovelaceRowConfig } from "../entity-rows/types";
+import type {
+  LovelaceCardConstructor,
+  LovelaceCardEditor,
+  LovelaceRowConstructor,
+  LovelaceRowEditor,
+} from "../types";
 import { GUISupportError } from "./gui-support-error";
+import { GUIModeChangedEvent } from "./types";
 
-export interface RowConfigChangedEvent {
-  config: LovelaceRowConfig;
+export interface ConfigChangedEvent {
+  config: LovelaceCardConfig | LovelaceRowConfig;
   error?: string;
   guiModeAvailable?: boolean;
 }
 
 declare global {
   interface HASSDomEvents {
-    "row-config-changed": RowConfigChangedEvent;
+    "entities-changed": {
+      entities: LovelaceRowConfig[];
+    };
+    "config-changed": ConfigChangedEvent;
+    "GUImode-changed": GUIModeChangedEvent;
   }
 }
 
-@customElement("hui-entity-row-editor")
-export class HuiEntityRowEditor extends LitElement {
+export interface UIConfigChangedEvent extends Event {
+  detail: {
+    config: LovelaceCardConfig | LovelaceRowConfig;
+  };
+}
+
+@customElement("hui-element-editor")
+export class HuiElementEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public lovelace?: LovelaceConfig;
+
+  @property() public elementType: "row" | "card" = "card";
 
   @internalProperty() private _yaml?: string;
 
-  @internalProperty() private _config?: LovelaceRowConfig;
+  @internalProperty() private _config?: LovelaceCardConfig | LovelaceRowConfig;
 
-  @internalProperty() private _configElement?: LovelaceRowEditor;
+  @internalProperty() private _configElement?:
+    | LovelaceCardEditor
+    | LovelaceRowEditor;
 
   @internalProperty() private _configElType?: string;
 
@@ -80,15 +109,14 @@ export class HuiEntityRowEditor extends LitElement {
     this._setConfig();
   }
 
-  public get value(): LovelaceRowConfig | undefined {
+  public get value(): LovelaceCardConfig | LovelaceRowConfig | undefined {
     return this._config;
   }
 
-  public set value(config: LovelaceRowConfig | undefined) {
+  public set value(config: LovelaceCardConfig | LovelaceRowConfig | undefined) {
     if (this._config && deepEqual(config, this._config)) {
       return;
     }
-
     this._config = config;
     this._yaml = undefined;
     this._error = undefined;
@@ -104,7 +132,7 @@ export class HuiEntityRowEditor extends LitElement {
         this._error = err.message;
       }
     }
-    fireEvent(this, "row-config-changed", {
+    fireEvent(this, "config-changed", {
       config: this.value!,
       error: this._error,
       guiModeAvailable: !(this.hasWarning || this.hasError),
@@ -206,9 +234,12 @@ export class HuiEntityRowEditor extends LitElement {
     if (this._configElement && changedProperties.has("hass")) {
       this._configElement.hass = this.hass;
     }
+    if (this._configElement && changedProperties.has("lovelace")) {
+      this._configElement.lovelace = this.lovelace;
+    }
   }
 
-  private _handleUIConfigChanged(ev: HASSDomEvent<RowConfigChangedEvent>) {
+  private _handleUIConfigChanged(ev: UIConfigChangedEvent) {
     ev.stopPropagation();
     const config = ev.detail.config;
     this.value = config;
@@ -227,15 +258,20 @@ export class HuiEntityRowEditor extends LitElement {
       return;
     }
 
-    let rowType: string;
-    if (!this.value.type && "entity" in this.value) {
+    let type: string;
+
+    if (
+      this.elementType === "row" &&
+      !this.value.type &&
+      "entity" in this.value
+    ) {
       const domain = computeDomain(this.value.entity);
-      rowType = `${
+      type = `${
         DOMAIN_TO_ELEMENT_TYPE![domain] ||
         DOMAIN_TO_ELEMENT_TYPE!._domain_not_found
       }-entity`;
     } else {
-      rowType = this.value.type!;
+      type = this.value.type!;
     }
 
     let configElement = this._configElement;
@@ -243,13 +279,22 @@ export class HuiEntityRowEditor extends LitElement {
       this._error = undefined;
       this._warnings = undefined;
 
-      if (this._configElType !== rowType) {
-        // If the row type has changed, we need to load a new GUI editor
-        if (!rowType) {
-          throw new Error("No row type defined");
+      if (this._configElType !== type) {
+        // If the type has changed, we need to load a new GUI editor
+        if (!type) {
+          throw new Error("No type defined");
         }
 
-        const elClass = await getRowElementClass(rowType);
+        let elClass:
+          | LovelaceCardConstructor
+          | LovelaceRowConstructor
+          | undefined;
+
+        if (this.elementType === "card") {
+          elClass = await getCardElementClass(type);
+        } else {
+          elClass = await getRowElementClass(type);
+        }
 
         this._loading = true;
         // Check if a GUI editor exists
@@ -257,23 +302,23 @@ export class HuiEntityRowEditor extends LitElement {
           configElement = await elClass.getConfigElement();
         } else {
           configElement = undefined;
-          throw new GUISupportError(
-            `No visual editor available for: ${rowType}`
-          );
+          throw new GUISupportError(`No visual editor available for: ${type}`);
         }
 
         this._configElement = configElement;
-        this._configElType = rowType;
+        this._configElType = type;
 
         // Perform final setup
         this._configElement.hass = this.hass;
-        this._configElement.addEventListener("row-config-changed", (ev) =>
-          this._handleUIConfigChanged(ev as HASSDomEvent<RowConfigChangedEvent>)
+        this._configElement.lovelace = this.lovelace;
+        this._configElement.addEventListener("config-changed", (ev) =>
+          this._handleUIConfigChanged(ev as UIConfigChangedEvent)
         );
       }
 
       // Setup GUI editor and check that it can handle the current config
       try {
+        // @ts-ignore
         this._configElement!.setConfig(this.value);
       } catch (err) {
         throw new GUISupportError(
@@ -332,6 +377,6 @@ export class HuiEntityRowEditor extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-entity-row-editor": HuiEntityRowEditor;
+    "hui-element-editor": HuiElementEditor;
   }
 }

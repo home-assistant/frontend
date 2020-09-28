@@ -35,8 +35,8 @@ import { LovelaceRowConfig } from "../../entity-rows/types";
 import { headerFooterConfigStructs } from "../../header-footer/types";
 import { LovelaceCardEditor } from "../../types";
 import "../hui-detail-editor-base";
+import { HuiElementEditor } from "../hui-element-editor";
 import "../hui-entities-card-row-editor";
-import { HuiEntityRowEditor } from "../hui-entity-row-editor";
 import { processEditorEntities } from "../process-editor-entities";
 import {
   EditorTarget,
@@ -84,7 +84,7 @@ export class HuiEntitiesCardEditor extends LitElement
 
   @internalProperty() private _editRowGuiMode = true;
 
-  @query("hui-entity-row-editor") private _cardEditorEl?: HuiEntityRowEditor;
+  @query("hui-element-editor") private _cardEditorEl?: HuiElementEditor;
 
   public setConfig(config: EntitiesCardConfig): void {
     assert(config, cardConfigStruct);
@@ -115,12 +115,13 @@ export class HuiEntitiesCardEditor extends LitElement
           @go-back=${this._goBack}
         >
           <span slot="title">Entity Row Editor</span>
-          <hui-entity-row-editor
+          <hui-element-editor
             .hass=${this.hass}
             .value=${this._editRowConfig}
-            @row-config-changed=${this._handleEntityRowConfigChanged}
+            elementType="row"
+            @config-changed=${this._handleEntityRowConfigChanged}
             @GUImode-changed=${this._handleGUIModeChanged}
-          ></hui-entity-row-editor>
+          ></hui-element-editor>
         </hui-detail-editor-base>
       `;
     }

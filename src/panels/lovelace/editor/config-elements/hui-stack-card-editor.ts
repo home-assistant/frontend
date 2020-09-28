@@ -1,4 +1,3 @@
-import "../../../../components/ha-icon-button";
 import "@polymer/paper-tabs";
 import "@polymer/paper-tabs/paper-tab";
 import {
@@ -6,24 +5,26 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   query,
   TemplateResult,
 } from "lit-element";
+import { any, array, assert, object, optional, string } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-icon-button";
 import { LovelaceConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import { StackCardConfig } from "../../cards/types";
 import { LovelaceCardEditor } from "../../types";
-import {
-  ConfigChangedEvent,
-  HuiCardEditor,
-} from "../card-editor/hui-card-editor";
 import "../card-editor/hui-card-picker";
+import "../hui-element-editor";
+import type {
+  ConfigChangedEvent,
+  HuiElementEditor,
+} from "../hui-element-editor";
 import { GUIModeChangedEvent } from "../types";
-import { assert, object, string, array, any, optional } from "superstruct";
 
 const cardConfigStruct = object({
   type: string(),
@@ -46,7 +47,7 @@ export class HuiStackCardEditor extends LitElement
 
   @internalProperty() private _guiModeAvailable? = true;
 
-  @query("hui-card-editor") private _cardEditorEl?: HuiCardEditor;
+  @query("hui-element-editor") private _cardEditorEl?: HuiElementEditor;
 
   public setConfig(config: Readonly<StackCardConfig>): void {
     assert(config, cardConfigStruct);
@@ -128,13 +129,13 @@ export class HuiStackCardEditor extends LitElement
                   ></ha-icon-button>
                 </div>
 
-                <hui-card-editor
+                <hui-element-editor
                   .hass=${this.hass}
                   .value=${this._config.cards[selected]}
                   .lovelace=${this.lovelace}
                   @config-changed=${this._handleConfigChanged}
                   @GUImode-changed=${this._handleGUIModeChanged}
-                ></hui-card-editor>
+                ></hui-element-editor>
               `
             : html`
                 <hui-card-picker
