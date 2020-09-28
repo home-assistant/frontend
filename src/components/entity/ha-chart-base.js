@@ -539,7 +539,7 @@ class HaChartBase extends mixinBehaviors(
     // should add for very common state string manually.
     // Palette modified from http://google.github.io/palette.js/ mpn65, Apache 2.0
     const palette = [
-      "ff0029",
+      "var(--graph-color, #ff0029)",
       "66a61e",
       "377eb8",
       "984ea3",
@@ -601,7 +601,11 @@ class HaChartBase extends mixinBehaviors(
     ];
     function getColorIndex(idx) {
       // Reuse the color if index too large.
-      return Color("#" + palette[idx % palette.length]);
+      const colorChoice = palette[idx % palette.length];
+      if (!colorChoice.includes("--")) {
+        colorChoice = "#" + colorChoice;
+      }
+      return Color(colorChoice);
     }
     const colorDict = {};
     let colorIndex = 0;
