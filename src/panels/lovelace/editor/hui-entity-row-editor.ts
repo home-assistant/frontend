@@ -10,6 +10,7 @@ import {
 } from "lit-element";
 import { html, TemplateResult } from "lit-html";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/ha-circular-progress";
@@ -228,7 +229,6 @@ export class HuiEntityRowEditor extends LitElement {
 
     let rowType: string;
     if (!this.value.type && "entity" in this.value) {
-      // @ts-ignore
       const domain = computeDomain(this.value.entity);
       rowType = `${
         DOMAIN_TO_ELEMENT_TYPE![domain] ||

@@ -1,4 +1,3 @@
-import { mdiArrowLeft } from "@mdi/js";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -35,6 +34,7 @@ import "../../components/hui-theme-select-editor";
 import { LovelaceRowConfig } from "../../entity-rows/types";
 import { headerFooterConfigStructs } from "../../header-footer/types";
 import { LovelaceCardEditor } from "../../types";
+import "../hui-detail-editor-base";
 import "../hui-entities-card-row-editor";
 import { HuiEntityRowEditor } from "../hui-entity-row-editor";
 import { processEditorEntities } from "../process-editor-entities";
@@ -107,30 +107,21 @@ export class HuiEntitiesCardEditor extends LitElement
 
     if (this._editRowConfig) {
       return html`
-        <div class="edit-entity-row-header">
-          <mwc-icon-button @click=${this._goBack}>
-            <ha-svg-icon .path=${mdiArrowLeft}></ha-svg-icon>
-          </mwc-icon-button>
-          Entity Row Editor
-          <mwc-button
-            slot="secondaryAction"
-            @click=${this._toggleMode}
-            .disabled=${!this._editRowGuiModeAvailable}
-            class="gui-mode-button"
-          >
-            ${this.hass!.localize(
-              !this._cardEditorEl || this._editRowGuiMode
-                ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
-                : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
-            )}
-          </mwc-button>
-        </div>
-        <hui-entity-row-editor
+        <hui-detail-editor-base
           .hass=${this.hass}
-          .value=${this._editRowConfig}
-          @row-config-changed=${this._handleEntityRowConfigChanged}
-          @GUImode-changed=${this._handleGUIModeChanged}
-        ></hui-entity-row-editor>
+          .guiModeAvailable=${this._editRowGuiModeAvailable}
+          .guiMode=${!this._cardEditorEl || this._editRowGuiMode}
+          @toggle-gui-mode=${this._toggleMode}
+          @go-back=${this._goBack}
+        >
+          <span slot="title">Entity Row Editor</span>
+          <hui-entity-row-editor
+            .hass=${this.hass}
+            .value=${this._editRowConfig}
+            @row-config-changed=${this._handleEntityRowConfigChanged}
+            @GUImode-changed=${this._handleGUIModeChanged}
+          ></hui-entity-row-editor>
+        </hui-detail-editor-base>
       `;
     }
 
