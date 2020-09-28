@@ -286,6 +286,7 @@ class HaLogbook extends LitElement {
 
         .icon-message {
           display: flex;
+          align-items: center;
         }
 
         .no-entries {
