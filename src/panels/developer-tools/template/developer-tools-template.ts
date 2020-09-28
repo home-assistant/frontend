@@ -296,6 +296,7 @@ class HaPanelDevTemplate extends LitElement {
         },
         {
           template: this._template,
+          timeout: 3,
         }
       );
       await this._unsubRenderTemplate;
