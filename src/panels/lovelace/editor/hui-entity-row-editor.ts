@@ -9,7 +9,7 @@ import {
   query,
 } from "lit-element";
 import { html, TemplateResult } from "lit-html";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/ha-circular-progress";
@@ -35,12 +35,6 @@ declare global {
   interface HASSDomEvents {
     "row-config-changed": RowConfigChangedEvent;
   }
-}
-
-export interface UIRowConfigChangedEvent extends Event {
-  detail: {
-    config: LovelaceRowConfig;
-  };
 }
 
 @customElement("hui-entity-row-editor")
@@ -213,7 +207,7 @@ export class HuiEntityRowEditor extends LitElement {
     }
   }
 
-  private _handleUIConfigChanged(ev: UIRowConfigChangedEvent) {
+  private _handleUIConfigChanged(ev: HASSDomEvent<RowConfigChangedEvent>) {
     ev.stopPropagation();
     const config = ev.detail.config;
     this.value = config;
@@ -235,7 +229,7 @@ export class HuiEntityRowEditor extends LitElement {
     let rowType: string;
     if (!this.value.type && "entity" in this.value) {
       // @ts-ignore
-      const domain = this.value.entity.split(".", 1)[0];
+      const domain = computeDomain(this.value.entity);
       rowType = `${
         DOMAIN_TO_ELEMENT_TYPE![domain] ||
         DOMAIN_TO_ELEMENT_TYPE!._domain_not_found
@@ -274,7 +268,7 @@ export class HuiEntityRowEditor extends LitElement {
         // Perform final setup
         this._configElement.hass = this.hass;
         this._configElement.addEventListener("row-config-changed", (ev) =>
-          this._handleUIConfigChanged(ev as UIRowConfigChangedEvent)
+          this._handleUIConfigChanged(ev as HASSDomEvent<RowConfigChangedEvent>)
         );
       }
 

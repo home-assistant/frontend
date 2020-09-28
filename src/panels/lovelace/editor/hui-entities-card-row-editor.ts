@@ -1,5 +1,5 @@
 import "@material/mwc-icon-button";
-import { mdiArrowLeft, mdiClose, mdiDrag, mdiPencil } from "@mdi/js";
+import { mdiClose, mdiDrag, mdiPencil } from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -9,7 +9,6 @@ import {
   LitElement,
   property,
   PropertyValues,
-  query,
   TemplateResult,
 } from "lit-element";
 import { guard } from "lit-html/directives/guard";
@@ -18,7 +17,7 @@ import Sortable, {
   AutoScroll,
   OnSpill,
 } from "sortablejs/modular/sortable.core.esm";
-import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
+import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entity-picker";
 import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-svg-icon";
@@ -26,8 +25,6 @@ import { sortableStyles } from "../../../resources/ha-sortable-style";
 import { HomeAssistant } from "../../../types";
 import { EntityConfig, LovelaceRowConfig } from "../entity-rows/types";
 import "./hui-entity-row-editor";
-import type { HuiEntityRowEditor } from "./hui-entity-row-editor";
-import { GUIModeChangedEvent } from "./types";
 
 @customElement("hui-entities-card-row-editor")
 export class HuiEntitiesCardRowEditor extends LitElement {
@@ -40,16 +37,6 @@ export class HuiEntitiesCardRowEditor extends LitElement {
   @internalProperty() private _attached = false;
 
   @internalProperty() private _renderEmptySortable = false;
-
-  @internalProperty() private _editRowConfig?: LovelaceRowConfig;
-
-  @internalProperty() private _editRowIndex?: number;
-
-  @internalProperty() private _editRowGuiModeAvailable? = true;
-
-  @internalProperty() private _editRowGuiMode = true;
-
-  @query("hui-entity-row-editor") private _cardEditorEl?: HuiEntityRowEditor;
 
   private _sortable?: Sortable;
 
@@ -66,34 +53,6 @@ export class HuiEntitiesCardRowEditor extends LitElement {
   protected render(): TemplateResult {
     if (!this.entities || !this.hass) {
       return html``;
-    }
-
-    if (this._editRowConfig) {
-      return html`
-        <div class="edit-entity-row-header">
-          <mwc-icon-button @click=${this._goBack}>
-            <ha-svg-icon .path=${mdiArrowLeft}></ha-svg-icon>
-          </mwc-icon-button>
-          <mwc-button
-            slot="secondaryAction"
-            @click=${this._toggleMode}
-            .disabled=${!this._editRowGuiModeAvailable}
-            class="gui-mode-button"
-          >
-            ${this.hass!.localize(
-              !this._cardEditorEl || this._editRowGuiMode
-                ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
-                : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
-            )}
-          </mwc-button>
-        </div>
-        <hui-entity-row-editor
-          .hass=${this.hass}
-          .value=${this._editRowConfig}
-          @row-config-changed=${this._handleEntityRowConfigChanged}
-          @GUImode-changed=${this._handleGUIModeChanged}
-        ></hui-entity-row-editor>
-      `;
     }
 
     return html`
@@ -206,7 +165,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
     this._renderEmptySortable = true;
     await this.updateComplete;
     const container = this.shadowRoot!.querySelector(".entities")!;
-    while (!this._editRowConfig && container.lastElementChild) {
+    while (container.lastElementChild) {
       container.removeChild(container.lastElementChild);
     }
     this._renderEmptySortable = false;
@@ -271,44 +230,10 @@ export class HuiEntitiesCardRowEditor extends LitElement {
     fireEvent(this, "entities-changed", { entities: newConfigEntities });
   }
 
-  private _handleEntityRowConfigChanged(ev: CustomEvent): void {
-    const value = ev.detail.config as LovelaceRowConfig;
-    this._editRowGuiModeAvailable = ev.detail.guiModeAvailable;
-
-    const newConfigEntities = this.entities!.concat();
-
-    if (!value) {
-      newConfigEntities.splice(this._editRowIndex!, 1);
-      this._goBack();
-    } else {
-      newConfigEntities[this._editRowIndex!] = value;
-    }
-
-    this._editRowConfig = value;
-
-    fireEvent(this, "entities-changed", { entities: newConfigEntities });
-  }
-
-  private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {
-    ev.stopPropagation();
-    this._editRowGuiMode = ev.detail.guiMode;
-    this._editRowGuiModeAvailable = ev.detail.guiModeAvailable;
-  }
-
   private _editRow(ev: CustomEvent): void {
-    this._editRowIndex = (ev.currentTarget as any).index;
-    this._editRowConfig = this.entities![this._editRowIndex!];
-    fireEvent(this, "edit-row", { editting: true });
-  }
-
-  private _goBack(): void {
-    this._editRowIndex = undefined;
-    this._editRowConfig = undefined;
-    fireEvent(this, "edit-row", { editting: false });
-  }
-
-  private _toggleMode(): void {
-    this._cardEditorEl?.toggleMode();
+    fireEvent(this, "edit-row", {
+      index: (ev.currentTarget as any).index,
+    });
   }
 
   static get styles(): CSSResult[] {
@@ -319,13 +244,16 @@ export class HuiEntitiesCardRowEditor extends LitElement {
           display: flex;
           align-items: center;
         }
+
         .entity .handle {
           padding-right: 8px;
           cursor: move;
         }
+
         .entity ha-entity-picker {
           flex-grow: 1;
         }
+
         .special-row {
           height: 60px;
           font-size: 16px;
@@ -344,16 +272,6 @@ export class HuiEntitiesCardRowEditor extends LitElement {
         .edit-icon {
           --mdc-icon-button-size: 36px;
           color: var(--secondary-text-color);
-        }
-
-        .edit-entity-row-header {
-          display: flex;
-          justify-content: space-between;
-          align-self: center;
-        }
-        .edit-entity-row-header mwc-button {
-          display: flex;
-          align-items: center;
         }
 
         .secondary {
