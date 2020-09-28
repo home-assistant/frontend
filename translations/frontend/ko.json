@@ -496,9 +496,11 @@
                     "wnw": "서북서",
                     "wsw": "서남서"
                 },
+                "day": "주간",
                 "forecast": "일기 예보",
                 "high": "높음",
-                "low": "낮음"
+                "low": "낮음",
+                "night": "야간"
             }
         },
         "common": {
@@ -2085,7 +2087,7 @@
                         "name": "이름",
                         "new_password": "새로운 비밀번호",
                         "owner": "소유자",
-                        "password_changed": "비밀번호가 변경되었습니다!",
+                        "password_changed": "비밀번호가 변경되었습니다.",
                         "system_generated": "시스템 자동 생성",
                         "system_generated_users_not_editable": "시스템 자동 생성 사용자는 업데이트할 수 없습니다.",
                         "system_generated_users_not_removable": "시스템 자동 생성 사용자는 제거할 수 없습니다.",
@@ -2492,8 +2494,21 @@
                         },
                         "entities": {
                             "description": "구성요소 카드는 가장 일반적인 유형의 카드입니다. 항목을 목록으로 그룹화합니다.",
+                            "edit_special_row": "코드 편집기를 사용하여 행 편집",
+                            "entity_row": {
+                                "attribute": "속성",
+                                "button": "버튼",
+                                "buttons": "버튼",
+                                "call-service": "콜 서비스",
+                                "cast": "캐스트",
+                                "conditional": "조건",
+                                "divider": "디바이더",
+                                "section": "섹션",
+                                "weblink": "웹 링크"
+                            },
                             "name": "구성요소 모음",
                             "show_header_toggle": "헤더 토글 표시",
+                            "special_row": "특별 행",
                             "toggle": "구성요소 토글"
                         },
                         "entity-filter": {
@@ -2614,7 +2629,8 @@
                             "description": "센서 카드는 시간 경과에 따라 상태 변화를 시각화하는 그래프 옵션을 통해 센서 상태에 대한 빠른 개요보기를 제공합니다.",
                             "graph_detail": "그래프 세부묘사 정도",
                             "graph_type": "그래프 유형",
-                            "name": "센서"
+                            "name": "센서",
+                            "show_more_detail": "자세한 내용 표시"
                         },
                         "shopping-list": {
                             "description": "장보기목록 카드를 사용하면 장보기목록에서 항목을 추가, 편집, 확인 및 삭제를 할 수 있습니다.",

@@ -496,9 +496,11 @@
                     "wnw": "zach. płn.-zach.",
                     "wsw": "zach. płd.-zach."
                 },
+                "day": "Dzień",
                 "forecast": "Prognoza",
                 "high": "wysoka",
-                "low": "niska"
+                "low": "niska",
+                "night": "Noc"
             }
         },
         "common": {
@@ -678,7 +680,7 @@
                     "icon": "Nadpisanie ikony",
                     "icon_error": "Ikony powinny mieć format 'prefix:iconname', np. 'mdi:home'",
                     "name": "Nadpisanie nazwy",
-                    "note": "Uwaga: może to jeszcze nie działać ze wszystkimi integracjami.",
+                    "note": "Uwaga: to może jeszcze nie działać ze wszystkimi integracjami.",
                     "unavailable": "Ta encja nie jest obecnie dostępna.",
                     "update": "AKTUALIZUJ"
                 },
@@ -2492,8 +2494,21 @@
                         },
                         "entities": {
                             "description": "Karta encji jest najbardziej popularnym rodzajem karty. Grupuje ona encje w listy.",
+                            "edit_special_row": "Edytuj wiersz za pomocą edytora kodu",
+                            "entity_row": {
+                                "attribute": "Atrybut",
+                                "button": "Przycisk",
+                                "buttons": "Przyciski",
+                                "call-service": "Wywołaj usługę",
+                                "cast": "Cast",
+                                "conditional": "Warunkowe",
+                                "divider": "Dzielnik",
+                                "section": "Sekcja",
+                                "weblink": "Łącze internetowe"
+                            },
                             "name": "Encje",
                             "show_header_toggle": "Pokaż przełącznik w nagłówku",
+                            "special_row": "wiersz specjalny",
                             "toggle": "Przełącz encje"
                         },
                         "entity-filter": {
