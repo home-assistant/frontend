@@ -53,15 +53,14 @@ export const fetchHassioSnapshotInfo = async (
         `hassio/snapshots/${snapshot}/info`
       )
     );
-  } else {
-    // When called from onboarding we don't have hass
-    const resp = await fetch(`/api/hassio/snapshots/${snapshot}/info`, {
-      method: "GET",
-    });
-    const data = (await resp.json()).data;
-    console.log(data);
-    return data;
   }
+  // When called from onboarding we don't have hass
+  const resp = await fetch(`/api/hassio/snapshots/${snapshot}/info`, {
+    method: "GET",
+  });
+  const data = (await resp.json()).data;
+  console.log(data);
+  return data;
 };
 
 export const reloadHassioSnapshots = async (hass: HomeAssistant) => {
