@@ -1,5 +1,6 @@
 import "@polymer/paper-input/paper-input";
 import {
+  CSSResult,
   customElement,
   html,
   internalProperty,
@@ -70,7 +71,6 @@ export class HuiGenericEntityRowEditor extends LitElement
     }
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <ha-entity-picker
           .hass=${this.hass}
@@ -140,6 +140,10 @@ export class HuiGenericEntityRowEditor extends LitElement
     }
 
     fireEvent(this, "row-config-changed", { config: this._config });
+  }
+
+  static get styles(): CSSResult {
+    return configElementStyle;
   }
 }
 

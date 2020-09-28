@@ -1,4 +1,5 @@
 import {
+  CSSResult,
   customElement,
   html,
   internalProperty,
@@ -61,7 +62,6 @@ export class HuiCalendarCardEditor extends LitElement
     }
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <div class="side-by-side">
           <paper-input
@@ -124,6 +124,10 @@ export class HuiCalendarCardEditor extends LitElement
     }
 
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  static get styles(): CSSResult {
+    return configElementStyle;
   }
 }
 

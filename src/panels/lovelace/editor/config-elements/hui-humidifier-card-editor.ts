@@ -2,11 +2,12 @@ import "@polymer/paper-input/paper-input";
 import {
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
+import { assert, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import { HomeAssistant } from "../../../../types";
@@ -15,7 +16,6 @@ import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import { string, object, optional, assert } from "superstruct";
 
 const cardConfigStruct = object({
   type: string(),
@@ -56,7 +56,6 @@ export class HuiHumidifierCardEditor extends LitElement
     }
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <ha-entity-picker
           .label="${this.hass.localize(
@@ -109,6 +108,10 @@ export class HuiHumidifierCardEditor extends LitElement
       }
     }
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  static get styles(): CSSResult {
+    return configElementStyle;
   }
 }
 

@@ -2,15 +2,16 @@ import "@polymer/paper-tabs";
 import "@polymer/paper-tabs/paper-tab";
 import {
   css,
-  CSSResult,
+  CSSResultArray,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   query,
   TemplateResult,
 } from "lit-element";
+import { any, array, assert, object, optional, string } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import { LovelaceConfig } from "../../../../data/lovelace";
@@ -23,7 +24,7 @@ import {
 } from "../card-editor/hui-card-editor";
 import "../card-editor/hui-card-picker";
 import { GUIModeChangedEvent } from "../types";
-import { string, any, object, optional, array, assert } from "superstruct";
+import { configElementStyle } from "./config-elements-style";
 
 const conditionStruct = object({
   entity: string(),
@@ -292,52 +293,55 @@ export class HuiConditionalCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
-    return css`
-      paper-tabs {
-        --paper-tabs-selection-bar-color: var(--primary-color);
-        --paper-tab-ink: var(--primary-color);
-        border-bottom: 1px solid var(--divider-color);
-      }
-      .conditions {
-        margin-top: 8px;
-      }
-      .condition {
-        margin-top: 8px;
-        border: 1px solid var(--divider-color);
-        padding: 12px;
-      }
-      .condition .state {
-        display: flex;
-        align-items: flex-end;
-      }
-      .condition .state paper-dropdown-menu {
-        margin-right: 16px;
-      }
-      .condition .state paper-input {
-        flex-grow: 1;
-      }
-
-      .card {
-        margin-top: 8px;
-        border: 1px solid var(--divider-color);
-        padding: 12px;
-      }
-      @media (max-width: 450px) {
-        .card,
-        .condition {
-          margin: 8px -12px 0;
+  static get styles(): CSSResultArray {
+    return [
+      configElementStyle,
+      css`
+        paper-tabs {
+          --paper-tabs-selection-bar-color: var(--primary-color);
+          --paper-tab-ink: var(--primary-color);
+          border-bottom: 1px solid var(--divider-color);
         }
-      }
-      .card .card-options {
-        display: flex;
-        justify-content: flex-end;
-        width: 100%;
-      }
-      .gui-mode-button {
-        margin-right: auto;
-      }
-    `;
+        .conditions {
+          margin-top: 8px;
+        }
+        .condition {
+          margin-top: 8px;
+          border: 1px solid var(--divider-color);
+          padding: 12px;
+        }
+        .condition .state {
+          display: flex;
+          align-items: flex-end;
+        }
+        .condition .state paper-dropdown-menu {
+          margin-right: 16px;
+        }
+        .condition .state paper-input {
+          flex-grow: 1;
+        }
+
+        .card {
+          margin-top: 8px;
+          border: 1px solid var(--divider-color);
+          padding: 12px;
+        }
+        @media (max-width: 450px) {
+          .card,
+          .condition {
+            margin: 8px -12px 0;
+          }
+        }
+        .card .card-options {
+          display: flex;
+          justify-content: flex-end;
+          width: 100%;
+        }
+        .gui-mode-button {
+          margin-right: auto;
+        }
+      `,
+    ];
   }
 }
 

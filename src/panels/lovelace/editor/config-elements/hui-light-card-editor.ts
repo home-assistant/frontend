@@ -1,5 +1,6 @@
 import "@polymer/paper-input/paper-input";
 import {
+  CSSResult,
   customElement,
   html,
   internalProperty,
@@ -84,7 +85,6 @@ export class HuiLightCardEditor extends LitElement
     ];
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <ha-entity-picker
           .label="${this.hass.localize(
@@ -182,6 +182,10 @@ export class HuiLightCardEditor extends LitElement
       }
     }
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  static get styles(): CSSResult {
+    return configElementStyle;
   }
 }
 

@@ -4,7 +4,7 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultArray,
   customElement,
   html,
   internalProperty,
@@ -135,7 +135,6 @@ export class HuiEntitiesCardEditor extends LitElement
     }
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <paper-input
           .label="${this.hass.localize(
@@ -265,15 +264,18 @@ export class HuiEntitiesCardEditor extends LitElement
     this._editRowGuiModeAvailable = ev.detail.guiModeAvailable;
   }
 
-  static get styles(): CSSResult {
-    return css`
-      .edit-entity-row-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 18px;
-      }
-    `;
+  static get styles(): CSSResultArray {
+    return [
+      configElementStyle,
+      css`
+        .edit-entity-row-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-size: 18px;
+        }
+      `,
+    ];
   }
 }
 
