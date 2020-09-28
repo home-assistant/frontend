@@ -59,7 +59,6 @@ export const fetchHassioSnapshotInfo = async (
     method: "GET",
   });
   const data = (await resp.json()).data;
-  console.log(data);
   return data;
 };
 
