@@ -27,26 +27,22 @@ class HaExpansionPanel extends LitElement {
           class="summary-icon ${classMap({ expanded: this.expanded })}"
         ></ha-svg-icon>
       </div>
-      <div class="container ${classMap({ expanded: this.expanded })}">
+      <div
+        class="container ${classMap({ expanded: this.expanded })}"
+        @transitionend=${this._handleTransitionEnd}
+      >
         <slot></slot>
       </div>
     `;
   }
 
-  protected firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
-
-    const container: HTMLDivElement = this.shadowRoot!.querySelector(
+  private _handleTransitionEnd() {
+    const container = this.shadowRoot!.querySelector(
       ".container"
     )! as HTMLDivElement;
 
     if (this.expanded) {
-      setTimeout(() => {
-        const scrollHeight = container.scrollHeight;
-        const animationDuration = this.getAutoHeightDuration(scrollHeight);
-        container.style.height = `${scrollHeight}px`;
-        container.style.transitionDuration = `${animationDuration}ms`;
-      }, 0);
+      container.style.height = "auto";
     }
   }
 
@@ -54,15 +50,19 @@ class HaExpansionPanel extends LitElement {
     const container: HTMLDivElement = this.shadowRoot!.querySelector(
       ".container"
     )! as HTMLDivElement;
-    this.expanded = !this.expanded;
 
-    if (this.expanded) {
-      const scrollHeight = container.scrollHeight;
-      const animationDuration = this.getAutoHeightDuration(scrollHeight);
-      container.style.height = `${scrollHeight}px`;
-      container.style.transitionDuration = `${animationDuration}ms`;
+    const scrollHeight = container.scrollHeight;
+    const animationDuration = this.getAutoHeightDuration(scrollHeight);
+    container.style.height = `${scrollHeight}px`;
+    container.style.transitionDuration = `${animationDuration}ms`;
+
+    if (!this.expanded) {
+      this.expanded = true;
     } else {
-      container.style.height = "0px";
+      setTimeout(() => {
+        container.style.height = "0px";
+        this.expanded = false;
+      }, 0);
     }
 
     fireEvent(this, "expanded-changed", { expanded: this.expanded });
