@@ -295,7 +295,7 @@ class HaLogbook extends LitElement {
         }
 
         ha-icon {
-          margin: 4px 8px 0 0;
+          margin-right: 16px;
           flex-shrink: 0;
           color: var(--state-icon-color);
         }
