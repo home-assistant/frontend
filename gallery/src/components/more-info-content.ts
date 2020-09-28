@@ -1,7 +1,7 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { property, PropertyValues, UpdatingElement } from "lit-element";
 import dynamicContentUpdater from "../../../src/common/dom/dynamic_content_updater";
-import { stateMoreInfoType } from "../../../src/common/entity/state_more_info_type";
+import { stateMoreInfoType } from "../../../src/dialogs/more-info/state_more_info_control";
 import "../../../src/dialogs/more-info/controls/more-info-alarm_control_panel";
 import "../../../src/dialogs/more-info/controls/more-info-automation";
 import "../../../src/dialogs/more-info/controls/more-info-camera";

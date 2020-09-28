@@ -1,6 +1,6 @@
 import { assert } from "chai";
 
-import { stateMoreInfoType } from "../../../src/common/entity/state_more_info_type";
+import { stateMoreInfoType } from "../../../src/dialogs/more-info/state_more_info_control";
 
 describe("stateMoreInfoType", () => {
   it("Returns media_player for media_player states", () => {
