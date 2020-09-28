@@ -153,6 +153,11 @@ export class MoreInfoLogbook extends LitElement {
           max-height: 250px;
           overflow: auto;
         }
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+         ha-logbook {
+           max-height: calc(100vh - 230px);
+         }
+        }
         ha-circular-progress {
           display: flex;
           justify-content: center;
