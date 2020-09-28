@@ -93,10 +93,10 @@ class HassioSnapshotDialog extends LitElement {
   public async showDialog(params: HassioSnapshotDialogParams) {
     this._snapshot = await fetchHassioSnapshotInfo(this.hass, params.slug);
     this._folders = _computeFolders(
-      this._snapshot.folders
+      this._snapshot?.folders
     ).sort((a: FolderItem, b: FolderItem) => (a.name > b.name ? 1 : -1));
     this._addons = _computeAddons(
-      this._snapshot.addons
+      this._snapshot?.addons
     ).sort((a: AddonItem, b: AddonItem) => (a.name > b.name ? 1 : -1));
 
     this._dialogParams = params;

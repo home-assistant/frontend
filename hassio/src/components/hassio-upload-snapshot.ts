@@ -13,7 +13,6 @@ import {
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/ha-circular-progress";
 import "../../../src/components/ha-svg-icon";
-import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import {
   HassioSnapshot,
   uploadSnapshot,
