@@ -36,7 +36,7 @@ export class HaCard extends LitElement {
 
       :host([outlined]) {
         box-shadow: none;
-        border-width: 1px;
+        border-width: var(--ha-card-border-width, 1px);
         border-style: solid;
         border-color: var(
           --ha-card-border-color,
