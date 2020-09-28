@@ -2814,7 +2814,9 @@
         },
         "restore": {
           "description": "Alternatively you can restore from a previous snapshot.",
-          "in_progress": "Restore in progress"
+          "in_progress": "Restore in progress",
+          "show_log": "Show full log",
+          "hide_log": "Hide full log"
         }
       },
       "custom": {

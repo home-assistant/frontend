@@ -1,3 +1,4 @@
+import "@material/mwc-button/mwc-button";
 import {
   css,
   CSSResult,
@@ -17,6 +18,7 @@ import "../components/ha-card";
 import { makeDialogManager } from "../dialogs/make-dialog-manager";
 import { ProvideHassLitMixin } from "../mixins/provide-hass-lit-mixin";
 import { haStyle } from "../resources/styles";
+import "./onboarding-loading";
 
 declare global {
   interface HASSDomEvents {
@@ -34,24 +36,45 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
 
   @internalProperty() private _log?: string;
 
+  @internalProperty() private _showFullLog = false;
+
   protected render(): TemplateResult {
     return this.restoring
-      ? html`<ha-card>
-          <h2>
-            ${this.localize("ui.panel.page-onboarding.restore.in_progress")}
-          </h2>
+      ? html`<ha-card
+          .header=${this.localize(
+            "ui.panel.page-onboarding.restore.in_progress"
+          )}
+        >
           ${this._log
-            ? html`<hassio-ansi-to-html
-                class="log"
-                .content=${this._filterLogs(this._log)}
-              ></hassio-ansi-to-html>`
+            ? this._showFullLog
+              ? html`<hassio-ansi-to-html
+                  .content=${this._filterLogs(this._log)}
+                >
+                </hassio-ansi-to-html>`
+              : html`<onboarding-loading></onboarding-loading>
+                  <hassio-ansi-to-html
+                    class="logentry"
+                    .content=${this._lastLogEntry(this._filterLogs(this._log))}
+                  >
+                  </hassio-ansi-to-html>`
             : ""}
+          <div class="card-actions">
+            <mwc-button @click=${this._toggeFullLog}>
+              ${this._showFullLog
+                ? this.localize("ui.panel.page-onboarding.restore.hide_log")
+                : this.localize("ui.panel.page-onboarding.restore.show_log")}
+            </mwc-button>
+          </div>
         </ha-card>`
       : html`
           <button class="link" @click=${this._uploadSnapshot}>
             ${this.localize("ui.panel.page-onboarding.restore.description")}
           </button>
         `;
+  }
+
+  private _toggeFullLog(): void {
+    this._showFullLog = !this._showFullLog;
   }
 
   private _filterLogs(logs: string): string {
@@ -64,10 +87,16 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
           !entry.includes("/supervisor/ping") &&
           !entry.includes("DEBUG")
       )
-      .slice(-16, -1) // We only show the last 15 lines, anything beyond that is not a part of the restore
       .join("\n")
       .replace(/\s[A-Z]+\s\(\w+\)\s\[[\w.]+\]/gi, "")
       .replace(/\d{2}-\d{2}-\d{2}\s/gi, "");
+  }
+
+  private _lastLogEntry(logs: string): string {
+    return logs
+      .split("\n")
+      .slice(-2)[0]
+      .replace(/\d{2}:\d{2}:\d{2}\s/gi, "");
   }
 
   private _uploadSnapshot(): void {
@@ -113,9 +142,8 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
     return [
       haStyle,
       css`
-        .log {
-          white-space: pre-wrap;
-          line-height: 22px;
+        .logentry {
+          text-align: center;
         }
         ha-card {
           padding: 4px;
@@ -123,27 +151,9 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
         }
         hassio-ansi-to-html {
           display: block;
+          line-height: 22px;
           padding: 0 8px;
-        }
-        h2:after {
-          display: inline-block;
-          animation: dots steps(1, end) 2s infinite;
-          content: "";
-        }
-
-        @keyframes dots {
-          0% {
-            content: "";
-          }
-          25% {
-            content: ".";
-          }
-          50% {
-            content: "..";
-          }
-          75% {
-            content: "...";
-          }
+          white-space: pre-wrap;
         }
 
         @media all and (min-width: 600px) {
