@@ -3,7 +3,8 @@ import "./dialog-hassio-snapshot-upload";
 
 export interface HassioSnapshotUploadDialogParams {
   showSnapshot: (slug: string) => void;
-  reloadSnapshot: () => Promise<void>;
+  reloadSnapshot?: () => Promise<void>;
+  onboarding?: boolean;
 }
 
 export const showSnapshotUploadDialog = (

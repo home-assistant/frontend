@@ -43,6 +43,7 @@ export class HassioUploadSnapshot extends LitElement {
         accept="application/x-tar"
         label="Upload snapshot"
         @file-picked=${this._uploadFile}
+        auto-open-file-dialog
       ></ha-file-upload>
     `;
   }
@@ -54,6 +55,7 @@ export class HassioUploadSnapshot extends LitElement {
       showAlertDialog(this, {
         title: "Unsupported file format",
         text: "Please choose a Home Assistant snapshot file (.tar)",
+        confirmText: "ok",
       });
       return;
     }
@@ -64,7 +66,8 @@ export class HassioUploadSnapshot extends LitElement {
     } catch (err) {
       showAlertDialog(this, {
         title: "Upload failed",
-        text: extractApiErrorMessage(err),
+        text: err.toString(),
+        confirmText: "ok",
       });
     } finally {
       this._uploading = false;
