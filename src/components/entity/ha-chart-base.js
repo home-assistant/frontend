@@ -601,7 +601,7 @@ class HaChartBase extends mixinBehaviors(
     ];
     function getColorIndex(idx) {
       // Reuse the color if index too large.
-      const colorChoice = palette[idx % palette.length];
+      let colorChoice = palette[idx % palette.length];
       if (!colorChoice.includes("--")) {
         colorChoice = "#" + colorChoice;
       }
