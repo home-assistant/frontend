@@ -121,6 +121,10 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
           padding: 4px;
           margin-top: 8px;
         }
+        hassio-ansi-to-html {
+          display: block;
+          padding: 0 8px;
+        }
         h2:after {
           display: inline-block;
           animation: dots steps(1, end) 2s infinite;
