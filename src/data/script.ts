@@ -90,17 +90,23 @@ export interface ChooseAction {
   default?: Action[];
 }
 
-export type Action =
-  | EventAction
-  | DeviceAction
-  | ServiceAction
-  | Condition
-  | DelayAction
-  | SceneAction
-  | WaitAction
-  | WaitForTriggerAction
-  | RepeatAction
-  | ChooseAction;
+export interface StepDescription {
+  description?: string;
+}
+
+export type Action = StepDescription &
+  (
+    | EventAction
+    | DeviceAction
+    | ServiceAction
+    | Condition
+    | DelayAction
+    | SceneAction
+    | WaitAction
+    | WaitForTriggerAction
+    | RepeatAction
+    | ChooseAction
+  );
 
 export const triggerScript = (
   hass: HomeAssistant,

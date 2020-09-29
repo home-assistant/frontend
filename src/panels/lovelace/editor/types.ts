@@ -76,6 +76,8 @@ export interface CardPickTarget extends EventTarget {
   config: LovelaceCardConfig;
 }
 
+export const descriptionConfigStruct = optional(string());
+
 export const actionConfigStruct = object({
   action: string(),
   navigation_path: optional(string()),

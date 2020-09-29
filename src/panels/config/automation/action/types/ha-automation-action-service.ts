@@ -21,11 +21,13 @@ import type { PolymerChangedEvent } from "../../../../../polymer-types";
 import type { HomeAssistant } from "../../../../../types";
 import { EntityId } from "../../../../lovelace/common/structs/is-entity-id";
 import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
+import { descriptionConfigStruct } from "../../../../lovelace/editor/types";
 
 const actionStruct = object({
   service: optional(string()),
   entity_id: optional(EntityId),
   data: optional(any()),
+  description: descriptionConfigStruct,
 });
 
 @customElement("ha-automation-action-service")
