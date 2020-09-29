@@ -47,7 +47,6 @@ const showMediaPlayer = () => {
       --logo-image: url('https://www.home-assistant.io/images/home-assistant-logo.svg');
       --theme-hue: 200;
       --progress-color: #03a9f4;
-      --background-image: url('https://home-assistant.io/images/cast/splash.png');
       --splash-image: url('https://home-assistant.io/images/cast/splash.png');
       --splash-size: cover;
     }
