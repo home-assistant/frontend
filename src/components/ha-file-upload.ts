@@ -10,11 +10,11 @@ import {
   LitElement,
   property,
   PropertyValues,
+  query,
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
-import { HomeAssistant } from "../types";
 import "./ha-circular-progress";
 import "./ha-svg-icon";
 
@@ -26,8 +26,6 @@ declare global {
 
 @customElement("ha-file-upload")
 export class HaFileUpload extends LitElement {
-  public hass!: HomeAssistant;
-
   @property() public accept!: string;
 
   @property() public icon!: string;
@@ -38,7 +36,19 @@ export class HaFileUpload extends LitElement {
 
   @property({ type: Boolean }) private uploading = false;
 
+  @property({ type: Boolean, attribute: "auto-open-file-dialog" })
+  private autoOpenFileDialog = false;
+
   @internalProperty() private _drag = false;
+
+  @query("#input") private _input?: HTMLInputElement;
+
+  protected firstUpdated(changedProperties: PropertyValues) {
+    super.firstUpdated(changedProperties);
+    if (this.autoOpenFileDialog) {
+      this._input?.click();
+    }
+  }
 
   protected updated(changedProperties: PropertyValues) {
     if (changedProperties.has("_drag") && !this.uploading) {
