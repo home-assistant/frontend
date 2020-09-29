@@ -1040,7 +1040,16 @@
                                     "before": "Before",
                                     "label": "Time",
                                     "type_input": "Value of a date/time helper",
-                                    "type_value": "Fixed time"
+                                    "type_value": "Fixed time",
+                                    "weekdays": {
+                                        "fri": "Friday",
+                                        "mon": "Monday",
+                                        "sat": "Saturday",
+                                        "sun": "Sunday",
+                                        "thu": "Thursday",
+                                        "tue": "Tuesday",
+                                        "wed": "Wednesday"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Entity with location",
@@ -2474,8 +2483,15 @@
                             "name": "Button"
                         },
                         "calendar": {
+                            "calendar_entities": "Calendar Entities",
                             "description": "The Calendar card displays a calendar including day, week and list views",
-                            "name": "Calendar"
+                            "inital_view": "Initial View",
+                            "name": "Calendar",
+                            "views": {
+                                "dayGridDay": "Day",
+                                "dayGridMonth": "Month",
+                                "listWeek": "List"
+                            }
                         },
                         "conditional": {
                             "card": "Card",

@@ -496,9 +496,11 @@
                     "wnw": "VNV",
                     "wsw": "VSV"
                 },
+                "day": "Dag",
                 "forecast": "Prognose",
                 "high": "Høy",
-                "low": "Lav"
+                "low": "Lav",
+                "night": "Natt"
             }
         },
         "common": {
@@ -2492,8 +2494,21 @@
                         },
                         "entities": {
                             "description": "Entities card er den vanligste typen kort. Den grupperer elementer i lister.",
+                            "edit_special_row": "Rediger rad ved hjelp av kodeditoren",
+                            "entity_row": {
+                                "attribute": "Attributt",
+                                "button": "Knapp",
+                                "buttons": "Knapper",
+                                "call-service": "Tilkall tjeneste",
+                                "cast": "Cast",
+                                "conditional": "Betinget",
+                                "divider": "Deler",
+                                "section": "Seksjon",
+                                "weblink": "Weblink"
+                            },
                             "name": "Entiteter",
                             "show_header_toggle": "Vis kortbryter?",
+                            "special_row": "spesiell rad",
                             "toggle": "Aktivér/deaktivér entiteter."
                         },
                         "entity-filter": {

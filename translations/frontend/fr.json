@@ -496,9 +496,11 @@
                     "wnw": "O-NO",
                     "wsw": "O-SO"
                 },
+                "day": "Jour",
                 "forecast": "Prévisions",
                 "high": "Haute",
-                "low": "Faible"
+                "low": "Faible",
+                "night": "Nuit"
             }
         },
         "common": {
@@ -2085,7 +2087,7 @@
                         "name": "Nom",
                         "new_password": "Nouveau mot de passe",
                         "owner": "Propriétaire",
-                        "password_changed": "Le mot de passe est modifié !",
+                        "password_changed": "Le mot de passe a été changé avec succès",
                         "system_generated": "Généré par le système",
                         "system_generated_users_not_editable": "Impossible de mettre à jour les utilisateurs générés par le système.",
                         "system_generated_users_not_removable": "Impossible de supprimer les utilisateurs générés par le système.",
@@ -2492,8 +2494,21 @@
                         },
                         "entities": {
                             "description": "La carte Entités est le type de carte le plus courant. Il regroupe les éléments dans des listes.",
+                            "edit_special_row": "Modifier la ligne à l'aide de l'éditeur de code",
+                            "entity_row": {
+                                "attribute": "Attribut",
+                                "button": "Bouton",
+                                "buttons": "Boutons",
+                                "call-service": "Appeler un service",
+                                "cast": "Cast",
+                                "conditional": "Conditionnel",
+                                "divider": "Diviseur",
+                                "section": "Section",
+                                "weblink": "Lien Web"
+                            },
                             "name": "Entités",
                             "show_header_toggle": "Afficher le bouton d'en-tête ?",
+                            "special_row": "ligne spéciale",
                             "toggle": "Basculer les entités."
                         },
                         "entity-filter": {
