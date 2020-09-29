@@ -14,7 +14,7 @@ import {
 import { any, array, assert, object, optional, string } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-button";
-import { LovelaceConfig } from "../../../../data/lovelace";
+import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import { StackCardConfig } from "../../cards/types";
 import { LovelaceCardEditor } from "../../types";
@@ -165,7 +165,7 @@ export class HuiStackCardEditor extends LitElement
       return;
     }
     const cards = [...this._config.cards];
-    cards[this._selectedCard] = ev.detail.config;
+    cards[this._selectedCard] = ev.detail.config as LovelaceCardConfig;
     this._config = { ...this._config, cards };
     this._guiModeAvailable = ev.detail.guiModeAvailable;
     fireEvent(this, "config-changed", { config: this._config });

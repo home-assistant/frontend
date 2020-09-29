@@ -2,6 +2,7 @@ import {
   any,
   array,
   boolean,
+  number,
   object,
   optional,
   string,
@@ -95,19 +96,19 @@ const buttonEntitiesRowConfigStruct = object({
 
 const castEntitiesRowConfigStruct = object({
   type: string(),
-  view: string(),
+  view: union([string(), number()]),
   dashboard: optional(string()),
   name: optional(string()),
   icon: optional(string()),
-  hide_if_unavailable: optional(string()),
+  hide_if_unavailable: optional(boolean()),
 });
 
 const callServiceEntitiesRowConfigStruct = object({
   type: string(),
   name: string(),
+  service: string(),
   icon: optional(string()),
   action_name: optional(string()),
-  service: string(),
   service_data: optional(any()),
 });
 

@@ -14,7 +14,7 @@ import {
 import { any, array, assert, object, optional, string } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
-import { LovelaceConfig } from "../../../../data/lovelace";
+import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import { ConditionalCardConfig } from "../../cards/types";
 import { LovelaceCardEditor } from "../../types";
@@ -229,7 +229,10 @@ export class HuiConditionalCardEditor extends LitElement
     if (!this._config) {
       return;
     }
-    this._config = { ...this._config, card: ev.detail.config };
+    this._config = {
+      ...this._config,
+      card: ev.detail.config as LovelaceCardConfig,
+    };
     this._guiModeAvailable = ev.detail.guiModeAvailable;
     fireEvent(this, "config-changed", { config: this._config });
   }
