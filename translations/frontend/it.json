@@ -496,9 +496,11 @@
                     "wnw": "ONO",
                     "wsw": "OSO"
                 },
+                "day": "Giorno",
                 "forecast": "Previsioni",
                 "high": "Alto",
-                "low": "Basso"
+                "low": "Basso",
+                "night": "Notte"
             }
         },
         "common": {
@@ -2085,7 +2087,7 @@
                         "name": "Nome",
                         "new_password": "Nuova password",
                         "owner": "Proprietario",
-                        "password_changed": "La password è stata cambiata!",
+                        "password_changed": "La password è stata modificata con successo",
                         "system_generated": "Generato dal sistema",
                         "system_generated_users_not_editable": "Impossibile aggiornare gli utenti generati dal sistema.",
                         "system_generated_users_not_removable": "Impossibile rimuovere gli utenti generati dal sistema.",
@@ -2492,8 +2494,21 @@
                         },
                         "entities": {
                             "description": "La scheda Entità è il tipo di scheda più comune. Raggruppa gli elementi in elenchi.",
+                            "edit_special_row": "Modificare la riga utilizzando l'editor di codice",
+                            "entity_row": {
+                                "attribute": "Attributo",
+                                "button": "Pulsante",
+                                "buttons": "Pulsanti",
+                                "call-service": "Chiama il Servizio",
+                                "cast": "Cast",
+                                "conditional": "Condizionale",
+                                "divider": "Divisore",
+                                "section": "Sezione",
+                                "weblink": "Collegamento Web"
+                            },
                             "name": "Entità",
                             "show_header_toggle": "Mostrare l'interruttore dell'intestazione?",
+                            "special_row": "riga speciale",
                             "toggle": "Attiva/disattiva entità."
                         },
                         "entity-filter": {
@@ -2614,7 +2629,8 @@
                             "description": "La scheda Sensore offre una rapida panoramica dello stato dei sensori con un grafico opzionale per visualizzare il cambiamento nel tempo.",
                             "graph_detail": "Dettaglio grafico",
                             "graph_type": "Tipo di grafico",
-                            "name": "Sensore"
+                            "name": "Sensore",
+                            "show_more_detail": "Mostra ulteriori dettagli"
                         },
                         "shopping-list": {
                             "description": "La scheda della Lista della Spesa consente di aggiungere, modificare, selezionare e cancellare gli articoli dalla lista della spesa.",

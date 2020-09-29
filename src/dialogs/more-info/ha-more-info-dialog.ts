@@ -21,7 +21,10 @@ import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import { stateMoreInfoType } from "../../common/entity/state_more_info_type";
+import {
+  stateMoreInfoType,
+  importMoreInfoControl,
+} from "./state_more_info_control";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-dialog";
 import "../../components/ha-header-bar";
@@ -34,28 +37,6 @@ import { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import "./ha-more-info-history";
 import "./ha-more-info-logbook";
-
-import "./controls/more-info-alarm_control_panel";
-import "./controls/more-info-automation";
-import "./controls/more-info-camera";
-import "./controls/more-info-climate";
-import "./controls/more-info-configurator";
-import "./controls/more-info-counter";
-import "./controls/more-info-cover";
-import "./controls/more-info-fan";
-import "./controls/more-info-group";
-import "./controls/more-info-humidifier";
-import "./controls/more-info-input_datetime";
-import "./controls/more-info-light";
-import "./controls/more-info-lock";
-import "./controls/more-info-media_player";
-import "./controls/more-info-person";
-import "./controls/more-info-script";
-import "./controls/more-info-sun";
-import "./controls/more-info-timer";
-import "./controls/more-info-vacuum";
-import "./controls/more-info-water_heater";
-import "./controls/more-info-weather";
 import "./controls/more-info-default";
 
 const DOMAINS_NO_INFO = ["camera", "configurator"];
@@ -104,7 +85,8 @@ export class MoreInfoDialog extends LitElement {
       this._moreInfoType = stateObj.attributes.custom_ui_more_info;
     } else {
       const type = stateMoreInfoType(stateObj);
-      this._moreInfoType = `more-info-${type}`;
+      importMoreInfoControl(type);
+      this._moreInfoType = type === "hidden" ? undefined : `more-info-${type}`;
     }
   }
 

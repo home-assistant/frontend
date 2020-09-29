@@ -1511,6 +1511,7 @@
                         "options": "Opções",
                         "reload": "Recarregar",
                         "reload_confirm": "A integração foi recarregada",
+                        "reload_restart_confirm": "Reinicie o Home Assistant para terminar o carregamento dessa integração",
                         "rename": "Renomear",
                         "restart_confirm": "Reinicie o Home Assistant para concluir a remoção dessa integração",
                         "settings_button": "Editar configurações para {integration}",
@@ -1824,20 +1825,29 @@
                     "section": {
                         "reloading": {
                             "automation": "Recarregar as automações",
+                            "command_line": "Recarregar entidades de linha de comando",
                             "core": "Recarregar localização & customizações",
                             "filter": "Recarregar entidades de filtro",
+                            "generic": "Recarregar entidades genéricas de câmeras IP",
+                            "generic_thermostat": "Recarregar entidades genéricas do termostato",
                             "group": "Recarregar os grupos",
                             "heading": "Recarregando a configuração YAML",
-                            "input_boolean": "Recarregar entradas de booleano",
+                            "homekit": "Recarregar Homekit",
+                            "input_boolean": "Recarregar entradas de booleanos",
                             "input_datetime": "Recarregar entradas de data",
                             "input_number": "Recarregar entradas numéricas",
                             "input_select": "Recarregar entradas de seleção",
                             "input_text": "Recarregar entradas de texto",
                             "introduction": "Algumas partes do Home Assistant podem ser recarregadas sem precisar reiniciar. Pressionar recarregar descarregará sua configuração YAML atual e carregará a nova.",
                             "person": "Recarregar pessoas",
+                            "rest": "Recarregar entidades rest e serviços de notificação",
+                            "rpi_gpio": "Recarregar entidades GPIO do Raspberry PI",
                             "scene": "Recarregar cenas",
                             "script": "Recarregar os scripts",
+                            "smtp": "Recarregar serviços de notificação de SMTP",
+                            "statistics": "Recarregar estatísticas de entidades",
                             "template": "Recarregar entidades de modelo",
+                            "universal": "Recarregar entidades universais de media players",
                             "zone": "Recarregar zonas"
                         },
                         "server_management": {
@@ -2290,6 +2300,14 @@
                         },
                         "entities": {
                             "description": "O cartão das Entidades é o tipo de cartão mais comum. Ele agrupa os itens em listas.",
+                            "entity_row": {
+                                "attribute": "Atributo",
+                                "button": "Botão",
+                                "call-service": "Serviço de chamada",
+                                "conditional": "Condicional",
+                                "divider": "Divisor",
+                                "section": "Seção"
+                            },
                             "name": "Entidades",
                             "show_header_toggle": "Mostrar Alternador do Cabeçalho?",
                             "toggle": "Alternar entidades."
@@ -2411,7 +2429,8 @@
                             "description": "O cartão Sensor oferece uma visão rápida do estado de seus sensores com um gráfico opcional para visualizar a mudança ao longo do tempo.",
                             "graph_detail": "Detalhe do gráfico",
                             "graph_type": "Tipo de gráfico",
-                            "name": "Sensor"
+                            "name": "Sensor",
+                            "show_more_detail": "Mostrar mais detalhes"
                         },
                         "shopping-list": {
                             "description": "O cartão da Lista de Compras permite adicionar, editar, fazer check-off e limpar itens da sua lista de compras.",

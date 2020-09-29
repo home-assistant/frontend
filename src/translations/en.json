@@ -430,6 +430,7 @@
         "edit": "Edit entity",
         "details": "Details",
         "history": "History",
+        "last_updated": "Last updated",
         "script": {
           "last_action": "Last Action",
           "last_triggered": "Last Triggered"
@@ -875,7 +876,7 @@
               "automation": "Reload automations",
               "script": "Reload scripts",
               "scene": "Reload scenes",
-              "person": "Reload persons",
+              "person": "Reload people",
               "zone": "Reload zones",
               "input_boolean": "Reload input booleans",
               "input_text": "Reload input texts",
@@ -1139,7 +1140,16 @@
                   "type_input": "[%key:ui::panel::config::automation::editor::triggers::type::time::type_input%]",
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::time::label%]",
                   "after": "After",
-                  "before": "Before"
+                  "before": "Before",
+                  "weekdays": {
+                    "mon": "Monday",
+                    "tue": "Tuesday",
+                    "wed": "Wednesday",
+                    "thu": "Thursday",
+                    "fri": "Friday",
+                    "sat": "Saturday",
+                    "sun": "Sunday"
+                  }
                 },
                 "zone": {
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]",
@@ -1596,11 +1606,11 @@
           }
         },
         "person": {
-          "caption": "Persons",
-          "description": "Manage the persons that Home Assistant tracks",
+          "caption": "People",
+          "description": "Manage the people that Home Assistant tracks",
           "introduction": "Here you can define each person of interest in Home Assistant.",
-          "note_about_persons_configured_in_yaml": "Note: persons configured via configuration.yaml cannot be edited via the UI.",
-          "no_persons_created_yet": "Looks like you have not created any persons yet.",
+          "note_about_persons_configured_in_yaml": "Note: people configured via configuration.yaml cannot be edited via the UI.",
+          "no_persons_created_yet": "Looks like you have not created any people yet.",
           "create_person": "Create Person",
           "add_person": "Add Person",
           "confirm_delete": "Are you sure you want to delete this person?",
@@ -1623,7 +1633,7 @@
         },
         "zone": {
           "caption": "Zones",
-          "description": "Manage the zones you want to track persons in",
+          "description": "Manage the zones you want to track people in",
           "introduction": "Zones allow you to specify certain regions on earth. When a person is within a zone, the state will take the name from the zone. Zones can also be used as a trigger or condition inside automation setups.",
           "no_zones_created_yet": "Looks like you have not created any zones yet.",
           "create_zone": "Create Zone",
@@ -2237,6 +2247,20 @@
             "para_migrate": "Home Assistant can add ID's to all your cards and views automatically for you by pressing the 'Migrate configuration' button.",
             "migrate": "Migrate configuration"
           },
+          "action-editor": {
+            "navigation_path": "Navigation Path",
+            "url_path": "Url Path",
+            "editor_service_data": "Service data can only be entered in the code editor",
+            "actions": {
+              "default_action": "Default Action",
+              "call-service": "Call Service",
+              "more-info": "More Info",
+              "toggle": "Toggle",
+              "navigate": "Navigate",
+              "url": "Url",
+              "none": "No Action"
+            }
+          },
           "card": {
             "alarm-panel": {
               "name": "Alarm Panel",
@@ -2245,7 +2269,14 @@
             },
             "calendar": {
               "name": "Calendar",
-              "description": "The Calendar card displays a calendar including day, week and list views"
+              "description": "The Calendar card displays a calendar including day, week and list views",
+              "inital_view": "Initial View",
+              "calendar_entities": "Calendar Entities",
+              "views": {
+                "dayGridMonth": "Month",
+                "dayGridDay": "Day",
+                "listWeek": "List"
+              }
             },
             "conditional": {
               "name": "Conditional",
@@ -2287,7 +2318,8 @@
             },
             "button": {
               "name": "Button",
-              "description": "The Button card allows you to add buttons to perform tasks."
+              "description": "The Button card allows you to add buttons to perform tasks.",
+              "default_action_help": "The default action depends on the entity's capabilities, it will either be toggled or the more info will be shown."
             },
             "entity-filter": {
               "name": "Entity Filter",
@@ -2811,6 +2843,12 @@
           "intro": "Devices and services are represented in Home Assistant as integrations. You can set them up now, or do it later from the configuration screen.",
           "more_integrations": "More",
           "finish": "Finish"
+        },
+        "restore": {
+          "description": "Alternatively you can restore from a previous snapshot.",
+          "in_progress": "Restore in progress",
+          "show_log": "Show full log",
+          "hide_log": "Hide full log"
         }
       },
       "custom": {

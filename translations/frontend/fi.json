@@ -495,9 +495,11 @@
                     "wnw": "länsiluode",
                     "wsw": "länsilounas"
                 },
+                "day": "Päivä",
                 "forecast": "Sääennuste",
                 "high": "Korkea",
-                "low": "Alhainen"
+                "low": "Alhainen",
+                "night": "Yö"
             }
         },
         "common": {
@@ -614,6 +616,9 @@
                 "video_not_supported": "Selaimesi ei tue videoelementtiä.",
                 "web-browser": "Selain"
             },
+            "picture-upload": {
+                "label": "Kuva"
+            },
             "related-items": {
                 "area": "Alue",
                 "automation": "Osa seuraavia automaatioita",
@@ -716,6 +721,9 @@
                 "platform_not_loaded": "Integrointia {platform} ei ole ladattu. Voit ladata sen lisäämällä \"default_config:\" tai ''{platform}:'' konfiguraatiotiedostoon.",
                 "required_error_msg": "Tämä kenttä on pakollinen",
                 "yaml_not_editable": "Tämän kohteen asetuksia ei voi muokata käyttöliittymästä. Vain käyttöliittymästä määritetyt kohteet ovat määritettävissä käyttöliittymästä."
+            },
+            "image_cropper": {
+                "crop": "Rajaa"
             },
             "more_info_control": {
                 "details": "Yksityiskohdat",
@@ -949,6 +957,9 @@
                                     "label": "Kutsu palvelua",
                                     "service_data": "Palvelun data"
                                 },
+                                "wait_for_trigger": {
+                                    "label": "Odota laukaisinta"
+                                },
                                 "wait_template": {
                                     "label": "Odota",
                                     "timeout": "Aikakatkaisu",
@@ -1112,6 +1123,9 @@
                                     "offset": "Poikkeama (vapaaehtoinen)",
                                     "sunrise": "Auringonnousu",
                                     "sunset": "Auringonlasku"
+                                },
+                                "tag": {
+                                    "label": "Tägi"
                                 },
                                 "template": {
                                     "label": "Malli (template)",
@@ -1750,6 +1764,9 @@
                         "header": "Verkon hallinta",
                         "node_count": "{count} solmua"
                     },
+                    "node_query_stages": {
+                        "complete": "Haastatteluprosessi on valmis"
+                    },
                     "nodes_table": {
                         "failed": "Epäonnistui",
                         "id": "ID",
@@ -1929,12 +1946,14 @@
                 "tags": {
                     "detail": {
                         "description": "Kuvaus",
-                        "name": "Nimi"
+                        "name": "Nimi",
+                        "tag_id": "Tägin ID"
                     },
                     "edit": "Muokkaa",
                     "headers": {
                         "name": "Nimi"
-                    }
+                    },
+                    "write": "Kirjoita"
                 },
                 "users": {
                     "add_user": {
@@ -2364,6 +2383,16 @@
                         },
                         "entities": {
                             "description": "Kohde-kortti on yleisin korttityyppi. Se ryhmittelee kohteet yhteen luetteloiksi.",
+                            "entity_row": {
+                                "attribute": "Määrite",
+                                "button": "Painike",
+                                "buttons": "Painikkeet",
+                                "cast": "Cast",
+                                "conditional": "Ehdollinen",
+                                "divider": "Jakaja",
+                                "section": "Osio",
+                                "weblink": "Nettilinkki"
+                            },
                             "name": "Kohteet",
                             "show_header_toggle": "Näytä otsikkokytkin?",
                             "toggle": "Ota kohteet käyttöön tai poista käytöstä"
@@ -2508,8 +2537,11 @@
                         }
                     },
                     "cardpicker": {
+                        "by_card": "Kortin mukaan",
+                        "by_entity": "Kohteen mukaan",
                         "custom_card": "Mukautettu",
                         "domain": "Toimialue",
+                        "entity": "Kohde",
                         "no_description": "Ei kuvausta saatavilla."
                     },
                     "edit_card": {

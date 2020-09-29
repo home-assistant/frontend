@@ -1,6 +1,12 @@
 import "@material/mwc-button";
 import "@material/mwc-icon-button";
-import { mdiPackageVariant, mdiPackageVariantClosed, mdiReload } from "@mdi/js";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import "@material/mwc-list/mwc-list-item";
+import {
+  mdiDotsVertical,
+  mdiPackageVariant,
+  mdiPackageVariantClosed,
+} from "@mdi/js";
 import "@polymer/paper-checkbox/paper-checkbox";
 import type { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
@@ -19,8 +25,10 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-progress-button";
+import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-svg-icon";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
@@ -39,7 +47,9 @@ import { PolymerChangedEvent } from "../../../src/polymer-types";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant, Route } from "../../../src/types";
 import "../components/hassio-card-content";
+import "../components/hassio-upload-snapshot";
 import { showHassioSnapshotDialog } from "../dialogs/snapshot/show-dialog-hassio-snapshot";
+import { showSnapshotUploadDialog } from "../dialogs/snapshot/show-dialog-snapshot-upload";
 import { supervisorTabs } from "../hassio-tabs";
 import { hassioStyle } from "../resources/hassio-style";
 
@@ -101,14 +111,23 @@ class HassioSnapshots extends LitElement {
         .tabs=${supervisorTabs}
       >
         <span slot="header">Snapshots</span>
-
-        <mwc-icon-button
+        <ha-button-menu
+          corner="BOTTOM_START"
           slot="toolbar-icon"
-          aria-label="Reload snapshots"
-          @click=${this.refreshData}
+          @action=${this._handleAction}
         >
-          <ha-svg-icon path=${mdiReload}></ha-svg-icon>
-        </mwc-icon-button>
+          <mwc-icon-button slot="trigger" alt="menu">
+            <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+          </mwc-icon-button>
+          <mwc-list-item>
+            Reload
+          </mwc-list-item>
+          ${atLeastVersion(this.hass.config.version, 0, 116)
+            ? html`<mwc-list-item>
+                Upload snapshot
+              </mwc-list-item>`
+            : ""}
+        </ha-button-menu>
 
         <div class="content">
           <h1>
@@ -257,6 +276,17 @@ class HassioSnapshots extends LitElement {
     }
   }
 
+  private _handleAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        this.refreshData();
+        break;
+      case 1:
+        this._showUploadSnapshotDialog();
+        break;
+    }
+  }
+
   private _handleTextValueChanged(ev: PolymerChangedEvent<string>) {
     const input = ev.currentTarget as PaperInputElement;
     this[`_${input.name}`] = ev.detail.value;
@@ -359,6 +389,17 @@ class HassioSnapshots extends LitElement {
     showHassioSnapshotDialog(this, {
       slug: ev.currentTarget!.snapshot.slug,
       onDelete: () => this._updateSnapshots(),
+    });
+  }
+
+  private _showUploadSnapshotDialog() {
+    showSnapshotUploadDialog(this, {
+      showSnapshot: (slug: string) =>
+        showHassioSnapshotDialog(this, {
+          slug,
+          onDelete: () => this._updateSnapshots(),
+        }),
+      reloadSnapshot: () => this.refreshData(),
     });
   }
 
