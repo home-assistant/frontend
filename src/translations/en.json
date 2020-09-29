@@ -2247,6 +2247,20 @@
             "para_migrate": "Home Assistant can add ID's to all your cards and views automatically for you by pressing the 'Migrate configuration' button.",
             "migrate": "Migrate configuration"
           },
+          "action-editor": {
+            "navigation_path": "Navigation Path",
+            "url_path": "Url Path",
+            "editor_service_data": "Service data can only be entered in the code editor",
+            "actions": {
+              "default_action": "Default Action",
+              "call-service": "Call Service",
+              "more-info": "More Info",
+              "toggle": "Toggle",
+              "navigate": "Navigate",
+              "url": "Url",
+              "none": "No Action"
+            }
+          },
           "card": {
             "alarm-panel": {
               "name": "Alarm Panel",
@@ -2304,7 +2318,8 @@
             },
             "button": {
               "name": "Button",
-              "description": "The Button card allows you to add buttons to perform tasks."
+              "description": "The Button card allows you to add buttons to perform tasks.",
+              "default_action_help": "The default action depends on the entity's capabilities, it will either be toggled or the more info will be shown."
             },
             "entity-filter": {
               "name": "Entity Filter",
