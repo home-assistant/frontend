@@ -1,4 +1,6 @@
+import { mdiClose } from "@mdi/js";
 import {
+  css,
   CSSResult,
   customElement,
   html,
@@ -8,7 +10,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
-import { createCloseHeading } from "../../../../src/components/ha-dialog";
+import "../../../../src/components/ha-header-bar";
 import { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
@@ -30,7 +32,11 @@ export class DialogHassioSnapshotUpload extends LitElement
   }
 
   public closeDialog(): void {
-    this._params?.reloadSnapshot();
+    if (this._params && !this._params.onboarding) {
+      if (this._params.reloadSnapshot) {
+        this._params.reloadSnapshot();
+      }
+    }
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -46,9 +52,19 @@ export class DialogHassioSnapshotUpload extends LitElement
         scrimClickAction
         escapeKeyAction
         hideActions
+        .heading=${true}
         @closed=${this.closeDialog}
-        .heading=${createCloseHeading(this.hass, "Upload snapshot")}
       >
+        <div slot="heading">
+          <ha-header-bar>
+            <span slot="title">
+              Upload snapshot
+            </span>
+            <mwc-icon-button slot="actionItems" dialogAction="cancel">
+              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+            </mwc-icon-button>
+          </ha-header-bar>
+        </div>
         <hassio-upload-snapshot
           @snapshot-uploaded=${this._snapshotUploaded}
           .hass=${this.hass}
@@ -63,8 +79,24 @@ export class DialogHassioSnapshotUpload extends LitElement
     this.closeDialog();
   }
 
-  static get styles(): CSSResult {
-    return haStyleDialog;
+  static get styles(): CSSResult[] {
+    return [
+      haStyleDialog,
+      css`
+        ha-header-bar {
+          --mdc-theme-on-primary: var(--primary-text-color);
+          --mdc-theme-primary: var(--mdc-theme-surface);
+          flex-shrink: 0;
+        }
+        /* overrule the ha-style-dialog max-height on small screens */
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          ha-header-bar {
+            --mdc-theme-primary: var(--app-header-background-color);
+            --mdc-theme-on-primary: var(--app-header-text-color, white);
+          }
+        }
+      `,
+    ];
   }
 }
 

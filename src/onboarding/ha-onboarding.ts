@@ -1,21 +1,23 @@
 import {
   Auth,
   createConnection,
+  genClientId,
   getAuth,
   subscribeConfig,
-  genClientId,
 } from "home-assistant-js-websocket";
 import {
   customElement,
   html,
-  property,
   internalProperty,
+  property,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { HASSDomEvent } from "../common/dom/fire_event";
+import { extractSearchParamsObject } from "../common/url/search-params";
 import { subscribeOne } from "../common/util/subscribe-one";
-import { hassUrl, AuthUrlSearchParams } from "../data/auth";
+import { AuthUrlSearchParams, hassUrl } from "../data/auth";
+import { fetchDiscoveryInformation } from "../data/discovery";
 import {
   fetchOnboardingOverview,
   OnboardingResponses,
@@ -29,7 +31,6 @@ import { HomeAssistant } from "../types";
 import { registerServiceWorker } from "../util/register-service-worker";
 import "./onboarding-create-user";
 import "./onboarding-loading";
-import { extractSearchParamsObject } from "../common/url/search-params";
 
 type OnboardingEvent =
   | {
@@ -62,6 +63,10 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
 
   @internalProperty() private _loading = false;
 
+  @internalProperty() private _restoring = false;
+
+  @internalProperty() private _supervisor?: boolean;
+
   @internalProperty() private _steps?: OnboardingStep[];
 
   protected render(): TemplateResult {
@@ -72,10 +77,21 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     }
     if (step.step === "user") {
       return html`
-        <onboarding-create-user
-          .localize=${this.localize}
-          .language=${this.language}
-        ></onboarding-create-user>
+        ${!this._restoring
+          ? html`<onboarding-create-user
+              .localize=${this.localize}
+              .language=${this.language}
+            >
+            </onboarding-create-user>`
+          : ""}
+        ${this._supervisor
+          ? html`<onboarding-restore-snapshot
+              .localize=${this.localize}
+              .restoring=${this._restoring}
+              @restoring=${this._restoringSnapshot}
+            >
+            </onboarding-restore-snapshot>`
+          : ""}
       `;
     }
     if (step.step === "core_config") {
@@ -100,6 +116,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this._fetchOnboardingSteps();
+    this._fetchDiscoveryInformation();
     import(
       /* webpackChunkName: "onboarding-integrations" */ "./onboarding-integrations"
     );
@@ -125,6 +142,32 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
 
   private _curStep() {
     return this._steps ? this._steps.find((stp) => !stp.done) : undefined;
+  }
+
+  private _restoringSnapshot() {
+    this._restoring = true;
+  }
+
+  private async _fetchDiscoveryInformation(): Promise<void> {
+    try {
+      const response = await fetchDiscoveryInformation();
+      this._supervisor = [
+        "Home Assistant OS",
+        "Home Assistant Supervised",
+      ].includes(response.installation_type);
+      if (this._supervisor) {
+        // Only load if we have supervisor
+        import(
+          /* webpackChunkName: "onboarding-restore-snapshot" */ "./onboarding-restore-snapshot"
+        );
+      }
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(
+        "Something went wrong loading onboarding-restore-snapshot",
+        err
+      );
+    }
   }
 
   private async _fetchOnboardingSteps() {

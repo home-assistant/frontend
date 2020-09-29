@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import { mdiDelete, mdiDownload, mdiHistory } from "@mdi/js";
+import { mdiClose, mdiDelete, mdiDownload, mdiHistory } from "@mdi/js";
 import { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
 import {
@@ -12,7 +12,8 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { createCloseHeading } from "../../../../src/components/ha-dialog";
+import { fireEvent } from "../../../../src/common/dom/fire_event";
+import "../../../../src/components/ha-header-bar";
 import "../../../../src/components/ha-svg-icon";
 import { getSignedPath } from "../../../../src/data/auth";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
@@ -22,7 +23,7 @@ import {
 } from "../../../../src/data/hassio/snapshot";
 import { showConfirmationDialog } from "../../../../src/dialogs/generic/show-dialog-box";
 import { PolymerChangedEvent } from "../../../../src/polymer-types";
-import { haStyleDialog } from "../../../../src/resources/styles";
+import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import { HassioSnapshotDialogParams } from "./show-dialog-hassio-snapshot";
 
@@ -75,6 +76,8 @@ class HassioSnapshotDialog extends LitElement {
 
   @internalProperty() private _error?: string;
 
+  @internalProperty() private _onboarding = false;
+
   @internalProperty() private _snapshot?: HassioSnapshotDetail;
 
   @internalProperty() private _folders!: FolderItem[];
@@ -90,13 +93,14 @@ class HassioSnapshotDialog extends LitElement {
   public async showDialog(params: HassioSnapshotDialogParams) {
     this._snapshot = await fetchHassioSnapshotInfo(this.hass, params.slug);
     this._folders = _computeFolders(
-      this._snapshot.folders
+      this._snapshot?.folders
     ).sort((a: FolderItem, b: FolderItem) => (a.name > b.name ? 1 : -1));
     this._addons = _computeAddons(
-      this._snapshot.addons
+      this._snapshot?.addons
     ).sort((a: AddonItem, b: AddonItem) => (a.name > b.name ? 1 : -1));
 
     this._dialogParams = params;
+    this._onboarding = params.onboarding ?? false;
   }
 
   protected render(): TemplateResult {
@@ -104,12 +108,17 @@ class HassioSnapshotDialog extends LitElement {
       return html``;
     }
     return html`
-      <ha-dialog
-        open
-        stacked
-        @closing=${this._closeDialog}
-        .heading=${createCloseHeading(this.hass, this._computeName)}
-      >
+      <ha-dialog open stacked @closing=${this._closeDialog} .heading=${true}>
+        <div slot="heading">
+          <ha-header-bar>
+            <span slot="title">
+              ${this._computeName}
+            </span>
+            <mwc-icon-button slot="actionItems" dialogAction="cancel">
+              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+            </mwc-icon-button>
+          </ha-header-bar>
+        </div>
         <div class="details">
           ${this._snapshot.type === "full"
             ? "Full snapshot"
@@ -182,11 +191,15 @@ class HassioSnapshotDialog extends LitElement {
         ${this._error ? html` <p class="error">Error: ${this._error}</p> ` : ""}
 
         <div>Actions:</div>
-
-        <mwc-button @click=${this._downloadClicked} slot="primaryAction">
-          <ha-svg-icon path=${mdiDownload} class="icon"></ha-svg-icon>
-          Download Snapshot
-        </mwc-button>
+        ${!this._onboarding
+          ? html`<mwc-button
+              @click=${this._downloadClicked}
+              slot="primaryAction"
+            >
+              <ha-svg-icon path=${mdiDownload} class="icon"></ha-svg-icon>
+              Download Snapshot
+            </mwc-button>`
+          : ""}
 
         <mwc-button
           @click=${this._partialRestoreClicked}
@@ -206,16 +219,22 @@ class HassioSnapshotDialog extends LitElement {
               </mwc-button>
             `
           : ""}
-        <mwc-button @click=${this._deleteClicked} slot="secondaryAction">
-          <ha-svg-icon path=${mdiDelete} class="icon warning"></ha-svg-icon>
-          <span class="warning">Delete Snapshot</span>
-        </mwc-button>
+        ${!this._onboarding
+          ? html`<mwc-button
+              @click=${this._deleteClicked}
+              slot="secondaryAction"
+            >
+              <ha-svg-icon path=${mdiDelete} class="icon warning"></ha-svg-icon>
+              <span class="warning">Delete Snapshot</span>
+            </mwc-button>`
+          : ""}
       </ha-dialog>
     `;
   }
 
   static get styles(): CSSResult[] {
     return [
+      haStyle,
       haStyleDialog,
       css`
         paper-checkbox {
@@ -241,6 +260,18 @@ class HassioSnapshotDialog extends LitElement {
         }
         .no-margin-top {
           margin-top: 0;
+        }
+        ha-header-bar {
+          --mdc-theme-on-primary: var(--primary-text-color);
+          --mdc-theme-primary: var(--mdc-theme-surface);
+          flex-shrink: 0;
+        }
+        /* overrule the ha-style-dialog max-height on small screens */
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          ha-header-bar {
+            --mdc-theme-primary: var(--app-header-background-color);
+            --mdc-theme-on-primary: var(--app-header-text-color, white);
+          }
         }
       `,
     ];
@@ -272,6 +303,8 @@ class HassioSnapshotDialog extends LitElement {
     if (
       !(await showConfirmationDialog(this, {
         title: "Are you sure you want partially to restore this snapshot?",
+        confirmText: "restore",
+        dismissText: "cancel",
       }))
     ) {
       return;
@@ -300,22 +333,31 @@ class HassioSnapshotDialog extends LitElement {
       data.password = this._snapshotPassword;
     }
 
-    this.hass
-      .callApi(
-        "POST",
+    if (!this._onboarding) {
+      this.hass
+        .callApi(
+          "POST",
 
-        `hassio/snapshots/${this._snapshot!.slug}/restore/partial`,
-        data
-      )
-      .then(
-        () => {
-          alert("Snapshot restored!");
-          this._closeDialog();
-        },
-        (error) => {
-          this._error = error.body.message;
-        }
-      );
+          `hassio/snapshots/${this._snapshot!.slug}/restore/partial`,
+          data
+        )
+        .then(
+          () => {
+            alert("Snapshot restored!");
+            this._closeDialog();
+          },
+          (error) => {
+            this._error = error.body.message;
+          }
+        );
+    } else {
+      fireEvent(this, "restoring");
+      fetch(`/api/hassio/snapshots/${this._snapshot!.slug}/restore/partial`, {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+      this._closeDialog();
+    }
   }
 
   private async _fullRestoreClicked() {
@@ -323,6 +365,8 @@ class HassioSnapshotDialog extends LitElement {
       !(await showConfirmationDialog(this, {
         title:
           "Are you sure you want to wipe your system and restore this snapshot?",
+        confirmText: "restore",
+        dismissText: "cancel",
       }))
     ) {
       return;
@@ -331,28 +375,38 @@ class HassioSnapshotDialog extends LitElement {
     const data = this._snapshot!.protected
       ? { password: this._snapshotPassword }
       : undefined;
-
-    this.hass
-      .callApi(
-        "POST",
-        `hassio/snapshots/${this._snapshot!.slug}/restore/full`,
-        data
-      )
-      .then(
-        () => {
-          alert("Snapshot restored!");
-          this._closeDialog();
-        },
-        (error) => {
-          this._error = error.body.message;
-        }
-      );
+    if (!this._onboarding) {
+      this.hass
+        .callApi(
+          "POST",
+          `hassio/snapshots/${this._snapshot!.slug}/restore/full`,
+          data
+        )
+        .then(
+          () => {
+            alert("Snapshot restored!");
+            this._closeDialog();
+          },
+          (error) => {
+            this._error = error.body.message;
+          }
+        );
+    } else {
+      fireEvent(this, "restoring");
+      fetch(`/api/hassio/snapshots/${this._snapshot!.slug}/restore/full`, {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+      this._closeDialog();
+    }
   }
 
   private async _deleteClicked() {
     if (
       !(await showConfirmationDialog(this, {
         title: "Are you sure you want to delete this snapshot?",
+        confirmText: "delete",
+        dismissText: "cancel",
       }))
     ) {
       return;
@@ -363,7 +417,9 @@ class HassioSnapshotDialog extends LitElement {
       .callApi("POST", `hassio/snapshots/${this._snapshot!.slug}/remove`)
       .then(
         () => {
-          this._dialogParams!.onDelete();
+          if (this._dialogParams!.onDelete) {
+            this._dialogParams!.onDelete();
+          }
           this._closeDialog();
         },
         (error) => {
