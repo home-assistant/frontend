@@ -12,6 +12,7 @@ import {
 } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
 import { nextRender } from "../common/util/render-status";
+import { getExternalConfig } from "../external_app/external_config";
 import type { HomeAssistant } from "../types";
 
 type HLSModule = typeof import("hls.js");
@@ -34,8 +35,7 @@ class HaHLSPlayer extends LitElement {
   @property({ type: Boolean, attribute: "playsinline" })
   public playsInline = false;
 
-  @property({ type: Boolean, attribute: "allow-exoplayer" })
-  public allowExoPlayer = false;
+  @property({ attribute: false }) public allowExoPlayer = false;
 
   @query("video") private _videoEl!: HTMLVideoElement;
 
@@ -93,7 +93,11 @@ class HaHLSPlayer extends LitElement {
   }
 
   private async _getUseExoPlayer(): Promise<boolean> {
-    return false;
+    if (!this.hass!.auth.external || !this.allowExoPlayer) {
+      return false;
+    }
+    const externalConfig = await getExternalConfig(this.hass!.auth.external);
+    return externalConfig && externalConfig.hasExoPlayer;
   }
 
   private async _startHls(): Promise<void> {
