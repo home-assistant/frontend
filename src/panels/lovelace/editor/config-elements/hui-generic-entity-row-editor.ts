@@ -29,7 +29,6 @@ import {
 import { configElementStyle } from "./config-elements-style";
 
 const SecondaryInfoValues: { [key: string]: { domains?: Set<string> } } = {
-  none: {},
   "entity-id": {},
   "last-changed": {},
   "last-triggered": { domains: new Set(["automation", "script"]) },
@@ -109,6 +108,11 @@ export class HuiGenericEntityRowEditor extends LitElement
             .configValue=${"secondary_info"}
             @iron-select=${this._valueChanged}
           >
+            <paper-item value=""
+              >${this.hass!.localize(
+                "ui.panel.lovelace.editor.card.entities.secondary_info_values.none"
+              )}</paper-item
+            >
             ${Object.keys(SecondaryInfoValues).map((info) => {
               if (
                 !("domains" in SecondaryInfoValues[info]) ||
@@ -116,7 +120,7 @@ export class HuiGenericEntityRowEditor extends LitElement
                   SecondaryInfoValues[info].domains!.has(domain))
               ) {
                 return html`
-                  <paper-item .value=${info === "none" ? "" : info}
+                  <paper-item .value=${info}
                     >${this.hass!.localize(
                       `ui.panel.lovelace.editor.card.entities.secondary_info_values.${info}`
                     )}</paper-item
