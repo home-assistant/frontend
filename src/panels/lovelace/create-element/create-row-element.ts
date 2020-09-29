@@ -4,7 +4,7 @@ import "../entity-rows/hui-script-entity-row";
 import "../entity-rows/hui-sensor-entity-row";
 import "../entity-rows/hui-text-entity-row";
 import "../entity-rows/hui-toggle-entity-row";
-import { EntityConfig } from "../entity-rows/types";
+import { LovelaceRowConfig } from "../entity-rows/types";
 import "../special-rows/hui-attribute-row";
 import "../special-rows/hui-button-row";
 import "../special-rows/hui-call-service-row";
@@ -77,7 +77,7 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   weather: "weather",
 };
 
-export const createRowElement = (config: EntityConfig) =>
+export const createRowElement = (config: LovelaceRowConfig) =>
   createLovelaceElement(
     "row",
     config,

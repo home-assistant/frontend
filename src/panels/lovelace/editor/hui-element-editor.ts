@@ -231,7 +231,11 @@ export class HuiElementEditor extends LitElement {
     if (this._configElement && changedProperties.has("hass")) {
       this._configElement.hass = this.hass;
     }
-    if (this._configElement && changedProperties.has("lovelace")) {
+    if (
+      this._configElement &&
+      "lovelace" in this._configElement &&
+      changedProperties.has("lovelace")
+    ) {
       this._configElement.lovelace = this.lovelace;
     }
   }
@@ -307,7 +311,9 @@ export class HuiElementEditor extends LitElement {
 
         // Perform final setup
         this._configElement.hass = this.hass;
-        this._configElement.lovelace = this.lovelace;
+        if ("lovelace" in this._configElement) {
+          this._configElement.lovelace = this.lovelace;
+        }
         this._configElement.addEventListener("config-changed", (ev) =>
           this._handleUIConfigChanged(ev as UIConfigChangedEvent)
         );
