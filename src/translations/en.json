@@ -875,7 +875,7 @@
               "automation": "Reload automations",
               "script": "Reload scripts",
               "scene": "Reload scenes",
-              "person": "Reload persons",
+              "person": "Reload people",
               "zone": "Reload zones",
               "input_boolean": "Reload input booleans",
               "input_text": "Reload input texts",
@@ -1605,11 +1605,11 @@
           }
         },
         "person": {
-          "caption": "Persons",
-          "description": "Manage the persons that Home Assistant tracks",
+          "caption": "People",
+          "description": "Manage the people that Home Assistant tracks",
           "introduction": "Here you can define each person of interest in Home Assistant.",
-          "note_about_persons_configured_in_yaml": "Note: persons configured via configuration.yaml cannot be edited via the UI.",
-          "no_persons_created_yet": "Looks like you have not created any persons yet.",
+          "note_about_persons_configured_in_yaml": "Note: people configured via configuration.yaml cannot be edited via the UI.",
+          "no_persons_created_yet": "Looks like you have not created any people yet.",
           "create_person": "Create Person",
           "add_person": "Add Person",
           "confirm_delete": "Are you sure you want to delete this person?",
@@ -1632,7 +1632,7 @@
         },
         "zone": {
           "caption": "Zones",
-          "description": "Manage the zones you want to track persons in",
+          "description": "Manage the zones you want to track people in",
           "introduction": "Zones allow you to specify certain regions on earth. When a person is within a zone, the state will take the name from the zone. Zones can also be used as a trigger or condition inside automation setups.",
           "no_zones_created_yet": "Looks like you have not created any zones yet.",
           "create_zone": "Create Zone",
