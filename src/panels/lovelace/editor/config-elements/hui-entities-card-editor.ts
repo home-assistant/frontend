@@ -114,7 +114,11 @@ export class HuiEntitiesCardEditor extends LitElement
           @toggle-gui-mode=${this._toggleMode}
           @go-back=${this._goBack}
         >
-          <span slot="title">Entity Row Editor</span>
+          <span slot="title"
+            >${this.hass.localize(
+              "ui.panel.lovelace.editor.card.entities.entity_row_editor"
+            )}</span
+          >
           <hui-element-editor
             .hass=${this.hass}
             .value=${this._editRowConfig}

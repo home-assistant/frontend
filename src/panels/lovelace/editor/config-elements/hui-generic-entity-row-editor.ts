@@ -10,6 +10,7 @@ import {
 } from "lit-element";
 import { assert } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeDomain } from "../../../../common/entity/compute_domain";
 import { stateIcon } from "../../../../common/entity/state_icon";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-input";
@@ -27,15 +28,15 @@ import {
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
-const SecondaryInfoValues = [
-  "",
-  "entity-id",
-  "last-changed",
-  "last-triggered",
-  "position",
-  "tilt-position",
-  "brightness",
-];
+const SecondaryInfoValues: { [key: string]: { domains?: Set<string> } } = {
+  none: {},
+  "entity-id": {},
+  "last-changed": {},
+  "last-triggered": { domains: new Set(["automation", "script"]) },
+  position: { domains: new Set(["cover"]) },
+  "tilt-position": { domains: new Set(["cover"]) },
+  brightness: { domains: new Set(["light"]) },
+};
 
 @customElement("hui-generic-entity-row-editor")
 export class HuiGenericEntityRowEditor extends LitElement
@@ -70,14 +71,16 @@ export class HuiGenericEntityRowEditor extends LitElement
       return html``;
     }
 
+    const domain = computeDomain(this._config.entity);
+
     return html`
       <div class="card-config">
         <ha-entity-picker
+          allow-custom-entity
           .hass=${this.hass}
           .value=${this._config.entity}
-          @change=${this._valueChanged}
           .configValue=${"entity"}
-          allow-custom-entity
+          @change=${this._valueChanged}
         ></ha-entity-picker>
         <div class="side-by-side">
           <paper-input
@@ -101,13 +104,26 @@ export class HuiGenericEntityRowEditor extends LitElement
         <paper-dropdown-menu .label=${"Secondary Info"}>
           <paper-listbox
             slot="dropdown-content"
-            .selected=${this._config.secondary_info}
             attr-for-selected="value"
+            .selected=${this._config.secondary_info || "none"}
             .configValue=${"secondary_info"}
             @iron-select=${this._valueChanged}
           >
-            ${SecondaryInfoValues.map((info) => {
-              return html`<paper-item .value=${info}>${info}</paper-item> `;
+            ${Object.keys(SecondaryInfoValues).map((info) => {
+              if (
+                !("domains" in SecondaryInfoValues[info]) ||
+                ("domains" in SecondaryInfoValues[info] &&
+                  SecondaryInfoValues[info].domains!.has(domain))
+              ) {
+                return html`
+                  <paper-item .value=${info === "none" ? "" : info}
+                    >${this.hass!.localize(
+                      `ui.panel.lovelace.editor.card.entities.secondary_info_values.${info}`
+                    )}</paper-item
+                  >
+                `;
+              }
+              return "";
             })}
           </paper-listbox>
         </paper-dropdown-menu>
