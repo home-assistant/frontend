@@ -26,6 +26,7 @@ import {
   getExtendedEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import { haStyleDialog } from "../../../resources/styles";
+import { documentationUrl } from "../../util/documentation-url";
 import type { HomeAssistant } from "../../../types";
 import { PLATFORMS_WITH_SETTINGS_TAB } from "./const";
 import "./entity-registry-settings";
