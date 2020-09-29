@@ -47,7 +47,7 @@ const LAZY_LOAD_TYPES = {
   attribute: () => import("../special-rows/hui-attribute-row"),
   text: () => import("../special-rows/hui-text-row"),
 };
-export const DOMAIN_TO_ELEMENT_TYPE = {
+const DOMAIN_TO_ELEMENT_TYPE = {
   _domain_not_found: "text",
   alert: "toggle",
   automation: "toggle",
