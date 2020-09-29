@@ -1,13 +1,14 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import "@polymer/paper-tooltip/paper-tooltip";
 /* eslint-plugin-disable lit */
+import LocalizeMixin from "../../mixins/localize-mixin";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../ha-relative-time";
 import "./state-badge";
 
-class StateInfo extends PolymerElement {
+class StateInfo extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
       ${this.styleTemplate} ${this.stateBadgeTemplate} ${this.infoTemplate}
