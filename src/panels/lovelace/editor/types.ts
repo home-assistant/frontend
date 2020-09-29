@@ -14,7 +14,6 @@ import {
   LovelaceViewConfig,
   ShowViewConfig,
 } from "../../../data/lovelace";
-import { EntityId } from "../common/structs/is-entity-id";
 import { EntityConfig } from "../entity-rows/types";
 
 export interface YamlChangedEvent extends Event {
@@ -151,7 +150,7 @@ const buttonsEntitiesRowConfigStruct = object({
         image: optional(string()),
         name: optional(string()),
       }),
-      EntityId,
+      string(),
     ])
   ),
 });
