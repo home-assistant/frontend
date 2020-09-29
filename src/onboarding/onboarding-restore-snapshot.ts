@@ -47,14 +47,12 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
         >
           ${this._log
             ? this._showFullLog
-              ? html`<hassio-ansi-to-html
-                  .content=${this._filterLogs(this._log)}
-                >
+              ? html`<hassio-ansi-to-html .content=${this._log}>
                 </hassio-ansi-to-html>`
               : html`<onboarding-loading></onboarding-loading>
                   <hassio-ansi-to-html
                     class="logentry"
-                    .content=${this._lastLogEntry(this._filterLogs(this._log))}
+                    .content=${this._lastLogEntry(this._log)}
                   >
                   </hassio-ansi-to-html>`
             : ""}
