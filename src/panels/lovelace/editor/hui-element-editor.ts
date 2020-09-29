@@ -12,7 +12,6 @@ import {
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/ha-circular-progress";
@@ -25,10 +24,7 @@ import type {
 import type { HomeAssistant } from "../../../types";
 import { handleStructError } from "../common/structs/handle-errors";
 import { getCardElementClass } from "../create-element/create-card-element";
-import {
-  DOMAIN_TO_ELEMENT_TYPE,
-  getRowElementClass,
-} from "../create-element/create-row-element";
+import { getRowElementClass } from "../create-element/create-row-element";
 import type { LovelaceRowConfig } from "../entity-rows/types";
 import type {
   LovelaceCardConstructor,
@@ -36,6 +32,7 @@ import type {
   LovelaceRowConstructor,
   LovelaceRowEditor,
 } from "../types";
+import "./config-elements/hui-generic-entity-row-editor";
 import { GUISupportError } from "./gui-support-error";
 import { GUIModeChangedEvent } from "./types";
 
@@ -265,11 +262,7 @@ export class HuiElementEditor extends LitElement {
       !this.value.type &&
       "entity" in this.value
     ) {
-      const domain = computeDomain(this.value.entity);
-      type = `${
-        DOMAIN_TO_ELEMENT_TYPE![domain] ||
-        DOMAIN_TO_ELEMENT_TYPE!._domain_not_found
-      }-entity`;
+      type = "generic-row";
     } else {
       type = this.value.type!;
     }
@@ -292,7 +285,7 @@ export class HuiElementEditor extends LitElement {
 
         if (this.elementType === "card") {
           elClass = await getCardElementClass(type);
-        } else {
+        } else if (this.elementType === "row" && type !== "generic-row") {
           elClass = await getRowElementClass(type);
         }
 
@@ -300,6 +293,10 @@ export class HuiElementEditor extends LitElement {
         // Check if a GUI editor exists
         if (elClass && elClass.getConfigElement) {
           configElement = await elClass.getConfigElement();
+        } else if (this.elementType === "row" && type === "generic-row") {
+          configElement = document.createElement(
+            "hui-generic-entity-row-editor"
+          );
         } else {
           configElement = undefined;
           throw new GUISupportError(`No visual editor available for: ${type}`);

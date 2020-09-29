@@ -222,6 +222,8 @@ export class HuiEntitiesCardEditor extends LitElement
   private _goBack(): void {
     this._editRowIndex = undefined;
     this._editRowConfig = undefined;
+    this._editRowGuiModeAvailable = true;
+    this._editRowGuiMode = true;
   }
 
   private _toggleMode(): void {
@@ -244,7 +246,7 @@ export class HuiEntitiesCardEditor extends LitElement
 
     this._editRowConfig = value;
 
-    this._config = { ...this._config, entities: newConfigEntities };
+    this._config = { ...this._config!, entities: newConfigEntities };
 
     this._configEntities = processEditorEntities(this._config!.entities);
 
