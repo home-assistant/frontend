@@ -162,7 +162,11 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         );
       }
     } catch (err) {
-      alert("Something went wrong loading onboarding, try refreshing");
+      // eslint-disable-next-line no-console
+      console.error(
+        "Something went wrong loading onboarding-restore-snapshot",
+        err
+      );
     }
   }
 
