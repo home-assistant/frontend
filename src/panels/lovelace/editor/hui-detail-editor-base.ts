@@ -40,9 +40,9 @@ export class HuiDetailEditorBase extends LitElement {
         </div>
         <mwc-button
           slot="secondaryAction"
-          @click=${this._toggleMode}
-          .disabled=${!this.guiModeAvailable}
           class="gui-mode-button"
+          .disabled=${!this.guiModeAvailable}
+          @click=${this._toggleMode}
         >
           ${this.hass.localize(
             this.guiMode
