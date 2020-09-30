@@ -296,12 +296,12 @@ class DialogPersonDetail extends LitElement {
       if (
         !(await showConfirmationDialog(this, {
           text: this.hass!.localize(
-            "ui.panel.config.person.detail.confirm_delete_user"
-          ),
-          confirmText: this.hass!.localize(
-            "ui.panel.config.person.detail.delete",
+            "ui.panel.config.person.detail.confirm_delete_user",
             "name",
             this._name
+          ),
+          confirmText: this.hass!.localize(
+            "ui.panel.config.person.detail.delete"
           ),
           dismissText: this.hass!.localize("ui.common.cancel"),
         }))
