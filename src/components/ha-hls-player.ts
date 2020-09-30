@@ -103,9 +103,9 @@ class HaHLSPlayer extends LitElement {
 
   private async _startHls(): Promise<void> {
     const videoEl = this._videoEl;
-    const url = this.url;
+    const url = this.url.replace("master_playlist", "playlist");
     const useExoPlayerPromise = this._getUseExoPlayer();
-    const masterPlaylistPromise = fetch(url);
+    const masterPlaylistPromise = fetch(this.url);
 
     const hls = ((await import(
       /* webpackChunkName: "hls.js" */ "hls.js"
