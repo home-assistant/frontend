@@ -1,5 +1,6 @@
 import "@polymer/paper-input/paper-input";
 import {
+  CSSResult,
   customElement,
   html,
   LitElement,
@@ -35,7 +36,6 @@ export class HuiLovelaceEditor extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <paper-input
           .label=${this.hass.localize(
@@ -70,6 +70,10 @@ export class HuiLovelaceEditor extends LitElement {
     }
 
     fireEvent(this, "lovelace-config-changed", { config: newConfig });
+  }
+
+  static get styles(): CSSResult {
+    return configElementStyle;
   }
 }
 

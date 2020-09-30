@@ -3,8 +3,8 @@ import {
   CSSResult,
   customElement,
   html,
-  LitElement,
   internalProperty,
+  LitElement,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -13,19 +13,23 @@ import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_elemen
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-card";
 import { HomeAssistant } from "../../../types";
+import { computeCardSize } from "../common/compute-card-size";
 import { findEntities } from "../common/find-entites";
 import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-entities-toggle";
 import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
 import { createRowElement } from "../create-element/create-row-element";
-import { LovelaceRow } from "../entity-rows/types";
+import {
+  EntityConfig,
+  LovelaceRow,
+  LovelaceRowConfig,
+} from "../entity-rows/types";
 import {
   LovelaceCard,
   LovelaceCardEditor,
   LovelaceHeaderFooter,
 } from "../types";
-import { EntitiesCardConfig, EntitiesCardEntityConfig } from "./types";
-import { computeCardSize } from "../common/compute-card-size";
+import { EntitiesCardConfig } from "./types";
 
 @customElement("hui-entities-card")
 class HuiEntitiesCard extends LitElement implements LovelaceCard {
@@ -57,7 +61,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
   private _hass?: HomeAssistant;
 
-  private _configEntities?: EntitiesCardEntityConfig[];
+  private _configEntities?: LovelaceRowConfig[];
 
   private _showHeaderToggle?: boolean;
 
@@ -115,7 +119,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       // Default value is show toggle if we can at least toggle 2 entities.
       let toggleable = 0;
       for (const rowConf of entities) {
-        if (!rowConf.entity) {
+        if (!("entity" in rowConf)) {
           continue;
         }
         toggleable += Number(DOMAINS_TOGGLE.has(computeDomain(rowConf.entity)));
@@ -188,7 +192,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
                     ? html`
                         <ha-icon
                           class="icon"
-                          .icon="${this._config.icon}"
+                          .icon=${this._config.icon}
                         ></ha-icon>
                       `
                     : ""}
@@ -198,10 +202,10 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
                   ? html``
                   : html`
                       <hui-entities-toggle
-                        .hass="${this._hass}"
-                        .entities="${this._configEntities!.map(
-                          (conf) => conf.entity
-                        )}"
+                        .hass=${this._hass}
+                        .entities=${(this._configEntities!.filter(
+                          (conf) => "type" in conf
+                        ) as EntityConfig[]).map((conf) => conf.entity)}
                       ></hui-entities-toggle>
                     `}
               </div>
@@ -285,20 +289,20 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private renderEntity(entityConf: EntitiesCardEntityConfig): TemplateResult {
+  private renderEntity(entityConf: LovelaceRowConfig): TemplateResult {
     const element = createRowElement(
-      this._config!.state_color
-        ? {
+      !("type" in entityConf) && this._config!.state_color
+        ? ({
             state_color: true,
-            ...entityConf,
-          }
+            ...(entityConf as EntityConfig),
+          } as EntityConfig)
         : entityConf
     );
     if (this._hass) {
       element.hass = this._hass;
     }
 
-    return html` <div>${element}</div> `;
+    return html`<div>${element}</div>`;
   }
 }
 

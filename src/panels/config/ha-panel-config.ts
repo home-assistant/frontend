@@ -136,6 +136,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       translationKey: "ui.panel.config.users.caption",
       iconPath: mdiBadgeAccountHorizontal,
       core: true,
+      advancedOnly: true,
     },
   ],
   general: [

@@ -11,26 +11,33 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeRTL } from "../../../../common/util/compute_rtl";
-import { deepEqual } from "../../../../common/util/deep-equal";
-import "../../../../components/ha-circular-progress";
-import "../../../../components/ha-code-editor";
-import type { HaCodeEditor } from "../../../../components/ha-code-editor";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { computeRTL } from "../../../common/util/compute_rtl";
+import { deepEqual } from "../../../common/util/deep-equal";
+import "../../../components/ha-circular-progress";
+import "../../../components/ha-code-editor";
+import type { HaCodeEditor } from "../../../components/ha-code-editor";
 import type {
   LovelaceCardConfig,
   LovelaceConfig,
-} from "../../../../data/lovelace";
-import type { HomeAssistant } from "../../../../types";
-import { handleStructError } from "../../common/structs/handle-errors";
-import { getCardElementClass } from "../../create-element/create-card-element";
-import type { LovelaceRowConfig } from "../../entity-rows/types";
-import type { LovelaceCardEditor } from "../../types";
-import { GUISupportError } from "../gui-support-error";
-import type { GUIModeChangedEvent } from "../types";
+} from "../../../data/lovelace";
+import type { HomeAssistant } from "../../../types";
+import { handleStructError } from "../common/structs/handle-errors";
+import { getCardElementClass } from "../create-element/create-card-element";
+import { getRowElementClass } from "../create-element/create-row-element";
+import type { LovelaceRowConfig } from "../entity-rows/types";
+import type {
+  LovelaceCardConstructor,
+  LovelaceCardEditor,
+  LovelaceRowConstructor,
+  LovelaceRowEditor,
+} from "../types";
+import "./config-elements/hui-generic-entity-row-editor";
+import { GUISupportError } from "./gui-support-error";
+import { GUIModeChangedEvent } from "./types";
 
 export interface ConfigChangedEvent {
-  config: LovelaceCardConfig;
+  config: LovelaceCardConfig | LovelaceRowConfig;
   error?: string;
   guiModeAvailable?: boolean;
 }
@@ -47,21 +54,27 @@ declare global {
 
 export interface UIConfigChangedEvent extends Event {
   detail: {
-    config: LovelaceCardConfig;
+    config: LovelaceCardConfig | LovelaceRowConfig;
   };
 }
 
-@customElement("hui-card-editor")
-export class HuiCardEditor extends LitElement {
+const GENERIC_ROW_TYPE = "generic-row";
+
+@customElement("hui-element-editor")
+export class HuiElementEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public lovelace?: LovelaceConfig;
 
+  @property() public elementType: "row" | "card" = "card";
+
   @internalProperty() private _yaml?: string;
 
-  @internalProperty() private _config?: LovelaceCardConfig;
+  @internalProperty() private _config?: LovelaceCardConfig | LovelaceRowConfig;
 
-  @internalProperty() private _configElement?: LovelaceCardEditor;
+  @internalProperty() private _configElement?:
+    | LovelaceCardEditor
+    | LovelaceRowEditor;
 
   @internalProperty() private _configElType?: string;
 
@@ -95,11 +108,11 @@ export class HuiCardEditor extends LitElement {
     this._setConfig();
   }
 
-  public get value(): LovelaceCardConfig | undefined {
+  public get value(): LovelaceCardConfig | LovelaceRowConfig | undefined {
     return this._config;
   }
 
-  public set value(config: LovelaceCardConfig | undefined) {
+  public set value(config: LovelaceCardConfig | LovelaceRowConfig | undefined) {
     if (this._config && deepEqual(config, this._config)) {
       return;
     }
@@ -220,7 +233,11 @@ export class HuiCardEditor extends LitElement {
     if (this._configElement && changedProperties.has("hass")) {
       this._configElement.hass = this.hass;
     }
-    if (this._configElement && changedProperties.has("lovelace")) {
+    if (
+      this._configElement &&
+      "lovelace" in this._configElement &&
+      changedProperties.has("lovelace")
+    ) {
       this._configElement.lovelace = this.lovelace;
     }
   }
@@ -244,37 +261,61 @@ export class HuiCardEditor extends LitElement {
       return;
     }
 
-    const cardType = this.value.type;
+    let type: string;
+
+    if (
+      this.elementType === "row" &&
+      !this.value.type &&
+      "entity" in this.value
+    ) {
+      type = GENERIC_ROW_TYPE;
+    } else {
+      type = this.value.type!;
+    }
+
     let configElement = this._configElement;
     try {
       this._error = undefined;
       this._warnings = undefined;
 
-      if (this._configElType !== cardType) {
-        // If the card type has changed, we need to load a new GUI editor
-        if (!this.value.type) {
-          throw new Error("No card type defined");
+      if (this._configElType !== type) {
+        // If the type has changed, we need to load a new GUI editor
+        if (!type) {
+          throw new Error(`No ${this.elementType} type defined`);
         }
 
-        const elClass = await getCardElementClass(cardType);
+        let elClass:
+          | LovelaceCardConstructor
+          | LovelaceRowConstructor
+          | undefined;
+
+        if (this.elementType === "card") {
+          elClass = await getCardElementClass(type);
+        } else if (this.elementType === "row" && type !== GENERIC_ROW_TYPE) {
+          elClass = await getRowElementClass(type);
+        }
 
         this._loading = true;
         // Check if a GUI editor exists
         if (elClass && elClass.getConfigElement) {
           configElement = await elClass.getConfigElement();
+        } else if (this.elementType === "row" && type === GENERIC_ROW_TYPE) {
+          configElement = document.createElement(
+            "hui-generic-entity-row-editor"
+          );
         } else {
           configElement = undefined;
-          throw new GUISupportError(
-            `No visual editor available for: ${cardType}`
-          );
+          throw new GUISupportError(`No visual editor available for: ${type}`);
         }
 
         this._configElement = configElement;
-        this._configElType = cardType;
+        this._configElType = type;
 
         // Perform final setup
         this._configElement.hass = this.hass;
-        this._configElement.lovelace = this.lovelace;
+        if ("lovelace" in this._configElement) {
+          this._configElement.lovelace = this.lovelace;
+        }
         this._configElement.addEventListener("config-changed", (ev) =>
           this._handleUIConfigChanged(ev as UIConfigChangedEvent)
         );
@@ -282,6 +323,7 @@ export class HuiCardEditor extends LitElement {
 
       // Setup GUI editor and check that it can handle the current config
       try {
+        // @ts-ignore
         this._configElement!.setConfig(this.value);
       } catch (err) {
         throw new GUISupportError(
@@ -340,6 +382,6 @@ export class HuiCardEditor extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-card-editor": HuiCardEditor;
+    "hui-element-editor": HuiElementEditor;
   }
 }

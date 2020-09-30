@@ -1656,7 +1656,10 @@
             "device_tracker_pick": "Pick device to track",
             "delete": "Delete",
             "create": "Create",
-            "update": "Update"
+            "update": "Update",
+            "confirm_delete_user": "Are you sure you want to delete the user account for {name}? You can still track the user, but the person will no longer be able to login.",
+            "admin": "[%key:ui::panel::config::users::editor::admin%]",
+            "allow_login": "Allow person to login"
           }
         },
         "zone": {
@@ -1676,7 +1679,7 @@
             "new_zone": "New Zone",
             "name": "Name",
             "icon": "Icon",
-            "icon_error_msg": "Icon should be in the format prefix:iconname, for example: mdi:home",
+            "icon_error_msg": "Icon should be in the format ''prefix:iconname'', for example: ''mdi:home''",
             "radius": "Radius",
             "latitude": "Latitude",
             "longitude": "Longitude",
@@ -2328,6 +2331,16 @@
               "description": "The Entities card is the most common type of card. It groups items together into lists.",
               "special_row": "special row",
               "edit_special_row": "Edit row using the code editor",
+              "entity_row_editor": "Entity Row Editor",
+              "secondary_info_values": {
+                "none": "No Secondary Info",
+                "entity-id": "Entity ID",
+                "last-changed": "Last Changed",
+                "last-triggered": "Last Triggered",
+                "position": "Position",
+                "tilt-position": "Tilt Position",
+                "brightness": "Brightness"
+              },
               "entity_row": {
                 "divider": "Divider",
                 "call-service": "Call Service",

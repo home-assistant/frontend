@@ -31,9 +31,7 @@ interface DeprecatedIcon {
   };
 }
 
-const mdiDeprecatedIcons: DeprecatedIcon = {
-  scooter: { removeIn: "117", newName: "human-scooter" },
-};
+const mdiDeprecatedIcons: DeprecatedIcon = {};
 
 const chunks: Chunks = {};
 
