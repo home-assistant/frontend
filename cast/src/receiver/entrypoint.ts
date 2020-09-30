@@ -81,6 +81,7 @@ castContext.addCustomMessageListener(
   CAST_NS,
   // @ts-ignore
   (ev: ReceivedMessage<HassMessage>) => {
+    // We received a show Lovelace command, stop media from playing, hide media player and show Lovelace controller
     if (
       playerManager.getPlayerState() !==
       cast.framework.messages.PlayerState.IDLE
@@ -100,6 +101,7 @@ const playerManager = castContext.getPlayerManager();
 playerManager.setMessageInterceptor(
   cast.framework.messages.MessageType.LOAD,
   (loadRequestData) => {
+    // We received a play media command, hide Lovelace and show media player
     showMediaPlayer();
     const media = loadRequestData.media;
     // Special handling if it came from Google Assistant
@@ -125,6 +127,7 @@ playerManager.addEventListener(
       event.mediaStatus?.idleReason !==
         cast.framework.messages.IdleReason.INTERRUPTED
     ) {
+      // media finished or stopped, return to default Lovelace
       showLovelaceController();
     }
   }
