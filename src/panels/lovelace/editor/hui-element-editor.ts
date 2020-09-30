@@ -58,6 +58,8 @@ export interface UIConfigChangedEvent extends Event {
   };
 }
 
+const GENERIC_ROW_TYPE = "generic-row";
+
 @customElement("hui-element-editor")
 export class HuiElementEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -266,7 +268,7 @@ export class HuiElementEditor extends LitElement {
       !this.value.type &&
       "entity" in this.value
     ) {
-      type = "generic-row";
+      type = GENERIC_ROW_TYPE;
     } else {
       type = this.value.type!;
     }
@@ -289,7 +291,7 @@ export class HuiElementEditor extends LitElement {
 
         if (this.elementType === "card") {
           elClass = await getCardElementClass(type);
-        } else if (this.elementType === "row" && type !== "generic-row") {
+        } else if (this.elementType === "row" && type !== GENERIC_ROW_TYPE) {
           elClass = await getRowElementClass(type);
         }
 
@@ -297,7 +299,7 @@ export class HuiElementEditor extends LitElement {
         // Check if a GUI editor exists
         if (elClass && elClass.getConfigElement) {
           configElement = await elClass.getConfigElement();
-        } else if (this.elementType === "row" && type === "generic-row") {
+        } else if (this.elementType === "row" && type === GENERIC_ROW_TYPE) {
           configElement = document.createElement(
             "hui-generic-entity-row-editor"
           );
