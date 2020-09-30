@@ -1040,7 +1040,16 @@
                                     "before": "Antes de",
                                     "label": "Hora",
                                     "type_input": "Valor de un ayudante de fecha/hora",
-                                    "type_value": "Horario fijo"
+                                    "type_value": "Horario fijo",
+                                    "weekdays": {
+                                        "fri": "Viernes",
+                                        "mon": "Lunes",
+                                        "sat": "Sábado",
+                                        "sun": "Domingo",
+                                        "thu": "Jueves",
+                                        "tue": "Martes",
+                                        "wed": "Miércoles"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Entidad con la ubicación",
@@ -2474,8 +2483,15 @@
                             "name": "Botón"
                         },
                         "calendar": {
+                            "calendar_entities": "Entidades de calendario",
                             "description": "La tarjeta Calendario muestra un calendario que incluye vistas de día, semana y lista",
-                            "name": "Calendario"
+                            "inital_view": "Vista inicial",
+                            "name": "Calendario",
+                            "views": {
+                                "dayGridDay": "Día",
+                                "dayGridMonth": "Mes",
+                                "listWeek": "Lista"
+                            }
                         },
                         "conditional": {
                             "card": "Tarjeta",

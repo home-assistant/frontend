@@ -1040,7 +1040,16 @@
                                     "before": "早于",
                                     "label": "时间",
                                     "type_input": "“日期/时间”辅助元素的值",
-                                    "type_value": "固定时间"
+                                    "type_value": "固定时间",
+                                    "weekdays": {
+                                        "fri": "星期五",
+                                        "mon": "星期一",
+                                        "sat": "星期六",
+                                        "sun": "星期日",
+                                        "thu": "星期四",
+                                        "tue": "星期二",
+                                        "wed": "星期三"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "位置追踪设备",
@@ -2474,8 +2483,15 @@
                             "name": "按钮"
                         },
                         "calendar": {
+                            "calendar_entities": "日历实体",
                             "description": "“日历”卡片显示一个日历，其包括日视图、周视图和列表视图。",
-                            "name": "日历"
+                            "inital_view": "初始视图",
+                            "name": "日历",
+                            "views": {
+                                "dayGridDay": "日",
+                                "dayGridMonth": "月",
+                                "listWeek": "列表"
+                            }
                         },
                         "conditional": {
                             "card": "卡片",

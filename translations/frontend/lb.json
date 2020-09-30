@@ -19,6 +19,7 @@
         "logbook": "Journal",
         "mailbox": "Bréifkëscht",
         "map": "Kaart",
+        "media_browser": "Medie navigateur",
         "profile": "Profil",
         "shopping_list": "Akafslëscht",
         "states": "Iwwersiicht"
@@ -573,6 +574,7 @@
                 "entries_not_found": "Keng Logbicher Entrée fonnt"
             },
             "media-browser": {
+                "audio_not_supported": "Däin Browser ënnerstëtzt dësen Audio Element net.",
                 "choose_player": "Ofspiller auswielen",
                 "choose-source": "Quell auswielen",
                 "class": {
@@ -581,6 +583,7 @@
                     "artist": "Artist",
                     "channel": "Kanal",
                     "composer": "Kompositeur",
+                    "contributing_artist": "Bäidroenden Artist",
                     "directory": "Bibliothéik",
                     "episode": "Episode",
                     "game": "Spill",
@@ -604,6 +607,10 @@
                     "server": "Server"
                 },
                 "documentation": "Dokumentatioun",
+                "learn_adding_local_media": "Méi iwwert dobäisetze vun Medie an der {documentation} liesen.",
+                "local_media_files": "Placéier deng Video, Audio an Biller Dateien am Medie Dossier fir se kënnen duerch ze sichen an am Browser oder ënnerstëtzte Medie Spiller of ze spillen.",
+                "media_browsing_error": "Feeler beim duerchsiche vun de Medie",
+                "media_not_supported": "De Medie Spiller vum Browser ënnerstëtzt dëse typ vun Medie net",
                 "media_player": "Medie Spiller",
                 "media-player-browser": "Media Player Browser",
                 "no_items": "Keng Elementer",
@@ -614,6 +621,7 @@
                 "play": "Spill",
                 "play-media": "Media ofspillen",
                 "setup_local_help": "Kuck Dokumentatioun iwwert d'ariichten vun lokale Medien.",
+                "video_not_supported": "Däin Browser ënnerstëtzt dëse Video Element net.",
                 "web-browser": "Web Navigateur"
             },
             "picture-upload": {
@@ -656,6 +664,7 @@
                 "update": "Aktualiséieren"
             },
             "domain_toggler": {
+                "reset_entities": "Entitéite resetten",
                 "title": "Domäner ëmschalten"
             },
             "entity_registry": {
@@ -1031,7 +1040,16 @@
                                     "before": "Virdrun",
                                     "label": "Zäit",
                                     "type_input": "Wäert vun engem Datum/Zäit Helper",
-                                    "type_value": "Fix Zäit"
+                                    "type_value": "Fix Zäit",
+                                    "weekdays": {
+                                        "fri": "Freideg",
+                                        "mon": "Méindeg",
+                                        "sat": "Samschdeg",
+                                        "sun": "Sonndeg",
+                                        "thu": "Donneschdeg",
+                                        "tue": "Dënschdeg",
+                                        "wed": "Mëttwoch"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Entitéit mam Standuert",
@@ -1591,6 +1609,8 @@
                         "no_device": "Entitéiten ouni Apparater",
                         "no_devices": "Dës Integratioun huet keng Apparater.",
                         "options": "Optiounen",
+                        "reload": "Nei lueden",
+                        "reload_confirm": "Integratioun gouf frësch gelueden",
                         "rename": "Ëmbenennen",
                         "restart_confirm": "Start Home Assistant nei fir dës Integratioun ze läschen",
                         "settings_button": "Astellungen ännere fir {integration}",
@@ -1966,20 +1986,34 @@
                     "section": {
                         "reloading": {
                             "automation": "Automatisme nei lueden",
+                            "command_line": "Kommando Zeilen Entitéite frësch lueden",
                             "core": "Standuert and Personnalisatioun néi lueden",
+                            "filesize": "Dateigréisst Entitéiten frësch lueden",
+                            "filter": "Filter Entitéite frësch lueden",
+                            "generic": "Generesch IP Kamera Entitéite frësch lueden",
+                            "generic_thermostat": "Generesch Thermostat Entitéite frësch lueden",
                             "group": "Gruppe nei lueden",
                             "heading": "YAML Konfiguratioun frësch lueden",
+                            "history_stats": "Verlaf Statiskik Entitéite frësch lueden",
+                            "homekit": "Homekit frësch lueden",
                             "input_number": "Agab Zuelen frësch lueden",
                             "input_select": "Agab Auswiel frësch lueden",
                             "input_text": "Agab Text frësch lueden",
                             "introduction": "E puer Deeler vum Home Assistant kënne frësch geluede ginn ouni datt een Neistart néideg ass. Klick op nei luede fir di aktuell Konfiguratioun z'entlueden an di nei Konfiguratioun ze lueden.",
+                            "min_max": "Min/Max Entitéite frësch lueden",
                             "mqtt": "MQTT Entitéiten frësch lueden",
                             "person": "Persoune frësch lueden",
+                            "ping": "Ping Binär Sensor Entitéite frësch lueden",
                             "reload": "{domain} frësh lueden",
+                            "rest": "Rest Entitéite a Notifikatioun's Servicer frësch lueden",
+                            "rpi_gpio": "Raspberry Pi GPIO entitéite frësch lueden",
                             "scene": "Szeene néi lueden",
                             "script": "Skripte nei lueden",
                             "smtp": "SMTP Notifikatioun's Servicer frësh lueden",
+                            "statistics": "Statiskik Entitéite frësch lueden",
                             "telegram": "Telegram Notifikatioun's Servicer frësch lueden",
+                            "template": "Modell Entitéite frësch lueden",
+                            "trend": "Trend Entitéite frësch lueden",
                             "zone": "Zone frësch lueden"
                         },
                         "server_management": {
@@ -2001,6 +2035,7 @@
                 },
                 "tags": {
                     "add_tag": "Tag dobäisetzen",
+                    "automation_title": "Tag {name} gouf gescannt",
                     "caption": "Tags",
                     "description": "Tags verwalten",
                     "detail": {
@@ -2013,10 +2048,14 @@
                         "tag_id": "Tag id",
                         "update": "Aktualiséieren"
                     },
+                    "edit": "Änneren",
                     "headers": {
-                        "last_scanned": "Läscht duerchsicht"
+                        "last_scanned": "Läscht duerchsicht",
+                        "name": "Numm"
                     },
-                    "no_tags": "Keng Tags"
+                    "never_scanned": "Niemols gescannt",
+                    "no_tags": "Keng Tags",
+                    "write": "Schréiwen"
                 },
                 "users": {
                     "add_user": {
@@ -2042,7 +2081,9 @@
                         "group": "Gruppe",
                         "id": "ID",
                         "name": "Numm",
+                        "new_password": "Neit Passwuert",
                         "owner": "Proprietär",
+                        "password_changed": "Passwuert erfollegräich geännert",
                         "system_generated": "Vum System generéiert",
                         "system_generated_users_not_editable": "Net méiglech System generéiert Benotzer z'aktualiséieren.",
                         "system_generated_users_not_removable": "Ka keng System generéiert Benotzer läschen.",
@@ -2429,8 +2470,15 @@
                             "name": "Knäppchen"
                         },
                         "calendar": {
+                            "calendar_entities": "Kalenner Entitéiten",
                             "description": "Kalenner Kaart weist ee Kalenner mat Deeg, Wochen an Lëschten un",
-                            "name": "Kalenner"
+                            "inital_view": "Initial Vue",
+                            "name": "Kalenner",
+                            "views": {
+                                "dayGridDay": "Dag",
+                                "dayGridMonth": "Mount",
+                                "listWeek": "Lëscht"
+                            }
                         },
                         "conditional": {
                             "card": "Kaart",
@@ -2449,11 +2497,13 @@
                         },
                         "entities": {
                             "description": "D'Entitéite Kaart ass déi am meeschten allgemengen Zort Kaart. Si gruppéiert Entitéite gemeinsam a Lëschten.",
+                            "edit_special_row": "Änner Zeil mam Code Editor",
                             "entity_row": {
                                 "attribute": "Attribut",
                                 "button": "Knäppchen",
                                 "buttons": "Knäppercher",
                                 "call-service": "Service ruffen",
+                                "cast": "Cast",
                                 "conditional": "Conditionnel",
                                 "divider": "Deeler",
                                 "section": "Sektioun",
@@ -2508,6 +2558,7 @@
                             "show_name": "Numm uweisen?",
                             "show_state": "Zoustand uweisen?",
                             "state": "Zoustand",
+                            "state_color": "Ikone baséierend um Zoustand fierwen?",
                             "tap_action": "Aktioun beim tippen",
                             "theme": "Thema",
                             "title": "Titel",

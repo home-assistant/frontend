@@ -578,9 +578,9 @@
                 "choose_player": "Velg spiller",
                 "choose-source": "Velg kilde",
                 "class": {
-                    "album": "",
-                    "app": "",
-                    "artist": "",
+                    "album": "Album",
+                    "app": "App",
+                    "artist": "Artist",
                     "channel": "Kanal",
                     "composer": "Komponist",
                     "contributing_artist": "Medvirkende artist",
@@ -592,12 +592,12 @@
                     "movie": "Film",
                     "music": "Musikk",
                     "playlist": "Spilleliste",
-                    "podcast": "",
+                    "podcast": "Podcast",
                     "season": "Sesong",
                     "track": "Spor",
                     "tv_show": "TV Serie",
-                    "url": "",
-                    "video": ""
+                    "url": "Url",
+                    "video": "Video"
                 },
                 "content-type": {
                     "album": "Album",
@@ -1040,7 +1040,16 @@
                                     "before": "Før",
                                     "label": "Tid",
                                     "type_input": "Verdien til en dato/tid hjelper",
-                                    "type_value": "Bestemt tid"
+                                    "type_value": "Bestemt tid",
+                                    "weekdays": {
+                                        "fri": "Fredag",
+                                        "mon": "Mandag",
+                                        "sat": "Lørdag",
+                                        "sun": "Søndag",
+                                        "thu": "Torsdag",
+                                        "tue": "Tirsdag",
+                                        "wed": "Onsdag"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Entitet med posisjon",
@@ -2474,8 +2483,15 @@
                             "name": "Knapp"
                         },
                         "calendar": {
+                            "calendar_entities": "Kalender entiteter",
                             "description": "Kalenderkortet viser en kalender som inkluderer dag, uke og listevisninger",
-                            "name": "Kalender"
+                            "inital_view": "Første visning",
+                            "name": "Kalender",
+                            "views": {
+                                "dayGridDay": "Dag",
+                                "dayGridMonth": "Måned",
+                                "listWeek": "Liste"
+                            }
                         },
                         "conditional": {
                             "card": "Kort",

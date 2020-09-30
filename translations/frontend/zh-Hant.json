@@ -1040,7 +1040,16 @@
                                     "before": "在...之前",
                                     "label": "時間",
                                     "type_input": "日期/時間協助數值",
-                                    "type_value": "固定時間"
+                                    "type_value": "固定時間",
+                                    "weekdays": {
+                                        "fri": "星期五",
+                                        "mon": "星期一",
+                                        "sat": "星期六",
+                                        "sun": "星期天",
+                                        "thu": "星期四",
+                                        "tue": "星期二",
+                                        "wed": "星期三"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "區域實體",
@@ -2474,8 +2483,15 @@
                             "name": "按鈕面板"
                         },
                         "calendar": {
+                            "calendar_entities": "日曆實體",
                             "description": "行事曆面板可顯示包含日、週及列表的行事曆",
-                            "name": "行事曆"
+                            "inital_view": "起始面板",
+                            "name": "行事曆",
+                            "views": {
+                                "dayGridDay": "日",
+                                "dayGridMonth": "週",
+                                "listWeek": "列表"
+                            }
                         },
                         "conditional": {
                             "card": "面板",
