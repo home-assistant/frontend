@@ -125,12 +125,15 @@ class HaHLSPlayer extends LitElement {
     }
 
     this._useExoPlayer = await useExoPlayerPromise;
+    let hevcRegexp: RegExp;
+    let masterPlaylist: string;
     if (this._useExoPlayer) {
-      const hevcRegexp = /CODECS=".*?((hev1)|(hvc1))\..*?"/;
-      const masterPlaylist = await (await masterPlaylistPromise).text();
-      if (hevcRegexp.test(masterPlaylist)) {
-        this._renderHLSExoPlayer(url);
-      }
+      hevcRegexp = /CODECS=".*?((hev1)|(hvc1))\..*?"/;
+      masterPlaylist = await (await masterPlaylistPromise).text();
+    }
+    // @ts-ignore
+    if (this._useExoPlayer && hevcRegexp.test(masterPlaylist)) {
+      this._renderHLSExoPlayer(url);
     } else if (hls.isSupported()) {
       this._renderHLSPolyfill(videoEl, hls, url);
     } else {
