@@ -22,7 +22,7 @@ import {
   Person,
   updatePerson,
 } from "../../../data/person";
-import { fetchUsers, User, updateUser } from "../../../data/user";
+import { fetchUsers, User } from "../../../data/user";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage";
