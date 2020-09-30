@@ -82,6 +82,8 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   @query(".content") private _content?: HTMLDivElement;
 
+  private _headerOffsetHeight = 0;
+
   private _resizeObserver?: ResizeObserver;
 
   public connectedCallback(): void {
@@ -308,7 +310,15 @@ export class HaMediaPlayerBrowse extends LitElement {
                               `
                             : ""}
                         </div>
-                        <div class="title">${child.title}</div>
+                        <div class="title">
+                          ${child.title}
+                          <paper-tooltip
+                            fitToVisibleBounds
+                            position="top"
+                            offset="4"
+                            >${child.title}</paper-tooltip
+                          >
+                        </div>
                         <div class="type">
                           ${this.hass.localize(
                             `ui.components.media-browser.content-type.${child.media_content_type}`
@@ -367,12 +377,10 @@ export class HaMediaPlayerBrowse extends LitElement {
               `
           : html`
               <div class="container">
-                ${this.hass.localize("ui.components.media-browser.no_items")}<br />
-
-                ${currentItem.media_content_id.startsWith(
-                  "media-source://media_source/local_source"
-                )
-                  ? html`${this.hass.localize(
+                ${this.hass.localize("ui.components.media-browser.no_items")}
+                ${currentItem.media_content_id ===
+                "media-source://media_source/local/."
+                  ? html`<br />${this.hass.localize(
                         "ui.components.media-browser.learn_adding_local_media",
                         "documentation",
                         html`<a
@@ -454,8 +462,9 @@ export class HaMediaPlayerBrowse extends LitElement {
     if (!header || !content) {
       return;
     }
-    content.style.marginTop = `${header.offsetHeight}px`;
-    content.style.maxHeight = `calc(var(--media-browser-max-height, 100%) - ${header.offsetHeight}px)`;
+    this._headerOffsetHeight = header.offsetHeight;
+    content.style.marginTop = `${this._headerOffsetHeight}px`;
+    content.style.maxHeight = `calc(var(--media-browser-max-height, 100%) - ${this._headerOffsetHeight}px)`;
   }
 
   private _animateHeaderHeight() {
@@ -550,12 +559,9 @@ export class HaMediaPlayerBrowse extends LitElement {
   @eventOptions({ passive: true })
   private _scroll(ev: Event): void {
     const content = ev.currentTarget as HTMLDivElement;
-    if (!this._scrolled && content.scrollTop > this._header!.offsetHeight) {
+    if (!this._scrolled && content.scrollTop > this._headerOffsetHeight) {
       this._scrolled = true;
-    } else if (
-      this._scrolled &&
-      content.scrollTop < this._header!.offsetHeight
-    ) {
+    } else if (this._scrolled && content.scrollTop < this._headerOffsetHeight) {
       this._scrolled = false;
     }
   }
@@ -623,7 +629,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           --mdc-theme-primary: var(--primary-color);
           display: flex;
           justify-content: center;
-          margin-top: 40px;
+          margin: 40px;
         }
 
         .container {
