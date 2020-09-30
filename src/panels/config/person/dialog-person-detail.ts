@@ -22,6 +22,22 @@ import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { PersonDetailDialogParams } from "./show-dialog-person-detail";
+import "../../../components/ha-formfield";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
+import {
+  User,
+  SYSTEM_GROUP_ID_ADMIN,
+  deleteUser,
+  SYSTEM_GROUP_ID_USER,
+  updateUser,
+} from "../../../data/user";
+import {
+  showAlertDialog,
+  showPromptDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
+import { adminChangePassword } from "../../../data/auth";
+import { showAddUserDialog } from "../users/show-dialog-add-user";
 
 const includeDomains = ["device_tracker"];
 
@@ -38,6 +54,10 @@ class DialogPersonDetail extends LitElement {
   @internalProperty() private _name!: string;
 
   @internalProperty() private _userId?: string;
+
+  @internalProperty() private _user?: User;
+
+  @internalProperty() private _isAdmin?: boolean;
 
   @internalProperty() private _deviceTrackers!: string[];
 
@@ -64,9 +84,15 @@ class DialogPersonDetail extends LitElement {
       this._userId = this._params.entry.user_id || undefined;
       this._deviceTrackers = this._params.entry.device_trackers || [];
       this._picture = this._params.entry.picture || null;
+      this._user = this._userId
+        ? this._params.users.find((user) => user.id === this._userId)
+        : undefined;
+      this._isAdmin = this._user?.group_ids.includes(SYSTEM_GROUP_ID_ADMIN);
     } else {
       this._name = "";
       this._userId = undefined;
+      this._user = undefined;
+      this._isAdmin = undefined;
       this._deviceTrackers = [];
       this._picture = null;
     }
@@ -115,15 +141,37 @@ class DialogPersonDetail extends LitElement {
               @change=${this._pictureChanged}
             ></ha-picture-upload>
 
-            <ha-user-picker
-              label="${this.hass!.localize(
-                "ui.panel.config.person.detail.linked_user"
-              )}"
-              .hass=${this.hass}
-              .value=${this._userId}
-              .users=${this._params.users}
-              @value-changed=${this._userChanged}
-            ></ha-user-picker>
+            <ha-formfield
+              .label=${this.hass!.localize(
+                "ui.panel.config.person.detail.allow_login"
+              )}
+            >
+              <ha-switch
+                @change=${this._allowLoginChanged}
+                .disabled=${this._user &&
+                (this._user.id === this.hass.user?.id ||
+                  this._user.system_generated ||
+                  this._user.is_owner)}
+                .checked=${this._userId}
+              ></ha-switch>
+            </ha-formfield>
+
+            ${this._user
+              ? html`<ha-formfield
+                  .label=${this.hass.localize(
+                    "ui.panel.config.person.detail.admin"
+                  )}
+                  .dir=${computeRTLDirection(this.hass)}
+                >
+                  <ha-switch
+                    .disabled=${this._user.system_generated ||
+                    this._user.is_owner}
+                    .checked=${this._isAdmin}
+                    @change=${this._adminChanged}
+                  >
+                  </ha-switch>
+                </ha-formfield>`
+              : ""}
             ${this._deviceTrackersAvailable(this.hass)
               ? html`
                   <p>
@@ -185,10 +233,21 @@ class DialogPersonDetail extends LitElement {
                 slot="secondaryAction"
                 class="warning"
                 @click="${this._deleteEntry}"
-                .disabled=${this._submitting}
+                .disabled=${(this._user && this._user.is_owner) ||
+                this._submitting}
               >
                 ${this.hass!.localize("ui.panel.config.person.detail.delete")}
               </mwc-button>
+              ${this._user && this.hass.user?.is_owner
+                ? html`<mwc-button
+                    slot="secondaryAction"
+                    @click=${this._changePassword}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.users.editor.change_password"
+                    )}
+                  </mwc-button>`
+                : ""}
             `
           : html``}
         <mwc-button
@@ -213,9 +272,47 @@ class DialogPersonDetail extends LitElement {
     this._name = ev.detail.value;
   }
 
-  private _userChanged(ev: PolymerChangedEvent<string>) {
-    this._error = undefined;
-    this._userId = ev.detail.value;
+  private async _adminChanged(ev): Promise<void> {
+    this._isAdmin = ev.target.checked;
+  }
+
+  private async _allowLoginChanged(ev): Promise<void> {
+    const target = ev.target;
+    if (target.checked) {
+      target.checked = false;
+      showAddUserDialog(this, {
+        userAddedCallback: async (user?: User) => {
+          if (user) {
+            target.checked = true;
+            this._user = user;
+            this._userId = user.id;
+            this._isAdmin = user.group_ids.includes(SYSTEM_GROUP_ID_ADMIN);
+            this._params?.refreshUsers();
+          }
+        },
+        name: this._name,
+      });
+    } else if (this._userId) {
+      if (
+        !(await showConfirmationDialog(this, {
+          text: this.hass!.localize(
+            "ui.panel.config.person.detail.confirm_delete_user",
+            "name",
+            this._name
+          ),
+          confirmText: this.hass!.localize(
+            "ui.panel.config.person.detail.delete"
+          ),
+          dismissText: this.hass!.localize("ui.common.cancel"),
+        }))
+      ) {
+        target.checked = true;
+        return;
+      }
+      await deleteUser(this.hass, this._userId);
+      this._params?.refreshUsers();
+      this._userId = undefined;
+    }
   }
 
   private _deviceTrackersChanged(ev: PolymerChangedEvent<string[]>) {
@@ -228,9 +325,70 @@ class DialogPersonDetail extends LitElement {
     this._picture = (ev.target as HaPictureUpload).value;
   }
 
+  private async _changePassword() {
+    if (!this._user) {
+      return;
+    }
+    const credential = this._user.credentials.find(
+      (cred) => cred.type === "homeassistant"
+    );
+    if (!credential) {
+      showAlertDialog(this, {
+        title: "No Home Assistant credentials found.",
+      });
+      return;
+    }
+    const newPassword = await showPromptDialog(this, {
+      title: this.hass.localize("ui.panel.config.users.editor.change_password"),
+      inputType: "password",
+      inputLabel: this.hass.localize(
+        "ui.panel.config.users.editor.new_password"
+      ),
+    });
+    if (!newPassword) {
+      return;
+    }
+    const confirmPassword = await showPromptDialog(this, {
+      title: this.hass.localize("ui.panel.config.users.editor.change_password"),
+      inputType: "password",
+      inputLabel: this.hass.localize(
+        "ui.panel.config.users.add_user.password_confirm"
+      ),
+    });
+    if (!confirmPassword) {
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.users.add_user.password_not_match"
+        ),
+      });
+      return;
+    }
+    await adminChangePassword(this.hass, this._user.id, newPassword);
+    showAlertDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.users.editor.password_changed"
+      ),
+    });
+  }
+
   private async _updateEntry() {
     this._submitting = true;
     try {
+      if (
+        (this._userId && this._name !== this._params!.entry?.name) ||
+        this._isAdmin !== this._user?.group_ids.includes(SYSTEM_GROUP_ID_ADMIN)
+      ) {
+        await updateUser(this.hass!, this._userId!, {
+          name: this._name.trim(),
+          group_ids: [
+            this._isAdmin ? SYSTEM_GROUP_ID_ADMIN : SYSTEM_GROUP_ID_USER,
+          ],
+        });
+        this._params?.refreshUsers();
+      }
       const values: PersonMutableParams = {
         name: this._name.trim(),
         device_trackers: this._deviceTrackers,
@@ -254,6 +412,9 @@ class DialogPersonDetail extends LitElement {
     this._submitting = true;
     try {
       if (await this._params!.removeEntry()) {
+        if (this._params!.entry!.user_id) {
+          deleteUser(this.hass, this._params!.entry!.user_id);
+        }
         this._params = undefined;
       }
     } finally {
@@ -274,6 +435,10 @@ class DialogPersonDetail extends LitElement {
         }
         ha-picture-upload {
           display: block;
+        }
+        ha-formfield {
+          display: block;
+          padding: 16px 0;
         }
         ha-user-picker {
           margin-top: 16px;
