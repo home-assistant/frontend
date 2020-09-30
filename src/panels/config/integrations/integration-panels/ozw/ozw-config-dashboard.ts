@@ -29,6 +29,7 @@ import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
 import "../../../../../layouts/hass-error-screen";
+import "../../../../../layouts/hass-loading-screen";
 
 export const ozwTabs: PageNavigation[] = [];
 
@@ -44,16 +45,18 @@ class OZWConfigDashboard extends LitElement {
 
   @property() public configEntryId?: string;
 
-  @internalProperty() private _instances: OZWInstance[] = [];
-
-  @internalProperty() private _firstFetch = false;
+  @internalProperty() private _instances?: OZWInstance[];
 
   protected firstUpdated() {
     this._fetchData();
   }
 
   protected render(): TemplateResult {
-    if (this._instances.length === 0 && this._firstFetch) {
+    if (!this._instances) {
+      return html`<hass-loading-screen></hass-loading-screen>`;
+    }
+
+    if (this._instances && this._instances.length === 0) {
       return html`<hass-error-screen
         .error="${this.hass.localize(
           "ui.panel.config.ozw.select_instance.none_found"
@@ -147,7 +150,6 @@ class OZWConfigDashboard extends LitElement {
 
   private async _fetchData() {
     this._instances = await fetchOZWInstances(this.hass!);
-    this._firstFetch = true;
     if (this._instances.length === 1) {
       navigate(
         this,
