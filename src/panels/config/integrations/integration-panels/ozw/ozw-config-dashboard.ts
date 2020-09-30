@@ -28,6 +28,7 @@ import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
+import "../../../../../layouts/hass-error-screen";
 
 export const ozwTabs: PageNavigation[] = [];
 
@@ -45,11 +46,21 @@ class OZWConfigDashboard extends LitElement {
 
   @internalProperty() private _instances: OZWInstance[] = [];
 
+  @internalProperty() private _firstFetch = false;
+
   protected firstUpdated() {
     this._fetchData();
   }
 
   protected render(): TemplateResult {
+    if (this._instances.length === 0 && this._firstFetch) {
+      return html`<hass-error-screen
+        .error="${this.hass.localize(
+          "ui.panel.config.ozw.select_instance.none_found"
+        )}"
+      ></hass-error-screen>`;
+    }
+
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
@@ -136,6 +147,7 @@ class OZWConfigDashboard extends LitElement {
 
   private async _fetchData() {
     this._instances = await fetchOZWInstances(this.hass!);
+    this._firstFetch = true;
     if (this._instances.length === 1) {
       navigate(
         this,

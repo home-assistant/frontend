@@ -1894,7 +1894,8 @@
           },
           "select_instance": {
             "header": "Select an OpenZWave Instance",
-            "introduction": "You have more than one OpenZWave instance running. Which instance would you like to manage?"
+            "introduction": "You have more than one OpenZWave instance running. Which instance would you like to manage?",
+            "none_found": "No OpenZWave instances were found. Please make sure the OpenZWave daemon and your MQTT broker are running."
           },
           "network": {
             "header": "Network Management",
