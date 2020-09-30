@@ -71,6 +71,10 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
   @internalProperty() private _veryNarrow = false;
 
+  private _startDate?: Date;
+
+  private _endDate?: Date;
+
   private _resizeObserver?: ResizeObserver;
 
   public setConfig(config: CalendarCardConfig): void {
@@ -88,6 +92,10 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
         backgroundColor: `#${HA_COLOR_PALETTE[idx % HA_COLOR_PALETTE.length]}`,
       };
     });
+
+    if (this._config?.entities !== config.entities) {
+      this._fetchCalendarEvents();
+    }
 
     this._config = { initial_view: "dayGridMonth", ...config };
   }
@@ -152,13 +160,21 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private async _handleViewChanged(
-    ev: HASSDomEvent<CalendarViewChanged>
-  ): Promise<void> {
+  private _handleViewChanged(ev: HASSDomEvent<CalendarViewChanged>): void {
+    this._startDate = ev.detail.start;
+    this._endDate = ev.detail.end;
+    this._fetchCalendarEvents();
+  }
+
+  private async _fetchCalendarEvents(): Promise<void> {
+    if (!this._startDate || !this._endDate) {
+      return;
+    }
+
     this._events = await fetchCalendarEvents(
       this.hass!,
-      ev.detail.start,
-      ev.detail.end,
+      this._startDate,
+      this._endDate,
       this._calendars
     );
   }
