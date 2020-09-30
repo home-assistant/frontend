@@ -22,7 +22,8 @@ export interface StateLabelBadgeConfig extends LovelaceBadgeConfig {
 }
 
 export interface SummaryBadgeConfig extends LovelaceBadgeConfig {
-  domain: string;
+  domain?: string;
+  group?: string;
   icon?: string;
   image?: string;
   exclude?: string[];

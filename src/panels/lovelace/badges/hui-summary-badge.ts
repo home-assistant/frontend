@@ -19,13 +19,17 @@ export class HuiSummaryBadge extends LitElement implements LovelaceBadge {
   @property() protected _config?: SummaryBadgeConfig;
 
   public setConfig(config: SummaryBadgeConfig): void {
-    if (!config.domain) {
-      throw new Error("Domain must be defined.");
+    if (!config.domain && !config.group) {
+      throw new Error("domain or group must be defined.");
+    }
+
+    if (config.group && !config.domain && !config.name) {
+      throw new Error("name must be defined if using a group with no domain.");
     }
 
     this._config = {
-      icon: domainIcon(config.domain),
       state: "on",
+      icon: domainIcon(config.domain || "default", config.state || "on"),
       ...config,
     };
   }
@@ -39,8 +43,16 @@ export class HuiSummaryBadge extends LitElement implements LovelaceBadge {
       (entity) =>
         (!this._config!.exclude ||
           !this._config!.exclude.includes(entity.entity_id)) &&
-        computeDomain(entity.entity_id) === this._config!.domain &&
-        entity.state === this._config!.state!
+        ((!this._config!.group &&
+          computeDomain(entity.entity_id) === this._config!.domain) ||
+          (this._config!.group &&
+            (!this._config!.domain ||
+              computeDomain(entity.entity_id) === this._config!.domain) &&
+            this.hass!.states[this._config!.group] &&
+            this.hass!.states[
+              this._config!.group
+            ].attributes.entity_id.includes(entity.entity_id) &&
+            entity.state === this._config!.state!))
     );
 
     if (states.length === 0 && !this._config.show_always) {
