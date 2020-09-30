@@ -115,18 +115,22 @@ export class HaPanelLogbook extends LitElement {
         </div>
 
         ${this._isLoading
-          ? html`<div class="progress-wrapper">
-              <ha-circular-progress
-                active
-                alt=${this.hass.localize("ui.common.loading")}
-              ></ha-circular-progress>
-            </div>`
-          : html`<ha-logbook
-              .hass=${this.hass}
-              .entries=${this._entries}
-              .userIdToName=${this._userIdToName}
-              virtualize
-            ></ha-logbook>`}
+          ? html`
+              <div class="progress-wrapper">
+                <ha-circular-progress
+                  active
+                  alt=${this.hass.localize("ui.common.loading")}
+                ></ha-circular-progress>
+              </div>
+            `
+          : html`
+              <ha-logbook
+                .hass=${this.hass}
+                .entries=${this._entries}
+                .userIdToName=${this._userIdToName}
+                virtualize
+              ></ha-logbook>
+            `}
       </ha-app-layout>
     `;
   }
@@ -268,6 +272,7 @@ export class HaPanelLogbook extends LitElement {
       ),
       this._fetchUserDone,
     ]);
+
     // Fixed in TS 3.9 but upgrade out of scope for this PR.
     // @ts-ignore
     this._entries = entries;
