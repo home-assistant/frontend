@@ -1,93 +1,118 @@
+import { mdiPlus } from "@mdi/js";
 import {
-  customElement,
+  css,
+  CSSResult,
+  html,
+  internalProperty,
+  LitElement,
   property,
   PropertyValues,
-  UpdatingElement,
+  TemplateResult,
 } from "lit-element";
-import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { LovelaceViewConfig } from "../../../data/lovelace";
-import { HomeAssistant } from "../../../types";
-import { createCardElement } from "../create-element/create-card-element";
-import { Lovelace, LovelaceCard } from "../types";
+import { classMap } from "lit-html/directives/class-map";
+import { computeRTL } from "../../../common/util/compute_rtl";
+import type {
+  LovelaceViewConfig,
+  LovelaceViewElement,
+} from "../../../data/lovelace";
+import type { HomeAssistant } from "../../../types";
+import { HuiErrorCard } from "../cards/hui-error-card";
+import { HuiCardOptions } from "../components/hui-card-options";
+import { HuiWarning } from "../components/hui-warning";
+import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
+import type { Lovelace, LovelaceCard } from "../types";
 
 let editCodeLoaded = false;
 
-@customElement("hui-panel-view")
-export class HUIPanelView extends UpdatingElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+export class PanelView extends LitElement implements LovelaceViewElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public lovelace?: Lovelace;
 
-  @property() public config?: LovelaceViewConfig;
+  @property({ type: Number }) public index?: number;
 
-  @property({ type: Number }) public index!: number;
+  @property({ attribute: false }) public cards: Array<
+    LovelaceCard | HuiErrorCard
+  > = [];
 
-  protected firstUpdated(changedProperties: PropertyValues): void {
-    super.firstUpdated(changedProperties);
+  @internalProperty() private _card?:
+    | LovelaceCard
+    | HuiWarning
+    | HuiCardOptions;
+
+  public constructor() {
+    super();
     this.style.setProperty("background", "var(--lovelace-background)");
   }
 
-  protected update(changedProperties: PropertyValues): void {
-    super.update(changedProperties);
+  public setConfig(_config: LovelaceViewConfig): void {}
 
-    const hass = this.hass!;
-    const lovelace = this.lovelace!;
-    const hassChanged = changedProperties.has("hass");
-    const oldHass = changedProperties.get("hass") as this["hass"] | undefined;
-    const configChanged = changedProperties.has("config");
+  protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
 
-    if (lovelace.editMode && !editCodeLoaded) {
+    if (this.lovelace?.editMode && !editCodeLoaded) {
       editCodeLoaded = true;
-      import(/* webpackChunkName: "hui-view-editable" */ "./hui-view-editable");
+      import(
+        /* webpackChunkName: "default-layout-editable" */ "./default-view-editable"
+      );
     }
 
-    let editModeChanged = false;
-
-    if (changedProperties.has("lovelace")) {
-      const oldLovelace = changedProperties.get("lovelace") as Lovelace;
-      editModeChanged =
-        !oldLovelace || lovelace.editMode !== oldLovelace.editMode;
-    }
-
-    if (editModeChanged || configChanged) {
-      this._createCard();
-    } else if (hassChanged) {
-      (this.lastChild! as LovelaceCard).hass = this.hass;
-    }
+    const oldLovelace = changedProperties.get("lovelace") as Lovelace;
 
     if (
-      configChanged ||
-      (hassChanged &&
-        oldHass &&
-        (hass.themes !== oldHass.themes ||
-          hass.selectedTheme !== oldHass.selectedTheme))
+      oldLovelace?.config !== this.lovelace?.config ||
+      (oldLovelace && oldLovelace?.editMode !== this.lovelace?.editMode)
     ) {
-      applyThemesOnElement(this, hass.themes, this.config!.theme);
+      this._createCard();
     }
   }
 
-  private _createCard(): void {
-    while (this.lastChild) {
-      this.removeChild(this.lastChild);
-    }
+  protected render(): TemplateResult {
+    return html`
+      ${this._card}
+      ${this.lovelace?.editMode && this.cards.length === 0
+        ? html`
+            <mwc-fab
+              title=${this.hass!.localize(
+                "ui.panel.lovelace.editor.edit_card.add"
+              )}
+              @click=${this._addCard}
+              class=${classMap({
+                rtl: computeRTL(this.hass!),
+              })}
+            >
+              <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+            </mwc-fab>
+          `
+        : ""}
+    `;
+  }
 
-    const card: LovelaceCard = createCardElement(this.config!.cards![0]);
-    card.hass = this.hass;
+  private _addCard(): void {
+    showCreateCardDialog(this, {
+      lovelaceConfig: this.lovelace!.config,
+      saveConfig: this.lovelace!.saveConfig,
+      path: [this.index!],
+    });
+  }
+
+  private _createCard(): void {
+    const card: LovelaceCard = this.cards[0];
     card.isPanel = true;
 
-    if (!this.lovelace!.editMode) {
-      this.appendChild(card);
-      return;
+    if (!this.lovelace?.editMode) {
+      this._card = card;
     }
 
     const wrapper = document.createElement("hui-card-options");
     wrapper.hass = this.hass;
     wrapper.lovelace = this.lovelace;
-    wrapper.path = [this.index, 0];
+    wrapper.path = [this.index!, 0];
     card.editMode = true;
     wrapper.appendChild(card);
-    this.appendChild(wrapper);
-    if (this.config!.cards!.length > 1) {
+    this._card = wrapper;
+
+    if (this.cards!.length > 1) {
       const warning = document.createElement("hui-warning");
       warning.setAttribute(
         "style",
@@ -96,13 +121,33 @@ export class HUIPanelView extends UpdatingElement {
       warning.innerText = this.hass!.localize(
         "ui.panel.lovelace.editor.view.panel_mode.warning_multiple_cards"
       );
-      this.appendChild(warning);
+      this._card = warning;
     }
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      mwc-fab {
+        position: sticky;
+        float: right;
+        right: calc(16px + env(safe-area-inset-right));
+        bottom: calc(16px + env(safe-area-inset-bottom));
+        z-index: 1;
+      }
+
+      mwc-fab.rtl {
+        float: left;
+        right: auto;
+        left: calc(16px + env(safe-area-inset-left));
+      }
+    `;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-panel-view": HUIPanelView;
+    "hui-panel-view": PanelView;
   }
 }
+
+customElements.define("hui-panel-view", PanelView);
