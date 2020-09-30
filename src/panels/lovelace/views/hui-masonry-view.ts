@@ -98,11 +98,13 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
   }
 
   protected firstUpdated(): void {
+    this._updateColumns = this._updateColumns.bind(this);
     this._mqls = [300, 600, 900, 1200].map((width) => {
       const mql = matchMedia(`(min-width: ${width}px)`);
       mql.addEventListener("change", this._updateColumns);
       return mql;
     });
+    this._updateColumns();
   }
 
   protected updated(changedProperties: PropertyValues): void {
@@ -130,11 +132,14 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
       }
     }
 
-    const oldLovelace = changedProperties.get("lovelace") as Lovelace;
+    const oldLovelace = changedProperties.get("lovelace") as
+      | Lovelace
+      | undefined;
 
     if (
-      oldLovelace?.config !== this.lovelace?.config ||
-      oldLovelace?.editMode !== this.lovelace?.editMode ||
+      (changedProperties.has("lovelace") && (
+        oldLovelace?.config !== this.lovelace?.config ||
+        oldLovelace?.editMode !== this.lovelace?.editMode)) ||
       changedProperties.has("_columns")
     ) {
       this._createColumns();
@@ -237,6 +242,9 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
   }
 
   private _updateColumns() {
+    if (!this._mqls) {
+      return;
+    }
     const matchColumns = this._mqls!.reduce(
       (cols, mql) => cols + Number(mql.matches),
       0
@@ -260,6 +268,8 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
         display: flex;
         flex-direction: row;
         justify-content: center;
+        margin-left: 4px;
+        margin-right: 4px;
       }
 
       .column {
@@ -288,11 +298,6 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
       }
 
       @media (max-width: 500px) {
-        :host {
-          padding-left: 0;
-          padding-right: 0;
-        }
-
         .column > * {
           margin-left: 0;
           margin-right: 0;
