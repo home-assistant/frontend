@@ -1040,7 +1040,16 @@
                                     "before": "Abans",
                                     "label": "Temporal",
                                     "type_input": "Valor d'un ajudant de data/hora",
-                                    "type_value": "Temps fix"
+                                    "type_value": "Temps fix",
+                                    "weekdays": {
+                                        "fri": "Divendres",
+                                        "mon": "Dilluns",
+                                        "sat": "Dissabte",
+                                        "sun": "Diumenge",
+                                        "thu": "Dijous",
+                                        "tue": "Dimarts",
+                                        "wed": "Dimecres"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Entitat amb ubicació",
@@ -2474,8 +2483,15 @@
                             "name": "Botó"
                         },
                         "calendar": {
+                            "calendar_entities": "Entitats de calendari",
                             "description": "La targeta Calendari mostra un calendari que inclou visualitzacions de dia, setmana i llista",
-                            "name": "Calendari"
+                            "inital_view": "Vista inicial",
+                            "name": "Calendari",
+                            "views": {
+                                "dayGridDay": "Dia",
+                                "dayGridMonth": "Mes",
+                                "listWeek": "Llista"
+                            }
                         },
                         "conditional": {
                             "card": "Targeta",

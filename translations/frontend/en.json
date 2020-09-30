@@ -741,6 +741,7 @@
                 "dismiss": "Dismiss dialog",
                 "edit": "Edit entity",
                 "history": "History",
+                "last_updated": "Last updated",
                 "person": {
                     "create_zone": "Create zone from current location"
                 },
@@ -1873,11 +1874,11 @@
                 },
                 "person": {
                     "add_person": "Add Person",
-                    "caption": "Persons",
+                    "caption": "People",
                     "confirm_delete": "Are you sure you want to delete this person?",
                     "confirm_delete2": "All devices belonging to this person will become unassigned.",
                     "create_person": "Create Person",
-                    "description": "Manage the persons that Home Assistant tracks",
+                    "description": "Manage the people that Home Assistant tracks",
                     "detail": {
                         "create": "Create",
                         "delete": "Delete",
@@ -1894,8 +1895,8 @@
                         "update": "Update"
                     },
                     "introduction": "Here you can define each person of interest in Home Assistant.",
-                    "no_persons_created_yet": "Looks like you have not created any persons yet.",
-                    "note_about_persons_configured_in_yaml": "Note: persons configured via configuration.yaml cannot be edited via the UI."
+                    "no_persons_created_yet": "Looks like you have not created any people yet.",
+                    "note_about_persons_configured_in_yaml": "Note: people configured via configuration.yaml cannot be edited via the UI."
                 },
                 "scene": {
                     "activated": "Activated scene {name}.",
@@ -2012,7 +2013,7 @@
                             "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current YAML configuration and load the new one.",
                             "min_max": "Reload min/max entities",
                             "mqtt": "Reload mqtt entities",
-                            "person": "Reload persons",
+                            "person": "Reload people",
                             "ping": "Reload ping binary sensor entities",
                             "reload": "Reload {domain}",
                             "rest": "Reload rest entities and notify services",
@@ -2223,7 +2224,7 @@
                     "configured_in_yaml": "Zones configured via configuration.yaml cannot be edited via the UI.",
                     "confirm_delete": "Are you sure you want to delete this zone?",
                     "create_zone": "Create Zone",
-                    "description": "Manage the zones you want to track persons in",
+                    "description": "Manage the zones you want to track people in",
                     "detail": {
                         "create": "Create",
                         "delete": "Delete",
@@ -2472,6 +2473,20 @@
                     "refresh": "Refresh"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "Call Service",
+                            "default_action": "Default Action",
+                            "more-info": "More Info",
+                            "navigate": "Navigate",
+                            "none": "No Action",
+                            "toggle": "Toggle",
+                            "url": "Url"
+                        },
+                        "editor_service_data": "Service data can only be entered in the code editor",
+                        "navigation_path": "Navigation Path",
+                        "url_path": "Url Path"
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "Available States",
@@ -2479,6 +2494,7 @@
                             "name": "Alarm Panel"
                         },
                         "button": {
+                            "default_action_help": "The default action depends on the entity's capabilities, it will either be toggled or the more info will be shown.",
                             "description": "The Button card allows you to add buttons to perform tasks.",
                             "name": "Button"
                         },
@@ -2976,6 +2992,12 @@
                     "more_integrations": "More"
                 },
                 "intro": "Are you ready to awaken your home, reclaim your privacy and join a worldwide community of tinkerers?",
+                "restore": {
+                    "description": "Alternatively you can restore from a previous snapshot.",
+                    "hide_log": "Hide full log",
+                    "in_progress": "Restore in progress",
+                    "show_log": "Show full log"
+                },
                 "user": {
                     "create_account": "Create Account",
                     "data": {

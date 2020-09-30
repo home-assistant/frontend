@@ -1040,7 +1040,16 @@
                                     "before": "Enne",
                                     "label": "Aeg",
                                     "type_input": "Kuupäeva/kellaja abilise väärtus",
-                                    "type_value": "Määratud aeg"
+                                    "type_value": "Määratud aeg",
+                                    "weekdays": {
+                                        "fri": "Reede",
+                                        "mon": "Esmaspäev",
+                                        "sat": "Laupäev",
+                                        "sun": "Pühapäev",
+                                        "thu": "Neljapäev",
+                                        "tue": "Teisipäev",
+                                        "wed": "Kolmapäev"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Asukohaga olem",
@@ -2474,8 +2483,15 @@
                             "name": "Nupp"
                         },
                         "calendar": {
+                            "calendar_entities": "Kalendri olemid",
                             "description": "Kalendri kaardil kuvatakse kalender mis sisaldab päeva, nädala ja loendivaateid",
-                            "name": "Kalender"
+                            "inital_view": "Vaikevaade",
+                            "name": "Kalender",
+                            "views": {
+                                "dayGridDay": "Päevavaade",
+                                "dayGridMonth": "Kuuvaade",
+                                "listWeek": "Sündmuste nimekiri"
+                            }
                         },
                         "conditional": {
                             "card": "Kaart",

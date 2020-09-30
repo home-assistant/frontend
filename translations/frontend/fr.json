@@ -2475,7 +2475,10 @@
                         },
                         "calendar": {
                             "description": "La carte Calendrier affiche un calendrier comprenant des vues par jour, par semaine et par liste",
-                            "name": "Calendrier"
+                            "name": "Calendrier",
+                            "views": {
+                                "listWeek": "Français"
+                            }
                         },
                         "conditional": {
                             "card": "Carte",

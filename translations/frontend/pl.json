@@ -1040,7 +1040,16 @@
                                     "before": "Przed",
                                     "label": "Czas",
                                     "type_input": "Wartość pomocnika typu data/czas",
-                                    "type_value": "Ustalony czas"
+                                    "type_value": "Ustalony czas",
+                                    "weekdays": {
+                                        "fri": "Piątek",
+                                        "mon": "Poniedziałek",
+                                        "sat": "Sobota",
+                                        "sun": "Niedziela",
+                                        "thu": "Czwartek",
+                                        "tue": "Wtorek",
+                                        "wed": "Środa"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Encja z lokalizacją",
@@ -1991,7 +2000,7 @@
                             "filter": "Encje komponentu filtr",
                             "generic": "Encje komponentu kamera IP generic",
                             "generic_thermostat": "Encje komponentu termostatu generic",
-                            "group": "Grupy",
+                            "group": "Przeładuj grupy, ich encje oraz usługi powiadomień",
                             "heading": "Ponowne wczytanie konfiguracji YAML",
                             "history_stats": "Encje komponentu historia stanów",
                             "homekit": "HomeKit",
@@ -2474,8 +2483,15 @@
                             "name": "Przycisk"
                         },
                         "calendar": {
+                            "calendar_entities": "Encje kalendarza",
                             "description": "Karta kalendarza wyświetla kalendarz zawierający widoki dnia, tygodnia i listy",
-                            "name": "Kalendarz"
+                            "inital_view": "Wstępny widok",
+                            "name": "Kalendarz",
+                            "views": {
+                                "dayGridDay": "Dzień",
+                                "dayGridMonth": "Miesiąc",
+                                "listWeek": "Lista"
+                            }
                         },
                         "conditional": {
                             "card": "Karta",

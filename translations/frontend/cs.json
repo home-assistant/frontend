@@ -1040,7 +1040,16 @@
                                     "before": "Před",
                                     "label": "Čas",
                                     "type_input": "Hodnota pomocníka \"Datum a/nebo čas\"",
-                                    "type_value": "Pevný čas"
+                                    "type_value": "Pevný čas",
+                                    "weekdays": {
+                                        "fri": "Pátek",
+                                        "mon": "Pondělí",
+                                        "sat": "Sobota",
+                                        "sun": "Neděle",
+                                        "thu": "Čtvrtek",
+                                        "tue": "Úterý",
+                                        "wed": "Středa"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Entita s umístěním",
@@ -2474,8 +2483,15 @@
                             "name": "Tlačítko"
                         },
                         "calendar": {
+                            "calendar_entities": "Entity kalendáře",
                             "description": "Karta Kalendář zobrazuje kalendář včetně zobrazení dnů, týdnů a seznamů",
-                            "name": "Kalendář"
+                            "inital_view": "Výchozí pohled",
+                            "name": "Kalendář",
+                            "views": {
+                                "dayGridDay": "Den",
+                                "dayGridMonth": "Měsíc",
+                                "listWeek": "Seznam"
+                            }
                         },
                         "conditional": {
                             "card": "Karta",
