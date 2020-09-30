@@ -12,6 +12,7 @@ import {
 } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
 import { nextRender } from "../common/util/render-status";
+import { getExternalConfig } from "../external_app/external_config";
 import type { HomeAssistant } from "../types";
 
 type HLSModule = typeof import("hls.js");
@@ -93,39 +94,49 @@ class HaHLSPlayer extends LitElement {
   }
 
   private async _getUseExoPlayer(): Promise<boolean> {
-    return false;
+    if (!this.hass!.auth.external || !this.allowExoPlayer) {
+      return false;
+    }
+    const externalConfig = await getExternalConfig(this.hass!.auth.external);
+    return externalConfig && externalConfig.hasExoPlayer;
   }
 
   private async _startHls(): Promise<void> {
-    let hls: any;
     const videoEl = this._videoEl;
-    this._useExoPlayer = await this._getUseExoPlayer();
-    if (!this._useExoPlayer) {
-      hls = ((await import(/* webpackChunkName: "hls.js" */ "hls.js")) as any)
-        .default as HLSModule;
-      let hlsSupported = hls.isSupported();
+    const playlist_url = this.url.replace("master_playlist", "playlist");
+    const useExoPlayerPromise = this._getUseExoPlayer();
+    const masterPlaylistPromise = fetch(this.url);
 
-      if (!hlsSupported) {
-        hlsSupported =
-          videoEl.canPlayType("application/vnd.apple.mpegurl") !== "";
-      }
+    const hls = ((await import(
+      /* webpackChunkName: "hls.js" */ "hls.js"
+    )) as any).default as HLSModule;
+    let hlsSupported = hls.isSupported();
 
-      if (!hlsSupported) {
-        this._videoEl.innerHTML = this.hass.localize(
-          "ui.components.media-browser.video_not_supported"
-        );
-        return;
-      }
+    if (!hlsSupported) {
+      hlsSupported =
+        videoEl.canPlayType("application/vnd.apple.mpegurl") !== "";
     }
 
-    const url = this.url;
+    if (!hlsSupported) {
+      this._videoEl.innerHTML = this.hass.localize(
+        "ui.components.media-browser.video_not_supported"
+      );
+      return;
+    }
 
+    this._useExoPlayer = await useExoPlayerPromise;
+    let hevcRegexp: RegExp;
+    let masterPlaylist: string;
     if (this._useExoPlayer) {
-      this._renderHLSExoPlayer(url);
+      hevcRegexp = /CODECS=".*?((hev1)|(hvc1))\..*?"/;
+      masterPlaylist = await (await masterPlaylistPromise).text();
+    }
+    if (this._useExoPlayer && hevcRegexp!.test(masterPlaylist!)) {
+      this._renderHLSExoPlayer(playlist_url);
     } else if (hls.isSupported()) {
-      this._renderHLSPolyfill(videoEl, hls, url);
+      this._renderHLSPolyfill(videoEl, hls, playlist_url);
     } else {
-      this._renderHLSNative(videoEl, url);
+      this._renderHLSNative(videoEl, playlist_url);
     }
   }
 

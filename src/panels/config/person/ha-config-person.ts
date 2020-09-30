@@ -1,6 +1,7 @@
 import { mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
+import "@material/mwc-fab";
 import {
   css,
   CSSResult,
@@ -222,6 +223,9 @@ class HaConfigPerson extends LitElement {
         } catch (err) {
           return false;
         }
+      },
+      refreshUsers: () => {
+        this._usersLoad = fetchUsers(this.hass!);
       },
     });
   }

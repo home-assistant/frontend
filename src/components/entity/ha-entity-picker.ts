@@ -93,6 +93,8 @@ export class HaEntityPicker extends LitElement {
 
   @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
 
+  @property({ type: Boolean }) public hideClearIcon = false;
+
   @property({ type: Boolean }) private _opened = false;
 
   @query("vaadin-combo-box-light") private _comboBox!: HTMLElement;
@@ -204,7 +206,7 @@ export class HaEntityPicker extends LitElement {
           autocorrect="off"
           spellcheck="false"
         >
-          ${this.value
+          ${this.value && !this.hideClearIcon
             ? html`
                 <ha-icon-button
                   aria-label=${this.hass.localize(

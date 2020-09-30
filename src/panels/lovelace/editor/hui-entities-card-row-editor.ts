@@ -1,4 +1,5 @@
-import { mdiClose, mdiDrag } from "@mdi/js";
+import "@material/mwc-icon-button";
+import { mdiClose, mdiDrag, mdiPencil } from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -19,7 +20,7 @@ import Sortable, {
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entity-picker";
 import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
-import "../../../components/ha-icon-button";
+import "../../../components/ha-svg-icon";
 import { sortableStyles } from "../../../resources/ha-sortable-style";
 import { HomeAssistant } from "../../../types";
 import { EntityConfig, LovelaceRowConfig } from "../entity-rows/types";
@@ -85,26 +86,38 @@ export class HuiEntitiesCardRowEditor extends LitElement {
                                 )}</span
                               >
                             </div>
-                            <mwc-icon-button
-                              aria-label=${this.hass!.localize(
-                                "ui.components.entity.entity-picker.clear"
-                              )}
-                              .index=${index}
-                              @click=${this._removeSpecialRow}
-                            >
-                              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-                            </mwc-icon-button>
                           </div>
                         `
                       : html`
                           <ha-entity-picker
                             allow-custom-entity
+                            hideClearIcon
                             .hass=${this.hass}
                             .value=${(entityConf as EntityConfig).entity}
                             .index=${index}
                             @value-changed=${this._valueChanged}
                           ></ha-entity-picker>
                         `}
+                    <mwc-icon-button
+                      aria-label=${this.hass!.localize(
+                        "ui.components.entity.entity-picker.clear"
+                      )}
+                      class="remove-icon"
+                      .index=${index}
+                      @click=${this._removeRow}
+                    >
+                      <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+                    </mwc-icon-button>
+                    <mwc-icon-button
+                      aria-label=${this.hass!.localize(
+                        "ui.components.entity.entity-picker.edit"
+                      )}
+                      class="edit-icon"
+                      .index=${index}
+                      @click=${this._editRow}
+                    >
+                      <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
+                    </mwc-icon-button>
                   </div>
                 `;
               })
@@ -164,7 +177,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
       animation: 150,
       fallbackClass: "sortable-fallback",
       handle: ".handle",
-      onEnd: async (evt: SortableEvent) => this._entityMoved(evt),
+      onEnd: async (evt: SortableEvent) => this._rowMoved(evt),
     });
   }
 
@@ -180,7 +193,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
     fireEvent(this, "entities-changed", { entities: newConfigEntities });
   }
 
-  private _entityMoved(ev: SortableEvent): void {
+  private _rowMoved(ev: SortableEvent): void {
     if (ev.oldIndex === ev.newIndex) {
       return;
     }
@@ -192,7 +205,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
     fireEvent(this, "entities-changed", { entities: newEntities });
   }
 
-  private _removeSpecialRow(ev: CustomEvent): void {
+  private _removeRow(ev: CustomEvent): void {
     const index = (ev.currentTarget as any).index;
     const newConfigEntities = this.entities!.concat();
 
@@ -218,6 +231,12 @@ export class HuiEntitiesCardRowEditor extends LitElement {
     fireEvent(this, "entities-changed", { entities: newConfigEntities });
   }
 
+  private _editRow(ev: CustomEvent): void {
+    fireEvent(this, "edit-row", {
+      index: (ev.currentTarget as any).index,
+    });
+  }
+
   static get styles(): CSSResult[] {
     return [
       sortableStyles,
@@ -226,13 +245,16 @@ export class HuiEntitiesCardRowEditor extends LitElement {
           display: flex;
           align-items: center;
         }
+
         .entity .handle {
           padding-right: 8px;
           cursor: move;
         }
+
         .entity ha-entity-picker {
           flex-grow: 1;
         }
+
         .special-row {
           height: 60px;
           font-size: 16px;
@@ -247,7 +269,8 @@ export class HuiEntitiesCardRowEditor extends LitElement {
           flex-direction: column;
         }
 
-        .special-row mwc-icon-button {
+        .remove-icon,
+        .edit-icon {
           --mdc-icon-button-size: 36px;
           color: var(--secondary-text-color);
         }
