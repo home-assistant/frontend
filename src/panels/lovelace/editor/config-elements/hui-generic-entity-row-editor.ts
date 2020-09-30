@@ -153,8 +153,7 @@ export class HuiGenericEntityRowEditor extends LitElement
       } else {
         this._config = {
           ...this._config,
-          [target.configValue!]:
-            target.checked !== undefined ? target.checked : value,
+          [target.configValue!]: value,
         };
       }
     }
