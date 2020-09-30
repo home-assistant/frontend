@@ -285,7 +285,34 @@
     },
     "components": {
       "logbook": {
-        "entries_not_found": "No logbook entries found."
+        "entries_not_found": "No logbook entries found.",
+        "by": "by",
+        "by_service": "by service",
+        "messages": {
+          "was_away": "was away",
+          "was_at_state": "was at {state}",
+          "rose": "rose",
+          "set": "set",
+          "was_low": "was low",
+          "was_normal": "was normal",
+          "was_connected": "was connected",
+          "was_disconnected": "was disconnected",
+          "was_opened": "was opened",
+          "was_closed": "was closed",
+          "was_unlocked": "was unlocked",
+          "was_locked": "was locked",
+          "was_plugged_in": "was plugged in",
+          "was_unplugged": "was unplugged",
+          "was_at_home": "was at home",
+          "was_unsafe": "was unsafe",
+          "was_safe": "was safe",
+          "detected_device_class": "detected {device_class}",
+          "cleared_device_class": "cleared (no {device_class} detected)",
+          "turned_off": "turned off",
+          "turned_on": "turned on",
+          "changed_to_state": "changed to {state}",
+          "became_unavailable": "became unavailable"
+        }
       },
       "entity": {
         "entity-picker": {

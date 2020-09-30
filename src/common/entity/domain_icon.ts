@@ -1,63 +1,24 @@
+import { HassEntity } from "home-assistant-js-websocket";
 /**
  * Return the icon to be used for a domain.
  *
  * Optionally pass in a state to influence the domain icon.
  */
-import { DEFAULT_DOMAIN_ICON } from "../const";
+import { DEFAULT_DOMAIN_ICON, FIXED_DOMAIN_ICONS } from "../const";
+import { binarySensorIcon } from "./binary_sensor_icon";
+import { coverIcon } from "./cover_icon";
+import { sensorIcon } from "./sensor_icon";
 
-const fixedIcons = {
-  alert: "hass:alert",
-  alexa: "hass:amazon-alexa",
-  air_quality: "hass:air-filter",
-  automation: "hass:robot",
-  calendar: "hass:calendar",
-  camera: "hass:video",
-  climate: "hass:thermostat",
-  configurator: "hass:cog",
-  conversation: "hass:text-to-speech",
-  counter: "hass:counter",
-  device_tracker: "hass:account",
-  fan: "hass:fan",
-  google_assistant: "hass:google-assistant",
-  group: "hass:google-circles-communities",
-  homeassistant: "hass:home-assistant",
-  homekit: "hass:home-automation",
-  image_processing: "hass:image-filter-frames",
-  input_boolean: "hass:toggle-switch-outline",
-  input_datetime: "hass:calendar-clock",
-  input_number: "hass:ray-vertex",
-  input_select: "hass:format-list-bulleted",
-  input_text: "hass:form-textbox",
-  light: "hass:lightbulb",
-  mailbox: "hass:mailbox",
-  notify: "hass:comment-alert",
-  persistent_notification: "hass:bell",
-  person: "hass:account",
-  plant: "hass:flower",
-  proximity: "hass:apple-safari",
-  remote: "hass:remote",
-  scene: "hass:palette",
-  script: "hass:script-text",
-  sensor: "hass:eye",
-  simple_alarm: "hass:bell",
-  sun: "hass:white-balance-sunny",
-  switch: "hass:flash",
-  timer: "hass:timer-outline",
-  updater: "hass:cloud-upload",
-  vacuum: "hass:robot-vacuum",
-  water_heater: "hass:thermometer",
-  weather: "hass:weather-cloudy",
-  zone: "hass:map-marker-radius",
-};
-
-export const domainIcon = (domain: string, state?: string): string => {
-  if (domain in fixedIcons) {
-    return fixedIcons[domain];
-  }
+export const domainIcon = (
+  domain: string,
+  stateObj?: HassEntity,
+  state?: string
+): string => {
+  const compareState = state !== undefined ? state : stateObj?.state;
 
   switch (domain) {
     case "alarm_control_panel":
-      switch (state) {
+      switch (compareState) {
         case "armed_home":
           return "hass:bell-plus";
         case "armed_night":
@@ -71,21 +32,10 @@ export const domainIcon = (domain: string, state?: string): string => {
       }
 
     case "binary_sensor":
-      return state && state === "off"
-        ? "hass:radiobox-blank"
-        : "hass:checkbox-marked-circle";
+      return binarySensorIcon(compareState, stateObj);
 
     case "cover":
-      switch (state) {
-        case "opening":
-          return "hass:arrow-up-box";
-        case "closing":
-          return "hass:arrow-down-box";
-        case "closed":
-          return "hass:window-closed";
-        default:
-          return "hass:window-open";
-      }
+      return coverIcon(compareState, stateObj);
 
     case "humidifier":
       return state && state === "off"
@@ -93,13 +43,13 @@ export const domainIcon = (domain: string, state?: string): string => {
         : "hass:air-humidifier";
 
     case "lock":
-      return state && state === "unlocked" ? "hass:lock-open" : "hass:lock";
+      return compareState === "unlocked" ? "hass:lock-open" : "hass:lock";
 
     case "media_player":
-      return state && state === "playing" ? "hass:cast-connected" : "hass:cast";
+      return compareState === "playing" ? "hass:cast-connected" : "hass:cast";
 
     case "zwave":
-      switch (state) {
+      switch (compareState) {
         case "dead":
           return "hass:emoticon-dead";
         case "sleeping":
@@ -110,11 +60,32 @@ export const domainIcon = (domain: string, state?: string): string => {
           return "hass:z-wave";
       }
 
-    default:
-      // eslint-disable-next-line
-      console.warn(
-        "Unable to find icon for domain " + domain + " (" + state + ")"
-      );
-      return DEFAULT_DOMAIN_ICON;
+    case "sensor": {
+      const icon = sensorIcon(stateObj);
+      if (icon) {
+        return icon;
+      }
+
+      break;
+    }
+
+    case "input_datetime":
+      if (!stateObj?.attributes.has_date) {
+        return "hass:clock";
+      }
+      if (!stateObj.attributes.has_time) {
+        return "hass:calendar";
+      }
+      break;
   }
+
+  if (domain in FIXED_DOMAIN_ICONS) {
+    return FIXED_DOMAIN_ICONS[domain];
+  }
+
+  // eslint-disable-next-line
+  console.warn(
+    "Unable to find icon for domain " + domain + " (" + stateObj + ")"
+  );
+  return DEFAULT_DOMAIN_ICON;
 };
