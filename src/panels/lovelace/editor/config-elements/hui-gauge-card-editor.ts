@@ -1,7 +1,7 @@
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultArray,
   customElement,
   html,
   internalProperty,
@@ -81,7 +81,6 @@ export class HuiGaugeCardEditor extends LitElement
     }
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <ha-entity-picker
           .label="${this.hass.localize(
@@ -197,23 +196,26 @@ export class HuiGaugeCardEditor extends LitElement
     `;
   }
 
-  static get styles(): CSSResult {
-    return css`
-      .severity {
-        display: none;
-        width: 100%;
-        padding-left: 16px;
-        flex-direction: row;
-        flex-wrap: wrap;
-      }
-      .severity > * {
-        flex: 1 0 30%;
-        padding-right: 4px;
-      }
-      ha-switch[checked] ~ .severity {
-        display: flex;
-      }
-    `;
+  static get styles(): CSSResultArray {
+    return [
+      configElementStyle,
+      css`
+        .severity {
+          display: none;
+          width: 100%;
+          padding-left: 16px;
+          flex-direction: row;
+          flex-wrap: wrap;
+        }
+        .severity > * {
+          flex: 1 0 30%;
+          padding-right: 4px;
+        }
+        ha-switch[checked] ~ .severity {
+          display: flex;
+        }
+      `,
+    ];
   }
 
   private _toggleSeverity(ev: EntitiesEditorEvent): void {

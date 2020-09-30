@@ -2,6 +2,7 @@ import {
   any,
   array,
   boolean,
+  number,
   object,
   optional,
   string,
@@ -13,8 +14,6 @@ import {
   LovelaceViewConfig,
   ShowViewConfig,
 } from "../../../data/lovelace";
-import { EntityId } from "../common/structs/is-entity-id";
-import { Icon } from "../common/structs/is-icon";
 import { EntityConfig } from "../entity-rows/types";
 
 export interface YamlChangedEvent extends Event {
@@ -51,6 +50,7 @@ export interface ConfigError {
 export interface EntitiesEditorEvent {
   detail?: {
     entities?: EntityConfig[];
+    item?: any;
   };
   target?: EventTarget;
 }
@@ -95,19 +95,19 @@ const buttonEntitiesRowConfigStruct = object({
 
 const castEntitiesRowConfigStruct = object({
   type: string(),
-  view: string(),
+  view: union([string(), number()]),
   dashboard: optional(string()),
   name: optional(string()),
   icon: optional(string()),
-  hide_if_unavailable: optional(string()),
+  hide_if_unavailable: optional(boolean()),
 });
 
 const callServiceEntitiesRowConfigStruct = object({
   type: string(),
   name: string(),
+  service: string(),
   icon: optional(string()),
   action_name: optional(string()),
-  service: string(),
   service_data: optional(any()),
 });
 
@@ -150,7 +150,7 @@ const buttonsEntitiesRowConfigStruct = object({
         image: optional(string()),
         name: optional(string()),
       }),
-      EntityId,
+      string(),
     ])
   ),
 });
@@ -166,9 +166,9 @@ const attributeEntitiesRowConfigStruct = object({
 
 export const entitiesConfigStruct = union([
   object({
-    entity: EntityId,
+    entity: string(),
     name: optional(string()),
-    icon: optional(Icon),
+    icon: optional(string()),
     image: optional(string()),
     secondary_info: optional(string()),
     format: optional(string()),
@@ -177,7 +177,7 @@ export const entitiesConfigStruct = union([
     hold_action: optional(actionConfigStruct),
     double_tap_action: optional(actionConfigStruct),
   }),
-  EntityId,
+  string(),
   buttonEntitiesRowConfigStruct,
   castEntitiesRowConfigStruct,
   conditionalEntitiesRowConfigStruct,

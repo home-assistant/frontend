@@ -1,5 +1,6 @@
 import "@polymer/paper-input/paper-input";
 import {
+  CSSResult,
   customElement,
   html,
   internalProperty,
@@ -62,7 +63,6 @@ export class HuiPictureCardEditor extends LitElement
     const actions = ["navigate", "url", "call-service", "none"];
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <paper-input
           .label="${this.hass.localize(
@@ -132,6 +132,10 @@ export class HuiPictureCardEditor extends LitElement
       }
     }
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  static get styles(): CSSResult {
+    return configElementStyle;
   }
 }
 

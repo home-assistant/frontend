@@ -16,6 +16,7 @@ import {
   LovelaceCard,
   LovelaceCardConstructor,
   LovelaceHeaderFooter,
+  LovelaceRowConstructor,
 } from "../types";
 
 const TIMEOUT = 2000;
@@ -39,7 +40,7 @@ interface CreateElementConfigTypes {
   row: {
     config: LovelaceRowConfig;
     element: LovelaceRow;
-    constructor: unknown;
+    constructor: LovelaceRowConstructor;
   };
   "header-footer": {
     config: LovelaceHeaderFooterConfig;

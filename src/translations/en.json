@@ -2331,6 +2331,16 @@
               "description": "The Entities card is the most common type of card. It groups items together into lists.",
               "special_row": "special row",
               "edit_special_row": "Edit row using the code editor",
+              "entity_row_editor": "Entity Row Editor",
+              "secondary_info_values": {
+                "none": "No Secondary Info",
+                "entity-id": "Entity ID",
+                "last-changed": "Last Changed",
+                "last-triggered": "Last Triggered",
+                "position": "Position",
+                "tilt-position": "Tilt Position",
+                "brightness": "Brightness"
+              },
               "entity_row": {
                 "divider": "Divider",
                 "call-service": "Call Service",

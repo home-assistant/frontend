@@ -1,31 +1,32 @@
 import "@polymer/paper-input/paper-input";
 import {
+  CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
+import {
+  array,
+  assert,
+  number,
+  object,
+  optional,
+  string,
+  union,
+} from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../types";
 import { HistoryGraphCardConfig } from "../../cards/types";
+import { EntityId } from "../../common/structs/is-entity-id";
 import "../../components/hui-entity-editor";
 import { EntityConfig } from "../../entity-rows/types";
 import { LovelaceCardEditor } from "../../types";
 import { processEditorEntities } from "../process-editor-entities";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import {
-  assert,
-  union,
-  optional,
-  string,
-  object,
-  array,
-  number,
-} from "superstruct";
-import { EntityId } from "../../common/structs/is-entity-id";
 
 const entitiesConfigStruct = union([
   object({
@@ -80,7 +81,6 @@ export class HuiHistoryGraphCardEditor extends LitElement
     }
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <paper-input
           .label="${this.hass.localize(
@@ -155,6 +155,10 @@ export class HuiHistoryGraphCardEditor extends LitElement
     }
 
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  static get styles(): CSSResult {
+    return configElementStyle;
   }
 }
 
