@@ -93,7 +93,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       };
     });
 
-    if (this._config.entities !== config.entities) {
+    if (this._config?.entities !== config.entities) {
       this._fetchCalendarEvents();
     }
 
