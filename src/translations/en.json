@@ -1618,7 +1618,10 @@
             "device_tracker_pick": "Pick device to track",
             "delete": "Delete",
             "create": "Create",
-            "update": "Update"
+            "update": "Update",
+            "confirm_delete_user": "[%key:ui::panel::config::user::editor::confirm_user_deletion%]",
+            "admin": "[%key:ui::panel::config::user::admin%]",
+            "allow_login": "Allow person to login"
           }
         },
         "zone": {

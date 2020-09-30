@@ -87,7 +87,7 @@ class DialogPersonDetail extends LitElement {
       this._user = this._userId
         ? this._params.users.find((user) => user.id === this._userId)
         : undefined;
-      this._isAdmin = this._user?.group_ids[0] === SYSTEM_GROUP_ID_ADMIN;
+      this._isAdmin = this._user?.group_ids.includes(SYSTEM_GROUP_ID_ADMIN);
     } else {
       this._name = "";
       this._userId = undefined;
@@ -141,7 +141,11 @@ class DialogPersonDetail extends LitElement {
               @change=${this._pictureChanged}
             ></ha-picture-upload>
 
-            <ha-formfield label="Allow person to login">
+            <ha-formfield
+              .label=${this.hass!.localize(
+                "ui.panel.config.person.detail.allow_login"
+              )}
+            >
               <ha-switch
                 @change=${this._allowLoginChanged}
                 .disabled=${this._user &&
@@ -155,7 +159,7 @@ class DialogPersonDetail extends LitElement {
             ${this._user
               ? html`<ha-formfield
                   .label=${this.hass.localize(
-                    "ui.panel.config.users.editor.admin"
+                    "ui.panel.config.person.detail.admin"
                   )}
                   .dir=${computeRTLDirection(this.hass)}
                 >
@@ -282,7 +286,7 @@ class DialogPersonDetail extends LitElement {
             target.checked = true;
             this._user = user;
             this._userId = user.id;
-            this._isAdmin = user.group_ids[0] === SYSTEM_GROUP_ID_ADMIN;
+            this._isAdmin = user.group_ids.includes(SYSTEM_GROUP_ID_ADMIN);
             this._params?.refreshUsers();
           }
         },
@@ -291,7 +295,15 @@ class DialogPersonDetail extends LitElement {
     } else if (this._userId) {
       if (
         !(await showConfirmationDialog(this, {
-          text: "Are you sure you want to remove this user?",
+          text: this.hass!.localize(
+            "ui.panel.config.person.detail.confirm_delete_user"
+          ),
+          confirmText: this.hass!.localize(
+            "ui.panel.config.person.detail.delete",
+            "name",
+            this._name
+          ),
+          dismissText: this.hass!.localize("ui.common.cancel"),
         }))
       ) {
         target.checked = true;
@@ -367,7 +379,7 @@ class DialogPersonDetail extends LitElement {
     try {
       if (
         (this._userId && this._name !== this._params!.entry?.name) ||
-        this._isAdmin !== (this._user?.group_ids[0] === SYSTEM_GROUP_ID_ADMIN)
+        this._isAdmin !== this._user?.group_ids.includes(SYSTEM_GROUP_ID_ADMIN)
       ) {
         await updateUser(this.hass!, this._userId!, {
           name: this._name.trim(),

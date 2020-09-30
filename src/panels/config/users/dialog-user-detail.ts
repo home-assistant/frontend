@@ -47,7 +47,7 @@ class DialogUserDetail extends LitElement {
     this._params = params;
     this._error = undefined;
     this._name = params.entry.name || "";
-    this._isAdmin = params.entry.group_ids[0] === SYSTEM_GROUP_ID_ADMIN;
+    this._isAdmin = params.entry.group_ids.includes(SYSTEM_GROUP_ID_ADMIN);
     await this.updateComplete;
   }
 
