@@ -1656,7 +1656,10 @@
             "device_tracker_pick": "Pick device to track",
             "delete": "Delete",
             "create": "Create",
-            "update": "Update"
+            "update": "Update",
+            "confirm_delete_user": "Are you sure you want to delete the user account for {name}? You can still track the user, but the person will no longer be able to login.",
+            "admin": "[%key:ui::panel::config::users::editor::admin%]",
+            "allow_login": "Allow person to login"
           }
         },
         "zone": {
@@ -1676,7 +1679,7 @@
             "new_zone": "New Zone",
             "name": "Name",
             "icon": "Icon",
-            "icon_error_msg": "Icon should be in the format prefix:iconname, for example: mdi:home",
+            "icon_error_msg": "Icon should be in the format ''prefix:iconname'', for example: ''mdi:home''",
             "radius": "Radius",
             "latitude": "Latitude",
             "longitude": "Longitude",
