@@ -115,17 +115,19 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
       );
     }
 
-    if (changedProperties.has("hass") && changedProperties.size === 1) {
-      return;
-    }
+    if (changedProperties.has("hass")) {
+      const oldHass = changedProperties.get("hass") as HomeAssistant;
 
-    const oldHass = changedProperties.get("hass") as HomeAssistant;
+      if (
+        (oldHass && this.hass!.dockedSidebar !== oldHass.dockedSidebar) ||
+        (!oldHass && this.hass)
+      ) {
+        this._updateColumns();
+      }
 
-    if (
-      (oldHass && this.hass!.dockedSidebar !== oldHass.dockedSidebar) ||
-      (!oldHass && this.hass)
-    ) {
-      this._updateColumns();
+      if (changedProperties.size === 1) {
+        return;
+      }
     }
 
     const oldLovelace = changedProperties.get("lovelace") as Lovelace;

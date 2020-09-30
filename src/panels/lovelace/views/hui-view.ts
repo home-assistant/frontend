@@ -75,13 +75,7 @@ export class HUIView extends UpdatingElement {
 
     const hass = this.hass!;
     const lovelace = this.lovelace!;
-    let viewConfig = lovelace.config.views[this.index!];
-    viewConfig = {
-      ...viewConfig,
-      type: viewConfig.panel
-        ? PANEL_VIEW_LAYOUT
-        : viewConfig.type || DEFAULT_VIEW_LAYOUT,
-    };
+
     const hassChanged = changedProperties.has("hass");
     const oldLovelace = changedProperties.get("lovelace") as Lovelace;
 
@@ -96,15 +90,25 @@ export class HUIView extends UpdatingElement {
       configChanged = !oldLovelace || lovelace.config !== oldLovelace.config;
     }
 
-    if (configChanged && !this._layoutElement) {
-      this._layoutElement = createViewElement({
+    let viewConfig: LovelaceViewConfig | undefined;
+
+    if (configChanged) {
+      viewConfig = lovelace.config.views[this.index!];
+      viewConfig = {
         ...viewConfig,
-      });
+        type: viewConfig.panel
+          ? PANEL_VIEW_LAYOUT
+          : viewConfig.type || DEFAULT_VIEW_LAYOUT,
+      };
+    }
+
+    if (configChanged && !this._layoutElement) {
+      this._layoutElement = createViewElement(viewConfig!);
     }
 
     if (configChanged) {
-      this._createBadges(viewConfig);
-      this._createCards(viewConfig);
+      this._createBadges(viewConfig!);
+      this._createCards(viewConfig!);
 
       this._layoutElement!.hass = this.hass;
       this._layoutElement!.lovelace = lovelace;
@@ -176,13 +180,9 @@ export class HUIView extends UpdatingElement {
       return;
     }
 
-    const elements: LovelaceCard[] = [];
-    config.cards.forEach((cardConfig) => {
-      const element = this.createCardElement(cardConfig);
-      elements.push(element);
-    });
-
-    this._cards = elements;
+    this._cards = config.cards.map((cardConfig) =>
+      this.createCardElement(cardConfig)
+    );
   }
 
   private _rebuildCard(
