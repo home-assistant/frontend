@@ -21,7 +21,7 @@ import type {
 import type { HomeAssistant } from "../../../types";
 import type { HuiErrorCard } from "../cards/hui-error-card";
 import { computeCardSize } from "../common/compute-card-size";
-import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
+import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
 
 let editCodeLoaded = false;
@@ -140,7 +140,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
   }
 
   private _addCard(): void {
-    showEditCardDialog(this, {
+    showCreateCardDialog(this, {
       lovelaceConfig: this.lovelace!.config,
       saveConfig: this.lovelace!.saveConfig,
       path: [this.index!],

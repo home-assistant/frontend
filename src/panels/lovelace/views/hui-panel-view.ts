@@ -19,7 +19,7 @@ import type { HomeAssistant } from "../../../types";
 import { HuiErrorCard } from "../cards/hui-error-card";
 import { HuiCardOptions } from "../components/hui-card-options";
 import { HuiWarning } from "../components/hui-warning";
-import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
+import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import type { Lovelace, LovelaceCard } from "../types";
 
 let editCodeLoaded = false;
@@ -58,7 +58,6 @@ export class PanelView extends LitElement implements LovelaceViewElement {
     }
 
     const oldLovelace = changedProperties.get("lovelace") as Lovelace;
-    const oldCards = changedProperties.get("cards");
 
     if (
       oldLovelace?.config !== this.lovelace?.config ||
@@ -90,7 +89,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
   }
 
   private _addCard(): void {
-    showEditCardDialog(this, {
+    showCreateCardDialog(this, {
       lovelaceConfig: this.lovelace!.config,
       saveConfig: this.lovelace!.saveConfig,
       path: [this.index!],
