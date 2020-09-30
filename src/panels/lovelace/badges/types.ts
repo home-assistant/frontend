@@ -22,11 +22,11 @@ export interface StateLabelBadgeConfig extends LovelaceBadgeConfig {
 }
 
 export interface SummaryBadgeConfig extends LovelaceBadgeConfig {
+  domain: string;
   icon?: string;
   image?: string;
   exclude?: string[];
   show_always?: boolean;
-  domain?: string;
   state?: string;
   name?: string;
 }

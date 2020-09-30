@@ -6,6 +6,7 @@ import {
   property,
 } from "lit-element";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { domainIcon } from "../../../common/entity/domain_icon";
 import "../../../components/ha-label-badge";
 import { HomeAssistant } from "../../../types";
 import { LovelaceBadge } from "../types";
@@ -18,9 +19,12 @@ export class HuiSummaryBadge extends LitElement implements LovelaceBadge {
   @property() protected _config?: SummaryBadgeConfig;
 
   public setConfig(config: SummaryBadgeConfig): void {
+    if (!config.domain) {
+      throw new Error("Domain must be defined.");
+    }
+
     this._config = {
-      icon: "hass:lightbulb-group",
-      domain: "light",
+      icon: domainIcon(config.domain),
       state: "on",
       ...config,
     };
@@ -31,16 +35,13 @@ export class HuiSummaryBadge extends LitElement implements LovelaceBadge {
       return html``;
     }
 
-    const states: string[] = [];
-
-    for (const entity of Object.keys(this.hass.states)) {
-      if (
-        (!this._config.exclude || !this._config.exclude.includes(entity)) &&
-        computeDomain(entity) === this._config.domain &&
-        this.hass.states[entity].state === this._config.state
-      )
-        states.push(entity);
-    }
+    const states = Object.values(this.hass.states).filter(
+      (entity) =>
+        (!this._config!.exclude ||
+          !this._config!.exclude.includes(entity.entity_id)) &&
+        computeDomain(entity.entity_id) === this._config!.domain &&
+        entity.state === this._config!.state!
+    );
 
     if (states.length === 0 && !this._config.show_always) {
       return html``;
