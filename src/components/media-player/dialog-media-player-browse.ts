@@ -90,14 +90,20 @@ class DialogMediaPlayerBrowse extends LitElement {
           --dialog-content-padding: 0;
         }
 
+        ha-media-player-browse {
+          --media-browser-max-height: 100vh;
+        }
+
         @media (min-width: 800px) {
           ha-dialog {
             --mdc-dialog-max-width: 800px;
             --dialog-surface-position: fixed;
             --dialog-surface-top: 40px;
-            --mdc-dialog-max-height: calc(100% - 72px);
+            --mdc-dialog-max-height: calc(100vh - 72px);
           }
           ha-media-player-browse {
+            position: initial;
+            --media-browser-max-height: 100vh - 72px;
             width: 700px;
           }
         }

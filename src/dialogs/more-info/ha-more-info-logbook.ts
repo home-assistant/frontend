@@ -60,6 +60,7 @@ export class MoreInfoLogbook extends LitElement {
                 narrow
                 no-icon
                 no-name
+                relative-time
                 .hass=${this.hass}
                 .entries=${this._logbookEntries}
                 .userIdToName=${this._persons}
@@ -152,6 +153,11 @@ export class MoreInfoLogbook extends LitElement {
         ha-logbook {
           max-height: 250px;
           overflow: auto;
+        }
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+         ha-logbook {
+           max-height: unset;
+         }
         }
         ha-circular-progress {
           display: flex;

@@ -498,6 +498,8 @@
             "back": "חזור",
             "cancel": "ביטול",
             "close": "סגור",
+            "continue": "המשך",
+            "copied": "מועתק",
             "delete": "מחיקה",
             "error_required": "חובה",
             "loading": "טוען",
@@ -553,6 +555,13 @@
             "history_charts": {
                 "loading_history": "טוען היסטוריה...",
                 "no_history_found": "לא נמצאה היסטוריה"
+            },
+            "media-browser": {
+                "class": {
+                    "video": "וידאו"
+                },
+                "documentation": "תיעוד",
+                "learn_adding_local_media": "למד עוד אודות הוספת מדיה ב{תיעוד}."
             },
             "picture-upload": {
                 "label": "תמונה",
@@ -664,8 +673,10 @@
                 "crop": "חתוך"
             },
             "more_info_control": {
+                "controls": "פקדים",
                 "dismiss": "סגור",
                 "edit": "ערוך יישות",
+                "history": "היסטוריה",
                 "person": {
                     "create_zone": "צור אזור מהמיקום הנוכחי"
                 },
@@ -957,7 +968,16 @@
                                 "time": {
                                     "after": "אחרי",
                                     "before": "לפני",
-                                    "label": "זמן"
+                                    "label": "זמן",
+                                    "weekdays": {
+                                        "fri": "יום שישי",
+                                        "mon": "יום שני",
+                                        "sat": "יום שבת",
+                                        "sun": "יום ראשון",
+                                        "thu": "יום חמישי",
+                                        "tue": "יום שלישי",
+                                        "wed": "יום רביעי"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "ישות עם מיקום",
@@ -1178,6 +1198,7 @@
                         "banner": "עריכת היישויות החשופות באמצעות ממשק משתמש זה אינה זמינה מאחר שקבעת את תצורת מסנני הישויות ב configuration.yaml.",
                         "expose": "חשוף בפני אלכסה",
                         "exposed_entities": "ישויות חשופות",
+                        "not_exposed": "{selected} לא חשוף",
                         "not_exposed_entities": "ישויות לא חשופות",
                         "title": "Alexa"
                     },
@@ -1216,7 +1237,9 @@
                         "banner": "עריכת היישויות החשופות באמצעות ממשק משתמש זה אינה זמינה מאחר שקבעת את תצורת מסנני הישויות ב configuration.yaml.",
                         "disable_2FA": "השבת אימות דו-שלבי",
                         "expose": "חשוף בפני Google Assistant",
+                        "exposed": "{selected} חשוף",
                         "exposed_entities": "ישויות חשופות",
+                        "not_exposed": "{selected} לא חשוף",
                         "not_exposed_entities": "ישויות לא חשופות",
                         "sync_to_google": "מסנכרן שינויים ל-Google.",
                         "title": "Google Assistant"
@@ -2281,6 +2304,15 @@
                             "description": "כרטיס ה־Button מאפשר להוסיף כפתורים לביצוע משימות.",
                             "name": "כפתור"
                         },
+                        "calendar": {
+                            "calendar_entities": "ישויות לוח שנה",
+                            "inital_view": "תצוגה ראשונית",
+                            "views": {
+                                "dayGridDay": "יום",
+                                "dayGridMonth": "חודש",
+                                "listWeek": "רשימה"
+                            }
+                        },
                         "conditional": {
                             "card": "כרטיס",
                             "change_type": "שנה סוג",
@@ -2298,6 +2330,12 @@
                         },
                         "entities": {
                             "description": "כרטיס היישויות הוא סוג הכרטיס הנפוץ ביותר. הוא מקבץ ישויות יחד לרשימות.",
+                            "entity_row": {
+                                "attribute": "שדה",
+                                "button": "כפתור",
+                                "buttons": "כפתורים",
+                                "conditional": "מותנה"
+                            },
                             "name": "ישויות",
                             "show_header_toggle": "הצג שינוי מצב כותרת?",
                             "toggle": "החלף מצב ישויות."

@@ -174,6 +174,7 @@ class MQTTMessages extends LitElement {
         margin: 0;
         padding-left: 4px;
         padding-right: 4px;
+        font-family: var(--code-font-family, monospace);
       }
     `;
   }

@@ -147,7 +147,7 @@ export class HaStateLabelBadge extends LitElement {
           return "hass:alert-circle";
         }
         // state == 'disarmed'
-        return domainIcon(domain, state.state);
+        return domainIcon(domain, state);
       case "binary_sensor":
       case "device_tracker":
       case "updater":

@@ -108,6 +108,10 @@ export class HuiCardOptions extends LitElement {
         outline: 2px solid var(--primary-color);
       }
 
+      ::slotted(*) {
+        display: block;
+      }
+
       ha-card {
         border-top-right-radius: 0;
         border-top-left-radius: 0;

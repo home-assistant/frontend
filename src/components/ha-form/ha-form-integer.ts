@@ -14,7 +14,7 @@ import {
 } from "lit-element";
 import { fireEvent } from "../../common/dom/fire_event";
 import { HaCheckbox } from "../ha-checkbox";
-import "../ha-paper-slider";
+import "../ha-slider";
 import {
   HaFormElement,
   HaFormIntegerData,
@@ -31,7 +31,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
 
   @property() public suffix?: string;
 
-  @query("paper-input ha-paper-slider") private _input?: HTMLElement;
+  @query("paper-input ha-slider") private _input?: HTMLElement;
 
   public focus() {
     if (this._input) {
@@ -53,7 +53,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
                     ></ha-checkbox>
                   `
                 : ""}
-              <ha-paper-slider
+              <ha-slider
                 pin
                 editable
                 .value=${this._value}
@@ -63,7 +63,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
                 this.schema.optional &&
                 this.schema.default === undefined}
                 @value-changed=${this._valueChanged}
-              ></ha-paper-slider>
+              ></ha-slider>
             </div>
           </div>
         `
@@ -112,7 +112,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
       .flex {
         display: flex;
       }
-      ha-paper-slider {
+      ha-slider {
         width: 100%;
         margin-right: 16px;
       }

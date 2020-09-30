@@ -496,9 +496,11 @@
                     "wnw": "O-NO",
                     "wsw": "O-SO"
                 },
+                "day": "Jour",
                 "forecast": "Prévisions",
                 "high": "Haute",
-                "low": "Faible"
+                "low": "Faible",
+                "night": "Nuit"
             }
         },
         "common": {
@@ -1530,7 +1532,7 @@
                 "header": "Configurer Home Assistant",
                 "helpers": {
                     "caption": "Entrées",
-                    "description": "Gérez les éléments qui peuvent aident à créer des automatisations",
+                    "description": "Gérer les éléments qui peuvent aider à créer des automatisations",
                     "dialog": {
                         "add_helper": "Ajouter une entrée",
                         "add_platform": "Ajouter {platform}",
@@ -1804,7 +1806,7 @@
                     },
                     "network": {
                         "header": "Gestion du réseau",
-                        "introduction": "Gérez les fonctions de niveau réseau.",
+                        "introduction": "Gérer les fonctions de niveau réseau.",
                         "node_count": "{count} nœuds"
                     },
                     "node_query_stages": {
@@ -2085,7 +2087,7 @@
                         "name": "Nom",
                         "new_password": "Nouveau mot de passe",
                         "owner": "Propriétaire",
-                        "password_changed": "Le mot de passe est modifié !",
+                        "password_changed": "Le mot de passe a été changé avec succès",
                         "system_generated": "Généré par le système",
                         "system_generated_users_not_editable": "Impossible de mettre à jour les utilisateurs générés par le système.",
                         "system_generated_users_not_removable": "Impossible de supprimer les utilisateurs générés par le système.",
@@ -2212,7 +2214,7 @@
                     "configured_in_yaml": "Les zones configurées via configuration.yaml ne peuvent pas être modifiées via l'interface utilisateur.",
                     "confirm_delete": "Êtes-vous sûr de vouloir supprimer cette zone ?",
                     "create_zone": "Créer une zone",
-                    "description": "Gérez les zones dans lesquelles vous voulez suivre les personnes.",
+                    "description": "Gérer les zones dans lesquelles vous voulez suivre les personnes.",
                     "detail": {
                         "create": "Créer",
                         "delete": "Effacer",
@@ -2473,7 +2475,10 @@
                         },
                         "calendar": {
                             "description": "La carte Calendrier affiche un calendrier comprenant des vues par jour, par semaine et par liste",
-                            "name": "Calendrier"
+                            "name": "Calendrier",
+                            "views": {
+                                "listWeek": "Français"
+                            }
                         },
                         "conditional": {
                             "card": "Carte",
@@ -2492,8 +2497,21 @@
                         },
                         "entities": {
                             "description": "La carte Entités est le type de carte le plus courant. Il regroupe les éléments dans des listes.",
+                            "edit_special_row": "Modifier la ligne à l'aide de l'éditeur de code",
+                            "entity_row": {
+                                "attribute": "Attribut",
+                                "button": "Bouton",
+                                "buttons": "Boutons",
+                                "call-service": "Appeler un service",
+                                "cast": "Cast",
+                                "conditional": "Conditionnel",
+                                "divider": "Diviseur",
+                                "section": "Section",
+                                "weblink": "Lien Web"
+                            },
                             "name": "Entités",
                             "show_header_toggle": "Afficher le bouton d'en-tête ?",
+                            "special_row": "ligne spéciale",
                             "toggle": "Basculer les entités."
                         },
                         "entity-filter": {
@@ -2614,7 +2632,8 @@
                             "description": "La carte Capteur vous donne un aperçu rapide de l'état de vos capteurs avec un graphique en option pour visualiser les changements au fil du temps.",
                             "graph_detail": "Détail du graphique",
                             "graph_type": "Type de graphique",
-                            "name": "Capteur"
+                            "name": "Capteur",
+                            "show_more_detail": "Afficher plus de détails"
                         },
                         "shopping-list": {
                             "description": "La carte Liste d'achats vous permet d'ajouter, de modifier, de valider et d'effacer des articles de votre liste d'achats.",

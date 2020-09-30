@@ -2,6 +2,7 @@
     "panel": {
         "config": "Konfiguraasje",
         "history": "Skiednis",
+        "logbook": "Lochboek",
         "mailbox": "Postfak",
         "map": "Kaart",
         "shopping_list": "Boadskiplist"
@@ -20,6 +21,9 @@
         },
         "default": {
             "unknown": "Ûnbek."
+        },
+        "device_tracker": {
+            "home": "Thús"
         },
         "person": {
             "home": "Thús"
@@ -58,6 +62,9 @@
             },
             "gas": {
                 "off": "Net detektearre"
+            },
+            "moisture": {
+                "off": "Droech"
             },
             "motion": {
                 "on": "Detekteare"
@@ -106,28 +113,38 @@
         "group": {
             "home": "Thús",
             "locked": "Beskoattele",
+            "not_home": "Oan",
             "off": "Út",
             "on": "Oan",
             "open": "Iepen",
             "stopped": "Stoppe"
         },
         "light": {
-            "off": "Út"
+            "off": "Út",
+            "on": "Oan"
         },
         "lock": {
             "locked": "Beskoattele"
         },
         "media_player": {
+            "on": "Oan",
             "playing": "Ôfspylje"
         },
+        "remote": {
+            "on": "Oan"
+        },
         "script": {
-            "off": "Út"
+            "off": "Út",
+            "on": "Oan"
         },
         "sensor": {
             "off": "Út",
             "on": "Oan"
         },
         "switch": {
+            "on": "Oan"
+        },
+        "vacuum": {
             "on": "Oan"
         },
         "weather": {
@@ -146,6 +163,10 @@
     },
     "ui": {
         "card": {
+            "climate": {
+                "on_off": "Oan / út",
+                "operation": "Operaasje"
+            },
             "script": {
                 "cancel": "Annulearje",
                 "cancel_multiple": "Annulearje {number}"
@@ -157,15 +178,43 @@
             },
             "weather": {
                 "attributes": {
-                    "precipitation": "Delslach"
+                    "air_pressure": "Luchtdruk",
+                    "precipitation": "Delslach",
+                    "temperature": "Temperatuer"
                 },
+                "cardinal_direction": {
+                    "e": "E",
+                    "n": "N",
+                    "ne": "NE",
+                    "nw": "NW",
+                    "s": "S",
+                    "se": "SE",
+                    "sw": "SW",
+                    "w": "W"
+                },
+                "day": "Dei",
                 "high": "Heech",
-                "low": "Leech"
+                "low": "Leech",
+                "night": "Nacht"
             }
         },
         "common": {
             "cancel": "Annulearje",
-            "loading": "Oan it laden"
+            "loading": "Oan it laden",
+            "no": "Nee",
+            "yes": "Ja"
+        },
+        "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "add": "Tafoegje",
+                    "name": "Namme"
+                }
+            },
+            "device-picker": {
+                "device": "Apparaat",
+                "toggle": "Skeakelje"
+            }
         },
         "dialogs": {
             "generic": {
@@ -182,14 +231,37 @@
             "second": "{count} {count, plural,\none {sekonde}\nother {sekonden}\n}",
             "week": "{count} {count, plural,\none {wike}\nother {wiken}\n}"
         },
+        "notification_drawer": {
+            "close": "Slute"
+        },
         "panel": {
             "config": {
                 "automation": {
                     "editor": {
                         "actions": {
+                            "header": "Aksjes",
                             "type": {
                                 "choose": {
                                     "add_option": "Opsje tafoegje"
+                                }
+                            }
+                        },
+                        "alias": "Namme",
+                        "conditions": {
+                            "type": {
+                                "sun": {
+                                    "label": "Sinne"
+                                },
+                                "time": {
+                                    "weekdays": {
+                                        "fri": "Freed",
+                                        "mon": "Moandei",
+                                        "sat": "Sneon",
+                                        "sun": "Snein",
+                                        "thu": "Tongersdei",
+                                        "tue": "Tiisdei",
+                                        "wed": "Woansdei"
+                                    }
                                 }
                             }
                         },
@@ -209,6 +281,9 @@
                                 "state": {
                                     "from": "Fan",
                                     "to": "Nei"
+                                },
+                                "time": {
+                                    "at": "Om"
                                 }
                             }
                         }
@@ -218,6 +293,20 @@
                             "name": "Namme"
                         }
                     }
+                },
+                "cloud": {
+                    "alexa": {
+                        "title": "Alexa"
+                    },
+                    "google": {
+                        "title": "Google Assistant"
+                    }
+                },
+                "devices": {
+                    "data_table": {
+                        "device": "Apparaat"
+                    },
+                    "device_not_found": "Apparaat net fûn."
                 },
                 "helpers": {
                     "types": {
@@ -240,6 +329,13 @@
                     "title": "MQTT"
                 },
                 "scene": {
+                    "editor": {
+                        "devices": {
+                            "add": "Foegje in apparaat ta",
+                            "delete": "Apparaat ferwiderje"
+                        },
+                        "name": "Namme"
+                    },
                     "picker": {
                         "headers": {
                             "name": "Namme"
@@ -255,6 +351,9 @@
                     }
                 },
                 "users": {
+                    "editor": {
+                        "password_changed": "It wachtwurd is feroare!"
+                    },
                     "picker": {
                         "headers": {
                             "name": "Namme"
@@ -262,6 +361,9 @@
                     }
                 },
                 "zha": {
+                    "clusters": {
+                        "introduction": "Clusters binne de boustiennen foar Zigbee-funksjonaliteit. Se skiede funksjonaliteit yn logyske ienheden. D'r binne client- en serversoarten en disse besteane út attributen en kommando's."
+                    },
                     "groups": {
                         "description": "Meitsje en bewurkje Zigbee groepen"
                     }
@@ -270,13 +372,37 @@
                     "node_config": {
                         "config_value": "Konfiguraasje wearde"
                     },
+                    "node_management": {
+                        "add_to_group": "Tafoegje oan groep",
+                        "remove_from_group": "Ferwiderje út groep"
+                    },
                     "services": {
                         "cancel_command": "Opdracht annulearje"
                     }
                 }
             },
             "lovelace": {
+                "cards": {
+                    "starting": {
+                        "description": "Home Assistant komt op gong, eefkes geduld..."
+                    }
+                },
                 "editor": {
+                    "card": {
+                        "calendar": {
+                            "views": {
+                                "dayGridDay": "Dei",
+                                "dayGridMonth": "Moanne"
+                            }
+                        },
+                        "entities": {
+                            "edit_special_row": "Rige bewurkje mei de code-editor",
+                            "special_row": "Spesjale rige"
+                        }
+                    },
+                    "raw_editor": {
+                        "confirm_remove_config_title": "Binne jo wis dat jo jo Lovelace UI-konfiguraasje ferwiderje wolle?"
+                    },
                     "select_view": {
                         "dashboard_label": "Dashboard"
                     }
@@ -288,10 +414,32 @@
             "mailbox": {
                 "playback_title": "Berjocht ôfspylje"
             },
+            "page-authorize": {
+                "form": {
+                    "providers": {
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Wachtwurd",
+                                        "username": "Brûkersnamme"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "profile": {
+                "advanced_mode": {
+                    "link_promo": "Lear mear"
+                },
                 "dashboard": {
                     "dropdown_label": "Dashboard",
                     "header": "Dashboard"
+                },
+                "mfa_setup": {
+                    "close": "Slute"
                 },
                 "themes": {
                     "dark_mode": {
