@@ -105,7 +105,6 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
       return mql;
     });
     this._updateColumns();
-    console.log("firstUpdated", this._mqls);
   }
 
   protected updated(changedProperties: PropertyValues): void {
@@ -240,7 +239,6 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
   }
 
   private _updateColumns() {
-    console.log("updateCols", this._mqls);
     if (!this._mqls) {
       return;
     }
