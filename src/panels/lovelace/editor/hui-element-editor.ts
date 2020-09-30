@@ -281,7 +281,7 @@ export class HuiElementEditor extends LitElement {
       if (this._configElType !== type) {
         // If the type has changed, we need to load a new GUI editor
         if (!type) {
-          throw new Error("No type defined");
+          throw new Error(`No ${this.elementType} type defined`);
         }
 
         let elClass:

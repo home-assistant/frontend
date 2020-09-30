@@ -28,13 +28,13 @@ import {
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
-const SecondaryInfoValues: { [key: string]: { domains?: Set<string> } } = {
+const SecondaryInfoValues: { [key: string]: { domains?: string[] } } = {
   "entity-id": {},
   "last-changed": {},
-  "last-triggered": { domains: new Set(["automation", "script"]) },
-  position: { domains: new Set(["cover"]) },
-  "tilt-position": { domains: new Set(["cover"]) },
-  brightness: { domains: new Set(["light"]) },
+  "last-triggered": { domains: ["automation", "script"] },
+  position: { domains: ["cover"] },
+  "tilt-position": { domains: ["cover"] },
+  brightness: { domains: ["light"] },
 };
 
 @customElement("hui-generic-entity-row-editor")
@@ -117,7 +117,7 @@ export class HuiGenericEntityRowEditor extends LitElement
               if (
                 !("domains" in SecondaryInfoValues[info]) ||
                 ("domains" in SecondaryInfoValues[info] &&
-                  SecondaryInfoValues[info].domains!.has(domain))
+                  SecondaryInfoValues[info].domains!.includes(domain))
               ) {
                 return html`
                   <paper-item .value=${info}

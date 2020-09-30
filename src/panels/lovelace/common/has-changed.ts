@@ -1,6 +1,5 @@
 import { PropertyValues } from "lit-element";
 import { HomeAssistant } from "../../../types";
-import { EntityConfig } from "../entity-rows/types";
 import { processConfigEntities } from "./process-config-entities";
 
 function hasConfigChanged(element: any, changedProps: PropertyValues): boolean {
@@ -55,8 +54,9 @@ export function hasConfigOrEntitiesChanged(
 
   const entities = processConfigEntities(element._config!.entities);
 
-  return (entities.filter((conf) => "entity" in conf) as EntityConfig[]).some(
+  return entities.some(
     (entity) =>
+      "entity" in entity &&
       oldHass.states[entity.entity] !== element.hass!.states[entity.entity]
   );
 }

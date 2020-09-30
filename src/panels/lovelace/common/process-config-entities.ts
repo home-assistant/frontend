@@ -2,7 +2,9 @@
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { EntityConfig, LovelaceRowConfig } from "../entity-rows/types";
 
-export const processConfigEntities = <T extends LovelaceRowConfig>(
+export const processConfigEntities = <
+  T extends EntityConfig | LovelaceRowConfig
+>(
   entities: Array<T | string>
 ): T[] => {
   if (!entities || !Array.isArray(entities)) {

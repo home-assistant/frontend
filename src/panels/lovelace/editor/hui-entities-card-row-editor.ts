@@ -91,7 +91,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
                       : html`
                           <ha-entity-picker
                             allow-custom-entity
-                            .showClearIcon=${false}
+                            hideClearIcon
                             .hass=${this.hass}
                             .value=${(entityConf as EntityConfig).entity}
                             .index=${index}
