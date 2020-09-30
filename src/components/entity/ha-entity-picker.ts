@@ -206,7 +206,7 @@ export class HaEntityPicker extends LitElement {
           autocorrect="off"
           spellcheck="false"
         >
-          ${this.value && this.showClearIcon
+          ${this.value && !this.hideClearIcon
             ? html`
                 <ha-icon-button
                   aria-label=${this.hass.localize(
