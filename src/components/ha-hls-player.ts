@@ -102,30 +102,32 @@ class HaHLSPlayer extends LitElement {
   }
 
   private async _startHls(): Promise<void> {
-    let hls: any;
     const videoEl = this._videoEl;
-    this._useExoPlayer = await this._getUseExoPlayer();
-    if (!this._useExoPlayer) {
-      hls = ((await import(/* webpackChunkName: "hls.js" */ "hls.js")) as any)
-        .default as HLSModule;
-      let hlsSupported = hls.isSupported();
+    const url = this.url;
+    const useExoPlayerPromise = this._getUseExoPlayer();
+    const masterPlaylistPromise = await fetch(url);
 
-      if (!hlsSupported) {
-        hlsSupported =
-          videoEl.canPlayType("application/vnd.apple.mpegurl") !== "";
-      }
+    const hls = ((await import(
+      /* webpackChunkName: "hls.js" */ "hls.js"
+    )) as any).default as HLSModule;
+    let hlsSupported = hls.isSupported();
 
-      if (!hlsSupported) {
-        this._videoEl.innerHTML = this.hass.localize(
-          "ui.components.media-browser.video_not_supported"
-        );
-        return;
-      }
+    if (!hlsSupported) {
+      hlsSupported =
+        videoEl.canPlayType("application/vnd.apple.mpegurl") !== "";
     }
 
-    const url = this.url;
+    if (!hlsSupported) {
+      this._videoEl.innerHTML = this.hass.localize(
+        "ui.components.media-browser.video_not_supported"
+      );
+      return;
+    }
 
-    if (this._useExoPlayer) {
+    this._useExoPlayer = await useExoPlayerPromise;
+    const hevcRegexp = /CODECS=".*?((hev1)|(hvc1))\..*?"/;
+    const masterPlaylist = await masterPlaylistPromise.text();
+    if (hevcRegexp.test(masterPlaylist) && this._useExoPlayer) {
       this._renderHLSExoPlayer(url);
     } else if (hls.isSupported()) {
       this._renderHLSPolyfill(videoEl, hls, url);
