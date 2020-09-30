@@ -137,10 +137,9 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
       | undefined;
 
     if (
-      (changedProperties.has("lovelace") &&
-        oldLovelace?.config !== this.lovelace?.config) ||
-      (changedProperties.has("lovelace") &&
-        oldLovelace?.editMode !== this.lovelace?.editMode) ||
+      (changedProperties.has("lovelace") && (
+        oldLovelace?.config !== this.lovelace?.config ||
+        oldLovelace?.editMode !== this.lovelace?.editMode)) ||
       changedProperties.has("_columns")
     ) {
       this._createColumns();
