@@ -58,9 +58,10 @@ export class PanelView extends LitElement implements LovelaceViewElement {
     }
 
     const oldLovelace = changedProperties.get("lovelace") as Lovelace;
+    const oldCards = changedProperties.get("cards");
 
     if (
-      changedProperties.has("cards") ||
+      oldLovelace?.config !== this.lovelace?.config ||
       (oldLovelace && oldLovelace?.editMode !== this.lovelace?.editMode)
     ) {
       this._createCard();

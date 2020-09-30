@@ -131,7 +131,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     const oldLovelace = changedProperties.get("lovelace") as Lovelace;
 
     if (
-      changedProperties.has("cards") ||
+      oldLovelace?.config !== this.lovelace?.config ||
       oldLovelace?.editMode !== this.lovelace?.editMode ||
       changedProperties.has("_columns")
     ) {
