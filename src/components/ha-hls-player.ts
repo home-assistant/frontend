@@ -131,8 +131,7 @@ class HaHLSPlayer extends LitElement {
       hevcRegexp = /CODECS=".*?((hev1)|(hvc1))\..*?"/;
       masterPlaylist = await (await masterPlaylistPromise).text();
     }
-    // @ts-ignore
-    if (this._useExoPlayer && hevcRegexp.test(masterPlaylist)) {
+    if (this._useExoPlayer && hevcRegexp!.test(masterPlaylist!)) {
       this._renderHLSExoPlayer(playlist_url);
     } else if (hls.isSupported()) {
       this._renderHLSPolyfill(videoEl, hls, playlist_url);
