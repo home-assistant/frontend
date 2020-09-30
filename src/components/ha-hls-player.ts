@@ -105,7 +105,7 @@ class HaHLSPlayer extends LitElement {
     const videoEl = this._videoEl;
     const url = this.url;
     const useExoPlayerPromise = this._getUseExoPlayer();
-    const masterPlaylistPromise = await fetch(url);
+    const masterPlaylistPromise = fetch(url);
 
     const hls = ((await import(
       /* webpackChunkName: "hls.js" */ "hls.js"
@@ -125,10 +125,12 @@ class HaHLSPlayer extends LitElement {
     }
 
     this._useExoPlayer = await useExoPlayerPromise;
-    const hevcRegexp = /CODECS=".*?((hev1)|(hvc1))\..*?"/;
-    const masterPlaylist = await masterPlaylistPromise.text();
-    if (hevcRegexp.test(masterPlaylist) && this._useExoPlayer) {
-      this._renderHLSExoPlayer(url);
+    if (this._useExoPlayer) {
+      const hevcRegexp = /CODECS=".*?((hev1)|(hvc1))\..*?"/;
+      const masterPlaylist = await (await masterPlaylistPromise).text();
+      if (hevcRegexp.test(masterPlaylist)) {
+        this._renderHLSExoPlayer(url);
+      }
     } else if (hls.isSupported()) {
       this._renderHLSPolyfill(videoEl, hls, url);
     } else {
