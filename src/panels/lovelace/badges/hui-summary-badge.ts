@@ -51,8 +51,7 @@ export class HuiSummaryBadge extends LitElement implements LovelaceBadge {
       <ha-label-badge
         .icon=${this._config.icon}
         .description="${states.length} ${this._config.name ||
-        this._config.domain}${states.length !== 1 ? "s" : ""} ${this._config
-          .state}"
+        this._config.domain}(s) ${this._config.state}"
         .image=${this._config.image}
       ></ha-label-badge>
     `;
