@@ -112,7 +112,7 @@ class DialogUserDetail extends LitElement {
               .dir=${computeRTLDirection(this.hass)}
             >
               <ha-switch
-                .disabled=${user.system_generated}
+                .disabled=${user.system_generated || user.is_owner}
                 .checked=${this._isAdmin}
                 @change=${this._adminChanged}
               >

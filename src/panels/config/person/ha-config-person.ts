@@ -1,6 +1,7 @@
 import { mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
+import "@material/mwc-fab";
 import {
   css,
   CSSResult,
@@ -21,7 +22,7 @@ import {
   Person,
   updatePerson,
 } from "../../../data/person";
-import { fetchUsers, User } from "../../../data/user";
+import { fetchUsers, User, updateUser } from "../../../data/user";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage";
@@ -222,6 +223,9 @@ class HaConfigPerson extends LitElement {
         } catch (err) {
           return false;
         }
+      },
+      refreshUsers: () => {
+        this._usersLoad = fetchUsers(this.hass!);
       },
     });
   }
