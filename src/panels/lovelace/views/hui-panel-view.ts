@@ -57,6 +57,10 @@ export class PanelView extends LitElement implements LovelaceViewElement {
       );
     }
 
+    if (!changedProperties.has("lovelace")) {
+      return;
+    }
+
     const oldLovelace = changedProperties.get("lovelace") as Lovelace;
 
     if (
