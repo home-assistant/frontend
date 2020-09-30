@@ -103,7 +103,7 @@ class HaHLSPlayer extends LitElement {
 
   private async _startHls(): Promise<void> {
     const videoEl = this._videoEl;
-    const url = this.url.replace("master_playlist", "playlist");
+    const playlist_url = this.url.replace("master_playlist", "playlist");
     const useExoPlayerPromise = this._getUseExoPlayer();
     const masterPlaylistPromise = fetch(this.url);
 
@@ -133,11 +133,11 @@ class HaHLSPlayer extends LitElement {
     }
     // @ts-ignore
     if (this._useExoPlayer && hevcRegexp.test(masterPlaylist)) {
-      this._renderHLSExoPlayer(url);
+      this._renderHLSExoPlayer(playlist_url);
     } else if (hls.isSupported()) {
-      this._renderHLSPolyfill(videoEl, hls, url);
+      this._renderHLSPolyfill(videoEl, hls, playlist_url);
     } else {
-      this._renderHLSNative(videoEl, url);
+      this._renderHLSNative(videoEl, playlist_url);
     }
   }
 
