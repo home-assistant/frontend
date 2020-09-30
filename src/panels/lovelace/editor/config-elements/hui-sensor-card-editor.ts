@@ -3,6 +3,7 @@ import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
+  CSSResult,
   customElement,
   html,
   internalProperty,
@@ -90,7 +91,6 @@ export class HuiSensorCardEditor extends LitElement
     const graphs = ["line", "none"];
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <ha-entity-picker
           .label="${this.hass.localize(
@@ -237,6 +237,10 @@ export class HuiSensorCardEditor extends LitElement
       }
     }
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  static get styles(): CSSResult {
+    return configElementStyle;
   }
 }
 
