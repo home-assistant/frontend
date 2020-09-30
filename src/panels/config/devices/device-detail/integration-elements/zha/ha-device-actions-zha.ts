@@ -120,7 +120,7 @@ export class HaDeviceActionsZha extends LitElement {
     }
 
     await this.hass.callService("zha", "remove", {
-      ieee_address: this._zhaDevice!.ieee,
+      ieee: this._zhaDevice!.ieee,
     });
 
     history.back();
