@@ -5,6 +5,7 @@ import {
   html,
   LitElement,
   property,
+  query,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
@@ -17,6 +18,8 @@ class HaExpansionPanel extends LitElement {
   @property({ type: Boolean, reflect: true }) expanded = false;
 
   @property({ type: Boolean, reflect: true }) outlined = false;
+
+  @query(".container") private _container!: HTMLDivElement;
 
   protected render(): TemplateResult {
     return html`
@@ -37,28 +40,20 @@ class HaExpansionPanel extends LitElement {
   }
 
   private _handleTransitionEnd() {
-    const container = this.shadowRoot!.querySelector(
-      ".container"
-    )! as HTMLDivElement;
-
     if (this.expanded) {
-      container.style.height = "auto";
+      this._container.style.height = "auto";
     }
   }
 
   private _toggleContainer(): void {
-    const container = this.shadowRoot!.querySelector(
-      ".container"
-    )! as HTMLDivElement;
-
-    const scrollHeight = container.scrollHeight;
-    container.style.height = `${scrollHeight}px`;
+    const scrollHeight = this._container.scrollHeight;
+    this._container.style.height = `${scrollHeight}px`;
 
     if (!this.expanded) {
       this.expanded = true;
     } else {
       setTimeout(() => {
-        container.style.height = "0px";
+        this._container.style.height = "0px";
         this.expanded = false;
       }, 0);
     }
