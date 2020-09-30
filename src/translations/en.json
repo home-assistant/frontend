@@ -471,7 +471,8 @@
         "control": "Control",
         "related": "Related",
         "dismiss": "Dismiss",
-        "no_unique_id": "This entity does not have a unique ID, therefore its settings cannot be managed from the UI.",
+        "no_unique_id": "This entity does not have a unique ID, therefore its settings cannot be managed from the UI. See the {faq_link} for more detail.",
+        "faq": "documentation",
         "editor": {
           "name": "Name Override",
           "icon": "Icon Override",
