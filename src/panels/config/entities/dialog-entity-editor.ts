@@ -27,6 +27,7 @@ import {
   getExtendedEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import { haStyleDialog } from "../../../resources/styles";
+import { documentationUrl } from "../../../util/documentation-url";
 import type { HomeAssistant } from "../../../types";
 import { PLATFORMS_WITH_SETTINGS_TAB } from "./const";
 import "./entity-registry-settings";
@@ -170,7 +171,21 @@ export class DialogEntityEditor extends LitElement {
         }
         return html`
           <div class="content">
-            ${this.hass.localize("ui.dialogs.entity_registry.no_unique_id")}
+            ${this.hass.localize(
+              "ui.dialogs.entity_registry.no_unique_id",
+              "faq_link",
+              html`<a
+                href="${documentationUrl(
+                  this.hass,
+                  "/faq/unique_id"
+                )}"
+                target="_blank"
+                rel="noreferrer"
+                >${this.hass.localize(
+                  "ui.dialogs.entity_registry.faq"
+                )}</a
+              >`              
+            )}
           </div>
         `;
       case "tab-related":

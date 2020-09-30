@@ -496,9 +496,11 @@
                     "wnw": "WNW",
                     "wsw": "WZW"
                 },
+                "day": "Dag",
                 "forecast": "Verwachting",
                 "high": "Hoog",
-                "low": "Laag"
+                "low": "Laag",
+                "night": "Nacht"
             }
         },
         "common": {
@@ -605,7 +607,7 @@
                     "server": "Server"
                 },
                 "documentation": "documentatie",
-                "learn_adding_local_media": "Leer meer over media toevoegen in de {documentatie}.",
+                "learn_adding_local_media": "Leer meer over media toevoegen in de {documentation}.",
                 "local_media_files": "Plaats je video, audio en foto bestanden in de media map om bestanden te kunnen doorzoeken en afspelen in de browser of op ondersteunde mediaspelers.",
                 "media_browsing_error": "Fout bij bladeren door media",
                 "media_not_supported": "De Browser Media Player ondersteunt dit type media niet",
@@ -618,7 +620,7 @@
                 "pick-media": "Kies Media",
                 "play": "Speel",
                 "play-media": "Media afspelen",
-                "setup_local_help": "Raadpleeg de {documentatie} voor het instellen van lokale media.",
+                "setup_local_help": "Raadpleeg de {documentation} voor het instellen van lokale media.",
                 "video_not_supported": "Uw browser ondersteunt het video-element niet.",
                 "web-browser": "Webbrowser"
             },
@@ -2492,8 +2494,21 @@
                         },
                         "entities": {
                             "description": "De Entities-kaart is het meest voorkomende type kaart. Het groepeert items samen in lijsten.",
+                            "edit_special_row": "Bewerk rij met behulp van de code-editor",
+                            "entity_row": {
+                                "attribute": "Attribuut",
+                                "button": "Knop",
+                                "buttons": "Knoppen",
+                                "call-service": "Aanroepen service",
+                                "cast": "Cast",
+                                "conditional": "Conditioneel",
+                                "divider": "Verdeler",
+                                "section": "Sectie",
+                                "weblink": "Web link"
+                            },
                             "name": "Entiteiten",
                             "show_header_toggle": "Titel schakelaar weergeven?",
+                            "special_row": "speciale rij",
                             "toggle": "Entiteiten in- en uitschakelen"
                         },
                         "entity-filter": {
@@ -2614,7 +2629,8 @@
                             "description": "De Sensor-kaart geeft u een snel overzicht van de status van uw sensoren met een optionele grafiek om veranderingen in de tijd te visualiseren.",
                             "graph_detail": "Grafiek Detail",
                             "graph_type": "Grafiektype",
-                            "name": "Sensor"
+                            "name": "Sensor",
+                            "show_more_detail": "Laat meer details zien"
                         },
                         "shopping-list": {
                             "description": "Met de Shopping List-kaart kunt u items aan uw boodschappenlijst toevoegen, bewerken, afvinken en wissen.",

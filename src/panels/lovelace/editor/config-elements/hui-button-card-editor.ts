@@ -38,6 +38,15 @@ const cardConfigStruct = object({
   show_state: optional(boolean()),
 });
 
+const actions = [
+  "more-info",
+  "toggle",
+  "navigate",
+  "url",
+  "call-service",
+  "none",
+];
+
 @customElement("hui-button-card-editor")
 export class HuiButtonCardEditor extends LitElement
   implements LovelaceCardEditor {
@@ -80,8 +89,8 @@ export class HuiButtonCardEditor extends LitElement
       : "";
   }
 
-  get _tap_action(): ActionConfig {
-    return this._config!.tap_action || { action: "toggle" };
+  get _tap_action(): ActionConfig | undefined {
+    return this._config!.tap_action;
   }
 
   get _hold_action(): ActionConfig {
@@ -97,14 +106,6 @@ export class HuiButtonCardEditor extends LitElement
       return html``;
     }
 
-    const actions = [
-      "more-info",
-      "toggle",
-      "navigate",
-      "url",
-      "call-service",
-      "none",
-    ];
     const dir = computeRTLDirection(this.hass!);
 
     return html`
@@ -117,9 +118,9 @@ export class HuiButtonCardEditor extends LitElement
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
           .hass=${this.hass}
-          .value="${this._entity}"
+          .value=${this._entity}
           .configValue=${"entity"}
-          @value-changed="${this._valueChanged}"
+          @value-changed=${this._valueChanged}
           allow-custom-entity
         ></ha-entity-picker>
         <div class="side-by-side">
@@ -129,9 +130,9 @@ export class HuiButtonCardEditor extends LitElement
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .value="${this._name}"
-            .configValue="${"name"}"
-            @value-changed="${this._valueChanged}"
+            .value=${this._name}
+            .configValue=${"name"}
+            @value-changed=${this._valueChanged}
           ></paper-input>
           <ha-icon-input
             .label="${this.hass.localize(
@@ -155,9 +156,9 @@ export class HuiButtonCardEditor extends LitElement
               .dir=${dir}
             >
               <ha-switch
-                .checked="${this._show_name !== false}"
-                .configValue="${"show_name"}"
-                @change="${this._change}"
+                .checked=${this._show_name !== false}
+                .configValue=${"show_name"}
+                @change=${this._change}
               ></ha-switch>
             </ha-formfield>
           </div>
@@ -183,9 +184,9 @@ export class HuiButtonCardEditor extends LitElement
               .dir=${dir}
             >
               <ha-switch
-                .checked="${this._show_icon !== false}"
-                .configValue="${"show_icon"}"
-                @change="${this._change}"
+                .checked=${this._show_icon !== false}
+                .configValue=${"show_icon"}
+                @change=${this._change}
               ></ha-switch>
             </ha-formfield>
           </div>
@@ -197,17 +198,17 @@ export class HuiButtonCardEditor extends LitElement
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .value="${this._icon_height}"
-            .configValue="${"icon_height"}"
-            @value-changed="${this._valueChanged}"
+            .value=${this._icon_height}
+            .configValue=${"icon_height"}
+            @value-changed=${this._valueChanged}
             type="number"
             ><div class="suffix" slot="suffix">px</div>
           </paper-input>
           <hui-theme-select-editor
             .hass=${this.hass}
-            .value="${this._theme}"
-            .configValue="${"theme"}"
-            @value-changed="${this._valueChanged}"
+            .value=${this._theme}
+            .configValue=${"theme"}
+            @value-changed=${this._valueChanged}
           ></hui-theme-select-editor>
         </div>
         <div class="side-by-side">
@@ -218,10 +219,13 @@ export class HuiButtonCardEditor extends LitElement
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .hass=${this.hass}
-            .config="${this._tap_action}"
-            .actions="${actions}"
-            .configValue="${"tap_action"}"
-            @value-changed="${this._valueChanged}"
+            .config=${this._tap_action}
+            .actions=${actions}
+            .configValue=${"tap_action"}
+            .tooltipText=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.button.default_action_help"
+            )}
+            @value-changed=${this._valueChanged}
           ></hui-action-editor>
           <hui-action-editor
             .label="${this.hass.localize(
@@ -230,10 +234,13 @@ export class HuiButtonCardEditor extends LitElement
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .hass=${this.hass}
-            .config="${this._hold_action}"
-            .actions="${actions}"
-            .configValue="${"hold_action"}"
-            @value-changed="${this._valueChanged}"
+            .config=${this._hold_action}
+            .actions=${actions}
+            .configValue=${"hold_action"}
+            .tooltipText=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.button.default_action_help"
+            )}
+            @value-changed=${this._valueChanged}
           ></hui-action-editor>
         </div>
       </div>
@@ -251,11 +258,12 @@ export class HuiButtonCardEditor extends LitElement
       return;
     }
 
-    this._config = {
-      ...this._config,
-      [target.configValue!]: value,
-    };
-    fireEvent(this, "config-changed", { config: this._config });
+    fireEvent(this, "config-changed", {
+      config: {
+        ...this._config,
+        [target.configValue!]: value,
+      },
+    });
   }
 
   private _valueChanged(ev: CustomEvent): void {
@@ -268,25 +276,22 @@ export class HuiButtonCardEditor extends LitElement
     if (this[`_${target.configValue}`] === value) {
       return;
     }
+    let newConfig;
     if (target.configValue) {
       if (value !== false && !value) {
-        this._config = { ...this._config };
-        delete this._config[target.configValue!];
+        newConfig = { ...this._config };
+        delete newConfig[target.configValue!];
       } else {
-        let newValue: string | undefined;
-        if (
-          target.configValue === "icon_height" &&
-          !isNaN(Number(target.value))
-        ) {
-          newValue = `${String(value)}px`;
-        }
-        this._config = {
+        newConfig = {
           ...this._config,
-          [target.configValue!]: newValue !== undefined ? newValue : value,
+          [target.configValue!]:
+            target.configValue === "icon_height" && !isNaN(Number(target.value))
+              ? `${String(value)}px`
+              : value,
         };
       }
     }
-    fireEvent(this, "config-changed", { config: this._config });
+    fireEvent(this, "config-changed", { config: newConfig });
   }
 }
 

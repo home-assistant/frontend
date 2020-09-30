@@ -496,9 +496,11 @@
                     "wnw": "ONO",
                     "wsw": "OSO"
                 },
+                "day": "Dia",
                 "forecast": "Previsió",
                 "high": "Alt",
-                "low": "Baix"
+                "low": "Baix",
+                "night": "Nit"
             }
         },
         "common": {
@@ -1038,7 +1040,16 @@
                                     "before": "Abans",
                                     "label": "Temporal",
                                     "type_input": "Valor d'un ajudant de data/hora",
-                                    "type_value": "Temps fix"
+                                    "type_value": "Temps fix",
+                                    "weekdays": {
+                                        "fri": "Divendres",
+                                        "mon": "Dilluns",
+                                        "sat": "Dissabte",
+                                        "sun": "Diumenge",
+                                        "thu": "Dijous",
+                                        "tue": "Dimarts",
+                                        "wed": "Dimecres"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Entitat amb ubicació",
@@ -2085,7 +2096,7 @@
                         "name": "Nom",
                         "new_password": "Nova contrasenya",
                         "owner": "Propietari",
-                        "password_changed": "La contrasenya s'ha canviat!",
+                        "password_changed": "La contrasenya s'ha canviat correctament",
                         "system_generated": "Generat pel sistema",
                         "system_generated_users_not_editable": "No es poden actualitzar usuaris generats pel sistema.",
                         "system_generated_users_not_removable": "No es poden eliminar usuaris generats pel sistema.",
@@ -2472,8 +2483,15 @@
                             "name": "Botó"
                         },
                         "calendar": {
+                            "calendar_entities": "Entitats de calendari",
                             "description": "La targeta Calendari mostra un calendari que inclou visualitzacions de dia, setmana i llista",
-                            "name": "Calendari"
+                            "inital_view": "Vista inicial",
+                            "name": "Calendari",
+                            "views": {
+                                "dayGridDay": "Dia",
+                                "dayGridMonth": "Mes",
+                                "listWeek": "Llista"
+                            }
                         },
                         "conditional": {
                             "card": "Targeta",
@@ -2492,8 +2510,21 @@
                         },
                         "entities": {
                             "description": "La targeta entitats és la més habitual. Agrupa diferents tipus d'entitats en una llista.",
+                            "edit_special_row": "Edita la fila mitjançant l'editor de codi",
+                            "entity_row": {
+                                "attribute": "Atribut",
+                                "button": "Botó",
+                                "buttons": "Botons",
+                                "call-service": "Crida servei",
+                                "cast": "Obté",
+                                "conditional": "Condicional",
+                                "divider": "Divisor",
+                                "section": "Secció",
+                                "weblink": "Enllaç web"
+                            },
                             "name": "Entitats",
                             "show_header_toggle": "Mostra commutació a la capçalera?",
+                            "special_row": "fila especial",
                             "toggle": "Commuta les entitats."
                         },
                         "entity-filter": {
@@ -2614,7 +2645,8 @@
                             "description": "La targeta sensor mostra una visió ràpida d'un dels teus sensors. En mostra l'estat i opcionalment un gràfic amb els canvis al llarg del temps.",
                             "graph_detail": "Detall del gràfic",
                             "graph_type": "Tipus de gràfic",
-                            "name": "Sensor"
+                            "name": "Sensor",
+                            "show_more_detail": "Mostra més detalls"
                         },
                         "shopping-list": {
                             "description": "La targeta de llista de compres et permet afegir, editar, marcar i borrar elements de la teva llista de compres.",
@@ -3006,7 +3038,7 @@
                     "created_at": "Creat el {date}",
                     "delete_failed": "No s'ha pogut eliminar el token d'autenticació d'accés.",
                     "description": "Crea tokens d'autenticació d'accés de llarga durada per permetre als teus programes/scripts interactuar amb la instància de Home Assistant. Cada token és vàlid durant deu anys després de la seva creació. Els següents tokens d'autenticació d'accés de llarga durada estan actius actualment.",
-                    "empty_state": "Encara no tens tokens d'autenticaciós d'accés de llarga durada.",
+                    "empty_state": "Encara no tens tokens d'autenticació d'accés de llarga durada.",
                     "header": "Tokens d'autenticació d'accés de llarga durada",
                     "last_used": "Darrer ús el {date} des de {location}",
                     "learn_auth_requests": "Aprèn a fer sol·licituds autenticades.",

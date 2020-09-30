@@ -425,7 +425,9 @@
                 "media_previous_track": "Anterior",
                 "sound_mode": "Modo de som",
                 "source": "Fonte",
-                "text_to_speak": "Texto para falar"
+                "text_to_speak": "Texto para falar",
+                "turn_off": "Desligar",
+                "turn_on": "Ligar"
             },
             "persistent_notification": {
                 "dismiss": "Dispensar"
@@ -492,9 +494,11 @@
                     "wnw": "ONO",
                     "wsw": "OSO"
                 },
+                "day": "Dia",
                 "forecast": "Previsão",
                 "high": "Alto",
-                "low": "Fraco"
+                "low": "Fraco",
+                "night": "Noite"
             }
         },
         "common": {
@@ -502,6 +506,7 @@
             "back": "Voltar",
             "cancel": "Cancelar",
             "close": "Fechar",
+            "copied": "Copiado",
             "delete": "Eliminar",
             "error_required": "Obrigatório",
             "loading": "Carregando",
@@ -559,6 +564,20 @@
                 "no_history_found": "Histórico de estado não encontrado."
             },
             "media-browser": {
+                "choose-source": "Escolha a fonte",
+                "class": {
+                    "album": "Álbum",
+                    "artist": "Artista",
+                    "channel": "Canal",
+                    "composer": "Compositor",
+                    "directory": "Biblioteca",
+                    "episode": "Episódio",
+                    "genre": "Gênero",
+                    "movie": "Filme",
+                    "music": "Música",
+                    "season": "Temporada",
+                    "video": "Vídeo"
+                },
                 "content-type": {
                     "album": "Álbum",
                     "artist": "Artista",
@@ -566,6 +585,9 @@
                     "playlist": "Lista de reprodução",
                     "server": "Servidor"
                 },
+                "documentation": "Documentação",
+                "no_items": "Sem itens",
+                "pick": "Escolher",
                 "play": "Tocar"
             },
             "picture-upload": {
@@ -674,6 +696,7 @@
                 "yaml_not_editable": "As configurações desta entidade não podem ser editadas a partir da interface do usuário. Somente entidades configuradas a partir da interface do usuário são configuráveis a partir da interface do usuário."
             },
             "more_info_control": {
+                "details": "Detalhes",
                 "dismiss": "Dispensar diálogo",
                 "edit": "Editar entidade",
                 "person": {
@@ -967,7 +990,16 @@
                                 "time": {
                                     "after": "Depois",
                                     "before": "Antes",
-                                    "label": "Temporal"
+                                    "label": "Temporal",
+                                    "weekdays": {
+                                        "fri": "Sexta-feira",
+                                        "mon": "Segunda-feira",
+                                        "sat": "Sábado",
+                                        "sun": "Domingo",
+                                        "thu": "Quinta-feira",
+                                        "tue": "Terça-feira",
+                                        "wed": "Quarta-feira"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Entidade com localização",
@@ -1511,6 +1543,7 @@
                         "options": "Opções",
                         "reload": "Recarregar",
                         "reload_confirm": "A integração foi recarregada",
+                        "reload_restart_confirm": "Reinicie o Home Assistant para terminar o carregamento dessa integração",
                         "rename": "Renomear",
                         "restart_confirm": "Reinicie o Home Assistant para concluir a remoção dessa integração",
                         "settings_button": "Editar configurações para {integration}",
@@ -1669,6 +1702,7 @@
                     "topic": "tópico"
                 },
                 "ozw": {
+                    "button": "Configurar",
                     "common": {
                         "instance": "Instância",
                         "network": "Rede",
@@ -1824,20 +1858,29 @@
                     "section": {
                         "reloading": {
                             "automation": "Recarregar as automações",
+                            "command_line": "Recarregar entidades de linha de comando",
                             "core": "Recarregar localização & customizações",
                             "filter": "Recarregar entidades de filtro",
+                            "generic": "Recarregar entidades genéricas de câmeras IP",
+                            "generic_thermostat": "Recarregar entidades genéricas do termostato",
                             "group": "Recarregar os grupos",
                             "heading": "Recarregando a configuração YAML",
-                            "input_boolean": "Recarregar entradas de booleano",
+                            "homekit": "Recarregar Homekit",
+                            "input_boolean": "Recarregar entradas de booleanos",
                             "input_datetime": "Recarregar entradas de data",
                             "input_number": "Recarregar entradas numéricas",
                             "input_select": "Recarregar entradas de seleção",
                             "input_text": "Recarregar entradas de texto",
                             "introduction": "Algumas partes do Home Assistant podem ser recarregadas sem precisar reiniciar. Pressionar recarregar descarregará sua configuração YAML atual e carregará a nova.",
                             "person": "Recarregar pessoas",
+                            "rest": "Recarregar entidades rest e serviços de notificação",
+                            "rpi_gpio": "Recarregar entidades GPIO do Raspberry PI",
                             "scene": "Recarregar cenas",
                             "script": "Recarregar os scripts",
+                            "smtp": "Recarregar serviços de notificação de SMTP",
+                            "statistics": "Recarregar estatísticas de entidades",
                             "template": "Recarregar entidades de modelo",
+                            "universal": "Recarregar entidades universais de media players",
                             "zone": "Recarregar zonas"
                         },
                         "server_management": {
@@ -1861,12 +1904,16 @@
                     "caption": "Etiquetas",
                     "detail": {
                         "create": "Criar",
-                        "name": "Nome"
+                        "delete": "Excluir",
+                        "description": "Descrição",
+                        "name": "Nome",
+                        "update": "Atualizar"
                     },
                     "edit": "Editar",
                     "headers": {
                         "name": "Nome"
-                    }
+                    },
+                    "write": "Escrever"
                 },
                 "users": {
                     "add_user": {
@@ -2271,7 +2318,12 @@
                             "name": "Botão"
                         },
                         "calendar": {
-                            "name": "Calendário"
+                            "name": "Calendário",
+                            "views": {
+                                "dayGridDay": "Dia",
+                                "dayGridMonth": "Mês",
+                                "listWeek": "Lista"
+                            }
                         },
                         "conditional": {
                             "card": "Cartão",
@@ -2290,6 +2342,15 @@
                         },
                         "entities": {
                             "description": "O cartão das Entidades é o tipo de cartão mais comum. Ele agrupa os itens em listas.",
+                            "entity_row": {
+                                "attribute": "Atributo",
+                                "button": "Botão",
+                                "buttons": "Botões",
+                                "call-service": "Serviço de chamada",
+                                "conditional": "Condicional",
+                                "divider": "Divisor",
+                                "section": "Seção"
+                            },
                             "name": "Entidades",
                             "show_header_toggle": "Mostrar Alternador do Cabeçalho?",
                             "toggle": "Alternar entidades."
@@ -2411,7 +2472,8 @@
                             "description": "O cartão Sensor oferece uma visão rápida do estado de seus sensores com um gráfico opcional para visualizar a mudança ao longo do tempo.",
                             "graph_detail": "Detalhe do gráfico",
                             "graph_type": "Tipo de gráfico",
-                            "name": "Sensor"
+                            "name": "Sensor",
+                            "show_more_detail": "Mostrar mais detalhes"
                         },
                         "shopping-list": {
                             "description": "O cartão da Lista de Compras permite adicionar, editar, fazer check-off e limpar itens da sua lista de compras.",
@@ -2767,6 +2829,9 @@
                     "submit": "Enviar"
                 },
                 "current_user": "Você está logado como {fullName}.",
+                "customize_sidebar": {
+                    "button": "Editar"
+                },
                 "dashboard": {
                     "description": "Escolha um painel padrão para este dispositivo.",
                     "dropdown_label": "Painel de controle",
@@ -2789,6 +2854,7 @@
                     "confirm_delete": "Tem certeza de que deseja excluir o token de acesso para {name} ?",
                     "create": "Criar token",
                     "create_failed": "Falha ao criar o token de acesso.",
+                    "created": "Criado em {date}",
                     "created_at": "Criado em {date}",
                     "delete_failed": "Falha ao excluir o token de acesso.",
                     "description": "Crie tokens de acesso de longa duração para permitir que seus scripts interajam com sua instância do Home Assistant. Cada token será válido por 10 anos a partir da criação. Os seguintes tokens de acesso de longa duração estão atualmente ativos.",
@@ -2796,6 +2862,7 @@
                     "header": "Tokens de acesso de longa duração",
                     "last_used": "Usado pela última vez em {date} de {location}",
                     "learn_auth_requests": "Aprenda como fazer solicitações autenticadas.",
+                    "name": "Nome",
                     "not_used": "Nunca foi usado",
                     "prompt_copy_token": "Copie seu token de acesso. Ele não será mostrado novamente.",
                     "prompt_name": "Nome?"
@@ -2862,6 +2929,7 @@
             }
         },
         "sidebar": {
+            "done": "Feito",
             "external_app_configuration": "Configuração do aplicativo",
             "sidebar_toggle": "Alternar barra lateral"
         }

@@ -1,13 +1,12 @@
 /** Return an icon representing a cover state. */
 import { HassEntity } from "home-assistant-js-websocket";
-import { domainIcon } from "./domain_icon";
 
-export const coverIcon = (state: HassEntity): string => {
-  const open = state.state !== "closed";
+export const coverIcon = (state?: string, stateObj?: HassEntity): string => {
+  const open = state !== "closed";
 
-  switch (state.attributes.device_class) {
+  switch (stateObj?.attributes.device_class) {
     case "garage":
-      switch (state.state) {
+      switch (state) {
         case "opening":
           return "hass:arrow-up-box";
         case "closing":
@@ -18,7 +17,7 @@ export const coverIcon = (state: HassEntity): string => {
           return "hass:garage-open";
       }
     case "gate":
-      switch (state.state) {
+      switch (state) {
         case "opening":
         case "closing":
           return "hass:gate-arrow-right";
@@ -32,7 +31,7 @@ export const coverIcon = (state: HassEntity): string => {
     case "damper":
       return open ? "hass:circle" : "hass:circle-slice-8";
     case "shutter":
-      switch (state.state) {
+      switch (state) {
         case "opening":
           return "hass:arrow-up-box";
         case "closing":
@@ -44,7 +43,7 @@ export const coverIcon = (state: HassEntity): string => {
       }
     case "blind":
     case "curtain":
-      switch (state.state) {
+      switch (state) {
         case "opening":
           return "hass:arrow-up-box";
         case "closing":
@@ -55,7 +54,7 @@ export const coverIcon = (state: HassEntity): string => {
           return "hass:blinds-open";
       }
     case "window":
-      switch (state.state) {
+      switch (state) {
         case "opening":
           return "hass:arrow-up-box";
         case "closing":
@@ -65,7 +64,16 @@ export const coverIcon = (state: HassEntity): string => {
         default:
           return "hass:window-open";
       }
+  }
+
+  switch (state) {
+    case "opening":
+      return "hass:arrow-up-box";
+    case "closing":
+      return "hass:arrow-down-box";
+    case "closed":
+      return "hass:window-closed";
     default:
-      return domainIcon("cover", state.state);
+      return "hass:window-open";
   }
 };

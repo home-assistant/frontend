@@ -212,13 +212,8 @@
           Chromecast is a technology developed by Google, and is available on:
         </p>
         <ul>
-          <li>Google Chrome (all platforms except on iOS)</li>
-          <li>
-            Microsoft Edge (all platforms,
-            <a href="https://www.microsoftedgeinsider.com" target="_blank"
-              >dev and canary builds only</a
-            >)
-          </li>
+          <li>Google Chrome (all platforms except iOS)</li>
+          <li>Microsoft Edge (all platforms)</li>
         </ul>
       </div>
 

@@ -18,6 +18,7 @@ export const subscribeRenderTemplate = (
     template: string;
     entity_ids?: string | string[];
     variables?: object;
+    timeout?: number;
   }
 ): Promise<UnsubscribeFunc> => {
   return conn.subscribeMessage((msg: RenderTemplateResult) => onChange(msg), {

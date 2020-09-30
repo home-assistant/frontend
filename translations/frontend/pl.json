@@ -496,9 +496,11 @@
                     "wnw": "zach. płn.-zach.",
                     "wsw": "zach. płd.-zach."
                 },
+                "day": "Dzień",
                 "forecast": "Prognoza",
                 "high": "wysoka",
-                "low": "niska"
+                "low": "niska",
+                "night": "Noc"
             }
         },
         "common": {
@@ -604,15 +606,21 @@
                     "playlist": "Lista odtwarzania",
                     "server": "Serwer"
                 },
+                "documentation": "dokumentacja",
+                "learn_adding_local_media": "Dowiedz się więcej o dodawaniu multimediów w {documentation}.",
+                "local_media_files": "Umieść pliki wideo, audio i obrazy w folderze multimediów, aby móc je przeglądać i odtwarzać w przeglądarce lub obsługiwanych odtwarzaczach multimedialnych.",
                 "media_browsing_error": "Błąd przeglądania multimediów",
                 "media_not_supported": "Przeglądarka odtwarzacza mediów nie obsługuje tego typu mediów",
                 "media_player": "Odtwarzacz mediów",
                 "media-player-browser": "Przeglądarka odtwarzacza mediów",
                 "no_items": "Brak elementów",
+                "no_local_media_found": "Nie znaleziono mediów lokalnych",
+                "no_media_folder": "Wygląda na to, że nie utworzyłeś jeszcze folderu multimediów.",
                 "pick": "Wybierz",
                 "pick-media": "Wybierz media",
                 "play": "Odtwarzaj",
                 "play-media": "Odtwarzaj media",
+                "setup_local_help": "Zapoznaj się z {documentation}, by skonfigurować media lokalne.",
                 "video_not_supported": "Twoja przeglądarka nie obsługuje elementu wideo.",
                 "web-browser": "Przeglądarka internetowa"
             },
@@ -672,7 +680,7 @@
                     "icon": "Nadpisanie ikony",
                     "icon_error": "Ikony powinny mieć format 'prefix:iconname', np. 'mdi:home'",
                     "name": "Nadpisanie nazwy",
-                    "note": "Uwaga: może to jeszcze nie działać ze wszystkimi integracjami.",
+                    "note": "Uwaga: to może jeszcze nie działać ze wszystkimi integracjami.",
                     "unavailable": "Ta encja nie jest obecnie dostępna.",
                     "update": "AKTUALIZUJ"
                 },
@@ -894,7 +902,7 @@
                 },
                 "automation": {
                     "caption": "Automatyzacje",
-                    "description": "Twórz i edytuj automatyzacje",
+                    "description": "Zarządzaj automatyzacjami",
                     "editor": {
                         "actions": {
                             "add": "Dodaj akcję",
@@ -1032,7 +1040,16 @@
                                     "before": "Przed",
                                     "label": "Czas",
                                     "type_input": "Wartość pomocnika typu data/czas",
-                                    "type_value": "Ustalony czas"
+                                    "type_value": "Ustalony czas",
+                                    "weekdays": {
+                                        "fri": "Piątek",
+                                        "mon": "Poniedziałek",
+                                        "sat": "Sobota",
+                                        "sun": "Niedziela",
+                                        "thu": "Czwartek",
+                                        "tue": "Wtorek",
+                                        "wed": "Środa"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Encja z lokalizacją",
@@ -1983,7 +2000,7 @@
                             "filter": "Encje komponentu filtr",
                             "generic": "Encje komponentu kamera IP generic",
                             "generic_thermostat": "Encje komponentu termostatu generic",
-                            "group": "Grupy",
+                            "group": "Przeładuj grupy, ich encje oraz usługi powiadomień",
                             "heading": "Ponowne wczytanie konfiguracji YAML",
                             "history_stats": "Encje komponentu historia stanów",
                             "homekit": "HomeKit",
@@ -2466,8 +2483,15 @@
                             "name": "Przycisk"
                         },
                         "calendar": {
+                            "calendar_entities": "Encje kalendarza",
                             "description": "Karta kalendarza wyświetla kalendarz zawierający widoki dnia, tygodnia i listy",
-                            "name": "Kalendarz"
+                            "inital_view": "Wstępny widok",
+                            "name": "Kalendarz",
+                            "views": {
+                                "dayGridDay": "Dzień",
+                                "dayGridMonth": "Miesiąc",
+                                "listWeek": "Lista"
+                            }
                         },
                         "conditional": {
                             "card": "Karta",
@@ -2486,8 +2510,21 @@
                         },
                         "entities": {
                             "description": "Karta encji jest najbardziej popularnym rodzajem karty. Grupuje ona encje w listy.",
+                            "edit_special_row": "Edytuj wiersz za pomocą edytora kodu",
+                            "entity_row": {
+                                "attribute": "Atrybut",
+                                "button": "Przycisk",
+                                "buttons": "Przyciski",
+                                "call-service": "Wywołaj usługę",
+                                "cast": "Cast",
+                                "conditional": "Warunkowe",
+                                "divider": "Dzielnik",
+                                "section": "Sekcja",
+                                "weblink": "Łącze internetowe"
+                            },
                             "name": "Encje",
                             "show_header_toggle": "Pokaż przełącznik w nagłówku",
+                            "special_row": "wiersz specjalny",
                             "toggle": "Przełącz encje"
                         },
                         "entity-filter": {
@@ -2608,7 +2645,8 @@
                             "description": "Karta sensor zapewnia szybki przegląd stanu sensorów z opcjonalnym wykresem, aby wizualizować zmiany w czasie.",
                             "graph_detail": "Szczegół wykresu",
                             "graph_type": "Rodzaj wykresu",
-                            "name": "Sensor"
+                            "name": "Sensor",
+                            "show_more_detail": "Pokaż więcej informacji"
                         },
                         "shopping-list": {
                             "description": "Karta lista zakupów umożliwia dodawanie, edytowanie, zaznaczanie i usuwanie pozycji z listy zakupów.",

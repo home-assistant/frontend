@@ -175,7 +175,7 @@ class HassioAddonConfig extends LitElement {
         }
         iron-autogrow-textarea {
           width: 100%;
-          font-family: monospace;
+          font-family: var(--code-font-family, monospace);
         }
         .syntaxerror {
           color: var(--error-color);

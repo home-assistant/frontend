@@ -46,12 +46,20 @@ export const fetchHassioSnapshotInfo = async (
   hass: HomeAssistant,
   snapshot: string
 ) => {
-  return hassioApiResultExtractor(
-    await hass.callApi<HassioResponse<HassioSnapshotDetail>>(
-      "GET",
-      `hassio/snapshots/${snapshot}/info`
-    )
-  );
+  if (hass) {
+    return hassioApiResultExtractor(
+      await hass.callApi<HassioResponse<HassioSnapshotDetail>>(
+        "GET",
+        `hassio/snapshots/${snapshot}/info`
+      )
+    );
+  }
+  // When called from onboarding we don't have hass
+  const resp = await fetch(`/api/hassio/snapshots/${snapshot}/info`, {
+    method: "GET",
+  });
+  const data = (await resp.json()).data;
+  return data;
 };
 
 export const reloadHassioSnapshots = async (hass: HomeAssistant) => {
@@ -78,4 +86,32 @@ export const createHassioPartialSnapshot = async (
     `hassio/snapshots/new/partial`,
     data
   );
+};
+
+export const uploadSnapshot = async (
+  hass: HomeAssistant,
+  file: File
+): Promise<HassioResponse<HassioSnapshot>> => {
+  const fd = new FormData();
+  let resp;
+  fd.append("file", file);
+  if (hass) {
+    resp = await hass.fetchWithAuth("/api/hassio/snapshots/new/upload", {
+      method: "POST",
+      body: fd,
+    });
+  } else {
+    // When called from onboarding we don't have hass
+    resp = await fetch("/api/hassio/snapshots/new/upload", {
+      method: "POST",
+      body: fd,
+    });
+  }
+
+  if (resp.status === 413) {
+    throw new Error("Uploaded snapshot is too large");
+  } else if (resp.status !== 200) {
+    throw new Error(`${resp.status} ${resp.statusText}`);
+  }
+  return await resp.json();
 };

@@ -19,6 +19,7 @@
         "logbook": "Journal",
         "mailbox": "Bréifkëscht",
         "map": "Kaart",
+        "media_browser": "Medie navigateur",
         "profile": "Profil",
         "shopping_list": "Akafslëscht",
         "states": "Iwwersiicht"
@@ -495,9 +496,11 @@
                     "wnw": "WNW",
                     "wsw": "WSW"
                 },
+                "day": "Dag",
                 "forecast": "Prognose",
                 "high": "Héich",
-                "low": "Niddreg"
+                "low": "Niddreg",
+                "night": "Nuecht"
             }
         },
         "common": {
@@ -505,6 +508,8 @@
             "back": "Zeréck",
             "cancel": "Ofbriechen",
             "close": "Zoumaachen",
+            "continue": "Weider",
+            "copied": "Kopéiert",
             "delete": "Läschen",
             "error_required": "Erfuerderlech",
             "loading": "Lued",
@@ -551,6 +556,10 @@
                 "toggle": "Ëmschalten"
             },
             "entity": {
+                "entity-attribute-picker": {
+                    "attribute": "Attribut",
+                    "show_attributes": "Attributer uweisen"
+                },
                 "entity-picker": {
                     "clear": "Läschen",
                     "entity": "Entitéit",
@@ -561,8 +570,35 @@
                 "loading_history": "Lued Status Verlaaf",
                 "no_history_found": "Keen Status Verlaaf fonnt"
             },
+            "logbook": {
+                "entries_not_found": "Keng Logbicher Entrée fonnt"
+            },
             "media-browser": {
+                "audio_not_supported": "Däin Browser ënnerstëtzt dësen Audio Element net.",
+                "choose_player": "Ofspiller auswielen",
                 "choose-source": "Quell auswielen",
+                "class": {
+                    "album": "Album",
+                    "app": "App",
+                    "artist": "Artist",
+                    "channel": "Kanal",
+                    "composer": "Kompositeur",
+                    "contributing_artist": "Bäidroenden Artist",
+                    "directory": "Bibliothéik",
+                    "episode": "Episode",
+                    "game": "Spill",
+                    "genre": "Genre",
+                    "image": "Bild",
+                    "movie": "Film",
+                    "music": "Musek",
+                    "playlist": "Ofspilllëscht",
+                    "podcast": "Podcast",
+                    "season": "Saison",
+                    "track": "Piste",
+                    "tv_show": "TV Sendung",
+                    "url": "Url",
+                    "video": "Video"
+                },
                 "content-type": {
                     "album": "Album",
                     "artist": "Artist",
@@ -570,12 +606,23 @@
                     "playlist": "Ofspilllëscht",
                     "server": "Server"
                 },
+                "documentation": "Dokumentatioun",
+                "learn_adding_local_media": "Méi iwwert dobäisetze vun Medie an der {documentation} liesen.",
+                "local_media_files": "Placéier deng Video, Audio an Biller Dateien am Medie Dossier fir se kënnen duerch ze sichen an am Browser oder ënnerstëtzte Medie Spiller of ze spillen.",
+                "media_browsing_error": "Feeler beim duerchsiche vun de Medie",
+                "media_not_supported": "De Medie Spiller vum Browser ënnerstëtzt dëse typ vun Medie net",
+                "media_player": "Medie Spiller",
                 "media-player-browser": "Media Player Browser",
                 "no_items": "Keng Elementer",
+                "no_local_media_found": "Keng lokal Medie fonnt",
+                "no_media_folder": "Et gesäit sou aus wéi wann nach keen lokale Medie Dossier erstallt gouf.",
                 "pick": "Auswielen",
                 "pick-media": "Media auswielen",
                 "play": "Spill",
-                "play-media": "Media ofspillen"
+                "play-media": "Media ofspillen",
+                "setup_local_help": "Kuck Dokumentatioun iwwert d'ariichten vun lokale Medien.",
+                "video_not_supported": "Däin Browser ënnerstëtzt dëse Video Element net.",
+                "web-browser": "Web Navigateur"
             },
             "picture-upload": {
                 "label": "Bild",
@@ -617,6 +664,7 @@
                 "update": "Aktualiséieren"
             },
             "domain_toggler": {
+                "reset_entities": "Entitéite resetten",
                 "title": "Domäner ëmschalten"
             },
             "entity_registry": {
@@ -688,8 +736,11 @@
                 "crop": "Kierzen"
             },
             "more_info_control": {
+                "controls": "Kontrollen",
+                "details": "Detailler",
                 "dismiss": "Dialog ofbriechen",
                 "edit": "Entitéit änneren",
+                "history": "Verlaf",
                 "person": {
                     "create_zone": "Zone erstellen vun der aktueller Positioun"
                 },
@@ -917,7 +968,13 @@
                                     "label": "Service opruffen",
                                     "service_data": "Service-Donnéeën"
                                 },
+                                "wait_for_trigger": {
+                                    "continue_timeout": "Weider no Zäitiwwerschreidung",
+                                    "label": "Op Ausléiser waarden",
+                                    "timeout": "Zäitiwwerschreidung (optionell)"
+                                },
                                 "wait_template": {
+                                    "continue_timeout": "Bei Zäit Iwwerschreidung wéiderfueren",
                                     "label": "Waart",
                                     "timeout": "Zäitiwwerschreidung (optional)",
                                     "wait_template": "Waardenzäit Modell"
@@ -981,7 +1038,18 @@
                                 "time": {
                                     "after": "Duerno",
                                     "before": "Virdrun",
-                                    "label": "Zäit"
+                                    "label": "Zäit",
+                                    "type_input": "Wäert vun engem Datum/Zäit Helper",
+                                    "type_value": "Fix Zäit",
+                                    "weekdays": {
+                                        "fri": "Freideg",
+                                        "mon": "Méindeg",
+                                        "sat": "Samschdeg",
+                                        "sun": "Sonndeg",
+                                        "thu": "Donneschdeg",
+                                        "tue": "Dënschdeg",
+                                        "wed": "Mëttwoch"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Entitéit mam Standuert",
@@ -1069,6 +1137,7 @@
                                     "value_template": "Wäerte Modell (optional)"
                                 },
                                 "state": {
+                                    "attribute": "Attribut (Optionell)",
                                     "for": "Fir",
                                     "from": "Vun",
                                     "label": "Zoustand",
@@ -1096,7 +1165,9 @@
                                 },
                                 "time": {
                                     "at": "Um",
-                                    "label": "Zäit"
+                                    "label": "Zäit",
+                                    "type_input": "Wäert vun engem Datum/Zäit Helper",
+                                    "type_value": "Fix Zäit"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -1119,6 +1190,8 @@
                         "add_automation": "Automatismus dobäisetzen",
                         "delete_automation": "Automatisme läschen",
                         "delete_confirm": "Sécher fir dës Automatisme ze läschen?",
+                        "duplicate": "Duplizéieren",
+                        "duplicate_automation": "Automatisme duplizéieren",
                         "edit_automation": "Automatisme änneren",
                         "header": "Automatismen editéieren",
                         "headers": {
@@ -1200,8 +1273,14 @@
                     },
                     "alexa": {
                         "banner": "D'Ännere vun den Entitéiten déi iwwert dës UI exposéiert sinn ass desaktivéiert well Entitéite Filter an der configuration.yaml konfiguréiert sinn.",
+                        "dont_expose_entity": "Entitéit net exposéieren",
                         "expose": "Op Alexa exposéieren",
+                        "expose_entity": "Entitéit exposéieren",
+                        "exposed": "{selected} exposéiert",
                         "exposed_entities": "Exposéiert Entitéiten",
+                        "follow_domain": "Domain suivéieren",
+                        "manage_domains": "Domaine verwalten",
+                        "not_exposed": "{selected} net exposéiert",
                         "not_exposed_entities": "Keng exposéiert Entitéiten",
                         "title": "Alexa"
                     },
@@ -1239,8 +1318,14 @@
                     "google": {
                         "banner": "D'Ännere vun den Entitéiten déi iwwert dës UI exposéiert sinn ass desaktivéiert well Entitéite Filter an der configuration.yaml konfiguréiert sinn.",
                         "disable_2FA": "2-Faktor-Authentifikatioun désaktivéieren",
+                        "dont_expose_entity": "Entitéit net exposéieren",
                         "expose": "Op Google Assistant exposéieren",
+                        "expose_entity": "Entitéit exposéieren",
+                        "exposed": "{selected} exposéiert",
                         "exposed_entities": "Exposéiert Entitéiten",
+                        "follow_domain": "Domain suivéieren",
+                        "manage_domains": "Domaine verwalten",
+                        "not_exposed": "{selected} net exposéiert",
                         "not_exposed_entities": "Keng exposéiert Entitéiten",
                         "sync_to_google": "Ännerungen ginn mat Google synchroniséiert",
                         "title": "Google Assistant"
@@ -1505,6 +1590,7 @@
                 },
                 "integrations": {
                     "add_integration": "Integratioun dobäisetzen",
+                    "attention": "Opmierksamkeet erfuerderlech",
                     "caption": "Integratiounen",
                     "config_entry": {
                         "area": "An {area}",
@@ -1523,6 +1609,8 @@
                         "no_device": "Entitéiten ouni Apparater",
                         "no_devices": "Dës Integratioun huet keng Apparater.",
                         "options": "Optiounen",
+                        "reload": "Nei lueden",
+                        "reload_confirm": "Integratioun gouf frësch gelueden",
                         "rename": "Ëmbenennen",
                         "restart_confirm": "Start Home Assistant nei fir dës Integratioun ze läschen",
                         "settings_button": "Astellungen ännere fir {integration}",
@@ -1571,6 +1659,7 @@
                     "none_found_detail": "Siich Kriterien upassen.",
                     "note_about_integrations": "Net all Integratioune könne nach via den Benotzer Interface konfiguréiert ginn.",
                     "note_about_website_reference": "Méi sin der disponibel op der ",
+                    "reconfigure": "Nei Konfiguréieren",
                     "rename_dialog": "Numm vun dësem Objet läschen",
                     "rename_input_label": "Numm",
                     "search": "Integratioune sichen"
@@ -1741,8 +1830,20 @@
                         "versions": "Informatioun kréien iwwert Firmware a Kommando Klass Versiounen",
                         "wakeup": "Ënnerstëtzung fir Erwäche Waardeschlaangen an Noriichten astellen"
                     },
+                    "node": {
+                        "button": "Node Detailler",
+                        "not_found": "Node net fonnt"
+                    },
+                    "nodes_table": {
+                        "failed": "Feeler",
+                        "id": "ID",
+                        "manufacturer": "Hiersteller",
+                        "model": "Modell",
+                        "zwave_plus": "Z-Wave Plus"
+                    },
                     "refresh_node": {
                         "battery_note": "Falls den Node Batterie bedriwwen ass, stell sécher fir en z'erwächen iers de weiderfiers",
+                        "button": "Node aktualiséieren",
                         "complete": "Aktualiséierung vun den Node Informatioune komplett",
                         "description": "Dëst befeelt OpenZWave fir en Node ofzefroen a Kommando Klassen, Fäegkeeten a Wäerter vum Node aktualiséieren.",
                         "node_status": "Status vum Node",
@@ -1885,16 +1986,34 @@
                     "section": {
                         "reloading": {
                             "automation": "Automatisme nei lueden",
+                            "command_line": "Kommando Zeilen Entitéite frësch lueden",
                             "core": "Standuert and Personnalisatioun néi lueden",
+                            "filesize": "Dateigréisst Entitéiten frësch lueden",
+                            "filter": "Filter Entitéite frësch lueden",
+                            "generic": "Generesch IP Kamera Entitéite frësch lueden",
+                            "generic_thermostat": "Generesch Thermostat Entitéite frësch lueden",
                             "group": "Gruppe nei lueden",
                             "heading": "YAML Konfiguratioun frësch lueden",
+                            "history_stats": "Verlaf Statiskik Entitéite frësch lueden",
+                            "homekit": "Homekit frësch lueden",
                             "input_number": "Agab Zuelen frësch lueden",
                             "input_select": "Agab Auswiel frësch lueden",
                             "input_text": "Agab Text frësch lueden",
                             "introduction": "E puer Deeler vum Home Assistant kënne frësch geluede ginn ouni datt een Neistart néideg ass. Klick op nei luede fir di aktuell Konfiguratioun z'entlueden an di nei Konfiguratioun ze lueden.",
+                            "min_max": "Min/Max Entitéite frësch lueden",
+                            "mqtt": "MQTT Entitéiten frësch lueden",
                             "person": "Persoune frësch lueden",
+                            "ping": "Ping Binär Sensor Entitéite frësch lueden",
+                            "reload": "{domain} frësh lueden",
+                            "rest": "Rest Entitéite a Notifikatioun's Servicer frësch lueden",
+                            "rpi_gpio": "Raspberry Pi GPIO entitéite frësch lueden",
                             "scene": "Szeene néi lueden",
                             "script": "Skripte nei lueden",
+                            "smtp": "SMTP Notifikatioun's Servicer frësh lueden",
+                            "statistics": "Statiskik Entitéite frësch lueden",
+                            "telegram": "Telegram Notifikatioun's Servicer frësch lueden",
+                            "template": "Modell Entitéite frësch lueden",
+                            "trend": "Trend Entitéite frësch lueden",
                             "zone": "Zone frësch lueden"
                         },
                         "server_management": {
@@ -1916,6 +2035,7 @@
                 },
                 "tags": {
                     "add_tag": "Tag dobäisetzen",
+                    "automation_title": "Tag {name} gouf gescannt",
                     "caption": "Tags",
                     "description": "Tags verwalten",
                     "detail": {
@@ -1928,10 +2048,14 @@
                         "tag_id": "Tag id",
                         "update": "Aktualiséieren"
                     },
+                    "edit": "Änneren",
                     "headers": {
-                        "last_scanned": "Läscht duerchsicht"
+                        "last_scanned": "Läscht duerchsicht",
+                        "name": "Numm"
                     },
-                    "no_tags": "Keng Tags"
+                    "never_scanned": "Niemols gescannt",
+                    "no_tags": "Keng Tags",
+                    "write": "Schréiwen"
                 },
                 "users": {
                     "add_user": {
@@ -1939,6 +2063,8 @@
                         "create": "Erstellen",
                         "name": "Numm",
                         "password": "Passwuert",
+                        "password_confirm": "Passwuert bestätegen",
+                        "password_not_match": "Passwierder stëmmen net iwwereneen",
                         "username": "Benotzernumm"
                     },
                     "caption": "Benotzer",
@@ -1955,7 +2081,9 @@
                         "group": "Gruppe",
                         "id": "ID",
                         "name": "Numm",
+                        "new_password": "Neit Passwuert",
                         "owner": "Proprietär",
+                        "password_changed": "Passwuert erfollegräich geännert",
                         "system_generated": "Vum System generéiert",
                         "system_generated_users_not_editable": "Net méiglech System generéiert Benotzer z'aktualiséieren.",
                         "system_generated_users_not_removable": "Ka keng System generéiert Benotzer läschen.",
@@ -2251,9 +2379,14 @@
                         "title": "Zoustänn"
                     },
                     "templates": {
+                        "all_listeners": "Dës Virlag lauschtert fir all geännert Zoustänn Evenementer.",
                         "description": "Modeller ginn mëttels Jinja2 template engine duergestallt mat e puer Home Assistant spezifesch Erweiderungen.",
+                        "domain": "Domain",
                         "editor": "Modell Editeur",
+                        "entity": "Entitéit",
                         "jinja_documentation": "Jinja2 Modell Dokumentatioun",
+                        "listeners": "Dës Virlag lauschtert fir déi folgend geännert Evenementer:",
+                        "no_listeners": "Dës Virlag lauschtert net fir geännert Zoustänn Evenementer a gëtt net automatesch aktualiséiert.",
                         "reset": "Op Demo Modell zeréck setzen",
                         "template_extensions": "Home Assistant Modell Erweiderungen",
                         "title": "Modeller",
@@ -2337,8 +2470,15 @@
                             "name": "Knäppchen"
                         },
                         "calendar": {
+                            "calendar_entities": "Kalenner Entitéiten",
                             "description": "Kalenner Kaart weist ee Kalenner mat Deeg, Wochen an Lëschten un",
-                            "name": "Kalenner"
+                            "inital_view": "Initial Vue",
+                            "name": "Kalenner",
+                            "views": {
+                                "dayGridDay": "Dag",
+                                "dayGridMonth": "Mount",
+                                "listWeek": "Lëscht"
+                            }
                         },
                         "conditional": {
                             "card": "Kaart",
@@ -2357,8 +2497,21 @@
                         },
                         "entities": {
                             "description": "D'Entitéite Kaart ass déi am meeschten allgemengen Zort Kaart. Si gruppéiert Entitéite gemeinsam a Lëschten.",
+                            "edit_special_row": "Änner Zeil mam Code Editor",
+                            "entity_row": {
+                                "attribute": "Attribut",
+                                "button": "Knäppchen",
+                                "buttons": "Knäppercher",
+                                "call-service": "Service ruffen",
+                                "cast": "Cast",
+                                "conditional": "Conditionnel",
+                                "divider": "Deeler",
+                                "section": "Sektioun",
+                                "weblink": "Web Link"
+                            },
                             "name": "Entitéiten",
                             "show_header_toggle": "Titel Schalter uweisen?",
+                            "special_row": "Spezial Réih",
                             "toggle": "Entitéiten ëmschalten"
                         },
                         "entity-filter": {
@@ -2405,6 +2558,7 @@
                             "show_name": "Numm uweisen?",
                             "show_state": "Zoustand uweisen?",
                             "state": "Zoustand",
+                            "state_color": "Ikone baséierend um Zoustand fierwen?",
                             "tap_action": "Aktioun beim tippen",
                             "theme": "Thema",
                             "title": "Titel",
@@ -2478,7 +2632,8 @@
                             "description": "Sensor Kaart erméiglecht eng schnell vue vun den Zoustänn vun de Sensoren mat engem optionalen Graphique fir den Verlaf ze visualiséieren.",
                             "graph_detail": "Detail Diagramm",
                             "graph_type": "Typ vun Graph.",
-                            "name": "Sensor"
+                            "name": "Sensor",
+                            "show_more_detail": "Méi Detailer uweisen"
                         },
                         "shopping-list": {
                             "description": "Akafslëscht Kaart erlaabt et Saachen op eng Akafslëscht dobäizesetzen, änneren oder ofzehaken.",
@@ -2500,7 +2655,11 @@
                         }
                     },
                     "cardpicker": {
+                        "by_card": "Der Kaart no",
+                        "by_entity": "Der Entitéit no",
                         "custom_card": "Personnaliséiert",
+                        "domain": "Domain",
+                        "entity": "Entitéit",
                         "no_description": "Keng Beschreiwung verfügbar"
                     },
                     "edit_card": {
@@ -2514,6 +2673,7 @@
                         "options": "Méi Optiounen",
                         "pick_card": "Wielt eng Kaart aus déi soll dobäigesat ginn.",
                         "pick_card_view_title": "Wéieng Kaart wëllt dir zu ärer {name}Usiicht dobäisetzen?",
+                        "search_cards": "Kaart sichen",
                         "show_code_editor": "Code Editeur uweisen",
                         "show_visual_editor": "Visuellen Editeur uweisen",
                         "toggle_editor": "Editeur ëmschalten",
@@ -2834,6 +2994,11 @@
                     "submit": "Ofschécken"
                 },
                 "current_user": "Dir sidd aktuell ageloggt als {fullName}.",
+                "customize_sidebar": {
+                    "button": "Änneren",
+                    "description": "Du kanns och den Header vun der Sidebar drécken an hale fir den Ännerungs modus z'aktivéieren.",
+                    "header": "Änner Reihefolleg a verstopp Elementer aus der Sidebar"
+                },
                 "dashboard": {
                     "description": "Wiel ee Tableau de Bord als Standard op dësem Apparat.",
                     "dropdown_label": "Tableau de Bord",
@@ -2856,6 +3021,7 @@
                     "confirm_delete": "Sécher fir den Accèss Jeton fir {name} ze läsche?",
                     "create": "Jeton erstellen",
                     "create_failed": "Feeler beim erstellen vum Accèss Jeton",
+                    "created": "Erstallt {date}",
                     "created_at": "Erstallt um {date}",
                     "delete_failed": "Feeler beim läschen vum Accèss Jeton",
                     "description": "Erstellt laang gëlteg Accèss Jetone déi et äre Skripten erlabe mat ärem Home Assistant z'interagéieren. All eenzelen Jeton ass gëlteg fir 10 Joer. Folgend Accèss Jeton sinn am Moment aktiv.",
@@ -2863,6 +3029,7 @@
                     "header": "Lang gëlteg Accèss Jetone",
                     "last_used": "Fir d'Läscht benotzt um {date} vun {location}",
                     "learn_auth_requests": "Leiert wéi een \"authenticated requests\" erstellt.",
+                    "name": "Numm",
                     "not_used": "Nach nie benotzt ginn",
                     "prompt_copy_token": "Kopéiert den Accèss Jeton. E gëtt nie méi ugewisen.",
                     "prompt_name": "Numm?"
@@ -2929,6 +3096,7 @@
             }
         },
         "sidebar": {
+            "done": "Gemaach",
             "external_app_configuration": "App Konfiguratioun",
             "sidebar_toggle": "Säite Kolonne ëmschalten"
         }

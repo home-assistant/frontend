@@ -419,6 +419,7 @@
                 "unlock": "Entriegeln"
             },
             "media_player": {
+                "browse_media": "Medien durchsuchen",
                 "media_next_track": "Weiter",
                 "media_play": "Abspielen",
                 "sound_mode": "Sound-Modus",
@@ -492,9 +493,11 @@
                     "wnw": "WNW",
                     "wsw": "WSW"
                 },
+                "day": "Tag",
                 "forecast": "Prognose",
                 "high": "Hoch",
-                "low": "Niedrig"
+                "low": "Niedrig",
+                "night": "Nacht"
             }
         },
         "common": {
@@ -550,6 +553,10 @@
                 "toggle": "Umschalten"
             },
             "entity": {
+                "entity-attribute-picker": {
+                    "attribute": "Attribut",
+                    "show_attributes": "Attribute anzeigen"
+                },
                 "entity-picker": {
                     "clear": "Löschen",
                     "entity": "Entität",
@@ -587,9 +594,16 @@
                     "playlist": "Playlist",
                     "server": "Server"
                 },
+                "documentation": "Dokumentation",
+                "learn_adding_local_media": "Erfahre mehr über das Hinzufügen von Medien in der {documentation}.",
+                "local_media_files": "Platziere deine Video-, Audio- und Bilddateien im Medienverzeichnis, um sie im Browser oder auf unterstützten Mediaplayern durchsuchen und abspielen zu können.",
                 "no_items": "Keine Einträge",
+                "no_local_media_found": "Keine lokalen Medien gefunden",
+                "no_media_folder": "Es sieht so aus, als hätten Sie noch kein Medienverzeichnis erstellt.",
                 "play": "Abspielen",
-                "video_not_supported": "Ihr Browser unterstützt das Videoelement nicht."
+                "setup_local_help": "Lese die {documentation} über die Einrichtung lokaler Medien.",
+                "video_not_supported": "Ihr Browser unterstützt das Videoelement nicht.",
+                "web-browser": "Webbrowser"
             },
             "picture-upload": {
                 "label": "Bild",
@@ -631,6 +645,7 @@
                 "update": "Aktualisieren"
             },
             "domain_toggler": {
+                "reset_entities": "Entitäten zurücksetzen",
                 "title": "Domänen umschalten"
             },
             "entity_registry": {
@@ -697,6 +712,9 @@
                 "platform_not_loaded": "Die {platform} -Komponente ist nicht geladen. Füge sie bitte deiner Konfiguration hinzu. Entweder durch Hinzufügen von 'default_config:' oder ''{platform}:''.",
                 "required_error_msg": "Dieses Feld ist erforderlich",
                 "yaml_not_editable": "Die Einstellungen dieser Entität können nicht über die Benutzeroberfläche bearbeitet werden. Nur über die Benutzeroberfläche eingerichtete Entitäten können über die Benutzeroberfläche konfiguriert werden."
+            },
+            "image_cropper": {
+                "crop": "Zuschneiden"
             },
             "more_info_control": {
                 "details": "Details",
@@ -817,7 +835,7 @@
         },
         "notification_toast": {
             "connection_lost": "Verbindung getrennt. Verbinde erneut...",
-            "service_call_failed": "Fehler beim Aufrufen des Service {service}.",
+            "service_call_failed": "Fehler beim Aufrufen des Diensts {service}.",
             "started": "Home Assistant wurde vollständig gestartet!",
             "starting": "Home Assistant startet. Währenddessen kann es sein, dass nicht alles verfügbar ist.",
             "triggered": "{name} ausgelöst"
@@ -928,6 +946,9 @@
                                     "label": "Dienst ausführen",
                                     "service_data": "Dienstdaten"
                                 },
+                                "wait_for_trigger": {
+                                    "label": "Auf Auslöser warten"
+                                },
                                 "wait_template": {
                                     "label": "Warten",
                                     "timeout": "Timeout (optional)",
@@ -992,7 +1013,8 @@
                                 "time": {
                                     "after": "Nach",
                                     "before": "Vor",
-                                    "label": "Zeit"
+                                    "label": "Zeit",
+                                    "type_value": "Feste Zeit"
                                 },
                                 "zone": {
                                     "entity": "Entität mit Standort",
@@ -1415,7 +1437,7 @@
                 },
                 "entities": {
                     "caption": "Entitäten",
-                    "description": "Überblick aller bekannten Elemente.",
+                    "description": "Bekannte Entitäten verwalten",
                     "picker": {
                         "disable_selected": {
                             "button": "Ausgewählte deaktivieren",
@@ -1729,10 +1751,15 @@
                     },
                     "nodes_table": {
                         "failed": "Fehlgeschlagen",
+                        "id": "ID",
                         "manufacturer": "Hersteller"
                     },
                     "refresh_node": {
                         "start_refresh_button": "Aktualisierung starten"
+                    },
+                    "services": {
+                        "add_node": "Knoten hinzufügen",
+                        "remove_node": "Knoten entfernen"
                     }
                 },
                 "person": {
@@ -1859,7 +1886,9 @@
                         "reloading": {
                             "automation": "Automatisierungen neu laden",
                             "core": "Ort & Anpassungen neu laden",
-                            "group": "Gruppen neu laden",
+                            "filesize": "Dateigröße-Entitäten neu laden",
+                            "filter": "Filter-Entitäten neu laden",
+                            "group": "Gruppen, Gruppenentitäten und Benachrichtigungsdienste neu laden",
                             "heading": "Neuladen der YAML-Konfiguration",
                             "homekit": "HomeKit neu laden",
                             "input_boolean": "Eingabe-Booleans neu laden",
@@ -1868,9 +1897,16 @@
                             "input_select": "Eingabe-Auswahl neu laden",
                             "input_text": "Eingabetexte neu laden",
                             "introduction": "Einige Komponenten von Home Assistant können ohne einen Neustart neu geladen werden. \"Neu laden\" entlädt dabei die aktuelle Konfiguration und lädt die neue Konfiguration.",
+                            "min_max": "Min/Max-Entitäten neu laden",
+                            "mqtt": "MQTT-Entitäten neu laden",
                             "person": "Personen neu laden",
+                            "reload": "Neu laden {domain}",
+                            "rest": "Rest Entitäten und Benachrichtigungsdienste neu laden",
+                            "rpi_gpio": "Raspberry Pi GPIO Entitäten neu laden",
                             "scene": "Szenen neu laden",
                             "script": "Skripte neu laden",
+                            "smtp": "SMTP-Benachrichtigungsdienste neu laden",
+                            "statistics": "Statistik-Entitäten neu laden",
                             "telegram": "Telegram-Benachrichtigungsdienste neu laden",
                             "zone": "Zonen neu laden"
                         },
@@ -1892,10 +1928,20 @@
                     }
                 },
                 "tags": {
+                    "add_tag": "Tag hinzufügen",
+                    "automation_title": "Tag {name} ist gescannt",
+                    "caption": "Tags",
+                    "create_automation": "Automatisierung mit Tag erstellen",
+                    "description": "Tags verwalten",
                     "detail": {
+                        "create": "Erstellen",
+                        "create_and_write": "Erstellen und schreiben",
                         "delete": "Löschen",
                         "description": "Beschreibung",
                         "name": "Name",
+                        "new_tag": "Neuer Tag",
+                        "tag_id": "Tag ID",
+                        "tag_id_placeholder": "Automatisch generiert, wenn leer gelassen",
                         "update": "Aktualisieren"
                     },
                     "edit": "Bearbeiten",
@@ -1904,6 +1950,7 @@
                         "name": "Name"
                     },
                     "never_scanned": "Nie gescannt",
+                    "no_tags": "Keine Tags",
                     "write": "Schreiben"
                 },
                 "users": {
@@ -2229,6 +2276,7 @@
                     "templates": {
                         "description": "Vorlagen werden durch die Jinja2-Template-Engine mit einigen für Home Assistant spezifischen Erweiterungen gerendert.",
                         "editor": "Vorlageneditor",
+                        "entity": "Entität",
                         "jinja_documentation": "Jinja2 Template Dokumentation",
                         "reset": "Zurücksetzen auf Demo-Vorlage",
                         "template_extensions": "Home Assistant-Vorlagenerweiterungen",
@@ -2332,6 +2380,11 @@
                         },
                         "entities": {
                             "description": "Die Entitäts-Karte ist der am häufigsten verwendete Kartentyp. Sie gruppiert Elemente in Listen.",
+                            "edit_special_row": "Zeile mit dem Code-Editor bearbeiten",
+                            "entity_row": {
+                                "attribute": "Attribut",
+                                "call-service": "Dienst ausführen"
+                            },
                             "name": "Elemente",
                             "show_header_toggle": "Schalter anzeigen?",
                             "toggle": "Entitäten umschalten"
@@ -2453,7 +2506,8 @@
                             "description": "Die Sensorkarte gibt dir einen schnellen Überblick über Ihren Sensorstatus mit einem optionalen Diagramm, um Änderungen im Zeitverlauf zu visualisieren.",
                             "graph_detail": "Diagrammdetail",
                             "graph_type": "Typ",
-                            "name": "Sensor"
+                            "name": "Sensor",
+                            "show_more_detail": "Weitere Details anzeigen"
                         },
                         "shopping-list": {
                             "description": "Mit der Einkaufslistenkarte kannst du Artikel zu deiner Einkaufsliste hinzufügen, bearbeiten, abhaken und löschen.",
@@ -2475,7 +2529,9 @@
                         }
                     },
                     "cardpicker": {
+                        "by_entity": "Nach Entität",
                         "custom_card": "Benutzerdefiniert",
+                        "entity": "Entität",
                         "no_description": "Keine Beschreibung verfügbar."
                     },
                     "edit_card": {
@@ -2803,7 +2859,9 @@
                 },
                 "current_user": "Sie sind derzeit als {fullName} angemeldet.",
                 "customize_sidebar": {
-                    "button": "Bearbeiten"
+                    "button": "Bearbeiten",
+                    "description": "Du kannst auch die Kopfzeile der Seitenleiste gedrückt halten, um den Bearbeitungsmodus zu aktivieren.",
+                    "header": "Elemente in der Seitenleiste verstecken und Reihenfolge ändern"
                 },
                 "dashboard": {
                     "description": "Wähle ein Standard-Dashboard für dieses Gerät.",
@@ -2838,7 +2896,7 @@
                     "name": "Name",
                     "not_used": "Wurde noch nie benutzt",
                     "prompt_copy_token": "Kopiere deinen Zugangs-Token. Er wird nicht wieder angezeigt werden.",
-                    "prompt_name": "Name?"
+                    "prompt_name": "Gib den Token einen Namen"
                 },
                 "mfa_setup": {
                     "close": "Schließen",

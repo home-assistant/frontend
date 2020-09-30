@@ -58,16 +58,13 @@ import { swapView } from "./editor/config-util";
 import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovelace-dialog";
 import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import type { Lovelace } from "./types";
-import "./views/hui-panel-view";
-import type { HUIPanelView } from "./views/hui-panel-view";
-import { HUIView } from "./views/hui-view";
+import "./views/hui-view";
+import type { HUIView } from "./views/hui-view";
 
 class HUIRoot extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public lovelace?: Lovelace;
-
-  @property() public columns?: number;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -396,15 +393,7 @@ class HUIRoot extends LitElement {
     super.updated(changedProperties);
 
     const view = this._viewRoot;
-    const huiView = view.lastChild as HUIView | HUIPanelView;
-
-    if (
-      changedProperties.has("columns") &&
-      huiView &&
-      huiView instanceof HUIView
-    ) {
-      huiView.columns = this.columns;
-    }
+    const huiView = view.lastChild as HUIView;
 
     if (changedProperties.has("hass") && huiView) {
       huiView.hass = this.hass;
@@ -675,15 +664,8 @@ class HUIRoot extends LitElement {
     if (!force && this._viewCache![viewIndex]) {
       view = this._viewCache![viewIndex];
     } else {
-      if (viewConfig.panel && viewConfig.cards && viewConfig.cards.length > 0) {
-        view = document.createElement("hui-panel-view");
-        view.config = viewConfig;
-        view.index = viewIndex;
-      } else {
-        view = document.createElement("hui-view");
-        view.columns = this.columns;
-        view.index = viewIndex;
-      }
+      view = document.createElement("hui-view");
+      view.index = viewIndex;
       this._viewCache![viewIndex] = view;
     }
 

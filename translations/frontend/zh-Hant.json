@@ -496,9 +496,11 @@
                     "wnw": "西北西",
                     "wsw": "西南西"
                 },
+                "day": "白天",
                 "forecast": "預報",
                 "high": "高",
-                "low": "低"
+                "low": "低",
+                "night": "夜晚"
             }
         },
         "common": {
@@ -1038,7 +1040,16 @@
                                     "before": "在...之前",
                                     "label": "時間",
                                     "type_input": "日期/時間協助數值",
-                                    "type_value": "固定時間"
+                                    "type_value": "固定時間",
+                                    "weekdays": {
+                                        "fri": "星期五",
+                                        "mon": "星期一",
+                                        "sat": "星期六",
+                                        "sun": "星期天",
+                                        "thu": "星期四",
+                                        "tue": "星期二",
+                                        "wed": "星期三"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "區域實體",
@@ -2085,7 +2096,7 @@
                         "name": "名稱",
                         "new_password": "新密碼",
                         "owner": "擁有者",
-                        "password_changed": "密碼已變更！",
+                        "password_changed": "密碼變更成功",
                         "system_generated": "系統產生",
                         "system_generated_users_not_editable": "無法更新系統產生用戶",
                         "system_generated_users_not_removable": "無法移除系統產生用戶",
@@ -2472,8 +2483,15 @@
                             "name": "按鈕面板"
                         },
                         "calendar": {
+                            "calendar_entities": "日曆實體",
                             "description": "行事曆面板可顯示包含日、週及列表的行事曆",
-                            "name": "行事曆"
+                            "inital_view": "起始面板",
+                            "name": "行事曆",
+                            "views": {
+                                "dayGridDay": "日",
+                                "dayGridMonth": "週",
+                                "listWeek": "列表"
+                            }
                         },
                         "conditional": {
                             "card": "面板",
@@ -2492,8 +2510,21 @@
                         },
                         "entities": {
                             "description": "實體列表面板為最常用的面板。將實體分組為列表使用。",
+                            "edit_special_row": "使用編碼編輯器編輯",
+                            "entity_row": {
+                                "attribute": "屬性",
+                                "button": "按鈕",
+                                "buttons": "按鈕",
+                                "call-service": "執行服務",
+                                "cast": "Cast",
+                                "conditional": "條件式",
+                                "divider": "分配",
+                                "section": "部分",
+                                "weblink": "網站連結"
+                            },
                             "name": "實體",
                             "show_header_toggle": "於頁首顯示開關？",
+                            "special_row": "特殊列",
                             "toggle": "切換實體。"
                         },
                         "entity-filter": {
@@ -2614,7 +2645,8 @@
                             "description": "傳感器面板、可供以選項圖像方式檢視傳感器時間變化與狀態。",
                             "graph_detail": "圖像精細度",
                             "graph_type": "圖像類型",
-                            "name": "傳感器面板"
+                            "name": "傳感器面板",
+                            "show_more_detail": "顯示更多資訊"
                         },
                         "shopping-list": {
                             "description": "購物清單面板、可供新增、編輯、勾選或清除購物清單項目。",
