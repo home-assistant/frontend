@@ -244,8 +244,7 @@ class HaLogbook extends LitElement {
           line-height: 2em;
           padding: 8px 16px;
           box-sizing: border-box;
-          border-top: 1px solid
-            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
+          border-top: 1px solid var(--divider-color);
         }
 
         .entry.no-entity,
