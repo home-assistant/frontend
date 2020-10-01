@@ -741,6 +741,7 @@
                 "dismiss": "Avvis dialogboksen",
                 "edit": "Redigér entitet",
                 "history": "Historie",
+                "last_updated": "Sist oppdatert",
                 "person": {
                     "create_zone": "Opprett sone fra gjeldende plassering"
                 },
@@ -2223,7 +2224,7 @@
                     "configured_in_yaml": "Soner som er konfigurert via configuration.yaml kan ikke redigeres via brukergrensesnittet.",
                     "confirm_delete": "Er du sikker på at du vil slette denne sonen?",
                     "create_zone": "Opprett sone",
-                    "description": "Administrer sonene du vil spore personer i",
+                    "description": "Administrer sonene du vil spore folk i",
                     "detail": {
                         "create": "Opprett",
                         "delete": "Slett",
@@ -2472,6 +2473,20 @@
                     "refresh": "Oppdater"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "Tilkall tjeneste",
+                            "default_action": "Standard handling",
+                            "more-info": "Mer info",
+                            "navigate": "Navigere",
+                            "none": "Ingen handling",
+                            "toggle": "Veksle",
+                            "url": "Url"
+                        },
+                        "editor_service_data": "Tjenestedata kan bare legges inn i kodeditoren",
+                        "navigation_path": "Navigasjonsbane",
+                        "url_path": "Url-bane"
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "Tilgjengelige tilstander",
@@ -2479,6 +2494,7 @@
                             "name": "Alarmpanel"
                         },
                         "button": {
+                            "default_action_help": "Standardhandlingen avhenger av enhetens funksjoner, den vil enten bli vekslet eller mer informasjon vises.",
                             "description": "The Button card lar deg legge til knapper for å utføre oppgaver.",
                             "name": "Knapp"
                         },
@@ -2976,6 +2992,12 @@
                     "more_integrations": "Mer"
                 },
                 "intro": "Er du klar til å ta kontroll over hjemmet ditt, gjenvinne ditt privatliv og bli med i et verdensomspennende samfunn av tinkerers?",
+                "restore": {
+                    "description": "Alternativt kan du gjenopprette fra et forrige snapshot.",
+                    "hide_log": "Skjul full logg",
+                    "in_progress": "Gjenoppretting pågår",
+                    "show_log": "Vis full logg"
+                },
                 "user": {
                     "create_account": "Opprett konto",
                     "data": {

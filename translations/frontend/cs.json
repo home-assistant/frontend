@@ -741,6 +741,7 @@
                 "dismiss": "Zavřít dialog",
                 "edit": "Upravit entitu",
                 "history": "Historie",
+                "last_updated": "Poslední aktualizace",
                 "person": {
                     "create_zone": "Vytvořit zónu z aktuálního umístění"
                 },
@@ -2472,6 +2473,20 @@
                     "refresh": "Obnovit"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "Zavolání služby",
+                            "default_action": "Výchozí akce",
+                            "more-info": "Více informací",
+                            "navigate": "Přechod na jinou stránku",
+                            "none": "Žádná akce",
+                            "toggle": "Přepínač",
+                            "url": "Url adresa"
+                        },
+                        "editor_service_data": "Data služby lze zadat pouze v editoru kódu",
+                        "navigation_path": "Cesta stránky",
+                        "url_path": "Url adresa"
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "Dostupné režimy",
@@ -2479,6 +2494,7 @@
                             "name": "Ovládací panel alarmu"
                         },
                         "button": {
+                            "default_action_help": "Výchozí akce závisí na vlastnostech entity - bude buď přepnuta, nebo se zobrazí další informace.",
                             "description": "Karta Tlačítko umožňuje přidat tlačítka k provádění úkolů.",
                             "name": "Tlačítko"
                         },
@@ -2976,6 +2992,12 @@
                     "more_integrations": "Více"
                 },
                 "intro": "Jste připraveni oživit svůj domov, zachovat si své soukromí a připojit se k celosvětové komunitě tvůrců?",
+                "restore": {
+                    "description": "Případně můžete Home Assistant obnovit z poslední zálohy.",
+                    "hide_log": "Skrýt celý log",
+                    "in_progress": "Probíhá obnovení",
+                    "show_log": "Zobrazit celý log"
+                },
                 "user": {
                     "create_account": "Vytvořit účet",
                     "data": {
