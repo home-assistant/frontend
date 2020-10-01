@@ -41,7 +41,7 @@ export class HaFormDictionary extends LitElement implements HaFormElement {
 
   @internalProperty() private _showParams = true;
 
-  private _saveData = this.data || new Map<string, HaFormData>();
+  private _saveData = this.data || ({} as HaFormDictionaryData);
 
   protected render(): TemplateResult {
     const boolSchema = { type: "boolean" } as HaFormBooleanSchema;
