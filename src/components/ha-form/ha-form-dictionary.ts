@@ -16,7 +16,6 @@ import type {
   HaFormElement,
   HaFormDictionaryData,
   HaFormDictionarySchema,
-  HaFormData,
   HaFormSchema,
   HaFormBooleanSchema,
 } from "./ha-form";
