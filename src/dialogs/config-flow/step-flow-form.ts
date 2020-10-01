@@ -126,6 +126,7 @@ class StepFlowForm extends LitElement {
         data[field.name] = field.default;
       }
     });
+
     this._stepData = data;
     return data;
   }
@@ -146,6 +147,7 @@ class StepFlowForm extends LitElement {
         toSendData[key] = value;
       }
     });
+
     try {
       const step = await this.flowConfig.handleFlowStep(
         this.hass,
