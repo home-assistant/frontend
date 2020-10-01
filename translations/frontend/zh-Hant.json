@@ -741,6 +741,7 @@
                 "dismiss": "忽略對話",
                 "edit": "編輯實體",
                 "history": "歷史",
+                "last_updated": "最後更新",
                 "person": {
                     "create_zone": "使用目前位置新增區域"
                 },
@@ -2472,6 +2473,20 @@
                     "refresh": "更新"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "執行服務",
+                            "default_action": "預設動作",
+                            "more-info": "更多資訊",
+                            "navigate": "導航",
+                            "none": "沒有動作",
+                            "toggle": "開關",
+                            "url": "網址"
+                        },
+                        "editor_service_data": "服務資料僅能於代碼編輯器中輸入",
+                        "navigation_path": "導航路徑",
+                        "url_path": "網址路徑"
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "可用狀態",
@@ -2479,6 +2494,7 @@
                             "name": "警報器面板"
                         },
                         "button": {
+                            "default_action_help": "預設動作視實體的功能有所不同，可能為開關或顯示更多訊息。",
                             "description": "按鈕面板可供新增按鈕以執行任務。",
                             "name": "按鈕面板"
                         },
@@ -2976,6 +2992,12 @@
                     "more_integrations": "更多"
                 },
                 "intro": "準備喚醒您的智能家庭、取得隱私自主權，並加入由全球愛好者共同維護的社群了嗎？",
+                "restore": {
+                    "description": "或者可以自之前的 Snapshot 進行回復。",
+                    "hide_log": "隱藏完整日誌",
+                    "in_progress": "回復進行中",
+                    "show_log": "顯示完整日誌"
+                },
                 "user": {
                     "create_account": "創建帳號",
                     "data": {

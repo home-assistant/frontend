@@ -571,7 +571,34 @@
                 "no_history_found": "No state history found."
             },
             "logbook": {
-                "entries_not_found": "No logbook entries found."
+                "by": "by",
+                "by_service": "by service",
+                "entries_not_found": "No logbook entries found.",
+                "messages": {
+                    "became_unavailable": "became unavailable",
+                    "changed_to_state": "changed to {state}",
+                    "cleared_device_class": "cleared (no {device_class} detected)",
+                    "detected_device_class": "detected {device_class}",
+                    "rose": "rose",
+                    "set": "set",
+                    "turned_off": "turned off",
+                    "turned_on": "turned on",
+                    "was_at_home": "was at home",
+                    "was_at_state": "was at {state}",
+                    "was_away": "was away",
+                    "was_closed": "was closed",
+                    "was_connected": "was connected",
+                    "was_disconnected": "was disconnected",
+                    "was_locked": "was locked",
+                    "was_low": "was low",
+                    "was_normal": "was normal",
+                    "was_opened": "was opened",
+                    "was_plugged_in": "was plugged in",
+                    "was_safe": "was safe",
+                    "was_unlocked": "was unlocked",
+                    "was_unplugged": "was unplugged",
+                    "was_unsafe": "was unsafe"
+                }
             },
             "media-browser": {
                 "audio_not_supported": "Your browser does not support the audio element.",
@@ -684,7 +711,8 @@
                     "unavailable": "This entity is not currently available.",
                     "update": "Update"
                 },
-                "no_unique_id": "This entity does not have a unique ID, therefore its settings cannot be managed from the UI.",
+                "faq": "documentation",
+                "no_unique_id": "This entity does not have a unique ID, therefore its settings cannot be managed from the UI. See the {faq_link} for more detail.",
                 "related": "Related",
                 "settings": "Settings"
             },
@@ -1865,7 +1893,8 @@
                     },
                     "select_instance": {
                         "header": "Select an OpenZWave Instance",
-                        "introduction": "You have more than one OpenZWave instance running. Which instance would you like to manage?"
+                        "introduction": "You have more than one OpenZWave instance running. Which instance would you like to manage?",
+                        "none_found": "We couldn't find an OpenZWave instance. If you believe this is incorrect, check your OpenZWave and MQTT setups and ensure that Home Assistant can communicate with your MQTT broker."
                     },
                     "services": {
                         "add_node": "Add Node",
@@ -1880,6 +1909,9 @@
                     "create_person": "Create Person",
                     "description": "Manage the people that Home Assistant tracks",
                     "detail": {
+                        "admin": "Administrator",
+                        "allow_login": "Allow person to login",
+                        "confirm_delete_user": "Are you sure you want to delete the user account for {name}? You can still track the user, but the person will no longer be able to login.",
                         "create": "Create",
                         "delete": "Delete",
                         "device_tracker_intro": "Select the devices that belong to this person.",
@@ -2229,7 +2261,7 @@
                         "create": "Create",
                         "delete": "Delete",
                         "icon": "Icon",
-                        "icon_error_msg": "Icon should be in the format prefix:iconname, for example: mdi:home",
+                        "icon_error_msg": "Icon should be in the format ''prefix:iconname'', for example: ''mdi:home''",
                         "latitude": "Latitude",
                         "longitude": "Longitude",
                         "name": "Name",
@@ -2527,6 +2559,7 @@
                         "entities": {
                             "description": "The Entities card is the most common type of card. It groups items together into lists.",
                             "edit_special_row": "Edit row using the code editor",
+                            "entity_row_editor": "Entity Row Editor",
                             "entity_row": {
                                 "attribute": "Attribute",
                                 "button": "Button",
@@ -2539,6 +2572,15 @@
                                 "weblink": "Web Link"
                             },
                             "name": "Entities",
+                            "secondary_info_values": {
+                                "brightness": "Brightness",
+                                "entity-id": "Entity ID",
+                                "last-changed": "Last Changed",
+                                "last-triggered": "Last Triggered",
+                                "none": "No Secondary Info",
+                                "position": "Position",
+                                "tilt-position": "Tilt Position"
+                            },
                             "show_header_toggle": "Show Header Toggle?",
                             "special_row": "special row",
                             "toggle": "Toggle entities."

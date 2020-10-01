@@ -741,6 +741,7 @@
                 "dismiss": "Zamknij okno dialogowe",
                 "edit": "Edytuj encję",
                 "history": "Historia",
+                "last_updated": "Ostatnio zaktualizowano",
                 "person": {
                     "create_zone": "Utwórz strefę z bieżącej lokalizacji"
                 },
@@ -2472,6 +2473,20 @@
                     "refresh": "Wczytaj ponownie"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "Wywołaj usługę",
+                            "default_action": "Akcja domyślna",
+                            "more-info": "Okno więcej informacji",
+                            "navigate": "Przejdź",
+                            "none": "Brak akcji",
+                            "toggle": "Przełącz",
+                            "url": "URL"
+                        },
+                        "editor_service_data": "Dane usługi można wprowadzać tylko w edytorze kodu",
+                        "navigation_path": "Ścieżka",
+                        "url_path": "Ścieżka adresu URL"
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "Dostępne stany",
@@ -2479,6 +2494,7 @@
                             "name": "Panel alarmu"
                         },
                         "button": {
+                            "default_action_help": "Domyślna akcja zależy od możliwości encji, encja zostanie przełączona lub zostanie wyświetlone okno więcej informacji.",
                             "description": "Karta przycisku umożliwia dodawanie przycisków do wykonywania zadań.",
                             "name": "Przycisk"
                         },
@@ -2976,6 +2992,12 @@
                     "more_integrations": "Więcej"
                 },
                 "intro": "Czy jesteś gotowy, aby ożywić swój dom, odzyskać prywatność i dołączyć do światowej społeczności majsterkowiczów?",
+                "restore": {
+                    "description": "Alternatywnie możesz przywrócić z poprzedniej migawki.",
+                    "hide_log": "Ukryj cały log",
+                    "in_progress": "Trwa przywracanie",
+                    "show_log": "Pokaż cały log"
+                },
                 "user": {
                     "create_account": "Utwórz konto",
                     "data": {
