@@ -1,7 +1,8 @@
 import "@material/mwc-button";
-import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-icon-button";
-import "../../../components/ha-button-menu";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import "@material/mwc-list/mwc-list-item";
+import { mdiArrowDown, mdiArrowUp, mdiDotsVertical } from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -9,21 +10,20 @@ import {
   html,
   LitElement,
   property,
-  TemplateResult,
   queryAssignedNodes,
+  TemplateResult,
 } from "lit-element";
-import { HomeAssistant } from "../../../types";
-import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-import { swapCard, moveCard, addCard, deleteCard } from "../editor/config-util";
-import { confDeleteCard } from "../editor/delete-card";
-import { Lovelace, LovelaceCard } from "../types";
-import { computeCardSize } from "../common/compute-card-size";
-import { mdiDotsVertical, mdiArrowDown, mdiArrowUp } from "@mdi/js";
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
-import { showSelectViewDialog } from "../editor/select-view/show-select-view-dialog";
+import "../../../components/ha-button-menu";
 import { saveConfig } from "../../../data/lovelace";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import { HomeAssistant } from "../../../types";
 import { showSaveSuccessToast } from "../../../util/toast-saved-success";
+import { computeCardSize } from "../common/compute-card-size";
+import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
+import { addCard, deleteCard, moveCard, swapCard } from "../editor/config-util";
+import { confDeleteCard } from "../editor/delete-card";
+import { showSelectViewDialog } from "../editor/select-view/show-select-view-dialog";
+import { Lovelace, LovelaceCard } from "../types";
 
 @customElement("hui-card-options")
 export class HuiCardOptions extends LitElement {
@@ -44,7 +44,7 @@ export class HuiCardOptions extends LitElement {
   protected render(): TemplateResult {
     return html`
       <slot></slot>
-      <ha-card>
+      <div>
         <div class="card-actions">
           <mwc-button @click=${this._editCard}
             >${this.hass!.localize(
