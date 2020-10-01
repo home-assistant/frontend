@@ -58,7 +58,7 @@ export class HaFormDictionary extends LitElement implements HaFormElement {
               .schema=${boolSchema}
               .data=${this._showParams}
               label=${this._computeLabel("optional") ||
-              `Configure ${this.nesting}`}
+              `Configure ${this._computeLabel("title")}`}
               @value-changed=${this._showParamsChanged}
             ></ha-form-boolean>
           `
