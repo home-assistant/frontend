@@ -1,3 +1,4 @@
+import "@material/mwc-fab/mwc-fab";
 import { mdiPlus } from "@mdi/js";
 import {
   css,
@@ -10,6 +11,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import "lit-grid-layout";
 import { classMap } from "lit-html/directives/class-map";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { nextRender } from "../../../common/util/render-status";
@@ -22,9 +24,11 @@ import type {
 import type { HomeAssistant } from "../../../types";
 import type { HuiErrorCard } from "../cards/hui-error-card";
 import { computeCardSize } from "../common/compute-card-size";
+import { HuiCardOptions } from "../components/hui-card-options";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
 
+let editCodeLoaded = false;
 const mediaQueryColumns = [2, 6, 9, 12];
 
 @customElement("hui-grid-view")
@@ -50,6 +54,12 @@ export class GridView extends LitElement implements LovelaceViewElement {
     posY: number;
   }>;
 
+  @internalProperty() public _cards: Array<
+    LovelaceCard | HuiErrorCard | HuiCardOptions
+  > = [];
+
+  private _config?: LovelaceViewConfig;
+
   private _createColumnsIteration = 0;
 
   private _mqls?: MediaQueryList[];
@@ -59,7 +69,9 @@ export class GridView extends LitElement implements LovelaceViewElement {
     this.addEventListener("iron-resize", (ev: Event) => ev.stopPropagation());
   }
 
-  public setConfig(_config: LovelaceViewConfig): void {}
+  public setConfig(config: LovelaceViewConfig): void {
+    this._config = config;
+  }
 
   protected render(): TemplateResult {
     return html`
@@ -69,7 +81,7 @@ export class GridView extends LitElement implements LovelaceViewElement {
         .items=${this._cards}
         .layout=${this._layout}
         .rowHeight=${15}
-        .columns=${this.columns}
+        .columns=${this._columns}
       ></lit-grid-layout>
       ${this.lovelace?.editMode
         ? html`
@@ -105,7 +117,7 @@ export class GridView extends LitElement implements LovelaceViewElement {
     if (this.lovelace?.editMode && !editCodeLoaded) {
       editCodeLoaded = true;
       import(
-        /* webpackChunkName: "default-layout-editable" */ "./default-view-editable"
+        /* webpackChunkName: "default-view-editable" */ "./default-view-editable"
       );
     }
 
@@ -134,6 +146,7 @@ export class GridView extends LitElement implements LovelaceViewElement {
           oldLovelace?.editMode !== this.lovelace?.editMode)) ||
       changedProperties.has("_columns")
     ) {
+      this._createCards();
       this._createLayout();
     }
   }
@@ -144,22 +157,6 @@ export class GridView extends LitElement implements LovelaceViewElement {
       saveConfig: this.lovelace!.saveConfig,
       path: [this.index!],
     });
-  }
-
-  private _addCardToColumn(columnEl, index, editMode) {
-    const card: LovelaceCard = this.cards[index];
-    if (!editMode) {
-      card.editMode = false;
-      columnEl.appendChild(card);
-    } else {
-      const wrapper = document.createElement("hui-card-options");
-      wrapper.hass = this.hass;
-      wrapper.lovelace = this.lovelace;
-      wrapper.path = [this.index!, index];
-      card.editMode = true;
-      wrapper.appendChild(card);
-      columnEl.appendChild(wrapper);
-    }
   }
 
   private async _createLayout() {
@@ -182,7 +179,7 @@ export class GridView extends LitElement implements LovelaceViewElement {
     let start: Date | undefined;
 
     // Calculate the size of every card and determine in what column it should go
-    for (const [index, el] of this._cards.entries()) {
+    for (const [index, card] of this.cards.entries()) {
       if (tillNextRender === undefined) {
         // eslint-disable-next-line no-loop-func
         tillNextRender = nextRender().then(() => {
@@ -202,7 +199,7 @@ export class GridView extends LitElement implements LovelaceViewElement {
         waitProm = tillNextRender;
       }
 
-      const cardSizeProm = computeCardSize(el);
+      const cardSizeProm = computeCardSize(card);
       // @ts-ignore
       // eslint-disable-next-line no-await-in-loop
       const [cardSize] = await Promise.all([cardSizeProm, waitProm]);
@@ -212,35 +209,33 @@ export class GridView extends LitElement implements LovelaceViewElement {
         return;
       }
 
-      var y = Math.ceil(Math.random() * 4) + 1;
+      const y = Math.ceil(Math.random() * 4) + 1;
 
-      newLayout.push({
+      const layout = {
         width: 3,
         height: cardSize,
         posX: 3 * (index % 4),
         posY: Math.floor(index / 6) * y,
-        key: el.key!,
-      });
+        // Random unique Id
+        key: (card as LovelaceCard).layout?.key || index.toString(),
+      };
+
+      newLayout.push(layout);
+      console.log(layout);
+
+      // this._config!.cards![index].layout = layout;
     }
 
     this._layout = newLayout;
   }
 
-  private _createCards(config: LovelaceViewConfig): void {
-    if (!config || !config.cards || !Array.isArray(config.cards)) {
-      this._cards = [];
-      return;
-    }
-
-    console.log("creating card");
-
-    const elements: LovelaceCard[] = [];
-    config.cards.forEach((cardConfig, index) => {
-      const card = this.createCardElement(cardConfig);
-
+  private _createCards(): void {
+    const elements: Array<LovelaceCard | HuiCardOptions> = [];
+    this.cards.forEach((card: LovelaceCard, index) => {
+      const cardConfig = this._config!.cards![index];
       if (!this.lovelace?.editMode) {
         card.editMode = false;
-        card.key = cardConfig.key;
+        card.layout = cardConfig.layout;
         elements.push(card);
       } else {
         const wrapper = document.createElement("hui-card-options");
@@ -248,14 +243,13 @@ export class GridView extends LitElement implements LovelaceViewElement {
         wrapper.lovelace = this.lovelace;
         wrapper.path = [this.index!, index];
         card.editMode = true;
+        card.layout = cardConfig.layout;
         wrapper.appendChild(card);
-        wrapper.key = cardConfig.key;
         elements.push(wrapper);
       }
     });
 
     this._cards = elements;
-    this._createLayout();
   }
 
   private _updateColumns() {

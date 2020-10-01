@@ -9,6 +9,7 @@ const ALWAYS_LOADED_LAYOUTS = new Set(["masonry"]);
 
 const LAZY_LOAD_LAYOUTS = {
   panel: () => import("../views/hui-panel-view"),
+  grid: () => import("../views/hui-grid-view"),
 };
 
 export const createViewElement = (

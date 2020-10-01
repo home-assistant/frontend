@@ -113,7 +113,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     if (this.lovelace?.editMode && !editCodeLoaded) {
       editCodeLoaded = true;
       import(
-        /* webpackChunkName: "default-layout-editable" */ "./default-view-editable"
+        /* webpackChunkName: "default-view-editable" */ "./default-view-editable"
       );
     }
 
@@ -137,9 +137,9 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
       | undefined;
 
     if (
-      (changedProperties.has("lovelace") && (
-        oldLovelace?.config !== this.lovelace?.config ||
-        oldLovelace?.editMode !== this.lovelace?.editMode)) ||
+      (changedProperties.has("lovelace") &&
+        (oldLovelace?.config !== this.lovelace?.config ||
+          oldLovelace?.editMode !== this.lovelace?.editMode)) ||
       changedProperties.has("_columns")
     ) {
       this._createColumns();
