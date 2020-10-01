@@ -44,7 +44,8 @@ export interface FlowConfig {
   renderShowFormStepFieldLabel(
     hass: HomeAssistant,
     step: DataEntryFlowStepForm,
-    nesting: string
+    nesting: string,
+    param?: string
   ): string;
 
   renderShowFormStepFieldError(

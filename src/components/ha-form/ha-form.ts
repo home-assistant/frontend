@@ -128,7 +128,7 @@ export class HaForm extends LitElement implements HaFormElement {
 
   @property() public computeError?: (schema: HaFormSchema, error) => string;
 
-  @property() public computeLabel?: (nesting: string) => string;
+  @property() public computeLabel?: (nesting: string, param?: string) => string;
 
   @property() public computeSuffix?: (schema: HaFormSchema) => string;
 

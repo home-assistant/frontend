@@ -176,8 +176,13 @@ class StepFlowForm extends LitElement {
     this._stepData = ev.detail.value;
   }
 
-  private _labelCallback = (nesting: string): string =>
-    this.flowConfig.renderShowFormStepFieldLabel(this.hass, this.step, nesting);
+  private _labelCallback = (nesting: string, param?: string): string =>
+    this.flowConfig.renderShowFormStepFieldLabel(
+      this.hass,
+      this.step,
+      nesting,
+      param
+    );
 
   private _errorCallback = (error: string) =>
     this.flowConfig.renderShowFormStepFieldError(this.hass, this.step, error);

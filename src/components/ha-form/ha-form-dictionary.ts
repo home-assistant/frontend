@@ -32,7 +32,7 @@ export class HaFormDictionary extends LitElement implements HaFormElement {
 
   @property() public computeError?: (schema: HaFormSchema, error) => string;
 
-  @property() public computeLabel?: (nesting: string) => string;
+  @property() public computeLabel?: (nesting: string, param?: string) => string;
 
   @property() public computeSuffix?: (schema: HaFormSchema) => string;
 
@@ -104,7 +104,7 @@ export class HaFormDictionary extends LitElement implements HaFormElement {
   }
 
   private _computeLabel(param: string) {
-    if (this.computeLabel) return this.computeLabel(`${this.nesting}.${param}`);
+    if (this.computeLabel) return this.computeLabel(this.nesting, param);
     return param || "";
   }
 
