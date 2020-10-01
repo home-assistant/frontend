@@ -741,6 +741,7 @@
                 "dismiss": "Desestimar el diàleg",
                 "edit": "Edita entitat",
                 "history": "Historial",
+                "last_updated": "Última actualització",
                 "person": {
                     "create_zone": "Crea una zona a partir de la ubicació actual"
                 },
@@ -2472,6 +2473,20 @@
                     "refresh": "Actualitza"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "Crida servei",
+                            "default_action": "Acció per defecte",
+                            "more-info": "Més informació",
+                            "navigate": "Navega",
+                            "none": "Sense acció",
+                            "toggle": "Commuta",
+                            "url": "URL"
+                        },
+                        "editor_service_data": "Les dades de servei només es poden introduir des de l'editor de codi",
+                        "navigation_path": "Ruta de navegació",
+                        "url_path": "Ruta de l'URL"
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "Estats disponibles",
@@ -2479,6 +2494,7 @@
                             "name": "Panell d'alarma"
                         },
                         "button": {
+                            "default_action_help": "L'acció predeterminada depèn de les característiques de l'entitat, o es commutarà o es mostrarà més informació.",
                             "description": "La targeta botó et permet afegir botons per realitzar diferents tasques.",
                             "name": "Botó"
                         },
@@ -2976,6 +2992,12 @@
                     "more_integrations": "Més"
                 },
                 "intro": "Estàs preparat donar vida pròpia a la teva llar, recuperar la teva privacitat i unir-te a una comunitat mundial de \"tinkerers\"?",
+                "restore": {
+                    "description": "També pots restaurar des d'una instantània anterior.",
+                    "hide_log": "Amaga el registre complet",
+                    "in_progress": "Restauració en curs",
+                    "show_log": "Mostra el registre complet"
+                },
                 "user": {
                     "create_account": "Crear compte",
                     "data": {
