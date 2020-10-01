@@ -3,9 +3,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -21,18 +21,18 @@ import "../../../components/ha-icon";
 import { UNAVAILABLE } from "../../../data/entity";
 import {
   getSecondaryWeatherAttribute,
-  getWeatherUnit,
   getWeatherStateIcon,
+  getWeatherUnit,
   weatherSVGStyles,
 } from "../../../data/weather";
 import type { HomeAssistant, WeatherEntity } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entites";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { installResizeObserver } from "../common/install-resize-observer";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { WeatherForecastCardConfig } from "./types";
-import { installResizeObserver } from "../common/install-resize-observer";
 
 const DAY_IN_MILLISECONDS = 86400000;
 
@@ -84,7 +84,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    return this._config?.show_forecast !== false ? 4 : 2;
+    return this._config?.show_forecast !== false ? 5 : 2;
   }
 
   public setConfig(config: WeatherForecastCardConfig): void {
@@ -334,31 +334,37 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    if (this.offsetWidth < 375) {
+    const card = this.shadowRoot!.querySelector("ha-card");
+    // If we show an error or warning there is no ha-card
+    if (!card) {
+      return;
+    }
+
+    if (card.offsetWidth < 375) {
       this.setAttribute("narrow", "");
     } else {
       this.removeAttribute("narrow");
     }
-    if (this.offsetWidth < 300) {
+    if (card.offsetWidth < 300) {
       this.setAttribute("verynarrow", "");
     } else {
       this.removeAttribute("verynarrow");
     }
-    this._veryVeryNarrow = this.offsetWidth < 245;
+    this._veryVeryNarrow = card.offsetWidth < 245;
   }
 
   static get styles(): CSSResult[] {
     return [
       weatherSVGStyles,
       css`
-        :host {
-          display: block;
-        }
-
         ha-card {
           cursor: pointer;
-          padding: 16px;
           outline: none;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          padding: 16px;
         }
 
         .content {

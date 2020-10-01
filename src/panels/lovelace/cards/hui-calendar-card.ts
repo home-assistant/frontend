@@ -101,7 +101,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    return 4;
+    return this._config?.header ? 1 : 0 + 11;
   }
 
   public connectedCallback(): void {
