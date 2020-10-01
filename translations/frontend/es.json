@@ -741,6 +741,7 @@
                 "dismiss": "Descartar diálogo",
                 "edit": "Editar entidad",
                 "history": "Historial",
+                "last_updated": "Última actualización",
                 "person": {
                     "create_zone": "Crear zona a partir de la ubicación actual"
                 },
@@ -1895,7 +1896,7 @@
                     },
                     "introduction": "Aquí puedes definir a cada persona de interés en Home Assistant.",
                     "no_persons_created_yet": "Parece que aún no has creado ninguna persona.",
-                    "note_about_persons_configured_in_yaml": "Nota: las personas configuradas a través de configuration.yaml no se pueden editar a través de la interfaz de usuario."
+                    "note_about_persons_configured_in_yaml": "Nota: las personas configuradas a través de configuration.yaml no se pueden editar a través de la IU."
                 },
                 "scene": {
                     "activated": "Activada escena {name}.",
@@ -2472,6 +2473,20 @@
                     "refresh": "Actualizar"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "Llamar servicio",
+                            "default_action": "Acción por defecto",
+                            "more-info": "Más información",
+                            "navigate": "Navegar",
+                            "none": "Sin acción",
+                            "toggle": "Alternar",
+                            "url": "Url"
+                        },
+                        "editor_service_data": "Los datos del servicio sólo pueden ser introducidos en el editor de código",
+                        "navigation_path": "Ruta de navegación",
+                        "url_path": "Ruta de la URL"
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "Estados disponibles",
@@ -2479,6 +2494,7 @@
                             "name": "Panel de alarma"
                         },
                         "button": {
+                            "default_action_help": "La acción predeterminada depende de las capacidades de la entidad, se alternará o se mostrará más información.",
                             "description": "La tarjeta Botón te permite agregar botones para realizar tareas.",
                             "name": "Botón"
                         },
@@ -2976,6 +2992,12 @@
                     "more_integrations": "Más"
                 },
                 "intro": "¿Estás listo para despertar tu casa, reclamar tu privacidad y unirte a una comunidad mundial de pensadores?",
+                "restore": {
+                    "description": "Alternativamente, puedes restaurar desde una copia de seguridad anterior.",
+                    "hide_log": "Ocultar registro completo",
+                    "in_progress": "Restauración en curso",
+                    "show_log": "Mostrar registro completo"
+                },
                 "user": {
                     "create_account": "Crear una cuenta",
                     "data": {

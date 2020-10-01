@@ -1040,7 +1040,16 @@
                                     "before": "Antes das",
                                     "label": "Tempo",
                                     "type_input": "Valor de um auxiliar de data/hora",
-                                    "type_value": "Hora marcada"
+                                    "type_value": "Hora marcada",
+                                    "weekdays": {
+                                        "fri": "Sexta-feira",
+                                        "mon": "Segunda-feira",
+                                        "sat": "Sábado",
+                                        "sun": "Domingo",
+                                        "thu": "Quinta-feira",
+                                        "tue": "Terça-feira",
+                                        "wed": "Quarta-feira"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Entidade com localização",
@@ -1663,7 +1672,7 @@
                 "logs": {
                     "caption": "Logs",
                     "clear": "Limpar",
-                    "description": "Exibir os logs do Assistente Inicial",
+                    "description": "Ver os registos do Home Assistant",
                     "details": "Detalhes do log ( {level} )",
                     "load_full_log": "Carregar log completo do Home Assistant",
                     "loading_log": "A carregar o log de erros...",
@@ -1794,7 +1803,7 @@
                             "driverremoved": "O driver foi removido",
                             "driverreset": "O driver foi reiniciado",
                             "offline": "OZWDaemon inativo",
-                            "ready": "Pronto para conectar",
+                            "ready": "Pronto para ligar",
                             "started": "Conectado ao MQTT",
                             "starting": "Conectando-se ao MQTT",
                             "stopped": "OpenZWave parado"
@@ -2475,7 +2484,11 @@
                         },
                         "calendar": {
                             "description": "O cartão do Calendário exibe um calendário incluindo dia, semana e visualizações de lista",
-                            "name": "Calendário"
+                            "name": "Calendário",
+                            "views": {
+                                "dayGridDay": "Dia",
+                                "dayGridMonth": "Mês"
+                            }
                         },
                         "conditional": {
                             "card": "Cartão",

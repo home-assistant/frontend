@@ -741,6 +741,7 @@
                 "dismiss": "Loobu dialoogist",
                 "edit": "Muuda olemit",
                 "history": "Ajalugu",
+                "last_updated": "Viimati uuendatud",
                 "person": {
                     "create_zone": "Loo tsoon praegusest asukohast"
                 },
@@ -1894,7 +1895,7 @@
                         "update": "Uuenda"
                     },
                     "introduction": "Siin saate määratleda iga huvipakkuva isiku Home Assistantis.",
-                    "no_persons_created_yet": "Paistab, et sa pole veel ühtegi isikut loonud.",
+                    "no_persons_created_yet": "Paistab, et sa pole veel ühtegi isikut lisanud.",
                     "note_about_persons_configured_in_yaml": "Märkus: configuration.yaml kaudu seadistatud isikuid ei saa kasutajaliidese kaudu muuta."
                 },
                 "scene": {
@@ -2223,7 +2224,7 @@
                     "configured_in_yaml": "configuration.yaml kaudu seadistatud tsoone ei saa kasutajaliidese kaudu redigeerida.",
                     "confirm_delete": "Oled kindel, et soovid selle tsooni kustutada?",
                     "create_zone": "Loo tsoon",
-                    "description": "Halda tsoone, milles soovid inimesi jälgida.",
+                    "description": "Halda tsoone milles soovid inimesi jälgida.",
                     "detail": {
                         "create": "Loo",
                         "delete": "Kustuta",
@@ -2472,6 +2473,20 @@
                     "refresh": "Värskenda"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "Kutsu teenus",
+                            "default_action": "Vaiketoiming",
+                            "more-info": "Rohkem infot",
+                            "navigate": "Navigeeri",
+                            "none": "Toiming puudub",
+                            "toggle": "Muuda olekut",
+                            "url": "URL"
+                        },
+                        "editor_service_data": "Teenuse andmeid saab sisestada ainult koodiredaktoris",
+                        "navigation_path": "Navigeerimistee",
+                        "url_path": "URL-i tee"
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "Saadaolevad olekud",
@@ -2479,6 +2494,7 @@
                             "name": "Valvepaneeli nupustik"
                         },
                         "button": {
+                            "default_action_help": "Vaiketoiming sõltub olemi võimalustest. Selle olekut muudetakse või kuvatakse rohkem teavet.",
                             "description": "Nupukaart võimaldab Teil ülesannete täitmiseks lisada nuppe.",
                             "name": "Nupp"
                         },
@@ -2976,6 +2992,12 @@
                     "more_integrations": "Rohkem"
                 },
                 "intro": "Kas oled valmis oma kodu ellu äratama, oma privaatsust tagasi võitma ja ühinema ülemaailmse nokitsejate kogukonnaga?",
+                "restore": {
+                    "description": "Teise võimalusena saad taastada eelmise hetktõmmise.",
+                    "hide_log": "Peida täielik logi",
+                    "in_progress": "Toimub taastamine",
+                    "show_log": "Kuva täielik logi"
+                },
                 "user": {
                     "create_account": "Loo konto",
                     "data": {
