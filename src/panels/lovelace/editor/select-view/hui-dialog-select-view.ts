@@ -4,13 +4,14 @@ import {
   LitElement,
   internalProperty,
   TemplateResult,
-  CSSResult,
   css,
+  CSSResultArray,
 } from "lit-element";
 import "../../../../components/dialog/ha-paper-dialog";
 import "../../components/hui-views-list";
 import type { SelectViewDialogParams } from "./show-select-view-dialog";
 import { HomeAssistant } from "../../../../types";
+import { haStyleDialog } from "../../../../resources/styles";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
@@ -135,12 +136,15 @@ export class HuiDialogSelectView extends LitElement {
     this.closeDialog();
   }
 
-  static get styles(): CSSResult {
-    return css`
-      ha-paper-dropdown-menu {
-        width: 100%;
-      }
-    `;
+  static get styles(): CSSResultArray {
+    return [
+      haStyleDialog,
+      css`
+        ha-paper-dropdown-menu {
+          width: 100%;
+        }
+      `,
+    ];
   }
 }
 

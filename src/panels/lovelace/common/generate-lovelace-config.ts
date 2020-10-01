@@ -63,6 +63,8 @@ const HIDE_DOMAIN = new Set([
   "zone",
 ]);
 
+const HIDE_PLATFORM = new Set(["mobile_app"]);
+
 let subscribedRegistries = false;
 
 interface SplittedByAreas {
@@ -206,11 +208,23 @@ export const computeCards = (
   return cards;
 };
 
-const computeDefaultViewStates = (entities: HassEntities): HassEntities => {
+const computeDefaultViewStates = (
+  entities: HassEntities,
+  entityEntries: EntityRegistryEntry[]
+): HassEntities => {
   const states = {};
+  const hiddenEntities = new Set(
+    entityEntries
+      .filter((entry) => HIDE_PLATFORM.has(entry.platform))
+      .map((entry) => entry.entity_id)
+  );
+
   Object.keys(entities).forEach((entityId) => {
     const stateObj = entities[entityId];
-    if (!HIDE_DOMAIN.has(computeStateDomain(stateObj))) {
+    if (
+      !HIDE_DOMAIN.has(computeStateDomain(stateObj)) &&
+      !hiddenEntities.has(stateObj.entity_id)
+    ) {
       states[entityId] = entities[entityId];
     }
   });
@@ -317,7 +331,7 @@ export const generateDefaultViewConfig = (
   entities: HassEntities,
   localize: LocalizeFunc
 ): LovelaceViewConfig => {
-  const states = computeDefaultViewStates(entities);
+  const states = computeDefaultViewStates(entities, entityEntries);
   const path = "default_view";
   const title = "Home";
   const icon = undefined;

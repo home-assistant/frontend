@@ -1,12 +1,12 @@
 /* eslint-plugin-disable lit */
 import { IronResizableBehavior } from "@polymer/iron-resizable-behavior/iron-resizable-behavior";
-import "../ha-icon-button";
 import { mixinBehaviors } from "@polymer/polymer/lib/legacy/class";
 import { timeOut } from "@polymer/polymer/lib/utils/async";
 import { Debouncer } from "@polymer/polymer/lib/utils/debounce";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { formatTime } from "../../common/datetime/format_time";
+import "../ha-icon-button";
 
 // eslint-disable-next-line no-unused-vars
 /* global Chart moment Color */
@@ -355,7 +355,7 @@ class HaChartBase extends mixinBehaviors(
       return value;
     }
     const date = new Date(values[index].value);
-    return formatTime(date);
+    return formatTime(date, this.hass.language);
   }
 
   drawChart() {
@@ -420,7 +420,7 @@ class HaChartBase extends mixinBehaviors(
         },
       };
       options = Chart.helpers.merge(options, this.data.options);
-      options.scales.xAxes[0].ticks.callback = this._formatTickValue;
+      options.scales.xAxes[0].ticks.callback = this._formatTickValue.bind(this);
       if (this.data.type === "timeline") {
         this.set("isTimeline", true);
         if (this.data.colors !== undefined) {

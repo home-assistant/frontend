@@ -31,6 +31,10 @@ class HassioMarkdownDialog extends LitElement {
     this._opened = true;
   }
 
+  public closeDialog() {
+    this._opened = false;
+  }
+
   protected render(): TemplateResult {
     if (!this._opened) {
       return html``;
@@ -38,16 +42,12 @@ class HassioMarkdownDialog extends LitElement {
     return html`
       <ha-dialog
         open
-        @closing=${this._closeDialog}
+        @closed=${this.closeDialog}
         .heading=${createCloseHeading(this.hass, this.title)}
       >
         <ha-markdown .content=${this.content || ""}></ha-markdown>
       </ha-dialog>
     `;
-  }
-
-  private _closeDialog(): void {
-    this._opened = false;
   }
 
   static get styles(): CSSResult[] {

@@ -13,6 +13,8 @@ export const DISCOVERY_SOURCES = [
   "discovery",
 ];
 
+export const ATTENTION_SOURCES = ["reauth"];
+
 export const createConfigFlow = (hass: HomeAssistant, handler: string) =>
   hass.callApi<DataEntryFlowStep>("POST", "config/config_entries/flow", {
     handler,

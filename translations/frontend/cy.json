@@ -733,6 +733,9 @@
                         "no_area": "Dim Ardal",
                         "no_device": "Endidau heb ddyfeisiau",
                         "no_devices": "Tydi'r integreiddad yma ddim efo dyfeisiadau.",
+                        "reload": "Ail-lwytho",
+                        "reload_confirm": "Cafodd yr integreiddiad ei ail-lwytho",
+                        "reload_restart_confirm": "Ailgychwyn Home Assistant i ddarfod yr integreiddiadau",
                         "restart_confirm": "Ailgychwyn Home Assistant i ddarfod dileu'r integreiddiad hwn"
                     },
                     "config_flow": {
@@ -782,6 +785,52 @@
                 },
                 "mqtt": {
                     "title": "MQTT"
+                },
+                "ozw": {
+                    "button": "Ffurfweddu",
+                    "common": {
+                        "controller": "Rheolwr",
+                        "instance": "Enghraifft",
+                        "network": "Rhwydwaith"
+                    },
+                    "navigation": {
+                        "network": "Rhwydwaith",
+                        "nodes": "Nodau",
+                        "select_instance": "Dewis Enghraifft"
+                    },
+                    "network_status": {
+                        "details": {
+                            "driverallnodesqueried": "Holwyd pob nod",
+                            "driverallnodesqueriedsomedead": "Holwyd pob nod. Cafwyd hyd i rai nodau yn farw",
+                            "driverawakenodesqueries": "Holwyd pob nod effro",
+                            "driverfailed": "Wedi methu cysylltu â rheolydd Z-Wave",
+                            "driverready": "Cychwyn y rheolydd Z-Wave",
+                            "driverremoved": "Mae'r gyrrwr wedi'i diddymu",
+                            "driverreset": "Mae'r gyrrwr wedi cael ei ailosod",
+                            "offline": "OZWDaemon all-lein",
+                            "ready": "Barod i gysylltu",
+                            "started": "Cysylltu â MQTT",
+                            "starting": "Cysylltu â MQTT",
+                            "stopped": "Stopiodd OpenZWave"
+                        },
+                        "offline": "All-lein",
+                        "online": "Ar-lein",
+                        "starting": "Cychwyn",
+                        "unknown": "Anhysbys"
+                    },
+                    "network": {
+                        "header": "Rheolaeth Rhwydwaith",
+                        "introduction": "Rheoli swyddogaethau rhwydwaith-lydan",
+                        "node_count": "nodau {count}"
+                    },
+                    "select_instance": {
+                        "header": "Dewiswch Enghraifft OpenZWave",
+                        "introduction": "Mae gennych fwy nag un enghraifft OpenZWave yn rhedeg. Pa enghraifft hoffech chi ei rheoli?"
+                    },
+                    "services": {
+                        "add_node": "Ychwanegu Nod",
+                        "remove_node": "Tynnu Nod"
+                    }
                 },
                 "person": {
                     "caption": "Pobl",
@@ -838,11 +887,16 @@
                     "section": {
                         "reloading": {
                             "automation": "Ail-lwytho awtomeiddiadau",
+                            "command_line": "Ail-lwytho endidau llinell orchymyn",
                             "core": "Ail-lwytho craidd",
+                            "filter": "Ail-lwytho endidau hidlo",
                             "group": "Ail-lwytho grwpiau",
                             "heading": "Ffurfweddiad yn ail-lwytho",
                             "introduction": "Gall rhai rhannau o Home Assistant ail-lwytho heb orfod ailgychwyn. Bydd taro ail-lwytho yn dadlwytho eu cyfluniad cyfredol a llwytho'r un newydd.",
-                            "script": "Ail-lwytho sgriptiau"
+                            "rest": "Ail-lwytho endidau gorffwys",
+                            "script": "Ail-lwytho sgriptiau",
+                            "statistics": "Ail-lwytho endidau ystadegau",
+                            "universal": "Ail-lwytho endidau chwaraewyr cyfryngau cyffredinol"
                         },
                         "server_management": {
                             "heading": "Rheoli gweinydd",
@@ -945,6 +999,7 @@
                         "title": "Cyflerau"
                     },
                     "templates": {
+                        "reset": "Ailosod i dempled demo",
                         "title": "Templedi"
                     }
                 }
@@ -994,6 +1049,10 @@
                         },
                         "button": {
                             "description": "Mae'r cerdyn Botwm yn caniatáu ichi ychwanegu botymau i gyflawni tasgau."
+                        },
+                        "calendar": {
+                            "description": "Mae'r cerdyn Calendr yn dangos calendr gan gynnwys gweddlun dydd, wythnos a restr",
+                            "name": "Calendr"
                         },
                         "conditional": {
                             "card": "Cerdyn",
@@ -1281,6 +1340,7 @@
                     "intro": "Helo {name}, croeso i Home Assistant. Sut hoffech enwi eich tŷ?",
                     "intro_location": "Hoffem wybod ble rydych chi'n byw. Bydd y wybodaeth yn helpu i arddangos gwybodaeth a sefydlu awtomeiddiadau haul. Tydi'r data byth yn cael ei rannu thu allan i'ch rhwydwaith.",
                     "intro_location_detect": "Gallwn eich helpu i lenwi'r wybodaeth hon drwy wneud cais un-tro i wasanaeth allanol.",
+                    "location_name": "Enw eich gosodiad Home Assistant",
                     "location_name_default": "Hafan"
                 },
                 "integration": {

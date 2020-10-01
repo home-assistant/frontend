@@ -1,12 +1,13 @@
 import "@material/mwc-icon-button/mwc-icon-button";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import {
   css,
   CSSResult,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
 } from "lit-element";
 import { html, TemplateResult } from "lit-html";
@@ -19,13 +20,13 @@ import {
   HassioAddonRepository,
   reloadHassioAddons,
 } from "../../../src/data/hassio/addon";
-import "../../../src/layouts/hass-tabs-subpage";
+import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import "../../../src/layouts/hass-loading-screen";
+import "../../../src/layouts/hass-tabs-subpage";
 import { HomeAssistant, Route } from "../../../src/types";
 import { showRepositoriesDialog } from "../dialogs/repositories/show-dialog-repositories";
 import { supervisorTabs } from "../hassio-tabs";
 import "./hassio-addon-repository";
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 
 const sortRepos = (a: HassioAddonRepository, b: HassioAddonRepository) => {
   if (a.slug === "local") {
@@ -179,7 +180,7 @@ class HassioAddonStore extends LitElement {
       this._repos.sort(sortRepos);
       this._addons = addonsInfo.addons;
     } catch (err) {
-      alert("Failed to fetch add-on info");
+      alert(extractApiErrorMessage(err));
     }
   }
 

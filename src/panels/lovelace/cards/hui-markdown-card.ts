@@ -14,7 +14,10 @@ import { classMap } from "lit-html/directives/class-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/ha-card";
 import "../../../components/ha-markdown";
-import { subscribeRenderTemplate } from "../../../data/ws-templates";
+import {
+  subscribeRenderTemplate,
+  RenderTemplateResult,
+} from "../../../data/ws-templates";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { MarkdownCardConfig } from "./types";
@@ -40,7 +43,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
   @internalProperty() private _config?: MarkdownCardConfig;
 
-  @internalProperty() private _content = "";
+  @internalProperty() private _templateResult?: RenderTemplateResult;
 
   @internalProperty() private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
 
@@ -85,7 +88,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
           class=${classMap({
             "no-header": !this._config.title,
           })}
-          .content="${this._content}"
+          .content="${this._templateResult?.result}"
         ></ha-markdown>
       </ha-card>
     `;
@@ -127,7 +130,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
       this._unsubRenderTemplate = subscribeRenderTemplate(
         this.hass.connection,
         (result) => {
-          this._content = result;
+          this._templateResult = result;
         },
         {
           template: this._config.content,
@@ -139,7 +142,10 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
         }
       );
     } catch (_err) {
-      this._content = this._config!.content;
+      this._templateResult = {
+        result: this._config!.content,
+        listeners: { all: false, domains: [], entities: [] },
+      };
       this._unsubRenderTemplate = undefined;
     }
   }

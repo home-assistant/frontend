@@ -1,14 +1,26 @@
 import { ActionConfig, LovelaceCardConfig } from "../../../data/lovelace";
+import { FullCalendarView } from "../../../types";
 import { Condition } from "../common/validate-condition";
 import { HuiImage } from "../components/hui-image";
 import { LovelaceElementConfig } from "../elements/types";
-import { EntityConfig, EntityFilterEntityConfig } from "../entity-rows/types";
+import {
+  EntityConfig,
+  EntityFilterEntityConfig,
+  LovelaceRowConfig,
+} from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 
 export interface AlarmPanelCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string;
   states?: string[];
+  theme?: string;
+}
+
+export interface CalendarCardConfig extends LovelaceCardConfig {
+  entities: string[];
+  initial_view?: FullCalendarView;
+  title?: string;
   theme?: string;
 }
 
@@ -52,7 +64,7 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
   type: "entities";
   show_header_toggle?: boolean;
   title?: string;
-  entities: Array<EntitiesCardEntityConfig | string>;
+  entities: Array<LovelaceRowConfig | string>;
   theme?: string;
   icon?: string;
   header?: LovelaceHeaderFooterConfig;

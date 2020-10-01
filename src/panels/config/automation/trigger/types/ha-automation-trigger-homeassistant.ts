@@ -18,7 +18,7 @@ export default class HaHassTrigger extends LitElement {
     };
   }
 
-  public render() {
+  protected render() {
     const { event } = this.trigger;
     return html`
       <label id="eventlabel">

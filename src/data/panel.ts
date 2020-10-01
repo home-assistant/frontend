@@ -17,7 +17,9 @@ export const setDefaultPanel = (
 };
 
 export const getDefaultPanel = (hass: HomeAssistant): PanelInfo =>
-  hass.panels[hass.defaultPanel];
+  hass.panels[hass.defaultPanel]
+    ? hass.panels[hass.defaultPanel]
+    : hass.panels[DEFAULT_PANEL];
 
 export const getPanelTitle = (hass: HomeAssistant): string | undefined => {
   if (!hass.panels) {

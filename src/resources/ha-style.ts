@@ -82,7 +82,7 @@ documentContainer.innerHTML = `<custom-style>
       --light-primary-opacity: 1.0;
 
       /* set our slider style */
-      --ha-paper-slider-pin-font-size: 15px;
+      --ha-slider-pin-font-size: 15px;
 
       /* rgb */
       --rgb-primary-color: 3, 169, 244;

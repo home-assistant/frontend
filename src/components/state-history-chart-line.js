@@ -19,6 +19,7 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
       </style>
       <ha-chart-base
         id="chart"
+        hass="[[hass]]"
         data="[[chartData]]"
         identifier="[[identifier]]"
         rendered="{{rendered}}"
@@ -28,6 +29,9 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
 
   static get properties() {
     return {
+      hass: {
+        type: Object,
+      },
       chartData: Object,
       data: Object,
       names: Object,
@@ -58,12 +62,22 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
     this.drawChart();
   }
 
+  ready() {
+    super.ready();
+    // safari doesn't always render the canvas when we animate it, so we remove overflow hidden when the animation is complete
+    this.addEventListener("transitionend", () => {
+      this.style.overflow = "auto";
+    });
+  }
+
   dataChanged() {
     this.drawChart();
   }
 
   _onRenderedChanged(rendered) {
-    if (rendered) this.animateHeight();
+    if (rendered) {
+      this.animateHeight();
+    }
   }
 
   animateHeight() {
@@ -75,14 +89,14 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
   }
 
   drawChart() {
+    if (!this._isAttached) {
+      return;
+    }
+
     const unit = this.unit;
     const deviceStates = this.data;
     const datasets = [];
     let endTime;
-
-    if (!this._isAttached) {
-      return;
-    }
 
     if (deviceStates.length === 0) {
       return;

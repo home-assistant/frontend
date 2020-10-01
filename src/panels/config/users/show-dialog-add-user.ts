@@ -3,6 +3,7 @@ import { User } from "../../../data/user";
 
 export interface AddUserDialogParams {
   userAddedCallback: (user: User) => void;
+  name?: string;
 }
 
 export const loadAddUserDialog = () =>

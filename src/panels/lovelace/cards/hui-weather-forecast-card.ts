@@ -163,6 +163,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         : undefined;
 
     let hourly: boolean | undefined;
+    let dayNight: boolean | undefined;
 
     if (forecast?.length && forecast?.length > 2) {
       const date1 = new Date(forecast[1].datetime);
@@ -170,6 +171,14 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       const timeDiff = date2.getTime() - date1.getTime();
 
       hourly = timeDiff < DAY_IN_MILLISECONDS;
+
+      if (hourly) {
+        const dateFirst = new Date(forecast[0].datetime);
+        const datelast = new Date(forecast[forecast.length - 1].datetime);
+        const dayDiff = datelast.getTime() - dateFirst.getTime();
+
+        dayNight = dayDiff > DAY_IN_MILLISECONDS;
+      }
     }
 
     const weatherStateIcon = getWeatherStateIcon(stateObj.state, this);
@@ -235,7 +244,21 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                   (item) => html`
                     <div>
                       <div>
-                        ${hourly
+                        ${dayNight
+                          ? html`
+                              ${new Date(item.datetime).toLocaleDateString(
+                                this.hass!.language,
+                                { weekday: "short" }
+                              )}
+                              <div class="daynight">
+                                ${item.daytime === undefined || item.daytime
+                                  ? this.hass!.localize("ui.card.weather.day")
+                                  : this.hass!.localize(
+                                      "ui.card.weather.night"
+                                    )}<br />
+                              </div>
+                            `
+                          : hourly
                           ? html`
                               ${new Date(item.datetime).toLocaleTimeString(
                                 this.hass!.language,
@@ -254,7 +277,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                       ${item.condition !== undefined && item.condition !== null
                         ? html`
                             <div class="forecast-image-icon">
-                              ${getWeatherStateIcon(item.condition, this)}
+                              ${getWeatherStateIcon(
+                                item.condition,
+                                this,
+                                !(item.daytime || item.daytime === undefined)
+                              )}
                             </div>
                           `
                         : ""}
@@ -442,6 +469,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         .forecast-image-icon > * {
           width: 40px;
           height: 40px;
+          --mdc-icon-size: 40px;
         }
 
         .forecast-icon {
@@ -450,6 +478,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
         .attribute,
         .templow,
+        .daynight,
         .name {
           color: var(--secondary-text-color);
         }
@@ -475,7 +504,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
           width: 52px;
         }
 
-        :host([narrow]) .weather-icon {
+        :host([narrow]) .icon-image .weather-icon {
           --mdc-icon-size: 52px;
         }
 

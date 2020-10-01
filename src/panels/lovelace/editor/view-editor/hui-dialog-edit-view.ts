@@ -342,6 +342,7 @@ export class HuiDialogEditView extends LitElement {
       css`
         h2 {
           display: block;
+          color: var(--primary-text-color);
           line-height: normal;
           -moz-osx-font-smoothing: grayscale;
           -webkit-font-smoothing: antialiased;
@@ -380,6 +381,7 @@ export class HuiDialogEditView extends LitElement {
         }
         paper-tabs {
           --paper-tabs-selection-bar-color: var(--primary-color);
+          color: var(--primary-text-color);
           text-transform: uppercase;
           border-bottom: 1px solid rgba(0, 0, 0, 0.1);
           padding: 0 20px;
@@ -410,6 +412,12 @@ export class HuiDialogEditView extends LitElement {
           justify-content: center;
           margin: 12px 16px;
           flex-wrap: wrap;
+        }
+
+        @media all and (min-width: 600px) {
+          ha-dialog {
+            --mdc-dialog-min-width: 600px;
+          }
         }
       `,
     ];

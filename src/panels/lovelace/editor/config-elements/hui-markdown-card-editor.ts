@@ -1,13 +1,15 @@
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
 import {
+  CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
+import { assert, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../types";
 import { MarkdownCardConfig } from "../../cards/types";
@@ -15,7 +17,6 @@ import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import { string, assert, object, optional } from "superstruct";
 
 const cardConfigStruct = object({
   type: string(),
@@ -54,7 +55,6 @@ export class HuiMarkdownCardEditor extends LitElement
     }
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <paper-input
           .label="${this.hass.localize(
@@ -74,6 +74,7 @@ export class HuiMarkdownCardEditor extends LitElement
           )})"
           .value="${this._content}"
           .configValue="${"content"}"
+          @keydown=${this._ignoreKeydown}
           @value-changed="${this._valueChanged}"
           autocapitalize="none"
           autocomplete="off"
@@ -87,6 +88,10 @@ export class HuiMarkdownCardEditor extends LitElement
         ></hui-theme-select-editor>
       </div>
     `;
+  }
+
+  private _ignoreKeydown(ev: KeyboardEvent) {
+    ev.stopPropagation();
   }
 
   private _valueChanged(ev: EntitiesEditorEvent): void {
@@ -110,6 +115,10 @@ export class HuiMarkdownCardEditor extends LitElement
       }
     }
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  static get styles(): CSSResult {
+    return configElementStyle;
   }
 }
 

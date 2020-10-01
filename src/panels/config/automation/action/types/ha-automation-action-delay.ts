@@ -16,7 +16,7 @@ export class HaDelayAction extends LitElement implements ActionElement {
     return { delay: "" };
   }
 
-  public render() {
+  protected render() {
     const { delay } = this.action;
 
     return html`
