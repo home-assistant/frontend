@@ -5,6 +5,7 @@ import {
   CSSResultArray,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   PropertyValues,
@@ -13,6 +14,7 @@ import {
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-circular-progress";
 import "../../components/ha-form/ha-form";
+import type { HaForm } from "../../components/ha-form/ha-form";
 import "../../components/ha-markdown";
 import type { DataEntryFlowStepForm } from "../../data/data_entry_flow";
 import type { HomeAssistant } from "../../types";
@@ -38,20 +40,11 @@ class StepFlowForm extends LitElement {
   @property()
   private _errorMsg?: string;
 
+  @internalProperty() private _requiredFilled = false;
+
   protected render(): TemplateResult {
     const step = this.step;
     const stepData = this._stepDataProcessed;
-
-    const allRequiredInfoFilledIn =
-      stepData === undefined
-        ? // If no data filled in, just check that any field is required
-          step.data_schema.find((field) => !field.optional) === undefined
-        : // If data is filled in, make sure all required fields are
-          stepData &&
-          step.data_schema.every(
-            (field) =>
-              field.optional || !["", undefined].includes(stepData![field.name])
-          );
 
     return html`
       <h2>
@@ -69,6 +62,7 @@ class StepFlowForm extends LitElement {
           .error=${step.errors}
           .computeLabel=${this._labelCallback}
           .computeError=${this._errorCallback}
+          id="inner-form"
         ></ha-form>
       </div>
       <div class="buttons">
@@ -82,13 +76,13 @@ class StepFlowForm extends LitElement {
               <div>
                 <mwc-button
                   @click=${this._submitStep}
-                  .disabled=${!allRequiredInfoFilledIn}
+                  .disabled=${!this._requiredFilled}
                   >${this.hass.localize(
                     "ui.panel.config.integrations.config_flow.submit"
                   )}
                 </mwc-button>
 
-                ${!allRequiredInfoFilledIn
+                ${!this._requiredFilled
                   ? html`
                       <paper-tooltip animation-delay="0" position="left"
                         >${this.hass.localize(
@@ -113,6 +107,12 @@ class StepFlowForm extends LitElement {
     });
   }
 
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    const haForm = this.shadowRoot!.getElementById(`inner-form`) as HaForm;
+    this._requiredFilled = haForm && haForm.allRequiredFieldsFilled();
+  }
+
   private get _stepDataProcessed() {
     if (this._stepData !== undefined) {
       return this._stepData;
@@ -126,7 +126,6 @@ class StepFlowForm extends LitElement {
         data[field.name] = field.default;
       }
     });
-
     this._stepData = data;
     return data;
   }
@@ -147,7 +146,6 @@ class StepFlowForm extends LitElement {
         toSendData[key] = value;
       }
     });
-
     try {
       const step = await this.flowConfig.handleFlowStep(
         this.hass,

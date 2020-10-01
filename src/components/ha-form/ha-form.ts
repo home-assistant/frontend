@@ -113,9 +113,9 @@ export interface HaFormElement extends LitElement {
   data?: HaFormDataContainer | HaFormData;
   label?: string;
   suffix?: string;
-  // computeError?: (schema: HaFormSchema, error) => string;
-  // computeLabel?: (nesting: string) => string;
-  // computeSuffix?: (schema: HaFormSchema) => string;
+  computeError?: (schema: HaFormSchema, error) => string;
+  computeLabel?: (nesting: string) => string;
+  computeSuffix?: (schema: HaFormSchema) => string;
 }
 
 @customElement("ha-form")
@@ -132,7 +132,7 @@ export class HaForm extends LitElement implements HaFormElement {
 
   @property() public computeSuffix?: (schema: HaFormSchema) => string;
 
-  @property() public nesting = "";
+  @property() public nesting?;
 
   public focus() {
     const input =
@@ -145,11 +145,6 @@ export class HaForm extends LitElement implements HaFormElement {
   }
 
   protected render() {
-    console.log(
-      "XXX form nesting=%s schema=%s",
-      JSON.stringify(this.nesting),
-      JSON.stringify(this.schema)
-    );
     if (Array.isArray(this.schema)) {
       return html`
         ${this.error && this.error.base
@@ -170,6 +165,7 @@ export class HaForm extends LitElement implements HaFormElement {
               .computeLabel=${this.computeLabel}
               .computeSuffix=${this.computeSuffix}
               .nesting=${this._addNesting(this.nesting, item)}
+              id="child-form-${item.name}"
             ></ha-form>
           `
         )}
@@ -190,12 +186,43 @@ export class HaForm extends LitElement implements HaFormElement {
         label: this._computeLabel(this.nesting),
         suffix: this._computeSuffix(this.schema),
         id: "child-form",
-        // computeError: this.computeError,
-        // computeLabel: this.computeLabel,
-        // computeSuffix: this.computeSuffix,
+        computeError: this.computeError,
+        computeLabel: this.computeLabel,
+        computeSuffix: this.computeSuffix,
         nesting: this.nesting,
       })}
     `;
+  }
+
+  public allRequiredFieldsFilled() {
+    return this._allRequiredFieldsFilledInternal(this.schema, this.data);
+  }
+
+  private _allRequiredFieldsFilledInternal(
+    schema: HaFormSchema | HaFormSchema[],
+    data: HaFormDataContainer | HaFormData
+  ) {
+    if (Array.isArray(schema)) {
+      if (
+        !schema.every((field) =>
+          this._allRequiredFieldsFilledInternal(field, data[field.name])
+        )
+      )
+        return false;
+      return true;
+    }
+    if (!schema.optional && (data === undefined || data === "")) {
+      return false;
+    }
+    if (data === undefined || data === "") {
+      return schema.optional;
+    }
+    if (schema.type === "dictionary")
+      return this._allRequiredFieldsFilledInternal(
+        (schema as HaFormDictionarySchema).dictionary!,
+        data
+      );
+    return true;
   }
 
   private _addNesting(nesting: string, schema: HaFormSchema) {
@@ -203,7 +230,6 @@ export class HaForm extends LitElement implements HaFormElement {
   }
 
   private _computeLabel(nesting: string) {
-    console.log("XXX _computeLabel");
     return this.computeLabel ? this.computeLabel(nesting) : nesting || "";
   }
 
@@ -227,19 +253,15 @@ export class HaForm extends LitElement implements HaFormElement {
   }
 
   private _valueChanged(ev: CustomEvent) {
-    console.log("XXX A %s ---", JSON.stringify(this.schema));
     ev.stopPropagation();
-    console.log("XXX A1");
     const schema = (ev.target as HaFormElement).schema as HaFormSchema;
-    console.log("XXX A2");
     const data = this.data as HaFormDataContainer;
-    console.log("XXX A3 schema.name=%s value=", schema.name, ev.detail.value);
-    data[schema.name] = ev.detail.value;
-    console.log("XXX A4");
+    const value = ev.detail.value;
+    if (value !== "") data[schema.name] = ev.detail.value;
+    else delete data[schema.name];
     fireEvent(this, "value-changed", {
       value: { ...data },
     });
-    console.log("XXX A5");
   }
 
   static get styles(): CSSResult {

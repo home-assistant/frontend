@@ -84,7 +84,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
       this.data ||
       this.schema.description?.suggested_value ||
       this.schema.default ||
-      0
+      ""
     );
   }
 
@@ -96,9 +96,9 @@ export class HaFormInteger extends LitElement implements HaFormElement {
   }
 
   private _valueChanged(ev: Event) {
-    const value = Number(
-      (ev.target as PaperInputElement | PaperSliderElement).value
-    );
+    const rawValue = (ev.target as PaperInputElement | PaperSliderElement)
+      .value;
+    const value = rawValue === "" ? "" : Number(rawValue);
     if (this._value === value) {
       return;
     }

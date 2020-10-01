@@ -6,6 +6,10 @@ import {
   LitElement,
   property,
   TemplateResult,
+  css,
+  CSSResultArray,
+  PropertyValues,
+  internalProperty,
 } from "lit-element";
 import { fireEvent } from "../../common/dom/fire_event";
 import type {
@@ -14,6 +18,7 @@ import type {
   HaFormDictionarySchema,
   HaFormData,
   HaFormSchema,
+  HaFormBooleanSchema,
 } from "./ha-form";
 
 @customElement("ha-form-dictionary")
@@ -34,51 +39,85 @@ export class HaFormDictionary extends LitElement implements HaFormElement {
 
   @property() public nesting = "";
 
+  @internalProperty() private _showParams = true;
+
+  private _saveData = this.data || new Map<string, HaFormData>();
+
   protected render(): TemplateResult {
-    const boolSchema = { type: "boolean" };
-    console.log(
-      "XXX HERE schema=%s data=%s",
-      JSON.stringify(this.schema),
-      JSON.stringify(this.data)
-    );
-    console.log("XXX dictionary nesting=%s", JSON.stringify(this.nesting));
-    if (this.schema.optional) console.log("XXX OPTIONAL");
+    const boolSchema = { type: "boolean" } as HaFormBooleanSchema;
     return html`
-      ${this.schema.optional
-        ? html` <ha-form-boolean .schema=${boolSchema}></ha-form-boolean> `
+      ${this._showParams
+        ? html`
+            <hr />
+            <h4>${this._computeLabel("title")}</h4>
+            ${this._computeLabel("description")}
+          `
         : ""}
-      <ha-form
-        .schema=${this.schema.dictionary}
-        .data=${this.data || {}}
-        @value-changed=${this._valueChanged}
-        .computeError=${this.computeError}
-        .computeLabel=${this.computeLabel}
-        .computeSuffix=${this.computeSuffix}
-        .nesting=${this.nesting}
-      >
-      </ha-form>
+      ${this.schema.optional
+        ? html`
+            <ha-form-boolean
+              .schema=${boolSchema}
+              .data=${this._showParams}
+              label=${this._computeLabel("optional") ||
+              `Configure ${this.nesting}`}
+              @value-changed=${this._showParamsChanged}
+            ></ha-form-boolean>
+          `
+        : ""}
+      ${this._showParams
+        ? html`
+            <ha-form
+              .schema=${this.schema.dictionary}
+              .data=${this.data}
+              @value-changed=${this._valueChanged}
+              .computeError=${this.computeError}
+              .computeLabel=${this.computeLabel}
+              .computeSuffix=${this.computeSuffix}
+              .nesting=${this.nesting}
+              id="inner-form"
+            >
+            </ha-form>
+            <hr />
+          `
+        : ""}
     `;
   }
 
-  private _valueChanged(ev: CustomEvent) {
-    if (!this.data) this.data = new Map<string, HaFormData>(); // XXX need to match different params either as list or map
-    console.log("XXX A");
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+    if (this.schema.optional && !this.data) this._showParams = false;
+  }
+
+  private _showParamsChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    console.log("XXX B %s", JSON.stringify(ev.target as HaFormElement));
-    const schema = (ev.target as HaFormElement).schema as HaFormSchema;
-    console.log("XXX C");
-    const data = this.data as HaFormDictionaryData;
-    console.log(
-      "XXX D schema.name=%s value=%s",
-      schema.name,
-      JSON.stringify(ev.detail.value)
-    );
-    data[schema.name] = ev.detail.value;
-    console.log("XXX E");
+    this._showParams = ev.detail.value;
+    fireEvent(this, "value-changed", {
+      value: this._showParams ? this._saveData : "",
+    });
+  }
+
+  private _valueChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    this._saveData = ev.detail.value;
     fireEvent(this, "value-changed", {
       value: { ...ev.detail.value },
     });
-    console.log("XXX G");
+  }
+
+  private _computeLabel(param: string) {
+    if (this.computeLabel) return this.computeLabel(`${this.nesting}.${param}`);
+    return param || "";
+  }
+
+  static get styles(): CSSResultArray {
+    return [
+      css`
+        hr {
+          margin-left: -1em;
+          margin-right: -1em;
+        }
+      `,
+    ];
   }
 }
 

@@ -86,10 +86,6 @@ export const showOptionsFlowDialog = (
       },
 
       renderShowFormStepFieldLabel(hass, step, field) {
-        const orig = `component.${configEntry.domain}.options.step.${step.step_id}.data.${field}`;
-        const calc = hass.localize(orig);
-        console.log("orig=%s calc=%s", orig, calc);
-        return calc;
         return hass.localize(
           `component.${configEntry.domain}.options.step.${step.step_id}.data.${field}`
         );
