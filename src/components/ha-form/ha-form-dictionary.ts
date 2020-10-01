@@ -77,7 +77,7 @@ export class HaFormDictionary extends LitElement implements HaFormElement {
               id="inner-form"
             >
             </ha-form>
-            <hr />
+            <hr></hr>
           `
         : ""}
     `;
