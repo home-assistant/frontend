@@ -9,7 +9,6 @@ import {
   css,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
-import "lit-grid-layout";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/entity/ha-state-label-badge";
@@ -32,6 +31,24 @@ import { nextRender } from "../../../common/util/render-status";
 
 let editCodeLoaded = false;
 
+// Find column with < 5 size, else smallest column
+const getColumnIndex = (columnSizes: number[], size: number) => {
+  let minIndex = 0;
+  for (let i = 0; i < columnSizes.length; i++) {
+    if (columnSizes[i] < 5) {
+      minIndex = i;
+      break;
+    }
+    if (columnSizes[i] < columnSizes[minIndex]) {
+      minIndex = i;
+    }
+  }
+
+  columnSizes[minIndex] += size;
+
+  return minIndex;
+};
+
 export class HUIView extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
@@ -44,13 +61,6 @@ export class HUIView extends LitElement {
   @internalProperty() private _cards: Array<LovelaceCard | HuiErrorCard> = [];
 
   @internalProperty() private _badges: LovelaceBadge[] = [];
-
-  @internalProperty() private _layout?: Array<{
-    width: number;
-    height: number;
-    posX: number;
-    posY: number;
-  }>;
 
   private _createColumnsIteration = 0;
 
@@ -91,17 +101,9 @@ export class HUIView extends LitElement {
   }
 
   protected render(): TemplateResult {
-    console.log("render");
-
     return html`
       <div id="badges"></div>
-      <lit-grid-layout
-        .dragHandle=${"hui-card-options"}
-        .items=${this._cards}
-        .layout=${this._layout}
-        .rowHeight=${15}
-        .columns=${this.columns}
-      ></lit-grid-layout>
+      <div id="columns"></div>
       ${this.lovelace!.editMode
         ? html`
             <mwc-fab
@@ -153,10 +155,10 @@ export class HUIView extends LitElement {
       });
     }
 
-    if (configChanged || editModeChanged) {
+    if (configChanged) {
       this._createCards(lovelace.config.views[this.index!]);
     } else if (editModeChanged || changedProperties.has("columns")) {
-      this._createLayout();
+      this._createColumns();
     }
 
     if (hassChanged && !configChanged) {
@@ -216,21 +218,27 @@ export class HUIView extends LitElement {
     root.style.display = elements.length > 0 ? "block" : "none";
   }
 
-  private async _createLayout() {
+  private async _createColumns() {
     this._createColumnsIteration++;
     const iteration = this._createColumnsIteration;
+    const root = this.shadowRoot!.getElementById("columns")!;
 
-    if (this._layout?.length) {
-      return;
+    // Remove old columns
+    while (root.lastChild) {
+      root.removeChild(root.lastChild);
     }
 
-    const newLayout: Array<{
-      width: number;
-      height: number;
-      posX: number;
-      posY: number;
-      key: string;
-    }> = [];
+    // Track the total height of cards in a columns
+    const columnSizes: number[] = [];
+    const columnElements: HTMLDivElement[] = [];
+    // Add columns to DOM, limit number of columns to the number of cards
+    for (let i = 0; i < Math.min(this.columns!, this._cards.length); i++) {
+      const columnEl = document.createElement("div");
+      columnEl.classList.add("column");
+      root.appendChild(columnEl);
+      columnSizes.push(0);
+      columnElements.push(columnEl);
+    }
 
     let tillNextRender: Promise<unknown> | undefined;
     let start: Date | undefined;
@@ -265,36 +273,37 @@ export class HUIView extends LitElement {
         // An other create columns is started, abort this one
         return;
       }
-
-      var y = Math.ceil(Math.random() * 4) + 1;
-
-      newLayout.push({
-        width: 3,
-        height: cardSize,
-        posX: 3 * (index % 4),
-        posY: Math.floor(index / 6) * y,
-        key: el.key!,
-      });
+      // Calculate in wich column the card should go based on the size and the cards already in there
+      this._addCardToColumn(
+        columnElements[getColumnIndex(columnSizes, cardSize as number)],
+        index,
+        this.lovelace!.editMode
+      );
     }
 
-    this._layout = newLayout;
+    // Remove empty columns
+    columnElements.forEach((column) => {
+      if (!column.lastChild) {
+        column.parentElement!.removeChild(column);
+      }
+    });
   }
 
-  // private _addCardToColumn(columnEl, index, editMode) {
-  //   const card: LovelaceCard = this._cards[index];
-  //   if (!editMode) {
-  //     card.editMode = false;
-  //     columnEl.appendChild(card);
-  //   } else {
-  //     const wrapper = document.createElement("hui-card-options");
-  //     wrapper.hass = this.hass;
-  //     wrapper.lovelace = this.lovelace;
-  //     wrapper.path = [this.index!, index];
-  //     card.editMode = true;
-  //     wrapper.appendChild(card);
-  //     columnEl.appendChild(wrapper);
-  //   }
-  // }
+  private _addCardToColumn(columnEl, index, editMode) {
+    const card: LovelaceCard = this._cards[index];
+    if (!editMode) {
+      card.editMode = false;
+      columnEl.appendChild(card);
+    } else {
+      const wrapper = document.createElement("hui-card-options");
+      wrapper.hass = this.hass;
+      wrapper.lovelace = this.lovelace;
+      wrapper.path = [this.index!, index];
+      card.editMode = true;
+      wrapper.appendChild(card);
+      columnEl.appendChild(wrapper);
+    }
+  }
 
   private _createCards(config: LovelaceViewConfig): void {
     if (!config || !config.cards || !Array.isArray(config.cards)) {
@@ -302,30 +311,14 @@ export class HUIView extends LitElement {
       return;
     }
 
-    console.log("creating card");
-
     const elements: LovelaceCard[] = [];
-    config.cards.forEach((cardConfig, index) => {
-      const card = this.createCardElement(cardConfig);
-
-      if (!this.lovelace?.editMode) {
-        card.editMode = false;
-        card.key = cardConfig.key;
-        elements.push(card);
-      } else {
-        const wrapper = document.createElement("hui-card-options");
-        wrapper.hass = this.hass;
-        wrapper.lovelace = this.lovelace;
-        wrapper.path = [this.index!, index];
-        card.editMode = true;
-        wrapper.appendChild(card);
-        wrapper.key = cardConfig.key;
-        elements.push(wrapper);
-      }
+    config.cards.forEach((cardConfig) => {
+      const element = this.createCardElement(cardConfig);
+      elements.push(element);
     });
 
     this._cards = elements;
-    this._createLayout();
+    this._createColumns();
   }
 
   private _rebuildCard(
@@ -392,7 +385,7 @@ export class HUIView extends LitElement {
         float: right;
         right: calc(16px + env(safe-area-inset-right));
         bottom: calc(16px + env(safe-area-inset-bottom));
-        z-index: 5;
+        z-index: 1;
       }
 
       mwc-fab.rtl {
