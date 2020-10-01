@@ -48,7 +48,7 @@ export class HaFormDictionary extends LitElement implements HaFormElement {
     return html`
       ${this._showParams
         ? html`
-            <hr />
+            <hr></hr>
             <h4>${this._computeLabel("title")}</h4>
             ${this._computeLabel("description")}
           `
