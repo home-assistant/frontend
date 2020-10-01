@@ -16,11 +16,11 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
   @property() public trigger!: EventTrigger;
 
   public static get defaultConfig() {
-    return { event_type: "", event_data: {} };
+    return { event_type: "", event_data: {}, context: {} };
   }
 
   protected render() {
-    const { event_type, event_data } = this.trigger;
+    const { event_type, event_data, context } = this.trigger;
     return html`
       <paper-input
         .label=${this.hass.localize(
@@ -36,6 +36,14 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
         )}
         .name=${"event_data"}
         .defaultValue=${event_data}
+        @value-changed=${this._dataChanged}
+      ></ha-yaml-editor>
+      <ha-yaml-editor
+        .label=${this.hass.localize(
+          "ui.panel.config.automation.editor.triggers.type.event.context"
+        )}
+        .name=${"context"}
+        .defaultValue=${context}
         @value-changed=${this._dataChanged}
       ></ha-yaml-editor>
     `;

@@ -1089,7 +1089,8 @@
                 "event": {
                   "label": "Event",
                   "event_type": "Event type",
-                  "event_data": "Event data"
+                  "event_data": "Event data",
+                  "context": "Event context"
                 },
                 "geo_location": {
                   "label": "Geolocation",
