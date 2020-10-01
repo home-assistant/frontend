@@ -137,9 +137,9 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
       | undefined;
 
     if (
-      (changedProperties.has("lovelace") && (
-        oldLovelace?.config !== this.lovelace?.config ||
-        oldLovelace?.editMode !== this.lovelace?.editMode)) ||
+      (changedProperties.has("lovelace") &&
+        (oldLovelace?.config !== this.lovelace?.config ||
+          oldLovelace?.editMode !== this.lovelace?.editMode)) ||
       changedProperties.has("_columns")
     ) {
       this._createColumns();
@@ -258,6 +258,12 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
   static get styles(): CSSResult {
     return css`
+      :host {
+        display: block;
+        background: var(--lovelace-background);
+        height: 100%;
+      }
+
       #badges {
         margin: 8px 16px;
         font-size: 85%;
