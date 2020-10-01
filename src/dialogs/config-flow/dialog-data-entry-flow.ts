@@ -104,6 +104,7 @@ class DataEntryFlowDialog extends LitElement {
     const step = await (params.continueFlowId
       ? params.flowConfig.fetchFlow(this.hass, params.continueFlowId)
       : params.flowConfig.createFlow(this.hass, params.startFlowHandler!));
+
     // Happens if second showDialog called
     if (curInstance !== this._instance) {
       return;
