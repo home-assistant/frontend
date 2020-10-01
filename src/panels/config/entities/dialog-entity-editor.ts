@@ -175,11 +175,16 @@ export class DialogEntityEditor extends LitElement {
               "ui.dialogs.entity_registry.no_unique_id",
               "faq_link",
               html`<a
-                href="${documentationUrl(this.hass, "/faq/unique_id")}"
+                href="${documentationUrl(
+                  this.hass,
+                  "/faq/unique_id"
+                )}"
                 target="_blank"
                 rel="noreferrer"
-                >${this.hass.localize("ui.dialogs.entity_registry.faq")}</a
-              >`
+                >${this.hass.localize(
+                  "ui.dialogs.entity_registry.faq"
+                )}</a
+              >`              
             )}
           </div>
         `;
