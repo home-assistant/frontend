@@ -571,7 +571,11 @@
                 "no_history_found": "Historie stavu chybí."
             },
             "logbook": {
-                "entries_not_found": "Nenalezeny žádné záznamy."
+                "entries_not_found": "Nenalezeny žádné záznamy.",
+                "messages": {
+                    "turned_off": "vypnuto",
+                    "turned_on": "zapnuto"
+                }
             },
             "media-browser": {
                 "audio_not_supported": "Váš prohlížeč nepodporuje element \"audio\".",
@@ -684,7 +688,8 @@
                     "unavailable": "Tato entita není momentálně k dispozici.",
                     "update": "Aktualizovat"
                 },
-                "no_unique_id": "Tato entita nemá jedinečné ID, proto její nastavení nelze spravovat z uživatelského rozhraní.",
+                "faq": "dokumentace",
+                "no_unique_id": "Tato entita nemá jedinečné ID, proto její nastavení nelze spravovat z uživatelského rozhraní. Další podrobnosti naleznete na stránce {faq_link}.",
                 "related": "Související",
                 "settings": "Nastavení"
             },
@@ -1880,6 +1885,9 @@
                     "create_person": "Vytvořit osobu",
                     "description": "Správa osob, které Home Assistant sleduje",
                     "detail": {
+                        "admin": "Administrátor",
+                        "allow_login": "Povolit osobě se přihlásit",
+                        "confirm_delete_user": "Opravdu chcete smazat uživatelský účet pro {name} ? Stále můžete uživatele sledovat, ale daná osoba se již nebude moci přihlásit.",
                         "create": "Vytvořit",
                         "delete": "Smazat",
                         "device_tracker_intro": "Vyberte zařízení, která patří této osobě.",
@@ -2229,7 +2237,7 @@
                         "create": "Vytvořit",
                         "delete": "Smazat",
                         "icon": "Ikona",
-                        "icon_error_msg": "Ikona by měla být ve formátu předpona:jménoIcony, například: mdi:home",
+                        "icon_error_msg": "Ikona by měla být ve formátu \"předpona:jménoIkony\", například: \"mdi:home\"",
                         "latitude": "Zeměpisná šířka",
                         "longitude": "Zeměpisná délka",
                         "name": "Název",
@@ -2527,6 +2535,7 @@
                         "entities": {
                             "description": "Karta Entity je nejběžnějším typem karty. Seskupuje položky do seznamů.",
                             "edit_special_row": "Upravte řádek pomocí editoru kódu",
+                            "entity_row_editor": "Editor řádku entity",
                             "entity_row": {
                                 "attribute": "Atribut",
                                 "button": "Tlačítko",
@@ -2539,6 +2548,15 @@
                                 "weblink": "Webový odkaz"
                             },
                             "name": "Entity",
+                            "secondary_info_values": {
+                                "brightness": "Jas",
+                                "entity-id": "ID entity",
+                                "last-changed": "Naposledy změněno",
+                                "last-triggered": "Naposledy spuštěno",
+                                "none": "Žádné doplňující informace",
+                                "position": "Pozice",
+                                "tilt-position": "Náklon"
+                            },
                             "show_header_toggle": "Zobrazit přepínač záhlaví?",
                             "special_row": "speciální řádek",
                             "toggle": "Přepnout entity."

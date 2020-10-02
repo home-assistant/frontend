@@ -571,7 +571,34 @@
                 "no_history_found": "Oleku ajalugu ei leitud"
             },
             "logbook": {
-                "entries_not_found": "Logiraamatu kandeid ei leitud."
+                "by": "poolt",
+                "by_service": "teenuse poolt",
+                "entries_not_found": "Logiraamatu kandeid ei leitud.",
+                "messages": {
+                    "became_unavailable": "muutus kättesaamatuks",
+                    "changed_to_state": "muutus olekusse {state}",
+                    "cleared_device_class": "kustutatud ( {device_class} ei leitud)",
+                    "detected_device_class": "tuvastati {device_class}",
+                    "rose": "tõusis",
+                    "set": "määratud",
+                    "turned_off": "lülitus välja",
+                    "turned_on": "lülitus sisse",
+                    "was_at_home": "oli kodus",
+                    "was_at_state": "oli olekus {state}",
+                    "was_away": "oli ära",
+                    "was_closed": "sulgus",
+                    "was_connected": "ühendus",
+                    "was_disconnected": "ühendati lahti",
+                    "was_locked": "lukustati",
+                    "was_low": "oli madal",
+                    "was_normal": "oli normaalne",
+                    "was_opened": "avanes",
+                    "was_plugged_in": "ühendus",
+                    "was_safe": "oli turvatud",
+                    "was_unlocked": "avanes",
+                    "was_unplugged": "oli lahti ühendatud",
+                    "was_unsafe": "oli turvamata"
+                }
             },
             "media-browser": {
                 "audio_not_supported": "Teie brauser ei toeta helielementi.",
@@ -684,7 +711,8 @@
                     "unavailable": "See olem pole praegu saadaval.",
                     "update": "Uuenda"
                 },
-                "no_unique_id": "Sellel olemil pole unikaalset ID-d, seetõttu ei saa selle seadeid kasutajaliidesest hallata.",
+                "faq": "dokumentatsioon",
+                "no_unique_id": "Sellel olemil puudub unikaalne ID-d. Seetõttu ei saa selle seadeid kasutajaliidesest hallata. Lisainfot vaata {faq_link}.",
                 "related": "Seotud",
                 "settings": "Seaded"
             },
@@ -1865,7 +1893,8 @@
                     },
                     "select_instance": {
                         "header": "Valige OpenZWave'i eksemplar",
-                        "introduction": "Teil töötab rohkem kui üks OpenZWave'i eksemplar. Millist juhtumit soovite hallata?"
+                        "introduction": "Teil töötab rohkem kui üks OpenZWave'i eksemplar. Millist juhtumit soovite hallata?",
+                        "none_found": "Ei leitud OpenZWave'i eksemplare. Kui arvate, et see on vale, kontrollige oma OpenZWave'i ja MQTT seadistusi ning veenduge, et Home Assistant saaks teie MQTT vahendajaga suhelda."
                     },
                     "services": {
                         "add_node": "Lisa sõlm",
@@ -1880,6 +1909,9 @@
                     "create_person": "Loo isik",
                     "description": "Halda isikuid keda Home Assistant jälgib.",
                     "detail": {
+                        "admin": "Administraator",
+                        "allow_login": "Luba isikul sisse logida",
+                        "confirm_delete_user": "Kas kustutada kasutaja {name} ? Kasutajat saate endiselt jälgida kuid kasutaja ei saa enam sisse logida.",
                         "create": "Loo",
                         "delete": "Kustuta",
                         "device_tracker_intro": "Vali seadmed, mis kuuluvad sellele isikule.",
@@ -2229,7 +2261,7 @@
                         "create": "Loo",
                         "delete": "Kustuta",
                         "icon": "Ikoon",
-                        "icon_error_msg": "Ikoon peaks olema formaadis prefiks:ikooninimi, näiteks: mdi:home",
+                        "icon_error_msg": "Ikoon peaks olema formaadis \"prefiks:ikooninimi\". Näiteks: mdi:home",
                         "latitude": "Laius",
                         "longitude": "Pikkus",
                         "name": "Nimi",
@@ -2527,6 +2559,7 @@
                         "entities": {
                             "description": "Olemite kaart  on kõige levinum kaarditüüp. See rühmitabolemid loenditeks.",
                             "edit_special_row": "Redigeeri rida koodiredaktori abil",
+                            "entity_row_editor": "Olemirea redaktor",
                             "entity_row": {
                                 "attribute": "Atribuut",
                                 "button": "Nupp",
@@ -2539,6 +2572,15 @@
                                 "weblink": "Veebilink"
                             },
                             "name": "Olemid",
+                            "secondary_info_values": {
+                                "brightness": "Heledus",
+                                "entity-id": "Olemi ID",
+                                "last-changed": "Viimati muudetud",
+                                "last-triggered": "Viimati vallandunud",
+                                "none": "Teisene teave puudub",
+                                "position": "Asend",
+                                "tilt-position": "Kalle"
+                            },
                             "show_header_toggle": "Kas näidata päise vahetamist?",
                             "special_row": "eriline rida",
                             "toggle": "Vaheta olemeid."

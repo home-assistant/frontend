@@ -571,7 +571,34 @@
                 "no_history_found": "没有找到历史状态。"
             },
             "logbook": {
-                "entries_not_found": "未找到日志条目。"
+                "by": ", 通过",
+                "by_service": ", 通过服务",
+                "entries_not_found": "未找到日志条目。",
+                "messages": {
+                    "became_unavailable": "变为不可用",
+                    "changed_to_state": "变为 {state}",
+                    "cleared_device_class": "未检测到 {device_class}",
+                    "detected_device_class": "检测到 {device_class}",
+                    "rose": "升起",
+                    "set": "落下",
+                    "turned_off": "已关闭",
+                    "turned_on": "已开启",
+                    "was_at_home": "在家",
+                    "was_at_state": "处于 {state}",
+                    "was_away": "离开",
+                    "was_closed": "已关闭",
+                    "was_connected": "已连接",
+                    "was_disconnected": "已断开",
+                    "was_locked": "已锁定",
+                    "was_low": "较低",
+                    "was_normal": "正常",
+                    "was_opened": "已打开",
+                    "was_plugged_in": "已插入",
+                    "was_safe": "安全",
+                    "was_unlocked": "已解锁",
+                    "was_unplugged": "已拔出",
+                    "was_unsafe": "危险"
+                }
             },
             "media-browser": {
                 "audio_not_supported": "您的浏览器不支持音频元素。",
@@ -684,7 +711,8 @@
                     "unavailable": "该实体暂不可用。",
                     "update": "更新"
                 },
-                "no_unique_id": "该实体没有唯一的 ID，因此无法由 UI 管理其设置。",
+                "faq": "文档",
+                "no_unique_id": "该实体没有唯一的 ID，因此无法由 UI 管理其设置。请参阅 {faq_link} 以详细了解。",
                 "related": "关联",
                 "settings": "设置"
             },
@@ -741,6 +769,7 @@
                 "dismiss": "关闭对话框",
                 "edit": "编辑实体",
                 "history": "历史",
+                "last_updated": "上次更新",
                 "person": {
                     "create_zone": "从当前位置创建地点"
                 },
@@ -1278,7 +1307,7 @@
                         "expose_entity": "使实体可发现",
                         "exposed": "{selected} 个可发现",
                         "exposed_entities": "公开的实体",
-                        "follow_domain": "关注域",
+                        "follow_domain": "跟随域设置",
                         "manage_domains": "管理域",
                         "not_exposed": "{selected} 个不可发现",
                         "not_exposed_entities": "不可发现的实体",
@@ -1323,7 +1352,7 @@
                         "expose_entity": "使实体可发现",
                         "exposed": "{selected} 个可发现",
                         "exposed_entities": "公开的实体",
-                        "follow_domain": "关注域",
+                        "follow_domain": "跟随域设置",
                         "manage_domains": "管理域",
                         "not_exposed": "{selected} 个不可发现",
                         "not_exposed_entities": "不可发现的实体",
@@ -1864,7 +1893,8 @@
                     },
                     "select_instance": {
                         "header": "选择一个 OpenZWave 实例",
-                        "introduction": "有多个 OpenZWave 实例正在运行。您要管理哪个实例？"
+                        "introduction": "有多个 OpenZWave 实例正在运行。您要管理哪个实例？",
+                        "none_found": "无法找到 OpenZWave 实例。如有疑问，请检查 OpenZWave 和 MQTT 设置，确保 Home Assistant 可以与 MQTT broker 通信。"
                     },
                     "services": {
                         "add_node": "添加节点",
@@ -1879,6 +1909,9 @@
                     "create_person": "创建人员",
                     "description": "管理 Home Assistant 跟踪的人员",
                     "detail": {
+                        "admin": "管理员",
+                        "allow_login": "允许人员登录",
+                        "confirm_delete_user": "您确定要删除用户 {name} 的帐户吗？您仍然可以跟踪该用户，但他将不能再登录。",
                         "create": "创建",
                         "delete": "删除",
                         "device_tracker_intro": "选择属于此人的设备。",
@@ -2228,7 +2261,7 @@
                         "create": "创建",
                         "delete": "删除",
                         "icon": "图标",
-                        "icon_error_msg": "图标的格式应为 prefix:iconname，例如：mdi:home",
+                        "icon_error_msg": "图标的格式应为“prefix:iconname”，例如：“mdi:home”",
                         "latitude": "纬度",
                         "longitude": "经度",
                         "name": "名称",
@@ -2472,6 +2505,20 @@
                     "refresh": "刷新"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "调用服务",
+                            "default_action": "默认动作",
+                            "more-info": "更多信息",
+                            "navigate": "导航",
+                            "none": "没有动作",
+                            "toggle": "切换",
+                            "url": "网址"
+                        },
+                        "editor_service_data": "服务数据只能在代码编辑器中输入",
+                        "navigation_path": "导航路径",
+                        "url_path": "网址路径"
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "可用状态",
@@ -2479,6 +2526,7 @@
                             "name": "报警面板"
                         },
                         "button": {
+                            "default_action_help": "默认动作取决于实体的功能，可能会切换状态或显示更多信息。",
                             "description": "“按钮”卡片用于添加按钮来执行任务。",
                             "name": "按钮"
                         },
@@ -2511,6 +2559,7 @@
                         "entities": {
                             "description": "“实体”卡片是最常见的卡片。它将项目汇聚成列表。",
                             "edit_special_row": "使用代码编辑器编辑行",
+                            "entity_row_editor": "实体行编辑器",
                             "entity_row": {
                                 "attribute": "属性",
                                 "button": "按钮",
@@ -2523,6 +2572,15 @@
                                 "weblink": "网页链接"
                             },
                             "name": "实体",
+                            "secondary_info_values": {
+                                "brightness": "亮度",
+                                "entity-id": "实体 ID",
+                                "last-changed": "上次变化",
+                                "last-triggered": "上次触发",
+                                "none": "无次要信息",
+                                "position": "位置",
+                                "tilt-position": "倾斜位置"
+                            },
                             "show_header_toggle": "显示标题旁的开关？",
                             "special_row": "特殊行",
                             "toggle": "切换实体。"
@@ -2684,7 +2742,7 @@
                         "header": "卡片配置",
                         "move": "移动",
                         "options": "更多选项",
-                        "pick_card": "请选择要添加的卡片。",
+                        "pick_card": "您想添加哪张卡片？",
                         "pick_card_view_title": "您想将哪张卡片添加到 {name} 视图？",
                         "search_cards": "搜索卡片",
                         "show_code_editor": "显示代码编辑器",
@@ -2790,7 +2848,7 @@
                     "domain": "域",
                     "entity": "实体",
                     "entity_id": "实体 ID",
-                    "last_changed": "最后更改",
+                    "last_changed": "上次变化",
                     "no_data": "没有未使用的实体",
                     "search": "搜索实体",
                     "select_to_add": "选择要添加到卡片中的实体，然后单击添加卡片按钮。",
@@ -2976,6 +3034,12 @@
                     "more_integrations": "更多"
                 },
                 "intro": "准备好唤醒你的家、找回你的隐私，并加入世界级的极客社区了吗？",
+                "restore": {
+                    "description": "或者，您也可以从以前的快照还原。",
+                    "hide_log": "隐藏完整日志",
+                    "in_progress": "正在还原",
+                    "show_log": "显示完整日志"
+                },
                 "user": {
                     "create_account": "创建帐户",
                     "data": {

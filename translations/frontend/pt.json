@@ -571,7 +571,34 @@
                 "no_history_found": "Nenhum histórico de estado encontrado."
             },
             "logbook": {
-                "entries_not_found": "Não foram encontradas entradas no Log."
+                "by": "por",
+                "by_service": "pelo serviço",
+                "entries_not_found": "Não foram encontradas entradas no Log.",
+                "messages": {
+                    "became_unavailable": "ficou indisponível",
+                    "changed_to_state": "alterado para {state}",
+                    "cleared_device_class": "Vazio (nenhuma {device_class} detetada)",
+                    "detected_device_class": "detetado {device_class}",
+                    "rose": "rosa",
+                    "set": "definir",
+                    "turned_off": "desligado",
+                    "turned_on": "ligado",
+                    "was_at_home": "estava em casa",
+                    "was_at_state": "estava em {state}",
+                    "was_away": "estava fora",
+                    "was_closed": "foi fechado",
+                    "was_connected": "foi conectado",
+                    "was_disconnected": "foi desconectado",
+                    "was_locked": "foi trancado",
+                    "was_low": "estava baixo",
+                    "was_normal": "estava normal",
+                    "was_opened": "foi aberto",
+                    "was_plugged_in": "foi conectado",
+                    "was_safe": "estava seguro",
+                    "was_unlocked": "foi destrancado",
+                    "was_unplugged": "foi desconectado",
+                    "was_unsafe": "estava inseguro"
+                }
             },
             "media-browser": {
                 "audio_not_supported": "O seu navegador não suporta o elemento de áudio.",
@@ -684,7 +711,8 @@
                     "unavailable": "Esta entidade não está atualmente disponível.",
                     "update": "Atualizar"
                 },
-                "no_unique_id": "Esta entidade não tem uma identificação única, portanto suas configurações não podem ser geridas a partir da IU.",
+                "faq": "Documentação",
+                "no_unique_id": "Esta entidade não tem uma identificação única, portanto suas configurações não podem ser geridas a partir da UI. Para mais informações, ver {faq_link}.",
                 "related": "Relacionadas",
                 "settings": "Definições"
             },
@@ -741,6 +769,7 @@
                 "dismiss": "Descartar diálogo",
                 "edit": "Editar entidade",
                 "history": "Histórico",
+                "last_updated": "Última atualização",
                 "person": {
                     "create_zone": "Criar zona a partir da localização atual"
                 },
@@ -1864,7 +1893,8 @@
                     },
                     "select_instance": {
                         "header": "Selecione uma instância OpenZWave",
-                        "introduction": "Tem mais do que uma instância Openzwave em execução. Que instância deseja gerir?"
+                        "introduction": "Tem mais do que uma instância Openzwave em execução. Que instância deseja gerir?",
+                        "none_found": "Não conseguimos encontrar uma instância OpenZWave. Se você acredita que isso está incorreto, verifique as configurações do OpenZWave e do MQTT e certifique-se de que o Home Assistant possa se comunicar com o seu corretor MQTT."
                     },
                     "services": {
                         "add_node": "Adicionar nó",
@@ -1879,6 +1909,9 @@
                     "create_person": "Criar pessoa",
                     "description": "Gerir as pessoas que o Home Assistant segue.",
                     "detail": {
+                        "admin": "Administrador",
+                        "allow_login": "Permitir login",
+                        "confirm_delete_user": "Tem a certeza que quer apagar a conta de utilizador do {name}? Ainda poderá rastrear o utilizador, mas a pessoa não poderá mais efetuar o login.",
                         "create": "Criar",
                         "delete": "Apagar",
                         "device_tracker_intro": "Selecione os dispositivos que pertencem a esta pessoa.",
@@ -2228,7 +2261,7 @@
                         "create": "Criar",
                         "delete": "Eliminar",
                         "icon": "Ícone",
-                        "icon_error_msg": "O ícone deve estar no prefixo do formato: iconname, por exemplo: mdi: home",
+                        "icon_error_msg": "O ícone deve estar no formato \"prefixo:nome do icon\", por exemplo: \"mdi:home\"",
                         "latitude": "Latitude",
                         "longitude": "Longitude",
                         "name": "Nome",
@@ -2472,6 +2505,20 @@
                     "refresh": "Atualizar"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "Chamar serviço",
+                            "default_action": "Ação por defeito",
+                            "more-info": "Mais informações",
+                            "navigate": "Navegar",
+                            "none": "Nenhuma Ação",
+                            "toggle": "Alternar",
+                            "url": "Url"
+                        },
+                        "editor_service_data": "Os dados de serviço só podem ser inseridos no editor de código",
+                        "navigation_path": "URL de navegação",
+                        "url_path": "URL"
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "Estados Disponíveis",
@@ -2479,15 +2526,19 @@
                             "name": "Painel de alarme"
                         },
                         "button": {
+                            "default_action_help": "A ação padrão depende dos recursos da entidade, ela será alternada ou mais informações serão mostradas.",
                             "description": "O Cartão de Botões permite-lhe adicionar botões para realizar tarefas.",
                             "name": "Botão"
                         },
                         "calendar": {
+                            "calendar_entities": "Entidades do calendário",
                             "description": "O cartão do Calendário exibe um calendário incluindo dia, semana e visualizações de lista",
+                            "inital_view": "Vista Inicial",
                             "name": "Calendário",
                             "views": {
                                 "dayGridDay": "Dia",
-                                "dayGridMonth": "Mês"
+                                "dayGridMonth": "Mês",
+                                "listWeek": "Lista"
                             }
                         },
                         "conditional": {
@@ -2508,6 +2559,7 @@
                         "entities": {
                             "description": "O cartão de entidades é o tipo mais comum de cartão. Ele agrupa itens em listas.",
                             "edit_special_row": "Editar linha usando o editor de código",
+                            "entity_row_editor": "Editor de Linha de Entidade",
                             "entity_row": {
                                 "attribute": "Atributo",
                                 "button": "Botão",
@@ -2520,6 +2572,15 @@
                                 "weblink": "Ligação Web"
                             },
                             "name": "Entidades",
+                            "secondary_info_values": {
+                                "brightness": "Brilho",
+                                "entity-id": "ID da entidade",
+                                "last-changed": "Última modificação",
+                                "last-triggered": "Acionado pela última vez",
+                                "none": "Sem informações secundárias",
+                                "position": "Posição",
+                                "tilt-position": "Posição de Inclinação"
+                            },
                             "show_header_toggle": "Show Header Toggle?",
                             "special_row": "linha especial",
                             "toggle": "Alternar entidades."
@@ -2973,6 +3034,12 @@
                     "more_integrations": "Mais"
                 },
                 "intro": "Está pronto para despertar a sua casa, reclamar a sua privacidade e juntar-se a uma comunidade mundial de tecnólogos?",
+                "restore": {
+                    "description": "Em alternativa, pode restaurar a partir de um snapshot anterior.",
+                    "hide_log": "Ocultar log completo",
+                    "in_progress": "Restauração em curso",
+                    "show_log": "Mostrar log completo"
+                },
                 "user": {
                     "create_account": "Criar conta",
                     "data": {

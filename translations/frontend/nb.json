@@ -571,7 +571,34 @@
                 "no_history_found": "Ingen statushistorikk funnet."
             },
             "logbook": {
-                "entries_not_found": "Ingen loggbokoppføringer funnet."
+                "by": "av",
+                "by_service": "etter tjeneste",
+                "entries_not_found": "Ingen loggbokoppføringer funnet.",
+                "messages": {
+                    "became_unavailable": "ble utilgjengelig",
+                    "changed_to_state": "endret til {state}",
+                    "cleared_device_class": "fjernet (ingen {device_class} oppdaget)",
+                    "detected_device_class": "oppdaget {device_class}",
+                    "rose": "rose",
+                    "set": "Angi",
+                    "turned_off": "slått av",
+                    "turned_on": "slått på",
+                    "was_at_home": "var hjemme",
+                    "was_at_state": "var på {state}",
+                    "was_away": "var borte",
+                    "was_closed": "var stengt",
+                    "was_connected": "var koblet til",
+                    "was_disconnected": "ble koblet fra",
+                    "was_locked": "var låst",
+                    "was_low": "var lav",
+                    "was_normal": "var normalt",
+                    "was_opened": "var åpnet",
+                    "was_plugged_in": "ble koblet til",
+                    "was_safe": "var trygg",
+                    "was_unlocked": "ble låst opp",
+                    "was_unplugged": "ble koblet fra",
+                    "was_unsafe": "var utrygt"
+                }
             },
             "media-browser": {
                 "audio_not_supported": "Nettleseren din støtter ikke lydelementet.",
@@ -684,7 +711,8 @@
                     "unavailable": "Denne entiteten er ikke tilgjengelig for øyeblikket.",
                     "update": "Oppdater"
                 },
-                "no_unique_id": "Denne entiteten har ikke en unik ID og derfor kan ikke innstillingene administreres fra brukergrensesnittet.",
+                "faq": "dokumentasjon",
+                "no_unique_id": "Denne enheten har ikke en unik ID, og innstillingene kan derfor ikke administreres fra brukergrensesnittet. Se {faq_link} for mer informasjon.",
                 "related": "Relaterte",
                 "settings": "Innstillinger"
             },
@@ -1865,7 +1893,8 @@
                     },
                     "select_instance": {
                         "header": "Velg en OpenZWave-forekomst",
-                        "introduction": "Du har mer enn én OpenZWave-forekomst som kjører. Hvilken forekomst vil du administrere?"
+                        "introduction": "Du har mer enn én OpenZWave-forekomst som kjører. Hvilken forekomst vil du administrere?",
+                        "none_found": "Vi kunne ikke finne en OpenZWave-forekomst. Hvis du mener dette er feil, sjekk OpenZWave- og MQTT-oppsettene og sørg for at Home Assistant kan kommunisere med MQTT-megleren din."
                     },
                     "services": {
                         "add_node": "Legg til node",
@@ -1880,6 +1909,9 @@
                     "create_person": "Opprett person",
                     "description": "Administrere personene som Home Assistant sporer",
                     "detail": {
+                        "admin": "Administrator",
+                        "allow_login": "Tillat person å logge inn",
+                        "confirm_delete_user": "Er du sikker på at du vil slette brukerkontoen for {name}? Du kan fortsatt spore brukeren, men personen vil ikke lenger kunne logge inn.",
                         "create": "Opprett",
                         "delete": "Slett",
                         "device_tracker_intro": "Velg enhetene som tilhører denne personen.",
@@ -2229,7 +2261,7 @@
                         "create": "Opprett",
                         "delete": "Slett",
                         "icon": "Ikon",
-                        "icon_error_msg": "Ikonet skal være i formatets prefiks:iconname, for eksempel: mdi:home",
+                        "icon_error_msg": "Ikonet skal være i formatet '' prefiks: iconname '', for eksempel: '' mdi: home ''",
                         "latitude": "Breddegrad",
                         "longitude": "Lengdegrad",
                         "name": "Navn",
@@ -2527,6 +2559,7 @@
                         "entities": {
                             "description": "Entities card er den vanligste typen kort. Den grupperer elementer i lister.",
                             "edit_special_row": "Rediger rad ved hjelp av kodeditoren",
+                            "entity_row_editor": "Redigeringsprogram for enhetsrad",
                             "entity_row": {
                                 "attribute": "Attributt",
                                 "button": "Knapp",
@@ -2539,6 +2572,15 @@
                                 "weblink": "Weblink"
                             },
                             "name": "Entiteter",
+                            "secondary_info_values": {
+                                "brightness": "Lysstyrke",
+                                "entity-id": "Entitets-ID",
+                                "last-changed": "Sist endret",
+                                "last-triggered": "Sist utløst",
+                                "none": "Ingen sekundær info",
+                                "position": "Posisjon",
+                                "tilt-position": "Vippeposisjon"
+                            },
                             "show_header_toggle": "Vis kortbryter?",
                             "special_row": "spesiell rad",
                             "toggle": "Aktivér/deaktivér entiteter."

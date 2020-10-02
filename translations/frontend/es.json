@@ -571,7 +571,34 @@
                 "no_history_found": "No se encontró historial de estado."
             },
             "logbook": {
-                "entries_not_found": "No se han encontrado entradas en el registro."
+                "by": "por",
+                "by_service": "por el servicio",
+                "entries_not_found": "No se han encontrado entradas en el registro.",
+                "messages": {
+                    "became_unavailable": "dejó de estar disponible",
+                    "changed_to_state": "cambiado a {state}",
+                    "cleared_device_class": "despejado (no se detecta {device_class})",
+                    "detected_device_class": "detectado {device_class}",
+                    "rose": "aumentó",
+                    "set": "Establecer",
+                    "turned_off": "apagado",
+                    "turned_on": "encendido",
+                    "was_at_home": "estaba en casa",
+                    "was_at_state": "estaba en {state}",
+                    "was_away": "estaba ausente",
+                    "was_closed": "fue cerrado",
+                    "was_connected": "fue conectado",
+                    "was_disconnected": "fue desconectado",
+                    "was_locked": "fue cerrado",
+                    "was_low": "era bajo",
+                    "was_normal": "era normal",
+                    "was_opened": "fue abierto",
+                    "was_plugged_in": "fue enchufado",
+                    "was_safe": "era seguro",
+                    "was_unlocked": "fue desbloqueado",
+                    "was_unplugged": "fue desenchufado",
+                    "was_unsafe": "era inseguro"
+                }
             },
             "media-browser": {
                 "audio_not_supported": "Tu navegador no es compatible con el elemento de audio.",
@@ -684,7 +711,8 @@
                     "unavailable": "Esta entidad no está disponible actualmente.",
                     "update": "Actualizar"
                 },
-                "no_unique_id": "Esta entidad no tiene una ID única, por lo que su configuración no se puede administrar desde la IU.",
+                "faq": "documentación",
+                "no_unique_id": "Esta entidad no tiene una ID única, por lo que su configuración no se puede administrar desde la IU. Consulta {faq_link} para más detalles.",
                 "related": "Relacionado",
                 "settings": "Configuración"
             },
@@ -1865,7 +1893,8 @@
                     },
                     "select_instance": {
                         "header": "Selecciona una instancia de OpenZWave",
-                        "introduction": "Tienes más de una instancia de OpenZWave en ejecución. ¿Qué instancia te gustaría gestionar?"
+                        "introduction": "Tienes más de una instancia de OpenZWave en ejecución. ¿Qué instancia te gustaría gestionar?",
+                        "none_found": "No pudimos encontrar una instancia de OpenZWave. Si crees que esto es incorrecto, verifica tus configuraciones de OpenZWave y MQTT y asegúrate de que Home Assistant pueda comunicarse con tu broker MQTT."
                     },
                     "services": {
                         "add_node": "Añadir Nodo",
@@ -1880,6 +1909,9 @@
                     "create_person": "Crear persona",
                     "description": "Administra las personas a las que rastrea Home Assistant.",
                     "detail": {
+                        "admin": "Administrador",
+                        "allow_login": "Permitir que la persona inicie sesión",
+                        "confirm_delete_user": "¿Estás seguro de que deseas eliminar la cuenta de usuario de {name} ? Aún puedes rastrear al usuario, pero la persona ya no podrá iniciar sesión.",
                         "create": "Crear",
                         "delete": "Eliminar",
                         "device_tracker_intro": "Seleccione los dispositivos que pertenecen a esta persona.",
@@ -2229,7 +2261,7 @@
                         "create": "Crear",
                         "delete": "Eliminar",
                         "icon": "Icono",
-                        "icon_error_msg": "El icono debe estar en el formato prefijo:nombre_del_icono, por ejemplo: mdi:home",
+                        "icon_error_msg": "El icono debe estar en el formato \"prefijo:nombre_del_icono\", por ejemplo: \"mdi:home\"",
                         "latitude": "Latitud",
                         "longitude": "Longitud",
                         "name": "Nombre",
@@ -2527,6 +2559,7 @@
                         "entities": {
                             "description": "La tarjeta Entidades es el tipo de tarjeta más común. Agrupa los elementos en listas.",
                             "edit_special_row": "Editar fila usando el editor de código",
+                            "entity_row_editor": "Editor de filas de entidades",
                             "entity_row": {
                                 "attribute": "Atributo",
                                 "button": "Botón",
@@ -2539,6 +2572,15 @@
                                 "weblink": "Enlace web"
                             },
                             "name": "Entidades",
+                            "secondary_info_values": {
+                                "brightness": "Brillo",
+                                "entity-id": "ID de entidad",
+                                "last-changed": "Último cambio",
+                                "last-triggered": "Última activación",
+                                "none": "Sin información secundaria",
+                                "position": "Posición",
+                                "tilt-position": "Posición de inclinación"
+                            },
                             "show_header_toggle": "¿Mostrar interruptor en encabezado?",
                             "special_row": "fila especial",
                             "toggle": "Alternar entidades."

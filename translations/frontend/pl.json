@@ -684,6 +684,7 @@
                     "unavailable": "Ta encja nie jest obecnie dostępna.",
                     "update": "AKTUALIZUJ"
                 },
+                "faq": "dokumentacja",
                 "no_unique_id": "Ten encja nie ma unikalnego identyfikatora, dlatego z poziomu interfejsu użytkownika nie można zarządzać jej ustawieniami.",
                 "related": "Powiązane",
                 "settings": "Ustawienia"
@@ -1880,6 +1881,7 @@
                     "create_person": "Utwórz osobę",
                     "description": "Zarządzaj osobami, które śledzi Home Assistant",
                     "detail": {
+                        "admin": "Administrator",
                         "create": "Utwórz",
                         "delete": "Usuń",
                         "device_tracker_intro": "Wybierz urządzenia należące do tej osoby.",
@@ -2539,6 +2541,12 @@
                                 "weblink": "Łącze internetowe"
                             },
                             "name": "Encje",
+                            "secondary_info_values": {
+                                "brightness": "Jasność",
+                                "entity-id": "Identyfikator encji",
+                                "last-changed": "Ostatnia zmiana",
+                                "position": "Pozycja"
+                            },
                             "show_header_toggle": "Pokaż przełącznik w nagłówku",
                             "special_row": "wiersz specjalny",
                             "toggle": "Przełącz encje"
