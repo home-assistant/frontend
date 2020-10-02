@@ -1,3 +1,4 @@
+import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
@@ -7,7 +8,6 @@ import {
   TemplateResult,
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
-import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
 
 export const createEntityNotFoundWarning = (
   hass: HomeAssistant,
@@ -35,6 +35,7 @@ export class HuiWarning extends LitElement {
         color: black;
         background-color: #fce588;
         padding: 8px;
+    	word-break: break-word;
       }
     `;
   }
