@@ -173,7 +173,7 @@ export class HaForm extends LitElement implements HaFormElement {
     }
 
     return html`
-      ${this.error
+      ${this.error && this.schema.type !== "dictionary"
         ? html`
             <div class="error">
               ${this._computeError(this.error, this.schema)}
