@@ -92,6 +92,7 @@ class HUIRoot extends LitElement {
       100,
       false
     );
+    fireEvent(this, "hass-quick-open", { entityId: "light.chandelier" });
   }
 
   protected render(): TemplateResult {
