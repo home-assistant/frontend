@@ -86,10 +86,10 @@ class HaConfigPerson extends LitElement {
               : ""}
             
             <a
-              href="${documentationUrl(
+              href=${documentationUrl(
               this.hass,
               "/integrations/person/"
-              )}"
+              )}
               target="_blank"
               rel="noreferrer"
             >
