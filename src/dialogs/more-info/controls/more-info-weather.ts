@@ -1,3 +1,4 @@
+import "../../../components/ha-svg-icon";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
@@ -9,7 +10,28 @@ import {
 } from "lit-element";
 import { html, TemplateResult } from "lit-html";
 import { HomeAssistant } from "../../../types";
-import "../../../components/ha-icon";
+
+import {
+  mdiAlertCircleOutline,
+  mdiEye,
+  mdiGauge,
+  mdiThermometer,
+  mdiWaterPercent,
+  mdiWeatherCloudy,
+  mdiWeatherFog,
+  mdiWeatherHail,
+  mdiWeatherLightning,
+  mdiWeatherLightningRainy,
+  mdiWeatherNight,
+  mdiWeatherPartlyCloudy,
+  mdiWeatherPouring,
+  mdiWeatherRainy,
+  mdiWeatherSnowy,
+  mdiWeatherSnowyRainy,
+  mdiWeatherSunny,
+  mdiWeatherWindy,
+  mdiWeatherWindyVariant,
+} from "@mdi/js";
 
 const cardinalDirections = [
   "N",
@@ -32,21 +54,21 @@ const cardinalDirections = [
 ];
 
 const weatherIcons = {
-  "clear-night": "hass:weather-night",
-  cloudy: "hass:weather-cloudy",
-  exceptional: "hass:alert-circle-outline",
-  fog: "hass:weather-fog",
-  hail: "hass:weather-hail",
-  lightning: "hass:weather-lightning",
-  "lightning-rainy": "hass:weather-lightning-rainy",
-  partlycloudy: "hass:weather-partly-cloudy",
-  pouring: "hass:weather-pouring",
-  rainy: "hass:weather-rainy",
-  snowy: "hass:weather-snowy",
-  "snowy-rainy": "hass:weather-snowy-rainy",
-  sunny: "hass:weather-sunny",
-  windy: "hass:weather-windy",
-  "windy-variant": "hass:weather-windy-variant",
+  "clear-night": mdiWeatherNight,
+  cloudy: mdiWeatherCloudy,
+  exceptional: mdiAlertCircleOutline,
+  fog: mdiWeatherFog,
+  hail: mdiWeatherHail,
+  lightning: mdiWeatherLightning,
+  "lightning-rainy": mdiWeatherLightningRainy,
+  partlycloudy: mdiWeatherPartlyCloudy,
+  pouring: mdiWeatherPouring,
+  rainy: mdiWeatherRainy,
+  snowy: mdiWeatherSnowy,
+  "snowy-rainy": mdiWeatherSnowyRainy,
+  sunny: mdiWeatherSunny,
+  windy: mdiWeatherWindy,
+  "windy-variant": mdiWeatherWindyVariant,
 };
 
 @customElement("more-info-weather")
@@ -79,7 +101,7 @@ class MoreInfoWeather extends LitElement {
 
     return html`
       <div class="flex">
-        <ha-icon icon="hass:thermometer"></ha-icon>
+        <ha-svg-icon .path=${mdiThermometer}></ha-svg-icon>
         <div class="main">
           ${this.hass.localize("ui.card.weather.attributes.temperature")}
         </div>
@@ -90,7 +112,7 @@ class MoreInfoWeather extends LitElement {
       ${this._showValue(this.stateObj.attributes.pressure)
         ? html`
             <div class="flex">
-              <ha-icon icon="hass:gauge"></ha-icon>
+              <ha-svg-icon .path=${mdiGauge}></ha-svg-icon>
               <div class="main">
                 ${this.hass.localize("ui.card.weather.attributes.air_pressure")}
               </div>
@@ -104,7 +126,7 @@ class MoreInfoWeather extends LitElement {
       ${this._showValue(this.stateObj.attributes.humidity)
         ? html`
             <div class="flex">
-              <ha-icon icon="hass:water-percent"></ha-icon>
+              <ha-svg-icon .path=${mdiWaterPercent}></ha-svg-icon>
               <div class="main">
                 ${this.hass.localize("ui.card.weather.attributes.humidity")}
               </div>
@@ -115,7 +137,7 @@ class MoreInfoWeather extends LitElement {
       ${this._showValue(this.stateObj.attributes.wind_speed)
         ? html`
             <div class="flex">
-              <ha-icon icon="hass:weather-windy"></ha-icon>
+              <ha-svg-icon .path=${mdiWeatherWindy}></ha-svg-icon>
               <div class="main">
                 ${this.hass.localize("ui.card.weather.attributes.wind_speed")}
               </div>
@@ -131,7 +153,7 @@ class MoreInfoWeather extends LitElement {
       ${this._showValue(this.stateObj.attributes.visibility)
         ? html`
             <div class="flex">
-              <ha-icon icon="hass:eye"></ha-icon>
+              <ha-svg-icon .path=${mdiEye}></ha-svg-icon>
               <div class="main">
                 ${this.hass.localize("ui.card.weather.attributes.visibility")}
               </div>
@@ -151,9 +173,9 @@ class MoreInfoWeather extends LitElement {
                 <div class="flex">
                   ${item.condition
                     ? html`
-                        <ha-icon
-                          .icon="${weatherIcons[item.condition]}"
-                        ></ha-icon>
+                        <ha-svg-icon
+                          .path="${weatherIcons[item.condition]}"
+                        ></ha-svg-icon>
                       `
                     : ""}
                   ${!this._showValue(item.templow)
@@ -193,7 +215,7 @@ class MoreInfoWeather extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      ha-icon {
+      ha-svg-icon {
         color: var(--paper-item-icon-color);
       }
       .section {
