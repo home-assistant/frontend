@@ -89,7 +89,7 @@ export const getWind = (
   speed: string,
   bearing: string
 ): string => {
-  if (bearing != null) {
+  if (bearing !== null) {
     const cardinalDirection = getWindBearing(bearing);
     return `${speed} ${getWeatherUnit(hass!, "wind_speed")} (${
       hass.localize(
