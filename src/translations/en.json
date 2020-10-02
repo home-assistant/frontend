@@ -2179,6 +2179,9 @@
         }
       },
       "lovelace": {
+        "badges": {
+          "summary": "{count} {count, plural,\n one {domain}\n other {domains}\n} {state}"
+        },
         "cards": {
           "confirm_delete": "Are you sure you want to delete this card?",
           "empty_state": {
