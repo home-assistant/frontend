@@ -24,6 +24,18 @@ import {
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 
+const compareTokenLastUsedAt = (tokenA: RefreshToken, tokenB: RefreshToken) => {
+  const timeA = tokenA.last_used_at ? new Date(tokenA.last_used_at) : 0;
+  const timeB = tokenB.last_used_at ? new Date(tokenB.last_used_at) : 0;
+  if (timeA < timeB) {
+    return 1;
+  } 
+  if (timeA > timeB) {
+    return -1;
+  }
+  return 0;
+}
+
 @customElement("ha-refresh-tokens-card")
 class HaRefreshTokens extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -32,7 +44,7 @@ class HaRefreshTokens extends LitElement {
 
   private _refreshTokens = memoizeOne(
     (refreshTokens: RefreshToken[]): RefreshToken[] =>
-      refreshTokens?.filter((token) => token.type === "normal").reverse()
+      refreshTokens?.filter((token) => token.type === "normal").sort(compareTokenLastUsedAt)
   );
 
   protected render(): TemplateResult {
