@@ -101,7 +101,7 @@ export type HaFormFloatData = number;
 export type HaFormBooleanData = boolean;
 export type HaFormSelectData = string;
 export type HaFormMultiSelectData = string[];
-export type HaFormDictionaryData = { [key: string]: HaFormData };
+export type HaFormDictionaryData = HaFormDataContainer;
 export interface HaFormTimeData {
   hours?: number;
   minutes?: number;
