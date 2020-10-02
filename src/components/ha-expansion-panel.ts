@@ -40,24 +40,20 @@ class HaExpansionPanel extends LitElement {
   }
 
   private _handleTransitionEnd() {
-    if (this.expanded) {
-      this._container.style.height = "auto";
-    }
+    this._container.style.removeProperty("height");
   }
 
   private _toggleContainer(): void {
     const scrollHeight = this._container.scrollHeight;
     this._container.style.height = `${scrollHeight}px`;
 
-    if (!this.expanded) {
-      this.expanded = true;
-    } else {
+    if (this.expanded) {
       setTimeout(() => {
         this._container.style.height = "0px";
-        this.expanded = false;
       }, 0);
     }
 
+    this.expanded = !this.expanded;
     fireEvent(this, "expanded-changed", { expanded: this.expanded });
   }
 
