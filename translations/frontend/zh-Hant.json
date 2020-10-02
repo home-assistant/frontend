@@ -571,7 +571,34 @@
                 "no_history_found": "找不到狀態歷史。"
             },
             "logbook": {
-                "entries_not_found": "找不到實體日誌。"
+                "by": "由",
+                "by_service": "由服務",
+                "entries_not_found": "找不到實體日誌。",
+                "messages": {
+                    "became_unavailable": "變成不可用",
+                    "changed_to_state": "變更為{state}",
+                    "cleared_device_class": "安全（無{device_class}偵測）",
+                    "detected_device_class": "偵測到{device_class}",
+                    "rose": "升高",
+                    "set": "設定",
+                    "turned_off": "關閉",
+                    "turned_on": "開啟",
+                    "was_at_home": "狀態在家",
+                    "was_at_state": "狀態{state}",
+                    "was_away": "狀態離家",
+                    "was_closed": "狀態關閉",
+                    "was_connected": "狀態連線",
+                    "was_disconnected": "狀態斷線",
+                    "was_locked": "狀態上鎖",
+                    "was_low": "狀態過低",
+                    "was_normal": "狀態正常",
+                    "was_opened": "狀態開啟",
+                    "was_plugged_in": "狀態插上",
+                    "was_safe": "狀態安全",
+                    "was_unlocked": "狀態解鎖",
+                    "was_unplugged": "狀態拔下",
+                    "was_unsafe": "狀態不安全"
+                }
             },
             "media-browser": {
                 "audio_not_supported": "瀏覽器不支援音效元件。",
@@ -684,7 +711,8 @@
                     "unavailable": "該實體目前不可用。",
                     "update": "更新"
                 },
-                "no_unique_id": "此實體不包含唯一 ID、因此無法由 UI 進行管理設定。",
+                "faq": "相關文件",
+                "no_unique_id": "此實體不包含唯一 ID、因此無法由 UI 進行管理設定。請參閱{faq_link}以獲得更詳細資訊。",
                 "related": "相關",
                 "settings": "設定"
             },
@@ -1865,7 +1893,8 @@
                     },
                     "select_instance": {
                         "header": "選擇 OpenZWave 設備",
-                        "introduction": "超過一個以上的 OpenZWave 設備執行中，要管理哪個設備？"
+                        "introduction": "超過一個以上的 OpenZWave 設備執行中，要管理哪個設備？",
+                        "none_found": "找不到 Openzwave 設備。假如您認為有問題，請再確認 Openzwave 與 MQTT 設定、並確定 Home Assistant 能夠與 MQTT Broker 進行通訊。"
                     },
                     "services": {
                         "add_node": "新增節點",
@@ -1880,6 +1909,9 @@
                     "create_person": "新增人員",
                     "description": "管理 Home Assistant 追蹤人員",
                     "detail": {
+                        "admin": "管理員",
+                        "allow_login": "允許人員登入",
+                        "confirm_delete_user": "確定要刪除帳號{name}使用者？依舊可以追蹤使用者，但人員將無法進行登入。",
                         "create": "新增",
                         "delete": "刪除",
                         "device_tracker_intro": "選擇此人員所擁有的設備。",
@@ -2229,7 +2261,7 @@
                         "create": "新增",
                         "delete": "刪除",
                         "icon": "圖示",
-                        "icon_error_msg": "圖示格式為 prefix:iconname、例如：mdi:home",
+                        "icon_error_msg": "圖示格式為 ''prefix:iconname''、例如：''mdi:home''",
                         "latitude": "緯度",
                         "longitude": "經度",
                         "name": "名稱",
@@ -2527,6 +2559,7 @@
                         "entities": {
                             "description": "實體列表面板為最常用的面板。將實體分組為列表使用。",
                             "edit_special_row": "使用編碼編輯器編輯",
+                            "entity_row_editor": "實體編輯器",
                             "entity_row": {
                                 "attribute": "屬性",
                                 "button": "按鈕",
@@ -2539,6 +2572,15 @@
                                 "weblink": "網站連結"
                             },
                             "name": "實體",
+                            "secondary_info_values": {
+                                "brightness": "亮度",
+                                "entity-id": "實體 ID",
+                                "last-changed": "上次變更",
+                                "last-triggered": "上次觸發",
+                                "none": "無次要資訊",
+                                "position": "位置",
+                                "tilt-position": "標題位置"
+                            },
                             "show_header_toggle": "於頁首顯示開關？",
                             "special_row": "特殊列",
                             "toggle": "切換實體。"

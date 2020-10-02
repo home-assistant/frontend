@@ -571,7 +571,10 @@
                 "no_history_found": "Aucun historique des valeurs trouvé."
             },
             "logbook": {
-                "entries_not_found": "Aucune entrée trouvée dans le journal."
+                "entries_not_found": "Aucune entrée trouvée dans le journal.",
+                "messages": {
+                    "rose": "aube"
+                }
             },
             "media-browser": {
                 "audio_not_supported": "Votre navigateur ne prend pas en charge l'élément audio.",

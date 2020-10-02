@@ -571,7 +571,34 @@
                 "no_history_found": "Nessuno storico trovato."
             },
             "logbook": {
-                "entries_not_found": "Non sono state trovate voci nel registro."
+                "by": "da",
+                "by_service": "dal servizio",
+                "entries_not_found": "Non sono state trovate voci nel registro.",
+                "messages": {
+                    "became_unavailable": "non è più disponibile",
+                    "changed_to_state": "cambiato in {state}",
+                    "cleared_device_class": "cancellato (nessun {device_class} rilevato)",
+                    "detected_device_class": "rilevato {device_class}",
+                    "rose": "alzato",
+                    "set": "impostato",
+                    "turned_off": "spento",
+                    "turned_on": "acceso",
+                    "was_at_home": "era a casa",
+                    "was_at_state": "era a {state}",
+                    "was_away": "era lontano",
+                    "was_closed": "era chiuso",
+                    "was_connected": "era connesso",
+                    "was_disconnected": "era disconnesso",
+                    "was_locked": "era bloccato",
+                    "was_low": "era basso",
+                    "was_normal": "era normale",
+                    "was_opened": "era aperto",
+                    "was_plugged_in": "è stato collegato",
+                    "was_safe": "era sicuro",
+                    "was_unlocked": "era sbloccato",
+                    "was_unplugged": "è stato scollegato",
+                    "was_unsafe": "non era sicuro"
+                }
             },
             "media-browser": {
                 "audio_not_supported": "Il tuo browser non supporta l'elemento audio.",
@@ -684,7 +711,8 @@
                     "unavailable": "Questa entità non è attualmente disponibile.",
                     "update": "Aggiorna"
                 },
-                "no_unique_id": "Questa entità non ha un ID univoco, pertanto le sue impostazioni non possono essere gestite dall'Interfaccia Utente.",
+                "faq": "documentazione",
+                "no_unique_id": "Questa entità non ha un ID univoco, pertanto le sue impostazioni non possono essere gestite dall'Interfaccia Utente. Vedere {faq_link} per maggiori dettagli.",
                 "related": "Relazionato",
                 "settings": "Impostazioni"
             },
@@ -741,6 +769,7 @@
                 "dismiss": "Chiudi finestra di dialogo",
                 "edit": "Modifica entità",
                 "history": "Storico",
+                "last_updated": "Ultimo aggiornamento",
                 "person": {
                     "create_zone": "Crea zona dalla posizione corrente"
                 },
@@ -1040,7 +1069,16 @@
                                     "before": "Prima",
                                     "label": "Tempo",
                                     "type_input": "Valore di un aiutante data/ora",
-                                    "type_value": "Tempo fisso"
+                                    "type_value": "Tempo fisso",
+                                    "weekdays": {
+                                        "fri": "Venerdì",
+                                        "mon": "Lunedi",
+                                        "sat": "Sabato",
+                                        "sun": "Domenica",
+                                        "thu": "Giovedì",
+                                        "tue": "Martedì",
+                                        "wed": "Mercoledì"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Entità con posizione",
@@ -1855,7 +1893,8 @@
                     },
                     "select_instance": {
                         "header": "Seleziona un'istanza OpenZWave",
-                        "introduction": "Hai più di un'istanza OpenZWave in esecuzione. Quale istanza vorresti gestire?"
+                        "introduction": "Hai più di un'istanza OpenZWave in esecuzione. Quale istanza vorresti gestire?",
+                        "none_found": "Non siamo riusciti a trovare un'istanza di OpenZWave. Se ritieni che ciò non sia corretto, controlla le tue impostazioni di OpenZWave e MQTT e assicurati che Home Assistant possa comunicare con il tuo broker MQTT."
                     },
                     "services": {
                         "add_node": "Aggiungi Nodo",
@@ -1870,6 +1909,9 @@
                     "create_person": "Crea persona",
                     "description": "Gestisci le persone tracciate da Home Assistant",
                     "detail": {
+                        "admin": "Amministratore",
+                        "allow_login": "Consenti alla persona di accedere",
+                        "confirm_delete_user": "Sei sicuro di voler eliminare l'account utente per {name}? Puoi ancora tenere traccia dell'utente, ma la persona non sarà più in grado di accedere.",
                         "create": "Crea",
                         "delete": "Elimina",
                         "device_tracker_intro": "Seleziona i dispositivi che appartengono a questa persona.",
@@ -1886,7 +1928,7 @@
                     },
                     "introduction": "Qui è possibile definire ogni persona di interesse in Home Assistant.",
                     "no_persons_created_yet": "Sembra che tu non abbia ancora creato nessuna persona.",
-                    "note_about_persons_configured_in_yaml": "Nota: le persone configurate tramite configuration.yaml non possono essere modificate tramite l'interfaccia utente."
+                    "note_about_persons_configured_in_yaml": "Nota: le persone configurate tramite configuration.yaml non possono essere modificate tramite l'Interfaccia Utente."
                 },
                 "scene": {
                     "activated": "Scena attivata {name}.",
@@ -2003,7 +2045,7 @@
                             "introduction": "Alcune parti di Home Assistant possono essere ricaricate senza richiedere un riavvio. Premendo su Ricarica si rimuoverà la loro Configurazione YAML  attuale e si caricherà la versione aggiornata.",
                             "min_max": "Ricaricare le entità min/max",
                             "mqtt": "Ricarica le entità mqtt",
-                            "person": "Ricarica le persone",
+                            "person": "Ricaricare le persone",
                             "ping": "Ricarica le entità del sensore binario ping",
                             "reload": "Ricarica {domain}",
                             "rest": "Ricarica le entità di rest e i servizi di notifica",
@@ -2214,12 +2256,12 @@
                     "configured_in_yaml": "Le zone configurate tramite configuration.yaml non possono essere modificate tramite l'interfaccia utente.",
                     "confirm_delete": "Sei sicuro di voler cancellare questa zona?",
                     "create_zone": "Crea zona",
-                    "description": "Gestisci le zone in cui vuoi rintracciare le persone",
+                    "description": "Gestire le zone in cui si desidera tenere traccia delle persone",
                     "detail": {
                         "create": "Crea",
                         "delete": "Elimina",
                         "icon": "Icona",
-                        "icon_error_msg": "L'icona dovrebbe essere nel formato prefisso:nome_icona, ad esempio: mdi:home",
+                        "icon_error_msg": "L'icona deve essere nel formato \"prefisso:nome_icona\", ad esempio: \"mdi:home\"",
                         "latitude": "Latitudine",
                         "longitude": "Logitudine",
                         "name": "Nome",
@@ -2463,6 +2505,20 @@
                     "refresh": "Aggiorna"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "Chiama il Servizio",
+                            "default_action": "Azione predefinita",
+                            "more-info": "Ulteriori informazioni",
+                            "navigate": "Navigare",
+                            "none": "Nessuna Azione",
+                            "toggle": "Commutatore",
+                            "url": "Url"
+                        },
+                        "editor_service_data": "I dati di servizio possono essere inseriti solo nell'editor del codice",
+                        "navigation_path": "Percorso di navigazione",
+                        "url_path": "Percorso Url"
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "Stati disponibili",
@@ -2470,12 +2526,20 @@
                             "name": "Pannello di allarme"
                         },
                         "button": {
+                            "default_action_help": "L'azione predefinita dipende dalle capacità dell'entità, verrà attivata o disattivata o verranno mostrate più informazioni.",
                             "description": "La scheda Pulsante consente di aggiungere pulsanti per eseguire attività.",
                             "name": "Pulsante"
                         },
                         "calendar": {
+                            "calendar_entities": "Entità Calendario",
                             "description": "La scheda Calendario mostra un calendario che include le visualizzazioni per giorno, settimana ed elenco",
-                            "name": "Calendario"
+                            "inital_view": "Vista iniziale",
+                            "name": "Calendario",
+                            "views": {
+                                "dayGridDay": "Giorno",
+                                "dayGridMonth": "Mese",
+                                "listWeek": "Elenco"
+                            }
                         },
                         "conditional": {
                             "card": "Scheda",
@@ -2495,6 +2559,7 @@
                         "entities": {
                             "description": "La scheda Entità è il tipo di scheda più comune. Raggruppa gli elementi in elenchi.",
                             "edit_special_row": "Modificare la riga utilizzando l'editor di codice",
+                            "entity_row_editor": "Editor di riga dell'entità",
                             "entity_row": {
                                 "attribute": "Attributo",
                                 "button": "Pulsante",
@@ -2507,6 +2572,15 @@
                                 "weblink": "Collegamento Web"
                             },
                             "name": "Entità",
+                            "secondary_info_values": {
+                                "brightness": "Luminosità",
+                                "entity-id": "ID Entità",
+                                "last-changed": "Ultima modifica",
+                                "last-triggered": "Ultima attivazione",
+                                "none": "Nessuna informazione secondaria",
+                                "position": "Posizione",
+                                "tilt-position": "Posizione di inclinazione"
+                            },
                             "show_header_toggle": "Mostrare l'interruttore dell'intestazione?",
                             "special_row": "riga speciale",
                             "toggle": "Attiva/disattiva entità."
@@ -2960,6 +3034,12 @@
                     "more_integrations": "Di Più"
                 },
                 "intro": "Sei pronto per risvegliare la tua casa, reclamare la tua privacy e far parte di una comunità mondiale di smanettoni?",
+                "restore": {
+                    "description": "In alternativa è possibile ripristinare da un'istantanea precedente.",
+                    "hide_log": "Nascondi il registro completo",
+                    "in_progress": "Ripristino in corso",
+                    "show_log": "Mostra il registro completo"
+                },
                 "user": {
                     "create_account": "Crea un Account",
                     "data": {

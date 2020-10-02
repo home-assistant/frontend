@@ -556,7 +556,12 @@
                 "no_history_found": "Durum geçmişi bulunamadı."
             },
             "logbook": {
-                "entries_not_found": "Kayıt defteri girişi bulunamadı."
+                "entries_not_found": "Kayıt defteri girişi bulunamadı.",
+                "messages": {
+                    "rose": "gül",
+                    "was_closed": "kapatıldı",
+                    "was_opened": "açıldı"
+                }
             },
             "media-browser": {
                 "choose_player": "Medya oynatıcı seçin",
@@ -633,6 +638,7 @@
                     "unavailable": "Bu varlık şu anda kullanılamıyor.",
                     "update": "Güncelle"
                 },
+                "faq": "dokümantasyon",
                 "no_unique_id": "Bu varlığın benzersiz bir kimliği yok, bu nedenle ayarları kullanıcı arayüzünden yönetilemiyor.",
                 "related": "İlgili",
                 "settings": "Ayarlar"
@@ -2243,6 +2249,11 @@
                                 "weblink": "Web Bağlantısı"
                             },
                             "name": "Varlıklar",
+                            "secondary_info_values": {
+                                "last-changed": "Son değiştirilen",
+                                "last-triggered": "Son Tetiklenen",
+                                "position": "Pozisyon"
+                            },
                             "show_header_toggle": "Başlık Değiştirme Gösterilsin mi?",
                             "special_row": "özel satır",
                             "toggle": "Varlıklarageçiş."

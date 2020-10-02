@@ -571,7 +571,34 @@
                 "no_history_found": "No s'ha trobat cap historial d'estats."
             },
             "logbook": {
-                "entries_not_found": "No s'han trobat entrades al registre."
+                "by": "per",
+                "by_service": "pel servei",
+                "entries_not_found": "No s'han trobat entrades al registre.",
+                "messages": {
+                    "became_unavailable": "no està disponible",
+                    "changed_to_state": "a canviat a {state}",
+                    "cleared_device_class": "s'ha esborrat (no s'ha detectat cap {device_class})",
+                    "detected_device_class": "s'ha detectat {device_class}",
+                    "rose": "rosa",
+                    "set": "establert",
+                    "turned_off": "s'ha apagat",
+                    "turned_on": "s'ha engegat",
+                    "was_at_home": "és a casa",
+                    "was_at_state": "és {state}",
+                    "was_away": "és a fora",
+                    "was_closed": "s'ha tancat",
+                    "was_connected": "s'ha connectat",
+                    "was_disconnected": "s'ha desconnectat",
+                    "was_locked": "s'ha bloquejat",
+                    "was_low": "és baix/a",
+                    "was_normal": "és normal",
+                    "was_opened": "s'ha obert",
+                    "was_plugged_in": "s'ha endollat",
+                    "was_safe": "és segur",
+                    "was_unlocked": "s'ha desbloquejat",
+                    "was_unplugged": "s'ha desendollat",
+                    "was_unsafe": "és insegur"
+                }
             },
             "media-browser": {
                 "audio_not_supported": "El teu navegador no és compatible amb l'element d'àudio.",
@@ -684,7 +711,8 @@
                     "unavailable": "Aquesta entitat no està disponible actualment.",
                     "update": "Actualitza"
                 },
-                "no_unique_id": "Aquesta entitat no té un ID únic, per tant, la seva configuració no pot ser gestionada des de la interfície d'usuari.",
+                "faq": "documentació",
+                "no_unique_id": "Aquesta entitat no té un ID únic, per tant, la seva configuració no pot ser gestionada des de la interfície d'usuari. Consulta {faq_link} per a més detalls.",
                 "related": "Relacionat",
                 "settings": "Configuració"
             },
@@ -1865,7 +1893,8 @@
                     },
                     "select_instance": {
                         "header": "Selecciona una instància d'OpenZWave",
-                        "introduction": "Tens més d'una instància d'OpenZWave en funcionament. Quina instància vols gestionar?"
+                        "introduction": "Tens més d'una instància d'OpenZWave en funcionament. Quina instància vols gestionar?",
+                        "none_found": "No s'ha pogut trobar cap instància d'OpenZWave. Si creus que això és incorrecte, comprova les configuracions d'OpenZWave i MQTT i assegurat que Home Assistant pugui comunicar-se amb el teu broker MQTT."
                     },
                     "services": {
                         "add_node": "Afegeix node",
@@ -1880,6 +1909,9 @@
                     "create_person": "Crea persona",
                     "description": "Gestiona les persones a qui Home Assistant fa seguiment",
                     "detail": {
+                        "admin": "Administrador",
+                        "allow_login": "Permet l'inici de sessió de la persona",
+                        "confirm_delete_user": "Estàs segur que vols eliminar el compte d'usuari de {name}? Encara li podràs fer seguiment, però no podrà tornar a iniciar sessió.",
                         "create": "Crea",
                         "delete": "Elimina",
                         "device_tracker_intro": "Selecciona els dispositius que pertanyen a aquesta persona.",
@@ -2229,7 +2261,7 @@
                         "create": "Crea",
                         "delete": "Elimina",
                         "icon": "Icona",
-                        "icon_error_msg": "El nom de la icona ha de tenir el format prefix:nom_icona, per exemple: mdi: home",
+                        "icon_error_msg": "La icona ha de tenir el format \"prefix:nom_icona\", per exemple: \"mdi:home\"",
                         "latitude": "Latitud",
                         "longitude": "Longitud",
                         "name": "Nom",
@@ -2527,6 +2559,7 @@
                         "entities": {
                             "description": "La targeta entitats és la més habitual. Agrupa diferents tipus d'entitats en una llista.",
                             "edit_special_row": "Edita la fila mitjançant l'editor de codi",
+                            "entity_row_editor": "Editor de files d'entitats",
                             "entity_row": {
                                 "attribute": "Atribut",
                                 "button": "Botó",
@@ -2539,6 +2572,15 @@
                                 "weblink": "Enllaç web"
                             },
                             "name": "Entitats",
+                            "secondary_info_values": {
+                                "brightness": "Brillantor",
+                                "entity-id": "ID de l'entitat",
+                                "last-changed": "Últim canvi",
+                                "last-triggered": "Disparada per última vegada",
+                                "none": "Sense informació secundària",
+                                "position": "Posició",
+                                "tilt-position": "Inclinació"
+                            },
                             "show_header_toggle": "Mostra commutació a la capçalera?",
                             "special_row": "fila especial",
                             "toggle": "Commuta les entitats."

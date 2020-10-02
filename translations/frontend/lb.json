@@ -571,7 +571,34 @@
                 "no_history_found": "Keen Status Verlaaf fonnt"
             },
             "logbook": {
-                "entries_not_found": "Keng Logbicher Entrée fonnt"
+                "by": "vun",
+                "by_service": "no Service",
+                "entries_not_found": "Keng Logbicher Entrée fonnt",
+                "messages": {
+                    "became_unavailable": "ass onereechbar ginn.",
+                    "changed_to_state": "geännert op {state}",
+                    "cleared_device_class": "geläscht (keng {device_class} détektéiert)",
+                    "detected_device_class": "{device_class} détektéiert",
+                    "rose": "gehuewen",
+                    "set": "Setzen",
+                    "turned_off": "ausgeschalt",
+                    "turned_on": "ugeschalt",
+                    "was_at_home": "war doheem",
+                    "was_at_state": "war {state}",
+                    "was_away": "war Ënnerwee",
+                    "was_closed": "war zou",
+                    "was_connected": "war connectéiert",
+                    "was_disconnected": "war déconnectéiert",
+                    "was_locked": "war gespaart",
+                    "was_low": "war niddereg",
+                    "was_normal": "war normal",
+                    "was_opened": "war opgemaach",
+                    "was_plugged_in": "war ugeschloss",
+                    "was_safe": "war sécher",
+                    "was_unlocked": "war net gespaart",
+                    "was_unplugged": "war net ugeschloss",
+                    "was_unsafe": "war onsécher"
+                }
             },
             "media-browser": {
                 "audio_not_supported": "Däin Browser ënnerstëtzt dësen Audio Element net.",
@@ -684,6 +711,7 @@
                     "unavailable": "Dës Entitéit ass net erreechbar fir de Moment.",
                     "update": "Aktualiséieren"
                 },
+                "faq": "Dokumentatioun",
                 "no_unique_id": "Dës Entitéit huet keng eenzegaarteg ID, dofir kënnen hir Astellungen net am Benotzer Interface geréiert ginn.",
                 "related": "Relatioun",
                 "settings": "Astellungen"
@@ -741,6 +769,7 @@
                 "dismiss": "Dialog ofbriechen",
                 "edit": "Entitéit änneren",
                 "history": "Verlaf",
+                "last_updated": "Läscht mise à jour",
                 "person": {
                     "create_zone": "Zone erstellen vun der aktueller Positioun"
                 },
@@ -1446,6 +1475,7 @@
                     "caption": "Apparater",
                     "confirm_delete": "Sécher fir dësen Appara ze läsche?",
                     "confirm_rename_entity_ids": "Wëllt Dir och d'Entitéiten-ID vun Ären Entitéiten ëmbenennen?",
+                    "confirm_rename_entity_ids_warning": "Dëst ännert keng Konfiguratioun (wéi Automatisatisme, Skripte, Szene, Lovelace) déi aktuell dës Entitéite benotzt, du muss se selwer aktualiséieren.",
                     "data_table": {
                         "area": "Beräich",
                         "battery": "Batterie",
@@ -1611,6 +1641,7 @@
                         "options": "Optiounen",
                         "reload": "Nei lueden",
                         "reload_confirm": "Integratioun gouf frësch gelueden",
+                        "reload_restart_confirm": "Start Home Assistant nei fir dës Integratioun fäerdeg ze lueden",
                         "rename": "Ëmbenennen",
                         "restart_confirm": "Start Home Assistant nei fir dës Integratioun ze läschen",
                         "settings_button": "Astellungen ännere fir {integration}",
@@ -1811,6 +1842,7 @@
                     },
                     "network": {
                         "header": "Verwaltung vum Netzwierk",
+                        "introduction": "Netzwierk wäit Funktioune verwalten",
                         "node_count": "{count} nodes"
                     },
                     "node_query_stages": {
@@ -1856,7 +1888,8 @@
                     },
                     "select_instance": {
                         "header": "Eng OpenZWave Instanz auswielen",
-                        "introduction": "Du hues méi wéi eng OpenZWave Instanz laafen. Wéieng Instanz wëlls du verwalten?"
+                        "introduction": "Du hues méi wéi eng OpenZWave Instanz laafen. Wéieng Instanz wëlls du verwalten?",
+                        "none_found": "Keng OpenZWave Instanz fonnt. Falls dëst inkorrekt ass, iwwerpréif deng OpenZWave an MQTT Astellungen an stell sécher dass den Home Assistant mat dengem MQTT Broker kommunizéiere kann."
                     },
                     "services": {
                         "add_node": "Node dobäisetzen",
@@ -1871,6 +1904,9 @@
                     "create_person": "Persoun erstellen",
                     "description": "Verwalt d'Persoune déi vum Home Assistant suivéiert ginn.",
                     "detail": {
+                        "admin": "Administrator",
+                        "allow_login": "Login erlaabt fir Persoun",
+                        "confirm_delete_user": "Sécher fir de Benotzer Kont fir {name} ze läschen? Du kanns dann nach ëmmer den Benotzer suivéieren, mee déi Persoun kann sech dann net méi verbannen.",
                         "create": "Erstellen",
                         "delete": "Läschen",
                         "device_tracker_intro": "Wiel d'Apparater aus déi zu dëser Persoun gehéieren.",
@@ -2014,6 +2050,7 @@
                             "telegram": "Telegram Notifikatioun's Servicer frësch lueden",
                             "template": "Modell Entitéite frësch lueden",
                             "trend": "Trend Entitéite frësch lueden",
+                            "universal": "Universal Medie Spiller Entitéite frësch lueden",
                             "zone": "Zone frësch lueden"
                         },
                         "server_management": {
@@ -2037,6 +2074,7 @@
                     "add_tag": "Tag dobäisetzen",
                     "automation_title": "Tag {name} gouf gescannt",
                     "caption": "Tags",
+                    "create_automation": "Erstell Automatisme mam Tag",
                     "description": "Tags verwalten",
                     "detail": {
                         "create": "Erstellen",
@@ -2046,6 +2084,7 @@
                         "name": "Numm",
                         "new_tag": "Neien tag",
                         "tag_id": "Tag id",
+                        "tag_id_placeholder": "Automatesch erstallt falls eidel geloss",
                         "update": "Aktualiséieren"
                     },
                     "edit": "Änneren",
@@ -2459,6 +2498,19 @@
                     "refresh": "Frësch lueden"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "Service ruffen",
+                            "default_action": "Standard Aktioun",
+                            "more-info": "Méi Informatiounen",
+                            "navigate": "Navigéieren",
+                            "none": "Keng Aktioun",
+                            "toggle": "Ëmschalten",
+                            "url": "Url"
+                        },
+                        "navigation_path": "Nagiatioun's Pad",
+                        "url_path": "URL Pad"
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "Verfügbar Zoustänn",
@@ -2466,6 +2518,7 @@
                             "name": "Alarm Zentral"
                         },
                         "button": {
+                            "default_action_help": "D'Standardaktioun hänkt vun de Fäegkeete vun der Entitéit of, et gëtt entweder ëmgeschalt oder \"méi Info\" gëtt ugewisen.",
                             "description": "Knäppchen Kaart erlaabt et Knäppchen mat Aktioune unzeweisen.",
                             "name": "Knäppchen"
                         },
@@ -2510,6 +2563,15 @@
                                 "weblink": "Web Link"
                             },
                             "name": "Entitéiten",
+                            "secondary_info_values": {
+                                "brightness": "Hellegkeet",
+                                "entity-id": "Entitéit ID",
+                                "last-changed": "Läscht Ännerung",
+                                "last-triggered": "Läscht ausgeléist",
+                                "none": "Keng Sekundär Informatioun",
+                                "position": "Positioun",
+                                "tilt-position": "Kippstellung"
+                            },
                             "show_header_toggle": "Titel Schalter uweisen?",
                             "special_row": "Spezial Réih",
                             "toggle": "Entitéiten ëmschalten"
@@ -2963,6 +3025,12 @@
                     "more_integrations": "Méi"
                 },
                 "intro": "Sidd Dir prett fir Äert Heem interessant ze maachen, Är Privatsphär ze garantéieren an enger weltwäiter Gemeinschaft bei ze trieden?",
+                "restore": {
+                    "description": "Alternativ kanns Du aus engem fréiere Snapshot restauréieren.",
+                    "hide_log": "Komplette Log verstoppen",
+                    "in_progress": "Restauratioun en cours",
+                    "show_log": "Komplette Log uweisen"
+                },
                 "user": {
                     "create_account": "Kont erstellen",
                     "data": {
