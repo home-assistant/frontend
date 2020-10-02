@@ -142,8 +142,12 @@ export class HuiNotificationDrawer extends EventsMixin(
     const notifications = notificationsBackend.concat(configuratorEntities);
 
     notifications.sort(function (n1, n2) {
-      if (n1.created_at > n2.created_at) { return -1; }
-      if (n1.created_at < n2.created_at) { return 1; }
+      if (new Date(n1.created_at) > new Date(n2.created_at)) {
+        return -1;
+      }
+      if (new Date(n1.created_at) < new Date(n2.created_at)) {
+        return 1;
+      }
       return 0;
     });
 
