@@ -88,10 +88,18 @@ class OZWNodeDashboard extends LitElement {
             ? html`
                 <ha-card class="content">
                   <div class="card-content">
-                    <b
-                      >${this._node.node_manufacturer_name}
-                      ${this._node.node_product_name}</b
-                    ><br />
+                    <b>
+                      ${this._node.node_manufacturer_name}
+                      ${this._node.node_product_name}
+                    </b>
+                    ${this._metadata?.metadata.ProductPicBase64
+                      ? html`<img
+                          src="data:image/png;base64,${this._metadata?.metadata
+                            .ProductPicBase64}"
+                          class="product-image"
+                        />`
+                      : ``}
+                    <br />
                     Node ID: ${this._node.node_id}<br />
                     Query Stage: ${this._node.node_query_stage}
                     ${this._metadata?.metadata.ProductManualURL
@@ -218,6 +226,15 @@ class OZWNodeDashboard extends LitElement {
 
         [hidden] {
           display: none;
+        }
+        .product-image {
+          max-height: 140px;
+          max-width: 140px;
+          padding: 12px;
+          float: right;
+        }
+        .card-actions {
+          clear: right;
         }
       `,
     ];
