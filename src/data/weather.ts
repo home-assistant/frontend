@@ -91,13 +91,13 @@ export const getWind = (
 ): string => {
   if (bearing != null) {
     const cardinalDirection = getWindBearing(bearing);
-    return `${speed} ${getWeatherUnit(hass!, "length")}/h (${
+    return `${speed} ${getWeatherUnit(hass!, "wind_speed")} (${
       hass.localize(
         `ui.card.weather.cardinal_direction.${cardinalDirection.toLowerCase()}`
       ) || cardinalDirection
     })`;
   }
-  return `${speed} ${getWeatherUnit(hass!, "length")}/h`;
+  return `${speed} ${getWeatherUnit(hass!, "wind_speed")}`;
 };
 
 export const getWeatherUnit = (
