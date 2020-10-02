@@ -49,7 +49,6 @@ class HcLovelace extends LitElement {
         .hass=${this.hass}
         .lovelace=${lovelace}
         .index=${index}
-        columns="2"
       ></hui-view>
     `;
   }
@@ -67,7 +66,7 @@ class HcLovelace extends LitElement {
 
         if (configBackground) {
           (this.shadowRoot!.querySelector(
-            "hui-view, hui-panel-view"
+            "hui-view"
           ) as HTMLElement)!.style.setProperty(
             "--lovelace-background",
             configBackground
