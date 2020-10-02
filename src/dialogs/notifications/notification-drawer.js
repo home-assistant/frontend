@@ -139,7 +139,15 @@ export class HuiNotificationDrawer extends EventsMixin(
       .filter((entityId) => computeDomain(entityId) === "configurator")
       .map((entityId) => hass.states[entityId]);
 
-    return notificationsBackend.concat(configuratorEntities);
+    const notifications = notificationsBackend.concat(configuratorEntities);
+
+    notifications.sort(function (n1, n2) {
+      if (n1.created_at > n2.created_at) return -1;
+      if (n1.created_at < n2.created_at) return 1;
+      return 0;
+    });
+
+    return notifications;
   }
 
   showDialog({ narrow }) {
