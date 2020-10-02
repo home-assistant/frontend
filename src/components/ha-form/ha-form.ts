@@ -183,6 +183,7 @@ export class HaForm extends LitElement implements HaFormElement {
       ${dynamicElement(`ha-form-${this.schema.type}`, {
         schema: this.schema,
         data: this.data,
+        error: this.error,
         label: this._computeLabel(this.nesting),
         suffix: this._computeSuffix(this.schema),
         id: "child-form",

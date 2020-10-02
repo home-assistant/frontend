@@ -24,6 +24,8 @@ import type {
 export class HaFormDictionary extends LitElement implements HaFormElement {
   @property() public schema!: HaFormDictionarySchema;
 
+  @property() public error;
+
   @property() public data!: HaFormDictionaryData;
 
   @property() public label!: string;
@@ -68,6 +70,7 @@ export class HaFormDictionary extends LitElement implements HaFormElement {
             <ha-form
               .schema=${this.schema.dictionary}
               .data=${this.data}
+              .error=${this.error}
               @value-changed=${this._valueChanged}
               .computeError=${this.computeError}
               .computeLabel=${this.computeLabel}
