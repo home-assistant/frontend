@@ -44,11 +44,12 @@ export const getLogbookData = async (
   );
 
   for (const entry of logbookData) {
-    if (entry.state) {
+    const stateObj = hass!.states[entry.entity_id!];
+    if (entry.state && stateObj) {
       entry.message = getLogbookMessage(
         hass,
         entry.state,
-        hass!.states[entry.entity_id!],
+        stateObj,
         computeDomain(entry.entity_id!)
       );
     }
