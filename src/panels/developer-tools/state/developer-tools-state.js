@@ -164,7 +164,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
                 on-click="entityMoreInfo"
                 alt="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
                 title="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
-                path="[[informationOutlineIcon()]]"
+                .path="[[informationOutlineIcon()]]"
               ></ha-svg-icon>
               <a href="#" on-click="entitySelected">[[entity.entity_id]]</a>
             </td>

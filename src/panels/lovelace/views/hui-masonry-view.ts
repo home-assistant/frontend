@@ -90,7 +90,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
                 rtl: computeRTL(this.hass!),
               })}
             >
-              <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+              <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
             </mwc-fab>
           `
         : ""}

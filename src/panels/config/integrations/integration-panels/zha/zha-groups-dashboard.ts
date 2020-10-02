@@ -129,7 +129,7 @@ export class ZHAGroupsDashboard extends LitElement {
           <mwc-fab
             title=${this.hass!.localize("ui.panel.config.zha.groups.add_group")}
           >
-            <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+            <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
           </mwc-fab>
         </a>
       </hass-tabs-subpage-data-table>

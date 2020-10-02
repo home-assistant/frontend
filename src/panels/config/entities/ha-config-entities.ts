@@ -463,7 +463,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                 "ui.panel.config.entities.picker.filter.filter"
               )}
             >
-              <ha-svg-icon path=${mdiFilterVariant}></ha-svg-icon>
+              <ha-svg-icon .path=${mdiFilterVariant}></ha-svg-icon>
             </mwc-icon-button>
             <mwc-list-item
               @request-selected="${this._showDisabledChanged}"

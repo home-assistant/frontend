@@ -87,7 +87,7 @@ class ZHAConfigDashboard extends LitElement {
             title=${this.hass.localize("ui.panel.config.zha.add_device")}
             ?rtl=${computeRTL(this.hass)}
           >
-            <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+            <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
           </mwc-fab>
         </a>
       </hass-tabs-subpage>

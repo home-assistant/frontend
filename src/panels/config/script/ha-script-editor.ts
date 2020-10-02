@@ -260,7 +260,7 @@ export class HaScriptEditor extends LitElement {
             dirty: this._dirty,
           })}
         >
-          <ha-svg-icon slot="icon" path=${mdiContentSave}></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
         </mwc-fab>
       </hass-tabs-subpage>
     `;

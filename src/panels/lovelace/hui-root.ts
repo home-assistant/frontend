@@ -115,7 +115,7 @@ class HUIRoot extends LitElement {
                     )}"
                     @click="${this._editModeDisable}"
                   >
-                    <ha-svg-icon path=${mdiClose}></ha-svg-icon>
+                    <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
                   </mwc-icon-button>
                   <div main-title>
                     ${this.config.title ||
@@ -130,7 +130,7 @@ class HUIRoot extends LitElement {
                       class="edit-icon"
                       @click="${this._editLovelace}"
                     >
-                      <ha-svg-icon path=${mdiPencil}></ha-svg-icon>
+                      <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
                     </mwc-icon-button>
                   </div>
                   <a
@@ -144,7 +144,7 @@ class HUIRoot extends LitElement {
                         "ui.panel.lovelace.menu.help"
                       )}"
                     >
-                      <ha-svg-icon path=${mdiHelpCircle}></ha-svg-icon>
+                      <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
                     </mwc-icon-button>
                   </a>
                   <ha-button-menu corner="BOTTOM_START">
@@ -157,7 +157,7 @@ class HUIRoot extends LitElement {
                         "ui.panel.lovelace.editor.menu.open"
                       )}
                     >
-                      <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+                      <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
                     </mwc-icon-button>
                     ${__DEMO__ /* No unused entities available in the demo */
                       ? ""
@@ -194,7 +194,7 @@ class HUIRoot extends LitElement {
                           label="Start conversation"
                           @click=${this._showVoiceCommandDialog}
                         >
-                          <ha-svg-icon path=${mdiMicrophone}></ha-svg-icon>
+                          <ha-svg-icon .path=${mdiMicrophone}></ha-svg-icon>
                         </mwc-icon-button>
                       `
                     : ""}
@@ -208,7 +208,7 @@ class HUIRoot extends LitElement {
                         "ui.panel.lovelace.editor.menu.open"
                       )}"
                     >
-                      <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+                      <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
                     </mwc-icon-button>
                     ${this._yamlMode
                       ? html`
@@ -332,7 +332,7 @@ class HUIRoot extends LitElement {
                                     "ui.panel.lovelace.editor.edit_view.edit"
                                   )}"
                                   class="edit-icon view"
-                                  path=${mdiPencil}
+                                  .path=${mdiPencil}
                                   @click="${this._editView}"
                                 ></ha-svg-icon>
                                 <ha-icon-button-arrow-next
@@ -359,7 +359,7 @@ class HUIRoot extends LitElement {
                               "ui.panel.lovelace.editor.edit_view.add"
                             )}"
                           >
-                            <ha-svg-icon path=${mdiPlus}></ha-svg-icon>
+                            <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
                           </mwc-icon-button>
                         `
                       : ""}

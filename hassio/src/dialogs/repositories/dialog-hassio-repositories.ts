@@ -91,7 +91,7 @@ class HassioRepositoriesDialog extends LitElement {
                       title="Remove"
                       @click=${this._removeRepository}
                     >
-                      <ha-svg-icon path=${mdiDelete}></ha-svg-icon>
+                      <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
                     </mwc-icon-button>
                   </paper-item>
                 `;
