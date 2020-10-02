@@ -98,9 +98,8 @@ export class HaFormInteger extends LitElement implements HaFormElement {
   private _valueChanged(ev: Event) {
     const rawValue = (ev.target as PaperInputElement | PaperSliderElement)
       .value;
-    const value = ["", undefined].includes(rawValue)
-      ? rawValue
-      : Number(rawValue);
+    const value =
+      rawValue === "" || rawValue === undefined ? rawValue : Number(rawValue);
     if (this._value === value) {
       return;
     }
