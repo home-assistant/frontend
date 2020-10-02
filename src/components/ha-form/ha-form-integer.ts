@@ -84,7 +84,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
       this.data ||
       this.schema.description?.suggested_value ||
       this.schema.default ||
-      ""
+      undefined
     );
   }
 
