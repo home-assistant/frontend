@@ -6,6 +6,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { computeDomain } from "../../common/entity/compute_domain";
 import "../../components/ha-icon-button-prev";
+import "../../components/buttons/ha-progress-button";
 import { subscribeNotifications } from "../../data/persistent_notification";
 import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
@@ -50,6 +51,11 @@ export class HuiNotificationDrawer extends EventsMixin(
         padding: 0 16px 16px;
       }
 
+      .notification-actions {
+        padding: 0 16px 16px;
+        text-align: center;
+      }
+
       .empty {
         padding: 16px;
         text-align: center;
@@ -69,6 +75,13 @@ export class HuiNotificationDrawer extends EventsMixin(
               </div>
             </template>
           </dom-repeat>
+            <template is="dom-if" if="[[_moreThanOne(notifications)]]">
+              <div class="notification-actions">
+                <ha-progress-button raised="" on-click="_dismissAll">
+                  [[localize('ui.notification_drawer.dismiss_all')]]
+                </ha-progress-button>
+              </div>
+            </template>
         </template>
         <template is="dom-if" if="[[_empty(notifications)]]">
           <div class="empty">[[localize('ui.notification_drawer.empty')]]<div>
@@ -111,8 +124,22 @@ export class HuiNotificationDrawer extends EventsMixin(
     this.open = false;
   }
 
+  _dismissAll(ev) {
+    ev.stopPropagation();
+    this.notifications.forEach((notification) => {
+      this.hass.callService("persistent_notification", "dismiss", {
+        notification_id: notification.notification_id,
+      });
+    });
+    this.open = false;
+  }
+
   _empty(notifications) {
     return notifications.length === 0;
+  }
+
+  _moreThanOne(notifications) {
+    return notifications.length > 1;
   }
 
   _openChanged(open) {
