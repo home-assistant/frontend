@@ -68,12 +68,15 @@ class HaChartBase extends mixinBehaviors(
         .chartTooltip ul {
           display: inline-block;
           padding: 0 0px;
-          margin: 5px 0 0 0;
+          margin: 0 3px;
           width: 100%;
         }
         .chartTooltip li {
           display: block;
           white-space: pre-line;
+        }
+        .chartTooltip li::first-line {
+          line-height: 0;
         }
         .chartTooltip .title {
           text-align: center;
