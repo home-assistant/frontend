@@ -496,9 +496,11 @@
                     "wnw": "VNV",
                     "wsw": "VSV"
                 },
+                "day": "Dag",
                 "forecast": "Prognos",
                 "high": "Hög",
-                "low": "Låg"
+                "low": "Låg",
+                "night": "Natt"
             }
         },
         "common": {
@@ -569,7 +571,23 @@
                 "no_history_found": "Ingen historik hittad."
             },
             "logbook": {
-                "entries_not_found": "Inga inlägg i loggboken hittades"
+                "entries_not_found": "Inga inlägg i loggboken hittades",
+                "messages": {
+                    "became_unavailable": "blev otillgänglig",
+                    "changed_to_state": "ändrades till",
+                    "turned_off": "Slogs av",
+                    "turned_on": "Slogs på",
+                    "was_away": "var borta",
+                    "was_closed": "var stängd",
+                    "was_connected": "var ansluten",
+                    "was_disconnected": "var frånkopplad",
+                    "was_locked": "var låst",
+                    "was_low": "var låg",
+                    "was_opened": "var öppen",
+                    "was_plugged_in": "var inkopplad",
+                    "was_unlocked": "var olåst",
+                    "was_unplugged": "var urkopplad"
+                }
             },
             "media-browser": {
                 "choose_player": "Välj spelare",
@@ -680,6 +698,7 @@
                     "unavailable": "Den här entiteten är för närvarande inte tillgänglig.",
                     "update": "Uppdatera"
                 },
+                "faq": "dokumentation",
                 "no_unique_id": "Den här entiteten har inget unikt ID, därför kan den inte hanteras från användargränssnittet.",
                 "related": "Relaterade",
                 "settings": "Inställningar"
@@ -737,6 +756,7 @@
                 "dismiss": "Avfärda",
                 "edit": "Redigera entitet",
                 "history": "Historik",
+                "last_updated": "Senast uppdaterad",
                 "person": {
                     "create_zone": "Skapa zon från aktuell plats"
                 },
@@ -1036,7 +1056,16 @@
                                     "before": "Före",
                                     "label": "Tid",
                                     "type_input": "Värde för en datum-/tidhjälpare",
-                                    "type_value": "Satt tid"
+                                    "type_value": "Satt tid",
+                                    "weekdays": {
+                                        "fri": "fredag",
+                                        "mon": "måndag",
+                                        "sat": "lördag",
+                                        "sun": "söndag",
+                                        "thu": "torsdag",
+                                        "tue": "tisdag",
+                                        "wed": "onsdag"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Entitet med position",
@@ -1138,7 +1167,7 @@
                                     "sunset": "Solnedgång"
                                 },
                                 "tag": {
-                                    "label": "Etikett"
+                                    "label": "Tagg"
                                 },
                                 "template": {
                                     "label": "Mall",
@@ -1837,7 +1866,8 @@
                     },
                     "select_instance": {
                         "header": "Välj en OpenZWave-instans",
-                        "introduction": "Du har mer än en OpenZWave-instans som körs. Vilken instans vill du hantera?"
+                        "introduction": "Du har mer än en OpenZWave-instans som körs. Vilken instans vill du hantera?",
+                        "none_found": "Vi kunde inte hitta en OpenZWave-instans. Om du tror detta är fel, kontrollera dina OpenZWave- och MQTT-inställningar och se till att Home Assistant kan kommunicera med din MQTT-broker."
                     },
                     "services": {
                         "add_node": "Lägg till nod",
@@ -1852,6 +1882,9 @@
                     "create_person": "Skapa person",
                     "description": "Hantera personer som Home Assistant spårar",
                     "detail": {
+                        "admin": "Adminstratör",
+                        "allow_login": "Tillåt person att logga in",
+                        "confirm_delete_user": "Vill du verkligen bort användarkontot för {name}? Du kan fortfarande spåra användaren men personen kommer inte längre att kunna logga in.",
                         "create": "Skapa",
                         "delete": "Ta bort",
                         "device_tracker_intro": "Välj de enheter som tillhör till den här personen.",
@@ -1983,6 +2016,7 @@
                             "rpi_gpio": "Ladda om Raspberry Pi GPIO-entiteter",
                             "scene": "Ladda om scenarier",
                             "script": "Ladda om skript",
+                            "smtp": "Ladda om smtp-aviseringstjänster",
                             "template": "Ladda om mallar för entiteter",
                             "zone": "Ladda om zoner"
                         },
@@ -2004,11 +2038,11 @@
                     }
                 },
                 "tags": {
-                    "add_tag": "Lägg till etikett",
+                    "add_tag": "Lägg till tagg",
                     "automation_title": "Taggen {name} är skannad",
-                    "caption": "Etiketter",
+                    "caption": "Taggar",
                     "create_automation": "Skapa automatisering med tagg",
-                    "description": "Hantera etiketter",
+                    "description": "Hantera taggar",
                     "detail": {
                         "create": "Skapa",
                         "create_and_write": "Skapa och redigera",
@@ -2016,7 +2050,7 @@
                         "description": "Beskrivning",
                         "name": "Namn",
                         "new_tag": "Ny tagg",
-                        "tag_id": "Etikett-ID",
+                        "tag_id": "Tagg-ID",
                         "tag_id_placeholder": "Autogenereras när det lämnas tomt",
                         "update": "Uppdatera"
                     },
@@ -2026,7 +2060,7 @@
                         "name": "Namn"
                     },
                     "never_scanned": "Aldrig skannad",
-                    "no_tags": "Inga etiketter",
+                    "no_tags": "Inga taggar",
                     "write": "Redigera"
                 },
                 "users": {
@@ -2431,6 +2465,14 @@
                     "refresh": "Uppdatera"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "default_action": "Standardåtgärd",
+                            "toggle": "Växla",
+                            "url": "URL"
+                        },
+                        "url_path": "Sökväg till url"
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "Tillgängliga tillstånd",
@@ -2443,7 +2485,12 @@
                         },
                         "calendar": {
                             "description": "Kalenderkortet visar en kalender med dag-, vecka- och listvyer",
-                            "name": "Kalender"
+                            "name": "Kalender",
+                            "views": {
+                                "dayGridDay": "Dag",
+                                "dayGridMonth": "Månad",
+                                "listWeek": "Lista"
+                            }
                         },
                         "conditional": {
                             "card": "Kort",
@@ -2462,7 +2509,24 @@
                         },
                         "entities": {
                             "description": "Entitetskortet är den vanligaste korttypen. Det grupperar objekt i listor.",
+                            "entity_row": {
+                                "attribute": "Attribut",
+                                "button": "Knapp",
+                                "buttons": "Knappar",
+                                "call-service": "Anropa tjänst",
+                                "cast": "Cast",
+                                "conditional": "Villkorlig",
+                                "section": "Sektion",
+                                "weblink": "Webbadress"
+                            },
                             "name": "Enheter",
+                            "secondary_info_values": {
+                                "brightness": "Ljusstyrka",
+                                "entity-id": "Entitets-ID",
+                                "last-changed": "Senast ändrad",
+                                "last-triggered": "Senast utlöst",
+                                "position": "Position"
+                            },
                             "show_header_toggle": "Visa rubrikväljare?",
                             "toggle": "Växla entiteter."
                         },
@@ -2584,7 +2648,8 @@
                             "description": "Sensorkortet ger dig en snabb överblick över dina sensortillstånd med en valfri graf för att visualisera förändring över tid.",
                             "graph_detail": "Detalj på kurva",
                             "graph_type": "Typ av kurva",
-                            "name": "Sensor"
+                            "name": "Sensor",
+                            "show_more_detail": "Visa fler detaljer"
                         },
                         "shopping-list": {
                             "description": "Shopping List-kortet gör att du kan lägga till, redigera, checka av och rensa objekt från din inköpslista.",
@@ -2914,6 +2979,12 @@
                     "more_integrations": "Mer"
                 },
                 "intro": "Är du redo att väcka ditt hem, återta din integritet och gå med i en världsomspännande gemenskap av hemmafixare?",
+                "restore": {
+                    "description": "Alternativt kan du återställa från en tidigare snapshot.",
+                    "hide_log": "Dölj fullständig logg",
+                    "in_progress": "Återställning pågår",
+                    "show_log": "Visa fullständig logg"
+                },
                 "user": {
                     "create_account": "Skapa konto",
                     "data": {

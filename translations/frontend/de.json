@@ -568,7 +568,11 @@
                 "no_history_found": "Kein Zustandsverlauf gefunden."
             },
             "logbook": {
-                "entries_not_found": "Keine Logbucheinträge gefunden."
+                "entries_not_found": "Keine Logbucheinträge gefunden.",
+                "messages": {
+                    "turned_off": "ausgeschaltet",
+                    "turned_on": "eingeschaltet"
+                }
             },
             "media-browser": {
                 "audio_not_supported": "Ihr Browser unterstützt das Audioelement nicht.",
@@ -665,6 +669,7 @@
                     "unavailable": "Diese Entität ist derzeit nicht verfügbar.",
                     "update": "Aktualisieren"
                 },
+                "faq": "Dokumentation",
                 "no_unique_id": "Diese Entität hat keine eindeutige ID, daher können die Einstellungen nicht über die UI verwaltet werden.",
                 "related": "Verwandte",
                 "settings": "Einstellungen"
@@ -1770,6 +1775,7 @@
                     "create_person": "Person erstellen",
                     "description": "Verwalte die Personen, die Home Assistant verfolgt.",
                     "detail": {
+                        "confirm_delete_user": "Bist Du sicher, dass Du das Benutzerkonto von {name} löschen möchtest? Du kannst das Benutzerkonto immer noch verfolgen, aber es kann nicht mehr zum Anmelden verwendet werden.",
                         "create": "Erstellen",
                         "delete": "Löschen",
                         "device_tracker_intro": "Wähle die Geräte, die dieser Person gehören.",
@@ -2386,6 +2392,13 @@
                                 "call-service": "Dienst ausführen"
                             },
                             "name": "Elemente",
+                            "secondary_info_values": {
+                                "brightness": "Helligkeit",
+                                "entity-id": "Entitäts-ID",
+                                "last-changed": "Zuletzt geändert",
+                                "last-triggered": "Zuletzt ausgelöst",
+                                "position": "Position"
+                            },
                             "show_header_toggle": "Schalter anzeigen?",
                             "toggle": "Entitäten umschalten"
                         },

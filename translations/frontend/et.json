@@ -593,10 +593,10 @@
                     "was_low": "oli madal",
                     "was_normal": "oli normaalne",
                     "was_opened": "avanes",
-                    "was_plugged_in": "ühendus",
+                    "was_plugged_in": "ühendati",
                     "was_safe": "oli turvatud",
                     "was_unlocked": "avanes",
-                    "was_unplugged": "oli lahti ühendatud",
+                    "was_unplugged": "eemaldati",
                     "was_unsafe": "oli turvamata"
                 }
             },
