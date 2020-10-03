@@ -571,7 +571,28 @@
                 "no_history_found": "Nie znaleziono historii."
             },
             "logbook": {
-                "entries_not_found": "Nie znaleziono wpisów w dzienniku."
+                "by": "przez",
+                "by_service": "przez usługę",
+                "entries_not_found": "Nie znaleziono wpisów w dzienniku.",
+                "messages": {
+                    "became_unavailable": "jest niedostępny(-a)",
+                    "changed_to_state": "zmienił(-a) się na {state}",
+                    "cleared_device_class": "brak (nie {device_class} ruchu)",
+                    "detected_device_class": "{device_class} ruch",
+                    "rose": "podniosło się",
+                    "turned_off": "wyłączony(-a)",
+                    "turned_on": "włączony(-a)",
+                    "was_closed": "zostały(-o) zamknięte(-a)",
+                    "was_connected": "został podłączony",
+                    "was_disconnected": "został odłączony",
+                    "was_locked": "został zamknięty",
+                    "was_low": "był niski",
+                    "was_normal": "był normalny",
+                    "was_opened": "zostały(-o) otwarte(-a)",
+                    "was_plugged_in": "został(-a) podłączony(-a)",
+                    "was_unlocked": "został otwarty",
+                    "was_unplugged": "został(-a) odłączony(-a)"
+                }
             },
             "media-browser": {
                 "audio_not_supported": "Twoja przeglądarka nie obsługuje elementu audio.",
@@ -685,7 +706,7 @@
                     "update": "AKTUALIZUJ"
                 },
                 "faq": "dokumentacja",
-                "no_unique_id": "Ten encja nie ma unikalnego identyfikatora, dlatego z poziomu interfejsu użytkownika nie można zarządzać jej ustawieniami.",
+                "no_unique_id": "Ta encja nie ma unikalnego identyfikatora, dlatego z poziomu interfejsu użytkownika nie można zarządzać jej ustawieniami. Więcej szczegółów znajdziesz w {faq_link}.",
                 "related": "Powiązane",
                 "settings": "Ustawienia"
             },
@@ -1866,7 +1887,8 @@
                     },
                     "select_instance": {
                         "header": "Wybierz instancję OpenZWave",
-                        "introduction": "Masz uruchomionych więcej niż jedną instancję OpenZWave. Którą instancją chcesz zarządzać?"
+                        "introduction": "Masz uruchomionych więcej niż jedną instancję OpenZWave. Którą instancją chcesz zarządzać?",
+                        "none_found": "Nie mogliśmy znaleźć instancji OpenZWave. Jeśli uważasz, że to nieprawda, sprawdź ustawienia OpenZWave oraz MQTT i upewnij się, że Home Assistant może komunikować się z Twoim brokerem MQTT."
                     },
                     "services": {
                         "add_node": "Dodaj węzeł",
@@ -1882,6 +1904,8 @@
                     "description": "Zarządzaj osobami, które śledzi Home Assistant",
                     "detail": {
                         "admin": "Administrator",
+                        "allow_login": "Zezwalaj osobie na logowanie",
+                        "confirm_delete_user": "Czy na pewno chcesz usunąć konto użytkownika {name}? Nadal możesz śledzić tego użytkownika, ale osoba ta nie będzie już mogła się zalogować.",
                         "create": "Utwórz",
                         "delete": "Usuń",
                         "device_tracker_intro": "Wybierz urządzenia należące do tej osoby.",
@@ -2529,6 +2553,7 @@
                         "entities": {
                             "description": "Karta encji jest najbardziej popularnym rodzajem karty. Grupuje ona encje w listy.",
                             "edit_special_row": "Edytuj wiersz za pomocą edytora kodu",
+                            "entity_row_editor": "Edytor wiersza encji",
                             "entity_row": {
                                 "attribute": "Atrybut",
                                 "button": "Przycisk",
@@ -2545,7 +2570,10 @@
                                 "brightness": "Jasność",
                                 "entity-id": "Identyfikator encji",
                                 "last-changed": "Ostatnia zmiana",
-                                "position": "Pozycja"
+                                "last-triggered": "Ostatnie uruchomienie",
+                                "none": "Brak dodatkowych informacji",
+                                "position": "Pozycja",
+                                "tilt-position": "Pochylenie"
                             },
                             "show_header_toggle": "Pokaż przełącznik w nagłówku",
                             "special_row": "wiersz specjalny",
