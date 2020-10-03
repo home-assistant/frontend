@@ -17,6 +17,8 @@ class HaLabelBadge extends LitElement {
 
   @property() public label?: string;
 
+  @property() public upperLabel?: string;
+
   @property() public description?: string;
 
   @property() public image?: string;
@@ -25,11 +27,23 @@ class HaLabelBadge extends LitElement {
     return html`
       <div class="badge-container">
         <div class="label-badge" id="badge">
+          ${this.upperLabel
+            ? html`
+                <div
+                  class=${classMap({
+                    upperLabel: true,
+                    big: this.upperLabel.length > 5,
+                  })}
+                >
+                  <span>${this.upperLabel}</span>
+                </div>
+              `
+            : ""}
           <div
-            class="${classMap({
+            class=${classMap({
               value: true,
               big: Boolean(this.value && this.value.length > 4),
-            })}"
+            })}
           >
             <slot>
               ${this.icon && !this.value && !this.image
@@ -43,10 +57,10 @@ class HaLabelBadge extends LitElement {
           ${this.label
             ? html`
                 <div
-                  class="${classMap({
+                  class=${classMap({
                     label: true,
                     big: this.label.length > 5,
-                  })}"
+                  })}
                 >
                   <span>${this.label}</span>
                 </div>
@@ -95,16 +109,25 @@ class HaLabelBadge extends LitElement {
         .label-badge .value.big {
           font-size: 70%;
         }
-        .label-badge .label {
+        .label-badge .label,
+        .label-badge .upperLabel {
           position: absolute;
-          bottom: -1em;
           /* Make the label as wide as container+border. (parent_borderwidth / font-size) */
           left: -0.2em;
           right: -0.2em;
-          line-height: 1em;
-          font-size: 0.5em;
         }
-        .label-badge .label span {
+        .label-badge .label {
+          bottom: -1.5em;
+          font-size: 0.5em;
+          line-height: 1em;
+        }
+        .label-badge .upperLabel {
+          top: -1.1em;
+          font-size: 0.45em;
+          line-height: 0.8em;
+        }
+        .label-badge .label span,
+        .label-badge .upperLabel span {
           box-sizing: border-box;
           max-width: 100%;
           display: inline-block;
@@ -119,7 +142,8 @@ class HaLabelBadge extends LitElement {
           transition: background-color 0.3s ease-in-out;
           text-transform: var(--ha-label-badge-label-text-transform, uppercase);
         }
-        .label-badge .label.big span {
+        .label-badge .label.big span,
+        .label-badge .upperLabel.big span {
           font-size: 90%;
           padding: 10% 12% 7% 12%; /* push smaller text a bit down to center vertically */
         }

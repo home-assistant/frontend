@@ -72,20 +72,22 @@ export class HaStateLabelBadge extends LitElement {
 
     return html`
       <ha-label-badge
-        class="${classMap({
+        class=${classMap({
           [domain]: true,
           "has-unit_of_measurement": "unit_of_measurement" in state.attributes,
-        })}"
-        .value="${this._computeValue(domain, state)}"
-        .icon="${this.icon ? this.icon : this._computeIcon(domain, state)}"
-        .image="${this.icon
+        })}
+        .value=${this._computeValue(domain, state)}
+        .icon=${this.icon ? this.icon : this._computeIcon(domain, state)}
+        .image=${this.icon
           ? ""
           : this.image
           ? this.image
           : state.attributes.entity_picture_local ||
-            state.attributes.entity_picture}"
-        .label="${this._computeLabel(domain, state, this._timerTimeRemaining)}"
-        .description="${this.name ? this.name : computeStateName(state)}"
+            state.attributes.entity_picture}
+        .label=${this._computeLabel(domain, state, this._timerTimeRemaining)}
+        .upperLabel=${this._computeUpperLabel(domain, state)}
+        .upperLabelIcon=${this._computeUpperLabelIcon(domain, state)}
+        .description=${this.name ? this.name : computeStateName(state)}
       ></ha-label-badge>
     `;
   }
@@ -164,6 +166,31 @@ export class HaStateLabelBadge extends LitElement {
       default:
         return null;
     }
+  }
+
+  private _computeUpperLabel(
+    domain: string,
+    state: HassEntity
+  ): string | undefined {
+    if (["device_tracker"].includes(domain) && state.attributes.battery) {
+      return state.attributes.battery + "%";
+    }
+
+    return undefined;
+  }
+
+  private _computeUpperLabelIcon(
+    domain: string,
+    state: HassEntity
+  ): string | undefined {
+    if (["device_tracker"].includes(domain) && state.attributes.battery) {
+      const battery = Math.round(state.attributes.battery / 10) * 10;
+      if (battery > 90) return "hass:battery";
+      if (battery < 10) return "hass:battery-alert";
+      return "hass:battery-" + battery;
+    }
+
+    return undefined;
   }
 
   private _computeLabel(domain, state, _timerTimeRemaining) {
