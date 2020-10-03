@@ -58,6 +58,7 @@ import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "../../../components/ha-svg-icon";
 import { mdiContentSave } from "@mdi/js";
+import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 
 interface DeviceEntities {
   id: string;
@@ -70,7 +71,9 @@ interface DeviceEntitiesLookup {
 }
 
 @customElement("ha-scene-editor")
-export class HaSceneEditor extends SubscribeMixin(LitElement) {
+export class HaSceneEditor extends SubscribeMixin(
+  KeyboardShortcutMixin(LitElement)
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
@@ -714,6 +717,10 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
       this._errors = err.body.message || err.message;
       throw err;
     }
+  }
+
+  protected handleKeyboardSave() {
+    this._saveScene();
   }
 
   static get styles(): CSSResult[] {
