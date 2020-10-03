@@ -153,6 +153,17 @@ class HaPanelDevTemplate extends LitElement {
             ?.result}</pre>
           ${!this._templateResult?.listeners
             ? ""
+            : this._templateResult.listeners.time_patterns.length === 1
+            ? html`
+                <h3>
+                  ${this.hass.localize(
+                    "ui.panel.developer-tools.tabs.templates.time_pattern"
+                  )}
+                  ${this._templateResult.listeners.time_patterns[0].hour}:${this
+                    ._templateResult.listeners.time_patterns[0].minute}:${this
+                    ._templateResult.listeners.time_patterns[0].second}
+                </h3>
+              `
             : this._templateResult.listeners.all
             ? html`
                 <h3 class="all_listeners">

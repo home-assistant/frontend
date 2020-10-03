@@ -5,10 +5,17 @@ export interface RenderTemplateResult {
   listeners: TemplateListeners;
 }
 
+interface TimePattern {
+  hour: string | number;
+  minute: string | number;
+  second: string | number;
+}
+
 interface TemplateListeners {
   all: boolean;
   domains: string[];
   entities: string[];
+  time_patterns: TimePattern[];
 }
 
 export const subscribeRenderTemplate = (
