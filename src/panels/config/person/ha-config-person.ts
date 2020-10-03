@@ -158,6 +158,22 @@ class HaConfigPerson extends LitElement {
     this._configItems = personData.config.sort((ent1, ent2) =>
       compare(ent1.name, ent2.name)
     );
+    this._openDialogIfPersonSpecifiedInRoute();
+  }
+
+  private _openDialogIfPersonSpecifiedInRoute() {
+    const isPersonSpecifiedInRoute =
+      this.route && this.route.path && this.route.path.indexOf("/edit/") > -1;
+    if (isPersonSpecifiedInRoute) {
+      const routeSegments = this.route.path.split("/edit/");
+      const personId = routeSegments.length > 1 ? routeSegments[1] : null;
+      if (personId) {
+        const personToEdit = this._storageItems!.find((p) => p.id === personId);
+        if (personToEdit) {
+          this._openDialog(personToEdit);
+        }
+      }
+    }
   }
 
   private _createPerson() {

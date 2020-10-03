@@ -40,7 +40,7 @@ import "./ha-more-info-logbook";
 import "./controls/more-info-default";
 
 const DOMAINS_NO_INFO = ["camera", "configurator"];
-const EDITABLE_DOMAINS_WITH_ID = ["scene", "automation"];
+const EDITABLE_DOMAINS_WITH_ID = ["scene", "automation", "person"];
 const EDITABLE_DOMAINS = ["script"];
 
 export interface MoreInfoDialogParams {
