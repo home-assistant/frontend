@@ -1456,6 +1456,7 @@
                     }
                 },
                 "devices": {
+                    "add_prompt": "Nach keen {name} gouf mat dësem Apparat dobäigesat. Du kanns een dobäisetzen mat engem Klick op de + Knäppchen hei uewen.",
                     "automation": {
                         "actions": {
                             "caption": "Wann eppes ausgeléist gëtt"
@@ -1871,6 +1872,7 @@
                         "id": "ID",
                         "manufacturer": "Hiersteller",
                         "model": "Modell",
+                        "query_stage": "Ofroo Stage",
                         "zwave_plus": "Z-Wave Plus"
                     },
                     "refresh_node": {
@@ -2032,6 +2034,8 @@
                             "heading": "YAML Konfiguratioun frësch lueden",
                             "history_stats": "Verlaf Statiskik Entitéite frësch lueden",
                             "homekit": "Homekit frësch lueden",
+                            "input_boolean": "Agab Boolean frësch lueden",
+                            "input_datetime": "Agab Datum frësch lueden",
                             "input_number": "Agab Zuelen frësch lueden",
                             "input_select": "Agab Auswiel frësch lueden",
                             "input_text": "Agab Text frësch lueden",
@@ -2508,6 +2512,7 @@
                             "toggle": "Ëmschalten",
                             "url": "Url"
                         },
+                        "editor_service_data": "Service Data kann ee nëmmen am Code Editor aginn",
                         "navigation_path": "Nagiatioun's Pad",
                         "url_path": "URL Pad"
                     },
@@ -2551,6 +2556,7 @@
                         "entities": {
                             "description": "D'Entitéite Kaart ass déi am meeschten allgemengen Zort Kaart. Si gruppéiert Entitéite gemeinsam a Lëschten.",
                             "edit_special_row": "Änner Zeil mam Code Editor",
+                            "entity_row_editor": "Entitéite Réih Editor",
                             "entity_row": {
                                 "attribute": "Attribut",
                                 "button": "Knäppchen",

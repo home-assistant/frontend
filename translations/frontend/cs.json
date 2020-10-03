@@ -571,10 +571,32 @@
                 "no_history_found": "Historie stavu chybí."
             },
             "logbook": {
+                "by_service": "službou",
                 "entries_not_found": "Nenalezeny žádné záznamy.",
                 "messages": {
+                    "became_unavailable": "stalo se nedostupným",
+                    "changed_to_state": "změněno na {state}",
+                    "cleared_device_class": "zrušeno (nebylo zjištěno {device_class})",
+                    "detected_device_class": "zjištěno {device_class}",
+                    "rose": "vzrostlo",
+                    "set": "nastaveno",
                     "turned_off": "vypnuto",
-                    "turned_on": "zapnuto"
+                    "turned_on": "zapnuto",
+                    "was_at_home": "byl doma",
+                    "was_at_state": "bylo v {state}",
+                    "was_away": "byl pryč",
+                    "was_closed": "bylo zavřeno",
+                    "was_connected": "bylo připojeno",
+                    "was_disconnected": "bylo odpojeno",
+                    "was_locked": "bylo uzamčeno",
+                    "was_low": "bylo nízké",
+                    "was_normal": "bylo normální",
+                    "was_opened": "bylo otevřeno",
+                    "was_plugged_in": "bylo zapojeno",
+                    "was_safe": "bylo v bezpečí",
+                    "was_unlocked": "bylo odemčeno",
+                    "was_unplugged": "bylo odpojeno",
+                    "was_unsafe": "bylo v nebezpečí"
                 }
             },
             "media-browser": {
@@ -1870,7 +1892,8 @@
                     },
                     "select_instance": {
                         "header": "Vyberte instanci OpenZWave",
-                        "introduction": "Máte více než jednu instanci OpenZWave. Kterou instanci chcete spravovat?"
+                        "introduction": "Máte více než jednu instanci OpenZWave. Kterou instanci chcete spravovat?",
+                        "none_found": "Instance OpenZWave nebyla nalezena. Pokud se domníváte, že to není správně, zkontrolujte nastavení OpenZWave a MQTT a zajistěte, aby Home Assistant mohl komunikovat s vaším MQTT."
                     },
                     "services": {
                         "add_node": "Přidat uzel",
@@ -2387,8 +2410,8 @@
                         "alert_entity_field": "Entita je povinné pole",
                         "attributes": "Atributy",
                         "current_entities": "Současné entity",
-                        "description1": "Nastavte zobrazení zařízení v Home Assistant",
-                        "description2": "Toto nebude komunikovat se skutečným zařízením.",
+                        "description1": "Nastavte stav zařízení v Home Assistant.",
+                        "description2": "Stav skutečného zařízení se nezmění.",
                         "entity": "Entita",
                         "filter_attributes": "Filtrovat atributy",
                         "filter_entities": "Filtrovat entity",

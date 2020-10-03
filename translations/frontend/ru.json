@@ -576,8 +576,27 @@
                 "entries_not_found": "В журнале нет записей.",
                 "messages": {
                     "changed_to_state": "изменяет состояние на {state}",
+                    "cleared_device_class": "не обнаруживает {device_class}",
+                    "detected_device_class": "обнаруживает {device_class}",
+                    "rose": "всходит",
+                    "set": "заходит",
                     "turned_off": "выключается",
-                    "turned_on": "включается"
+                    "turned_on": "включается",
+                    "was_at_home": "дома",
+                    "was_at_state": "{state}",
+                    "was_away": "не дома",
+                    "was_closed": "закрывается",
+                    "was_connected": "подключается",
+                    "was_disconnected": "отключается",
+                    "was_locked": "блокируется",
+                    "was_low": "регистрирует низкий заряд",
+                    "was_normal": "регистрирует нормальный заряд",
+                    "was_opened": "открывается",
+                    "was_plugged_in": "подключается",
+                    "was_safe": "регистрирует безопасность",
+                    "was_unlocked": "разблокируется",
+                    "was_unplugged": "отключается",
+                    "was_unsafe": "не регистрирует безопасность"
                 }
             },
             "media-browser": {
@@ -691,6 +710,7 @@
                     "unavailable": "Этот объект в настоящее время недоступен.",
                     "update": "Обновить"
                 },
+                "faq": "документация",
                 "no_unique_id": "У этого объекта нет уникального идентификатора, поэтому его настройками нельзя управлять из пользовательского интерфейса.",
                 "related": "Зависимости",
                 "settings": "Настройки"
