@@ -86,7 +86,6 @@ export class HaStateLabelBadge extends LitElement {
             state.attributes.entity_picture}
         .label=${this._computeLabel(domain, state, this._timerTimeRemaining)}
         .upperLabel=${this._computeUpperLabel(domain, state)}
-        .upperLabelIcon=${this._computeUpperLabelIcon(domain, state)}
         .description=${this.name ? this.name : computeStateName(state)}
       ></ha-label-badge>
     `;
@@ -174,20 +173,6 @@ export class HaStateLabelBadge extends LitElement {
   ): string | undefined {
     if (["device_tracker"].includes(domain) && state.attributes.battery) {
       return state.attributes.battery + "%";
-    }
-
-    return undefined;
-  }
-
-  private _computeUpperLabelIcon(
-    domain: string,
-    state: HassEntity
-  ): string | undefined {
-    if (["device_tracker"].includes(domain) && state.attributes.battery) {
-      const battery = Math.round(state.attributes.battery / 10) * 10;
-      if (battery > 90) return "hass:battery";
-      if (battery < 10) return "hass:battery-alert";
-      return "hass:battery-" + battery;
     }
 
     return undefined;

@@ -45,6 +45,8 @@ const cachedIcons: { [key: string]: string } = {};
 export class HaIcon extends LitElement {
   @property() public icon?: string;
 
+  @property() public viewBox?: string;
+
   @internalProperty() private _path?: string;
 
   @internalProperty() private _viewBox?;
@@ -68,7 +70,7 @@ export class HaIcon extends LitElement {
     }
     return html`<ha-svg-icon
       .path=${this._path}
-      .viewBox=${this._viewBox}
+      .viewBox=${this.viewBox || this._viewBox}
     ></ha-svg-icon>`;
   }
 

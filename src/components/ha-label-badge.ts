@@ -19,6 +19,8 @@ class HaLabelBadge extends LitElement {
 
   @property() public upperLabel?: string;
 
+  @property() public upperLabelIcon?: string;
+
   @property() public description?: string;
 
   @property() public image?: string;
@@ -30,20 +32,22 @@ class HaLabelBadge extends LitElement {
           ${this.upperLabel
             ? html`
                 <div
-                  class=${classMap({
-                    upperLabel: true,
+                  class="upperLabel ${classMap({
                     big: this.upperLabel.length > 5,
-                  })}
+                  })}"
                 >
-                  <span>${this.upperLabel}</span>
+                  <span
+                    >${this.upperLabelIcon
+                      ? html` <ha-icon .icon=${this.upperLabelIcon}></ha-icon> `
+                      : ""}${this.upperLabel}</span
+                  >
                 </div>
               `
             : ""}
           <div
-            class=${classMap({
-              value: true,
+            class="value ${classMap({
               big: Boolean(this.value && this.value.length > 4),
-            })}
+            })}"
           >
             <slot>
               ${this.icon && !this.value && !this.image
@@ -57,10 +61,9 @@ class HaLabelBadge extends LitElement {
           ${this.label
             ? html`
                 <div
-                  class=${classMap({
-                    label: true,
+                  class="label ${classMap({
                     big: this.label.length > 5,
-                  })}
+                  })}"
                 >
                   <span>${this.label}</span>
                 </div>
