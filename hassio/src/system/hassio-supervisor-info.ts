@@ -51,7 +51,7 @@ class HassioSupervisorInfo extends LitElement {
           </ha-settings-row>
           <ha-settings-row>
             <span slot="heading">
-              Newest version
+              Newest Version
             </span>
             <span slot="description">
               ${this.supervisorInfo.version_latest}
@@ -98,7 +98,7 @@ class HassioSupervisorInfo extends LitElement {
           ${this.supervisorInfo?.supported
             ? html` <ha-settings-row three-line>
                 <span slot="heading">
-                  Share diagnostics
+                  Share Diagnostics
                 </span>
                 <div slot="description" class="diagnostics-description">
                   Share crash reports and diagnostic information.
@@ -184,7 +184,7 @@ class HassioSupervisorInfo extends LitElement {
       this.supervisorInfo = await fetchHassioSupervisorInfo(this.hass);
     } catch (err) {
       showAlertDialog(this, {
-        title: "Failed to set supervisor option",
+        title: "Failed to set supervisor option.",
         text: extractApiErrorMessage(err),
       });
     }
@@ -200,7 +200,7 @@ class HassioSupervisorInfo extends LitElement {
       this.supervisorInfo = await fetchHassioSupervisorInfo(this.hass);
     } catch (err) {
       showAlertDialog(this, {
-        title: "Failed to reload the supervisor",
+        title: "Failed to reload the supervisor.",
         text: extractApiErrorMessage(err),
       });
     }
@@ -212,7 +212,7 @@ class HassioSupervisorInfo extends LitElement {
     button.progress = true;
 
     const confirmed = await showConfirmationDialog(this, {
-      title: "Update supervisor",
+      title: "Update Supervisor",
       text: `Are you sure you want to update supervisor to version ${this.supervisorInfo.version_latest}?`,
       confirmText: "update",
       dismissText: "cancel",
@@ -227,7 +227,7 @@ class HassioSupervisorInfo extends LitElement {
       await updateSupervisor(this.hass);
     } catch (err) {
       showAlertDialog(this, {
-        title: "Failed to update the supervisor",
+        title: "Failed to update the supervisor.",
         text: extractApiErrorMessage(err),
       });
     }
@@ -257,7 +257,7 @@ class HassioSupervisorInfo extends LitElement {
       await setSupervisorOption(this.hass, data);
     } catch (err) {
       showAlertDialog(this, {
-        title: "Failed to set supervisor option",
+        title: "Failed to set supervisor option.",
         text: extractApiErrorMessage(err),
       });
     }
