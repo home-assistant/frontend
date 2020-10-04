@@ -131,7 +131,7 @@ class HassioSnapshots extends LitElement {
 
         <div class="content">
           <h1>
-            Create snapshot
+            Create Snapshot
           </h1>
           <p class="description">
             Snapshots allow you to easily backup and restore all data of your
@@ -219,7 +219,7 @@ class HassioSnapshots extends LitElement {
             </ha-card>
           </div>
 
-          <h1>Available snapshots</h1>
+          <h1>Available Snapshots</h1>
           <div class="card-group">
             ${this._snapshots === undefined
               ? undefined
