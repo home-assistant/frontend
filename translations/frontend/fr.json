@@ -571,9 +571,19 @@
                 "no_history_found": "Aucun historique des valeurs trouvé."
             },
             "logbook": {
+                "by": "par",
+                "by_service": "par le service",
                 "entries_not_found": "Aucune entrée trouvée dans le journal.",
                 "messages": {
-                    "rose": "aube"
+                    "became_unavailable": "est devenu indisponible",
+                    "changed_to_state": "changé en {state}.",
+                    "cleared_device_class": "effacé (no {device_class} detected)",
+                    "detected_device_class": "détecté {device_class}",
+                    "rose": "aube",
+                    "turned_off": "éteint",
+                    "turned_on": "activé",
+                    "was_away": "était absent",
+                    "was_safe": "était sûr"
                 }
             },
             "media-browser": {
@@ -687,6 +697,7 @@
                     "unavailable": "Cette entité n'est pas disponible actuellement.",
                     "update": "Mise à jour"
                 },
+                "faq": "documentation",
                 "no_unique_id": "Cette entité n'a pas d'identifiant unique, ses paramètres ne peuvent donc pas être gérés à partir de l'interface utilisateur.",
                 "related": "Liées",
                 "settings": "Réglages"
@@ -744,6 +755,7 @@
                 "dismiss": "Fermer la fenêtre de dialogue",
                 "edit": "Modifier l'entité",
                 "history": "Historique",
+                "last_updated": "Dernière mise à jour",
                 "person": {
                     "create_zone": "Créer une zone à partir de l'emplacement actuel"
                 },
@@ -1043,7 +1055,16 @@
                                     "before": "Avant",
                                     "label": "Heure",
                                     "type_input": "Valeur d'une aide de date/heure",
-                                    "type_value": "Temps fixe"
+                                    "type_value": "Temps fixe",
+                                    "weekdays": {
+                                        "fri": "Vendredi",
+                                        "mon": "Lundi",
+                                        "sat": "samedi",
+                                        "sun": "dimanche",
+                                        "thu": "Jeudi",
+                                        "tue": "Mardi",
+                                        "wed": "Mercredi"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Entité avec localisation",
@@ -1858,7 +1879,8 @@
                     },
                     "select_instance": {
                         "header": "Sélectionnez une instance OpenZWave",
-                        "introduction": "Vous avez plus d'une instance OpenZWave en cours d'exécution. Quelle instance souhaitez-vous gérer ?"
+                        "introduction": "Vous avez plus d'une instance OpenZWave en cours d'exécution. Quelle instance souhaitez-vous gérer ?",
+                        "none_found": "Nous n'avons pas trouvé d'instance d'OpenZWave. Si vous pensez c'est incorrect, vérifiez vos configurations OpenZWave et MQTT et assurez-vous que Home Assistant peut communiquer avec votre serveur MQTT."
                     },
                     "services": {
                         "add_node": "Ajouter un nœud",
@@ -1873,6 +1895,9 @@
                     "create_person": "Créer une personne",
                     "description": "Gérer les personnes suivies par Home Assistant.",
                     "detail": {
+                        "admin": "Administrateur",
+                        "allow_login": "Autoriser la personne à se connecter",
+                        "confirm_delete_user": "Êtes-vous sûr de vouloir supprimer le compte utilisateur de {name} ? Vous pouvez toujours suivre l'utilisateur, mais la personne ne pourra plus se connecter.",
                         "create": "Créer",
                         "delete": "Supprimer",
                         "device_tracker_intro": "Sélectionnez les appareils appartenant à cette personne.",
@@ -2466,6 +2491,19 @@
                     "refresh": "Rafraîchir"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "Appeler le service",
+                            "default_action": "Actions par défaut",
+                            "more-info": "Plus d’infos",
+                            "navigate": "Naviguer",
+                            "none": "Pas d'action",
+                            "toggle": "Interrupteur",
+                            "url": "Url"
+                        },
+                        "editor_service_data": "Les informations sur les services ne peuvent être saisies que dans l'éditeur de code\n",
+                        "url_path": "Chemin de l'url"
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "États disponibles",
@@ -2473,14 +2511,19 @@
                             "name": "Panneau d'alarme"
                         },
                         "button": {
+                            "default_action_help": "L'action par défaut dépend des capacités de l'entité, elle sera soit activée/désactivée, soit plus d'informations seront affichées.",
                             "description": "La carte Bouton vous permet d'ajouter des boutons pour effectuer des tâches.",
                             "name": "Bouton"
                         },
                         "calendar": {
+                            "calendar_entities": "Calendrier",
                             "description": "La carte Calendrier affiche un calendrier comprenant des vues par jour, par semaine et par liste",
+                            "inital_view": "Vue initiale",
                             "name": "Calendrier",
                             "views": {
-                                "listWeek": "Français"
+                                "dayGridDay": "Jour",
+                                "dayGridMonth": "Mois",
+                                "listWeek": "liste"
                             }
                         },
                         "conditional": {
@@ -2501,6 +2544,7 @@
                         "entities": {
                             "description": "La carte Entités est le type de carte le plus courant. Il regroupe les éléments dans des listes.",
                             "edit_special_row": "Modifier la ligne à l'aide de l'éditeur de code",
+                            "entity_row_editor": "Modifier à l'aide de l'éditeur de code",
                             "entity_row": {
                                 "attribute": "Attribut",
                                 "button": "Bouton",
@@ -2513,6 +2557,15 @@
                                 "weblink": "Lien Web"
                             },
                             "name": "Entités",
+                            "secondary_info_values": {
+                                "brightness": "Luminosité",
+                                "entity-id": "ID de l'entité",
+                                "last-changed": "Dernière modification",
+                                "last-triggered": "Dernier déclenchement",
+                                "none": "Pas d'informations secondaires",
+                                "position": "Position",
+                                "tilt-position": "position d'inclinaison"
+                            },
                             "show_header_toggle": "Afficher le bouton d'en-tête ?",
                             "special_row": "ligne spéciale",
                             "toggle": "Basculer les entités."
@@ -2966,6 +3019,12 @@
                     "more_integrations": "Plus"
                 },
                 "intro": "Êtes-vous prêt à réveiller votre maison, à récupérer votre vie privée et à rejoindre une communauté mondiale de bricoleurs?",
+                "restore": {
+                    "description": "Vous pouvez également restaurer à partir d'un snapshot précédent.",
+                    "hide_log": "Masquer le journal",
+                    "in_progress": "Restauration en cours",
+                    "show_log": "Afficher le journal"
+                },
                 "user": {
                     "create_account": "Créer un compte",
                     "data": {

@@ -19,6 +19,7 @@
         "logbook": "Denník",
         "mailbox": "Poštová schránka",
         "map": "Mapa",
+        "media_browser": "Prehliadač médií",
         "profile": "Profil",
         "shopping_list": "Nákupný zoznam",
         "states": "Prehľad"
@@ -476,7 +477,9 @@
                     "wnw": "ZSZ",
                     "wsw": "ZJZ"
                 },
-                "forecast": "Predpoveď"
+                "day": "Deň",
+                "forecast": "Predpoveď",
+                "night": "Noc"
             }
         },
         "common": {
@@ -485,6 +488,7 @@
             "cancel": "Zrušiť",
             "close": "Zavrieť",
             "continue": "Pokračovať",
+            "copied": "Skopírované",
             "delete": "Odstrániť",
             "loading": "Načítava sa",
             "next": "Ďalej",
@@ -524,6 +528,10 @@
                 "toggle": "Prepínač"
             },
             "entity": {
+                "entity-attribute-picker": {
+                    "attribute": "Atribút",
+                    "show_attributes": "Zobraziť atribúty"
+                },
                 "entity-picker": {
                     "clear": "Vyčistiť",
                     "entity": "Entita",
@@ -534,10 +542,77 @@
                 "loading_history": "Načítavam históriu stavov",
                 "no_history_found": "Nenašla sa žiadna história stavov"
             },
+            "logbook": {
+                "entries_not_found": "Nenašli sa žiadne záznamy v denníku.",
+                "messages": {
+                    "became_unavailable": "sa stal nedostupným",
+                    "changed_to_state": "zmenené na {state}",
+                    "turned_off": "vypnuté",
+                    "turned_on": "zapnuté",
+                    "was_at_home": "bol doma",
+                    "was_away": "bol preč",
+                    "was_closed": "boli zavreté",
+                    "was_connected": "bol pripojený",
+                    "was_disconnected": "bol odpojený",
+                    "was_locked": "bol zamknutý",
+                    "was_opened": "boli otvorené",
+                    "was_plugged_in": "bol zapojený",
+                    "was_unlocked": "bol odomknutý",
+                    "was_unplugged": "bol odpojený"
+                }
+            },
             "media-browser": {
+                "audio_not_supported": "Váš prehliadač nepodporuje zvukový prvok.",
                 "choose_player": "Vyberte prehrávač",
+                "choose-source": "Vybrať zdroj",
+                "class": {
+                    "album": "Album",
+                    "app": "App",
+                    "artist": "Umelec",
+                    "channel": "Kanál",
+                    "composer": "Skladateľ",
+                    "contributing_artist": "Prispievajúci umelec",
+                    "directory": "Knižnica",
+                    "episode": "Epizóda",
+                    "game": "Hra",
+                    "genre": "Žáner",
+                    "image": "Obrázok",
+                    "movie": "Film",
+                    "music": "Hudba",
+                    "playlist": "Zoznam k prehratiu",
+                    "podcast": "Podcast",
+                    "season": "Sezóna",
+                    "track": "Sledovať",
+                    "tv_show": "Televízna relácia",
+                    "url": "Url",
+                    "video": "Video"
+                },
+                "content-type": {
+                    "album": "Album",
+                    "artist": "Umelec",
+                    "library": "Knižnica",
+                    "playlist": "Zoznam k prehratiu",
+                    "server": "Server"
+                },
+                "documentation": "dokumentácia",
+                "learn_adding_local_media": "Ďalšie informácie o pridávaní médií nájdete v dokumentácii {documentation}.",
+                "local_media_files": "Umiestnite videosúbory, zvukové a obrazové súbory do mediálneho adresára, aby ste ich mohli prehľadávať a prehrávať v prehliadači alebo v podporovaných prehrávačoch médií.",
+                "media_browsing_error": "Chyba prehľadávania médií",
+                "media_not_supported": "Prehrávač médií prehliadača nepodporuje tento typ médií",
                 "media_player": "Prehrávač médií",
+                "media-player-browser": "Prehliadač prehrávača médií",
+                "no_items": "Žiadne položky",
+                "no_local_media_found": "Nenašli sa žiadne lokálne médiá",
+                "no_media_folder": "Zdá sa, že ste ešte nevytvorili adresár médií.",
+                "pick-media": "Vybrať médiá",
+                "play-media": "Prehrať médiá",
+                "setup_local_help": "Informácie o nastavení lokálnych médií nájdete v dokumentácii {documentation}.",
+                "video_not_supported": "Váš prehliadač nepodporuje video prvok.",
                 "web-browser": "Webový prehliadač"
+            },
+            "picture-upload": {
+                "label": "Obrázok",
+                "unsupported_format": "Nepodporovaný formát, vyberte obrázok JPEG, PNG alebo GIF."
             },
             "related-items": {
                 "area": "Oblasť",
@@ -590,6 +665,7 @@
                     "unavailable": "Táto entita nie je momentálne k dispozícii.",
                     "update": "AKTUALIZOVAŤ"
                 },
+                "faq": "dokumentácia",
                 "no_unique_id": "Táto entita nemá jedinečné ID, preto jej nastavenia nemožno spravovať z používateľského rozhrania (UI).",
                 "related": "Súvisiace",
                 "settings": "Nastavenia"
@@ -638,10 +714,16 @@
                 "required_error_msg": "Toto pole je povinné",
                 "yaml_not_editable": "Nastavenia tejto entity nie je možné upravovať z UI. Iba entity nastavené z UI sú konfigurovateľné z UI."
             },
+            "image_cropper": {
+                "crop": "Orezať"
+            },
             "more_info_control": {
+                "controls": "Ovládacie prvky",
+                "details": "Podrobnosti",
                 "dismiss": "Zrušiť dialógové okno",
                 "edit": "Upraviť entitu",
                 "history": "História",
+                "last_updated": "Posledná aktualizácia",
                 "person": {
                     "create_zone": "Vytvoriť zónu z aktuálnej polohy"
                 },
@@ -838,6 +920,11 @@
                                     "label": "Zavolať službu",
                                     "service_data": "Dáta služby"
                                 },
+                                "wait_for_trigger": {
+                                    "continue_timeout": "Pokračovať po vypršaní času",
+                                    "label": "Počkať na spúšťač",
+                                    "timeout": "Timeout (voliteľne)"
+                                },
                                 "wait_template": {
                                     "label": "Čakať",
                                     "timeout": "Časový limit (voliteľné)",
@@ -898,7 +985,17 @@
                                 "time": {
                                     "after": "Po",
                                     "before": "Pred",
-                                    "label": "Čas"
+                                    "label": "Čas",
+                                    "type_value": "Pevný čas",
+                                    "weekdays": {
+                                        "fri": "Piatok",
+                                        "mon": "Pondelok",
+                                        "sat": "Sobota",
+                                        "sun": "Nedeľa",
+                                        "thu": "Štvrtok",
+                                        "tue": "Utorok",
+                                        "wed": "Streda"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Entita s umiestnením",
@@ -980,6 +1077,7 @@
                                     "value_template": "Šablóna hodnoty (voliteľné)"
                                 },
                                 "state": {
+                                    "attribute": "Atribút (voliteľný)",
                                     "for": "Trvanie stavu",
                                     "from": "Z",
                                     "label": "Stav",
@@ -1004,7 +1102,8 @@
                                 },
                                 "time": {
                                     "at": "Čas o",
-                                    "label": "Čas"
+                                    "label": "Čas",
+                                    "type_value": "Pevný čas"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -1027,6 +1126,8 @@
                         "add_automation": "Pridať automatizáciu",
                         "delete_automation": "Odstrániť automatizáciu",
                         "delete_confirm": "Naozaj chcete odstrániť túto automatizáciu?",
+                        "duplicate": "Duplikovať",
+                        "duplicate_automation": "Duplikovať automatizáciu",
                         "edit_automation": "Upraviť automatizáciu",
                         "header": "Editor automatizácií",
                         "headers": {
@@ -1136,7 +1237,10 @@
                     "google": {
                         "banner": "Úprava týchto entít cez  toto používateľské rozhranie je zakázaná, pretože ste nakonfigurovali filtre entít v súbore Configuration.yaml.",
                         "expose": "Sprístupniť pre Google Assistant",
+                        "exposed": "{selected} vystavená",
                         "exposed_entities": "Zverejnené entity",
+                        "follow_domain": "Sledovanie domény",
+                        "not_exposed": "{selected} nevystavená",
                         "not_exposed_entities": "Nezverejnené entity",
                         "sync_to_google": "Synchronizujú sa zmeny v službe Google.",
                         "title": "Google Assistant"
@@ -1231,6 +1335,7 @@
                     }
                 },
                 "devices": {
+                    "add_prompt": "Pomocou tohto zariadenia zatiaľ nebolo pridané žiadne {name} . Jeden môžete pridať kliknutím na tlačidlo + vyššie.",
                     "automation": {
                         "actions": {
                             "caption": "Keď sa niečo spustí..."
@@ -1316,6 +1421,7 @@
                             "confirm_text": "Entity je možné odstrániť, iba ak ich integrácia už neposkytuje.",
                             "confirm_title": "Chcete odstrániť {number} entity?"
                         },
+                        "search": "Vyhľadať entity",
                         "selected": "{number} vybrané",
                         "status": {
                             "ok": "Ok",
@@ -1375,6 +1481,7 @@
                 },
                 "integrations": {
                     "add_integration": "Pridať integráciu",
+                    "attention": "Vyžaduje sa pozornosť",
                     "caption": "Integrácie",
                     "config_entry": {
                         "area": "V {area}",
@@ -1391,6 +1498,8 @@
                         "no_device": "Entity bez zariadení",
                         "no_devices": "Táto integrácia nemá žiadne zariadenia.",
                         "options": "Možnosti",
+                        "reload": "Znova načítať",
+                        "reload_confirm": "Integrácia bola opätovne načítaná",
                         "rename": "Premenovať",
                         "restart_confirm": "Ak chcete dokončiť odstránenie tejto integrácie, reštartujte Home Assistant",
                         "settings_button": "Upraviť nastavenia pre {integration}",
@@ -1436,7 +1545,9 @@
                     "none_found": "Nenašli sa žiadne integrácie",
                     "none_found_detail": "Upravte kritériá vyhľadávania.",
                     "note_about_integrations": "Nie všetky integrácie je možné nakonfigurovať pomocou používateľského rozhrania.",
-                    "note_about_website_reference": "Viac informácií je k dispozícii na"
+                    "note_about_website_reference": "Viac informácií je k dispozícii na",
+                    "reconfigure": "Prekonfigurovať",
+                    "search": "Vyhľadať integrácie"
                 },
                 "introduction": "Tu je možné konfigurovať vaše komponenty a Home Assistant. Aktuálne sa z používateľského rozhrania nedá konfigurovať všetko, ale pracujeme na tom.",
                 "logs": {
@@ -1542,8 +1653,59 @@
                     "topic": "téma"
                 },
                 "ozw": {
+                    "button": "Konfigurovať",
+                    "common": {
+                        "controller": "Radič",
+                        "instance": "Inštancia",
+                        "network": "Sieť"
+                    },
+                    "network_status": {
+                        "details": {
+                            "driverallnodesqueried": "Všetky uzly boli dotazované",
+                            "driverallnodesqueriedsomedead": "Všetky uzly boli dotazované. Niektoré uzly boli nájdené mŕtve",
+                            "driverawakenodesqueries": "Všetky bdelé uzly boli dotazované",
+                            "driverfailed": "Nepodarilo sa pripojiť k radiču Z-Wave",
+                            "driverready": "Inicializácia radiča Z-Wave",
+                            "driverremoved": "Ovládač bol odstránený",
+                            "driverreset": "Ovládač bol resetovaný",
+                            "ready": "Pripravené na pripojenie",
+                            "stopped": "OpenZWave zastavené"
+                        },
+                        "offline": "Offline",
+                        "online": "Online",
+                        "starting": "Štartuje",
+                        "unknown": "Neznámy"
+                    },
+                    "network": {
+                        "header": "Správa siete",
+                        "introduction": "Spravovať funkcie v celej sieti.",
+                        "node_count": "{count} uzlov"
+                    },
+                    "node": {
+                        "button": "Podrobnosti uzla",
+                        "not_found": "Uzol sa nenašiel"
+                    },
                     "nodes_table": {
-                        "id": "ID"
+                        "failed": "Zlyhalo",
+                        "id": "ID",
+                        "manufacturer": "Výrobca",
+                        "model": "Model",
+                        "query_stage": "Fáza dopytu",
+                        "zwave_plus": "Z-Wave Plus"
+                    },
+                    "refresh_node": {
+                        "button": "Obnoviť uzol",
+                        "node_status": "Stav uzla",
+                        "refreshing_description": "Obnovujú sa informácie o uzle...",
+                        "start_refresh_button": "Spustiť obnovenie",
+                        "step": "Krok"
+                    },
+                    "select_instance": {
+                        "introduction": "Máte spustených viac ako jednu inštanciu OpenZWave. Ktorú inštanciu chcete spravovať?"
+                    },
+                    "services": {
+                        "add_node": "Pridať uzol",
+                        "remove_node": "Odstrániť uzol"
                     }
                 },
                 "person": {
@@ -1554,6 +1716,8 @@
                     "create_person": "Vytvoriť osobu",
                     "description": "Spravujte osoby, ktoré Home Assistant sleduje.",
                     "detail": {
+                        "allow_login": "Povoliť osobe prihlásiť sa",
+                        "confirm_delete_user": "Naozaj chcete odstrániť používateľský účet pre {name} ? Stále môžete sledovať používateľa, ale osoba sa už nebude môcť prihlásiť.",
                         "create": "Vytvoriť",
                         "delete": "Odstrániť",
                         "device_tracker_intro": "Vyberte zariadenia, ktoré patria tejto osobe.",
@@ -1664,12 +1828,25 @@
                         "reloading": {
                             "automation": "Znovu načítať automatizácie",
                             "core": "Znovu načítať polohu a jadro",
+                            "filesize": "Znova načítať entity veľkosti súboru",
+                            "generic_thermostat": "Znova načítať entity generického termostatu",
                             "group": "Znovu načítať skupiny",
                             "heading": "Načítavanie novej konfigurácie",
+                            "history_stats": "Znova načítať entity štatistiky histórie",
+                            "homekit": "Znova načítať HomeKit",
                             "introduction": "Niektoré časti aplikácie Home Assistant sa môžu načítať bez nutnosti reštartovania. Opätovným načítaním sa zahodí aktuálna konfigurácia a načíta sa nová.",
+                            "min_max": "Znova načítať min/max entity",
+                            "mqtt": "Opätovné načítanie entít mqtt",
                             "person": "Znovu načítať osoby",
+                            "ping": "Znova načítať entity binárneho snímača ping",
+                            "reload": "Znova načítať {domain}",
+                            "rpi_gpio": "Opätovné načítanie entít GPIO Raspberry Pi",
                             "scene": "Znovu načítať scény",
                             "script": "Znovu načítať skripty",
+                            "smtp": "Opätovné načítanie informačnej služby smtp",
+                            "telegram": "Opätovné načítanie telegram notifikačných služieb",
+                            "template": "Znova načítať entity šablóny",
+                            "trend": "Znova načítať entity trendov",
                             "zone": "Znovu načítať zóny"
                         },
                         "server_management": {
@@ -1688,6 +1865,14 @@
                             "valid": "Konfigurácia je platná!"
                         }
                     }
+                },
+                "tags": {
+                    "add_tag": "Pridať značku",
+                    "caption": "Značky",
+                    "description": "Správa značiek",
+                    "never_scanned": "Nikdy neskenované",
+                    "no_tags": "Žiadne značky",
+                    "write": "Zapísať"
                 },
                 "users": {
                     "add_user": {
@@ -1715,7 +1900,7 @@
                         "name": "Názov",
                         "new_password": "Nové heslo",
                         "owner": "Vlastník",
-                        "password_changed": "Heslo je zmenené!",
+                        "password_changed": "Heslo bolo úspešne zmenené",
                         "system_generated": "Systémom vytvorený",
                         "system_generated_users_not_editable": "Nie je možné aktualizovať používateľov generovaných systémom.",
                         "system_generated_users_not_removable": "Nie je možné odstrániť používateľov generovaných systémom.",
@@ -1963,8 +2148,13 @@
                         "title": "Stavy"
                     },
                     "templates": {
+                        "all_listeners": "Táto šablóna počúva všetky udalosti zmenené stavom.",
                         "description": "Šablóny sa vykresľujú pomocou nástroja šablóny Jinja2 s niektorými špecifickými rozšíreniami  pre Home Assistant.",
+                        "domain": "Doména",
                         "editor": "Editor šablóna",
+                        "entity": "Entita",
+                        "listeners": "Táto šablóna počúva nasledujúce udalosti zmenené stavom:",
+                        "no_listeners": "Táto šablóna nepočúva žiadne udalosti zmenené stavom a neaktualizuje sa automaticky.",
                         "template_extensions": "Rozšírenia šablóny Home Assistant",
                         "title": "Šablóny"
                     }
@@ -2035,12 +2225,37 @@
                     "refresh": "Obnoviť"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "Zavolať službu",
+                            "default_action": "Predvolená akcia",
+                            "more-info": "Viac informácií",
+                            "navigate": "Navigovať",
+                            "none": "Žiadna akcia",
+                            "toggle": "Prepnúť"
+                        },
+                        "editor_service_data": "Servisné údaje je možné zadávať iba v editore kódov",
+                        "navigation_path": "Navigačná cesta",
+                        "url_path": "Cesta adresy URL"
+                    },
                     "card": {
                         "alarm-panel": {
                             "name": "Ovládací panel alarmu"
                         },
                         "button": {
+                            "default_action_help": "Predvolená akcia závisí od schopností entity, bude buď prepnutá, alebo sa zobrazí viac informácií.",
                             "name": "Tlačidlo"
+                        },
+                        "calendar": {
+                            "calendar_entities": "Entity kalendára",
+                            "description": "Na karte Kalendár sa zobrazuje kalendár vrátane zobrazení dňa, týždňa a zoznamu",
+                            "inital_view": "Počiatočné zobrazenie",
+                            "name": "Kalendár",
+                            "views": {
+                                "dayGridDay": "Deň",
+                                "dayGridMonth": "Mesiac",
+                                "listWeek": "Zoznam"
+                            }
                         },
                         "conditional": {
                             "card": "Karta",
@@ -2052,7 +2267,25 @@
                             "required": "Požadované"
                         },
                         "entities": {
+                            "entity_row_editor": "Editor riadkov entít",
+                            "entity_row": {
+                                "attribute": "Atribút",
+                                "button": "Tlačidlo",
+                                "buttons": "Tlačidlá",
+                                "cast": "Obsadenie",
+                                "conditional": "Podmienené",
+                                "divider": "Delič",
+                                "section": "Sekcia",
+                                "weblink": "Internetový odkaz"
+                            },
                             "name": "Entity",
+                            "secondary_info_values": {
+                                "brightness": "Jas",
+                                "last-changed": "Posledná zmena",
+                                "last-triggered": "Naposledy spustené",
+                                "none": "Žiadne sekundárne informácie",
+                                "position": "Pozícia"
+                            },
                             "show_header_toggle": "Zobraziť prepínač hlavičky?",
                             "toggle": "Prepnúť entity."
                         },
@@ -2161,7 +2394,8 @@
                             "description": "Karta Senzor poskytuje rýchly prehľad o stave senzorov s voliteľným grafom na vizualizáciu zmien v priebehu času.",
                             "graph_detail": "Detail grafu",
                             "graph_type": "Typ grafu",
-                            "name": "Snímač"
+                            "name": "Snímač",
+                            "show_more_detail": "Zobraziť viac podrobností"
                         },
                         "shopping-list": {
                             "description": "Karta Nákupný zoznam umožňuje pridávať, upravovať, odškrtávať a vymazávať položky z nákupného zoznamu.",
@@ -2183,7 +2417,11 @@
                         }
                     },
                     "cardpicker": {
+                        "by_card": "Podľa karty",
+                        "by_entity": "Podľa entity",
                         "custom_card": "Vlastná karta",
+                        "domain": "Doména",
+                        "entity": "Entita",
                         "no_description": "Popis nie je k dispozícii."
                     },
                     "edit_card": {
@@ -2476,6 +2714,12 @@
                     "more_integrations": "Viac"
                 },
                 "intro": "Ste pripravení prebudiť váš domov, získať vaše súkromie  a pripojiť sa k celosvetovej komunite bastličov?",
+                "restore": {
+                    "description": "Prípadne môžete obnoviť z predchádzajúcej snímky.",
+                    "hide_log": "Skryť celý denník",
+                    "in_progress": "Prebieha obnovenie",
+                    "show_log": "Zobraziť celý denník"
+                },
                 "user": {
                     "create_account": "Vytvoriť účet",
                     "data": {
@@ -2507,6 +2751,11 @@
                     "submit": "Odoslať"
                 },
                 "current_user": "Momentálne ste prihlásení ako {fullName}.",
+                "customize_sidebar": {
+                    "button": "Upraviť",
+                    "description": "Režim úprav môžete aktivovať aj stlačením a podržaním hlavičky bočného panela.",
+                    "header": "Zmena poradia a skrytie položiek z bočného panela"
+                },
                 "dashboard": {
                     "description": "Vyberte predvolený dashboard pre toto zariadenie.",
                     "dropdown_label": "Dashboard",
@@ -2529,6 +2778,7 @@
                     "confirm_delete": "Naozaj chcete odstrániť prístupový token pre {name}?",
                     "create": "Vytvoriť Token",
                     "create_failed": "Nepodarilo sa vytvoriť prístupový token.",
+                    "created": "Vytvorené {date}",
                     "created_at": "Vytvorený {date}",
                     "delete_failed": "Nepodarilo sa odstrániť prístupový token.",
                     "description": "Vytvorte prístupové tokeny s dlhou životnosťou, ktoré umožnia vašim skriptom komunikovať s vašou inštanciou Home Assistant. Každý token bude platný 10 rokov od vytvorenia. Nasledujúce prístupové tokeny s dlhou životnosťou sú v súčasnosti aktívne.",
@@ -2536,6 +2786,7 @@
                     "header": "Prístupové tokeny s dlhou životnosťou",
                     "last_used": "Naposledy použitý {date} z {location}",
                     "learn_auth_requests": "Zistite, ako vytvárať overené požiadavky.",
+                    "name": "Názov",
                     "not_used": "Nikdy nebol použitý",
                     "prompt_copy_token": "Skopírujte svoj nový prístupový token. Znova sa nezobrazí.",
                     "prompt_name": "Názov?"
@@ -2598,6 +2849,7 @@
             }
         },
         "sidebar": {
+            "done": "Hotovo",
             "external_app_configuration": "Konfigurácia aplikácie",
             "sidebar_toggle": "Prepínač bočného panela"
         }
