@@ -33,8 +33,6 @@ export class HuiCardOptions extends LitElement {
 
   @property() public path?: [number, number];
 
-  @property() public key?: string;
-
   @queryAssignedNodes() private _assignedNodes?: NodeListOf<LovelaceCard>;
 
   public getCardSize() {

@@ -13,6 +13,7 @@ import {
 } from "lit-element";
 import "lit-grid-layout";
 import { classMap } from "lit-html/directives/class-map";
+import { v4 as uuidv4 } from "uuid";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/entity/ha-state-label-badge";
@@ -22,14 +23,25 @@ import type {
   LovelaceViewElement,
 } from "../../../data/lovelace";
 import type { HomeAssistant } from "../../../types";
-import type { HuiErrorCard } from "../cards/hui-error-card";
 import { computeCardSize } from "../common/compute-card-size";
 import { HuiCardOptions } from "../components/hui-card-options";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
+import { HuiGridCardOptions } from "./grid/hui-grid-card-options";
 
 let editCodeLoaded = false;
 const mediaQueryColumns = [2, 6, 9, 12];
+
+interface LovelaceGridCard extends LovelaceCard, HuiGridCardOptions {
+  key: string;
+  grid?: {
+    key: string;
+    width: number;
+    height: number;
+    posX: number;
+    posY: number;
+  };
+}
 
 @customElement("hui-grid-view")
 export class GridView extends LitElement implements LovelaceViewElement {
@@ -39,9 +51,7 @@ export class GridView extends LitElement implements LovelaceViewElement {
 
   @property({ type: Number }) public index?: number;
 
-  @property({ attribute: false }) public cards: Array<
-    LovelaceCard | HuiErrorCard
-  > = [];
+  @property({ attribute: false }) public cards: Array<LovelaceGridCard> = [];
 
   @property({ attribute: false }) public badges: LovelaceBadge[] = [];
 
@@ -52,11 +62,10 @@ export class GridView extends LitElement implements LovelaceViewElement {
     height: number;
     posX: number;
     posY: number;
+    key: string;
   }>;
 
-  @internalProperty() public _cards: Array<
-    LovelaceCard | HuiErrorCard | HuiCardOptions
-  > = [];
+  @internalProperty() public _cards: Array<LovelaceCard | HuiCardOptions> = [];
 
   private _config?: LovelaceViewConfig;
 
@@ -77,11 +86,12 @@ export class GridView extends LitElement implements LovelaceViewElement {
     return html`
       <div id="badges"></div>
       <lit-grid-layout
-        .dragHandle=${"hui-card-options"}
+        .rowHeight=${15}
+        .dragHandle=${".parent-card-actions"}
         .items=${this._cards}
         .layout=${this._layout}
-        .rowHeight=${15}
         .columns=${this._columns}
+        @layout-changed=${(ev) => console.log(ev.detail)}
       ></lit-grid-layout>
       ${this.lovelace?.editMode
         ? html`
@@ -94,7 +104,7 @@ export class GridView extends LitElement implements LovelaceViewElement {
                 rtl: computeRTL(this.hass!),
               })}
             >
-              <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+              <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
             </mwc-fab>
           `
         : ""}
@@ -117,7 +127,7 @@ export class GridView extends LitElement implements LovelaceViewElement {
     if (this.lovelace?.editMode && !editCodeLoaded) {
       editCodeLoaded = true;
       import(
-        /* webpackChunkName: "default-view-editable" */ "./default-view-editable"
+        /* webpackChunkName: "grid-view-editable" */ "./grid/grid-view-editable"
       );
     }
 
@@ -146,8 +156,8 @@ export class GridView extends LitElement implements LovelaceViewElement {
           oldLovelace?.editMode !== this.lovelace?.editMode)) ||
       changedProperties.has("_columns")
     ) {
-      this._createCards();
       this._createLayout();
+      this._createCards();
     }
   }
 
@@ -180,6 +190,7 @@ export class GridView extends LitElement implements LovelaceViewElement {
 
     // Calculate the size of every card and determine in what column it should go
     for (const [index, card] of this.cards.entries()) {
+      const cardConfig = this._config!.cards![index];
       if (tillNextRender === undefined) {
         // eslint-disable-next-line no-loop-func
         tillNextRender = nextRender().then(() => {
@@ -209,44 +220,59 @@ export class GridView extends LitElement implements LovelaceViewElement {
         return;
       }
 
-      const y = Math.ceil(Math.random() * 4) + 1;
-
       const layout = {
         width: 3,
         height: cardSize,
-        posX: 3 * (index % 4),
-        posY: Math.floor(index / 6) * y,
+        // posX: 3 * (index % 4),
+        // posY: Math.floor(index / 6) * y,
         // Random unique Id
-        key: (card as LovelaceCard).layout?.key || index.toString(),
+        key: uuidv4(),
+        ...cardConfig.layout,
       };
 
       newLayout.push(layout);
-      console.log(layout);
 
       // this._config!.cards![index].layout = layout;
     }
 
+    const cards = this._config!.cards!.map((conf, idx) => {
+      return { ...conf, layout: newLayout[idx] };
+    });
+
+    // this.lovelace?.saveConfig(
+    //   replaceView(this.lovelace.config, this.index!, {
+    //     ...this._config!,
+    //     cards,
+    //   })
+    // );
+
     this._layout = newLayout;
+    this._createCards();
   }
 
   private _createCards(): void {
-    const elements: Array<LovelaceCard | HuiCardOptions> = [];
-    this.cards.forEach((card: LovelaceCard, index) => {
-      const cardConfig = this._config!.cards![index];
-      if (!this.lovelace?.editMode) {
-        card.editMode = false;
-        card.layout = cardConfig.layout;
-        elements.push(card);
-      } else {
-        const wrapper = document.createElement("hui-card-options");
+    const elements: Array<LovelaceGridCard> = [];
+    this.cards.forEach((card: LovelaceGridCard, index) => {
+      const layout = this._layout![index];
+
+      card.editMode = this.lovelace?.editMode;
+      let element = card;
+
+      if (this.lovelace?.editMode) {
+        const wrapper = document.createElement(
+          "hui-grid-card-options"
+        ) as LovelaceGridCard;
         wrapper.hass = this.hass;
         wrapper.lovelace = this.lovelace;
         wrapper.path = [this.index!, index];
-        card.editMode = true;
-        card.layout = cardConfig.layout;
+        wrapper.grid = layout;
         wrapper.appendChild(card);
-        elements.push(wrapper);
+        element = wrapper;
       }
+
+      element.grid = layout;
+      element.key = layout.key;
+      elements.push(element);
     });
 
     this._cards = elements;
@@ -261,11 +287,7 @@ export class GridView extends LitElement implements LovelaceViewElement {
       0
     );
     // Do -1 column if the menu is docked and open
-    this._columns = Math.max(
-      1,
-      mediaQueryColumns[matchColumns - 1] -
-        Number(this.hass!.dockedSidebar === "docked")
-    );
+    this._columns = Math.max(1, mediaQueryColumns[matchColumns - 1]);
   }
 
   static get styles(): CSSResult {
@@ -278,6 +300,10 @@ export class GridView extends LitElement implements LovelaceViewElement {
         position: relative;
         color: var(--primary-text-color);
         background: var(--lovelace-background, var(--primary-background-color));
+      }
+
+      lit-grid-layout {
+        --placeholder-background-color: var(--accent-color);
       }
 
       #badges {
