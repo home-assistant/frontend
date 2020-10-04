@@ -41,29 +41,29 @@ class HassioSystemMetrics extends LitElement {
     const usedSpace = this._getUsedSpace(this.hostInfo);
     const metrics = [
       {
-        description: "Core CPU usage",
+        description: "Core CPU Usage",
         value: this._coreMetrics?.cpu_percent,
       },
       {
-        description: "Core RAM usage",
+        description: "Core RAM Usage",
         value: this._coreMetrics?.memory_percent,
       },
       {
-        description: "Supervisor CPU usage",
+        description: "Supervisor CPU Usage",
         value: this._supervisorMetrics?.cpu_percent,
       },
       {
-        description: "Supervisor RAM usage",
+        description: "Supervisor RAM Usage",
         value: this._supervisorMetrics?.memory_percent,
       },
       {
-        description: "Used space",
+        description: "Used Space",
         value: usedSpace,
       },
     ];
 
     return html`
-      <ha-card header="System metrics">
+      <ha-card header="System Metrics">
         <div class="card-content">
           ${metrics.map((metric) =>
             this._renderMetric(metric.description, metric.value ?? 0)
