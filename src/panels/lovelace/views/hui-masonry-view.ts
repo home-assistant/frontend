@@ -261,7 +261,9 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
       :host {
         display: block;
         background: var(--lovelace-background);
+        padding-top: 4px;
         height: 100%;
+        box-sizing: border-box;
       }
 
       #badges {
