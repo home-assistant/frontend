@@ -575,7 +575,7 @@
                 "by_service": ", 通过服务",
                 "entries_not_found": "未找到日志条目。",
                 "messages": {
-                    "became_unavailable": "变为不可用",
+                    "became_unavailable": "不再可用",
                     "changed_to_state": "变为 {state}",
                     "cleared_device_class": "未检测到 {device_class}",
                     "detected_device_class": "检测到 {device_class}",
@@ -614,7 +614,7 @@
                     "directory": "媒体库",
                     "episode": "分集",
                     "game": "游戏",
-                    "genre": "体裁",
+                    "genre": "流派",
                     "image": "图片",
                     "movie": "电影",
                     "music": "音乐",
@@ -845,7 +845,7 @@
                     "remove": "您确定要删除此设备吗？"
                 },
                 "device_signature": "Zigbee 设备签名",
-                "last_seen": "上次看到",
+                "last_seen": "上次发现",
                 "manuf": "制造商：{manufacturer}",
                 "no_area": "没有区域",
                 "power_source": "电源",
@@ -2157,7 +2157,7 @@
                     },
                     "add": {
                         "caption": "添加设备",
-                        "description": "将设备添加到Zigbee网络"
+                        "description": "将设备添加到 Zigbee 网络"
                     },
                     "button": "配置",
                     "caption": "ZHA",
@@ -2181,7 +2181,7 @@
                     "clusters": {
                         "header": "集群",
                         "help_cluster_dropdown": "选择一个集群以查看属性和命令。",
-                        "introduction": "集群是Zigbee功能的构建基础，它们将功能分成逻辑单元。 有客户端和服务器类型，由属性和命令组成。"
+                        "introduction": "集群是 Zigbee 功能的构建基础，它们将功能分成逻辑单元。 有客户端和服务器类型，由属性和命令组成。"
                     },
                     "common": {
                         "add_devices": "添加设备",
@@ -2198,8 +2198,8 @@
                         "bind_button_help": "将选定的群组绑定到所选的设备集群。",
                         "bind_button_label": "绑定群组",
                         "cluster_selection_help": "选择要绑定到所选组的集群。",
-                        "group_picker_help": "选择一个组来进行绑定。",
-                        "group_picker_label": "可绑定的组",
+                        "group_picker_help": "选择一个群组来进行绑定。",
+                        "group_picker_label": "可绑定的群组",
                         "header": "群组绑定",
                         "introduction": "绑定和取消绑定群组。",
                         "unbind_button_help": "从选定的设备集群中取消绑定选定的群组。",
@@ -2211,29 +2211,29 @@
                         "caption": "群组",
                         "create": "创建群组",
                         "create_group": "Zigbee 家庭自动化 - 新增群组",
-                        "create_group_details": "输入所需的详细信息以创建新的zigbee组",
+                        "create_group_details": "输入所需的详细信息以创建新的 zigbee 群组",
                         "creating_group": "创建群组中",
-                        "description": "管理 Zigbee 组",
-                        "group_details": "以下是所选Zigbee组的所有详细信息。",
-                        "group_id": "组号",
+                        "description": "管理 Zigbee 群组",
+                        "group_details": "以下是所选 Zigbee 群组的所有详细信息。",
+                        "group_id": "群组 ID",
                         "group_info": "群组信息",
                         "group_name_placeholder": "群组名",
                         "group_not_found": "找不到群组！",
                         "group-header": "Zigbee 家庭自动化 - 群组资讯",
-                        "groups": "组",
+                        "groups": "群组",
                         "groups-header": "Zigbee 家庭自动化 - 群组管理",
                         "header": "Zigbee 家庭自动化 - 群组管理",
-                        "introduction": "创建和修改zigbee组",
-                        "manage_groups": "管理Zigbee组",
+                        "introduction": "创建和修改 Zigbee 群组",
+                        "manage_groups": "管理 Zigbee 群组",
                         "members": "成员",
                         "remove_groups": "删除群组",
                         "remove_members": "删除成员",
                         "removing_groups": "删除群组中",
                         "removing_members": "删除成员中",
-                        "zha_zigbee_groups": "ZHA Zigbee组"
+                        "zha_zigbee_groups": "ZHA Zigbee 群组"
                     },
                     "header": "配置 Zigbee 家庭自动化",
-                    "introduction": "在这里可以配置ZHA组件。 目前尚未支持在UI中进行所有的配置，但我们正在努力啦。",
+                    "introduction": "您可以在此配置 ZHA 及组件。目前并非所有配置都能通过前端 UI 完成，但是我们在努力实现中。",
                     "network_management": {
                         "header": "网络管理",
                         "introduction": "影响整个网络的命令"
@@ -2245,8 +2245,8 @@
                         "header": "设备管理",
                         "help_node_dropdown": "选择一个设备以查看每个设备的选项。",
                         "hint_battery_devices": "注意：在睡眠（电池供电）设备执行命令时，它们必须处于唤醒状态。通常，您可以通过触发睡眠设备来唤醒它。",
-                        "hint_wakeup": "小米传感器等某些设备具有唤醒按钮，您可以每隔约5秒按一下此按钮，以在与设备交互时保持设备处于唤醒状态。",
-                        "introduction": "运行影响单个设备的ZHA命令。选择设备以查看可用命令列表。"
+                        "hint_wakeup": "小米传感器等某些设备具有唤醒按钮，您可以每隔约 5 秒按一下此按钮，以便在与设备交互时保持设备唤醒。",
+                        "introduction": "运行影响单个设备的 ZHA 命令。请选择设备以查看可用命令列表。"
                     },
                     "title": "Zigbee 家庭自动化"
                 },
@@ -2283,14 +2283,14 @@
                     "button": "配置",
                     "caption": "Z-Wave",
                     "common": {
-                        "index": "指数",
+                        "index": "索引",
                         "instance": "实例",
                         "unknown": "未知",
                         "value": "值",
                         "wakeup_interval": "唤醒时间间隔"
                     },
                     "description": "管理 Z-Wave 网络",
-                    "learn_more": "了解有关Z-Wave的更多信息",
+                    "learn_more": "详细了解 Z-Wave",
                     "network_management": {
                         "header": "Z-Wave 网络管理",
                         "introduction": "运行影响 Z-Wave 网络的命令。大多数命令无法反馈是否执行成功，但您可以尝试检查 OZW 日志来确认。"
@@ -2335,8 +2335,8 @@
                         "set_protection": "设置保护"
                     },
                     "ozw_log": {
-                        "header": "OZW日志",
-                        "introduction": "查看日志。最小值为0（加载整个日志），最大值为1000。加载将显示静态日志，并且尾部将使用日志的最后指定的行数自动更新。",
+                        "header": "OZW 日志",
+                        "introduction": "查看日志。最小值为 0（加载整个日志），最大值为 1000。加载将显示静态日志，并且结尾将根据最后指定的日志行数自动更新。",
                         "last_log_lines": "最后日志行数",
                         "load": "加载",
                         "tail": "末尾"
