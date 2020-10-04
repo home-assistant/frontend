@@ -19,8 +19,6 @@ class HaLabelBadge extends LitElement {
 
   @property() public upperLabel?: string;
 
-  @property() public upperLabelIcon?: string;
-
   @property() public description?: string;
 
   @property() public image?: string;
@@ -36,11 +34,7 @@ class HaLabelBadge extends LitElement {
                     big: this.upperLabel.length > 5,
                   })}"
                 >
-                  <span
-                    >${this.upperLabelIcon
-                      ? html` <ha-icon .icon=${this.upperLabelIcon}></ha-icon> `
-                      : ""}${this.upperLabel}</span
-                  >
+                  <span>${this.upperLabel}</span>
                 </div>
               `
             : ""}
