@@ -135,7 +135,7 @@ class HassioSupervisorInfo extends LitElement {
         <div class="card-actions">
           <ha-progress-button
             @click=${this._supervisorReload}
-            title="Reload parts of the supervisor."
+            title="Reload parts of the supervisor"
           >
             Reload
           </ha-progress-button>
@@ -184,7 +184,7 @@ class HassioSupervisorInfo extends LitElement {
       this.supervisorInfo = await fetchHassioSupervisorInfo(this.hass);
     } catch (err) {
       showAlertDialog(this, {
-        title: "Failed to set supervisor option.",
+        title: "Failed to set supervisor option",
         text: extractApiErrorMessage(err),
       });
     }
@@ -227,7 +227,7 @@ class HassioSupervisorInfo extends LitElement {
       await updateSupervisor(this.hass);
     } catch (err) {
       showAlertDialog(this, {
-        title: "Failed to update the supervisor.",
+        title: "Failed to update the supervisor",
         text: extractApiErrorMessage(err),
       });
     }
@@ -257,7 +257,7 @@ class HassioSupervisorInfo extends LitElement {
       await setSupervisorOption(this.hass, data);
     } catch (err) {
       showAlertDialog(this, {
-        title: "Failed to set supervisor option.",
+        title: "Failed to set supervisor option",
         text: extractApiErrorMessage(err),
       });
     }
