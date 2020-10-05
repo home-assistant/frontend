@@ -51,7 +51,7 @@ class HassioSupervisorInfo extends LitElement {
           </ha-settings-row>
           <ha-settings-row>
             <span slot="heading">
-              Newest version
+              Newest Version
             </span>
             <span slot="description">
               ${this.supervisorInfo.version_latest}
@@ -98,7 +98,7 @@ class HassioSupervisorInfo extends LitElement {
           ${this.supervisorInfo?.supported
             ? html` <ha-settings-row three-line>
                 <span slot="heading">
-                  Share diagnostics
+                  Share Diagnostics
                 </span>
                 <div slot="description" class="diagnostics-description">
                   Share crash reports and diagnostic information.
@@ -135,7 +135,7 @@ class HassioSupervisorInfo extends LitElement {
         <div class="card-actions">
           <ha-progress-button
             @click=${this._supervisorReload}
-            title="Reload parts of the supervisor."
+            title="Reload parts of the supervisor"
           >
             Reload
           </ha-progress-button>
@@ -212,7 +212,7 @@ class HassioSupervisorInfo extends LitElement {
     button.progress = true;
 
     const confirmed = await showConfirmationDialog(this, {
-      title: "Update supervisor",
+      title: "Update Supervisor",
       text: `Are you sure you want to update supervisor to version ${this.supervisorInfo.version_latest}?`,
       confirmText: "update",
       dismissText: "cancel",

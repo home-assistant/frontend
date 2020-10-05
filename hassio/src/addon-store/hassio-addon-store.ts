@@ -98,7 +98,7 @@ class HassioAddonStore extends LitElement {
         main-page
         .tabs=${supervisorTabs}
       >
-        <span slot="header">Add-on store</span>
+        <span slot="header">Add-on Store</span>
         <ha-button-menu
           corner="BOTTOM_START"
           slot="toolbar-icon"
