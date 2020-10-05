@@ -14,6 +14,7 @@ import "@polymer/app-layout/app-scroll-effects/effects/waterfall";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
+
 import {
   css,
   CSSResult,
@@ -92,7 +93,6 @@ class HUIRoot extends LitElement {
       100,
       false
     );
-    fireEvent(this, "hass-quick-open", { entityId: "light.chandelier" });
   }
 
   protected render(): TemplateResult {
