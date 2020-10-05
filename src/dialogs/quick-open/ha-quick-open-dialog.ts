@@ -181,7 +181,7 @@ export class QuickOpenDialog extends LitElement {
             const iconPath = domainIcon(item.domain);
             return html`
               <mwc-list-item>
-                <ha-icon icon=${iconPath}></ha-icon>
+                <ha-icon .icon=${iconPath}></ha-icon>
                 <a
                   href="#"
                   @click=${item.onClick}
