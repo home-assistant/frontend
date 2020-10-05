@@ -77,7 +77,7 @@ class HassioHostInfo extends LitElement {
                   ${this.hostInfo.hostname}
                 </span>
                 <mwc-button
-                  title="Change the hostname."
+                  title="Change the hostname"
                   label="Change"
                   @click=${this._changeHostnameClicked}
                 >
@@ -93,7 +93,7 @@ class HassioHostInfo extends LitElement {
                   ${primaryIpAddress}
                 </span>
                 <mwc-button
-                  title="Change the network."
+                  title="Change the network"
                   label="Change"
                   @click=${this._changeNetworkClicked}
                 >
@@ -112,7 +112,7 @@ class HassioHostInfo extends LitElement {
             this.hostInfo.features.includes("hassos")
               ? html`
                   <ha-progress-button
-                    title="Update the host OS."
+                    title="Update the host OS"
                     @click=${this._osUpdate}
                   >
                     Update
@@ -145,7 +145,7 @@ class HassioHostInfo extends LitElement {
           ${this.hostInfo.features.includes("reboot")
             ? html`
                 <ha-progress-button
-                  title="Reboot the host OS."
+                  title="Reboot the host OS"
                   class="warning"
                   @click=${this._hostReboot}
                 >
@@ -156,7 +156,7 @@ class HassioHostInfo extends LitElement {
           ${this.hostInfo.features.includes("shutdown")
             ? html`
                 <ha-progress-button
-                  title="Shutdown the host OS."
+                  title="Shutdown the host OS"
                   class="warning"
                   @click=${this._hostShutdown}
                 >
@@ -177,7 +177,7 @@ class HassioHostInfo extends LitElement {
             </mwc-list-item>
             ${this.hostInfo.features.includes("hassos")
               ? html`<mwc-list-item
-                  title="Load HassOS configs or updates from USB."
+                  title="Load HassOS configs or updates from USB"
                 >
                   Import from USB
                 </mwc-list-item>`
@@ -221,7 +221,7 @@ class HassioHostInfo extends LitElement {
       });
     } catch (err) {
       showAlertDialog(this, {
-        title: "Failed to get hardware list.",
+        title: "Failed to get hardware list",
         text: extractApiErrorMessage(err),
       });
     }
@@ -249,7 +249,7 @@ class HassioHostInfo extends LitElement {
       // Ignore connection errors, these are all expected
       if (err.status_code && !ignoredStatusCodes.has(err.status_code)) {
         showAlertDialog(this, {
-          title: "Failed to reboot.",
+          title: "Failed to reboot",
           text: extractApiErrorMessage(err),
         });
       }
@@ -279,7 +279,7 @@ class HassioHostInfo extends LitElement {
       // Ignore connection errors, these are all expected
       if (err.status_code && !ignoredStatusCodes.has(err.status_code)) {
         showAlertDialog(this, {
-          title: "Failed to shutdown.",
+          title: "Failed to shutdown",
           text: extractApiErrorMessage(err),
         });
       }
@@ -307,7 +307,7 @@ class HassioHostInfo extends LitElement {
       await updateOS(this.hass);
     } catch (err) {
       showAlertDialog(this, {
-        title: "Failed to update.",
+        title: "Failed to update",
         text: extractApiErrorMessage(err),
       });
     }
@@ -336,7 +336,7 @@ class HassioHostInfo extends LitElement {
         this.hostInfo = await fetchHassioHostInfo(this.hass);
       } catch (err) {
         showAlertDialog(this, {
-          title: "Setting hostname failed.",
+          title: "Setting hostname failed",
           text: extractApiErrorMessage(err),
         });
       }
@@ -349,7 +349,7 @@ class HassioHostInfo extends LitElement {
       this.hostInfo = await fetchHassioHostInfo(this.hass);
     } catch (err) {
       showAlertDialog(this, {
-        title: "Failed to import from USB.",
+        title: "Failed to import from USB",
         text: extractApiErrorMessage(err),
       });
     }
