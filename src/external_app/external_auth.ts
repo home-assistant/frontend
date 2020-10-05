@@ -64,7 +64,13 @@ export class ExternalAuth extends Auth {
     });
   }
 
+  private _tokenCallbackPromise?: Promise<RefreshTokenResponse>;
+
   public async refreshAccessToken(force?: boolean) {
+    if (this._tokenCallbackPromise) {
+      await this._tokenCallbackPromise;
+      return;
+    }
     const payload: GetExternalAuthPayload = {
       callback: CALLBACK_SET_TOKEN,
     };
@@ -72,7 +78,7 @@ export class ExternalAuth extends Auth {
       payload.force = true;
     }
 
-    const callbackPromise = new Promise<RefreshTokenResponse>(
+    this._tokenCallbackPromise = new Promise<RefreshTokenResponse>(
       (resolve, reject) => {
         window[CALLBACK_SET_TOKEN] = (success, data) =>
           success ? resolve(data) : reject(data);
@@ -87,10 +93,11 @@ export class ExternalAuth extends Auth {
       window.webkit!.messageHandlers.getExternalAuth.postMessage(payload);
     }
 
-    const tokens = await callbackPromise;
+    const tokens = await this._tokenCallbackPromise;
 
     this.data.access_token = tokens.access_token;
     this.data.expires = tokens.expires_in * 1000 + Date.now();
+    this._tokenCallbackPromise = undefined;
   }
 
   public async revoke() {
