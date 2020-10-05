@@ -78,7 +78,6 @@ export class MoreInfoHistory extends LitElement {
       this.hass!,
       this.entityId,
       {
-        refresh: 60,
         cacheKey: `more_info.${this.entityId}`,
         hoursToShow: 24,
       },
