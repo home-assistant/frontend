@@ -1,3 +1,4 @@
+import { mdiArrowLeft, mdiArrowRight, mdiDelete, mdiPlus } from "@mdi/js";
 import "@polymer/paper-tabs";
 import "@polymer/paper-tabs/paper-tab";
 import {
@@ -13,7 +14,6 @@ import {
 } from "lit-element";
 import { any, array, assert, object, optional, string } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-icon-button";
 import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import { StackCardConfig } from "../../cards/types";
@@ -87,7 +87,7 @@ export class HuiStackCardEditor extends LitElement
             @iron-activate=${this._handleSelectedCard}
           >
             <paper-tab>
-              <ha-icon icon="hass:plus"></ha-icon>
+              <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
             </paper-tab>
           </paper-tabs>
         </div>
@@ -107,26 +107,29 @@ export class HuiStackCardEditor extends LitElement
                         : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
                     )}
                   </mwc-button>
-                  <ha-icon-button
-                    id="move-before"
-                    title="Move card before"
-                    icon="hass:arrow-left"
+
+                  <mwc-icon-button
                     .disabled=${selected === 0}
-                    @click=${this._handleMove}
-                  ></ha-icon-button>
+                    label="Move card before"
+                    @click=${() => this._handleMove(-1)}
+                  >
+                    <ha-svg-icon .path=${mdiArrowLeft}></ha-svg-icon>
+                  </mwc-icon-button>
 
-                  <ha-icon-button
-                    id="move-after"
-                    title="Move card after"
-                    icon="hass:arrow-right"
+                  <mwc-icon-button
+                    label="Move card after"
                     .disabled=${selected === numcards - 1}
-                    @click=${this._handleMove}
-                  ></ha-icon-button>
+                    @click=${() => this._handleMove(+1)}
+                  >
+                    <ha-svg-icon .path=${mdiArrowRight}></ha-svg-icon>
+                  </mwc-icon-button>
 
-                  <ha-icon-button
-                    icon="hass:delete"
+                  <mwc-icon-button
+                    label="Delete card"
                     @click=${this._handleDeleteCard}
-                  ></ha-icon-button>
+                  >
+                    <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
+                  </mwc-icon-button>
                 </div>
 
                 <hui-element-editor
@@ -193,12 +196,12 @@ export class HuiStackCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _handleMove(ev) {
+  private _handleMove(direction: number) {
     if (!this._config) {
       return;
     }
     const source = this._selectedCard;
-    const target = ev.target.id === "move-before" ? source - 1 : source + 1;
+    const target = source + direction;
     const cards = [...this._config.cards];
     const card = cards.splice(this._selectedCard, 1)[0];
     cards.splice(target, 0, card);
