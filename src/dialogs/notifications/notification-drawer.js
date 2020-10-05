@@ -6,7 +6,6 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { computeDomain } from "../../common/entity/compute_domain";
 import "../../components/ha-icon-button-prev";
-import "../../components/buttons/ha-progress-button";
 import { subscribeNotifications } from "../../data/persistent_notification";
 import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
@@ -75,13 +74,13 @@ export class HuiNotificationDrawer extends EventsMixin(
               </div>
             </template>
           </dom-repeat>
-            <template is="dom-if" if="[[_moreThanOne(notifications)]]">
-              <div class="notification-actions">
-                <ha-progress-button raised="" on-click="_dismissAll">
-                  [[localize('ui.notification_drawer.dismiss_all')]]
-                </ha-progress-button>
-              </div>
-            </template>
+          <template is="dom-if" if="[[_moreThanOne(notifications)]]">
+            <div class="notification-actions">
+              <mwc-button raised on-click="_dismissAll">
+                [[localize('ui.notification_drawer.dismiss_all')]]
+              </mwc-button>
+            </div>
+          </template>
         </template>
         <template is="dom-if" if="[[_empty(notifications)]]">
           <div class="empty">[[localize('ui.notification_drawer.empty')]]<div>
