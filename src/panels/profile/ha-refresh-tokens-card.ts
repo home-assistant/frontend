@@ -106,7 +106,7 @@ class HaRefreshTokens extends LitElement {
         text: this.hass.localize(
           "ui.panel.profile.refresh_tokens.confirm_delete",
           "name",
-          token.client_name
+          token.client_name || token.client_id
         ),
       }))
     ) {
