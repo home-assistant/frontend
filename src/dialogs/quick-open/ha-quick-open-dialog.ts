@@ -167,9 +167,9 @@ export class QuickOpenDialog extends LitElement {
           dialogInitialFocus
           no-label-float
           @value-changed=${this._entityFilterChanged}
-          label="${this.hass.localize(
+          .label=${this.hass.localize(
             "ui.dialogs.quick_open.filter_placeholder"
-          )}"
+          )}
           type="search"
           value=${this._commandMode
             ? `>${this._entityFilter}`
