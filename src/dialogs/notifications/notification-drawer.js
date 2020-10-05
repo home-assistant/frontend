@@ -123,8 +123,7 @@ export class HuiNotificationDrawer extends EventsMixin(
     this.open = false;
   }
 
-  _dismissAll(ev) {
-    ev.stopPropagation();
+  _dismissAll() {
     this.notifications.forEach((notification) => {
       this.hass.callService("persistent_notification", "dismiss", {
         notification_id: notification.notification_id,
