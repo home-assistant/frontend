@@ -2233,7 +2233,7 @@
                         "zha_zigbee_groups": "ZHA Zigbee 群组"
                     },
                     "header": "配置 Zigbee 家庭自动化",
-                    "introduction": "您可以在此配置 ZHA 及组件。目前并非所有配置都能通过前端 UI 完成，但是我们在努力实现中。",
+                    "introduction": "您可以在此配置 ZHA 组件。目前并非所有配置都能通过前端 UI 完成，但是我们在努力实现中。",
                     "network_management": {
                         "header": "网络管理",
                         "introduction": "影响整个网络的命令"

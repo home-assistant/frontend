@@ -624,6 +624,7 @@
                 "local_media_files": "ビデオ、オーディオ、画像ファイルをメディアディレクトリに配置して、ブラウザやサポートされているメディアプレーヤーで参照して再生できるようにします。",
                 "media_browsing_error": "メディア参照エラー",
                 "media_not_supported": "ブラウザ メディア プレーヤーはこの種類のメディアをサポートしていません",
+                "media_player": "メディアプレーヤー",
                 "media-player-browser": "メディアプレーヤーブラウザ",
                 "no_items": "アイテムなし",
                 "no_local_media_found": "ローカルメディアが見つかりません",

@@ -580,14 +580,20 @@
                 "class": {
                     "album": "Album",
                     "app": "App",
+                    "artist": "Künstler",
+                    "composer": "Komponist",
+                    "contributing_artist": "Mitwirkender Künstler",
                     "directory": "Bibliothek",
                     "episode": "Episode",
                     "game": "Spiel",
+                    "genre": "Genre",
+                    "image": "Bild",
                     "movie": "Film",
                     "music": "Musik",
                     "playlist": "Wiedergabeliste",
                     "podcast": "Podcast",
                     "season": "Episode",
+                    "tv_show": "TV-Sendung",
                     "url": "URL",
                     "video": "Video"
                 },
@@ -1019,7 +1025,16 @@
                                     "after": "Nach",
                                     "before": "Vor",
                                     "label": "Zeit",
-                                    "type_value": "Feste Zeit"
+                                    "type_value": "Feste Zeit",
+                                    "weekdays": {
+                                        "fri": "Freitag",
+                                        "mon": "Montag",
+                                        "sat": "Samstag",
+                                        "sun": "Sonntag",
+                                        "thu": "Donnerstag",
+                                        "tue": "Dienstag",
+                                        "wed": "Mittwoch"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Entität mit Standort",
@@ -1119,6 +1134,9 @@
                                     "offset": "Versatz (optional)",
                                     "sunrise": "Sonnenaufgang",
                                     "sunset": "Sonnenuntergang"
+                                },
+                                "tag": {
+                                    "label": "Tag"
                                 },
                                 "template": {
                                     "label": "Template",
@@ -1757,7 +1775,8 @@
                     "nodes_table": {
                         "failed": "Fehlgeschlagen",
                         "id": "ID",
-                        "manufacturer": "Hersteller"
+                        "manufacturer": "Hersteller",
+                        "zwave_plus": "Z-Wave Plus"
                     },
                     "refresh_node": {
                         "start_refresh_button": "Aktualisierung starten"
@@ -2356,6 +2375,11 @@
                     "refresh": "Aktualisieren"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "Dienst ausführen"
+                        }
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "Verfügbare Zustände",

@@ -580,10 +580,24 @@
                     "cleared_device_class": "effacé (no {device_class} detected)",
                     "detected_device_class": "détecté {device_class}",
                     "rose": "aube",
+                    "set": "Défini",
                     "turned_off": "éteint",
                     "turned_on": "activé",
+                    "was_at_home": "Était à la maison",
+                    "was_at_state": "était à {state}",
                     "was_away": "était absent",
-                    "was_safe": "était sûr"
+                    "was_closed": "était fermé",
+                    "was_connected": "était connecté",
+                    "was_disconnected": "était déconnecté",
+                    "was_locked": "Était verrouillé",
+                    "was_low": "était faible",
+                    "was_normal": "était normal",
+                    "was_opened": "était ouvert",
+                    "was_plugged_in": "était branché",
+                    "was_safe": "était sûr",
+                    "was_unlocked": "Était déverrouillé",
+                    "was_unplugged": "était débranché",
+                    "was_unsafe": "n'était pas sûr"
                 }
             },
             "media-browser": {
@@ -2501,7 +2515,8 @@
                             "toggle": "Interrupteur",
                             "url": "Url"
                         },
-                        "editor_service_data": "Les informations sur les services ne peuvent être saisies que dans l'éditeur de code\n",
+                        "editor_service_data": "Les informations sur les services ne peuvent être saisies que dans l'éditeur de code",
+                        "navigation_path": "Chemin de navigation",
                         "url_path": "Chemin de l'url"
                     },
                     "card": {
