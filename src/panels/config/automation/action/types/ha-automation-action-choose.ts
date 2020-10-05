@@ -40,7 +40,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
               "ui.panel.config.automation.editor.actions.type.choose.remove_option"
             )}
           >
-            <ha-svg-icon path=${mdiDelete}></ha-svg-icon>
+            <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
           </mwc-icon-button>
           <div class="card-content">
             <h2>

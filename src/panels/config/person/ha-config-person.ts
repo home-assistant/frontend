@@ -136,7 +136,7 @@ class HaConfigPerson extends LitElement {
           title="${hass.localize("ui.panel.config.person.add_person")}"
           @click=${this._createPerson}
         >
-          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </mwc-fab>
       </hass-tabs-subpage>
     `;

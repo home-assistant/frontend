@@ -342,7 +342,7 @@ export class HaAutomationEditor extends LitElement {
           .title=${this.hass.localize("ui.panel.config.automation.editor.save")}
           @click=${this._saveAutomation}
         >
-          <ha-svg-icon slot="icon" path=${mdiContentSave}></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
         </mwc-fab>
       </hass-tabs-subpage>
     `;
