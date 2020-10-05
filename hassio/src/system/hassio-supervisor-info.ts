@@ -200,7 +200,7 @@ class HassioSupervisorInfo extends LitElement {
       this.supervisorInfo = await fetchHassioSupervisorInfo(this.hass);
     } catch (err) {
       showAlertDialog(this, {
-        title: "Failed to reload the supervisor.",
+        title: "Failed to reload the supervisor",
         text: extractApiErrorMessage(err),
       });
     }
