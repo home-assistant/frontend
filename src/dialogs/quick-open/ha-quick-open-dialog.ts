@@ -1,11 +1,6 @@
+import "@polymer/paper-input/paper-input";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-list/mwc-list";
-import "../../components/ha-code-editor";
-import "../../components/entity/ha-entity-picker";
-import "@material/mwc-button";
-import "@material/mwc-icon-button";
-import "@material/mwc-tab";
-import "@material/mwc-tab-bar";
 import {
   css,
   customElement,
@@ -15,16 +10,9 @@ import {
   property,
 } from "lit-element";
 import { fireEvent } from "../../common/dom/fire_event";
-
 import "../../components/ha-dialog";
-import "../../components/ha-header-bar";
-import "../../components/ha-svg-icon";
 import { haStyleDialog } from "../../resources/styles";
-import "../../state-summary/state-card-content";
 import { HomeAssistant } from "../../types";
-
-import "../more-info/ha-more-info-history";
-import "../more-info/ha-more-info-logbook";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { fuzzySequentialMatch } from "../../common/string/sequence_matching";
 import { componentsWithService } from "../../common/config/components_with_service";
@@ -39,7 +27,7 @@ export interface QuickOpenDialogParams {
 
 interface QuickOpenItem {
   text: string;
-  domain?: string;
+  domain: string;
   icon?: string;
   onClick(ev: Event): void;
 }
@@ -48,9 +36,7 @@ interface QuickOpenItem {
 export class QuickOpenDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true }) public large = false;
-
-  @internalProperty() private _entities: QuickOpenItem[] = [];
+  @internalProperty() private _items: QuickOpenItem[] = [];
 
   @internalProperty() private _entityFilter = "";
 
@@ -61,14 +47,11 @@ export class QuickOpenDialog extends LitElement {
   public async showDialog(params: QuickOpenDialogParams) {
     this._commandMode = params.commandMode || false;
     this._opened = true;
-    this.large = false;
   }
 
   public closeDialog() {
     this._opened = false;
     this._entityFilter = "";
-    this._entities = [];
-    this._commandMode = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -87,7 +70,7 @@ export class QuickOpenDialog extends LitElement {
     } else {
       items = this._generateEntityItems(this.hass, this._entityFilter);
     }
-    this._entities = this._filterItems(items, this._entityFilter);
+    this._items = this._filterItems(items, this._entityFilter);
   }
 
   private _generateCommandItems(_filter: string): QuickOpenItem[] {
@@ -112,9 +95,9 @@ export class QuickOpenDialog extends LitElement {
   ): QuickOpenItem[] {
     return Object.keys(hass.states)
       .map((key) => hass.states[key])
-      .map<QuickOpenItem>((entity) => ({
-        text: entity.entity_id,
-        domain: computeDomain(entity.entity_id),
+      .map<QuickOpenItem>(({ entity_id }) => ({
+        text: entity_id,
+        domain: computeDomain(entity_id),
         onClick: this._entityMoreInfo,
       }));
   }
@@ -124,7 +107,7 @@ export class QuickOpenDialog extends LitElement {
     filter: string
   ): QuickOpenItem[] {
     return items
-      .filter((value) => fuzzySequentialMatch(filter.toLowerCase(), value.text))
+      .filter(({ text }) => fuzzySequentialMatch(filter.toLowerCase(), text))
       .sort((itemA, itemB) => {
         if (itemA.text < itemB.text) {
           return -1;
@@ -161,6 +144,7 @@ export class QuickOpenDialog extends LitElement {
     if (!this._opened) {
       return html``;
     }
+
     return html`
       <ha-dialog open @closed=${this.closeDialog} hideActions>
         <paper-input
@@ -175,29 +159,25 @@ export class QuickOpenDialog extends LitElement {
             ? `>${this._entityFilter}`
             : this._entityFilter}
         ></paper-input>
-        <mwc-list class="entities">
-          ${Object.keys(this._entities).map((text) => {
-            const item = this._entities[text];
-            const iconPath = domainIcon(item.domain);
-            return html`
-              <mwc-list-item>
-                <ha-icon .icon=${iconPath}></ha-icon>
-                <a
-                  href="#"
-                  @click=${item.onClick}
-                  .text=${item.text}
-                  .domain=${item.domain}
-                  alt=${this.hass.localize(
-                    "ui.panel.developer-tools.tabs.states.more_info"
-                  )}
-                  title=${this.hass.localize(
-                    "ui.panel.developer-tools.tabs.states.more_info"
-                  )}
-                  >${item.text}</a
-                >
+        <mwc-list>
+          ${this._items.map(
+            ({ text, domain, onClick }) => html`
+              <mwc-list-item
+                @click=${onClick}
+                .domain=${domain}
+                alt=${this.hass.localize(
+                  "ui.panel.developer-tools.tabs.states.more_info"
+                )}
+                .title=${this.hass.localize(
+                  "ui.panel.developer-tools.tabs.states.more_info"
+                )}
+                graphic="icon"
+              >
+                <ha-icon .icon=${domainIcon(domain)} slot="graphic"></ha-icon>
+                ${text}
               </mwc-list-item>
-            `;
-          })}
+            `
+          )}
         </mwc-list>
       </ha-dialog>
     `;
