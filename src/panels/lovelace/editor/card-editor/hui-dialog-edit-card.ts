@@ -174,7 +174,7 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
                     dir=${computeRTLDirection(this.hass)}
                   >
                     <mwc-icon-button>
-                      <ha-svg-icon path=${mdiHelpCircle}></ha-svg-icon>
+                      <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
                     </mwc-icon-button>
                   </a>
                 `

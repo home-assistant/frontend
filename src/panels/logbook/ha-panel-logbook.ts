@@ -86,7 +86,7 @@ export class HaPanelLogbook extends LitElement {
               @click=${this._refreshLogbook}
               .disabled=${this._isLoading}
             >
-              <ha-svg-icon path=${mdiRefresh}></ha-svg-icon>
+              <ha-svg-icon .path=${mdiRefresh}></ha-svg-icon>
             </mwc-icon-button>
           </app-toolbar>
         </app-header>

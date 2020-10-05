@@ -133,7 +133,7 @@ export default class HaAutomationActionRow extends LitElement {
                     )}
                     @click=${this._moveUp}
                   >
-                    <ha-svg-icon path=${mdiArrowUp}></ha-svg-icon>
+                    <ha-svg-icon .path=${mdiArrowUp}></ha-svg-icon>
                   </mwc-icon-button>
                 `
               : ""}
@@ -148,7 +148,7 @@ export default class HaAutomationActionRow extends LitElement {
                     )}
                     @click=${this._moveDown}
                   >
-                    <ha-svg-icon path=${mdiArrowDown}></ha-svg-icon>
+                    <ha-svg-icon .path=${mdiArrowDown}></ha-svg-icon>
                   </mwc-icon-button>
                 `
               : ""}
@@ -157,7 +157,7 @@ export default class HaAutomationActionRow extends LitElement {
                 slot="trigger"
                 .title=${this.hass.localize("ui.common.menu")}
                 .label=${this.hass.localize("ui.common.overflow_menu")}
-                ><ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+                ><ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
               </mwc-icon-button>
               <mwc-list-item .disabled=${!this._uiModeAvailable}>
                 ${yamlMode

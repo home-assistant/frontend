@@ -102,7 +102,7 @@ export class HaConfigUsers extends LitElement {
           .title=${this.hass.localize("ui.panel.config.users.picker.add_user")}
           @click=${this._addUser}
         >
-          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </mwc-fab>
       </hass-tabs-subpage-data-table>
     `;

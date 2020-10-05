@@ -196,7 +196,7 @@ class HassioSnapshotDialog extends LitElement {
               @click=${this._downloadClicked}
               slot="primaryAction"
             >
-              <ha-svg-icon path=${mdiDownload} class="icon"></ha-svg-icon>
+              <ha-svg-icon .path=${mdiDownload} class="icon"></ha-svg-icon>
               Download Snapshot
             </mwc-button>`
           : ""}
@@ -205,7 +205,7 @@ class HassioSnapshotDialog extends LitElement {
           @click=${this._partialRestoreClicked}
           slot="secondaryAction"
         >
-          <ha-svg-icon path=${mdiHistory} class="icon"></ha-svg-icon>
+          <ha-svg-icon .path=${mdiHistory} class="icon"></ha-svg-icon>
           Restore Selected
         </mwc-button>
         ${this._snapshot.type === "full"
@@ -214,7 +214,7 @@ class HassioSnapshotDialog extends LitElement {
                 @click=${this._fullRestoreClicked}
                 slot="secondaryAction"
               >
-                <ha-svg-icon path=${mdiHistory} class="icon"></ha-svg-icon>
+                <ha-svg-icon .path=${mdiHistory} class="icon"></ha-svg-icon>
                 Wipe &amp; restore
               </mwc-button>
             `
@@ -224,7 +224,10 @@ class HassioSnapshotDialog extends LitElement {
               @click=${this._deleteClicked}
               slot="secondaryAction"
             >
-              <ha-svg-icon path=${mdiDelete} class="icon warning"></ha-svg-icon>
+              <ha-svg-icon
+                .path=${mdiDelete}
+                class="icon warning"
+              ></ha-svg-icon>
               <span class="warning">Delete Snapshot</span>
             </mwc-button>`
           : ""}

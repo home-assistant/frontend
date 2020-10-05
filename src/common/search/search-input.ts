@@ -52,7 +52,7 @@ class SearchInput extends LitElement {
         .noLabelFloat=${this.noLabelFloat}
       >
         <ha-svg-icon
-          path=${mdiMagnify}
+          .path=${mdiMagnify}
           slot="prefix"
           class="prefix"
         ></ha-svg-icon>
@@ -65,7 +65,7 @@ class SearchInput extends LitElement {
             alt="Clear"
             title="Clear"
           >
-            <ha-svg-icon path=${mdiClose}></ha-svg-icon>
+            <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
           </mwc-icon-button>
         `}
       </paper-input>

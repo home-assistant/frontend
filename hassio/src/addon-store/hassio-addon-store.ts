@@ -105,7 +105,7 @@ class HassioAddonStore extends LitElement {
           @action=${this._handleAction}
         >
           <mwc-icon-button slot="trigger" alt="menu">
-            <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+            <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
           </mwc-icon-button>
           <mwc-list-item>
             Repositories
