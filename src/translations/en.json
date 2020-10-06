@@ -2243,9 +2243,11 @@
             "show_code_editor": "Show Code Editor",
             "add": "Add Card",
             "edit": "Edit",
-            "delete": "Delete Card",
-            "duplicate": "Duplicate Card",
+            "delete": "Delete card",
+            "duplicate": "Duplicate card",
             "move": "Move to View",
+            "move_before": "Move card before",
+            "move_after": "Move card after",
             "options": "More options",
             "search_cards": "Search cards"
           },
