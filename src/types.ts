@@ -50,15 +50,13 @@ declare global {
   }
 }
 
-export type Constructor<T = Record<string, unknown>> = new (
-  ...args: any[]
-) => T;
+export type Constructor<T = any> = new (...args: any[]) => T;
 
 export interface ClassElement {
   kind: "field" | "method";
   key: PropertyKey;
   placement: "static" | "prototype" | "own";
-  initializer?: () => unknown;
+  initializer?: (...args) => unknown;
   extras?: ClassElement[];
   finisher?: <T>(cls: Constructor<T>) => undefined | Constructor<T>;
   descriptor?: PropertyDescriptor;
@@ -111,7 +109,7 @@ export interface ThemeSettings {
   accentColor?: string;
 }
 
-export interface PanelInfo<T = Record<string, unknown> | null> {
+export interface PanelInfo<T = Record<string, any> | null> {
   component_name: string;
   config: T;
   icon: string | null;

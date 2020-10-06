@@ -35,8 +35,8 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   boot: "auto" | "manual";
   build: boolean;
   options: Record<string, unknown>;
-  network: null | Record<string, unknown>;
-  network_description: null | Record<string, unknown>;
+  network: null | Record<string, number>;
+  network_description: null | Record<string, string>;
   host_network: boolean;
   host_pid: boolean;
   host_ipc: boolean;

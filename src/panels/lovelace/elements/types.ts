@@ -4,7 +4,7 @@ import { Condition } from "../common/validate-condition";
 
 interface LovelaceElementConfigBase {
   type: string;
-  style: Record<string, unknown>;
+  style: Record<string, string>;
 }
 
 export type LovelaceElementConfig =
