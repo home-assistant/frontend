@@ -165,9 +165,6 @@ export class QuickOpenDialog extends LitElement {
               <mwc-list-item
                 @click=${onClick}
                 .domain=${domain}
-                alt=${this.hass.localize(
-                  "ui.panel.developer-tools.tabs.states.more_info"
-                )}
                 .title=${this.hass.localize(
                   "ui.panel.developer-tools.tabs.states.more_info"
                 )}
