@@ -88,7 +88,11 @@ class HassioSystemMetrics extends LitElement {
     this._loadData();
   }
 
-  private _renderMetric(description: string, value: number, title: string): TemplateResult {
+  private _renderMetric(
+    description: string,
+    value: number,
+    title: string
+  ): TemplateResult {
     const roundedValue = roundWithOneDecimal(value);
     return html`<ha-settings-row>
       <span slot="heading">
