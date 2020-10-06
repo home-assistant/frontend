@@ -1,19 +1,14 @@
-import type { QuickOpenDialogParams } from "../dialogs/quick-open/ha-quick-open-dialog";
 import type { Constructor, PropertyValues } from "lit-element";
 import { HassElement } from "./hass-element";
-import { showQuickOpenDialog } from "../dialogs/quick-open/show-dialog-quick-open";
+import {
+  QuickOpenDialogParams,
+  showQuickOpenDialog,
+} from "../dialogs/quick-open/show-dialog-quick-open";
 
 declare global {
   interface HASSDomEvents {
     "hass-quick-open": QuickOpenDialogParams;
-    "hass-service-called": HassServiceCalledParams;
   }
-}
-
-export interface HassServiceCalledParams {
-  domain: string;
-  service: string;
-  serviceData?: {};
 }
 
 export default <T extends Constructor<HassElement>>(superClass: T) =>
@@ -24,7 +19,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       document.addEventListener("keydown", (e: KeyboardEvent) => {
         if (e.code === "KeyP" && e.metaKey) {
           e.preventDefault();
-          const eventParams = {};
+          const eventParams: QuickOpenDialogParams = {};
           if (e.shiftKey) {
             eventParams.commandMode = true;
           }
