@@ -13,7 +13,11 @@ import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { throttle } from "../../common/util/throttle";
 import "../../components/ha-circular-progress";
 import "../../components/state-history-charts";
-import { getLogbookData, LogbookEntry } from "../../data/logbook";
+import {
+  CONTINUOUS_DOMAINS,
+  getLogbookData,
+  LogbookEntry,
+} from "../../data/logbook";
 import "../../panels/logbook/ha-logbook";
 import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
@@ -45,7 +49,7 @@ export class MoreInfoLogbook extends LitElement {
     }
 
     const domain = computeStateDomain(stateObj);
-    if (domain === "sensor" || domain === "proximity") {
+    if (CONTINUOUS_DOMAINS.includes(domain)) {
       return html``;
     }
 
