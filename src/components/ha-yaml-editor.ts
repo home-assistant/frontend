@@ -20,7 +20,7 @@ declare global {
   }
 }
 
-const isEmpty = (obj: object): boolean => {
+const isEmpty = (obj: Record<string, unknown>): boolean => {
   if (typeof obj !== "object") {
     return false;
   }

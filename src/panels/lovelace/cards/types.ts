@@ -50,7 +50,7 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
     | "brightness";
   action_name?: string;
   service?: string;
-  service_data?: object;
+  service_data?: Record<string, unknown>;
   url?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
@@ -212,7 +212,7 @@ export interface PictureElementsCardConfig extends LovelaceCardConfig {
   image?: string;
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
-  state_image?: {};
+  state_image?: Record<string, unknown>;
   state_filter?: string[];
   aspect_ratio?: string;
   entity?: string;
@@ -226,7 +226,7 @@ export interface PictureEntityCardConfig extends LovelaceCardConfig {
   image?: string;
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
-  state_image?: {};
+  state_image?: Record<string, unknown>;
   state_filter?: string[];
   aspect_ratio?: string;
   tap_action?: ActionConfig;
@@ -243,7 +243,7 @@ export interface PictureGlanceCardConfig extends LovelaceCardConfig {
   image?: string;
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
-  state_image?: {};
+  state_image?: Record<string, unknown>;
   state_filter?: string[];
   aspect_ratio?: string;
   entity?: string;
