@@ -254,7 +254,9 @@ export class HaScriptEditor extends LitElement {
         </div>
         <mwc-fab
           slot="fab"
-          .title=${this.hass.localize("ui.common.save")}
+          .title=${this.hass.localize(
+            "ui.panel.config.script.editor.save_script"
+          )}
           @click=${this._saveScript}
           class=${classMap({
             dirty: this._dirty,
