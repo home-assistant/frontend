@@ -163,7 +163,7 @@ class HaConfigPerson extends LitElement {
 
   private _openDialogIfPersonSpecifiedInRoute() {
     const isPersonSpecifiedInRoute =
-      this.route && this.route.path && this.route.path.indexOf("/edit/") > -1;
+      this.route?.path && this.route.path.includes("/edit/");
     if (isPersonSpecifiedInRoute) {
       const routeSegments = this.route.path.split("/edit/");
       const personId = routeSegments.length > 1 ? routeSegments[1] : null;
