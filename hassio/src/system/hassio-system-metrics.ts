@@ -161,6 +161,7 @@ class HassioSystemMetrics extends LitElement {
         }
         .value {
           width: 42px;
+          padding-right: 4px;
         }
       `,
     ];
