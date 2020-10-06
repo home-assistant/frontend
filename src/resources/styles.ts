@@ -110,7 +110,6 @@ export const haStyle = css`
     color: var(--app-header-text-color, white);
   }
 
-  app-toolbar ha-menu-button + [main-title],
   app-toolbar ha-icon-button-arrow-prev + [main-title],
   app-toolbar ha-icon-button + [main-title] {
     margin-left: 24px;
