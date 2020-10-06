@@ -26,9 +26,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
           e.preventDefault();
           let eventParams = {};
           if (e.shiftKey) {
-            eventParams = {
-              commandMode: true,
-            };
+            eventParams.commandMode = true;
           }
 
           showQuickOpenDialog(this, eventParams);
