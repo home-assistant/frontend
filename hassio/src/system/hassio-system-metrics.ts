@@ -89,7 +89,7 @@ class HassioSystemMetrics extends LitElement {
           ${roundedValue}%
         </span>
         <ha-bar
-          title="${description == "Used space"
+          title="${description === "Used space"
             ? `${bytesToString(this.hostInfo.disk_used * 1e6)}/${bytesToString(
                 this.hostInfo.disk_total * 1e6
               )}`
