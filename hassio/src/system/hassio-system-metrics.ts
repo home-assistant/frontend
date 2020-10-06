@@ -24,6 +24,7 @@ import { HomeAssistant } from "../../../src/types";
 import {
   getValueInPercentage,
   roundWithOneDecimal,
+  bytesToString,
 } from "../../../src/util/calculate";
 import { hassioStyle } from "../resources/hassio-style";
 
@@ -88,6 +89,11 @@ class HassioSystemMetrics extends LitElement {
           ${roundedValue}%
         </span>
         <ha-bar
+          title="${description == "Used space"
+            ? `${bytesToString(this.hostInfo.disk_used * 1e6)}/${bytesToString(
+                this.hostInfo.disk_total * 1e6
+              )}`
+            : ""}"
           class="${classMap({
             "target-warning": roundedValue > 50,
             "target-critical": roundedValue > 85,
