@@ -320,7 +320,7 @@ export class HuiButtonCardEditor extends LitElement
 
     fireEvent(this, "config-changed", {
       config: {
-        ...this._config,
+        ...this._config!,
         [target.type!]: { action: "none" },
       },
     });
