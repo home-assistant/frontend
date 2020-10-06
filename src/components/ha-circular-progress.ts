@@ -81,6 +81,9 @@ export class HaCircularProgress extends LitElement {
         :host {
           text-align: initial;
         }
+        .mdc-circular-progress {
+          overflow: hidden;
+        }
       `,
     ];
   }
