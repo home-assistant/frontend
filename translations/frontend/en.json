@@ -2558,7 +2558,7 @@
                         },
                         "entities": {
                             "description": "The Entities card is the most common type of card. It groups items together into lists.",
-                            "edit_special_row": "Edit row using the code editor",
+                            "edit_special_row": "View the details of this row by clicking the edit button",
                             "entity_row_editor": "Entity Row Editor",
                             "entity_row": {
                                 "attribute": "Attribute",

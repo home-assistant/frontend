@@ -570,8 +570,23 @@
             "logbook": {
                 "entries_not_found": "Keine Logbucheinträge gefunden.",
                 "messages": {
+                    "changed_to_state": "wechselte zu {state}",
                     "turned_off": "ausgeschaltet",
-                    "turned_on": "eingeschaltet"
+                    "turned_on": "eingeschaltet",
+                    "was_at_home": "war zu Hause",
+                    "was_away": "war abwesend",
+                    "was_closed": "wurde geschlossen",
+                    "was_connected": "wurde verbunden",
+                    "was_disconnected": "wurde getrennt",
+                    "was_locked": "wurde gesperrt",
+                    "was_low": "war niedrig",
+                    "was_normal": "war normal",
+                    "was_opened": "wurde geöffnet",
+                    "was_plugged_in": "wurde eingesteckt",
+                    "was_safe": "war sicher",
+                    "was_unlocked": "wurde entsperrt",
+                    "was_unplugged": "wurde ausgesteckt",
+                    "was_unsafe": "war unsicher"
                 }
             },
             "media-browser": {
@@ -676,7 +691,7 @@
                     "update": "Aktualisieren"
                 },
                 "faq": "Dokumentation",
-                "no_unique_id": "Diese Entität hat keine eindeutige ID, daher können die Einstellungen nicht über die UI verwaltet werden.",
+                "no_unique_id": "Diese Entität hat keine eindeutige ID, daher können die Einstellungen nicht über die UI verwaltet werden. Schauen Sie in der {faq_link} nach für mehr Details.",
                 "related": "Verwandte",
                 "settings": "Einstellungen"
             },
@@ -732,6 +747,7 @@
                 "dismiss": "Dialog ausblenden",
                 "edit": "Entität bearbeiten",
                 "history": "Verlauf",
+                "last_updated": "Letztes Update",
                 "person": {
                     "create_zone": "Zone vom aktuellen Standort erstellen"
                 },
@@ -1257,9 +1273,11 @@
                     },
                     "alexa": {
                         "banner": "Das Bearbeiten der Entitäten, die über diese Benutzeroberfläche verfügbar gemacht werden, ist deaktiviert, da in configuration.yaml Entitätsfilter konfiguriert sind.",
+                        "dont_expose_entity": "Entität nicht anzeigen",
                         "expose": "In Alexa anzeigen",
+                        "expose_entity": "Entität anzeigen",
                         "exposed_entities": "Exponierte Entitäten",
-                        "not_exposed_entities": "Nicht exponierte Entitäten",
+                        "not_exposed_entities": "Nicht angezeigte Entitäten",
                         "title": "Alexa"
                     },
                     "caption": "Home Assistant Cloud",
@@ -1298,7 +1316,7 @@
                         "disable_2FA": "Zweifaktor-Authentifizierung deaktivieren",
                         "expose": "Im Google Assistenten anzeigen",
                         "exposed_entities": "Exponierte Entitäten",
-                        "not_exposed_entities": "Nicht exponierte Entitäten",
+                        "not_exposed_entities": "Nicht angezeigte Entitäten",
                         "sync_to_google": "Änderungen mit Google synchronisieren.",
                         "title": "Google Assistant"
                     },
@@ -1512,7 +1530,7 @@
                 "header": "Home Assistant konfigurieren",
                 "helpers": {
                     "caption": "Helfer",
-                    "description": "Elemente, die beim Aufbau von Automatisierungen helfen können.",
+                    "description": "Elemente verwalten, die beim Aufbau von Automatisierungen helfen können.",
                     "dialog": {
                         "add_helper": "Helfer hinzufügen",
                         "add_platform": "{platform} hinzufügen",
@@ -1794,6 +1812,8 @@
                     "create_person": "Person erstellen",
                     "description": "Verwalte die Personen, die Home Assistant verfolgt.",
                     "detail": {
+                        "admin": "Administrator",
+                        "allow_login": "Erlauben Sie dieser Person, sich einzuloggen.",
                         "confirm_delete_user": "Bist Du sicher, dass Du das Benutzerkonto von {name} löschen möchtest? Du kannst das Benutzerkonto immer noch verfolgen, aber es kann nicht mehr zum Anmelden verwendet werden.",
                         "create": "Erstellen",
                         "delete": "Löschen",
@@ -1985,6 +2005,7 @@
                         "name": "Name",
                         "password": "Passwort",
                         "password_confirm": "Passwort bestätigen",
+                        "password_not_match": "Passwörter stimmen nicht überein",
                         "username": "Benutzername"
                     },
                     "caption": "Benutzer",
@@ -2003,7 +2024,7 @@
                         "name": "Name",
                         "new_password": "Neues Passwort",
                         "owner": "Besitzer",
-                        "password_changed": "Das Passwort wurde geändert!",
+                        "password_changed": "Das Passwort wurde erfolgreich geändert",
                         "system_generated": "System generiert",
                         "system_generated_users_not_editable": "Systemgenerierte Benutzer können nicht aktualisiert werden.",
                         "system_generated_users_not_removable": "Vom System generierte Benutzer können nicht entfernt werden.",
@@ -2135,7 +2156,7 @@
                         "create": "Erstellen",
                         "delete": "Löschen",
                         "icon": "Icon",
-                        "icon_error_msg": "Das Icon sollte das Format Präfix:ICONNAME haben, zum Beispiel: mdi:home",
+                        "icon_error_msg": "Das Icon sollte das Format \"Präfix:ICONNAME\" haben, zum Beispiel: \"mdi:home\"",
                         "latitude": "Breitengrad",
                         "longitude": "Längengrad",
                         "name": "Name",
@@ -2300,6 +2321,7 @@
                     },
                     "templates": {
                         "description": "Vorlagen werden durch die Jinja2-Template-Engine mit einigen für Home Assistant spezifischen Erweiterungen gerendert.",
+                        "domain": "Domain",
                         "editor": "Vorlageneditor",
                         "entity": "Entität",
                         "jinja_documentation": "Jinja2 Template Dokumentation",
@@ -2377,8 +2399,12 @@
                 "editor": {
                     "action-editor": {
                         "actions": {
-                            "call-service": "Dienst ausführen"
-                        }
+                            "call-service": "Dienst ausführen",
+                            "default_action": "Standardaktion",
+                            "more-info": "Mehr Info"
+                        },
+                        "navigation_path": "Navigationspfad",
+                        "url_path": "URL Pfad"
                     },
                     "card": {
                         "alarm-panel": {
@@ -2391,7 +2417,11 @@
                             "name": "Schaltfläche"
                         },
                         "calendar": {
-                            "name": "Kalender"
+                            "name": "Kalender",
+                            "views": {
+                                "dayGridDay": "Tag",
+                                "dayGridMonth": "Monat"
+                            }
                         },
                         "conditional": {
                             "card": "Karte",
@@ -2413,7 +2443,11 @@
                             "edit_special_row": "Zeile mit dem Code-Editor bearbeiten",
                             "entity_row": {
                                 "attribute": "Attribut",
-                                "call-service": "Dienst ausführen"
+                                "button": "Schalter",
+                                "call-service": "Dienst ausführen",
+                                "cast": "Cast",
+                                "divider": "Trennlinie",
+                                "weblink": "Webseiten Link"
                             },
                             "name": "Elemente",
                             "secondary_info_values": {
@@ -2864,6 +2898,9 @@
                     "more_integrations": "Mehr"
                 },
                 "intro": "Sind Sie bereit, dein Zuhause zu wecken, Ihre Privatsphäre zurückzugewinnen und einer weltweiten Gemeinschaft von Tüftlern beizutreten?",
+                "restore": {
+                    "hide_log": "Vollständiges Log verstecken"
+                },
                 "user": {
                     "create_account": "Benutzerkonto anlegen",
                     "data": {

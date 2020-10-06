@@ -543,6 +543,7 @@
                 "no_history_found": "Nenašla sa žiadna história stavov"
             },
             "logbook": {
+                "by_service": "službou",
                 "entries_not_found": "Nenašli sa žiadne záznamy v denníku.",
                 "messages": {
                     "became_unavailable": "sa stal nedostupným",
