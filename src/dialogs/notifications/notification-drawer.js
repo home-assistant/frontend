@@ -88,7 +88,7 @@ export class HuiNotificationDrawer extends EventsMixin(
       notifications: {
         type: Array,
         computed: "_computeNotifications(open, hass, _notificationsBackend)",
-        notify: true,
+        observer: "_notificationsChanged",
       },
       _notificationsBackend: {
         type: Array,
@@ -123,31 +123,22 @@ export class HuiNotificationDrawer extends EventsMixin(
         this.hass.connection,
         (notifications) => {
           this._notificationsBackend = notifications;
-          this.addEventListener(
-            "notifications-changed",
-            this._onNotificationsChanged
-          );
         }
       );
-    } else {
-      this.removeEventListener(
-        "notifications-changed",
-        this._onNotificationsChanged
-      );
-      if (this._unsubNotifications) {
-        this._unsubNotifications();
-        this._unsubNotifications = undefined;
-      }
+    } else if (this._unsubNotifications) {
+      this._unsubNotifications();
+      this._unsubNotifications = undefined;
     }
   }
 
-  _onNotificationsChanged(ev) {
-    if (this.notifications.length === 0 && this.open) {
-      // without the timeout, this.removeEventListener('notifications-changed') does not take effect
-      // we have to wait for the next cycle to trigger closing the drawer and removing the event listener successfully
-      setTimeout(() => {
-        this.open = false;
-      }, 0);
+  _notificationsChanged(newNotifications, oldNotifications) {
+    // automatically close drawer when last notification has been dismissed
+    if (
+      this.open &&
+      oldNotifications.length > 0 &&
+      !newNotifications.length === 0
+    ) {
+      this.open = false;
     }
   }
 
