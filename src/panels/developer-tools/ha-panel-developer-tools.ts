@@ -108,7 +108,7 @@ class PanelDeveloperTools extends LitElement {
           height: calc(100vh - 112px);
         }
         paper-tabs {
-          margin-left: 12px;
+          margin-left: 24px;
           --paper-tabs-selection-bar-color: #fff;
           text-transform: uppercase;
         }
