@@ -22,11 +22,11 @@ export const roundWithOneDecimal = (value: number): number => {
   return Math.round(value * 10) / 10;
 };
 
-export const bytesToString = (value: number, decimals = 3): number => {
-    if (bytes === 0) return '0 Bytes';
+export const bytesToString = (value: number, decimals = 3): string => {
+    if (value === 0) return '0 Bytes';
     const k = 1024;
     decimals = decimals < 0 ? 0 : decimals;
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / k ** i).toFixed(decimals)) + ' ' + sizes[i];
+    const i = Math.floor(Math.log(value) / Math.log(k));
+    return parseFloat((value / k ** i).toFixed(decimals)) + ' ' + sizes[i];
 }
