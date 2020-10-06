@@ -18,6 +18,7 @@ import "../../../components/ha-circular-progress";
 import "../../../components/ha-code-editor";
 import type { HaCodeEditor } from "../../../components/ha-code-editor";
 import type {
+  ActionConfig,
   LovelaceCardConfig,
   LovelaceConfig,
 } from "../../../data/lovelace";
@@ -27,17 +28,20 @@ import { getCardElementClass } from "../create-element/create-card-element";
 import { getRowElementClass } from "../create-element/create-row-element";
 import type { LovelaceRowConfig } from "../entity-rows/types";
 import type {
+  LovelaceActionEditor,
   LovelaceCardConstructor,
   LovelaceCardEditor,
   LovelaceRowConstructor,
   LovelaceRowEditor,
 } from "../types";
-import "./config-elements/hui-generic-entity-row-editor";
 import { GUISupportError } from "./gui-support-error";
 import { GUIModeChangedEvent } from "./types";
 
+import "./config-elements/hui-generic-entity-row-editor";
+import "../components/hui-action-editor";
+
 export interface ConfigChangedEvent {
-  config: LovelaceCardConfig | LovelaceRowConfig;
+  config: LovelaceCardConfig | LovelaceRowConfig | ActionConfig;
   error?: string;
   guiModeAvailable?: boolean;
 }
@@ -59,6 +63,7 @@ export interface UIConfigChangedEvent extends Event {
 }
 
 const GENERIC_ROW_TYPE = "generic-row";
+const ACTION_TYPE = "action";
 
 @customElement("hui-element-editor")
 export class HuiElementEditor extends LitElement {
@@ -66,15 +71,19 @@ export class HuiElementEditor extends LitElement {
 
   @property({ attribute: false }) public lovelace?: LovelaceConfig;
 
-  @property() public elementType: "row" | "card" = "card";
+  @property() public elementType: "action" | "row" | "card" = "card";
 
   @internalProperty() private _yaml?: string;
 
-  @internalProperty() private _config?: LovelaceCardConfig | LovelaceRowConfig;
+  @internalProperty() private _config?:
+    | LovelaceCardConfig
+    | LovelaceRowConfig
+    | ActionConfig;
 
   @internalProperty() private _configElement?:
     | LovelaceCardEditor
-    | LovelaceRowEditor;
+    | LovelaceRowEditor
+    | LovelaceActionEditor;
 
   @internalProperty() private _configElType?: string;
 
@@ -108,11 +117,17 @@ export class HuiElementEditor extends LitElement {
     this._setConfig();
   }
 
-  public get value(): LovelaceCardConfig | LovelaceRowConfig | undefined {
+  public get value():
+    | LovelaceCardConfig
+    | LovelaceRowConfig
+    | ActionConfig
+    | undefined {
     return this._config;
   }
 
-  public set value(config: LovelaceCardConfig | LovelaceRowConfig | undefined) {
+  public set value(
+    config: LovelaceCardConfig | LovelaceRowConfig | ActionConfig | undefined
+  ) {
     if (this._config && deepEqual(config, this._config)) {
       return;
     }
@@ -263,7 +278,9 @@ export class HuiElementEditor extends LitElement {
 
     let type: string;
 
-    if (
+    if (this.elementType === "action") {
+      type = ACTION_TYPE;
+    } else if (
       this.elementType === "row" &&
       !this.value.type &&
       "entity" in this.value
@@ -303,6 +320,8 @@ export class HuiElementEditor extends LitElement {
           configElement = document.createElement(
             "hui-generic-entity-row-editor"
           );
+        } else if (this.elementType === "action") {
+          configElement = document.createElement("hui-action-editor");
         } else {
           configElement = undefined;
           throw new GUISupportError(`No visual editor available for: ${type}`);

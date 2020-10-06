@@ -6,24 +6,39 @@ import {
   internalProperty,
   LitElement,
   property,
+  query,
   TemplateResult,
 } from "lit-element";
 import { assert, boolean, object, optional, string } from "superstruct";
-import { fireEvent } from "../../../../common/dom/fire_event";
+
+import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { stateIcon } from "../../../../common/entity/state_icon";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
-import "../../../../components/ha-formfield";
-import "../../../../components/ha-icon-input";
-import "../../../../components/ha-switch";
 import { ActionConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import { ButtonCardConfig } from "../../cards/types";
-import "../../components/hui-action-editor";
+import { LovelaceCardEditor } from "../../types";
+import {
+  actionConfigStruct,
+  EditorTarget,
+  GUIModeChangedEvent,
+} from "../types";
+import { configElementStyle } from "./config-elements-style";
+// eslint-disable-next-line import/no-duplicates
+import { HuiElementEditor } from "../hui-element-editor";
+// eslint-disable-next-line import/no-duplicates
+import { EditActionEvent } from "../../components/hui-actions-editor";
+
+// eslint-disable-next-line import/no-duplicates
+import "../hui-element-editor";
+// eslint-disable-next-line import/no-duplicates
+import "../../components/hui-actions-editor";
+import "../hui-detail-editor-base";
 import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
-import { LovelaceCardEditor } from "../../types";
-import { actionConfigStruct, EditorTarget } from "../types";
-import { configElementStyle } from "./config-elements-style";
+import "../../../../components/ha-formfield";
+import "../../../../components/ha-icon-input";
+import "../../../../components/ha-switch";
 
 const cardConfigStruct = object({
   type: string(),
@@ -39,21 +54,22 @@ const cardConfigStruct = object({
   show_state: optional(boolean()),
 });
 
-const actions = [
-  "more-info",
-  "toggle",
-  "navigate",
-  "url",
-  "call-service",
-  "none",
-];
-
 @customElement("hui-button-card-editor")
 export class HuiButtonCardEditor extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @internalProperty() private _config?: ButtonCardConfig;
+
+  @internalProperty() protected _editActionConfig?: ActionConfig;
+
+  @internalProperty() private _editActionType?: string;
+
+  @internalProperty() private _editActionGuiModeAvailable? = true;
+
+  @internalProperty() private _editActionGuiMode? = true;
+
+  @query("hui-element-editor") private _cardEditorEl?: HuiElementEditor;
 
   public setConfig(config: ButtonCardConfig): void {
     assert(config, cardConfigStruct);
@@ -98,6 +114,10 @@ export class HuiButtonCardEditor extends LitElement
     return this._config!.hold_action || { action: "more-info" };
   }
 
+  get _double_tap_action(): ActionConfig {
+    return this._config!.double_tap_action || { action: "none" };
+  }
+
   get _theme(): string {
     return this._config!.theme || "";
   }
@@ -108,6 +128,31 @@ export class HuiButtonCardEditor extends LitElement
     }
 
     const dir = computeRTLDirection(this.hass!);
+
+    if (this._editActionConfig) {
+      return html`
+        <hui-detail-editor-base
+          .hass=${this.hass}
+          .guiModeAvailable=${this._editActionGuiModeAvailable}
+          .guiMode=${this._editActionGuiMode}
+          @toggle-gui-mode=${this._toggleMode}
+          @go-back=${this._goBack}
+        >
+          <span slot="title"
+            >${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic." + this._editActionType
+            )}</span
+          >
+          <hui-element-editor
+            .hass=${this.hass}
+            .value=${this._editActionConfig}
+            elementType="action"
+            @config-changed=${this._handleActionConfigChanged}
+            @GUImode-changed=${this._handleGUIModeChanged}
+          ></hui-element-editor>
+        </hui-detail-editor-base>
+      `;
+    }
 
     return html`
       <div class="card-config">
@@ -212,41 +257,73 @@ export class HuiButtonCardEditor extends LitElement
           ></hui-theme-select-editor>
         </div>
         <div>
-          <hui-action-editor
-            .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.tap_action"
-            )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            )})"
+          <hui-actions-editor
             .hass=${this.hass}
-            .config=${this._tap_action}
-            .actions=${actions}
-            .configValue=${"tap_action"}
+            .tapAction=${this._tap_action}
+            .holdAction=${this._hold_action}
+            .doubleTapAction=${this._double_tap_action}
             .tooltipText=${this.hass.localize(
               "ui.panel.lovelace.editor.card.button.default_action_help"
             )}
-            @value-changed=${this._valueChanged}
-          ></hui-action-editor>
-        </div>
-        <div>
-          <hui-action-editor
-            .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.hold_action"
-            )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            )})"
-            .hass=${this.hass}
-            .config=${this._hold_action}
-            .actions=${actions}
-            .configValue=${"hold_action"}
-            .tooltipText=${this.hass.localize(
-              "ui.panel.lovelace.editor.card.button.default_action_help"
-            )}
-            @value-changed=${this._valueChanged}
-          ></hui-action-editor>
+            @edit-action=${this._editAction}
+            @clear-action=${this._clearAction}
+          ></hui-actions-editor>
         </div>
       </div>
     `;
+  }
+
+  private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {
+    ev.stopPropagation();
+    this._editActionGuiMode = ev.detail.guiMode;
+    this._editActionGuiModeAvailable = ev.detail.guiModeAvailable;
+  }
+
+  private _toggleMode(): void {
+    this._cardEditorEl?.toggleMode();
+  }
+
+  private _editAction(ev: HASSDomEvent<EditActionEvent>): void {
+    this._editActionType = ev.detail.type;
+    this._editActionConfig = this[`_${this._editActionType}`];
+  }
+
+  private _goBack(): void {
+    this._editActionConfig = undefined;
+    this._editActionType = undefined;
+    this._editActionGuiModeAvailable = true;
+    this._editActionGuiMode = true;
+  }
+
+  private _handleActionConfigChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+
+    const config = ev.detail.config as ActionConfig;
+    this._editActionGuiModeAvailable = ev.detail.guiModeAvailable;
+
+    if (this[`_${this._editActionType}`] === config) {
+      return;
+    }
+
+    this._editActionConfig = config;
+
+    this._config = {
+      ...this._config!,
+      [this._editActionType!]: this._editActionConfig,
+    };
+
+    fireEvent(this, "config-changed", { config: this._config! });
+  }
+
+  private _clearAction(ev: CustomEvent): void {
+    const target = ev.target! as EditorTarget;
+
+    fireEvent(this, "config-changed", {
+      config: {
+        ...this._config,
+        [target.type!]: { action: "none" },
+      },
+    });
   }
 
   private _change(ev: Event) {
@@ -293,6 +370,7 @@ export class HuiButtonCardEditor extends LitElement
         };
       }
     }
+
     fireEvent(this, "config-changed", { config: newConfig });
   }
 

@@ -10,6 +10,7 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   TemplateResult,
@@ -25,34 +26,38 @@ import {
   UrlActionConfig,
 } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
-import { EditorTarget } from "../editor/types";
+import { actionConfigStruct, EditorTarget } from "../editor/types";
 import { computeServiceAttributes } from "../../../common/service/compute_service_attributes";
 import { repeat } from "lit-html/directives/repeat";
+import { LovelaceActionEditor } from "../types";
+import { assert } from "superstruct";
 
 @customElement("hui-action-editor")
-export class HuiActionEditor extends LitElement {
-  @property() public config?: ActionConfig;
-
-  @property() public label?: string;
-
-  @property() public actions?: string[];
+export class HuiActionEditor extends LitElement
+  implements LovelaceActionEditor {
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public tooltipText?: string;
 
-  @property() protected hass?: HomeAssistant;
+  @internalProperty() private _config?: ActionConfig;
+
+  public setConfig(config: ActionConfig): void {
+    assert(config, actionConfigStruct);
+    this._config = config;
+  }
 
   get _navigation_path(): string {
-    const config = this.config as NavigateActionConfig;
+    const config = this._config as NavigateActionConfig;
     return config.navigation_path || "";
   }
 
   get _url_path(): string {
-    const config = this.config as UrlActionConfig;
+    const config = this._config as UrlActionConfig;
     return config.url_path || "";
   }
 
   get _service(): string {
-    const config = this.config as CallServiceActionConfig;
+    const config = this._config as CallServiceActionConfig;
     return config.service || "";
   }
 
@@ -60,33 +65,41 @@ export class HuiActionEditor extends LitElement {
     entity_id?: string | [string];
     [key: string]: any;
   } {
-    const config = this.config as CallServiceActionConfig;
+    const config = this._config as CallServiceActionConfig;
     return config.service_data || {};
   }
 
   protected render(): TemplateResult {
-    if (!this.hass || !this.actions) {
+    if (!this.hass) {
       return html``;
     }
+
+    const actions = [
+      "more-info",
+      "toggle",
+      "navigate",
+      "url",
+      "call-service",
+      "none",
+    ];
 
     return html`
       <div class="dropdown">
         <paper-dropdown-menu
-          .label=${this.label}
           .configValue=${"action"}
           @iron-select=${this._actionPicked}
         >
           <paper-listbox
             slot="dropdown-content"
             attr-for-selected="value"
-            .selected=${this.config?.action ?? "default"}
+            .selected=${this._config?.action ?? "default"}
           >
             <paper-item .value=${"default"}
               >${this.hass!.localize(
                 "ui.panel.lovelace.editor.action-editor.actions.default_action"
               )}</paper-item
             >
-            ${this.actions.map((action) => {
+            ${actions.map((action) => {
               return html`
                 <paper-item .value=${action}
                   >${this.hass!.localize(
@@ -103,7 +116,7 @@ export class HuiActionEditor extends LitElement {
             `
           : ""}
       </div>
-      ${this.config?.action === "navigate"
+      ${this._config?.action === "navigate"
         ? html`
             <paper-input
               label=${this.hass!.localize(
@@ -115,7 +128,7 @@ export class HuiActionEditor extends LitElement {
             ></paper-input>
           `
         : ""}
-      ${this.config?.action === "url"
+      ${this._config?.action === "url"
         ? html`
             <paper-input
               label=${this.hass!.localize(
@@ -127,7 +140,7 @@ export class HuiActionEditor extends LitElement {
             ></paper-input>
           `
         : ""}
-      ${this.config?.action === "call-service"
+      ${this._config?.action === "call-service"
         ? html`
             <ha-service-picker
               .hass=${this.hass}
@@ -153,13 +166,13 @@ export class HuiActionEditor extends LitElement {
                   <table class="attributes">
                     <tr>
                       <th>
-                        Parameter
+                        Parameter - Translate
                       </th>
                       <th>
-                        Description
+                        Description - Translate
                       </th>
                       <th>
-                        Example
+                        Example - Translate
                       </th>
                     </tr>
                     ${repeat(
@@ -187,31 +200,31 @@ export class HuiActionEditor extends LitElement {
 
   private _actionPicked(ev: CustomEvent): void {
     ev.stopPropagation();
-    if (!this.hass) {
+    if (!this._config || !this.hass) {
       return;
     }
     const item = ev.detail.item;
     const value = item.value;
-    if (this.config?.action === value) {
+    if (this._config?.action === value) {
       return;
     }
     if (value === "default") {
       fireEvent(this, "value-changed", { value: undefined });
-      if (this.config?.action) {
+      if (this._config?.action) {
         (this.shadowRoot!.querySelector(
           "paper-listbox"
-        ) as PaperListboxElement).select(this.config.action);
+        ) as PaperListboxElement).select(this._config.action);
       }
       return;
     }
-    fireEvent(this, "value-changed", {
-      value: { action: value },
+    fireEvent(this, "config-changed", {
+      config: { ...this._config, action: value },
     });
   }
 
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    if (!this.hass) {
+    if (!this._config || !this.hass) {
       return;
     }
     const target = ev.target! as EditorTarget;
@@ -220,8 +233,8 @@ export class HuiActionEditor extends LitElement {
       return;
     }
     if (target.configValue) {
-      fireEvent(this, "value-changed", {
-        value: { ...this.config!, [target.configValue!]: value },
+      fireEvent(this, "config-changed", {
+        config: { ...this._config, [target.configValue!]: value },
       });
     }
   }
