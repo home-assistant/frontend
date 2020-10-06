@@ -40,7 +40,12 @@ export class MoreInfoLogbook extends LitElement {
     }
     const stateObj = this.hass.states[this.entityId];
 
-    if (!stateObj) {
+    if (!stateObj || stateObj.attributes.unit_of_measurement) {
+      return html``;
+    }
+
+    const domain = computeStateDomain(stateObj);
+    if (domain === "sensor" || domain === "proximity") {
       return html``;
     }
 
@@ -155,9 +160,9 @@ export class MoreInfoLogbook extends LitElement {
           overflow: auto;
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
-         ha-logbook {
-           max-height: unset;
-         }
+          ha-logbook {
+            max-height: unset;
+          }
         }
         ha-circular-progress {
           display: flex;
