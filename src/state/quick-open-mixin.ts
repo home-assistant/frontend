@@ -24,7 +24,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       document.addEventListener("keydown", (e: KeyboardEvent) => {
         if (e.code === "KeyP" && e.metaKey) {
           e.preventDefault();
-          let eventParams = {};
+          const eventParams = {};
           if (e.shiftKey) {
             eventParams.commandMode = true;
           }
