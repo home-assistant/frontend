@@ -22,7 +22,7 @@ export const roundWithOneDecimal = (value: number): number => {
   return Math.round(value * 10) / 10;
 };
 
-export const bytesToLargestString = (value: number, decimals = 3): number => {
+export const bytesToString = (value: number, decimals = 3): number => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
     decimals = decimals < 0 ? 0 : decimals;
