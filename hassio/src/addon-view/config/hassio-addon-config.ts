@@ -39,7 +39,7 @@ class HassioAddonConfig extends LitElement {
 
   @property({ type: Boolean }) private _configHasChanged = false;
 
-  @query("ha-yaml-editor") private _editor!: HaYamlEditor;
+  @query("ha-yaml-editor", true) private _editor!: HaYamlEditor;
 
   protected render(): TemplateResult {
     const editor = this._editor;

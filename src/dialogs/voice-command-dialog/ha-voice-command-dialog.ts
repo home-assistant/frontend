@@ -57,7 +57,7 @@ export class HaVoiceCommandDialog extends LitElement {
 
   @internalProperty() private _agentInfo?: AgentInfo;
 
-  @query("#messages") private messages!: PaperDialogScrollableElement;
+  @query("#messages", true) private messages!: PaperDialogScrollableElement;
 
   private recognition!: SpeechRecognition;
 

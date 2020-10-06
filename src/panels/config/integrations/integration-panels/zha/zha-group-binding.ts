@@ -59,7 +59,7 @@ export class ZHAGroupBindingControl extends LitElement {
 
   private _clustersToBind?: Cluster[];
 
-  @query("zha-clusters-data-table")
+  @query("zha-clusters-data-table", true)
   private _zhaClustersDataTable!: ZHAClustersDataTable;
 
   protected updated(changedProperties: PropertyValues): void {
