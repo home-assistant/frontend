@@ -111,7 +111,8 @@ export class HuiStackCardEditor extends LitElement
                   <mwc-icon-button
                     .disabled=${selected === 0}
                     label="Move card before"
-                    @click=${() => this._handleMove(-1)}
+                    @click=${this._handleMove}
+                    .move=${-1}
                   >
                     <ha-svg-icon .path=${mdiArrowLeft}></ha-svg-icon>
                   </mwc-icon-button>
@@ -119,7 +120,8 @@ export class HuiStackCardEditor extends LitElement
                   <mwc-icon-button
                     label="Move card after"
                     .disabled=${selected === numcards - 1}
-                    @click=${() => this._handleMove(+1)}
+                    @click=${this._handleMove}
+                    .move=${1}
                   >
                     <ha-svg-icon .path=${mdiArrowRight}></ha-svg-icon>
                   </mwc-icon-button>
@@ -196,12 +198,13 @@ export class HuiStackCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _handleMove(direction: number) {
+  private _handleMove(ev: Event) {
     if (!this._config) {
       return;
     }
+    const move = (ev.currentTarget as any).move;
     const source = this._selectedCard;
-    const target = source + direction;
+    const target = source + move;
     const cards = [...this._config.cards];
     const card = cards.splice(this._selectedCard, 1)[0];
     cards.splice(target, 0, card);
