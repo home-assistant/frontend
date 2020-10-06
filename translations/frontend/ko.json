@@ -574,7 +574,7 @@
                 "entries_not_found": "로그북 구성요소를 찾을 수 없습니다."
             },
             "media-browser": {
-                "audio_not_supported": "브라우저가 오디오 요소를 지원하지 않습니다.",
+                "audio_not_supported": "브라우저가 오디오를 지원하지 않습니다.",
                 "choose_player": "플레이어 선택",
                 "choose-source": "소스 선택",
                 "class": {
@@ -609,7 +609,7 @@
                 "documentation": "관련문서",
                 "learn_adding_local_media": "{documentation} 에서 미디어 추가에 대해 자세히 알아보세요.",
                 "local_media_files": "브라우저 또는 지원되는 미디어 플레이어에서 탐색하고 재생할 수 있도록 비디오, 오디오 및 이미지 파일을 미디어 디렉토리에 위치 시켜 주세요.",
-                "media_browsing_error": "미디어 브라우징 오류",
+                "media_browsing_error": "미디어 탐색 오류",
                 "media_not_supported": "브라우저 미디어 플레이어에서 이 유형의 미디어를 지원하지 않습니다",
                 "media_player": "미디어 플레이어",
                 "media-player-browser": "미디어 플레이어 브라우저",
@@ -621,7 +621,7 @@
                 "play": "재생",
                 "play-media": "미디어 재생",
                 "setup_local_help": "로컬 미디어 설정 방법에 대한 {documentation} 를 확인하십시오.",
-                "video_not_supported": "브라우저가 비디오 요소를 지원하지 않습니다.",
+                "video_not_supported": "브라우저가 비디오를 지원하지 않습니다.",
                 "web-browser": "웹 브라우저"
             },
             "picture-upload": {
@@ -684,7 +684,7 @@
                     "unavailable": "이 구성요소는 현재 사용할 수 없습니다.",
                     "update": "업데이트"
                 },
-                "no_unique_id": "이 구성요소는 고유한 ID 가 없으므로 UI 에서 설정 내용을 관리할 수 없습니다.",
+                "no_unique_id": "이 구성요소는 고유한 ID 가 없으므로 UI 에서 설정 내용을 관리할 수 없습니다. 자세한 내용은 {faq_link} 을(를) 참조해주세요.",
                 "related": "관련 내용",
                 "settings": "설정 내용"
             },
@@ -2219,7 +2219,7 @@
                         "create": "만들기",
                         "delete": "삭제",
                         "icon": "아이콘",
-                        "icon_error_msg": "아이콘은 접두사:아이콘이름 형식이어야 합니다. 예: mdi:home",
+                        "icon_error_msg": "아이콘은 \"접두사:아이콘이름\" 형식이어야 합니다. 예: \"mdi:home\"",
                         "latitude": "위도",
                         "longitude": "경도",
                         "name": "이름",

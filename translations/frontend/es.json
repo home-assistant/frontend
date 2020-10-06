@@ -579,7 +579,7 @@
                     "changed_to_state": "cambiado a {state}",
                     "cleared_device_class": "despejado (no se detecta {device_class})",
                     "detected_device_class": "detectado {device_class}",
-                    "rose": "aumentó",
+                    "rose": "salió",
                     "set": "Establecer",
                     "turned_off": "apagado",
                     "turned_on": "encendido",
