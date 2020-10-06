@@ -112,7 +112,7 @@ export const haStyle = css`
 
   app-toolbar ha-icon-button-arrow-prev + [main-title],
   app-toolbar ha-icon-button + [main-title] {
-    margin-left: 24px;
+    margin-left: 12px;
   }
 
   h1 {
