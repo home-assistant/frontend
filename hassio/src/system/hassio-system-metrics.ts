@@ -77,7 +77,11 @@ class HassioSystemMetrics extends LitElement {
       <ha-card header="System Metrics">
         <div class="card-content">
           ${metrics.map((metric) =>
-            this._renderMetric(metric.description, metric.value ?? 0)
+            this._renderMetric(
+              metric.description,
+              metric.value ?? 0,
+              metric.title
+            )
           )}
         </div>
       </ha-card>
