@@ -67,7 +67,7 @@ export class ExternalAuth extends Auth {
   private _tokenCallbackPromise?: Promise<RefreshTokenResponse>;
 
   public async refreshAccessToken(force?: boolean) {
-    if (this._tokenCallbackPromise) {
+    if (this._tokenCallbackPromise && !force) {
       await this._tokenCallbackPromise;
       return;
     }
@@ -85,7 +85,8 @@ export class ExternalAuth extends Auth {
       }
     );
 
-    await 0;
+    // we sleep 1 microtask to get the promise to actually set it on the window object.
+    await Promise.resolve();
 
     if (window.externalApp) {
       window.externalApp.getExternalAuth(JSON.stringify(payload));
@@ -108,7 +109,8 @@ export class ExternalAuth extends Auth {
         success ? resolve(data) : reject(data);
     });
 
-    await 0;
+    // we sleep 1 microtask to get the promise to actually set it on the window object.
+    await Promise.resolve();
 
     if (window.externalApp) {
       window.externalApp.revokeExternalAuth(JSON.stringify(payload));
