@@ -130,7 +130,7 @@ class HaMenuButton extends LitElement {
     return css`
       :host {
         position: relative;
-        margin-right: 13px;
+        margin-right: 12px;
       }
       .dot {
         pointer-events: none;
