@@ -198,9 +198,6 @@ export class QuickOpenDialog extends LitElement {
           }
         }
 
-        ha-dialog[data-domain="camera"] {
-          --dialog-content-padding: 0;
-        }
       `,
     ];
   }
