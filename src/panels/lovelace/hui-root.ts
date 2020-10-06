@@ -700,8 +700,8 @@ class HUIRoot extends LitElement {
           min-height: 100%;
         }
         paper-tabs {
-          margin-left: max(env(safe-area-inset-left), 17px);
-          margin-right: env(safe-area-inset-right);
+          margin-left: max(env(safe-area-inset-left), 16px);
+          margin-right: max(env(safe-area-inset-right), 16px);
           --paper-tabs-selection-bar-color: var(--text-primary-color, #fff);
           text-transform: uppercase;
         }
