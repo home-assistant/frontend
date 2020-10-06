@@ -39,27 +39,37 @@ class HassioSystemMetrics extends LitElement {
   @internalProperty() private _coreMetrics?: HassioStats;
 
   protected render(): TemplateResult | void {
-    const usedSpace = this._getUsedSpace(this.hostInfo);
+    const host = this.hostInfo
+    const usedSpace = this._getUsedSpace(host);
+    const usedSpaceTitle =
+      bytesToString(host.disk_used * 1e6) +
+      "/" +
+      bytesToString(host.disk_total * 1e6);
     const metrics = [
       {
         description: "Core CPU Usage",
         value: this._coreMetrics?.cpu_percent,
+        title: "",
       },
       {
         description: "Core RAM Usage",
         value: this._coreMetrics?.memory_percent,
+        title: "",
       },
       {
         description: "Supervisor CPU Usage",
         value: this._supervisorMetrics?.cpu_percent,
+        title: "",
       },
       {
         description: "Supervisor RAM Usage",
         value: this._supervisorMetrics?.memory_percent,
+        title: "",
       },
       {
         description: "Used Space",
         value: usedSpace,
+        title: usedSpaceTitle,
       },
     ];
 
@@ -89,11 +99,7 @@ class HassioSystemMetrics extends LitElement {
           ${roundedValue}%
         </span>
         <ha-bar
-          title="${description === "Used space"
-            ? `${bytesToString(this.hostInfo.disk_used * 1e6)}/${bytesToString(
-                this.hostInfo.disk_total * 1e6
-              )}`
-            : ""}"
+          title="${title}"
           class="${classMap({
             "target-warning": roundedValue > 50,
             "target-critical": roundedValue > 85,
