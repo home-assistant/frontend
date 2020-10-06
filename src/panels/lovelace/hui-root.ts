@@ -285,6 +285,7 @@ class HUIRoot extends LitElement {
                 <div sticky>
                   <paper-tabs
                     scrollable
+                    hide-scroll-buttons
                     .selected="${this._curView}"
                     @iron-activate="${this._handleViewSelected}"
                     dir="${computeRTLDirection(this.hass!)}"
@@ -699,7 +700,7 @@ class HUIRoot extends LitElement {
           min-height: 100%;
         }
         paper-tabs {
-          margin-left: max(env(safe-area-inset-left), 12px);
+          margin-left: max(env(safe-area-inset-left), 17px);
           margin-right: env(safe-area-inset-right);
           --paper-tabs-selection-bar-color: var(--text-primary-color, #fff);
           text-transform: uppercase;
