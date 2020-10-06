@@ -50,7 +50,7 @@ class DialogThingtalk extends LitElement {
 
   @internalProperty() private _placeholders?: PlaceholderContainer;
 
-  @query("#input") private _input?: PaperInputElement;
+  @query("#input", true) private _input?: PaperInputElement;
 
   private _value!: string;
 

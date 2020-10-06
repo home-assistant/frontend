@@ -39,7 +39,7 @@ class HassioRepositoriesDialog extends LitElement {
   @property({ attribute: false })
   private _dialogParams?: HassioRepositoryDialogParams;
 
-  @query("#repository_input") private _optionInput?: PaperInputElement;
+  @query("#repository_input", true) private _optionInput?: PaperInputElement;
 
   @internalProperty() private _opened = false;
 

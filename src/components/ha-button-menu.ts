@@ -23,7 +23,7 @@ export class HaButtonMenu extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @query("mwc-menu") private _menu?: Menu;
+  @query("mwc-menu", true) private _menu?: Menu;
 
   public get items() {
     return this._menu?.items;

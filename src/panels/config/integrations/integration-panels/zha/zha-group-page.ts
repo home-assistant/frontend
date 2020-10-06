@@ -57,7 +57,7 @@ export class ZHAGroupPage extends LitElement {
 
   @internalProperty() private _selectedDevicesToRemove: string[] = [];
 
-  @query("#addMembers")
+  @query("#addMembers", true)
   private _zhaAddMembersDataTable!: ZHADeviceEndpointDataTable;
 
   @query("#removeMembers")

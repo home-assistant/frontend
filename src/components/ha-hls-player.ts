@@ -38,7 +38,7 @@ class HaHLSPlayer extends LitElement {
   @property({ type: Boolean, attribute: "allow-exoplayer" })
   public allowExoPlayer = false;
 
-  @query("video") private _videoEl!: HTMLVideoElement;
+  @query("video", true) private _videoEl!: HTMLVideoElement;
 
   @internalProperty() private _attached = false;
 

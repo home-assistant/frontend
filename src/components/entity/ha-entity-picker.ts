@@ -97,7 +97,7 @@ export class HaEntityPicker extends LitElement {
 
   @property({ type: Boolean }) private _opened = false;
 
-  @query("vaadin-combo-box-light") private _comboBox!: HTMLElement;
+  @query("vaadin-combo-box-light", true) private _comboBox!: HTMLElement;
 
   private _initedStates = false;
 

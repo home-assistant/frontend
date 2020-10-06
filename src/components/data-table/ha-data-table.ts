@@ -101,6 +101,9 @@ export class HaDataTable extends LitElement {
 
   @property({ type: String }) public searchLabel?: string;
 
+  @property({ type: Boolean, attribute: "no-label-float" })
+  public noLabelFloat? = false;
+
   @property({ type: String }) public filter = "";
 
   @internalProperty() private _filterable = false;
@@ -113,9 +116,9 @@ export class HaDataTable extends LitElement {
 
   @internalProperty() private _filteredData: DataTableRowData[] = [];
 
-  @query("slot[name='header']") private _header!: HTMLSlotElement;
+  @internalProperty() private _headerHeight = 0;
 
-  @query(".mdc-data-table__table") private _table!: HTMLDivElement;
+  @query("slot[name='header']") private _header!: HTMLSlotElement;
 
   private _checkableRowsCount?: number;
 
@@ -206,6 +209,7 @@ export class HaDataTable extends LitElement {
                   <search-input
                     @value-changed=${this._handleSearchChange}
                     .label=${this.searchLabel}
+                    .noLabelFloat=${this.noLabelFloat}
                   ></search-input>
                 </div>
               `
@@ -220,7 +224,7 @@ export class HaDataTable extends LitElement {
           style=${styleMap({
             height: this.autoHeight
               ? `${(this._filteredData.length || 1) * 53 + 57}px`
-              : `calc(100% - ${this._header?.clientHeight}px)`,
+              : `calc(100% - ${this._headerHeight}px)`,
           })}
         >
           <div class="mdc-data-table__header-row" role="row">
@@ -523,7 +527,7 @@ export class HaDataTable extends LitElement {
       return;
     }
     await this.updateComplete;
-    this._table.style.height = `calc(100% - ${this._header.clientHeight}px)`;
+    this._headerHeight = this._header.clientHeight;
   }
 
   @eventOptions({ passive: true })

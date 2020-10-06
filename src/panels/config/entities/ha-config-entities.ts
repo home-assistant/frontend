@@ -103,7 +103,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   @internalProperty() private _selectedEntities: string[] = [];
 
-  @query("hass-tabs-subpage-data-table")
+  @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
 
   private getDialog?: () => DialogEntityEditor | undefined;
