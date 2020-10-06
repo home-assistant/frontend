@@ -65,7 +65,7 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
 
   @internalProperty() private _guiModeAvailable? = true;
 
-  @query("hui-element-editor") private _cardEditorEl?: HuiElementEditor;
+  @query("hui-element-editor", true) private _cardEditorEl?: HuiElementEditor;
 
   @internalProperty() private _GUImode = true;
 

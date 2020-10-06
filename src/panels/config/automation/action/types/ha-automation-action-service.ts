@@ -34,7 +34,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
 
   @property({ attribute: false }) public action!: ServiceAction;
 
-  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+  @query("ha-yaml-editor", true) private _yamlEditor?: HaYamlEditor;
 
   private _actionData?: ServiceAction["data"];
 

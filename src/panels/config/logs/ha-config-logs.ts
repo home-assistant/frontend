@@ -28,7 +28,7 @@ export class HaConfigLogs extends LitElement {
 
   @property() public route!: Route;
 
-  @query("system-log-card") private systemLog?: SystemLogCard;
+  @query("system-log-card", true) private systemLog?: SystemLogCard;
 
   public connectedCallback() {
     super.connectedCallback();

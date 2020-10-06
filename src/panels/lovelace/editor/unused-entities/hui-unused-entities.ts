@@ -159,11 +159,11 @@ export class HuiUnusedEntities extends LitElement {
     return css`
       :host {
         background: var(--lovelace-background);
+        overflow: hidden;
       }
       .container {
         display: flex;
         flex-direction: column;
-        /* min-height: calc(100vh - 112px); */
         height: 100%;
       }
       ha-card {

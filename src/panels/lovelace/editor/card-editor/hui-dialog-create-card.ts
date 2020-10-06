@@ -119,14 +119,13 @@ export class HuiCreateDialogCard extends LitElement implements HassDialog {
                 ></hui-card-picker>
               `
             : html`
-                <div class="entity-picker-container">
-                  <hui-entity-picker-table
-                    .hass=${this.hass}
-                    .narrow=${true}
-                    .entities=${this._allEntities(this.hass.states)}
-                    @selected-changed=${this._handleSelectedChanged}
-                  ></hui-entity-picker-table>
-                </div>
+                <hui-entity-picker-table
+                  no-label-float
+                  .hass=${this.hass}
+                  .narrow=${true}
+                  .entities=${this._allEntities(this.hass.states)}
+                  @selected-changed=${this._handleSelectedChanged}
+                ></hui-entity-picker-table>
               `
         )}
 
@@ -203,12 +202,14 @@ export class HuiCreateDialogCard extends LitElement implements HassDialog {
             var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
         }
 
-        .entity-picker-container {
-          display: flex;
-          flex-direction: column;
-          height: 100%;
-          min-height: calc(100vh - 112px);
-          margin-top: -20px;
+        hui-entity-picker-table {
+          display: block;
+          height: calc(100vh - 198px);
+        }
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          hui-entity-picker-table {
+            height: calc(100vh - 158px);
+          }
         }
       `,
     ];

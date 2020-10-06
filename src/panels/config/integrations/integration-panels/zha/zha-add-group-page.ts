@@ -42,7 +42,7 @@ export class ZHAAddGroupPage extends LitElement {
 
   @internalProperty() private _groupName = "";
 
-  @query("zha-device-endpoint-data-table")
+  @query("zha-device-endpoint-data-table", true)
   private _zhaDevicesDataTable!: ZHADeviceEndpointDataTable;
 
   private _firstUpdatedCalled = false;

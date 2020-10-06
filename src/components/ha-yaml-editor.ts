@@ -44,7 +44,7 @@ export class HaYamlEditor extends LitElement {
 
   @internalProperty() private _yaml = "";
 
-  @query("ha-code-editor") private _editor?: HaCodeEditor;
+  @query("ha-code-editor", true) private _editor?: HaCodeEditor;
 
   public setValue(value): void {
     try {

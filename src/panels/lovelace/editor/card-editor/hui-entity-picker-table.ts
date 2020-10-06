@@ -27,12 +27,14 @@ export class HuiEntityPickerTable extends LitElement {
 
   @property({ type: Boolean }) public narrow?: boolean;
 
+  @property({ type: Boolean, attribute: "no-label-float" })
+  public noLabelFloat? = false;
+
   @property({ type: Array }) public entities!: DataTableRowData[];
 
   protected render(): TemplateResult {
     return html`
       <ha-data-table
-        auto-height
         selectable
         .id=${"entity_id"}
         .columns=${this._columns(this.narrow!)}
@@ -41,6 +43,7 @@ export class HuiEntityPickerTable extends LitElement {
         .searchLabel=${this.hass.localize(
           "ui.panel.lovelace.unused_entities.search"
         )}
+        .noLabelFloat=${this.noLabelFloat}
         .noDataText=${this.hass.localize(
           "ui.panel.lovelace.unused_entities.no_data"
         )}
@@ -139,6 +142,7 @@ export class HuiEntityPickerTable extends LitElement {
     return css`
       ha-data-table {
         --data-table-border-width: 0;
+        height: 100%;
       }
     `;
   }

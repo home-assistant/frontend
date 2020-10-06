@@ -36,7 +36,7 @@ class DialogSystemLogDetail extends LitElement {
 
   @internalProperty() private _manifest?: IntegrationManifest;
 
-  @query("paper-tooltip") private _toolTip?: PaperTooltipElement;
+  @query("paper-tooltip", true) private _toolTip?: PaperTooltipElement;
 
   public async showDialog(params: SystemLogDetailDialogParams): Promise<void> {
     this._params = params;
