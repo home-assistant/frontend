@@ -15,7 +15,6 @@ import "../../../../components/entity/ha-entity-attribute-picker";
 import "../../../../components/ha-icon-input";
 import { HomeAssistant } from "../../../../types";
 import { EntityCardConfig } from "../../cards/types";
-import "../../components/hui-action-editor";
 import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
 import { headerFooterConfigStructs } from "../../header-footer/types";

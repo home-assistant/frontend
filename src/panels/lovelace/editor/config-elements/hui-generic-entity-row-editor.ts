@@ -17,7 +17,6 @@ import "../../../../components/ha-icon-input";
 import "../../../../components/ha-switch";
 import { HomeAssistant } from "../../../../types";
 import { EntitiesCardEntityConfig } from "../../cards/types";
-import "../../components/hui-action-editor";
 import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
 import { LovelaceRowEditor } from "../../types";

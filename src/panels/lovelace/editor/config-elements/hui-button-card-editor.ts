@@ -30,6 +30,7 @@ const cardConfigStruct = object({
   icon_height: optional(string()),
   tap_action: optional(actionConfigStruct),
   hold_action: optional(actionConfigStruct),
+  double_tap_action: optional(actionConfigStruct),
   theme: optional(string()),
   show_state: optional(boolean()),
 });
@@ -221,19 +222,17 @@ export class HuiButtonCardEditor extends HuiActionBaseCardEditor {
             @value-changed=${this._valueChanged}
           ></hui-theme-select-editor>
         </div>
-        <div>
-          <hui-actions-editor
-            .hass=${this.hass}
-            .tapAction=${this._tap_action}
-            .holdAction=${this._hold_action}
-            .doubleTapAction=${this._double_tap_action}
-            .tooltipText=${this.hass.localize(
-              "ui.panel.lovelace.editor.card.button.default_action_help"
-            )}
-            @edit-action=${this._editAction}
-            @clear-action=${this._clearAction}
-          ></hui-actions-editor>
-        </div>
+        <hui-actions-editor
+          .hass=${this.hass}
+          .tapAction=${this._tap_action}
+          .holdAction=${this._hold_action}
+          .doubleTapAction=${this._double_tap_action}
+          .tooltipText=${this.hass.localize(
+            "ui.panel.lovelace.editor.card.button.default_action_help"
+          )}
+          @edit-action=${this._editAction}
+          @clear-action=${this._clearAction}
+        ></hui-actions-editor>
       </div>
     `;
   }
