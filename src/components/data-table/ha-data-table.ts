@@ -73,13 +73,17 @@ export interface DataTableColumnData extends DataTableSortColumnData {
   hidden?: boolean;
 }
 
+type ClonedDataTableColumnData = Omit<DataTableColumnData, "title"> & {
+  title?: string;
+};
+
 export interface DataTableRowData {
   [key: string]: any;
   selectable?: boolean;
 }
 
 export interface SortableColumnContainer {
-  [key: string]: DataTableSortColumnData;
+  [key: string]: ClonedDataTableColumnData;
 }
 
 @customElement("ha-data-table")
@@ -169,11 +173,13 @@ export class HaDataTable extends LitElement {
       }
 
       const clonedColumns: DataTableColumnContainer = deepClone(this.columns);
-      Object.values(clonedColumns).forEach((column: DataTableColumnData) => {
-        delete column.title;
-        delete column.type;
-        delete column.template;
-      });
+      Object.values(clonedColumns).forEach(
+        (column: ClonedDataTableColumnData) => {
+          delete column.title;
+          delete column.type;
+          delete column.template;
+        }
+      );
 
       this._sortColumns = clonedColumns;
     }

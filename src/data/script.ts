@@ -105,7 +105,7 @@ export type Action =
 export const triggerScript = (
   hass: HomeAssistant,
   entityId: string,
-  variables?: {}
+  variables?: Record<string, unknown>
 ) => hass.callService("script", computeObjectId(entityId), variables);
 
 export const canExcecute = (state: ScriptEntity) => {

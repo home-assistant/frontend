@@ -40,7 +40,8 @@ interface SelectedChangedEvent {
 }
 
 @customElement("hui-dialog-create-card")
-export class HuiCreateDialogCard extends LitElement implements HassDialog {
+export class HuiCreateDialogCard extends LitElement
+  implements HassDialog<CreateCardDialogParams> {
   @property({ attribute: false }) protected hass!: HomeAssistant;
 
   @internalProperty() private _params?: CreateCardDialogParams;

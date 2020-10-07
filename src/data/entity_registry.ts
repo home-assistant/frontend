@@ -15,7 +15,7 @@ export interface EntityRegistryEntry {
 
 export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
   unique_id: string;
-  capabilities: object;
+  capabilities: Record<string, unknown>;
   original_name?: string;
   original_icon?: string;
 }

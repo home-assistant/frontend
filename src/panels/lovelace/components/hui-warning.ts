@@ -35,7 +35,7 @@ export class HuiWarning extends LitElement {
         color: black;
         background-color: #fce588;
         padding: 8px;
-    	word-break: break-word;
+        word-break: break-word;
       }
     `;
   }

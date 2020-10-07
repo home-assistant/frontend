@@ -5,7 +5,7 @@
 // N milliseconds. If `immediate` is passed, trigger the function on the
 // leading edge, instead of the trailing.
 // eslint-disable-next-line: ban-types
-export const debounce = <T extends Function>(
+export const debounce = <T extends (...args) => unknown>(
   func: T,
   wait,
   immediate = false
