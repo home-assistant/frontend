@@ -2558,7 +2558,7 @@
                         },
                         "entities": {
                             "description": "La targeta entitats és la més habitual. Agrupa diferents tipus d'entitats en una llista.",
-                            "edit_special_row": "Edita la fila mitjançant l'editor de codi",
+                            "edit_special_row": "Fes clic al botó edita per veure els detalls de la fila",
                             "entity_row_editor": "Editor de files d'entitats",
                             "entity_row": {
                                 "attribute": "Atribut",

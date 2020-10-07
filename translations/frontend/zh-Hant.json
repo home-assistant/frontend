@@ -2558,7 +2558,7 @@
                         },
                         "entities": {
                             "description": "實體列表面板為最常用的面板。將實體分組為列表使用。",
-                            "edit_special_row": "使用編碼編輯器編輯",
+                            "edit_special_row": "點選編輯按鈕以檢視此列詳細資訊",
                             "entity_row_editor": "實體編輯器",
                             "entity_row": {
                                 "attribute": "屬性",

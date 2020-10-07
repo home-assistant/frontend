@@ -571,19 +571,27 @@
                 "no_history_found": "Geen geschiedenis gevonden"
             },
             "logbook": {
+                "by": "door",
+                "by_service": "door service",
                 "entries_not_found": "Geen logboekvermeldingen gevonden.",
                 "messages": {
                     "became_unavailable": "is niet meer beschikbaar",
                     "changed_to_state": "gewijzigd in {state}",
                     "cleared_device_class": "niets gedetecteerd (geen {device_class} gedetecteerd)",
                     "detected_device_class": "gedetecteerd {device_class}",
+                    "rose": "roos",
+                    "set": "stel  in",
                     "turned_off": "is uitgeschakeld",
                     "turned_on": "is ingeschakeld",
                     "was_at_home": "was thuis",
+                    "was_at_state": "was bij {state}",
+                    "was_away": "was weg",
                     "was_closed": "gesloten",
                     "was_connected": "verbonden",
                     "was_disconnected": "verbroken",
                     "was_locked": "vergrendeld",
+                    "was_low": "was laag",
+                    "was_normal": "was normaal",
                     "was_opened": "geopend",
                     "was_plugged_in": "is aangesloten",
                     "was_safe": "was veilig",
@@ -2507,7 +2515,9 @@
                             "toggle": "Schakelaar",
                             "url": "Url"
                         },
-                        "editor_service_data": "Servicegegevens kunnen alleen worden ingevoerd in de code-editor"
+                        "editor_service_data": "Servicegegevens kunnen alleen worden ingevoerd in de code-editor",
+                        "navigation_path": "Navigatiepad",
+                        "url_path": "URL-pad"
                     },
                     "card": {
                         "alarm-panel": {

@@ -2004,11 +2004,12 @@
                             "restart": "Restart",
                             "single": "Single (default)"
                         },
+                        "save_script": "Save script",
                         "sequence": "Sequence",
                         "sequence_sentence": "The sequence of actions of this script."
                     },
                     "picker": {
-                        "add_script": "Add script",
+                        "add_script": "Create new script",
                         "edit_script": "Edit script",
                         "header": "Script Editor",
                         "headers": {
@@ -2017,6 +2018,7 @@
                         "introduction": "The script editor allows you to create and edit scripts. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
                         "learn_more": "Learn more about scripts",
                         "no_scripts": "We couldn’t find any editable scripts",
+                        "run_script": "Run script",
                         "show_info": "Show info about script",
                         "trigger_script": "Trigger script"
                     }
@@ -2736,11 +2738,13 @@
                     "edit_card": {
                         "add": "Add Card",
                         "confirm_cancel": "Are you sure you want to cancel?",
-                        "delete": "Delete Card",
-                        "duplicate": "Duplicate Card",
+                        "delete": "Delete card",
+                        "duplicate": "Duplicate card",
                         "edit": "Edit",
                         "header": "Card Configuration",
                         "move": "Move to View",
+                        "move_after": "Move card after",
+                        "move_before": "Move card before",
                         "options": "More options",
                         "pick_card": "Which card would you like to add?",
                         "pick_card_view_title": "Which card would you like to add to your {name} view?",

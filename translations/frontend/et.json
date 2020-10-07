@@ -2558,7 +2558,7 @@
                         },
                         "entities": {
                             "description": "Olemite kaart  on kõige levinum kaarditüüp. See rühmitabolemid loenditeks.",
-                            "edit_special_row": "Redigeeri rida koodiredaktori abil",
+                            "edit_special_row": "Selle rea üksikasjade vaatamiseks klõpsa nuppu Muuda",
                             "entity_row_editor": "Olemirea redaktor",
                             "entity_row": {
                                 "attribute": "Atribuut",
