@@ -15,6 +15,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+
 import { fireEvent } from "../../../common/dom/fire_event";
 import { ActionConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
@@ -212,11 +213,6 @@ export class HuiActionsEditor extends LitElement {
         .remove-icon,
         .edit-icon {
           --mdc-icon-button-size: 36px;
-          color: var(--secondary-text-color);
-        }
-
-        .secondary {
-          font-size: 12px;
           color: var(--secondary-text-color);
         }
       `,

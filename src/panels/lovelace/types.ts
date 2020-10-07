@@ -1,5 +1,6 @@
 import {
   ActionConfig,
+  ConfirmationRestrictionConfig,
   LovelaceBadgeConfig,
   LovelaceCardConfig,
   LovelaceConfig,
@@ -76,5 +77,11 @@ export interface LovelaceRowEditor extends HTMLElement {
 export interface LovelaceActionEditor extends HTMLElement {
   hass?: HomeAssistant;
   setConfig(config: ActionConfig): void;
+  refreshYamlEditor?: (focus: boolean) => void;
+}
+
+export interface LovelaceConfirmationEditor extends HTMLElement {
+  hass?: HomeAssistant;
+  setConfig(config: ConfirmationRestrictionConfig): void;
   refreshYamlEditor?: (focus: boolean) => void;
 }

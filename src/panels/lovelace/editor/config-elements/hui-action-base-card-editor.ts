@@ -11,12 +11,9 @@ import { ActionConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { EditorTarget, GUIModeChangedEvent } from "../types";
-// eslint-disable-next-line import/no-duplicates
-import { HuiElementEditor } from "../hui-element-editor";
-// eslint-disable-next-line import/no-duplicates
-import { EditActionEvent } from "../../components/hui-actions-editor";
+import type { HuiElementEditor } from "../hui-element-editor";
+import type { EditActionEvent } from "../../components/hui-actions-editor";
 
-// eslint-disable-next-line import/no-duplicates
 import "../hui-element-editor";
 
 @customElement("hui-action-base-card-editor")

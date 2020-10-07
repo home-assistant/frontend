@@ -149,12 +149,13 @@ export interface CustomActionConfig extends BaseActionConfig {
 
 export interface BaseActionConfig {
   confirmation?: ConfirmationRestrictionConfig;
-  type?: string; // Just to conform with other types
+  type?: string; // Just to conform for hui-element-editor
 }
 
 export interface ConfirmationRestrictionConfig {
   text?: string;
   exemptions?: RestrictionConfig[];
+  type?: string; // Just to conform for hui-element-editor
 }
 
 export interface RestrictionConfig {

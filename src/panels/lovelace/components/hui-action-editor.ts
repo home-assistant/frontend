@@ -4,6 +4,7 @@ import "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
+
 import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
 import {
   css,
@@ -13,24 +14,35 @@ import {
   internalProperty,
   LitElement,
   property,
+  query,
   TemplateResult,
 } from "lit-element";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { repeat } from "lit-html/directives/repeat";
+import { assert } from "superstruct";
+import { mdiClose, mdiGestureTap, mdiPencil } from "@mdi/js";
+
+import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-help-tooltip";
 import { computeServiceDescription } from "../../../common/service/compute_service_description";
 import "../../../components/ha-service-picker";
 import {
   ActionConfig,
   CallServiceActionConfig,
+  ConfirmationRestrictionConfig,
   NavigateActionConfig,
   UrlActionConfig,
 } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
-import { actionConfigStruct, EditorTarget } from "../editor/types";
+import {
+  actionConfigStruct,
+  EditorTarget,
+  GUIModeChangedEvent,
+} from "../editor/types";
 import { computeServiceAttributes } from "../../../common/service/compute_service_attributes";
-import { repeat } from "lit-html/directives/repeat";
 import { LovelaceActionEditor } from "../types";
-import { assert } from "superstruct";
+import { HuiElementEditor } from "../editor/hui-element-editor";
+
+import "../editor/hui-detail-editor-base";
 
 @customElement("hui-action-editor")
 export class HuiActionEditor extends LitElement
@@ -40,6 +52,15 @@ export class HuiActionEditor extends LitElement
   @property() public tooltipText?: string;
 
   @internalProperty() private _config?: ActionConfig;
+
+  @internalProperty()
+  protected _editConfirmationConfig?: ConfirmationRestrictionConfig;
+
+  @internalProperty() protected _editConfirmationGuiModeAvailable? = true;
+
+  @internalProperty() protected _editConfirmationGuiMode? = true;
+
+  @query("hui-element-editor") private _cardEditorEl?: HuiElementEditor;
 
   public setConfig(config: ActionConfig): void {
     assert(config, actionConfigStruct);
@@ -69,6 +90,10 @@ export class HuiActionEditor extends LitElement
     return config.service_data || {};
   }
 
+  get _confirmation(): ConfirmationRestrictionConfig {
+    return this._config?.confirmation || {};
+  }
+
   protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
@@ -82,6 +107,31 @@ export class HuiActionEditor extends LitElement
       "call-service",
       "none",
     ];
+
+    if (this._editConfirmationConfig) {
+      return html`
+        <hui-detail-editor-base
+          .hass=${this.hass}
+          .guiModeAvailable=${this._editConfirmationGuiModeAvailable}
+          .guiMode=${this._editConfirmationGuiMode}
+          @toggle-gui-mode=${this._toggleMode}
+          @go-back=${this._goBack}
+        >
+          <span slot="title"
+            >${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.confirmation"
+            )}</span
+          >
+          <hui-element-editor
+            .hass=${this.hass}
+            .value=${this._editConfirmationConfig}
+            elementType="confirmation"
+            @config-changed=${this._handleConfirmationConfigChanged}
+            @GUImode-changed=${this._handleGUIModeChanged}
+          ></hui-element-editor>
+        </hui-detail-editor-base>
+      `;
+    }
 
     return html`
       <div class="dropdown">
@@ -116,6 +166,56 @@ export class HuiActionEditor extends LitElement
             `
           : ""}
       </div>
+      <div class="confirmation">
+        <div>
+          <ha-svg-icon .path=${mdiGestureTap}></ha-svg-icon>
+          <span
+            >${this.hass!.localize(
+              "ui.panel.lovelace.editor.card.generic.confirmation"
+            )}
+            -
+            ${Object.keys(this._confirmation).length > 0
+              ? this.hass!.localize(
+                  "ui.panel.lovelace.editor.card.generic.enabled"
+                )
+              : this.hass!.localize(
+                  "ui.panel.lovelace.editor.action-editor.confirmation.none"
+                )}</span
+          >
+        </div>
+        <div>
+          <mwc-icon-button
+            aria-label=${this.hass!.localize(
+              "ui.components.entity.entity-picker.edit"
+            )}
+            class="edit-icon"
+            @click=${this._editConfirmation}
+          >
+            <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
+          </mwc-icon-button>
+          <mwc-icon-button
+            aria-label=${this.hass!.localize(
+              "ui.components.entity.entity-picker.clear"
+            )}
+            class="remove-icon"
+            @click=${this._clearConfirmation}
+          >
+            <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+          </mwc-icon-button>
+        </div>
+      </div>
+      ${Object.keys(this._confirmation).length > 0
+        ? html` <div class="secondary">
+            ${this._confirmation?.exemptions
+              ? html`${this.hass!.localize(
+                  "ui.panel.lovelace.editor.action-editor.confirmation.exempt_users"
+                )}:
+                ${this._confirmation.exemptions}`
+              : this.hass!.localize(
+                  "ui.panel.lovelace.editor.action-editor.confirmation.no_exemptions"
+                )}
+          </div>`
+        : ""}
       ${this._config?.action === "navigate"
         ? html`
             <paper-input
@@ -198,6 +298,57 @@ export class HuiActionEditor extends LitElement
     `;
   }
 
+  private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {
+    ev.stopPropagation();
+    this._editConfirmationGuiMode = ev.detail.guiMode;
+    this._editConfirmationGuiModeAvailable = ev.detail.guiModeAvailable;
+  }
+
+  private _toggleMode(): void {
+    this._cardEditorEl?.toggleMode();
+  }
+
+  private _editConfirmation(): void {
+    this._editConfirmationConfig = this._confirmation;
+  }
+
+  private _clearConfirmation(): void {
+    if (!this._config || !this.hass) {
+      return;
+    }
+
+    const newConfig = { ...this._config };
+    delete newConfig.confirmation;
+
+    fireEvent(this, "config-changed", { config: newConfig });
+  }
+
+  private _goBack(): void {
+    this._editConfirmationConfig = undefined;
+    this._editConfirmationGuiModeAvailable = true;
+    this._editConfirmationGuiMode = true;
+  }
+
+  private _handleConfirmationConfigChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+
+    const config = ev.detail.config as ConfirmationRestrictionConfig;
+    this._editConfirmationGuiModeAvailable = ev.detail.guiModeAvailable;
+
+    if (this._confirmation === config) {
+      return;
+    }
+
+    this._editConfirmationConfig = config;
+
+    this._config = {
+      ...this._config!,
+      confirmation: this._editConfirmationConfig,
+    };
+
+    fireEvent(this, "config-changed", { config: this._config! });
+  }
+
   private _actionPicked(ev: CustomEvent): void {
     ev.stopPropagation();
     if (!this._config || !this.hass) {
@@ -245,10 +396,6 @@ export class HuiActionEditor extends LitElement
         display: flex;
       }
 
-      .secondary {
-        color: var(--secondary-text-color);
-      }
-
       .attributes th {
         text-align: left;
       }
@@ -282,6 +429,25 @@ export class HuiActionEditor extends LitElement
 
       td {
         padding: 4px;
+      }
+
+      .confirmation {
+        display: flex;
+        align-items: center;
+        text-transform: capitalize;
+        justify-content: space-between;
+      }
+
+      .remove-icon,
+      .edit-icon {
+        --mdc-icon-button-size: 36px;
+        color: var(--secondary-text-color);
+      }
+
+      .secondary {
+        font-size: 12px;
+        color: var(--secondary-text-color);
+        padding-left: 30px;
       }
     `;
   }

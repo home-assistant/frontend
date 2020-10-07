@@ -19,6 +19,7 @@ import "../../../components/ha-code-editor";
 import type { HaCodeEditor } from "../../../components/ha-code-editor";
 import type {
   ActionConfig,
+  ConfirmationRestrictionConfig,
   LovelaceCardConfig,
   LovelaceConfig,
 } from "../../../data/lovelace";
@@ -31,6 +32,7 @@ import type {
   LovelaceActionEditor,
   LovelaceCardConstructor,
   LovelaceCardEditor,
+  LovelaceConfirmationEditor,
   LovelaceRowConstructor,
   LovelaceRowEditor,
 } from "../types";
@@ -39,9 +41,14 @@ import { GUIModeChangedEvent } from "./types";
 
 import "./config-elements/hui-generic-entity-row-editor";
 import "../components/hui-action-editor";
+import "../components/hui-confirmation-editor";
 
 export interface ConfigChangedEvent {
-  config: LovelaceCardConfig | LovelaceRowConfig | ActionConfig;
+  config:
+    | LovelaceCardConfig
+    | LovelaceRowConfig
+    | ActionConfig
+    | ConfirmationRestrictionConfig;
   error?: string;
   guiModeAvailable?: boolean;
 }
@@ -64,6 +71,7 @@ export interface UIConfigChangedEvent extends Event {
 
 const GENERIC_ROW_TYPE = "generic-row";
 const ACTION_TYPE = "action";
+const CONFIRMATION_TYPE = "confirmation";
 
 @customElement("hui-element-editor")
 export class HuiElementEditor extends LitElement {
@@ -71,19 +79,22 @@ export class HuiElementEditor extends LitElement {
 
   @property({ attribute: false }) public lovelace?: LovelaceConfig;
 
-  @property() public elementType: "action" | "row" | "card" = "card";
+  @property() public elementType: "action" | "confirmation" | "row" | "card" =
+    "card";
 
   @internalProperty() private _yaml?: string;
 
   @internalProperty() private _config?:
     | LovelaceCardConfig
     | LovelaceRowConfig
-    | ActionConfig;
+    | ActionConfig
+    | ConfirmationRestrictionConfig;
 
   @internalProperty() private _configElement?:
     | LovelaceCardEditor
     | LovelaceRowEditor
-    | LovelaceActionEditor;
+    | LovelaceActionEditor
+    | LovelaceConfirmationEditor;
 
   @internalProperty() private _configElType?: string;
 
@@ -121,12 +132,18 @@ export class HuiElementEditor extends LitElement {
     | LovelaceCardConfig
     | LovelaceRowConfig
     | ActionConfig
+    | ConfirmationRestrictionConfig
     | undefined {
     return this._config;
   }
 
   public set value(
-    config: LovelaceCardConfig | LovelaceRowConfig | ActionConfig | undefined
+    config:
+      | LovelaceCardConfig
+      | LovelaceRowConfig
+      | ActionConfig
+      | ConfirmationRestrictionConfig
+      | undefined
   ) {
     if (this._config && deepEqual(config, this._config)) {
       return;
@@ -280,6 +297,8 @@ export class HuiElementEditor extends LitElement {
 
     if (this.elementType === "action") {
       type = ACTION_TYPE;
+    } else if (this.elementType === "confirmation") {
+      type = CONFIRMATION_TYPE;
     } else if (
       this.elementType === "row" &&
       !this.value.type &&
@@ -322,6 +341,8 @@ export class HuiElementEditor extends LitElement {
           );
         } else if (this.elementType === "action") {
           configElement = document.createElement("hui-action-editor");
+        } else if (this.elementType === "confirmation") {
+          configElement = document.createElement("hui-confirmation-editor");
         } else {
           configElement = undefined;
           throw new GUISupportError(`No visual editor available for: ${type}`);
