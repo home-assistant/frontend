@@ -39,37 +39,31 @@ class HassioSystemMetrics extends LitElement {
   @internalProperty() private _coreMetrics?: HassioStats;
 
   protected render(): TemplateResult | void {
-    const host = this.hostInfo
+    const host = this.hostInfo;
     const usedSpace = this._getUsedSpace(host);
-    const usedSpaceTitle =
-      bytesToString(host.disk_used * 1e6) +
-      "/" +
-      bytesToString(host.disk_total * 1e6);
+    const usedSpaceTitle = `${bytesToString(host.disk_used * 1e6)}/
+      ${bytesToString(host.disk_total * 1e6)}`;
     const metrics = [
       {
         description: "Core CPU Usage",
         value: this._coreMetrics?.cpu_percent,
-        title: "",
       },
       {
         description: "Core RAM Usage",
         value: this._coreMetrics?.memory_percent,
-        title: "",
       },
       {
         description: "Supervisor CPU Usage",
         value: this._supervisorMetrics?.cpu_percent,
-        title: "",
       },
       {
         description: "Supervisor RAM Usage",
         value: this._supervisorMetrics?.memory_percent,
-        title: "",
       },
       {
         description: "Used Space",
         value: usedSpace,
-        title: usedSpaceTitle,
+        tooltip: usedSpaceTitle,
       },
     ];
 
@@ -80,7 +74,7 @@ class HassioSystemMetrics extends LitElement {
             this._renderMetric(
               metric.description,
               metric.value ?? 0,
-              metric.title
+              metric.tooltip ?? undefined
             )
           )}
         </div>
@@ -95,7 +89,7 @@ class HassioSystemMetrics extends LitElement {
   private _renderMetric(
     description: string,
     value: number,
-    title: string
+    tooltip?: string
   ): TemplateResult {
     const roundedValue = roundWithOneDecimal(value);
     return html`<ha-settings-row>
@@ -107,7 +101,7 @@ class HassioSystemMetrics extends LitElement {
           ${roundedValue}%
         </span>
         <ha-bar
-          title="${title}"
+          title="${tooltip ?? ""}"
           class="${classMap({
             "target-warning": roundedValue > 50,
             "target-critical": roundedValue > 85,
