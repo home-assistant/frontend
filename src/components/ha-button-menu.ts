@@ -62,6 +62,9 @@ export class HaButtonMenu extends LitElement {
         display: inline-block;
         position: relative;
       }
+      ::slotted([disabled]) {
+        color: var(--disabled-text-color);
+      }
     `;
   }
 }
