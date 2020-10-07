@@ -97,12 +97,11 @@ class HassioSystemMetrics extends LitElement {
       <span slot="heading">
         ${description}
       </span>
-      <div slot="description">
+      <div slot="description" title="${tooltip ?? ""}">
         <span class="value">
           ${roundedValue}%
         </span>
         <ha-bar
-          title="${tooltip ?? ""}"
           class="${classMap({
             "target-warning": roundedValue > 50,
             "target-critical": roundedValue > 85,
