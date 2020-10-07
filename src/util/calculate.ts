@@ -28,5 +28,5 @@ export const bytesToString = (value: number, decimals = 3): string => {
     decimals = decimals < 0 ? 0 : decimals;
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
     const i = Math.floor(Math.log(value) / Math.log(k));
-    return parseFloat((value / k ** i).toFixed(decimals)) + ' ' + sizes[i];
+    return `${parseFloat((value / k ** i).toFixed(decimals))} ${sizes[i]}`;
 }
