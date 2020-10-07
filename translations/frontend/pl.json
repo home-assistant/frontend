@@ -578,7 +578,7 @@
                     "became_unavailable": "jest niedostępny(-a)",
                     "changed_to_state": "zmienił(-a) się na {state}",
                     "cleared_device_class": "brak (nie {device_class} ruchu)",
-                    "detected_device_class": "{device_class} ruch",
+                    "detected_device_class": "wykryto {device_class}",
                     "rose": "podniosło się",
                     "set": "ustaw",
                     "turned_off": "wyłączony(-a)",
@@ -594,8 +594,10 @@
                     "was_normal": "był normalny",
                     "was_opened": "zostały(-o) otwarte(-a)",
                     "was_plugged_in": "został(-a) podłączony(-a)",
+                    "was_safe": "nie było zagrożenia",
                     "was_unlocked": "został otwarty",
-                    "was_unplugged": "został(-a) odłączony(-a)"
+                    "was_unplugged": "został(-a) odłączony(-a)",
+                    "was_unsafe": "było zagrożenie"
                 }
             },
             "media-browser": {

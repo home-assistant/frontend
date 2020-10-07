@@ -2558,7 +2558,7 @@
                         },
                         "entities": {
                             "description": "La tarjeta Entidades es el tipo de tarjeta más común. Agrupa los elementos en listas.",
-                            "edit_special_row": "Editar fila usando el editor de código",
+                            "edit_special_row": "Ve los detalles de esta fila haciendo clic en el botón de edición",
                             "entity_row_editor": "Editor de filas de entidades",
                             "entity_row": {
                                 "attribute": "Atributo",

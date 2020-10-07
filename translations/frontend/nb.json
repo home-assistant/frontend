@@ -2558,7 +2558,7 @@
                         },
                         "entities": {
                             "description": "Entities card er den vanligste typen kort. Den grupperer elementer i lister.",
-                            "edit_special_row": "Rediger rad ved hjelp av kodeditoren",
+                            "edit_special_row": "Vis detaljene for denne raden ved å klikke på redigeringsknappen",
                             "entity_row_editor": "Redigeringsprogram for enhetsrad",
                             "entity_row": {
                                 "attribute": "Attributt",

@@ -2558,7 +2558,7 @@
                         },
                         "entities": {
                             "description": "“实体”卡片是最常见的卡片。它将项目汇聚成列表。",
-                            "edit_special_row": "使用代码编辑器编辑行",
+                            "edit_special_row": "点击编辑按钮可查看该行的详细信息",
                             "entity_row_editor": "实体行编辑器",
                             "entity_row": {
                                 "attribute": "属性",
