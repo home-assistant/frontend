@@ -162,17 +162,19 @@ class HaConfigPerson extends LitElement {
   }
 
   private _openDialogIfPersonSpecifiedInRoute() {
-    const isPersonSpecifiedInRoute =
-      this.route?.path && this.route.path.includes("/edit/");
-    if (isPersonSpecifiedInRoute) {
-      const routeSegments = this.route.path.split("/edit/");
-      const personId = routeSegments.length > 1 ? routeSegments[1] : null;
-      if (personId) {
-        const personToEdit = this._storageItems!.find((p) => p.id === personId);
-        if (personToEdit) {
-          this._openDialog(personToEdit);
-        }
-      }
+    if (!this.route.path.includes("/edit/")) {
+      return;
+    }
+
+    const routeSegments = this.route.path.split("/edit/");
+    const personId = routeSegments.length > 1 ? routeSegments[1] : null;
+    if (!personId) {
+      return;
+    }
+
+    const personToEdit = this._storageItems!.find((p) => p.id === personId);
+    if (personToEdit) {
+      this._openDialog(personToEdit);
     }
   }
 
