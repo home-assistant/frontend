@@ -13,7 +13,7 @@ import {
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-dialog";
 import { haStyleDialog } from "../../resources/styles";
-import { HomeAssistant } from "../../types";
+import { HomeAssistant, ServiceCallRequest } from "../../types";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { fuzzySequentialMatch } from "../../common/string/sequence_matching";
 import { componentsWithService } from "../../common/config/components_with_service";
@@ -25,11 +25,8 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { compare } from "../../common/string/compare";
 import memoizeOne from "memoize-one";
 
-interface CommandItem {
+interface CommandItem extends ServiceCallRequest {
   text: string;
-  domain: string;
-  service: string;
-  serviceData?: {};
 }
 
 @customElement("ha-quick-open-dialog")
