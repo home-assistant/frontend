@@ -89,7 +89,7 @@ export class HaScriptEditor extends LitElement {
           </mwc-icon-button>
 
           <mwc-list-item
-            ?disabled=${!this.scriptEntityId}
+            .disabled=${!this.scriptEntityId}
             aria-label=${this.hass.localize(
               "ui.panel.config.automation.picker.delete_automation"
             )}

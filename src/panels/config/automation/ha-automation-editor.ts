@@ -113,7 +113,7 @@ export class HaAutomationEditor extends LitElement {
           </mwc-icon-button>
 
           <mwc-list-item
-            ?disabled=${!this.automationId}
+            .disabled=${!this.automationId}
             aria-label=${this.hass.localize(
               "ui.panel.config.automation.picker.duplicate_automation"
             )}
@@ -129,7 +129,7 @@ export class HaAutomationEditor extends LitElement {
           </mwc-list-item>
 
           <mwc-list-item
-            ?disabled=${!this.automationId}
+            .disabled=${!this.automationId}
             aria-label=${this.hass.localize(
               "ui.panel.config.automation.picker.delete_automation"
             )}
