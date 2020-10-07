@@ -22,7 +22,7 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
     return document.createElement("hui-stack-card-editor");
   }
 
-  public static getStubConfig(): object {
+  public static getStubConfig(): Record<string, unknown> {
     return { cards: [] };
   }
 

@@ -22,7 +22,8 @@ import { HomeAssistant } from "../../../types";
 import { TagDetailDialogParams } from "./show-dialog-tag-detail";
 
 @customElement("dialog-tag-detail")
-class DialogTagDetail extends LitElement implements HassDialog {
+class DialogTagDetail extends LitElement
+  implements HassDialog<TagDetailDialogParams> {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @internalProperty() private _id?: string;

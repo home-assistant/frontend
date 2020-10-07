@@ -34,9 +34,9 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   version_latest: string;
   boot: "auto" | "manual";
   build: boolean;
-  options: object;
-  network: null | object;
-  network_description: null | object;
+  options: Record<string, unknown>;
+  network: null | Record<string, number>;
+  network_description: null | Record<string, string>;
   host_network: boolean;
   host_pid: boolean;
   host_ipc: boolean;
@@ -96,11 +96,11 @@ export interface HassioAddonRepository {
 export interface HassioAddonSetOptionParams {
   audio_input?: string | null;
   audio_output?: string | null;
-  options?: object | null;
+  options?: Record<string, unknown> | null;
   boot?: "auto" | "manual";
   auto_update?: boolean;
   ingress_panel?: boolean;
-  network?: object | null;
+  network?: Record<string, unknown> | null;
   watchdog?: boolean;
 }
 
