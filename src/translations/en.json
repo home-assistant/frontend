@@ -355,8 +355,6 @@
         "select": "Select"
       },
       "relative_time": {
-        "past": "{time} ago",
-        "future": "In {time}",
         "never": "Never",
         "just_now": "Just now",
         "duration": {
@@ -365,6 +363,20 @@
           "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n}",
           "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
           "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
+        },
+        "past_duration": {
+          "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n} ago",
+          "minute": "{count} {count, plural,\n  one {minute}\n  other {minutes}\n} ago",
+          "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n} ago",
+          "day": "{count} {count, plural,\n  one {day}\n  other {days}\n} ago",
+          "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n} ago"
+        },
+        "future_duration": {
+          "second": "In {count} {count, plural,\n  one {second}\n  other {seconds}\n}",
+          "minute": "In {count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
+          "hour": "In {count} {count, plural,\n  one {hour}\n  other {hours}\n}",
+          "day": "In {count} {count, plural,\n  one {day}\n  other {days}\n}",
+          "week": "In {count} {count, plural,\n  one {week}\n  other {weeks}\n}"
         }
       },
       "history_charts": {
