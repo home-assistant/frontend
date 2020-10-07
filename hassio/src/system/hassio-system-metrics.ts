@@ -64,7 +64,7 @@ class HassioSystemMetrics extends LitElement {
       {
         description: "Used Space",
         value: usedSpace,
-        tooltip: usedSpaceTitle,
+        tooltip: usedSpaceTip,
       },
     ];
 
