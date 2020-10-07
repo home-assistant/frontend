@@ -16,7 +16,7 @@ export const filterData = async (
   filter: FilterDataParamTypes[2]
 ): Promise<ReturnType<FilterDataType>> => {
   if (!worker) {
-    worker = wrap(new Worker("./sort_filter_worker", { type: "module" }));
+    worker = wrap(new Worker(new URL("./sort_filter_worker", import.meta.url)));
   }
 
   return await worker.filterData(data, columns, filter);
@@ -29,7 +29,7 @@ export const sortData = async (
   sortColumn: SortDataParamTypes[3]
 ): Promise<ReturnType<SortDataType>> => {
   if (!worker) {
-    worker = wrap(new Worker("./sort_filter_worker", { type: "module" }));
+    worker = wrap(new Worker(new URL("./sort_filter_worker", import.meta.url)));
   }
 
   return await worker.sortData(data, columns, direction, sortColumn);

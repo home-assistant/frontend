@@ -62,6 +62,7 @@ module.exports.babelOptions = ({ latestBuild }) => ({
       { loose: true, useBuiltIns: true },
     ],
     // Only support the syntax, Webpack will handle it.
+    "@babel/plugin-syntax-import-meta",
     "@babel/syntax-dynamic-import",
     "@babel/plugin-proposal-optional-chaining",
     "@babel/plugin-proposal-nullish-coalescing-operator",
