@@ -88,9 +88,9 @@ export class HuiPictureCardEditor extends HuiActionBaseCardEditor {
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.required"
           )})"
-          .value="${this._image}"
-          .configValue="${"image"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._image}
+          .configValue=${"image"}
+          @value-changed=${this._valueChanged}
         ></paper-input>
         <hui-actions-editor
           .hass=${this.hass}

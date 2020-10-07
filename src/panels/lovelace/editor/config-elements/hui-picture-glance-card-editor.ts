@@ -7,18 +7,14 @@ import {
   customElement,
   html,
   internalProperty,
-  LitElement,
-  property,
   TemplateResult,
 } from "lit-element";
 import { array, assert, object, optional, string } from "superstruct";
 
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { ActionConfig } from "../../../../data/lovelace";
-import { HomeAssistant } from "../../../../types";
 import { PictureGlanceCardConfig } from "../../cards/types";
 import { EntityConfig } from "../../entity-rows/types";
-import { LovelaceCardEditor } from "../../types";
 import { processEditorEntities } from "../process-editor-entities";
 import {
   actionConfigStruct,
@@ -148,9 +144,9 @@ export class HuiPictureGlanceCardEditor extends HuiActionBaseCardEditor {
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
-          .value="${this._title}"
-          .configValue="${"title"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._title}
+          .configValue=${"title"}
+          @value-changed=${this._valueChanged}
         ></paper-input>
         <paper-input
           .label="${this.hass.localize(
@@ -158,9 +154,9 @@ export class HuiPictureGlanceCardEditor extends HuiActionBaseCardEditor {
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
-          .value="${this._image}"
-          .configValue="${"image"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._image}
+          .configValue=${"image"}
+          @value-changed=${this._valueChanged}
         ></paper-input>
         <ha-entity-picker
           .label="${this.hass.localize(
@@ -169,9 +165,9 @@ export class HuiPictureGlanceCardEditor extends HuiActionBaseCardEditor {
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
           .hass=${this.hass}
-          .value="${this._camera_image}"
+          .value=${this._camera_image}
           .configValue=${"camera_image"}
-          @value-changed="${this._valueChanged}"
+          @value-changed=${this._valueChanged}
           allow-custom-entity
           .includeDomains=${includeDomains}
         ></ha-entity-picker>
@@ -182,12 +178,12 @@ export class HuiPictureGlanceCardEditor extends HuiActionBaseCardEditor {
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .configValue="${"camera_view"}"
-            @value-changed="${this._valueChanged}"
+            .configValue=${"camera_view"}
+            @value-changed=${this._valueChanged}
           >
             <paper-listbox
               slot="dropdown-content"
-              .selected="${views.indexOf(this._camera_view)}"
+              .selected=${views.indexOf(this._camera_view)}
             >
               ${views.map((view) => {
                 return html` <paper-item>${view}</paper-item> `;
@@ -200,9 +196,9 @@ export class HuiPictureGlanceCardEditor extends HuiActionBaseCardEditor {
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .value="${this._aspect_ratio}"
-            .configValue="${"aspect_ratio"}"
-            @value-changed="${this._valueChanged}"
+            .value=${this._aspect_ratio}
+            .configValue=${"aspect_ratio"}
+            @value-changed=${this._valueChanged}
           ></paper-input>
         </div>
         <ha-entity-picker
@@ -212,9 +208,9 @@ export class HuiPictureGlanceCardEditor extends HuiActionBaseCardEditor {
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
           .hass=${this.hass}
-          .value="${this._entity}"
+          .value=${this._entity}
           .configValue=${"entity"}
-          @value-changed="${this._valueChanged}"
+          @value-changed=${this._valueChanged}
           allow-custom-entity
         ></ha-entity-picker>
         <hui-actions-editor
@@ -230,14 +226,14 @@ export class HuiPictureGlanceCardEditor extends HuiActionBaseCardEditor {
         ></hui-actions-editor>
         <hui-entity-editor
           .hass=${this.hass}
-          .entities="${this._configEntities}"
-          @entities-changed="${this._valueChanged}"
+          .entities=${this._configEntities}
+          @entities-changed=${this._valueChanged}
         ></hui-entity-editor>
         <hui-theme-select-editor
           .hass=${this.hass}
-          .value="${this._theme}"
-          .configValue="${"theme"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._theme}
+          .configValue=${"theme"}
+          @value-changed=${this._valueChanged}
         ></hui-theme-select-editor>
       </div>
     `;
