@@ -41,8 +41,9 @@ class HassioSystemMetrics extends LitElement {
   protected render(): TemplateResult | void {
     const host = this.hostInfo;
     const usedSpace = this._getUsedSpace(host);
-    const usedSpaceTitle = `${bytesToString(host.disk_used * 1e6)}/
-      ${bytesToString(host.disk_total * 1e6)}`;
+    const usedSpaceTip = `${bytesToString(
+      host.disk_used * 1e6
+    )}/${bytesToString(host.disk_total * 1e6)}`;
     const metrics = [
       {
         description: "Core CPU Usage",
