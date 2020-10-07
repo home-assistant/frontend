@@ -2270,7 +2270,8 @@
             "header": "Title of your Lovelace UI",
             "explanation": "This title is shown above all your views in the Lovelace UI.",
             "edit_title": "Edit title",
-            "title": "Title"
+            "title": "Title",
+            "append_view_title": "Append the title of the selected view to the Lovelace UI Title."
           },
           "edit_view": {
             "header": "View Configuration",

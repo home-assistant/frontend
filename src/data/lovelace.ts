@@ -18,6 +18,7 @@ export interface LovelacePanelConfig {
 
 export interface LovelaceConfig {
   title?: string;
+  append_view_title: boolean;
   views: LovelaceViewConfig[];
   background?: string;
 }

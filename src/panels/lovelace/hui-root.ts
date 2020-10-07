@@ -120,6 +120,12 @@ class HUIRoot extends LitElement {
                   <div main-title>
                     ${this.config.title ||
                     this.hass!.localize("ui.panel.lovelace.editor.header")}
+                    ${this.config.append_view_title ?
+                      html`
+                        -
+                        ${this.config.views[this._curView ?? 0].title}
+                      `
+                    : ""}
                     <mwc-icon-button
                       aria-label="${this.hass!.localize(
                         "ui.panel.lovelace.editor.edit_lovelace.edit_title"
@@ -187,7 +193,15 @@ class HUIRoot extends LitElement {
                     .hass=${this.hass}
                     .narrow=${this.narrow}
                   ></ha-menu-button>
-                  <div main-title>${this.config.title || "Home Assistant"}</div>
+                  <div main-title>
+                    ${this.config.title || "Home Assistant"}
+                    ${this.config.append_view_title ?
+                      html`
+                        -
+                        ${this.config.views[this._curView ?? 0].title}
+                      `
+                    : ""}
+                  </div>
                   ${this._conversation(this.hass.config.components)
                     ? html`
                         <mwc-icon-button
