@@ -299,6 +299,10 @@ export const haStyleDialog = css`
     color: var(--primary-text-color);
   }
 
+  ha-dialog a {
+    color: var(--primary-color);
+  }
+
   /* make dialog fullscreen on small screens */
   @media all and (max-width: 450px), all and (max-height: 500px) {
     ha-dialog {
