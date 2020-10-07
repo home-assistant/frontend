@@ -95,7 +95,7 @@ export const actionConfigStruct = object({
   navigation_path: optional(string()),
   url_path: optional(string()),
   service: optional(string()),
-  service_data: optional(object()),
+  service_data: optional(union([string(), object()])),
   confirmation: optional(confirmationConfigStruct),
 });
 

@@ -22,9 +22,7 @@ import { assert } from "superstruct";
 import { mdiClose, mdiGestureTap, mdiPencil } from "@mdi/js";
 
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-help-tooltip";
 import { computeServiceDescription } from "../../../common/service/compute_service_description";
-import "../../../components/ha-service-picker";
 import {
   ActionConfig,
   CallServiceActionConfig,
@@ -42,6 +40,8 @@ import { computeServiceAttributes } from "../../../common/service/compute_servic
 import { LovelaceActionEditor } from "../types";
 import { HuiElementEditor } from "../editor/hui-element-editor";
 
+import "../../../components/ha-service-picker";
+import "../../../components/ha-help-tooltip";
 import "../editor/hui-detail-editor-base";
 
 @customElement("hui-action-editor")
