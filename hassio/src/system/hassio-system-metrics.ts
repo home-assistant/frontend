@@ -44,6 +44,9 @@ class HassioSystemMetrics extends LitElement {
     const usedSpaceTip = `${bytesToString(
       host.disk_used * 1e6
     )}/${bytesToString(host.disk_total * 1e6)}`;
+    const coreRamTip = `${bytesToString(
+      this._coreMetrics?.memory_usage
+    )}/${bytesToString(this._coreMetrics?.memory_limit)}`;
     const metrics = [
       {
         description: "Core CPU Usage",
@@ -52,6 +55,7 @@ class HassioSystemMetrics extends LitElement {
       {
         description: "Core RAM Usage",
         value: this._coreMetrics?.memory_percent,
+        tooltip: coreRamTip,
       },
       {
         description: "Supervisor CPU Usage",
