@@ -23,7 +23,10 @@ import {
   updatePerson,
 } from "../../../data/person";
 import { fetchUsers, User } from "../../../data/user";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showConfirmationDialog,
+  showAlertDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage";
 import { HomeAssistant, Route } from "../../../types";
@@ -175,6 +178,13 @@ class HaConfigPerson extends LitElement {
     const personToEdit = this._storageItems!.find((p) => p.id === personId);
     if (personToEdit) {
       this._openDialog(personToEdit);
+    } else {
+      showAlertDialog(this, {
+        title: this.hass?.localize(
+          "ui.panel.config.person.person_not_found_title"
+        ),
+        text: this.hass?.localize("ui.panel.config.person.person_not_found"),
+      });
     }
   }
 
