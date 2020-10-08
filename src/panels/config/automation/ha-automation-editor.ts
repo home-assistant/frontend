@@ -25,6 +25,7 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { navigate } from "../../../common/navigate";
+import deepClone from "deep-clone-simple";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -401,7 +402,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                         <ha-card>
                           <div class="card-content">
                             <ha-yaml-editor
-                              .defaultValue=${this._config}
+                              .defaultValue=${this._preprocessYaml()}
                               @value-changed=${this._yamlChanged}
                             ></ha-yaml-editor>
                           </div>
@@ -584,6 +585,12 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   private _excuteAutomation(ev: Event) {
     triggerAutomation(this.hass, (ev.target as any).stateObj.entity_id);
+  }
+
+  private _preprocessYaml() {
+    const cleanConfig = deepClone(this._config);
+    delete cleanConfig["id"];
+    return cleanConfig;
   }
 
   private _yamlChanged(ev: CustomEvent) {
