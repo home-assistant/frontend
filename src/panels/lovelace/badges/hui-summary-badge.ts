@@ -5,18 +5,20 @@ import {
   TemplateResult,
   property,
 } from "lit-element";
+
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { domainIcon } from "../../../common/entity/domain_icon";
-import "../../../components/ha-label-badge";
 import { HomeAssistant } from "../../../types";
 import { LovelaceBadge } from "../types";
 import { SummaryBadgeConfig } from "./types";
+
+import "../../../components/ha-label-badge";
 
 @customElement("hui-summary-badge")
 export class HuiSummaryBadge extends LitElement implements LovelaceBadge {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() protected _config?: SummaryBadgeConfig;
+  @property({ attribute: false }) protected _config?: SummaryBadgeConfig;
 
   public setConfig(config: SummaryBadgeConfig): void {
     if (!config.domain && !config.group) {
