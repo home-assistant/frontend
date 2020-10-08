@@ -39,14 +39,6 @@ class HassioSystemMetrics extends LitElement {
   @internalProperty() private _coreMetrics?: HassioStats;
 
   protected render(): TemplateResult | void {
-    const host = this.hostInfo;
-    const usedSpace = this._getUsedSpace(host);
-    const usedSpaceTip = `${bytesToString(
-      host.disk_used * 1e6
-    )}/${bytesToString(host.disk_total * 1e6)}`;
-    const coreRamTip = `${bytesToString(
-      this._coreMetrics?.memory_usage
-    )}/${bytesToString(this._coreMetrics?.memory_limit)}`;
     const metrics = [
       {
         description: "Core CPU Usage",
@@ -55,7 +47,9 @@ class HassioSystemMetrics extends LitElement {
       {
         description: "Core RAM Usage",
         value: this._coreMetrics?.memory_percent,
-        tooltip: coreRamTip,
+        tooltip: `${bytesToString(
+          this._coreMetrics?.memory_usage
+        )}/${bytesToString(this._coreMetrics?.memory_limit)}`,
       },
       {
         description: "Supervisor CPU Usage",
@@ -67,8 +61,10 @@ class HassioSystemMetrics extends LitElement {
       },
       {
         description: "Used Space",
-        value: usedSpace,
-        tooltip: usedSpaceTip,
+        value: this._getUsedSpace(this.hostInfo),
+        tooltip: `${
+          this.hostInfo.disk_used
+        } GB/${this.hostInfo.disk_total} GB`,
       },
     ];
 
