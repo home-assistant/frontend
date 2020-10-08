@@ -2004,11 +2004,12 @@
                             "restart": "Reiniciar",
                             "single": "Único (predeterminado)"
                         },
+                        "save_script": "Guardar script",
                         "sequence": "Secuencia",
                         "sequence_sentence": "La secuencia de acciones de este script."
                     },
                     "picker": {
-                        "add_script": "Añadir script",
+                        "add_script": "Crear nuevo script",
                         "edit_script": "Editar script",
                         "header": "Editor de scripts",
                         "headers": {
@@ -2017,6 +2018,7 @@
                         "introduction": "El editor de scripts te permite crear y editar scripts. Por favor, sigue el siguiente enlace para leer las instrucciones para asegurarte de que has configurado Home Assistant correctamente.",
                         "learn_more": "Saber más sobre los scripts",
                         "no_scripts": "No hemos encontrado ningún script editable",
+                        "run_script": "Ejecutar script",
                         "show_info": "Mostrar información sobre el script",
                         "trigger_script": "Script de desencadenante"
                     }
@@ -2741,6 +2743,8 @@
                         "edit": "Editar",
                         "header": "Configuración de la tarjeta",
                         "move": "Mover a la vista",
+                        "move_after": "Mover tarjeta después",
+                        "move_before": "Mover tarjeta antes",
                         "options": "Más opciones",
                         "pick_card": "¿Qué tarjeta te gustaría añadir?",
                         "pick_card_view_title": "¿Qué tarjeta te gustaría añadir a tu vista {name} ?",

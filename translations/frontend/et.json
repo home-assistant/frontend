@@ -2004,11 +2004,12 @@
                             "restart": "Taaskäivita",
                             "single": "Üks kord (vaikimisi)"
                         },
+                        "save_script": "Salvesta skript",
                         "sequence": "Jada",
                         "sequence_sentence": "Selle skripti toimingute jada."
                     },
                     "picker": {
-                        "add_script": "Lisa skript",
+                        "add_script": "Lisa uus skript",
                         "edit_script": "Muuda skripti",
                         "header": "Skriptiredaktor",
                         "headers": {
@@ -2017,6 +2018,7 @@
                         "introduction": "Skriptiredaktor võimaldab Teil skripte luua ja redigeerida. Juhiste lugemiseks järgige allolevat linki ja veenduge, et olete Home Assistanti õigesti konfigureerinud.",
                         "learn_more": "Lisateave skriptide kohta",
                         "no_scripts": "Me ei leidnud ühtegi redigeeritavat skripti",
+                        "run_script": "Käivita skript",
                         "show_info": "Kuva stseeni teave",
                         "trigger_script": "Käivita skript"
                     }
@@ -2741,6 +2743,8 @@
                         "edit": "Muuda",
                         "header": "Kaardi seadistamine",
                         "move": "Liiguta vaatesse",
+                        "move_after": "Teisalda kaart pärast",
+                        "move_before": "Teisalda kaart enne",
                         "options": "Veel valikuid",
                         "pick_card": "Vali kaart mida soovid lisada.",
                         "pick_card_view_title": "Millise kaardi soovite oma {name} vaatesse lisada?",

@@ -1270,7 +1270,7 @@
                             "title": "Google Assistant"
                         },
                         "integrations": "集成",
-                        "integrations_introduction": "Home Assistant Cloud的集成使您可以连接云中的服务，而不必在Internet上公开公开Home Assistant实例。",
+                        "integrations_introduction": "Home Assistant Cloud 的集成使您可以连接云中的服务，而不必在 Internet 上公开 Home Assistant 实例。",
                         "integrations_introduction2": "浏览网站以查找",
                         "integrations_link_all_features": "所有可用功能",
                         "manage_account": "管理帐户",
@@ -1404,7 +1404,7 @@
                 },
                 "common": {
                     "editor": {
-                        "confirm_unsaved": "您有未保存的更改，确定要退出吗？"
+                        "confirm_unsaved": "有更改尚未保存，确定离开页面吗？"
                     }
                 },
                 "core": {
@@ -2004,6 +2004,7 @@
                             "restart": "重启",
                             "single": "单点 (默认)"
                         },
+                        "save_script": "保存脚本",
                         "sequence": "顺序",
                         "sequence_sentence": "该脚本的操作顺序。"
                     },
@@ -2017,12 +2018,13 @@
                         "introduction": "脚本编辑器方便您创建及编辑脚本。请按照下面的链接阅读说明，以确保配置正确。",
                         "learn_more": "详细了解脚本",
                         "no_scripts": "未找到可编辑的脚本",
+                        "run_script": "运行脚本",
                         "show_info": "显示有关脚本的信息",
                         "trigger_script": "触发脚本"
                     }
                 },
                 "server_control": {
-                    "caption": "服务器控制",
+                    "caption": "服务控制",
                     "description": "重新启动或停止 Home Assistant 服务",
                     "section": {
                         "reloading": {
@@ -2148,12 +2150,12 @@
                 "zha": {
                     "add_device_page": {
                         "discovered_text": "发现的设备会立即显示在这里。",
-                        "discovery_text": "发现的设备将显示在此处。按照设备的说明进行操作，并将设备置于配对模式。",
+                        "discovery_text": "发现的设备将显示在这里。请按照设备的说明进行操作，将设备置于配对模式。",
                         "header": "Zigbee 家庭自动化 - 添加设备",
                         "no_devices_found": "未发现设备。请确保设备处于配对模式，并且在搜索设备时保持唤醒。",
                         "pairing_mode": "请确保您的设备处于配对模式。有关如何进入配对模式，请查阅设备说明书。",
                         "search_again": "再次搜索",
-                        "spinner": "正在寻找ZHA Zigbee设备......"
+                        "spinner": "正在查找 ZHA Zigbee 设备......"
                     },
                     "add": {
                         "caption": "添加设备",
@@ -2736,11 +2738,13 @@
                     "edit_card": {
                         "add": "添加卡片",
                         "confirm_cancel": "确实要取消吗？",
-                        "delete": "删除",
+                        "delete": "删除卡片",
                         "duplicate": "复制卡片",
                         "edit": "编辑",
                         "header": "卡片配置",
                         "move": "移动",
+                        "move_after": "向后移动卡片",
+                        "move_before": "向前移动卡片",
                         "options": "更多选项",
                         "pick_card": "您想添加哪张卡片？",
                         "pick_card_view_title": "您想将哪张卡片添加到 {name} 视图？",

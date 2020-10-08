@@ -2004,11 +2004,12 @@
                             "restart": "Omstart",
                             "single": "Enkel (standard)"
                         },
+                        "save_script": "Lagre skript",
                         "sequence": "Sekvens",
                         "sequence_sentence": "Sekvensen av handlingene til dette skriptet."
                     },
                     "picker": {
-                        "add_script": "Legg til skript",
+                        "add_script": "Opprett nytt skript",
                         "edit_script": "Rediger skript",
                         "header": "Skriptredigering",
                         "headers": {
@@ -2017,6 +2018,7 @@
                         "introduction": "Skripteditoren lar deg lage og redigere skript. Følg lenken nedenfor for å lese instruksjonene for å forsikre deg om at du har konfigurert Home Assistant riktig.",
                         "learn_more": "Lær mer om skript",
                         "no_scripts": "Vi kunne ikke finne noen redigerbare skript",
+                        "run_script": "Kjør skript",
                         "show_info": "Vis informasjon om skript",
                         "trigger_script": "Utløse skript"
                     }
@@ -2737,10 +2739,12 @@
                         "add": "Legg til kort",
                         "confirm_cancel": "Er du sikker på at du vil avbryte?",
                         "delete": "Slett kort",
-                        "duplicate": "Dupliser kort",
+                        "duplicate": "Duplisert kort",
                         "edit": "Rediger",
                         "header": "Kortkonfigurasjon",
                         "move": "Flytt til visning",
+                        "move_after": "Flytt kortet etter",
+                        "move_before": "Flytt kortet før",
                         "options": "Flere alternativer",
                         "pick_card": "Hvilket kort vil du legge til?",
                         "pick_card_view_title": "Hvilket kort vil du legge til i {name} visningen?",

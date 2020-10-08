@@ -939,7 +939,7 @@
                             "delete_confirm": "Segur que vols eliminar-ho?",
                             "duplicate": "Duplica",
                             "header": "Accions",
-                            "introduction": "Les accions són allò que farà Home Assistant quan es dispari l'automatització i es compleixin totes les condicions (si n'hi ha).",
+                            "introduction": "Les accions són allò que farà Home Assistant quan es dispari l'automatització.",
                             "learn_more": "Més informació sobre les accions",
                             "name": "Acció",
                             "type_select": "Tipus d'acció",
@@ -2004,11 +2004,12 @@
                             "restart": "Reinici",
                             "single": "Individual (per defecte)"
                         },
+                        "save_script": "Desa l'script",
                         "sequence": "Seqüència",
                         "sequence_sentence": "Seqüència d'accions de l'script."
                     },
                     "picker": {
-                        "add_script": "Afegeix script",
+                        "add_script": "Crea un script nou",
                         "edit_script": "Edita l'script",
                         "header": "Editor de scripts",
                         "headers": {
@@ -2017,6 +2018,7 @@
                         "introduction": "L'editor de scripts et permet crear i editar scripts. Vés a l'enllaç de sota per veure'n les instruccions i assegurar-te que has configurat Home Assistant correctament.",
                         "learn_more": "Més informació sobre els scripts",
                         "no_scripts": "No s'ha pogut trobar cap script editable",
+                        "run_script": "Executa l'script",
                         "show_info": "Mostra informació sobre l'script",
                         "trigger_script": "Dispara l'script"
                     }
@@ -2741,6 +2743,8 @@
                         "edit": "Editar",
                         "header": "Configuració de la targeta",
                         "move": "Moure a la Vista",
+                        "move_after": "Mou targeta després",
+                        "move_before": "Mou targeta abans",
                         "options": "Més opcions",
                         "pick_card": "Quina targeta vols afegir?",
                         "pick_card_view_title": "Quina targeta vols afegir a la visualització {name}?",
