@@ -44,7 +44,6 @@ class DialogTagDetail extends LitElement
   public showDialog(params: TagDetailDialogParams): void {
     this._params = params;
     this._error = undefined;
-    this._qrCode = undefined;
     if (this._params.entry) {
       this._name = this._params.entry.name || "";
     } else {
@@ -55,6 +54,7 @@ class DialogTagDetail extends LitElement
 
   public closeDialog(): void {
     this._params = undefined;
+    this._qrCode = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -79,14 +79,12 @@ class DialogTagDetail extends LitElement
         <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           <div class="form">
-            ${
-              this._params.entry
-                ? html`${this.hass!.localize(
-                    "ui.panel.config.tags.detail.tag_id"
-                  )}:
-                  ${this._params.entry.id}`
-                : ""
-            }
+            ${this._params.entry
+              ? html`${this.hass!.localize(
+                  "ui.panel.config.tags.detail.tag_id"
+                )}:
+                ${this._params.entry.id}`
+              : ""}
             <paper-input
               dialogInitialFocus
               .value=${this._name}
@@ -101,88 +99,83 @@ class DialogTagDetail extends LitElement
               required
               auto-validate
             ></paper-input>
-            ${
-              !this._params.entry
-                ? html` <paper-input
-                    .value=${this._id}
-                    .configValue=${"id"}
-                    @value-changed=${this._valueChanged}
-                    .label=${this.hass!.localize(
-                      "ui.panel.config.tags.detail.tag_id"
-                    )}
-                    .placeholder=${this.hass!.localize(
-                      "ui.panel.config.tags.detail.tag_id_placeholder"
-                    )}
-                  ></paper-input>`
-                : ""
-            }
+            ${!this._params.entry
+              ? html` <paper-input
+                  .value=${this._id}
+                  .configValue=${"id"}
+                  @value-changed=${this._valueChanged}
+                  .label=${this.hass!.localize(
+                    "ui.panel.config.tags.detail.tag_id"
+                  )}
+                  .placeholder=${this.hass!.localize(
+                    "ui.panel.config.tags.detail.tag_id_placeholder"
+                  )}
+                ></paper-input>`
+              : ""}
           </div>
+          ${this._params.entry
+            ? html`
+                <div>
+                  <p>
+                    ${this.hass!.localize(
+                      "ui.panel.config.tags.detail.usage",
+                      "companion_link",
+                      html`<a
+                        href="https://companion.home-assistant.io/"
+                        target="_blank"
+                        rel="noreferrer"
+                        >${this.hass!.localize(
+                          "ui.panel.config.tags.detail.companion_apps"
+                        )}</a
+                      >`
+                    )}
+                  </p>
+                </div>
+
+                <div id="qr">
+                  ${this._qrCode
+                    ? this._qrCode
+                    : html`
+                        <mwc-button @click=${this._generateQR}
+                          >Generate QR code
+                        </mwc-button>
+                      `}
+                </div>
+              `
+            : ``}
+        </div>
         ${this._params.entry
           ? html`
-              <div>
-                <p>
-                  ${this.hass!.localize(
-                    "ui.panel.config.tags.detail.usage",
-                    "companion_link", html`<a
-                      href="https://companion.home-assistant.io/"
-                      target="_blank"
-                      rel="noreferrer"
-                      >${this.hass!.localize("ui.panel.config.tags.detail.companion_apps")}</a>`
-                  )}
-              </div>
-              <div id="qr">
-                ${this._qrCode
-                  ? this._qrCode
-                  : html`
-                      <mwc-button
-                        @click=${this._generateQR}
-                      >Generate QR code
-                      </mwc-button>
-                    `
-                }
-              </div>
+              <mwc-button
+                slot="secondaryAction"
+                class="warning"
+                @click="${this._deleteEntry}"
+                .disabled=${this._submitting}
+              >
+                ${this.hass!.localize("ui.panel.config.tags.detail.delete")}
+              </mwc-button>
             `
-          : ``
-        }
-        </div>
-        ${
-          this._params.entry
-            ? html`
-                <mwc-button
-                  slot="secondaryAction"
-                  class="warning"
-                  @click="${this._deleteEntry}"
-                  .disabled=${this._submitting}
-                >
-                  ${this.hass!.localize("ui.panel.config.tags.detail.delete")}
-                </mwc-button>
-              `
-            : html``
-        }
+          : html``}
         <mwc-button
           slot="primaryAction"
           @click="${this._updateEntry}"
           .disabled=${this._submitting}
         >
-          ${
-            this._params.entry
-              ? this.hass!.localize("ui.panel.config.tags.detail.update")
-              : this.hass!.localize("ui.panel.config.tags.detail.create")
-          }
+          ${this._params.entry
+            ? this.hass!.localize("ui.panel.config.tags.detail.update")
+            : this.hass!.localize("ui.panel.config.tags.detail.create")}
         </mwc-button>
-        ${
-          this._params.openWrite && !this._params.entry
-            ? html` <mwc-button
-                slot="primaryAction"
-                @click="${this._updateWriteEntry}"
-                .disabled=${this._submitting}
-              >
-                ${this.hass!.localize(
-                  "ui.panel.config.tags.detail.create_and_write"
-                )}
-              </mwc-button>`
-            : ""
-        }
+        ${this._params.openWrite && !this._params.entry
+          ? html` <mwc-button
+              slot="primaryAction"
+              @click="${this._updateWriteEntry}"
+              .disabled=${this._submitting}
+            >
+              ${this.hass!.localize(
+                "ui.panel.config.tags.detail.create_and_write"
+              )}
+            </mwc-button>`
+          : ""}
       </ha-dialog>
     `;
   }
@@ -236,7 +229,7 @@ class DialogTagDetail extends LitElement
   }
 
   private async _generateQR() {
-    const qrcode = await import('qrcode');
+    const qrcode = await import("qrcode");
     const canvas = await qrcode.toCanvas(
       `https://home-assistant.io/tag/${this._params?.entry?.id}`,
       {
