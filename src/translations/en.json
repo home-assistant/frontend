@@ -434,6 +434,44 @@
       }
     },
     "dialogs": {
+      "quick-open": {
+        "commands": {
+          "reload": {
+            "reload": "[%key:ui::panel::config::server_control::section::reloading::reload%]",
+            "core": "[%key:ui::panel::config::server_control::section::reloading::core%]",
+            "group": "[%key:ui::panel::config::server_control::section::reloading::group%]",
+            "automation": "[%key:ui::panel::config::server_control::section::reloading::automation%]",
+            "script": "[%key:ui::panel::config::server_control::section::reloading::script%]",
+            "scene": "[%key:ui::panel::config::server_control::section::reloading::scene%]",
+            "person": "[%key:ui::panel::config::server_control::section::reloading::person%]",
+            "zone": "[%key:ui::panel::config::server_control::section::reloading::zone%]",
+            "input_boolean": "[%key:ui::panel::config::server_control::section::reloading::input_boolean%]",
+            "input_text": "[%key:ui::panel::config::server_control::section::reloading::input_text%]",
+            "input_number": "[%key:ui::panel::config::server_control::section::reloading::input_number%]",
+            "input_datetime": "[%key:ui::panel::config::server_control::section::reloading::input_datetime%]",
+            "input_select": "[%key:ui::panel::config::server_control::section::reloading::input_select%]",
+            "template": "[%key:ui::panel::config::server_control::section::reloading::template%]",
+            "universal": "[%key:ui::panel::config::server_control::section::reloading::universal%]",
+            "rest": "[%key:ui::panel::config::server_control::section::reloading::rest%]",
+            "command_line": "[%key:ui::panel::config::server_control::section::reloading::command_line%]",
+            "filter": "[%key:ui::panel::config::server_control::section::reloading::filter%]",
+            "statistics": "[%key:ui::panel::config::server_control::section::reloading::statistics%]",
+            "generic": "[%key:ui::panel::config::server_control::section::reloading::generic%]",
+            "generic_thermostat": "[%key:ui::panel::config::server_control::section::reloading::generic_thermostat%]",
+            "homekit": "[%key:ui::panel::config::server_control::section::reloading::homekit%]",
+            "min_max": "[%key:ui::panel::config::server_control::section::reloading::min_max%]",
+            "history_stats": "[%key:ui::panel::config::server_control::section::reloading::history_stats%]",
+            "trend": "[%key:ui::panel::config::server_control::section::reloading::trend%]",
+            "ping": "[%key:ui::panel::config::server_control::section::reloading::ping%]",
+            "filesize": "[%key:ui::panel::config::server_control::section::reloading::filesize%]",
+            "telegram": "[%key:ui::panel::config::server_control::section::reloading::telegram%]",
+            "smtp": "[%key:ui::panel::config::server_control::section::reloading::smtp%]",
+            "mqtt": "[%key:ui::panel::config::server_control::section::reloading::mqtt%]",
+            "rpi_gpio": "[%key:ui::panel::config::server_control::section::reloading::rpi_gpio%]"
+          }
+        },
+        "filter_placeholder": "Entity Filter"
+      },
       "voice_command": {
         "did_not_hear": "Home Assistant did not hear anything",
         "found": "I found the following for you:",
