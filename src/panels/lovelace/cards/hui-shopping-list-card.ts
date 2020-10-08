@@ -22,6 +22,8 @@ import {
   fetchItems,
   ShoppingListItem,
   updateItem,
+  moveUpItem,
+  moveDownItem,
 } from "../../../data/shopping-list";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
@@ -155,10 +157,11 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
                       <ha-icon
                         class="reorderButton"
                         icon="hass:arrow-up"
+                        .itemId=${item.id}
                         .title=${this.hass!.localize(
                           "ui.panel.lovelace.cards.shopping-list.add_item"
                         )}
-                        @click=${this._toggleReorder}
+                        @click=${this._moveUp}
                       >
                       </ha-icon>
                     `
@@ -168,10 +171,11 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
                       <ha-icon
                         class="reorderButton"
                         icon="hass:arrow-down"
+                        .itemId=${item.id}
                         .title=${this.hass!.localize(
                           "ui.panel.lovelace.cards.shopping-list.add_item"
                         )}
-                        @click=${this._toggleReorder}
+                        @click=${this._moveDown}
                       >
                       </ha-icon>
                     `
@@ -289,7 +293,14 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
 
   private _toggleReorder(): void {
     this._reordering = !this._reordering;
-    console.warn(this._reordering);
+  }
+
+  private _moveUp(ev): void {
+    moveUpItem(this.hass!, ev.target.itemId).catch(() => this._fetchData());
+  }
+
+  private _moveDown(ev): void {
+    moveDownItem(this.hass!, ev.target.itemId).catch(() => this._fetchData());
   }
 
   static get styles(): CSSResult {
