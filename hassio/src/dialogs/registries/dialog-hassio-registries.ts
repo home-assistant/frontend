@@ -49,7 +49,6 @@ class HassioRegistriesDialog extends LitElement {
   @internalProperty() private _addingRegistry = false;
 
   protected render(): TemplateResult {
-    console.log(this._registries);
     return html`
       <ha-dialog
         .open=${this._opened}
