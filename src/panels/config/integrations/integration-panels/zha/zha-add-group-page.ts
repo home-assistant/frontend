@@ -105,12 +105,15 @@ export class ZHAAddGroupPage extends LitElement {
               @click="${this._createGroup}"
               class="button"
             >
-              <ha-circular-progress
-                ?active="${this._processingAdd}"
-                alt="${this.hass!.localize(
-                  "ui.panel.config.zha.groups.creating_group"
-                )}"
-              ></ha-circular-progress>
+              ${this._processingAdd
+                ? html`<ha-circular-progress
+                    active
+                    size="small"
+                    .title=${this.hass!.localize(
+                      "ui.panel.config.zha.groups.creating_group"
+                    )}
+                  ></ha-circular-progress>`
+                : ""}
               ${this.hass!.localize(
                 "ui.panel.config.zha.groups.create"
               )}</mwc-button
@@ -171,17 +174,6 @@ export class ZHAAddGroupPage extends LitElement {
 
         ha-config-section *:last-child {
           padding-bottom: 24px;
-        }
-        mwc-button ha-circular-progress {
-          width: 14px;
-          height: 14px;
-          margin-right: 20px;
-        }
-        ha-circular-progress {
-          display: none;
-        }
-        ha-circular-progress[active] {
-          display: block;
         }
         .paper-dialog-buttons {
           align-items: flex-end;

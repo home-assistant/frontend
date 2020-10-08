@@ -239,7 +239,7 @@ export class HuiDialogEditCard extends LitElement
                     ? html`
                         <ha-circular-progress
                           active
-                          alt="Saving"
+                          title="Saving"
                           size="small"
                         ></ha-circular-progress>
                       `
@@ -424,10 +424,6 @@ export class HuiDialogEditCard extends LitElement
             margin: auto 0px;
             max-width: 500px;
           }
-        }
-
-        mwc-button ha-circular-progress {
-          margin-right: 20px;
         }
         .hidden {
           display: none;

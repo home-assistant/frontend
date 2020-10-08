@@ -135,10 +135,13 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
                 ?disabled=${this._saving}
                 @click=${this._saveConfig}
               >
-                <ha-circular-progress
-                  ?active=${this._saving}
-                  alt="Saving"
-                ></ha-circular-progress>
+                ${this._saving
+                  ? html`<ha-circular-progress
+                      active
+                      size="small"
+                      title="Saving"
+                    ></ha-circular-progress>`
+                  : ""}
                 ${this.hass!.localize(
                   "ui.panel.lovelace.editor.save_config.save"
                 )}
@@ -203,17 +206,6 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
         }
         ha-paper-dialog {
           max-width: 650px;
-        }
-        ha-circular-progress {
-          display: none;
-        }
-        ha-circular-progress[active] {
-          display: block;
-        }
-        mwc-button ha-circular-progress {
-          width: 14px;
-          height: 14px;
-          margin-right: 20px;
         }
         ha-switch {
           padding-bottom: 16px;

@@ -108,7 +108,8 @@ export class HuiDialogSuggestCard extends LitElement {
                     ? html`
                         <ha-circular-progress
                           active
-                          alt="Saving"
+                          title="Saving"
+                          size="small"
                         ></ha-circular-progress>
                       `
                     : this.hass!.localize(
@@ -141,11 +142,6 @@ export class HuiDialogSuggestCard extends LitElement {
         ha-paper-dialog {
           max-width: 845px;
           --dialog-z-index: 5;
-        }
-        mwc-button ha-circular-progress {
-          width: 14px;
-          height: 14px;
-          margin-right: 20px;
         }
         .hidden {
           display: none;
