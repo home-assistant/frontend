@@ -206,6 +206,12 @@ export interface ServiceCallResponse {
   context: Context;
 }
 
+export interface ServiceCallRequest {
+  domain: string;
+  service: string;
+  serviceData?: { [key: string]: any };
+}
+
 export interface HomeAssistant {
   auth: Auth & { external?: ExternalMessaging };
   connection: Connection;
@@ -239,9 +245,9 @@ export interface HomeAssistant {
   userData?: CoreFrontendUserData | null;
   hassUrl(path?): string;
   callService(
-    domain: string,
-    service: string,
-    serviceData?: { [key: string]: any }
+    domain: ServiceCallRequest["domain"],
+    service: ServiceCallRequest["service"],
+    serviceData?: ServiceCallRequest["serviceData"]
   ): Promise<ServiceCallResponse>;
   callApi<T>(
     method: "GET" | "POST" | "PUT" | "DELETE",
