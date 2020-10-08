@@ -78,7 +78,7 @@ class HassioSystemMetrics extends LitElement {
             this._renderMetric(
               metric.description,
               metric.value ?? 0,
-              metric.tooltip ?? undefined
+              metric.tooltip
             )
           )}
         </div>
