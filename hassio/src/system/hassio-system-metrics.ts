@@ -58,6 +58,9 @@ class HassioSystemMetrics extends LitElement {
       {
         description: "Supervisor RAM Usage",
         value: this._supervisorMetrics?.memory_percent,
+        tooltip: `${bytesToString(
+          this._supervisorMetrics?.memory_usage
+        )}/${bytesToString(this._supervisorMetrics?.memory_limit)}`,
       },
       {
         description: "Used Space",
