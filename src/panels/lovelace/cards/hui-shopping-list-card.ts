@@ -51,6 +51,8 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
 
   @internalProperty() private _checkedItems?: ShoppingListItem[];
 
+  @internalProperty() private _reordering: Boolean = false;
+
   public getCardSize(): number {
     return (this._config ? (this._config.title ? 1 : 0) : 0) + 3;
   }
@@ -120,11 +122,20 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
             )}
             @keydown=${this._addKeyPress}
           ></paper-input>
+          <ha-icon
+            class="reorderButton"
+            icon="hass:sort"
+            .title=${this.hass!.localize(
+              "ui.panel.lovelace.cards.shopping-list.add_item"
+            )}
+            @click=${this._toggleReorder}
+          >
+          </ha-icon>
         </div>
         ${repeat(
           this._uncheckedItems!,
           (item) => item.id,
-          (item) =>
+          (item, index) =>
             html`
               <div class="editRow">
                 <paper-checkbox
@@ -139,6 +150,32 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
                   .itemId=${item.id}
                   @change=${this._saveEdit}
                 ></paper-input>
+                ${this._reordering
+                  ? html`
+                      <ha-icon
+                        class="reorderButton"
+                        icon="hass:arrow-up"
+                        .title=${this.hass!.localize(
+                          "ui.panel.lovelace.cards.shopping-list.add_item"
+                        )}
+                        @click=${this._toggleReorder}
+                      >
+                      </ha-icon>
+                    `
+                  : ""}
+                ${this._reordering
+                  ? html`
+                      <ha-icon
+                        class="reorderButton"
+                        icon="hass:arrow-down"
+                        .title=${this.hass!.localize(
+                          "ui.panel.lovelace.cards.shopping-list.add_item"
+                        )}
+                        @click=${this._toggleReorder}
+                      >
+                      </ha-icon>
+                    `
+                  : ""}
               </div>
             `
         )}
@@ -250,6 +287,11 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
     }
   }
 
+  private _toggleReorder(): void {
+    this._reordering = !this._reordering;
+    console.warn(this._reordering);
+  }
+
   static get styles(): CSSResult {
     return css`
       ha-card {
@@ -276,6 +318,17 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
       .addButton {
         padding-right: 16px;
         cursor: pointer;
+      }
+
+      .reorderButton {
+        padding-left: 16px;
+        cursor: pointer;
+      }
+
+      .reorderButton[disabled] {
+        padding-left: 16px;
+        color: var(--disabled-text-color);
+        ointer-events: none;
       }
 
       paper-checkbox {
