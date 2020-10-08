@@ -1,4 +1,4 @@
-import { customElement, property, css, CSSResult } from "lit-element";
+import { customElement, property } from "lit-element";
 import { CircularProgress } from "@material/mwc-circular-progress";
 
 @customElement("ha-circular-progress")
@@ -13,6 +13,7 @@ export class HaCircularProgress extends CircularProgress {
   @property()
   public size: "small" | "medium" | "large" = "medium";
 
+  // @ts-ignore
   public set density(_) {
     // just a dummy
   }
@@ -30,24 +31,13 @@ export class HaCircularProgress extends CircularProgress {
     }
   }
 
+  // @ts-ignore
   public set indeterminate(_) {
     // just a dummy
   }
 
   public get indeterminate() {
     return this.active;
-  }
-
-  static get styles(): CSSResult[] {
-    return [
-      super.styles,
-      css`
-        .mdc-circular-progress,
-        .mdc-circular-progress__circle-clipper {
-          display: inline-flex;
-        }
-      `,
-    ];
   }
 }
 
