@@ -1,8 +1,10 @@
 import "@material/mwc-fab";
-import { mdiContentSave } from "@mdi/js";
+import { mdiContentSave, mdiDelete, mdiDotsVertical } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
+import "@material/mwc-list/mwc-list-item";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import { PaperListboxElement } from "@polymer/paper-listbox";
 import {
   css,
@@ -19,6 +21,7 @@ import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-input";
@@ -74,19 +77,32 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         .backCallback=${() => this._backTapped()}
         .tabs=${configSections.automation}
       >
-        ${!this.scriptEntityId
-          ? ""
-          : html`
-              <ha-icon-button
-                class="warning"
-                slot="toolbar-icon"
-                title="${this.hass.localize(
-                  "ui.panel.config.script.editor.delete_script"
-                )}"
-                icon="hass:delete"
-                @click=${this._deleteConfirm}
-              ></ha-icon-button>
-            `}
+        <ha-button-menu
+          corner="BOTTOM_START"
+          slot="toolbar-icon"
+          @action=${this._handleMenuAction}
+        >
+          <mwc-icon-button
+            slot="trigger"
+            .title=${this.hass.localize("ui.common.menu")}
+            .label=${this.hass.localize("ui.common.overflow_menu")}
+            ><ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+          </mwc-icon-button>
+
+          <mwc-list-item
+            .disabled=${!this.scriptEntityId}
+            aria-label=${this.hass.localize(
+              "ui.panel.config.automation.picker.delete_automation"
+            )}
+            class=${classMap({ warning: this.scriptEntityId })}
+            graphic="icon"
+          >
+            ${this.hass.localize(
+              "ui.panel.config.automation.picker.delete_automation"
+            )}
+            <ha-svg-icon slot="graphic" .path=${mdiDelete}></ha-svg-icon>
+          </mwc-list-item>
+        </ha-button-menu>
         ${this.narrow
           ? html` <span slot="header">${this._config?.alias}</span> `
           : ""}
@@ -430,6 +446,14 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   private async _delete() {
     await deleteScript(this.hass, computeObjectId(this.scriptEntityId));
     history.back();
+  }
+
+  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        this._deleteConfirm();
+        break;
+    }
   }
 
   private _saveScript(): void {
