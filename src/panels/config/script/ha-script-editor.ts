@@ -34,6 +34,7 @@ import {
 } from "../../../data/script";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/ha-app-layout";
+import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -43,7 +44,7 @@ import { HaDeviceAction } from "../automation/action/types/ha-automation-action-
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 
-export class HaScriptEditor extends LitElement {
+export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public scriptEntityId!: string;
@@ -454,6 +455,10 @@ export class HaScriptEditor extends LitElement {
         throw errors;
       }
     );
+  }
+
+  protected handleKeyboardSave() {
+    this._saveScript();
   }
 
   static get styles(): CSSResult[] {

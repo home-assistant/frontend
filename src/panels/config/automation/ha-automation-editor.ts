@@ -37,6 +37,7 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/ha-app-layout";
 import "../../../layouts/hass-tabs-subpage";
+import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -59,7 +60,7 @@ declare global {
   }
 }
 
-export class HaAutomationEditor extends LitElement {
+export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public automationId!: string;
@@ -559,6 +560,10 @@ export class HaAutomationEditor extends LitElement {
         throw errors;
       }
     );
+  }
+
+  protected handleKeyboardSave() {
+    this._saveAutomation();
   }
 
   static get styles(): CSSResult[] {
