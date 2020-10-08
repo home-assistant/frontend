@@ -155,7 +155,7 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
                 ${this._reordering
                   ? html`
                       <ha-icon
-                        class="reorderButton"
+                        class="reorderButton up"
                         icon="hass:arrow-up"
                         ?disabled=${index == 0}
                         .itemId=${item.id}
@@ -170,7 +170,7 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
                 ${this._reordering
                   ? html`
                       <ha-icon
-                        class="reorderButton"
+                        class="reorderButton down"
                         icon="hass:arrow-down"
                         ?disabled=${index == this._uncheckedItems!.length - 1}
                         .itemId=${item.id}
@@ -340,10 +340,17 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
         cursor: pointer;
       }
 
-      .reorderButton[disabled] {
+      .reorderButton.up {
         padding-left: 16px;
+        padding-right: 8px;
+      }
+
+      .reorderButton.down {
+        padding-left: 8px;
+      }
+
+      .reorderButton[disabled] {
         color: var(--disabled-text-color);
-        ointer-events: none;
         cursor: default;
       }
 
