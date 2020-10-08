@@ -26,6 +26,7 @@ import {
   roundWithOneDecimal,
   bytesToString,
 } from "../../../src/util/calculate";
+import { bytesToString } from "../../../src/util/bytes-to-string";
 import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-system-metrics")
