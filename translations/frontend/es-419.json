@@ -2577,8 +2577,7 @@
                         "edit_title": "Editar título",
                         "explanation": "Este título se muestra sobre todas sus vistas en la interfaz de usuario de Lovelace.",
                         "header": "Título de tu interfaz de usuario de Lovelace",
-                        "title": "Título",
-                        "append_view_title": "Añadir el título de la vista seleccionada al título de IU Lovelace."
+                        "title": "Título"
                     },
                     "edit_view": {
                         "add": "Agregar vista",

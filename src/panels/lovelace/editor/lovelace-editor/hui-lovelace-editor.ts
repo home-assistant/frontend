@@ -79,7 +79,7 @@ export class HuiLovelaceEditor extends LitElement {
       return;
     }
 
-    let newConfig = {
+    const newConfig = {
       ...this.config,
       append_view_title: (ev.target as HaSwitch).checked,
     };
