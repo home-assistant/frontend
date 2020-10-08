@@ -110,7 +110,9 @@ export class HaStateLabelBadge extends LitElement {
         return null;
       case "sensor":
       default:
-        return state.state === UNKNOWN
+        return state.attributes.device_class === "moon__phase"
+          ? null
+          : state.state === UNKNOWN
           ? "-"
           : state.attributes.unit_of_measurement
           ? state.state
@@ -162,7 +164,9 @@ export class HaStateLabelBadge extends LitElement {
           ? "hass:timer-outline"
           : "hass:timer-off-outline";
       default:
-        return null;
+        return state?.attributes.device_class === "moon__phase"
+          ? stateIcon(state)
+          : null;
     }
   }
 
