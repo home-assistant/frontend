@@ -405,6 +405,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                               .defaultValue=${this._preprocessYaml()}
                               @value-changed=${this._yamlChanged}
                             ></ha-yaml-editor>
+                            <mwc-button @click=${this._copyYaml}>
+                              Copy to clipboard
+                            </mwc-button>
                           </div>
                           ${stateObj
                             ? html`
@@ -591,6 +594,11 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     const cleanConfig = deepClone(this._config);
     delete cleanConfig["id"];
     return cleanConfig;
+  }
+
+  private async _copyYaml() {
+    const yaml = await import("js-yaml");
+    navigator.clipboard.writeText(yaml.safeDump(this._preprocessYaml()));
   }
 
   private _yamlChanged(ev: CustomEvent) {
