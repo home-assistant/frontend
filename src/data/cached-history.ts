@@ -10,7 +10,6 @@ import {
 } from "./history";
 
 export interface CacheConfig {
-  refresh: number;
   cacheKey: string;
   hoursToShow: number;
 }
