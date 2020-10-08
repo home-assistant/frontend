@@ -443,6 +443,19 @@ class HassioSnapshotDialog extends LitElement {
       return;
     }
 
+    if (window.location.href.includes("ui.nabu.casa")) {
+      const confirm = await showConfirmationDialog(this, {
+        title: "Potential slow download",
+        text:
+          "Downloading snapshots over the Nabu Casa URL will take some time, it is recomended to use your local URL instead, do you want to continue?",
+        confirmText: "continue",
+        dismissText: "cancel",
+      });
+      if (!confirm) {
+        return;
+      }
+    }
+
     const name = this._computeName.replace(/[^a-z0-9]+/gi, "_");
     const a = document.createElement("a");
     a.href = signedPath.path;
