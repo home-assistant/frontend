@@ -299,7 +299,7 @@ export const haStyleDialog = css`
     color: var(--primary-text-color);
   }
 
-  ha-dialog a {
+  a {
     color: var(--primary-color);
   }
 
