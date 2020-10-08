@@ -128,7 +128,7 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
             class="reorderButton"
             icon="hass:sort"
             .title=${this.hass!.localize(
-              "ui.panel.lovelace.cards.shopping-list.add_item"
+              "ui.panel.lovelace.cards.shopping-list.reorder_items"
             )}
             @click=${this._toggleReorder}
           >
@@ -160,7 +160,7 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
                         ?disabled=${index == 0}
                         .itemId=${item.id}
                         .title=${this.hass!.localize(
-                          "ui.panel.lovelace.cards.shopping-list.add_item"
+                          "ui.panel.lovelace.cards.shopping-list.move_up_item"
                         )}
                         @click=${index == 0 ? null : this._moveUp}
                       >
@@ -175,7 +175,7 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
                         ?disabled=${index == this._uncheckedItems!.length - 1}
                         .itemId=${item.id}
                         .title=${this.hass!.localize(
-                          "ui.panel.lovelace.cards.shopping-list.add_item"
+                          "ui.panel.lovelace.cards.shopping-list.move_down_item"
                         )}
                         @click=${index == this._uncheckedItems!.length - 1
                           ? null
