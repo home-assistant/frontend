@@ -157,11 +157,12 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
                       <ha-icon
                         class="reorderButton"
                         icon="hass:arrow-up"
+                        ?disabled=${index == 0}
                         .itemId=${item.id}
                         .title=${this.hass!.localize(
                           "ui.panel.lovelace.cards.shopping-list.add_item"
                         )}
-                        @click=${this._moveUp}
+                        @click=${index == 0 ? null : this._moveUp}
                       >
                       </ha-icon>
                     `
@@ -171,11 +172,14 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
                       <ha-icon
                         class="reorderButton"
                         icon="hass:arrow-down"
+                        ?disabled=${index == this._uncheckedItems!.length - 1}
                         .itemId=${item.id}
                         .title=${this.hass!.localize(
                           "ui.panel.lovelace.cards.shopping-list.add_item"
                         )}
-                        @click=${this._moveDown}
+                        @click=${index == this._uncheckedItems!.length - 1
+                          ? null
+                          : this._moveDown}
                       >
                       </ha-icon>
                     `
@@ -340,6 +344,7 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
         padding-left: 16px;
         color: var(--disabled-text-color);
         ointer-events: none;
+        cursor: default;
       }
 
       paper-checkbox {
