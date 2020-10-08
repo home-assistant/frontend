@@ -110,7 +110,7 @@ export class HaStateLabelBadge extends LitElement {
         return null;
       case "sensor":
       default:
-        return state?.attributes.device_class === "moon__phase"
+        return state.attributes.device_class === "moon__phase"
           ? null
           : state.state === UNKNOWN
           ? "-"
