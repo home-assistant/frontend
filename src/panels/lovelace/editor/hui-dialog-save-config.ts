@@ -25,7 +25,7 @@ import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import type { SaveDialogParams } from "./show-save-config-dialog";
 
-const EMPTY_CONFIG = { views: [] };
+const EMPTY_CONFIG = { views: [], append_view_title: false };
 
 @customElement("hui-dialog-save-config")
 export class HuiSaveConfig extends LitElement implements HassDialog {

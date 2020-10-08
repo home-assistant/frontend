@@ -1179,4 +1179,5 @@ export const demoLovelaceTeachingbirds: DemoConfig["lovelace"] = () => ({
       icon: "mdi:lan",
     },
   ],
+  append_view_title: false,
 });

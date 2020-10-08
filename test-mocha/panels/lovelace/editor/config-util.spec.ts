@@ -16,6 +16,7 @@ describe("swapCard", () => {
           cards: [{ type: "card1" }, { type: "card2" }],
         },
       ],
+      append_view_title: false,
     };
 
     const result = swapCard(config, [1, 0], [1, 1]);
@@ -26,6 +27,7 @@ describe("swapCard", () => {
           cards: [{ type: "card2" }, { type: "card1" }],
         },
       ],
+      append_view_title: false,
     };
     assert.deepEqual(expected, result);
   });
@@ -40,6 +42,7 @@ describe("swapCard", () => {
           cards: [{ type: "v2-c1" }, { type: "v2-c2" }],
         },
       ],
+      append_view_title: false,
     };
 
     const result = swapCard(config, [0, 0], [1, 1]);
@@ -52,6 +55,7 @@ describe("swapCard", () => {
           cards: [{ type: "v2-c1" }, { type: "v1-c1" }],
         },
       ],
+      append_view_title: false,
     };
     assert.deepEqual(expected, result);
   });
@@ -66,6 +70,7 @@ describe("moveCard", () => {
           cards: [{ type: "card1" }, { type: "card2" }],
         },
       ],
+      append_view_title: false,
     };
 
     const result = moveCard(config, [1, 0], [0]);
@@ -78,6 +83,7 @@ describe("moveCard", () => {
           cards: [{ type: "card2" }],
         },
       ],
+      append_view_title: false,
     };
     assert.deepEqual(expected, result);
   });
@@ -92,6 +98,7 @@ describe("moveCard", () => {
           cards: [{ type: "v2-c1" }, { type: "v2-c2" }],
         },
       ],
+      append_view_title: false,
     };
 
     const result = moveCard(config, [1, 0], [0]);
@@ -104,6 +111,7 @@ describe("moveCard", () => {
           cards: [{ type: "v2-c2" }],
         },
       ],
+      append_view_title: false,
     };
     assert.deepEqual(expected, result);
   });
@@ -118,6 +126,7 @@ describe("moveCard", () => {
           cards: [{ type: "v2-c1" }, { type: "v2-c2" }],
         },
       ],
+      append_view_title: false,
     };
 
     const result = () => {
@@ -144,6 +153,7 @@ describe("swapView", () => {
           cards: [],
         },
       ],
+      append_view_title: false,
     };
 
     const result = swapView(config, 1, 0);
@@ -158,6 +168,7 @@ describe("swapView", () => {
           cards: [],
         },
       ],
+      append_view_title: false,
     };
     assert.deepEqual(expected, result);
   });
@@ -174,6 +185,7 @@ describe("swapView", () => {
           cards: [],
         },
       ],
+      append_view_title: false,
     };
 
     const result = swapView(config, 0, 0);
@@ -188,6 +200,7 @@ describe("swapView", () => {
           cards: [],
         },
       ],
+      append_view_title: false,
     };
     assert.deepEqual(expected, result);
   });

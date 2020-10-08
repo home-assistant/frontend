@@ -465,4 +465,5 @@ export const demoLovelaceArsaboo: DemoConfig["lovelace"] = (localize) => ({
       ],
     },
   ],
+  append_view_title: false,
 });

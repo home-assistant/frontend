@@ -396,6 +396,7 @@ export const generateLovelaceConfigFromData = async (
           cards: [{ type: "safe-mode" }],
         },
       ],
+      append_view_title: false,
     };
   }
 
@@ -461,9 +462,12 @@ export const generateLovelaceConfigFromData = async (
     });
   }
 
+  const append_view_title = false
+
   return {
     title,
     views,
+    append_view_title,
   };
 };
 
@@ -479,6 +483,7 @@ export const generateLovelaceConfigFromHass = async (
           cards: [{ type: "starting" }],
         },
       ],
+      append_view_title: false,
     };
   }
 
@@ -490,6 +495,7 @@ export const generateLovelaceConfigFromHass = async (
           cards: [{ type: "safe-mode" }],
         },
       ],
+      append_view_title: false,
     };
   }
 
