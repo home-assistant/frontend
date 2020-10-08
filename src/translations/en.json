@@ -1697,6 +1697,8 @@
           "add_person": "Add Person",
           "confirm_delete": "Are you sure you want to delete this person?",
           "confirm_delete2": "All devices belonging to this person will become unassigned.",
+          "person_not_found_title": "Person Not Found",
+          "person_not_found": "We couldn't find the person you were trying to edit.",
           "detail": {
             "new_person": "New Person",
             "name": "Name",

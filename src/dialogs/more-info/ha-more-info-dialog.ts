@@ -40,7 +40,14 @@ import "./ha-more-info-logbook";
 import "./controls/more-info-default";
 
 const DOMAINS_NO_INFO = ["camera", "configurator"];
+/**
+ * Entity domains that should be editable *if* they have an id present;
+ * {@see shouldShowEditIcon}.
+ * */
 const EDITABLE_DOMAINS_WITH_ID = ["scene", "automation"];
+/**
+ * Entity Domains that should always be editable; {@see shouldShowEditIcon}.
+ * */
 const EDITABLE_DOMAINS = ["script"];
 
 export interface MoreInfoDialogParams {
@@ -71,6 +78,20 @@ export class MoreInfoDialog extends LitElement {
     this._entityId = undefined;
     this._currTabIndex = 0;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  protected shouldShowEditIcon(domain, stateObj): boolean {
+    if (EDITABLE_DOMAINS_WITH_ID.includes(domain) && stateObj.attributes.id) {
+      return true;
+    }
+    if (EDITABLE_DOMAINS.includes(domain)) {
+      return true;
+    }
+    if (domain === "person" && stateObj.attributes.editable !== "false") {
+      return true;
+    }
+
+    return false;
   }
 
   protected updated(changedProperties) {
@@ -137,10 +158,7 @@ export class MoreInfoDialog extends LitElement {
                   </mwc-icon-button>
                 `
               : ""}
-            ${this.hass.user!.is_admin &&
-            ((EDITABLE_DOMAINS_WITH_ID.includes(domain) &&
-              stateObj.attributes.id) ||
-              EDITABLE_DOMAINS.includes(domain))
+            ${this.shouldShowEditIcon(domain, stateObj)
               ? html`
                   <mwc-icon-button
                     slot="actionItems"
@@ -283,14 +301,12 @@ export class MoreInfoDialog extends LitElement {
   private _gotoEdit() {
     const stateObj = this.hass.states[this._entityId!];
     const domain = computeDomain(this._entityId!);
-    navigate(
-      this,
-      `/config/${domain}/edit/${
-        EDITABLE_DOMAINS_WITH_ID.includes(domain)
-          ? stateObj.attributes.id
-          : stateObj.entity_id
-      }`
-    );
+    let idToPassThroughUrl = stateObj.entity_id;
+    if (EDITABLE_DOMAINS_WITH_ID.includes(domain) || domain === "person") {
+      idToPassThroughUrl = stateObj.attributes.id;
+    }
+
+    navigate(this, `/config/${domain}/edit/${idToPassThroughUrl}`);
     this.closeDialog();
   }
 

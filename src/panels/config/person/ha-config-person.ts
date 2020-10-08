@@ -23,7 +23,10 @@ import {
   updatePerson,
 } from "../../../data/person";
 import { fetchUsers, User } from "../../../data/user";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showConfirmationDialog,
+  showAlertDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage";
 import { HomeAssistant, Route } from "../../../types";
@@ -158,6 +161,31 @@ class HaConfigPerson extends LitElement {
     this._configItems = personData.config.sort((ent1, ent2) =>
       compare(ent1.name, ent2.name)
     );
+    this._openDialogIfPersonSpecifiedInRoute();
+  }
+
+  private _openDialogIfPersonSpecifiedInRoute() {
+    if (!this.route.path.includes("/edit/")) {
+      return;
+    }
+
+    const routeSegments = this.route.path.split("/edit/");
+    const personId = routeSegments.length > 1 ? routeSegments[1] : null;
+    if (!personId) {
+      return;
+    }
+
+    const personToEdit = this._storageItems!.find((p) => p.id === personId);
+    if (personToEdit) {
+      this._openDialog(personToEdit);
+    } else {
+      showAlertDialog(this, {
+        title: this.hass?.localize(
+          "ui.panel.config.person.person_not_found_title"
+        ),
+        text: this.hass?.localize("ui.panel.config.person.person_not_found"),
+      });
+    }
   }
 
   private _createPerson() {
