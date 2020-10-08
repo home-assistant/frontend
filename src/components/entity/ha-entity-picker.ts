@@ -215,6 +215,7 @@ export class HaEntityPicker extends LitElement {
                   slot="suffix"
                   class="clear-button"
                   icon="hass:close"
+                  tabindex="-1"
                   @click=${this._clearValue}
                   no-ripple
                 >
@@ -230,6 +231,7 @@ export class HaEntityPicker extends LitElement {
             slot="suffix"
             class="toggle-button"
             .icon=${this._opened ? "hass:menu-up" : "hass:menu-down"}
+            tabindex="-1"
           >
             Toggle
           </ha-icon-button>
