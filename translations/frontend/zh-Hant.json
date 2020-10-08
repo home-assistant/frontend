@@ -2004,11 +2004,12 @@
                             "restart": "重啟",
                             "single": "單一（預設）"
                         },
+                        "save_script": "儲存腳本",
                         "sequence": "連續",
                         "sequence_sentence": "此腳本所含的操作動作。"
                     },
                     "picker": {
-                        "add_script": "新增腳本",
+                        "add_script": "新增新腳本",
                         "edit_script": "編輯腳本",
                         "header": "腳本編輯器",
                         "headers": {
@@ -2017,6 +2018,7 @@
                         "introduction": "腳本編輯器允許新增或編輯腳本。請參考下方教學連結，以確保正確的設定 Home Assistant。",
                         "learn_more": "詳細了解腳本",
                         "no_scripts": "無法找到任何可編輯的腳本",
+                        "run_script": "執行腳本",
                         "show_info": "顯示關於腳本資訊",
                         "trigger_script": "觸發腳本"
                     }
@@ -2741,6 +2743,8 @@
                         "edit": "編輯",
                         "header": "面板設定",
                         "move": "移動至視圖",
+                        "move_after": "向後移動面板",
+                        "move_before": "向前移動面板",
                         "options": "更多選項",
                         "pick_card": "選擇所要新增的面板？",
                         "pick_card_view_title": "要加入 {name} 視圖的面板？",

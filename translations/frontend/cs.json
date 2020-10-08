@@ -668,10 +668,10 @@
             "relative_time": {
                 "duration": {
                     "day": "{count} {count, plural,\none {den}\nfew {dny}\nother {dnů}\n}",
-                    "hour": "{count} {count, plural,\none {hodinu}\nfew {hodiny}\nother {hodin}\n}",
-                    "minute": "{count} {count, plural,\none {minutu}\nfew {minuty}\nother {minut}\n}",
-                    "second": "{count} {count, plural,\none {sekundu}\nfew {sekundy}\nother {sekund}\n}",
-                    "week": "{count} {count, plural,\none {týden}\nother {týdnů}\n}"
+                    "hour": "{count} {count, plural,\none {hodina}\nfew {hodiny}\nother {hodin}\n}",
+                    "minute": "{count} {count, plural,\none {minuta}\nfew {minuty}\nother {minut}\n}",
+                    "second": "{count} {count, plural,\none {sekunda}\nfew {sekundy}\nother {sekund}\n}",
+                    "week": "{count} {count, plural,\none {týden}\nfew {týdny}\nother {týdnů}\n}"
                 },
                 "future": "Za {time}",
                 "just_now": "Právě teď",
@@ -2003,6 +2003,7 @@
                             "restart": "Restart",
                             "single": "Jediný (výchozí)"
                         },
+                        "save_script": "Uložit skript",
                         "sequence": "Sekvence",
                         "sequence_sentence": "Posloupnost akcí tohoto skriptu."
                     },
@@ -2016,6 +2017,7 @@
                         "introduction": "Editor skriptů umožňuje vytvářet a upravovat skripty. Postupujte podle níže uvedeného odkazu a přečtěte si pokyny, abyste se ujistili, že jste Home Assistant nakonfigurovali správně.",
                         "learn_more": "Další informace o skriptech",
                         "no_scripts": "Nemohli jsme najít žádné upravitelné skripty",
+                        "run_script": "Spustit skript",
                         "show_info": "Zobrazit informace o skriptu",
                         "trigger_script": "Spustit skript"
                     }
@@ -2740,6 +2742,8 @@
                         "edit": "Upravit",
                         "header": "Konfigurace karty",
                         "move": "Přesunout",
+                        "move_after": "Posunout kartu za",
+                        "move_before": "Posunout kartu před",
                         "options": "Více možností",
                         "pick_card": "Kterou kartu chcete přidat?",
                         "pick_card_view_title": "Kterou kartu byste chtěli přidat do svého {name} pohledu?",

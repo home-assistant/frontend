@@ -2004,6 +2004,7 @@
                             "restart": "Restart",
                             "single": "Pojedynczy (domyślnie)"
                         },
+                        "save_script": "Zapisz skrypt",
                         "sequence": "Sekwencja",
                         "sequence_sentence": "Sekwencja akcji tego skryptu."
                     },
@@ -2017,6 +2018,7 @@
                         "introduction": "Edytor skryptów pozwala tworzyć i edytować skrypty. Kliknij poniższy link, aby przeczytać instrukcję, jak poprawnie konfigurować skrypty w Home Assistant.",
                         "learn_more": "Dowiedz się więcej o skryptach",
                         "no_scripts": "Nie znaleziono żadnych edytowalnych skryptów",
+                        "run_script": "Uruchom skrypt",
                         "show_info": "Pokaż informacje o skrypcie",
                         "trigger_script": "Uruchom skrypt"
                     }
@@ -2033,7 +2035,7 @@
                             "filter": "Encje komponentu filtr",
                             "generic": "Encje komponentu kamera IP generic",
                             "generic_thermostat": "Encje komponentu termostatu generic",
-                            "group": "Przeładuj grupy, ich encje oraz usługi powiadomień",
+                            "group": "Grupy, ich encje oraz usługi powiadomień",
                             "heading": "Ponowne wczytanie konfiguracji YAML",
                             "history_stats": "Encje komponentu historia stanów",
                             "homekit": "HomeKit",
@@ -2048,7 +2050,7 @@
                             "person": "Osoby",
                             "ping": "Encje komponentu ping",
                             "reload": "Domenę {domain}",
-                            "rest": "Encje komponentu rest",
+                            "rest": "Encje komponentu rest i usługi powiadomień",
                             "rpi_gpio": "Encje komponentu Raspberry Pi GPIO",
                             "scene": "Sceny",
                             "script": "Skrypty",
@@ -2261,7 +2263,7 @@
                         "create": "Utwórz",
                         "delete": "Usuń",
                         "icon": "Ikona",
-                        "icon_error_msg": "Ikona powinna mieć format prefiks:nazwa-ikony, na przykład: mdi:home",
+                        "icon_error_msg": "Ikona powinna mieć format \"prefiks:nazwa-ikony\", na przykład: mdi:home",
                         "latitude": "Szerokość geograficzna",
                         "longitude": "Długość geograficzna",
                         "name": "Nazwa",
@@ -2501,7 +2503,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Zaktualizowano konfigurację interfejsu Lovelace, czy  wczytać ją ponownie?",
+                    "message": "Zaktualizowano konfigurację interfejsu Lovelace, czy wczytać ją ponownie?",
                     "refresh": "Wczytaj ponownie"
                 },
                 "editor": {
@@ -2708,7 +2710,7 @@
                         },
                         "shopping-list": {
                             "description": "Karta lista zakupów umożliwia dodawanie, edytowanie, zaznaczanie i usuwanie pozycji z listy zakupów.",
-                            "integration_not_loaded": "Ta karta wymaga ustawienia integracji  `shopping_list`.",
+                            "integration_not_loaded": "Ta karta wymaga ustawienia integracji `shopping_list`.",
                             "name": "Lista zakupów"
                         },
                         "thermostat": {
@@ -2741,6 +2743,8 @@
                         "edit": "Edytuj",
                         "header": "Konfiguracja karty",
                         "move": "Przenieś",
+                        "move_after": "Przesuń kartę za",
+                        "move_before": "Przesuń kartę przed",
                         "options": "Więcej opcji",
                         "pick_card": "Wybierz kartę, którą chcesz dodać.",
                         "pick_card_view_title": "Którą kartę chcesz dodać do widoku {name}?",
@@ -2941,7 +2945,7 @@
                                     "data": {
                                         "password": "Hasło API"
                                     },
-                                    "description": "Proszę wprowadzić hasło API w konfiguracji  HTTP:"
+                                    "description": "Proszę wprowadzić hasło API w konfiguracji HTTP:"
                                 },
                                 "mfa": {
                                     "data": {

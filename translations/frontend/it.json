@@ -41,7 +41,7 @@
             },
             "preset_mode": {
                 "activity": "Attività",
-                "away": "Stand by",
+                "away": "Fuori casa",
                 "boost": "Boost",
                 "comfort": "Comfort",
                 "eco": "Protezione antigelo",
@@ -579,13 +579,13 @@
                     "changed_to_state": "cambiato in {state}",
                     "cleared_device_class": "cancellato (nessun {device_class} rilevato)",
                     "detected_device_class": "rilevato {device_class}",
-                    "rose": "alzato",
+                    "rose": "sorto",
                     "set": "impostato",
                     "turned_off": "spento",
                     "turned_on": "acceso",
                     "was_at_home": "era a casa",
                     "was_at_state": "era a {state}",
-                    "was_away": "era lontano",
+                    "was_away": "era fuori casa",
                     "was_closed": "era chiuso",
                     "was_connected": "era connesso",
                     "was_disconnected": "era disconnesso",
@@ -2004,11 +2004,12 @@
                             "restart": "Riavviare",
                             "single": "Singolo (predefinito)"
                         },
+                        "save_script": "Salva script",
                         "sequence": "Sequenza",
                         "sequence_sentence": "Sequenza di azioni di questo script."
                     },
                     "picker": {
-                        "add_script": "Aggiungi script",
+                        "add_script": "Crea nuovo script",
                         "edit_script": "Modifica script",
                         "header": "Editor script",
                         "headers": {
@@ -2017,6 +2018,7 @@
                         "introduction": "L'Editor di Script consente di creare e modificare Script. Seguire il collegamento seguente per leggere le istruzioni e assicurarsi di aver configurato correttamente Home Assistant.",
                         "learn_more": "Ulteriori informazioni sugli script",
                         "no_scripts": "Non è stato possibile trovare alcuno script modificabile",
+                        "run_script": "Esegui script",
                         "show_info": "Mostra informazioni sullo script",
                         "trigger_script": "Attiva script"
                     }
@@ -2558,7 +2560,7 @@
                         },
                         "entities": {
                             "description": "La scheda Entità è il tipo di scheda più comune. Raggruppa gli elementi in elenchi.",
-                            "edit_special_row": "Modificare la riga utilizzando l'editor di codice",
+                            "edit_special_row": "Visualizza i dettagli di questa riga facendo clic sul pulsante di modifica",
                             "entity_row_editor": "Editor di riga dell'entità",
                             "entity_row": {
                                 "attribute": "Attributo",
@@ -2741,6 +2743,8 @@
                         "edit": "Modifica",
                         "header": "Configurazione della scheda",
                         "move": "Sposta nella vista",
+                        "move_after": "Sposta la scheda dopo",
+                        "move_before": "Sposta la scheda prima",
                         "options": "Altre opzioni",
                         "pick_card": "Quale scheda vorresti aggiungere?",
                         "pick_card_view_title": "Quale scheda vorresti aggiungere alla tua vista {name}?",
@@ -2893,7 +2897,7 @@
                                 "init": {
                                     "data": {
                                         "password": "Password",
-                                        "username": "Username"
+                                        "username": "Nome utente"
                                     }
                                 },
                                 "mfa": {

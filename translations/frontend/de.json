@@ -571,6 +571,8 @@
                 "entries_not_found": "Keine Logbucheinträge gefunden.",
                 "messages": {
                     "changed_to_state": "wechselte zu {state}",
+                    "detected_device_class": "erkannt {device_class}",
+                    "set": "einstellen",
                     "turned_off": "ausgeschaltet",
                     "turned_on": "eingeschaltet",
                     "was_at_home": "war zu Hause",
@@ -596,6 +598,7 @@
                     "album": "Album",
                     "app": "App",
                     "artist": "Künstler",
+                    "channel": "Kanal",
                     "composer": "Komponist",
                     "contributing_artist": "Mitwirkender Künstler",
                     "directory": "Bibliothek",
@@ -977,6 +980,7 @@
                                     "label": "Auf Auslöser warten"
                                 },
                                 "wait_template": {
+                                    "continue_timeout": "Bei Timeout fortsetzen",
                                     "label": "Warten",
                                     "timeout": "Timeout (optional)",
                                     "wait_template": "Warte-Template"
@@ -1907,6 +1911,7 @@
                             "restart": "Neu starten",
                             "single": "Einzeln (Standard)"
                         },
+                        "save_script": "Skript speichern",
                         "sequence": "Sequenz",
                         "sequence_sentence": "Die Abfolge der Aktionen dieses Skripts."
                     },
@@ -1920,6 +1925,7 @@
                         "introduction": "Mit dem Skript-Editor können Skripte erstellt und bearbeitet werden. Bitte folge dem untenstehenden Link, um die Anleitung zu finden. Das stellt sicher, dass Home Assistant richtig konfiguriert ist.",
                         "learn_more": "Weitere Informationen zu Skripten",
                         "no_scripts": "Wir konnten keine bearbeitbaren Skripte finden",
+                        "run_script": "Skript ausführen",
                         "show_info": "Informationen zum Skript anzeigen",
                         "trigger_script": "Skript auslösen"
                     }
@@ -2401,8 +2407,13 @@
                         "actions": {
                             "call-service": "Dienst ausführen",
                             "default_action": "Standardaktion",
-                            "more-info": "Mehr Info"
+                            "more-info": "Mehr Info",
+                            "navigate": "Navigieren",
+                            "none": "Keine Aktion",
+                            "toggle": "Umschalten",
+                            "url": "Url"
                         },
+                        "editor_service_data": "Servicedaten können nur im Code-Editor eingegeben werden",
                         "navigation_path": "Navigationspfad",
                         "url_path": "URL Pfad"
                     },
@@ -2417,10 +2428,12 @@
                             "name": "Schaltfläche"
                         },
                         "calendar": {
+                            "inital_view": "Initiale Ansicht",
                             "name": "Kalender",
                             "views": {
                                 "dayGridDay": "Tag",
-                                "dayGridMonth": "Monat"
+                                "dayGridMonth": "Monat",
+                                "listWeek": "Liste"
                             }
                         },
                         "conditional": {
@@ -2444,6 +2457,7 @@
                             "entity_row": {
                                 "attribute": "Attribut",
                                 "button": "Schalter",
+                                "buttons": "Tasten",
                                 "call-service": "Dienst ausführen",
                                 "cast": "Cast",
                                 "divider": "Trennlinie",
@@ -2455,6 +2469,7 @@
                                 "entity-id": "Entitäts-ID",
                                 "last-changed": "Zuletzt geändert",
                                 "last-triggered": "Zuletzt ausgelöst",
+                                "none": "Keine Sekundärinfo",
                                 "position": "Position"
                             },
                             "show_header_toggle": "Schalter anzeigen?",
@@ -2899,7 +2914,10 @@
                 },
                 "intro": "Sind Sie bereit, dein Zuhause zu wecken, Ihre Privatsphäre zurückzugewinnen und einer weltweiten Gemeinschaft von Tüftlern beizutreten?",
                 "restore": {
-                    "hide_log": "Vollständiges Log verstecken"
+                    "description": "Alternativ kannst du von einem vorherigen Snapshot wiederherstellen.",
+                    "hide_log": "Vollständiges Log verstecken",
+                    "in_progress": "Wiederherstellung im Prozess",
+                    "show_log": "Vollständiges Protokoll anzeigen"
                 },
                 "user": {
                     "create_account": "Benutzerkonto anlegen",

@@ -2004,6 +2004,7 @@
                             "restart": "Redémarrer",
                             "single": "Unique (par défaut)"
                         },
+                        "save_script": "Enregistrer le script",
                         "sequence": "Séquence",
                         "sequence_sentence": "La séquence d'actions de ce script."
                     },
@@ -2017,6 +2018,7 @@
                         "introduction": "L'éditeur de script vous permet de créer et d'éditer des scripts. Suivez le lien ci-dessous pour lire les instructions afin de vous assurer que vous avez correctement configuré Home Assistant.",
                         "learn_more": "En savoir plus sur les scripts",
                         "no_scripts": "Nous n'avons pas trouvé de scripts modifiables",
+                        "run_script": "Exécuter le script",
                         "show_info": "Afficher des informations sur le script",
                         "trigger_script": "Script de déclenchement"
                     }
@@ -2261,7 +2263,7 @@
                         "create": "Créer",
                         "delete": "Effacer",
                         "icon": "Icône",
-                        "icon_error_msg": "L'icône doit être au format préfixe:nom d'icône, par exemple : mdi:home",
+                        "icon_error_msg": "L'icône doit être au format \"préfixe:nom d'icône\", par exemple : \"mdi:home\"",
                         "latitude": "Latitude",
                         "longitude": "Longitude",
                         "name": "Nom",
@@ -2336,10 +2338,10 @@
                     },
                     "ozw_log": {
                         "header": "Journal OZW",
-                        "introduction": "Afficher le journal. Entrer un nombre de 1 à 1000 lignes pour limiter le nombre de lignes chargées dans le journal, ou entrer 0 pour désactiver la limitation du nombre de lignes affichées (journal complet). \"Load\" affichera un instantané du journal, alors que \"Tail\" affichera le journal en l'actualisant au fur et à mesure que de nouvelles entrées apparaissent.",
+                        "introduction": "Afficher le journal. Entrer un nombre de 1 à 1000 lignes pour limiter le nombre de lignes chargées dans le journal, ou entrer 0 pour désactiver la limitation du nombre de lignes affichées (journal complet). \"Charger\" affichera un instantané du journal, alors que \"Suivre\" affichera le journal en l'actualisant au fur et à mesure que de nouvelles entrées apparaissent.",
                         "last_log_lines": "Nombre de dernières lignes de journal",
-                        "load": "Charge",
-                        "tail": "Queue"
+                        "load": "Charger",
+                        "tail": "Suivre"
                     },
                     "services": {
                         "add_node": "Ajouter un nœud",
@@ -2741,6 +2743,8 @@
                         "edit": "Modifier",
                         "header": "Configuration de la carte",
                         "move": "Déplacer",
+                        "move_after": "Déplacer la carte après",
+                        "move_before": "Déplacer la carte avant",
                         "options": "Plus d'options",
                         "pick_card": "Quelle carte aimeriez-vous ajouter ?",
                         "pick_card_view_title": "Quelle carte souhaitez-vous ajouter à votre vue {name} ?",
