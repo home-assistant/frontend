@@ -7956,10 +7956,10 @@ lit-element@2.3.1, lit-element@^2.0.0, lit-element@^2.2.1, lit-element@^2.3.0, l
   dependencies:
     lit-html "^1.1.1"
 
-lit-grid-layout@1.1.5:
-  version "1.1.5"
-  resolved "https://registry.yarnpkg.com/lit-grid-layout/-/lit-grid-layout-1.1.5.tgz#934b7a88b8eb6a52be50f489efbba42962e377d9"
-  integrity sha512-S+AnXtc9orAd4czHInQ0TNZ5/zPFnWjvJnxScOTWVOCP/75tHdPsmoq225LrCwfzzPPRF7eYabWPMQjGZQYTMg==
+lit-grid-layout@^1.1.9:
+  version "1.1.9"
+  resolved "https://registry.yarnpkg.com/lit-grid-layout/-/lit-grid-layout-1.1.9.tgz#bddf643c41f3e6eb0e07075de29c71d16473cab3"
+  integrity sha512-skd7qw1CMP9VPCArzvTyD/FFVpGjbN+QrVsD4Q8vJVsP6VSIiTiRn8dof0F9Wb7Xw10kfjrScJhrd55Bg9e1hg==
   dependencies:
     lit-element "^2.3.1"
     lit-html "^1.2.1"

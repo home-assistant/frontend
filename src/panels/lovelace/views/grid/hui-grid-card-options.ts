@@ -1,10 +1,8 @@
-import "@material/mwc-button";
 import "@material/mwc-icon-button";
 import {
   mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
-  mdiDrag,
   mdiPencil,
 } from "@mdi/js";
 import {
@@ -16,10 +14,10 @@ import {
   queryAssignedNodes,
 } from "lit-element";
 import { html, TemplateResult } from "lit-html";
+import "../../../../components/ha-svg-icon";
 import { HomeAssistant } from "../../../../types";
 import { computeCardSize } from "../../common/compute-card-size";
 import { showEditCardDialog } from "../../editor/card-editor/show-edit-card-dialog";
-import { swapCard } from "../../editor/config-util";
 import { confDeleteCard } from "../../editor/delete-card";
 import { Lovelace, LovelaceCard } from "../../types";
 
@@ -90,16 +88,6 @@ export class HuiGridCardOptions extends LitElement {
             </ha-button-menu>
           </div>
         </div>
-        <div class="card-actions">
-          <mwc-icon-button
-            class="drag-handle"
-            .title=${this.hass!.localize(
-              "ui.panel.lovelace.editor.edit_card.edit"
-            )}
-          >
-            <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
-          </mwc-icon-button>
-        </div>
       </div>
     `;
   }
@@ -120,12 +108,14 @@ export class HuiGridCardOptions extends LitElement {
         bottom: 0;
         z-index: 1;
         opacity: 0;
+        cursor: move;
       }
 
       .parent-card-actions:hover .overlay {
         outline: 2px solid var(--primary-color);
-        background-color: grey;
-        opacity: 0.8;
+        background: rgba(0, 0, 0, 0.3);
+        /* background-color: grey; */
+        opacity: 1;
       }
 
       .parent-card-actions {
@@ -144,18 +134,21 @@ export class HuiGridCardOptions extends LitElement {
 
       .card-actions {
         display: flex;
+        flex-wrap: wrap;
         justify-content: center;
         align-items: center;
         z-index: 2;
         position: absolute;
-        top: 0;
         left: 0;
         right: 0;
-        bottom: 0;
+        bottom: 24px;
+        color: white;
       }
 
       .card-actions > * {
-        padding: 0 4px;
+        margin: 0 4px;
+        border-radius: 24px;
+        background: rgba(0, 0, 0, 0.7);
       }
 
       mwc-list-item {
@@ -165,6 +158,10 @@ export class HuiGridCardOptions extends LitElement {
 
       mwc-list-item.delete-item {
         color: var(--error-color);
+      }
+
+      .drag-handle {
+        cursor: move;
       }
     `;
   }
@@ -186,22 +183,6 @@ export class HuiGridCardOptions extends LitElement {
       saveConfig: this.lovelace!.saveConfig,
       path: this.path!,
     });
-  }
-
-  private _cardUp(): void {
-    const lovelace = this.lovelace!;
-    const path = this.path!;
-    lovelace.saveConfig(
-      swapCard(lovelace.config, path, [path[0], path[1] - 1])
-    );
-  }
-
-  private _cardDown(): void {
-    const lovelace = this.lovelace!;
-    const path = this.path!;
-    lovelace.saveConfig(
-      swapCard(lovelace.config, path, [path[0], path[1] + 1])
-    );
   }
 
   private _deleteCard(): void {

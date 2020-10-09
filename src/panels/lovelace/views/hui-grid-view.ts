@@ -1,5 +1,5 @@
 import "@material/mwc-fab/mwc-fab";
-import { mdiPlus } from "@mdi/js";
+import { mdiPlus, mdiResizeBottomRight } from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -42,6 +42,17 @@ interface LovelaceGridCard extends LovelaceCard, HuiGridCardOptions {
     posY: number;
   };
 }
+
+const RESIZE_HANDLE = document.createElement("div") as HTMLElement;
+RESIZE_HANDLE.style.cssText =
+  "width: 100%; height: 100%; cursor: se-resize; fill: var(--primary-text-color)";
+RESIZE_HANDLE.innerHTML = `<svg 
+viewBox="0 0 24 24"
+preserveAspectRatio="xMidYMid meet"
+focusable="false">
+<g><path d=${mdiResizeBottomRight}></path>
+</g>
+</svg>`;
 
 @customElement("hui-grid-view")
 export class GridView extends LitElement implements LovelaceViewElement {
@@ -87,10 +98,13 @@ export class GridView extends LitElement implements LovelaceViewElement {
       <div id="badges"></div>
       <lit-grid-layout
         .rowHeight=${15}
-        .dragHandle=${".parent-card-actions"}
+        .dragHandle=${".overlay"}
+        .resizeHandle=${RESIZE_HANDLE}
         .items=${this._cards}
         .layout=${this._layout}
         .columns=${this._columns}
+        .dragDisabled=${!this.lovelace?.editMode}
+        .resizeDisabled=${!this.lovelace?.editMode}
         @layout-changed=${(ev) => console.log(ev.detail)}
       ></lit-grid-layout>
       ${this.lovelace?.editMode
@@ -183,6 +197,7 @@ export class GridView extends LitElement implements LovelaceViewElement {
       posX: number;
       posY: number;
       key: string;
+      minHeight: number;
     }> = [];
 
     let tillNextRender: Promise<unknown> | undefined;
@@ -227,6 +242,7 @@ export class GridView extends LitElement implements LovelaceViewElement {
         // posY: Math.floor(index / 6) * y,
         // Random unique Id
         key: uuidv4(),
+        minHeight: 4,
         ...cardConfig.layout,
       };
 
@@ -304,6 +320,7 @@ export class GridView extends LitElement implements LovelaceViewElement {
 
       lit-grid-layout {
         --placeholder-background-color: var(--accent-color);
+        --resize-handle-size: 32px;
       }
 
       #badges {

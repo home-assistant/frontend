@@ -104,7 +104,7 @@
     "leaflet": "^1.4.0",
     "leaflet-draw": "^1.0.4",
     "lit-element": "^2.3.1",
-    "lit-grid-layout": "1.1.5",
+    "lit-grid-layout": "^1.1.9",
     "lit-html": "^1.2.1",
     "lit-virtualizer": "^0.4.2",
     "marked": "^1.1.1",
