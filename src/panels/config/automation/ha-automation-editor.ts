@@ -91,7 +91,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   @internalProperty() private _entityId?: string;
 
-  @internalProperty() private _mode: string = "gui";
+  @internalProperty() private _mode = "gui";
 
   protected render(): TemplateResult {
     const stateObj = this._entityId
@@ -604,7 +604,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   private _preprocessYaml() {
     const cleanConfig = deepClone(this._config);
-    delete cleanConfig["id"];
+    delete cleanConfig.id;
     return cleanConfig;
   }
 

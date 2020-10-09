@@ -68,7 +68,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   @internalProperty() private _errors?: string;
 
-  @internalProperty() private _mode: string = "gui";
+  @internalProperty() private _mode = "gui";
 
   protected render(): TemplateResult {
     return html`
@@ -313,7 +313,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
             ? html`
                 <ha-config-section .isWide=${false}>
                   ${!this.narrow
-                    ? html` <span slot="header">${this._config.alias}</span> `
+                    ? html` <span slot="header">${this._config?.alias}</span> `
                     : ``}
                   <ha-card>
                     <div class="card-content">
