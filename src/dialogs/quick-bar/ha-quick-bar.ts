@@ -24,6 +24,7 @@ import { QuickBarParams } from "./show-dialog-quick-bar";
 import { HassEntity } from "home-assistant-js-websocket";
 import { compare } from "../../common/string/compare";
 import memoizeOne from "memoize-one";
+import { SingleSelectedEvent } from "@material/mwc-list/mwc-list-foundation";
 
 interface CommandItem extends ServiceCallRequest {
   text: string;
@@ -72,11 +73,9 @@ export class QuickBar extends LitElement {
           type="search"
           value=${this._commandMode ? `>${this._itemFilter}` : this._itemFilter}
         ></paper-input>
-        <mwc-list>
-          ${this._commandMode
-            ? this.renderCommandsList(this._itemFilter)
-            : this.renderEntityList(this._itemFilter)}
-        </mwc-list>
+        ${this._commandMode
+          ? this.renderCommandsList(this._itemFilter)
+          : this.renderEntityList(this._itemFilter)}
       </ha-dialog>
     `;
   }
@@ -85,20 +84,19 @@ export class QuickBar extends LitElement {
     const items = this._filterCommandItems(this._commandItems, filter);
 
     return html`
-      ${items.map(
-        ({ text, domain, service, serviceData }) => html`
-          <mwc-list-item
-            @click=${this._executeCommand}
-            .domain=${domain}
-            .service=${service}
-            .serviceData=${serviceData}
-            graphic="icon"
-          >
-            <ha-icon .icon=${domainIcon(domain)} slot="graphic"></ha-icon>
-            ${text}
-          </mwc-list-item>
-        `
-      )}
+      <mwc-list @selected=${this._processItemAndCloseDialog}>
+        ${items.map(
+          (item) => html`
+            <mwc-list-item .item=${item} graphic="icon">
+              <ha-icon
+                .icon=${domainIcon(item.domain)}
+                slot="graphic"
+              ></ha-icon>
+              ${item.text}
+            </mwc-list-item>
+          `
+        )}
+      </mwc-list>
     `;
   });
 
@@ -109,15 +107,17 @@ export class QuickBar extends LitElement {
     );
 
     return html`
-      ${entities.map((entity_id) => {
-        const domain = computeDomain(entity_id);
-        return html`
-          <mwc-list-item @click=${this._entityMoreInfo} graphic="icon">
-            <ha-icon .icon=${domainIcon(domain)} slot="graphic"></ha-icon>
-            ${entity_id}
-          </mwc-list-item>
-        `;
-      })}
+      <mwc-list activatable @selected=${this._entityMoreInfo}>
+        ${entities.map((entityId) => {
+          const domain = computeDomain(entityId);
+          return html`
+            <mwc-list-item graphic="icon" .entityId=${entityId}>
+              <ha-icon .icon=${domainIcon(domain)} slot="graphic"></ha-icon>
+              ${entityId}
+            </mwc-list-item>
+          `;
+        })}
+      </mwc-list>
     `;
   });
 
@@ -161,33 +161,30 @@ export class QuickBar extends LitElement {
   }
 
   private _filterEntityItems(
-    entity_ids: HassEntity["entity_id"][],
+    entityIds: HassEntity["entity_id"][],
     filter: string
   ): HassEntity["entity_id"][] {
-    return entity_ids
-      .filter((entity_id) =>
-        fuzzySequentialMatch(filter.toLowerCase(), entity_id)
+    return entityIds
+      .filter((entityId) =>
+        fuzzySequentialMatch(filter.toLowerCase(), entityId)
       )
       .sort();
   }
 
-  private async _executeCommand(ev: Event) {
-    const target = ev.currentTarget as any;
+  private async _processItemAndCloseDialog(ev: SingleSelectedEvent) {
+    const index = ev.detail.index;
+    const item = (ev.target as any).items[index].item;
 
-    await this.hass.callService(
-      target.domain,
-      target.service,
-      target.serviceData
-    );
+    await this.hass.callService(item.domain, item.service, item.serviceData);
 
     this.closeDialog();
   }
 
-  private _entityMoreInfo(ev: Event) {
-    ev.preventDefault();
-    fireEvent(this, "hass-more-info", {
-      entityId: (ev.target as any).text,
-    });
+  private _entityMoreInfo(ev: SingleSelectedEvent) {
+    const index = ev.detail.index;
+    const entityId = (ev.target as any).items[index].entityId;
+
+    fireEvent(this, "hass-more-info", { entityId });
     this.closeDialog();
   }
 
