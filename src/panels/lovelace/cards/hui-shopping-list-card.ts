@@ -53,7 +53,7 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
 
   @internalProperty() private _checkedItems?: ShoppingListItem[];
 
-  @internalProperty() private _reordering: Boolean = false;
+  @internalProperty() private _reordering: boolean = false;
 
   public getCardSize(): number {
     return (this._config ? (this._config.title ? 1 : 0) : 0) + 3;
@@ -157,12 +157,12 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
                       <ha-icon
                         class="reorderButton up"
                         icon="hass:arrow-up"
-                        ?disabled=${index == 0}
+                        ?disabled=${index === 0}
                         .itemId=${item.id}
                         .title=${this.hass!.localize(
                           "ui.panel.lovelace.cards.shopping-list.move_up_item"
                         )}
-                        @click=${index == 0 ? null : this._moveUp}
+                        @click=${index === 0 ? null : this._moveUp}
                       >
                       </ha-icon>
                     `
@@ -172,12 +172,12 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
                       <ha-icon
                         class="reorderButton down"
                         icon="hass:arrow-down"
-                        ?disabled=${index == this._uncheckedItems!.length - 1}
+                        ?disabled=${index === this._uncheckedItems!.length - 1}
                         .itemId=${item.id}
                         .title=${this.hass!.localize(
                           "ui.panel.lovelace.cards.shopping-list.move_down_item"
                         )}
-                        @click=${index == this._uncheckedItems!.length - 1
+                        @click=${index === this._uncheckedItems!.length - 1
                           ? null
                           : this._moveDown}
                       >
