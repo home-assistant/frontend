@@ -42,6 +42,10 @@ export class QuickBar extends LitElement {
 
   @internalProperty() private _commandMode = false;
 
+  @internalProperty() private _topEntityIdResult?: string;
+
+  @internalProperty() private _topCommandResult?: CommandItem;
+
   public async showDialog(params: QuickBarParams) {
     this._commandMode = params.commandMode || false;
     this._opened = true;
@@ -72,6 +76,7 @@ export class QuickBar extends LitElement {
           )}
           type="search"
           value=${this._commandMode ? `>${this._itemFilter}` : this._itemFilter}
+          @keydown=${this._activateFirstItem}
         ></paper-input>
         ${this._commandMode
           ? this.renderCommandsList(this._itemFilter)
@@ -83,8 +88,10 @@ export class QuickBar extends LitElement {
   protected renderCommandsList = memoizeOne((filter) => {
     const items = this._filterCommandItems(this._commandItems, filter);
 
+    this._topCommandResult = items[0];
+
     return html`
-      <mwc-list @selected=${this._processItemAndCloseDialog}>
+      <mwc-list @selected=${this._processCommand}>
         ${items.map(
           (item) => html`
             <mwc-list-item .item=${item} graphic="icon">
@@ -106,12 +113,18 @@ export class QuickBar extends LitElement {
       filter
     );
 
+    this._topEntityIdResult = entities[0];
+
     return html`
       <mwc-list activatable @selected=${this._entityMoreInfo}>
-        ${entities.map((entityId) => {
+        ${entities.map((entityId, index) => {
           const domain = computeDomain(entityId);
           return html`
-            <mwc-list-item graphic="icon" .entityId=${entityId}>
+            <mwc-list-item
+              graphic="icon"
+              .entityId=${entityId}
+              .activated=${index === 0}
+            >
               <ha-icon .icon=${domainIcon(domain)} slot="graphic"></ha-icon>
               ${entityId}
             </mwc-list-item>
@@ -120,6 +133,16 @@ export class QuickBar extends LitElement {
       </mwc-list>
     `;
   });
+
+  private _activateFirstItem(ev: KeyboardEvent) {
+    if (ev.code === "Enter") {
+      if (this._commandMode) {
+        this._runCommandAndCloseDialog(this._topCommandResult);
+      } else {
+        this._launchMoreInfoDialog(this._topEntityIdResult);
+      }
+    }
+  }
 
   private _entityFilterChanged(ev: PolymerChangedEvent<string>) {
     const newFilter = ev.detail.value;
@@ -171,11 +194,27 @@ export class QuickBar extends LitElement {
       .sort();
   }
 
-  private async _processItemAndCloseDialog(ev: SingleSelectedEvent) {
+  private async _processCommand(ev: SingleSelectedEvent) {
     const index = ev.detail.index;
     const item = (ev.target as any).items[index].item;
 
-    await this.hass.callService(item.domain, item.service, item.serviceData);
+    this._runCommandAndCloseDialog({
+      domain: item.domain,
+      service: item.service,
+      serviceData: item.serviceData,
+    });
+  }
+
+  private async _runCommandAndCloseDialog(request?: ServiceCallRequest) {
+    if (!request) {
+      return;
+    }
+
+    await this.hass.callService(
+      request.domain,
+      request.service,
+      request.serviceData
+    );
 
     this.closeDialog();
   }
@@ -184,6 +223,10 @@ export class QuickBar extends LitElement {
     const index = ev.detail.index;
     const entityId = (ev.target as any).items[index].entityId;
 
+    this._launchMoreInfoDialog(entityId);
+  }
+
+  private _launchMoreInfoDialog(entityId) {
     fireEvent(this, "hass-more-info", { entityId });
     this.closeDialog();
   }
