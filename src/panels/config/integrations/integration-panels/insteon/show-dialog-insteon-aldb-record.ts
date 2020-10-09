@@ -5,7 +5,7 @@ import type { HaFormSchema } from "../../../../../components/ha-form/ha-form";
 export interface InsteonALDBRecordDialogParams {
   record: ALDBRecord;
   schema: HaFormSchema;
-  callback: (text: string) => Promise<void>;
+  callback: (rec: ALDBRecord) => Promise<void>;
 }
 
 export const loadInsteonALDBRecordDialog = () =>
