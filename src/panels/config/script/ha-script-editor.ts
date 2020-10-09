@@ -15,6 +15,7 @@ import {
   property,
   PropertyValues,
   TemplateResult,
+  query,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
@@ -26,6 +27,8 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-input";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import {
   Action,
   deleteScript,
@@ -70,6 +73,8 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   @internalProperty() private _mode = "gui";
 
+  @query("ha-yaml-editor", true) private _editor?: HaYamlEditor;
+
   protected render(): TemplateResult {
     return html`
       <hass-tabs-subpage
@@ -83,6 +88,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           corner="BOTTOM_START"
           slot="toolbar-icon"
           @action=${this._handleMenuAction}
+          activatable
         >
           <mwc-icon-button
             slot="trigger"
@@ -96,6 +102,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
               "ui.panel.config.automation.editor.edit_ui"
             )}
             graphic="icon"
+            ?activated=${this._mode === "gui"}
           >
             ${this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
             ${this._mode === "gui"
@@ -110,6 +117,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
               "ui.panel.config.automation.editor.edit_yaml"
             )}
             graphic="icon"
+            ?activated=${this._mode === "yaml"}
           >
             ${this.hass.localize("ui.panel.config.automation.editor.edit_yaml")}
             ${this._mode === "yaml"
@@ -506,8 +514,9 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   }
 
   private async _copyYaml() {
-    const yaml = await import("js-yaml");
-    navigator.clipboard.writeText(yaml.safeDump(this._preprocessYaml()));
+    if (this._editor?.yaml) {
+      navigator.clipboard.writeText(this._editor.yaml);
+    }
   }
 
   private _yamlChanged(ev: CustomEvent) {
