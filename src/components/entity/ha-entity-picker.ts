@@ -278,7 +278,6 @@ export class HaEntityPicker extends LitElement {
         state.entity_id.toLowerCase().includes(filterString) ||
         computeStateName(state).toLowerCase().includes(filterString)
     );
-    console.log(filteredStates);
 
     (this._comboBox as any).filteredItems = filteredStates;
   }
