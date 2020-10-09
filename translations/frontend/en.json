@@ -675,9 +675,23 @@
                     "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
                 },
                 "future": "In {time}",
+                "future_duration": {
+                    "day": "In {count} {count, plural,\n  one {day}\n  other {days}\n}",
+                    "hour": "In {count} {count, plural,\n  one {hour}\n  other {hours}\n}",
+                    "minute": "In {count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
+                    "second": "In {count} {count, plural,\n  one {second}\n  other {seconds}\n}",
+                    "week": "In {count} {count, plural,\n  one {week}\n  other {weeks}\n}"
+                },
                 "just_now": "Just now",
                 "never": "Never",
-                "past": "{time} ago"
+                "past": "{time} ago",
+                "past_duration": {
+                    "day": "{count} {count, plural,\n  one {day}\n  other {days}\n} ago",
+                    "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n} ago",
+                    "minute": "{count} {count, plural,\n  one {minute}\n  other {minutes}\n} ago",
+                    "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n} ago",
+                    "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n} ago"
+                }
             },
             "service-picker": {
                 "service": "Service"
@@ -824,6 +838,44 @@
                 "success": {
                     "description": "Options successfully saved."
                 }
+            },
+            "quick-open": {
+                "commands": {
+                    "reload": {
+                        "automation": "Reload automations",
+                        "command_line": "Reload command line entities",
+                        "core": "Reload location & customizations",
+                        "filesize": "Reload file size entities",
+                        "filter": "Reload filter entities",
+                        "generic": "Reload generic IP camera entities",
+                        "generic_thermostat": "Reload generic thermostat entities",
+                        "group": "Reload groups, group entities, and notify services",
+                        "history_stats": "Reload history stats entities",
+                        "homekit": "Reload HomeKit",
+                        "input_boolean": "Reload input booleans",
+                        "input_datetime": "Reload input date times",
+                        "input_number": "Reload input numbers",
+                        "input_select": "Reload input selects",
+                        "input_text": "Reload input texts",
+                        "min_max": "Reload min/max entities",
+                        "mqtt": "Reload mqtt entities",
+                        "person": "Reload people",
+                        "ping": "Reload ping binary sensor entities",
+                        "reload": "Reload {domain}",
+                        "rest": "Reload rest entities and notify services",
+                        "rpi_gpio": "Reload Raspberry Pi GPIO entities",
+                        "scene": "Reload scenes",
+                        "script": "Reload scripts",
+                        "smtp": "Reload smtp notify services",
+                        "statistics": "Reload statistics entities",
+                        "telegram": "Reload telegram notify services",
+                        "template": "Reload template entities",
+                        "trend": "Reload trend entities",
+                        "universal": "Reload universal media player entities",
+                        "zone": "Reload zones"
+                    }
+                },
+                "filter_placeholder": "Entity Filter"
             },
             "voice_command": {
                 "did_not_hear": "Home Assistant did not hear anything",
@@ -1928,7 +1980,9 @@
                     },
                     "introduction": "Here you can define each person of interest in Home Assistant.",
                     "no_persons_created_yet": "Looks like you have not created any people yet.",
-                    "note_about_persons_configured_in_yaml": "Note: people configured via configuration.yaml cannot be edited via the UI."
+                    "note_about_persons_configured_in_yaml": "Note: people configured via configuration.yaml cannot be edited via the UI.",
+                    "person_not_found": "We couldn't find the person you were trying to edit.",
+                    "person_not_found_title": "Person Not Found"
                 },
                 "scene": {
                     "activated": "Activated scene {name}.",
@@ -2086,6 +2140,7 @@
                     "create_automation": "Create automation with tag",
                     "description": "Manage tags",
                     "detail": {
+                        "companion_apps": "companion apps",
                         "create": "Create",
                         "create_and_write": "Create and Write",
                         "delete": "Delete",
@@ -2094,7 +2149,8 @@
                         "new_tag": "New tag",
                         "tag_id": "Tag id",
                         "tag_id_placeholder": "Autogenerated when left empty",
-                        "update": "Update"
+                        "update": "Update",
+                        "usage": "A tag can trigger an automation when scanned, you can use NFC tags, QR codes or any other kind of tag. Use our {companion_link} to write this tag to a programmable NFC tag or create a QR code below."
                     },
                     "edit": "Edit",
                     "headers": {

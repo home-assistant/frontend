@@ -2093,7 +2093,7 @@
                         "name": "Nimi",
                         "new_tag": "Uus TAG",
                         "tag_id": "TAG ID",
-                        "tag_id_placeholder": "Tühjana jätmise korral genereeritakse automaatselt",
+                        "tag_id_placeholder": "Tühjaks jätmise korral luuakse automaatselt",
                         "update": "Uuenda"
                     },
                     "edit": "Muuda",

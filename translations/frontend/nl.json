@@ -2004,11 +2004,12 @@
                             "restart": "Herstarten",
                             "single": "Enkelvoudig (standaard)"
                         },
+                        "save_script": "Script opslaan",
                         "sequence": "Reeks",
                         "sequence_sentence": "De reeks van acties in dit script."
                     },
                     "picker": {
-                        "add_script": "Script toevoegen",
+                        "add_script": "Maak een nieuw script",
                         "edit_script": "Bewerk script",
                         "header": "Script Editor",
                         "headers": {
@@ -2017,6 +2018,7 @@
                         "introduction": "Met de editor kunt u scripts maken en bewerken. Volg de onderstaande link om de instructies te lezen om ervoor te zorgen dat u Home Assistant correct hebt geconfigureerd.",
                         "learn_more": "Meer informatie over scripts",
                         "no_scripts": "We hebben geen bewerkbare scrips gevonden",
+                        "run_script": "Script uitvoeren",
                         "show_info": "Toon info over script",
                         "trigger_script": "Trigger script"
                     }
@@ -2741,6 +2743,8 @@
                         "edit": "Bewerken",
                         "header": "Kaart configuratie",
                         "move": "Verplaatsen",
+                        "move_after": "Verplaats kaart na",
+                        "move_before": "Verplaats kaart voor",
                         "options": "Meer opties",
                         "pick_card": "Welke kaart wil je toevoegen?",
                         "pick_card_view_title": "Welke kaart wil je toevoegen aan je {name} weergave?",

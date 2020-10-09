@@ -575,14 +575,18 @@
                 "messages": {
                     "became_unavailable": "blev otillgänglig",
                     "changed_to_state": "ändrades till",
+                    "rose": "gick upp",
+                    "set": "gick ned",
                     "turned_off": "Slogs av",
                     "turned_on": "Slogs på",
+                    "was_at_home": "var hemma",
                     "was_away": "var borta",
                     "was_closed": "var stängd",
                     "was_connected": "var ansluten",
                     "was_disconnected": "var frånkopplad",
                     "was_locked": "var låst",
                     "was_low": "var låg",
+                    "was_normal": "var normal",
                     "was_opened": "var öppen",
                     "was_plugged_in": "var inkopplad",
                     "was_unlocked": "var olåst",
@@ -640,7 +644,7 @@
             },
             "picture-upload": {
                 "label": "Bild",
-                "unsupported_format": "Formated stöds inte, vänligen välj en JPEG, PNG eller GIF-bild."
+                "unsupported_format": "Formatet stöds inte, vänligen välj en JPEG, PNG eller GIF-bild."
             },
             "related-items": {
                 "area": "Område",
@@ -1206,7 +1210,7 @@
                         "add_automation": "Lägg till automatisering",
                         "delete_automation": "Radera automation",
                         "delete_confirm": "Är du säker på att du vill radera denna automatisering?",
-                        "duplicate": "Dublett",
+                        "duplicate": "Dubblett",
                         "duplicate_automation": "Dubblett av en automatisering",
                         "edit_automation": "Redigera automation",
                         "header": "Automatiseringseditor",
@@ -1292,9 +1296,11 @@
                         "dont_expose_entity": "Visa inte entitet",
                         "expose": "Exponera för Alexa",
                         "expose_entity": "Visa entitet",
+                        "exposed": "{selected} är exponerad",
                         "exposed_entities": "Exponerade entiteter",
                         "follow_domain": "Följ domän",
                         "manage_domains": "Hantera domäner",
+                        "not_exposed": "{selected} är inte exponerad",
                         "not_exposed_entities": "Ej exponerade entiteter",
                         "title": ""
                     },
@@ -1441,7 +1447,7 @@
                     }
                 },
                 "devices": {
-                    "add_prompt": "Inget {namn} har lagts till med hjälp av den här enheten ännu. Du kan lägga till en genom att klicka på + knappen ovan.",
+                    "add_prompt": "Inget {name} har lagts till med hjälp av den här enheten ännu. Du kan lägga till en genom att klicka på + knappen ovan.",
                     "automation": {
                         "actions": {
                             "caption": "När något utlöses..."
@@ -1583,7 +1589,7 @@
                     "built_using": "Byggt med",
                     "caption": "Info",
                     "custom_uis": "Anpassade användargränssnitt:",
-                    "description": "Info om din Home Assistant-installation",
+                    "description": "Visa information om din Home Assistant-installation",
                     "developed_by": "Utvecklad av ett gäng grymma människor.",
                     "documentation": "Dokumentation",
                     "frontend": "frontend-UI",
@@ -1813,7 +1819,7 @@
                             "driverready": "Initierar Z-Wave-styrenheten",
                             "driverremoved": "Drivrutinen har tagits bort",
                             "driverreset": "Drivrutinen har återställts",
-                            "offline": "OZWDaemon offline",
+                            "offline": "OZWDaemon är offline",
                             "ready": "Redo att ansluta",
                             "started": "Ansluten till MQTT",
                             "starting": "Ansluter till MQTT",
@@ -1830,11 +1836,13 @@
                         "node_count": "{count} noder"
                     },
                     "node_query_stages": {
+                        "associations": "Uppdaterar associationsgrupper och medlemskap",
                         "complete": "Intervjuprocessen är klar",
                         "configuration": "Hämtar konfigurationsvärden från noden",
                         "dynamic": "Hämtar värden som ofta ändras från noden",
                         "instances": "Inhämtar detaljer om vilka instanser eller kanaler en enhet stöder",
-                        "neighbors": "Hämtar en lista av nodens grannar",
+                        "manufacturerspecific1": "Inhämtar tillverkar- och produkt-ID-koder från noden",
+                        "neighbors": "Hämtar en lista över nodens grannar",
                         "nodeplusinfo": "Hämtar Z-Wave+-information från noden",
                         "probe": "Kontrollera om noden är vaken / levande",
                         "session": "Hämtar värden som sällan ändras från noden",
@@ -1855,7 +1863,8 @@
                     "refresh_node": {
                         "battery_note": "Om noden är batteridriven, se till att väcka den innan du fortsätter",
                         "button": "Uppdatera nod",
-                        "complete": "Uppdatering av noden klar",
+                        "complete": "Uppdatering av noden är klar",
+                        "description": "Detta kommer att be OpenZWave att åter intervjua en nod och uppdatera nodens kommandoklasser, förmågor och värden.",
                         "node_status": "Nodstatus",
                         "refreshing_description": "Uppdaterar information om noderna...",
                         "start_refresh_button": "Starta uppdatering",
@@ -1956,7 +1965,7 @@
                         "default_name": "Nytt skript",
                         "delete_confirm": "Är du säker på att du vill ta bort det här skriptet?",
                         "delete_script": "Ta bort skript",
-                        "header": "Skript: {namn}",
+                        "header": "Skript: {name}",
                         "icon": "Ikon",
                         "id": "Entitets-ID",
                         "id_already_exists": "Detta ID finns redan",
@@ -1977,6 +1986,7 @@
                             "restart": "Starta om",
                             "single": "Enkel (standard)"
                         },
+                        "save_script": "Spara skript",
                         "sequence": "Sekvens",
                         "sequence_sentence": "Handlingssekvensen för detta skript."
                     },
@@ -1990,6 +2000,7 @@
                         "introduction": "Skriptredigeraren låter dig skapa och redigera skript. Följ länken nedan för att läsa instruktionerna för att se till att du har konfigurerat Home Assistant korrekt.",
                         "learn_more": "Lär dig mer om skript",
                         "no_scripts": "Vi kunde inte hitta några redigerbara skript",
+                        "run_script": "Kör skript",
                         "show_info": "Visa information om skript",
                         "trigger_script": "Aktivera skript"
                     }
@@ -2001,6 +2012,8 @@
                         "reloading": {
                             "automation": "Ladda om automatiseringar",
                             "core": "Ladda om plats & anpassningar",
+                            "filter": "Ladda om filterentiteter",
+                            "generic": "Ladda om generella IP kamera entiteter",
                             "group": "Ladda om grupper",
                             "heading": "YAML-konfiguration laddas om",
                             "homekit": "Ladda om HomeKit",
@@ -2010,13 +2023,14 @@
                             "input_select": "Ladda om inmatningsväljare",
                             "input_text": "Ladda om inmatningstext",
                             "introduction": "Vissa delar av Home Assistant kan laddas om utan att en omstart krävs. Att trycka på \"ladda om\" innebär att den nuvarande konfiguration inaktiveras och den nya laddas.",
-                            "mqtt": "Ladda om mqtt entiteter",
+                            "mqtt": "Ladda om MQTT entiteter",
                             "person": "Ladda om personer",
                             "reload": "Ladda om {domain}",
                             "rpi_gpio": "Ladda om Raspberry Pi GPIO-entiteter",
                             "scene": "Ladda om scenarier",
                             "script": "Ladda om skript",
-                            "smtp": "Ladda om smtp-aviseringstjänster",
+                            "smtp": "Ladda om SMTP aviseringstjänster",
+                            "telegram": "Ladda om Telegram aviseringstjänster",
                             "template": "Ladda om mallar för entiteter",
                             "zone": "Ladda om zoner"
                         },
@@ -2468,10 +2482,13 @@
                     "action-editor": {
                         "actions": {
                             "default_action": "Standardåtgärd",
+                            "more-info": "Mer information",
+                            "none": "Ingen åtgärd",
                             "toggle": "Växla",
                             "url": "URL"
                         },
-                        "url_path": "Sökväg till url"
+                        "editor_service_data": "Data för en tjänst kan bara anges i kodredigeraren",
+                        "url_path": "Sökväg till URL"
                     },
                     "card": {
                         "alarm-panel": {
@@ -2516,6 +2533,7 @@
                                 "call-service": "Anropa tjänst",
                                 "cast": "Cast",
                                 "conditional": "Villkorlig",
+                                "divider": "Avdelare",
                                 "section": "Sektion",
                                 "weblink": "Webbadress"
                             },
@@ -2525,7 +2543,8 @@
                                 "entity-id": "Entitets-ID",
                                 "last-changed": "Senast ändrad",
                                 "last-triggered": "Senast utlöst",
-                                "position": "Position"
+                                "position": "Position",
+                                "tilt-position": "Lutningsposition"
                             },
                             "show_header_toggle": "Visa rubrikväljare?",
                             "toggle": "Växla entiteter."
@@ -2595,7 +2614,7 @@
                             "name": "Vågrät trave"
                         },
                         "humidifier": {
-                            "description": "Termostatkortet kontrollerar din klimatenhet så att du kan ändra luftfuktigheten och läge.",
+                            "description": "Termostatkortet kontrollerar din klimatenhet så att du kan ändra luftfuktighet och läge.",
                             "name": "Luftfuktare"
                         },
                         "iframe": {

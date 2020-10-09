@@ -2653,7 +2653,7 @@
                         "move_right": "Ansicht nach rechts verschieben",
                         "tab_badges": "Abzeichen",
                         "tab_settings": "Einstellungen",
-                        "tab_visibility": "Sichtweite",
+                        "tab_visibility": "Sichtbarkeit",
                         "visibility": {
                             "select_users": "Wähle aus, welche Benutzer diese Ansicht in der Navigation sehen sollen"
                         }
