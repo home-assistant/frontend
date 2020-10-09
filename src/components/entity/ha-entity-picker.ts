@@ -174,7 +174,7 @@ export class HaEntityPicker extends LitElement {
         this.entityFilter,
         this.includeDeviceClasses
       );
-      (this._comboBox as any).items = states;
+      (this._comboBox as any).filteredItems = states;
       this._initedStates = true;
     }
   }
@@ -192,6 +192,7 @@ export class HaEntityPicker extends LitElement {
         .renderer=${rowRenderer}
         @opened-changed=${this._openedChanged}
         @value-changed=${this._valueChanged}
+        @filter-changed=${this._filterChanged}
       >
         <paper-input
           .autofocus=${this.autofocus}
@@ -258,6 +259,28 @@ export class HaEntityPicker extends LitElement {
     if (newValue !== this._value) {
       this._setValue(newValue);
     }
+  }
+
+  private _filterChanged(ev): void {
+    const filterString = ev.detail.value.toLowerCase();
+
+    const states = this._getStates(
+      this._opened,
+      this.hass,
+      this.includeDomains,
+      this.excludeDomains,
+      this.entityFilter,
+      this.includeDeviceClasses
+    );
+
+    const filteredStates = states.filter(
+      (state) =>
+        state.entity_id.toLowerCase().includes(filterString) ||
+        computeStateName(state).toLowerCase().includes(filterString)
+    );
+    console.log(filteredStates);
+
+    (this._comboBox as any).filteredItems = filteredStates;
   }
 
   private _setValue(value: string) {
