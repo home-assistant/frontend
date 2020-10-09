@@ -104,7 +104,7 @@ class DialogInsteonALDBRecord extends LitElement {
       this._close();
       await this._callback!(record!);
     } else {
-      this._errors!["base"] = "Some checks failed";
+      this._errors!.base = "Some checks failed";
     }
   }
 
