@@ -22,6 +22,8 @@ import {
   fetchItems,
   ShoppingListItem,
   updateItem,
+  moveUpItem,
+  moveDownItem,
 } from "../../../data/shopping-list";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
@@ -50,6 +52,8 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
   @internalProperty() private _uncheckedItems?: ShoppingListItem[];
 
   @internalProperty() private _checkedItems?: ShoppingListItem[];
+
+  @internalProperty() private _reordering = false;
 
   public getCardSize(): number {
     return (this._config ? (this._config.title ? 1 : 0) : 0) + 3;
@@ -120,11 +124,20 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
             )}
             @keydown=${this._addKeyPress}
           ></paper-input>
+          <ha-icon
+            class="reorderButton"
+            icon="hass:sort"
+            .title=${this.hass!.localize(
+              "ui.panel.lovelace.cards.shopping-list.reorder_items"
+            )}
+            @click=${this._toggleReorder}
+          >
+          </ha-icon>
         </div>
         ${repeat(
           this._uncheckedItems!,
           (item) => item.id,
-          (item) =>
+          (item, index) =>
             html`
               <div class="editRow">
                 <paper-checkbox
@@ -139,6 +152,38 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
                   .itemId=${item.id}
                   @change=${this._saveEdit}
                 ></paper-input>
+                ${this._reordering
+                  ? html`
+                      <ha-icon
+                        class="reorderButton up"
+                        icon="hass:arrow-up"
+                        ?disabled=${index === 0}
+                        .itemId=${item.id}
+                        .title=${this.hass!.localize(
+                          "ui.panel.lovelace.cards.shopping-list.move_up_item"
+                        )}
+                        @click=${index === 0 ? null : this._moveUp}
+                      >
+                      </ha-icon>
+                    `
+                  : ""}
+                ${this._reordering
+                  ? html`
+                      <ha-icon
+                        class="reorderButton down"
+                        icon="hass:arrow-down"
+                        ?disabled=${index === this._uncheckedItems!.length - 1}
+                        .itemId=${item.id}
+                        .title=${this.hass!.localize(
+                          "ui.panel.lovelace.cards.shopping-list.move_down_item"
+                        )}
+                        @click=${index === this._uncheckedItems!.length - 1
+                          ? null
+                          : this._moveDown}
+                      >
+                      </ha-icon>
+                    `
+                  : ""}
               </div>
             `
         )}
@@ -250,6 +295,18 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
     }
   }
 
+  private _toggleReorder(): void {
+    this._reordering = !this._reordering;
+  }
+
+  private _moveUp(ev): void {
+    moveUpItem(this.hass!, ev.target.itemId).catch(() => this._fetchData());
+  }
+
+  private _moveDown(ev): void {
+    moveDownItem(this.hass!, ev.target.itemId).catch(() => this._fetchData());
+  }
+
   static get styles(): CSSResult {
     return css`
       ha-card {
@@ -276,6 +333,25 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
       .addButton {
         padding-right: 16px;
         cursor: pointer;
+      }
+
+      .reorderButton {
+        padding-left: 16px;
+        cursor: pointer;
+      }
+
+      .reorderButton.up {
+        padding-left: 16px;
+        padding-right: 8px;
+      }
+
+      .reorderButton.down {
+        padding-left: 8px;
+      }
+
+      .reorderButton[disabled] {
+        color: var(--disabled-text-color);
+        cursor: default;
       }
 
       paper-checkbox {

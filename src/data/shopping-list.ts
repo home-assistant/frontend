@@ -38,3 +38,21 @@ export const addItem = (
     type: "shopping_list/items/add",
     name,
   });
+
+export const moveUpItem = (
+  hass: HomeAssistant,
+  itemId: string
+): Promise<ShoppingListItem> =>
+  hass.callWS({
+    type: "shopping_list/items/move_up",
+    item_id: itemId,
+  });
+
+export const moveDownItem = (
+  hass: HomeAssistant,
+  itemId: string
+): Promise<ShoppingListItem> =>
+  hass.callWS({
+    type: "shopping_list/items/move_down",
+    item_id: itemId,
+  });

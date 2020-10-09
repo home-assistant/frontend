@@ -2192,7 +2192,10 @@
           "shopping-list": {
             "checked_items": "Checked items",
             "clear_items": "Clear checked items",
-            "add_item": "Add item"
+            "add_item": "Add item",
+            "reorder_items": "Reorder items",
+            "move_up_item": "Move up item",
+            "move_down_item": "Move down item"
           },
           "picture-elements": {
             "hold": "Hold:",
