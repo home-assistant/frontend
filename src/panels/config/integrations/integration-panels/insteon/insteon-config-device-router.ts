@@ -1,10 +1,9 @@
-import { customElement, property } from "lit-element";
+import { customElement, internalProperty, property } from "lit-element";
 import {
   HassRouterPage,
   RouterOptions,
 } from "../../../../../layouts/hass-router-page";
 import { HomeAssistant } from "../../../../../types";
-import { navigate } from "../../../../../common/navigate";
 import { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 import { mdiNetwork, mdiFolderMultipleOutline } from "@mdi/js";
 
@@ -29,9 +28,7 @@ class InsteonConfigDeviceRouter extends HassRouterPage {
 
   @property() public narrow!: boolean;
 
-  private _configEntry = new URLSearchParams(window.location.search).get(
-    "config_entry"
-  );
+  @internalProperty() private deviceId?: string;
 
   protected routerOptions: RouterOptions = {
     defaultPage: "aldb",
@@ -48,7 +45,7 @@ class InsteonConfigDeviceRouter extends HassRouterPage {
         tag: "insteon-config-device-properties-page",
         load: () =>
           import(
-            /* webpackChunkName: "config-insteon-device-properties" */ "./insteon-config-device-aldb-page"
+            /* webpackChunkName: "config-insteon-device-properties" */ "./insteon-config-device-properties-page"
           ),
       },
     },
@@ -59,20 +56,10 @@ class InsteonConfigDeviceRouter extends HassRouterPage {
     el.hass = this.hass;
     el.isWide = this.isWide;
     el.narrow = this.narrow;
-    el.configEntryId = this._configEntry;
-    el.groupId = this.routeTail.path.substr(1);
-
-    const searchParams = new URLSearchParams(window.location.search);
-    if (this._configEntry && !searchParams.has("config_entry")) {
-      searchParams.append("config_entry", this._configEntry);
-      navigate(
-        this,
-        `${this.routeTail.prefix}${
-          this.routeTail.path
-        }?${searchParams.toString()}`,
-        true
-      );
+    if (this.routeTail.path) {
+      this.deviceId = this.routeTail.path.substr(1);
     }
+    el.deviceId = this.deviceId;
   }
 }
 

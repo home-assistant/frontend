@@ -1,5 +1,3 @@
-import "@material/mwc-fab";
-import { mdiPlus } from "@mdi/js";
 import "@material/mwc-button";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-circular-progress";
@@ -18,15 +16,13 @@ import "../../../../../components/ha-service-description";
 import "@polymer/paper-input/paper-textarea";
 import {
   InsteonDevice,
+  Properties,
   fetchInsteonDevice,
-  ALDBRecord,
-  fetchInsteonALDB,
-  changeALDBRecord,
-  createALDBRecord,
-  writeALDB,
-  loadALDB,
-  resetALDB,
-  addDefaultLinks,
+  fetchInsteonProperties,
+  changeProperty,
+  writeProperties,
+  loadProperties,
+  resetProperties,
 } from "../../../../../data/insteon";
 import "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
@@ -34,13 +30,11 @@ import { HomeAssistant, Route } from "../../../../../types";
 import { insteonDeviceTabs } from "./insteon-config-device-router";
 import "./insteon-aldb-data-table";
 import { HASSDomEvent } from "../../../../../common/dom/fire_event";
-import { RowClickedEvent } from "../../../../../components/data-table/ha-data-table";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
-import { showInsteonALDBRecordDialog } from "./show-dialog-insteon-aldb-record";
 import type { HaFormSchema } from "../../../../../components/ha-form/ha-form";
 
-@customElement("insteon-config-device-aldb-page")
-class InsteonConfigDeviceALDBPage extends LitElement {
+@customElement("insteon-config-device-properties-page")
+class InsteonConfigDevicePropertiesPage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow?: boolean;
@@ -53,13 +47,9 @@ class InsteonConfigDeviceALDBPage extends LitElement {
 
   @internalProperty() private _device?: InsteonDevice;
 
-  @internalProperty() private _records?: ALDBRecord[];
+  @internalProperty() private _properties?: Properties;
 
   @internalProperty() private _schema?: HaFormSchema;
-
-  @internalProperty() private _showHideUnused = "show_unused";
-
-  @internalProperty() private _showUnused = false;
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
@@ -67,26 +57,17 @@ class InsteonConfigDeviceALDBPage extends LitElement {
       fetchInsteonDevice(this.hass, this.deviceId!).then((device) => {
         this._device = device;
       });
-      fetchInsteonALDB(this.hass, this.deviceId!).then((aldbInfo) => {
-        this._records = this._filterRecords(aldbInfo.records, this._showUnused);
-        this._schema = aldbInfo.schema;
-      });
+      fetchInsteonProperties(this.hass, this.deviceId!).then(
+        (propertiesInfo) => {
+          this._properties = propertiesInfo.properties;
+          this._schema = propertiesInfo.schema;
+        }
+      );
     }
   }
 
   protected _dirty() {
-    return this._records?.reduce((dirty, rec) => {
-      return dirty || rec.dirty;
-    }, false);
-  }
-
-  private _filterRecords(
-    records: ALDBRecord[],
-    showUnused: boolean
-  ): ALDBRecord[] {
-    return records.filter((record) => {
-      return record.in_use || showUnused;
-    });
+    return false;
   }
 
   protected render(): TemplateResult {
@@ -132,79 +113,33 @@ class InsteonConfigDeviceALDBPage extends LitElement {
               )}
             </div>
             <div class="header-right">
-              <mwc-button @click=${this._onShowHideUnusedClicked}>
+              <mwc-button @click=${this._onLoadPropertiesClick}>
                 ${this.hass!.localize(
-                  "ui.panel.config.insteon.device.aldb.actions." +
-                    this._showHideUnused
-                )}
-              </mwc-button>
-              <mwc-button @click=${this._onLoadALDBClick}>
-                ${this.hass!.localize(
-                  "ui.panel.config.insteon.device.aldb.actions.load"
-                )}
-              </mwc-button>
-              <mwc-button @click=${this._onAddDefaultLinksClicked}>
-                ${this.hass!.localize(
-                  "ui.panel.config.insteon.device.aldb.actions.add_default_links"
+                  "ui.panel.config.insteon.device.properties.actions.load"
                 )}
               </mwc-button>
               <mwc-button
                 .disabled=${!this._dirty()}
-                @click=${this._onWriteALDBClick}
+                @click=${this._onWritePropertiesClick}
               >
                 ${this.hass!.localize(
-                  "ui.panel.config.insteon.device.aldb.actions.write"
+                  "ui.panel.config.insteon.device.properties.actions.write"
                 )}
               </mwc-button>
               <mwc-button
                 .disabled=${!this._dirty()}
-                @click=${this._onResetALDBClick}
+                @click=${this._onResetPropertiesClick}
               >
                 ${this.hass!.localize(
-                  "ui.panel.config.insteon.device.aldb.actions.reset"
+                  "ui.panel.config.insteon.device.properties.actions.reset"
                 )}
               </mwc-button>
             </div>
           </div>
-          <insteon-aldb-data-table
-            .hass=${this.hass}
-            .narrow=${this.narrow}
-            .records=${this._records}
-            @row-click=${this._handleRowClicked}
-          ></insteon-aldb-data-table>
+          Properties will go here
         </div>
-        <mwc-fab
-          slot="fab"
-          title="${this.hass.localize(
-            "ui.panel.config.insteon.device.aldb.create"
-          )}"
-          @click=${this._createRecord}
-        >
-          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
-        </mwc-fab>
       </hass-tabs-subpage>
     `;
-  }
-
-  private _createRecord(): void {
-    const record: ALDBRecord = {
-      mem_addr: 0,
-      in_use: true,
-      mode: "C",
-      highwater: false,
-      group: 0,
-      target: "",
-      target_name: "",
-      data1: 0,
-      data2: 0,
-      data3: 0,
-      dirty: true,
-    };
-    showInsteonALDBRecordDialog(this, {
-      schema: this._schema!,
-      record: record,
-      callback: async (rec) => await this._handleRecordCreate(rec),
-    });
   }
 
   private _onImageLoad(ev) {
@@ -215,10 +150,10 @@ class InsteonConfigDeviceALDBPage extends LitElement {
     ev.target.style.display = "none";
   }
 
-  private async _onLoadALDBClick() {
+  private async _onLoadPropertiesClick() {
     showConfirmationDialog(this, {
       text: this.hass.localize(
-        "ui.panel.config.insteon.device.aldb.actions.warn_load"
+        "ui.panel.config.insteon.device.properties.actions.warn_load"
       ),
       confirmText: this.hass!.localize("ui.common.yes"),
       dismissText: this.hass!.localize("ui.common.no"),
@@ -227,25 +162,10 @@ class InsteonConfigDeviceALDBPage extends LitElement {
   }
 
   private _load() {
-    loadALDB(this.hass, this.deviceId!);
-    this._device!.aldb_status = "loading";
-    this._records = [];
+    loadProperties(this.hass, this.deviceId!);
   }
 
-  private async _onShowHideUnusedClicked() {
-    this._showUnused = !this._showUnused;
-    if (this._showUnused) {
-      this._showHideUnused = "hide_unused";
-    } else {
-      this._showHideUnused = "show_unused";
-    }
-    this._records = [];
-    fetchInsteonALDB(this.hass, this.deviceId!).then((aldbInfo) => {
-      this._records = this._filterRecords(aldbInfo.records, this._showUnused);
-    });
-  }
-
-  private async _onWriteALDBClick() {
+  private async _onWritePropertiesClick() {
     showConfirmationDialog(this, {
       text: this.hass.localize(
         "ui.panel.config.insteon.device.aldb.actions.warn_write"
@@ -257,55 +177,18 @@ class InsteonConfigDeviceALDBPage extends LitElement {
   }
 
   private _write() {
-    writeALDB(this.hass, this.deviceId!);
-    this._device!.aldb_status = "loading";
-    this._records = [];
+    writeProperties(this.hass, this.deviceId!);
   }
 
-  private async _onResetALDBClick() {
-    resetALDB(this.hass, this.deviceId!);
-    fetchInsteonALDB(this.hass, this.deviceId!).then((aldbInfo) => {
-      this._records = this._filterRecords(aldbInfo.records, this._showUnused);
+  private async _onResetPropertiesClick() {
+    resetProperties(this.hass, this.deviceId!);
+    fetchInsteonProperties(this.hass, this.deviceId!).then((propertiesInfo) => {
+      this._properties = propertiesInfo.properties;
     });
   }
 
-  private async _onAddDefaultLinksClicked() {
-    showConfirmationDialog(this, {
-      text: "Changes will be made to this device and your modem.",
-      confirm: () => this._addDefaultLinks(),
-    });
-  }
-
-  private async _addDefaultLinks() {
-    addDefaultLinks(this.hass, this.deviceId!);
-    // this._records = [];
-  }
-
-  private async _handleRecordChange(record: ALDBRecord) {
-    changeALDBRecord(this.hass, this.deviceId!, record);
-    if (!record.in_use) {
-      this._showUnused = true;
-    }
-    fetchInsteonALDB(this.hass, this.deviceId!).then((aldbInfo) => {
-      this._records = this._filterRecords(aldbInfo.records, this._showUnused);
-    });
-  }
-
-  private async _handleRecordCreate(record: ALDBRecord) {
-    createALDBRecord(this.hass, this.deviceId!, record);
-    fetchInsteonALDB(this.hass, this.deviceId!).then((aldbInfo) => {
-      this._records = this._filterRecords(aldbInfo.records, this._showUnused);
-    });
-  }
-
-  private async _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
-    const id = ev.detail.id;
-    const record = this._records!.find((rec) => rec.mem_addr === id);
-    showInsteonALDBRecordDialog(this, {
-      schema: this._schema!,
-      record: record!,
-      callback: async (rec) => await this._handleRecordChange(rec),
-    });
+  private async _handlePropertyChange(name: string, value: number | boolean) {
+    changeProperty(this.hass, this.deviceId!, name, value);
   }
 
   private _handleBackTapped(): void {
@@ -324,7 +207,7 @@ class InsteonConfigDeviceALDBPage extends LitElement {
   }
 
   private _goBack(): void {
-    resetALDB(this.hass, this.deviceId!);
+    resetProperties(this.hass, this.deviceId!);
     history.back();
   }
 
@@ -412,6 +295,6 @@ class InsteonConfigDeviceALDBPage extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "insteon-config-device-aldb-page": InsteonConfigDeviceALDBPage;
+    "insteon-config-device-properties-page": InsteonConfigDevicePropertiesPage;
   }
 }

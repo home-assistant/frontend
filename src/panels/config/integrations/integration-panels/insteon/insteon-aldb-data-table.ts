@@ -30,6 +30,8 @@ export class InsteonALDBDataTable extends LitElement {
 
   @property() public records: ALDBRecord[] = [];
 
+  @property() public noDataText: string;
+
   @query("ha-data-table") private _dataTable!: HaDataTable;
 
   private _records = memoizeOne((records: ALDBRecord[]) => {
@@ -50,7 +52,9 @@ export class InsteonALDBDataTable extends LitElement {
       narrow
         ? {
             in_use: {
-              title: "In Use",
+              title: this.hass.localize(
+                "ui.panel.config.insteon.device.aldb.field_names.in_use"
+              ),
               template: (in_use: boolean) => {
                 if (in_use) {
                   return html`Y`;
@@ -60,31 +64,60 @@ export class InsteonALDBDataTable extends LitElement {
               sortable: true,
               width: "22%",
             },
+            dirty: {
+              title: this.hass.localize(
+                "ui.panel.config.insteon.device.aldb.field_names.modified"
+              ),
+              template: (dirty: boolean) => {
+                if (dirty) {
+                  return html`Y`;
+                }
+                return html`N`;
+              },
+              sortable: true,
+              width: "15%",
+            },
             target: {
-              title: "Target",
+              title: this.hass.localize(
+                "ui.panel.config.insteon.device.aldb.field_names.target"
+              ),
               sortable: true,
               grows: true,
             },
             group: {
-              title: "Group",
+              title: this.hass.localize(
+                "ui.panel.config.insteon.device.aldb.field_names.group"
+              ),
               sortable: true,
               width: "22%",
             },
             mode: {
-              title: "Mode",
+              title: this.hass.localize(
+                "ui.panel.config.insteon.device.aldb.field_names.mode"
+              ),
               sortable: true,
               width: "22%",
             },
           }
         : {
             mem_addr: {
-              title: "ID",
+              title: this.hass.localize(
+                "ui.panel.config.insteon.device.aldb.field_names.id"
+              ),
+              template: (mem_addr: number) => {
+                if (mem_addr < 0) {
+                  return html`New`;
+                }
+                return html`${mem_addr}`;
+              },
               sortable: true,
               direction: "desc",
               width: "12%",
             },
             in_use: {
-              title: "In Use",
+              title: this.hass.localize(
+                "ui.panel.config.insteon.device.aldb.field_names.in_use"
+              ),
               template: (in_use: boolean) => {
                 if (in_use) {
                   return html`Y`;
@@ -92,27 +125,48 @@ export class InsteonALDBDataTable extends LitElement {
                 return html`N`;
               },
               sortable: true,
-              width: "15%",
+              width: "12%",
+            },
+            dirty: {
+              title: this.hass.localize(
+                "ui.panel.config.insteon.device.aldb.field_names.modified"
+              ),
+              template: (dirty: boolean) => {
+                if (dirty) {
+                  return html`Y`;
+                }
+                return html`N`;
+              },
+              sortable: true,
+              width: "12%",
             },
             target: {
-              title: "Target",
+              title: this.hass.localize(
+                "ui.panel.config.insteon.device.aldb.field_names.target"
+              ),
               sortable: true,
               width: "15%",
             },
             target_name: {
-              title: "Target Device",
+              title: this.hass.localize(
+                "ui.panel.config.insteon.device.aldb.field_names.target_device"
+              ),
               sortable: true,
               grows: true,
             },
             group: {
-              title: "Group",
+              title: this.hass.localize(
+                "ui.panel.config.insteon.device.aldb.field_names.group"
+              ),
               sortable: true,
-              width: "15%",
+              width: "12%",
             },
             mode: {
-              title: "Mode",
+              title: this.hass.localize(
+                "ui.panel.config.insteon.device.aldb.field_names.mode"
+              ),
               sortable: true,
-              width: "15%",
+              width: "12%",
             },
           }
   );
@@ -129,7 +183,7 @@ export class InsteonALDBDataTable extends LitElement {
         .id=${"record_id"}
         .dir=${computeRTLDirection(this.hass)}
         .searchLabel=${this.hass.localize("ui.components.data-table.search")}
-        noDataText="${this.hass.localize("ui.components.data-table.no-data")}"
+        noDataText="${this.noDataText}"
       ></ha-data-table>
     `;
   }
