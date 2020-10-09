@@ -25,6 +25,7 @@ import {
   getValueInPercentage,
   roundWithOneDecimal,
 } from "../../../src/util/calculate";
+import { bytesToString } from "../../../src/util/bytes-to-string";
 import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-system-metrics")
@@ -38,7 +39,6 @@ class HassioSystemMetrics extends LitElement {
   @internalProperty() private _coreMetrics?: HassioStats;
 
   protected render(): TemplateResult | void {
-    const usedSpace = this._getUsedSpace(this.hostInfo);
     const metrics = [
       {
         description: "Core CPU Usage",
@@ -47,6 +47,9 @@ class HassioSystemMetrics extends LitElement {
       {
         description: "Core RAM Usage",
         value: this._coreMetrics?.memory_percent,
+        tooltip: `${bytesToString(
+          this._coreMetrics?.memory_usage
+        )}/${bytesToString(this._coreMetrics?.memory_limit)}`,
       },
       {
         description: "Supervisor CPU Usage",
@@ -55,10 +58,16 @@ class HassioSystemMetrics extends LitElement {
       {
         description: "Supervisor RAM Usage",
         value: this._supervisorMetrics?.memory_percent,
+        tooltip: `${bytesToString(
+          this._supervisorMetrics?.memory_usage
+        )}/${bytesToString(this._supervisorMetrics?.memory_limit)}`,
       },
       {
         description: "Used Space",
-        value: usedSpace,
+        value: this._getUsedSpace(this.hostInfo),
+        tooltip: `${
+          this.hostInfo.disk_used
+        } GB/${this.hostInfo.disk_total} GB`,
       },
     ];
 
@@ -66,7 +75,11 @@ class HassioSystemMetrics extends LitElement {
       <ha-card header="System Metrics">
         <div class="card-content">
           ${metrics.map((metric) =>
-            this._renderMetric(metric.description, metric.value ?? 0)
+            this._renderMetric(
+              metric.description,
+              metric.value ?? 0,
+              metric.tooltip
+            )
           )}
         </div>
       </ha-card>
@@ -77,13 +90,17 @@ class HassioSystemMetrics extends LitElement {
     this._loadData();
   }
 
-  private _renderMetric(description: string, value: number): TemplateResult {
+  private _renderMetric(
+    description: string,
+    value: number,
+    tooltip?: string
+  ): TemplateResult {
     const roundedValue = roundWithOneDecimal(value);
     return html`<ha-settings-row>
       <span slot="heading">
         ${description}
       </span>
-      <div slot="description">
+      <div slot="description" title="${tooltip ?? ""}">
         <span class="value">
           ${roundedValue}%
         </span>
@@ -155,6 +172,7 @@ class HassioSystemMetrics extends LitElement {
         }
         .value {
           width: 42px;
+          padding-right: 4px;
         }
       `,
     ];
