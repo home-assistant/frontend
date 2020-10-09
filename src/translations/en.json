@@ -2174,15 +2174,47 @@
                 "partial": "Partially loaded",
                 "failed": "Failed to load"
               },
+              "loading_records": "The All-Link Database is loading. This may take up to 20 minutes.",
+              "no_data": "The All-Link Database is not available. Please load the ALDB from the device.",
               "actions": {
                 "manage": "Manage All-Link Database",
-                "load": "Load",
-                "write": "Write",
-                "warn_save": "This will write the records to the device."
+                "create": "New record",
+                "load": "Load from device",
+                "write": "Write to device",
+                "warning_header": "Warning",
+                "warn_write": "This will write the records to the device. Are you sure you want to continue?",
+                "warn_load": "Loading the All-Link Database may take a while. Are you sure you want to continue?",
+                "warn_exit": "You have changes that have not been written to the device. Are you sure you want to continue?",
+                "reset": "Discard changes",
+                "add_default_links": "Add default links",
+                "show_unused": "Show unused",
+                "hide_unused": "Hide unused"
+              },
+              "field_names": {
+                "id": "ID",
+                "in_use": "In Use",
+                "modified": "Modified",
+                "target": "Target",
+                "target_device": "Target Device",
+                "group": "Group",
+                "mode": "Mode",
+                "data1": "Data 1",
+                "data2": "Data 2",
+                "data3": "Data 3"
               }
             },
             "properties": {
-              "caption": "Properties"
+              "caption": "Properties",
+              "actions": {
+                "manage": "Manage Properties",
+                "load": "Load from device",
+                "write": "Write to device",
+                "warning_header": "Warning",
+                "warn_write": "This will write the properties to the device. Are you sure you want to continue?",
+                "warn_load": "Loading the properties from the device may take a while. Are you sure you want to continue?",
+                "warn_exit": "You have changes that have not been written to the device. Are you sure you want to continue?",
+                "reset": "Discard changes"
+              }
             }
           }
         }

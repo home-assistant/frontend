@@ -28,20 +28,23 @@ class DialogInsteonALDBRecord extends LitElement {
 
   @property() public narrow?: boolean;
 
-  @internalProperty() private _record?: ALDBRecord | undefined;
+  @internalProperty() private _record: ALDBRecord | undefined;
 
   @internalProperty() private _schema?: HaFormSchema;
 
-  @internalProperty() private _callback?: (text: string) => Promise<void>;
+  @internalProperty() private _callback?: (record: ALDBRecord) => Promise<void>;
 
   @internalProperty() private _errors?: { [key: string]: string };
 
-  @internalProperty() private _data?: { [key: string]: any };
+  @internalProperty() private _formData?: { [key: string]: any };
+
+  @internalProperty() private _change_count = 0;
 
   public async showDialog(
     params: InsteonALDBRecordDialogParams
   ): Promise<void> {
     this._record = params.record;
+    this._formData = { ...params.record };
     this._schema = params.schema;
     this._callback = params.callback;
   }
@@ -59,7 +62,7 @@ class DialogInsteonALDBRecord extends LitElement {
       >
         <div class="form">
           <ha-form
-            .data=${this._recordData()}
+            .data=${this._formData}
             .schema=${this._schema}
             .error=${this._errors}
             @value-changed=${this._valueChanged}
@@ -87,8 +90,19 @@ class DialogInsteonALDBRecord extends LitElement {
       return;
     }
     if (this._checkData()) {
+      const record = this._record;
+      record!.mem_addr = this._formData!.mem_addr;
+      record!.in_use = this._formData!.in_use;
+      record!.target = this._formData!.target;
+      record!.mode = this._updatedMode();
+      record!.group = this._formData!.group;
+      record!.data1 = this._formData!.data1;
+      record!.data2 = this._formData!.data2;
+      record!.data3 = this._formData!.data3;
+      record!.highwater = false;
+      record!.dirty = true;
       this._close();
-      await this._callback!("Made change to: " + this._data!.mem_addr);
+      await this._callback!(record!);
     } else {
       this._errors!["base"] = "Some checks failed";
     }
@@ -96,13 +110,13 @@ class DialogInsteonALDBRecord extends LitElement {
 
   private _changeMade(): boolean {
     return (
-      this._record?.in_use !== (this._data?.in_use as boolean) ||
-      this._currentMode() !== (this._data?.mode as string) ||
-      this._record?.target !== (this._data?.target as string) ||
-      this._record?.group !== (this._data?.group as number) ||
-      this._record?.data1 !== (this._data?.data1 as number) ||
-      this._record?.data2 !== (this._data?.data2 as number) ||
-      this._record?.data3 !== (this._data?.data3 as number)
+      this._record!.in_use !== (this._formData!.in_use as boolean) ||
+      this._currentMode() !== (this._formData!.mode as string) ||
+      this._record!.target !== (this._formData!.target as string) ||
+      this._record!.group !== (this._formData!.group as number) ||
+      this._record!.data1 !== (this._formData!.data1 as number) ||
+      this._record!.data2 !== (this._formData!.data2 as number) ||
+      this._record!.data3 !== (this._formData!.data3 as number)
     );
   }
 
@@ -117,22 +131,15 @@ class DialogInsteonALDBRecord extends LitElement {
     return "Responder";
   }
 
-  private _recordData() {
-    return {
-      mem_addr: this._record?.mem_addr,
-      in_use: this._record?.in_use,
-      target: this._record?.target,
-      mode: this._currentMode(),
-      group: this._record?.group,
-      data1: this._record?.data1,
-      data2: this._record?.data2,
-      data3: this._record?.data3,
-    };
+  private _updatedMode(): string {
+    if (this._formData!.mode === "Controller") {
+      return "C";
+    }
+    return "R";
   }
 
   private _valueChanged(ev: CustomEvent) {
-    ev.stopPropagation();
-    this._data = ev.detail.value;
+    this._formData = ev.detail.value;
   }
 
   private _checkData(): boolean {
@@ -141,23 +148,23 @@ class DialogInsteonALDBRecord extends LitElement {
     const insteonAddressCheck = new RegExp(
       /[A-Fa-f0-9]{2}\.?[A-Fa-f0-9]{2}\.?[A-Fa-f0-9]{2}$/
     );
-    if (!insteonAddressCheck.test(this._data?.target)) {
+    if (!insteonAddressCheck.test(this._formData!.target)) {
       this._errors["target"] = "Invalid address";
       success = false;
     }
-    if (this._data?.group < 0 || this._data?.group > 255) {
+    if (this._formData?.group < 0 || this._formData?.group > 255) {
       this._errors["group"] = "Invalid group value (0 - 255)";
       success = false;
     }
-    if (this._data?.data1 < 0 || this._data?.data1 > 255) {
+    if (this._formData?.data1 < 0 || this._formData?.data1 > 255) {
       this._errors["data1"] = "Invalid data1 value (0 - 255)";
       success = false;
     }
-    if (this._data?.data2 < 0 || this._data?.data2 > 255) {
+    if (this._formData?.data2 < 0 || this._formData?.data2 > 255) {
       this._errors["data2"] = "Invalid data2 value (0 - 255)";
       success = false;
     }
-    if (this._data?.data3 < 0 || this._data?.data3 > 255) {
+    if (this._formData?.data3 < 0 || this._formData?.data3 > 255) {
       this._errors["data3"] = "Invalid data3 value (0 - 255)";
       success = false;
     }

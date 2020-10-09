@@ -1,7 +1,5 @@
-import { HassEntity } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
 import type { HaFormSchema } from "../components/ha-form/ha-form";
-import { HassioHomeAssistantInfo } from "./hassio/supervisor";
 
 export interface InsteonDevice {
   name: string;
@@ -10,15 +8,8 @@ export interface InsteonDevice {
   aldb_status: string;
 }
 
-export interface DefaultLink {
-  is_controller: boolean;
-  group: number;
-  dev_data1: number;
-  dev_data2: number;
-  dev_data3: number;
-  modem_data1: number;
-  modem_data2: number;
-  modem_data3: number;
+export interface Properties {
+  [key: string]: boolean | number;
 }
 
 export interface ALDBRecord {
@@ -32,12 +23,17 @@ export interface ALDBRecord {
   data1: number;
   data2: number;
   data3: number;
-  is_dirty: boolean;
+  dirty: boolean;
 }
 
 export interface ALDBInfo {
   schema: HaFormSchema;
   records: ALDBRecord[];
+}
+
+export interface PropertiesInfo {
+  schema: HaFormSchema;
+  properties: Properties;
 }
 
 export const fetchInsteonDevice = (
@@ -58,11 +54,100 @@ export const fetchInsteonALDB = (
     device_id: id,
   });
 
+export const fetchInsteonProperties = (
+  hass: HomeAssistant,
+  id: string
+): Promise<PropertiesInfo> =>
+  hass.callWS({
+    type: "insteon/properties/get",
+    device_id: id,
+  });
+
 export const changeALDBRecord = (
   hass: HomeAssistant,
+  id: string,
   record: ALDBRecord
-): Promise<ALDBRecord> =>
+): Promise<void> =>
   hass.callWS({
     type: "insteon/aldb/change",
+    device_id: id,
     record: record,
+  });
+
+export const changeProperty = (
+  hass: HomeAssistant,
+  id: string,
+  name: string,
+  value: number | boolean
+): Promise<void> =>
+  hass.callWS({
+    type: "insteon/properties/change",
+    device_id: id,
+    name: name,
+    value: value,
+  });
+
+export const createALDBRecord = (
+  hass: HomeAssistant,
+  id: string,
+  record: ALDBRecord
+): Promise<void> =>
+  hass.callWS({
+    type: "insteon/aldb/create",
+    device_id: id,
+    record: record,
+  });
+
+export const loadALDB = (hass: HomeAssistant, id: string): Promise<void> =>
+  hass.callWS({
+    type: "insteon/aldb/load",
+    device_id: id,
+  });
+
+export const loadProperties = (
+  hass: HomeAssistant,
+  id: string
+): Promise<void> =>
+  hass.callWS({
+    type: "insteon/properties/load",
+    device_id: id,
+  });
+
+export const writeALDB = (hass: HomeAssistant, id: string): Promise<void> =>
+  hass.callWS({
+    type: "insteon/aldb/write",
+    device_id: id,
+  });
+
+export const writeProperties = (
+  hass: HomeAssistant,
+  id: string
+): Promise<void> =>
+  hass.callWS({
+    type: "insteon/properties/write",
+    device_id: id,
+  });
+
+export const resetALDB = (hass: HomeAssistant, id: string): Promise<void> =>
+  hass.callWS({
+    type: "insteon/aldb/reset",
+    device_id: id,
+  });
+
+export const resetProperties = (
+  hass: HomeAssistant,
+  id: string
+): Promise<void> =>
+  hass.callWS({
+    type: "insteon/properties/reset",
+    device_id: id,
+  });
+
+export const addDefaultLinks = (
+  hass: HomeAssistant,
+  id: string
+): Promise<void> =>
+  hass.callWS({
+    type: "insteon/aldb/add_default_links",
+    device_id: id,
   });
