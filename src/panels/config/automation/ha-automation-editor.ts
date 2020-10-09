@@ -117,8 +117,13 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
             ><ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
           </mwc-icon-button>
 
-          <mwc-list-item graphic="icon">
-            GUI editor
+          <mwc-list-item
+            aria-label=${this.hass.localize(
+              "ui.panel.config.automation.editor.edit_ui"
+            )}
+            graphic="icon"
+          >
+            ${this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
             ${this._mode === "gui"
               ? html`<ha-svg-icon
                   slot="graphic"
@@ -126,8 +131,13 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                 ></ha-svg-icon> `
               : ``}
           </mwc-list-item>
-          <mwc-list-item graphic="icon">
-            YAML editor
+          <mwc-list-item
+            aria-label=${this.hass.localize(
+              "ui.panel.config.automation.editor.edit_yaml"
+            )}
+            graphic="icon"
+          >
+            ${this.hass.localize("ui.panel.config.automation.editor.edit_yaml")}
             ${this._mode === "yaml"
               ? html`<ha-svg-icon
                   slot="graphic"
@@ -406,7 +416,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                               @value-changed=${this._yamlChanged}
                             ></ha-yaml-editor>
                             <mwc-button @click=${this._copyYaml}>
-                              Copy to clipboard
+                              ${this.hass.localize(
+                                "ui.panel.config.automation.editor.copy_to_clipboard"
+                              )}
                             </mwc-button>
                           </div>
                           ${stateObj
