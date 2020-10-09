@@ -104,7 +104,7 @@ class DialogInsteonALDBRecord extends LitElement {
       this._close();
       await this._callback!(record!);
     } else {
-      this._errors!["base"] = "Some checks failed";
+      this._errors!.base = "Some checks failed";
     }
   }
 
@@ -149,23 +149,23 @@ class DialogInsteonALDBRecord extends LitElement {
       /[A-Fa-f0-9]{2}\.?[A-Fa-f0-9]{2}\.?[A-Fa-f0-9]{2}$/
     );
     if (!insteonAddressCheck.test(this._formData!.target)) {
-      this._errors["target"] = "Invalid address";
+      this._errors!.target = "Invalid address";
       success = false;
     }
     if (this._formData?.group < 0 || this._formData?.group > 255) {
-      this._errors["group"] = "Invalid group value (0 - 255)";
+      this._errors!.group = "Invalid group value (0 - 255)";
       success = false;
     }
     if (this._formData?.data1 < 0 || this._formData?.data1 > 255) {
-      this._errors["data1"] = "Invalid data1 value (0 - 255)";
+      this._errors!.data1 = "Invalid data1 value (0 - 255)";
       success = false;
     }
     if (this._formData?.data2 < 0 || this._formData?.data2 > 255) {
-      this._errors["data2"] = "Invalid data2 value (0 - 255)";
+      this._errors!.data2 = "Invalid data2 value (0 - 255)";
       success = false;
     }
     if (this._formData?.data3 < 0 || this._formData?.data3 > 255) {
-      this._errors["data3"] = "Invalid data3 value (0 - 255)";
+      this._errors!.data3 = "Invalid data3 value (0 - 255)";
       success = false;
     }
     return success;
