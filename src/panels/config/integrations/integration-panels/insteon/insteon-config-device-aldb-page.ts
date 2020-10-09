@@ -79,8 +79,8 @@ class InsteonConfigDeviceALDBPage extends LitElement {
         this._records = this._filterRecords(aldbInfo.records, this._showUnused);
         this._schema = aldbInfo.schema;
       });
-      fetchInsteonALDB(this.hass, this._device_id!).then((aldbInfo) => {
-        this._records = aldbInfo.records;
+      fetchInsteonALDB(this.hass, this.deviceId!).then((aldbInfo) => {
+        this._records = this._filterRecords(aldbInfo.records, this._showUnused);
         this._schema = aldbInfo.schema;
       });
     }
@@ -165,6 +165,11 @@ class InsteonConfigDeviceALDBPage extends LitElement {
                   "ui.panel.config.insteon.device.aldb.actions.add_default_links"
                 )}
               </mwc-button>
+              <mwc-button @click=${this._onAddDefaultLinksClicked}>
+                ${this.hass!.localize(
+                  "ui.panel.config.insteon.device.aldb.actions.add_default_links"
+                )}
+              </mwc-button>
               <mwc-button
                 .disabled=${!this._dirty()}
                 @click=${this._onWriteALDBClick}
@@ -184,6 +189,14 @@ class InsteonConfigDeviceALDBPage extends LitElement {
               >
                 ${this.hass!.localize(
                   "ui.panel.config.insteon.device.common.actions.reset"
+                )}
+              </mwc-button>
+              <mwc-button
+                .disabled=${!this._dirty()}
+                @click=${this._onResetALDBClick}
+              >
+                ${this.hass!.localize(
+                  "ui.panel.config.insteon.device.aldb.actions.reset"
                 )}
               </mwc-button>
               <mwc-button
@@ -341,12 +354,10 @@ class InsteonConfigDeviceALDBPage extends LitElement {
     });
   }
 
-  private async _handleDialogResponse(text: string) {
-    await showConfirmationDialog(this, {
-      title: "The title",
-      text: text,
-      confirmText: "We good",
-      dismissText: "We not good",
+  private async _handleRecordCreate(record: ALDBRecord) {
+    createALDBRecord(this.hass, this.deviceId!, record);
+    fetchInsteonALDB(this.hass, this.deviceId!).then((aldbInfo) => {
+      this._records = this._filterRecords(aldbInfo.records, this._showUnused);
     });
   }
 
