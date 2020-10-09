@@ -10,6 +10,7 @@ import {
   internalProperty,
   LitElement,
   property,
+  query,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
@@ -89,6 +90,8 @@ class HassioSnapshotDialog extends LitElement {
   @internalProperty() private _snapshotPassword!: string;
 
   @internalProperty() private _restoreHass: boolean | null | undefined = true;
+
+  @query("#download", true) private _downloadBtn!: HTMLAnchorElement;
 
   public async showDialog(params: HassioSnapshotDialogParams) {
     this._snapshot = await fetchHassioSnapshotInfo(this.hass, params.slug);
@@ -231,6 +234,7 @@ class HassioSnapshotDialog extends LitElement {
               <span class="warning">Delete Snapshot</span>
             </mwc-button>`
           : ""}
+        <a id="download"></a>
       </ha-dialog>
     `;
   }
@@ -268,6 +272,9 @@ class HassioSnapshotDialog extends LitElement {
           --mdc-theme-on-primary: var(--primary-text-color);
           --mdc-theme-primary: var(--mdc-theme-surface);
           flex-shrink: 0;
+        }
+        #download {
+          display: none;
         }
         /* overrule the ha-style-dialog max-height on small screens */
         @media all and (max-width: 450px), all and (max-height: 500px) {
@@ -457,12 +464,10 @@ class HassioSnapshotDialog extends LitElement {
     }
 
     const name = this._computeName.replace(/[^a-z0-9]+/gi, "_");
-    const a = document.createElement("a");
-    a.href = signedPath.path;
-    a.download = `Hass_io_${name}.tar`;
-    this.shadowRoot!.appendChild(a);
-    a.click();
-    this.shadowRoot!.removeChild(a);
+
+    this._downloadBtn.href = signedPath.path;
+    this._downloadBtn.download = `Snapshot_${name}.tar`;
+    this._downloadBtn.click();
   }
 
   private get _computeName() {
@@ -487,6 +492,8 @@ class HassioSnapshotDialog extends LitElement {
   }
 
   private _closeDialog() {
+    this._downloadBtn.href = "";
+    this._downloadBtn.download = "";
     this._dialogParams = undefined;
     this._snapshot = undefined;
     this._snapshotPassword = "";
