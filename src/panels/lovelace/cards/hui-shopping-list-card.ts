@@ -300,9 +300,7 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
 
   private async _toggleReorder() {
     if (!Sortable) {
-      const [sortableImport] = await Promise.all([
-        import("sortablejs/modular/sortable.core.esm"),
-      ]);
+      const sortableImport = await import("sortablejs/modular/sortable.core.esm");
       Sortable = sortableImport.Sortable;
     }
     this._reordering = !this._reordering;
