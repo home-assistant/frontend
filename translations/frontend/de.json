@@ -962,9 +962,11 @@
                                             "label": "Anzahl"
                                         },
                                         "until": {
+                                            "conditions": "Bis Bedingungen",
                                             "label": "Bis"
                                         },
                                         "while": {
+                                            "conditions": "Während Bedingungen",
                                             "label": "Während"
                                         }
                                     }
@@ -1794,6 +1796,9 @@
                     "network": {
                         "header": "Netzwerkverwaltung"
                     },
+                    "node_query_stages": {
+                        "associations": "Aktualisiert die verbundenen Gruppen und Mitgliedschaften"
+                    },
                     "nodes_table": {
                         "failed": "Fehlgeschlagen",
                         "id": "ID",
@@ -1835,7 +1840,9 @@
                     },
                     "introduction": "Hier können Sie jede Person von Interesse in Home Assistant definieren.",
                     "no_persons_created_yet": "Sieht so aus, als hättest du noch keine Personen angelegt.",
-                    "note_about_persons_configured_in_yaml": "Hinweis: Personen, die über configuration.yaml konfiguriert wurden, können nicht über die Benutzeroberfläche bearbeitet werden."
+                    "note_about_persons_configured_in_yaml": "Hinweis: Personen, die über configuration.yaml konfiguriert wurden, können nicht über die Benutzeroberfläche bearbeitet werden.",
+                    "person_not_found": "Wir konnten die Person, die du bearbeiten wolltest, nicht finden.",
+                    "person_not_found_title": "Person nicht gefunden"
                 },
                 "scene": {
                     "activated": "Aktivierte Szene {name}.",
@@ -1916,7 +1923,7 @@
                         "sequence_sentence": "Die Abfolge der Aktionen dieses Skripts."
                     },
                     "picker": {
-                        "add_script": "Skript hinzufügen",
+                        "add_script": "Neues Skript erstellen",
                         "edit_script": "Skript bearbeiten",
                         "header": "Skript-Editor",
                         "headers": {
@@ -2428,6 +2435,7 @@
                             "name": "Schaltfläche"
                         },
                         "calendar": {
+                            "description": "Die Kalenderkarte zeigt einen Kalender mit Tages-, Wochen- und Listenansichten an",
                             "inital_view": "Initiale Ansicht",
                             "name": "Kalender",
                             "views": {
@@ -2453,7 +2461,7 @@
                         },
                         "entities": {
                             "description": "Die Entitäts-Karte ist der am häufigsten verwendete Kartentyp. Sie gruppiert Elemente in Listen.",
-                            "edit_special_row": "Zeile mit dem Code-Editor bearbeiten",
+                            "edit_special_row": "Zeige die Details dieser Zeile an, indem du auf die Schaltfläche Bearbeiten klickst",
                             "entity_row": {
                                 "attribute": "Attribut",
                                 "button": "Schalter",
@@ -2623,7 +2631,7 @@
                     "edit_card": {
                         "add": "Karte hinzufügen",
                         "confirm_cancel": "Bist du sicher, dass du Abbrechen willst?",
-                        "delete": "Löschen",
+                        "delete": "Karte löschen",
                         "duplicate": "Karte duplizieren",
                         "edit": "Bearbeiten",
                         "header": "Kartenkonfiguration",
@@ -2669,6 +2677,9 @@
                         "para_migrate": "Home Assistant kann für alle deine Karten und Ansichten die IDs automatisch generieren, wenn du den \"Konfiguration migrieren\"-Button klickst.",
                         "para_no_id": "Dieses Element hat keine ID. Bitte füge diesem Element eine ID in 'ui-lovelace.yaml' hinzu."
                     },
+                    "move_card": {
+                        "header": "Wähle eine Ansicht, in die die Karte verschoben werden soll"
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "Wir generieren automatisch deine Lovelace-Ansichten mit deinen Bereichen und Geräten, wenn du deine Lovelace-Konfiguration entfernst.",
                         "confirm_remove_config_title": "Bist du sicher, dass du deine Lovelace-Konfiguration entfernen möchtest? Wir generieren automatisch deine Lovelace-Ansichten mit deinen Bereichen und Geräten.",
@@ -2695,6 +2706,9 @@
                         "yaml_config": "Um dir den Einstieg zu erleichtern, findest du hier die aktuelle Konfiguration dieses Dashboards:",
                         "yaml_control": "Um die Kontrolle im YAML-Modus zu übernehmen, erstelle eine YAML-Datei mit dem Namen, den du in Deiner Konfiguration für dieses Dashboard angegeben hast, oder mit der Standardeinstellung 'ui-lovelace.yaml'.",
                         "yaml_mode": "Du verwendest den YAML-Modus für dieses Dashboard. Dies bedeutet, dass Du Deine Lovelace-Konfiguration nicht über die Benutzeroberfläche ändern kannst. Wenn du dieses Dashboard über die Benutzeroberfläche verwalten möchtest, entferne \"mode: yaml\" aus Deiner Lovelace-Konfiguration in \"configuration.yaml\"."
+                    },
+                    "select_view": {
+                        "header": "Wähle eine Ansicht"
                     },
                     "suggest_card": {
                         "add": "Zu Lovelace hinzufügen",

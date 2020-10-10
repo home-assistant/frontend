@@ -675,9 +675,23 @@
                     "week": "{count} {count, plural,\none {semana}\nother {semanas}\n}"
                 },
                 "future": "En {time}",
+                "future_duration": {
+                    "day": "dentro de {count} {count, plural,\none {día}\nother {días}\n}",
+                    "hour": "dentro de {count} {count, plural,\none {hora}\nother {horas}\n}",
+                    "minute": "dentro de {count} {count, plural,\none {minuto}\nother {minutos}\n}",
+                    "second": "dentro de {count} {count, plural,\none {segundo}\nother {segundos}\n}",
+                    "week": "dentro de {count} {count, plural,\none {semana}\nother {semanas}\n}"
+                },
                 "just_now": "Ahora mismo",
                 "never": "Nunca",
-                "past": "Hace {time}"
+                "past": "Hace {time}",
+                "past_duration": {
+                    "day": "hace {count} {count, plural,\none {día}\nother {días}\n}",
+                    "hour": "hace {count} {count, plural,\none {hora}\nother {horas}\n}",
+                    "minute": "hace {count} {count, plural,\none {minuto}\nother {minutos}\n}",
+                    "second": "hace {count} {count, plural,\none {segundo}\nother {segundos}\n}",
+                    "week": "hace {count} {count, plural,\none {semana}\nother {semanas}\n}"
+                }
             },
             "service-picker": {
                 "service": "Servicio"
@@ -824,6 +838,44 @@
                 "success": {
                     "description": "Las opciones se guardaron correctamente."
                 }
+            },
+            "quick-open": {
+                "commands": {
+                    "reload": {
+                        "automation": "Recargar automatizaciones",
+                        "command_line": "Recargar entidades de línea de comandos",
+                        "core": "Recargar ubicación y personalizaciones",
+                        "filesize": "Recargar entidades de tamaño de archivo",
+                        "filter": "Recargar entidades de filtro",
+                        "generic": "Recargar entidades de cámara IP genéricas",
+                        "generic_thermostat": "Recargar entidades de termostato genéricas",
+                        "group": "Recargar grupos, entidades de grupo, y notificar servicios",
+                        "history_stats": "Recargar entidades de estadísticas del historial",
+                        "homekit": "Recargar HomeKit",
+                        "input_boolean": "Recargar los campos booleanos",
+                        "input_datetime": "Recargar los campos de fecha y hora",
+                        "input_number": "Recargar los campos numéricos",
+                        "input_select": "Recargar los campos desplegables",
+                        "input_text": "Recargar los campos de texto",
+                        "min_max": "Recargar entidades min/max",
+                        "mqtt": "Recargar entidades mqtt",
+                        "person": "Recargar personas",
+                        "ping": "Recargar entidades de sensor binario de ping",
+                        "reload": "Recargar {domain}",
+                        "rest": "Recargar entidades rest y notificar servicios",
+                        "rpi_gpio": "Recargar entidades GPIO de Raspberry Pi",
+                        "scene": "Recargar escenas",
+                        "script": "Recargar scripts",
+                        "smtp": "Recargar servicios de notificación smtp",
+                        "statistics": "Recargar entidades de estadísticas",
+                        "telegram": "Recargar servicios de notificación de telegram",
+                        "template": "Recargar entidades de plantilla",
+                        "trend": "Recargar entidades de tendencia",
+                        "universal": "Recargar entidades de reproductor multimedia universal",
+                        "zone": "Recargar zonas"
+                    }
+                },
+                "filter_placeholder": "Filtro de entidad"
             },
             "voice_command": {
                 "did_not_hear": "Home Assistant no escuchó nada",
@@ -1928,7 +1980,9 @@
                     },
                     "introduction": "Aquí puedes definir a cada persona de interés en Home Assistant.",
                     "no_persons_created_yet": "Parece que aún no has creado ninguna persona.",
-                    "note_about_persons_configured_in_yaml": "Nota: las personas configuradas a través de configuration.yaml no se pueden editar a través de la IU."
+                    "note_about_persons_configured_in_yaml": "Nota: las personas configuradas a través de configuration.yaml no se pueden editar a través de la IU.",
+                    "person_not_found": "No pudimos encontrar a la persona que intentabas editar.",
+                    "person_not_found_title": "Persona no encontrada"
                 },
                 "scene": {
                     "activated": "Activada escena {name}.",
@@ -2086,6 +2140,7 @@
                     "create_automation": "Crear automatización con etiqueta",
                     "description": "Administrar etiquetas",
                     "detail": {
+                        "companion_apps": "aplicaciones complementarias",
                         "create": "Crear",
                         "create_and_write": "Crear y escribir",
                         "delete": "Eliminar",
@@ -2094,7 +2149,8 @@
                         "new_tag": "Nueva etiqueta",
                         "tag_id": "ID de etiqueta",
                         "tag_id_placeholder": "Autogenerado cuando se deja vacío",
-                        "update": "Actualizar"
+                        "update": "Actualizar",
+                        "usage": "Una etiqueta puede activar una automatización cuando se escanea, puedes usar etiquetas NFC, códigos QR o cualquier otro tipo de etiqueta. Utiliza nuestra {companion_link} para escribir esta etiqueta en una etiqueta NFC programable o crea un código QR a continuación."
                     },
                     "edit": "Editar",
                     "headers": {

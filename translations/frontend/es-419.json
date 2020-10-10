@@ -2269,7 +2269,7 @@
                     },
                     "services": {
                         "alert_parsing_yaml": "Error al analizar YAML: {data}",
-                        "call_service": "Llamar al Servico",
+                        "call_service": "Llamar al Servicio",
                         "column_description": "Descripción",
                         "column_example": "Ejemplo",
                         "column_parameter": "Parámetro",

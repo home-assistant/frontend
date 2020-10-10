@@ -675,9 +675,23 @@
                     "week": "{count} {count, plural,\n  one {semana}\n  other {semanas}\n}"
                 },
                 "future": "Há {time}",
+                "future_duration": {
+                    "day": "In {count} {count, plural,\n  one {dia}\n  other {dias}\n}",
+                    "hour": "In {count} {count, plural,\n  one {hora}\n  other {horas}\n}",
+                    "minute": "In {count} {count, plural,\n  one {minuto}\n  other {minutos}\n}",
+                    "second": "In {count} {count, plural,\n  one {segundo}\n  other {segundos}\n}",
+                    "week": "In {count} {count, plural,\n  one {semana}\n  other {semanas}\n}"
+                },
                 "just_now": "Agora mesmo",
                 "never": "Nunca",
-                "past": "{time} atrás"
+                "past": "{time} atrás",
+                "past_duration": {
+                    "day": "{count} {count, plural,\n  one {dia}\n  other {dias}\n} atrás",
+                    "hour": "{count} {count, plural,\n  one {hora}\n  other {horas}\n} atrás",
+                    "minute": "{count} {count, plural,\n  one {minuto}\n  other {minutos}\n} atrás",
+                    "second": "{count} {count, plural,\n  one {segundo}\n  other {segundos}\n} atrás",
+                    "week": "{count} {count, plural,\n  one {semana}\n  other {semanas}\n} atrás"
+                }
             },
             "service-picker": {
                 "service": "Serviço"
@@ -824,6 +838,44 @@
                 "success": {
                     "description": "Salva com sucesso"
                 }
+            },
+            "quick-open": {
+                "commands": {
+                    "reload": {
+                        "automation": "Recarregar automações",
+                        "command_line": "Recarregar entidades de linha de comando",
+                        "core": "Recarregar localização e personalizações",
+                        "filesize": "Recarregar tamanho do ficheiro de entidades",
+                        "filter": "Recarregar entidades de filtro",
+                        "generic": "Recarregar entidades genéricas de câmeras IP",
+                        "generic_thermostat": "Recarregar entidades termostáticas genéricas",
+                        "group": "Recarregar grupos, grupos de entidades e serviços de notificação",
+                        "history_stats": "Recarregar entidades de estatísticas de histórico",
+                        "homekit": "Recarregar HomeKit",
+                        "input_boolean": "Recarregar booleanos de entrada",
+                        "input_datetime": "Recarregar input date times",
+                        "input_number": "Recarregar input numbers",
+                        "input_select": "Recarregar input selects",
+                        "input_text": "Recarregar input texts",
+                        "min_max": "Recarregar entidades Mín. / Máx.",
+                        "mqtt": "Recarregar entidades mqtt",
+                        "person": "Recarregar pessoas",
+                        "ping": "Recarregar entidades de sensor binárias de ping",
+                        "reload": "Recarregar {domain}",
+                        "rest": "Recarregar as restantes entidades e notificar serviços",
+                        "rpi_gpio": "Recarregar entidades Raspberry Pi GPIO",
+                        "scene": "Recarregar cenas",
+                        "script": "Recarregar scripts",
+                        "smtp": "Recarregar serviços de notificação de smtp",
+                        "statistics": "Recarregar entidades estatísticas",
+                        "telegram": "Recarregar os serviços de notificação do Telegram",
+                        "template": "Recarregar entidades modelo",
+                        "trend": "Recarregar entidades de tendência",
+                        "universal": "Recarregue entidades reprodutoras de multimédia",
+                        "zone": "Recarregar zonas"
+                    }
+                },
+                "filter_placeholder": "Filtro de Entidade"
             },
             "voice_command": {
                 "did_not_hear": "O Home Assistant não ouve nada",
@@ -1928,7 +1980,9 @@
                     },
                     "introduction": "Aqui pode definir cada pessoa de interesse no Home Assistant.",
                     "no_persons_created_yet": "Parece que você ainda não criou nenhuma pessoa.",
-                    "note_about_persons_configured_in_yaml": "Nota: pessoas configuradas via configuration.yaml não podem ser editadas via UI."
+                    "note_about_persons_configured_in_yaml": "Nota: pessoas configuradas via configuration.yaml não podem ser editadas via UI.",
+                    "person_not_found": "Não conseguimos encontrar a pessoa que estavas a tentar editar.",
+                    "person_not_found_title": "Pessoa não encontrada"
                 },
                 "scene": {
                     "activated": "Ativar cena {name}.",
@@ -2004,6 +2058,7 @@
                             "restart": "Reiniciar",
                             "single": "Predefinição"
                         },
+                        "save_script": "Salvar script",
                         "sequence": "Seqüência",
                         "sequence_sentence": "A seqüência de ações para este script."
                     },
@@ -2017,6 +2072,7 @@
                         "introduction": "O editor de scripts permite criar e editar scripts. Leia as instruções do link em baixo para se certificar de que configurou o Home Assistant corretamente.",
                         "learn_more": "Saber mais sobre scripts",
                         "no_scripts": "Não foi possível encontrar nenhum script editável",
+                        "run_script": "Executar script",
                         "show_info": "Mostrar informações sobre o script",
                         "trigger_script": "Despoletar script"
                     }
@@ -2084,6 +2140,7 @@
                     "create_automation": "Criar automação com etiqueta",
                     "description": "Gerir etiquetas",
                     "detail": {
+                        "companion_apps": "Aplicações de dispositivos móveis",
                         "create": "Criar",
                         "create_and_write": "Criar e Escrever",
                         "delete": "Apagar",
@@ -2092,7 +2149,8 @@
                         "new_tag": "Nova etiqueta",
                         "tag_id": "Identificação da etiqueta",
                         "tag_id_placeholder": "Gerado automaticamente quando deixado vazio",
-                        "update": "Atualizar"
+                        "update": "Atualizar",
+                        "usage": "Uma tag pode acionar uma automação quando digitalizada, você pode usar tags NFC, códigos QR ou qualquer outro tipo de tag. Use o nosso {companion_link} para escrever esta tag em uma tag NFC programável ou crie um código QR abaixo."
                     },
                     "edit": "Editar",
                     "headers": {
@@ -2741,6 +2799,8 @@
                         "edit": "Editar",
                         "header": "Configuração do cartão",
                         "move": "Mover para Vista",
+                        "move_after": "Mover cartão após",
+                        "move_before": "Mover cartão antes de",
                         "options": "Mais opções",
                         "pick_card": "Que cartão gostaria de adicionar?",
                         "pick_card_view_title": "Que cartão você gostaria de adicionar à sua vista {name}?",

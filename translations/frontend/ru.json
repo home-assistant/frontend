@@ -675,9 +675,23 @@
                     "week": "{count} {count, plural,\none {нед.}\nother {нед.}\n}"
                 },
                 "future": "через {time}",
+                "future_duration": {
+                    "day": "Через {count} {count, plural,\n  one {д.}\n  other {д.}\n}",
+                    "hour": "Через {count} {count, plural,\n  one {ч.}\n  other {ч.}\n}",
+                    "minute": "Через {count} {count, plural,\n  one {мин.}\n  other {мин.}\n}",
+                    "second": "Через {count} {count, plural,\n  one {сек.}\n  other {сек.}\n}",
+                    "week": "Через {count} {count, plural,\n  one {нед.}\n  other {нед.}\n}"
+                },
                 "just_now": "Сейчас",
                 "never": "Никогда",
-                "past": "{time} назад"
+                "past": "{time} назад",
+                "past_duration": {
+                    "day": "{count} {count, plural,\n  one {д.}\n  other {д.}\n} назад",
+                    "hour": "{count} {count, plural,\n  one {ч.}\n  other {ч.}\n} назад",
+                    "minute": "{count} {count, plural,\n  one {мин.}\n  other {мин.}\n} назад",
+                    "second": "{count} {count, plural,\n  one {сек.}\n  other {сек.}\n} назад",
+                    "week": "{count} {count, plural,\n  one {нед.}\n  other {нед.}\n} назад"
+                }
             },
             "service-picker": {
                 "service": "Служба"
@@ -824,6 +838,44 @@
                 "success": {
                     "description": "Параметры успешно сохранены."
                 }
+            },
+            "quick-open": {
+                "commands": {
+                    "reload": {
+                        "automation": "Перезагрузить автоматизации",
+                        "command_line": "Перезагрузить объекты интеграции \"Command Line\"",
+                        "core": "Обновить местоположение и кастомизацию",
+                        "filesize": "Перезагрузить объекты интеграции \"File Size\"",
+                        "filter": "Перезагрузить объекты интеграции \"Filter\"",
+                        "generic": "Перезагрузить объекты интеграции \"Generic IP Camera\"",
+                        "generic_thermostat": "Перезагрузить объекты интеграции \"Generic Thermostat\"",
+                        "group": "Перезагрузить группы, объекты групп и службы уведомлений",
+                        "history_stats": "Перезагрузить объекты интеграции \"History Stats\"",
+                        "homekit": "Перезагрузить HomeKit",
+                        "input_boolean": "Перезагрузить вспомогательные переключатели",
+                        "input_datetime": "Перезагрузить вспомогательные элементы ввода даты и времени",
+                        "input_number": "Перезагрузить вспомогательные элементы ввода чисел",
+                        "input_select": "Перезагрузить вспомогательные выпадающие списки",
+                        "input_text": "Перезагрузить вспомогательные элементы ввода текста",
+                        "min_max": "Перезагрузить объекты интеграции \"Min/Max\"",
+                        "mqtt": "Перезагрузить объекты интеграции \"MQTT\"",
+                        "person": "Перезагрузить персоны",
+                        "ping": "Перезагрузить объекты интеграции \"Ping (ICMP)\"",
+                        "reload": "Перезагрузить {domain}",
+                        "rest": "Перезагрузить объекты и службы уведомлений интеграции \"REST\"",
+                        "rpi_gpio": "Перезагрузить объекты интеграции \"Raspberry Pi GPIO\"",
+                        "scene": "Перезагрузить сцены",
+                        "script": "Перезагрузить сценарии",
+                        "smtp": "Перезагрузить службы уведомлений SMTP",
+                        "statistics": "Перезагрузить объекты интеграции \"Statistics\"",
+                        "telegram": "Перезагрузить службы уведомлений Telegram",
+                        "template": "Перезагрузить объекты шаблонов",
+                        "trend": "Перезагрузить объекты интеграции \"Trend\"",
+                        "universal": "Перезагрузить объекты интеграции \"Universal Media Player\"",
+                        "zone": "Перезагрузить зоны"
+                    }
+                },
+                "filter_placeholder": "Фильтр объектов"
             },
             "voice_command": {
                 "did_not_hear": "Home Assistant ничего не услышал",
@@ -1928,7 +1980,9 @@
                     },
                     "introduction": "Этот раздел позволяет добавлять в Home Assistant интересующих Вас персон.",
                     "no_persons_created_yet": "У Вас еще нет добавленных персон.",
-                    "note_about_persons_configured_in_yaml": "Примечание:\nПерсоны, настроенные с помощью configuration.yaml, нельзя редактировать с помощью пользовательского интерфейса."
+                    "note_about_persons_configured_in_yaml": "Примечание:\nПерсоны, настроенные с помощью configuration.yaml, нельзя редактировать с помощью пользовательского интерфейса.",
+                    "person_not_found": "Нам не удалось найти персону, которую Вы пытались редактировать.",
+                    "person_not_found_title": "Персона не найдена"
                 },
                 "scene": {
                     "activated": "Активирована сцена {name}.",
@@ -2086,6 +2140,7 @@
                     "create_automation": "Создать автоматизацию с меткой",
                     "description": "Управление метками",
                     "detail": {
+                        "companion_apps": "приложения-компаньоны",
                         "create": "Добавить",
                         "create_and_write": "Добавить и записать",
                         "delete": "Удалить",
@@ -2094,7 +2149,8 @@
                         "new_tag": "Новая метка",
                         "tag_id": "ID метки",
                         "tag_id_placeholder": "Если не указан, создается автоматически",
-                        "update": "Обновить"
+                        "update": "Обновить",
+                        "usage": "Метку можно использовать для запуска автоматизации. Поддерживаются метки NFC, QR-коды и любые другие метки. Используйте наши {companion_link} для записи программируемых меток NFC, или создайте QR-код ниже."
                     },
                     "edit": "Изменить",
                     "headers": {
@@ -2743,6 +2799,8 @@
                         "edit": "Изменить",
                         "header": "Настройка карточки",
                         "move": "Переместить",
+                        "move_after": "Переместить карточку после",
+                        "move_before": "Переместить карточку до",
                         "options": "Больше параметров",
                         "pick_card": "Какую карточку Вы хотели бы добавить?",
                         "pick_card_view_title": "Какую карточку Вы хотели бы добавить на вкладку {name}?",

@@ -674,9 +674,23 @@
                     "week": "{count} {count, plural,\none {týden}\nfew {týdny}\nother {týdnů}\n}"
                 },
                 "future": "Za {time}",
+                "future_duration": {
+                    "day": "Za {count} {count, plural,\none {den}\nfew {dny}\nother {dní}\n}",
+                    "hour": "Za {count} {count, plural,\none {hodinu}\nfew {hodiny}\nother {hodin}\n}",
+                    "minute": "Za {count} {count, plural,\none {minutu}\nfew {minuty}\nother {minut}\n}",
+                    "second": "Za {count} {count, plural,\none {sekundu}\nfew {sekundy}\nother {sekund}\n}",
+                    "week": "Za {count} {count, plural,\none {týden}\nfew {týdny}\nother {týdnů}\n}"
+                },
                 "just_now": "Právě teď",
                 "never": "Nikdy",
-                "past": "Před {time}"
+                "past": "Před {time}",
+                "past_duration": {
+                    "day": "Před {count} {count, plural,\none {dnem}\nother {dny}\n}",
+                    "hour": "Před {count} {count, plural,\none {hodinou}\nother {hodinami}\n}",
+                    "minute": "Před {count} {count, plural,\none {minutou}\nother {minutami}\n}",
+                    "second": "Před {count} {count, plural,\none {sekundou}\nother {sekundami}\n}",
+                    "week": "Před {count} {count, plural,\none {týdnem}\nother {týdny}\n}"
+                }
             },
             "service-picker": {
                 "service": "Služba"
@@ -823,6 +837,44 @@
                 "success": {
                     "description": "Volby byly úspěšně uloženy."
                 }
+            },
+            "quick-open": {
+                "commands": {
+                    "reload": {
+                        "automation": "Nově načíst automatizace",
+                        "command_line": "Nově načíst entity integrace Command line",
+                        "core": "Nově načíst umístění a přizpůsobení",
+                        "filesize": "Nově načíst entity integrace File size",
+                        "filter": "Nově načíst entity integrace Filter",
+                        "generic": "Nově načíst entity integrace Generic IP camera",
+                        "generic_thermostat": "Nově načíst entity integrace Generic thermostat",
+                        "group": "Nově načíst skupiny, skupiny entit a notifikační služby",
+                        "history_stats": "Nově načíst entity integrace History stats",
+                        "homekit": "Nově načíst entity integrace HomeKit",
+                        "input_boolean": "Nově načíst pomocníky - přepínače",
+                        "input_datetime": "Nově načíst pomocníky - data/časy",
+                        "input_number": "Nově načíst pomocníky - čísla",
+                        "input_select": "Nově načíst pomocníky - výběry",
+                        "input_text": "Nově načíst pomocníky - texty",
+                        "min_max": "Nově načíst entity integrace Min/Max",
+                        "mqtt": "Nově načíst entity integrace MQTT",
+                        "person": "Nově načíst osoby",
+                        "ping": "Nově načíst entity integrace Ping",
+                        "reload": "Nově načíst integraci {domain}",
+                        "rest": "Nově načíst entity a notifikační služby integrace Rest",
+                        "rpi_gpio": "Nově načíst entity integrace Raspberry Pi GPIO",
+                        "scene": "Nově načíst scény",
+                        "script": "Nově načíst skripty",
+                        "smtp": "Nově načíst notifikační služby integrace SMTP",
+                        "statistics": "Nově načíst entity integrace Statistics",
+                        "telegram": "Nově načíst notifikační služby integrace Telegram",
+                        "template": "Nově načíst entity integrace Template",
+                        "trend": "Nově načíst entity integrace Trend",
+                        "universal": "Nově načíst entity integrace Universal media player",
+                        "zone": "Nově načíst zóny"
+                    }
+                },
+                "filter_placeholder": "Filtr entit"
             },
             "voice_command": {
                 "did_not_hear": "Home Assistant nic neslyšel",
@@ -1927,7 +1979,9 @@
                     },
                     "introduction": "Zde můžete definovat každou osobu v Home Assistant.",
                     "no_persons_created_yet": "Vypadá to, že jste dosud žádné osoby nevytvořili.",
-                    "note_about_persons_configured_in_yaml": "Poznámka: Osoby konfigurované pomocí configuration.yaml nelze upravovat pomocí uživatelského rozhraní."
+                    "note_about_persons_configured_in_yaml": "Poznámka: Osoby konfigurované pomocí configuration.yaml nelze upravovat pomocí uživatelského rozhraní.",
+                    "person_not_found": "Nedaří se nám najít osobu, kterou jste se pokoušeli upravit.",
+                    "person_not_found_title": "Osoba nenalezena"
                 },
                 "scene": {
                     "activated": "Aktivovaná scéna {name}.",
@@ -2008,7 +2062,7 @@
                         "sequence_sentence": "Posloupnost akcí tohoto skriptu."
                     },
                     "picker": {
-                        "add_script": "Přidat skript",
+                        "add_script": "Vytvořit skript",
                         "edit_script": "Upravit skript",
                         "header": "Editor skriptů",
                         "headers": {
@@ -2085,6 +2139,7 @@
                     "create_automation": "Vytvořit automatizaci se značkou",
                     "description": "Správa značek",
                     "detail": {
+                        "companion_apps": "doprovodné aplikace",
                         "create": "Vytvořit",
                         "create_and_write": "Vytvořit a zapsat",
                         "delete": "Smazat",
@@ -2093,7 +2148,8 @@
                         "new_tag": "Nová značka",
                         "tag_id": "ID značky",
                         "tag_id_placeholder": "Automaticky vygenerováno, pokud zůstane prázdné",
-                        "update": "Aktualizovat"
+                        "update": "Aktualizovat",
+                        "usage": "Značka může po naskenování spustit automatizaci. Můžete použít NFC značky, QR kódy nebo jakýkoli jiný druh značky. Použijte naše {companion_link} k zapsání této značky na programovatelnou NFC značku nebo vytvořte QR kód níže."
                     },
                     "edit": "Upravit",
                     "headers": {
@@ -2559,7 +2615,7 @@
                         },
                         "entities": {
                             "description": "Karta Entity je nejběžnějším typem karty. Seskupuje položky do seznamů.",
-                            "edit_special_row": "Upravte řádek pomocí editoru kódu",
+                            "edit_special_row": "Použijte tlačítko Upravit k zobrazení podrobností tohoto řádku",
                             "entity_row_editor": "Editor řádku entity",
                             "entity_row": {
                                 "attribute": "Atribut",
@@ -2738,7 +2794,7 @@
                         "add": "Přidat kartu",
                         "confirm_cancel": "Opravdu chcete zahodit změny?",
                         "delete": "Smazat kartu",
-                        "duplicate": "Duplikovat Kartu",
+                        "duplicate": "Duplikovat kartu",
                         "edit": "Upravit",
                         "header": "Konfigurace karty",
                         "move": "Přesunout",
