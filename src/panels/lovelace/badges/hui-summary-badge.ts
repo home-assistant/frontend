@@ -31,7 +31,11 @@ export class HuiSummaryBadge extends LitElement implements LovelaceBadge {
 
     this._config = {
       state: "on",
-      icon: domainIcon(config.domain || "default", config.state || "on"),
+      icon: domainIcon(
+        config.domain || "default",
+        undefined,
+        config.state || "on"
+      ),
       ...config,
     };
   }
