@@ -132,7 +132,7 @@ class HaPanelProfile extends LitElement {
                   ></ha-force-narrow-row>
                 `
               : ""}
-            ${navigator.vibrate
+            ${"vibrate" in navigator
               ? html`
                   <ha-set-vibrate-row
                     .narrow=${this.narrow}

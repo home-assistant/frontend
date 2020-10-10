@@ -2026,6 +2026,9 @@
                         },
                         "entities": {
                             "name": "Об'єкти",
+                            "secondary_info_values": {
+                                "brightness": "Яскравість"
+                            },
                             "show_header_toggle": "Показати тумблер заголовка?",
                             "toggle": "Перемкнути сутності."
                         },

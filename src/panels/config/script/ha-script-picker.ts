@@ -61,7 +61,7 @@ class HaScriptPicker extends LitElement {
                 .script=${script}
                 icon="hass:play"
                 title="${this.hass.localize(
-                  "ui.panel.config.script.picker.activate_script"
+                  "ui.panel.config.script.picker.run_script"
                 )}"
                 @click=${(ev: Event) => this._runScript(ev)}
               ></ha-icon-button>
@@ -151,11 +151,11 @@ class HaScriptPicker extends LitElement {
             ?is-wide=${this.isWide}
             ?narrow=${this.narrow}
             title="${this.hass.localize(
-              "ui.panel.config.script.picker.add_script"
+              "ui.panel.config.script.picker.create_new_script"
             )}"
             ?rtl=${computeRTL(this.hass)}
           >
-            <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+            <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
           </mwc-fab>
         </a>
       </hass-tabs-subpage-data-table>

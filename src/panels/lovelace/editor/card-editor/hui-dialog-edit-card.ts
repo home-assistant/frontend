@@ -50,7 +50,8 @@ declare global {
 }
 
 @customElement("hui-dialog-edit-card")
-export class HuiDialogEditCard extends LitElement implements HassDialog {
+export class HuiDialogEditCard extends LitElement
+  implements HassDialog<EditCardDialogParams> {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @internalProperty() private _params?: EditCardDialogParams;
@@ -65,7 +66,7 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
 
   @internalProperty() private _guiModeAvailable? = true;
 
-  @query("hui-element-editor") private _cardEditorEl?: HuiElementEditor;
+  @query("hui-element-editor", true) private _cardEditorEl?: HuiElementEditor;
 
   @internalProperty() private _GUImode = true;
 
@@ -174,7 +175,7 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
                     dir=${computeRTLDirection(this.hass)}
                   >
                     <mwc-icon-button>
-                      <ha-svg-icon path=${mdiHelpCircle}></ha-svg-icon>
+                      <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
                     </mwc-icon-button>
                   </a>
                 `
@@ -238,7 +239,7 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
                     ? html`
                         <ha-circular-progress
                           active
-                          alt="Saving"
+                          title="Saving"
                           size="small"
                         ></ha-circular-progress>
                       `
@@ -423,10 +424,6 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
             margin: auto 0px;
             max-width: 500px;
           }
-        }
-
-        mwc-button ha-circular-progress {
-          margin-right: 20px;
         }
         .hidden {
           display: none;

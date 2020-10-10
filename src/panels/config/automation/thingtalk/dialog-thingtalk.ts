@@ -50,7 +50,7 @@ class DialogThingtalk extends LitElement {
 
   @internalProperty() private _placeholders?: PlaceholderContainer;
 
-  @query("#input") private _input?: PaperInputElement;
+  @query("#input", true) private _input?: PaperInputElement;
 
   private _value!: string;
 
@@ -133,10 +133,13 @@ class DialogThingtalk extends LitElement {
             Skip
           </mwc-button>
           <mwc-button @click="${this._generate}" .disabled=${this._submitting}>
-            <ha-circular-progress
-              ?active="${this._submitting}"
-              alt="Creating your automation..."
-            ></ha-circular-progress>
+            ${this._submitting
+              ? html`<ha-circular-progress
+                  active
+                  size="small"
+                  title="Creating your automation..."
+                ></ha-circular-progress>`
+              : ""}
             Create automation
           </mwc-button>
         </div>
@@ -245,17 +248,6 @@ class DialogThingtalk extends LitElement {
         }
         mwc-button.left {
           margin-right: auto;
-        }
-        mwc-button ha-circular-progress {
-          width: 14px;
-          height: 14px;
-          margin-right: 20px;
-        }
-        ha-circular-progress {
-          display: none;
-        }
-        ha-circular-progress[active] {
-          display: block;
         }
         .error {
           color: var(--error-color);

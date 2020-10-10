@@ -25,7 +25,7 @@ const DAY = 86400000;
 @customElement("hui-graph-header-footer")
 export class HuiGraphHeaderFooter extends LitElement
   implements LovelaceHeaderFooter {
-  public static getStubConfig(): object {
+  public static getStubConfig(): Record<string, unknown> {
     return {};
   }
 

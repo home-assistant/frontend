@@ -40,11 +40,6 @@ export class PanelView extends LitElement implements LovelaceViewElement {
     | HuiWarning
     | HuiCardOptions;
 
-  public constructor() {
-    super();
-    this.style.setProperty("background", "var(--lovelace-background)");
-  }
-
   public setConfig(_config: LovelaceViewConfig): void {}
 
   protected updated(changedProperties: PropertyValues): void {
@@ -87,7 +82,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
                 rtl: computeRTL(this.hass!),
               })}
             >
-              <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+              <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
             </mwc-fab>
           `
         : ""}
@@ -108,6 +103,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
 
     if (!this.lovelace?.editMode) {
       this._card = card;
+      return;
     }
 
     const wrapper = document.createElement("hui-card-options");
@@ -133,6 +129,12 @@ export class PanelView extends LitElement implements LovelaceViewElement {
 
   static get styles(): CSSResult {
     return css`
+      :host {
+        display: block;
+        background: var(--lovelace-background);
+        height: 100%;
+      }
+
       mwc-fab {
         position: sticky;
         float: right;

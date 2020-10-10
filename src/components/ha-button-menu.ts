@@ -23,7 +23,7 @@ export class HaButtonMenu extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @query("mwc-menu") private _menu?: Menu;
+  @query("mwc-menu", true) private _menu?: Menu;
 
   public get items() {
     return this._menu?.items;
@@ -61,6 +61,9 @@ export class HaButtonMenu extends LitElement {
       :host {
         display: inline-block;
         position: relative;
+      }
+      ::slotted([disabled]) {
+        color: var(--disabled-text-color);
       }
     `;
   }

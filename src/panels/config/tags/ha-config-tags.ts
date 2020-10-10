@@ -198,7 +198,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
           title=${this.hass.localize("ui.panel.config.tags.add_tag")}
           @click=${this._addTag}
         >
-          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </mwc-fab>
       </hass-tabs-subpage-data-table>
     `;

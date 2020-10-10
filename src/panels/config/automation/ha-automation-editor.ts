@@ -1,9 +1,16 @@
 import "@material/mwc-fab";
-import { mdiContentDuplicate, mdiContentSave, mdiDelete } from "@mdi/js";
+import {
+  mdiContentDuplicate,
+  mdiContentSave,
+  mdiDelete,
+  mdiDotsVertical,
+} from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-input/paper-textarea";
+import "@material/mwc-list/mwc-list-item";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import { PaperListboxElement } from "@polymer/paper-listbox";
 import {
   css,
@@ -17,6 +24,7 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { navigate } from "../../../common/navigate";
+import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
@@ -37,6 +45,7 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/ha-app-layout";
 import "../../../layouts/hass-tabs-subpage";
+import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -59,7 +68,7 @@ declare global {
   }
 }
 
-export class HaAutomationEditor extends LitElement {
+export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public automationId!: string;
@@ -92,29 +101,48 @@ export class HaAutomationEditor extends LitElement {
         .backCallback=${() => this._backTapped()}
         .tabs=${configSections.automation}
       >
-        ${!this.automationId
-          ? ""
-          : html`
-              <mwc-icon-button
-                slot="toolbar-icon"
-                title="${this.hass.localize(
-                  "ui.panel.config.automation.picker.duplicate_automation"
-                )}"
-                @click=${this._duplicate}
-              >
-                <ha-svg-icon .path=${mdiContentDuplicate}></ha-svg-icon>
-              </mwc-icon-button>
-              <mwc-icon-button
-                class="warning"
-                slot="toolbar-icon"
-                title="${this.hass.localize(
-                  "ui.panel.config.automation.picker.delete_automation"
-                )}"
-                @click=${this._deleteConfirm}
-              >
-                <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
-              </mwc-icon-button>
-            `}
+        <ha-button-menu
+          corner="BOTTOM_START"
+          slot="toolbar-icon"
+          @action=${this._handleMenuAction}
+        >
+          <mwc-icon-button
+            slot="trigger"
+            .title=${this.hass.localize("ui.common.menu")}
+            .label=${this.hass.localize("ui.common.overflow_menu")}
+            ><ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+          </mwc-icon-button>
+
+          <mwc-list-item
+            .disabled=${!this.automationId}
+            aria-label=${this.hass.localize(
+              "ui.panel.config.automation.picker.duplicate_automation"
+            )}
+            graphic="icon"
+          >
+            ${this.hass.localize(
+              "ui.panel.config.automation.picker.duplicate_automation"
+            )}
+            <ha-svg-icon
+              slot="graphic"
+              .path=${mdiContentDuplicate}
+            ></ha-svg-icon>
+          </mwc-list-item>
+
+          <mwc-list-item
+            .disabled=${!this.automationId}
+            aria-label=${this.hass.localize(
+              "ui.panel.config.automation.picker.delete_automation"
+            )}
+            class=${classMap({ warning: this.automationId })}
+            graphic="icon"
+          >
+            ${this.hass.localize(
+              "ui.panel.config.automation.picker.delete_automation"
+            )}
+            <ha-svg-icon slot="graphic" .path=${mdiDelete}></ha-svg-icon>
+          </mwc-list-item>
+        </ha-button-menu>
         ${this._config
           ? html`
               ${this.narrow
@@ -342,7 +370,7 @@ export class HaAutomationEditor extends LitElement {
           .title=${this.hass.localize("ui.panel.config.automation.editor.save")}
           @click=${this._saveAutomation}
         >
-          <ha-svg-icon slot="icon" path=${mdiContentSave}></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
         </mwc-fab>
       </hass-tabs-subpage>
     `;
@@ -540,6 +568,17 @@ export class HaAutomationEditor extends LitElement {
     history.back();
   }
 
+  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        this._duplicate();
+        break;
+      case 1:
+        this._deleteConfirm();
+        break;
+    }
+  }
+
   private _saveAutomation(): void {
     const id = this.automationId || String(Date.now());
     this.hass!.callApi(
@@ -559,6 +598,10 @@ export class HaAutomationEditor extends LitElement {
         throw errors;
       }
     );
+  }
+
+  protected handleKeyboardSave() {
+    this._saveAutomation();
   }
 
   static get styles(): CSSResult[] {

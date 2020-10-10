@@ -31,7 +31,6 @@ export class HaDeviceActionsOzw extends LitElement {
   @property()
   private ozw_instance = 1;
 
-
   protected updated(changedProperties: PropertyValues) {
     if (changedProperties.has("device")) {
       const identifiers:

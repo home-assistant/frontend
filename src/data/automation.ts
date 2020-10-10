@@ -217,12 +217,12 @@ export const subscribeTrigger = (
   hass: HomeAssistant,
   onChange: (result: {
     variables: {
-      trigger: {};
+      trigger: Record<string, unknown>;
     };
     context: Context;
   }) => void,
   trigger: Trigger | Trigger[],
-  variables?: {}
+  variables?: Record<string, unknown>
 ) =>
   hass.connection.subscribeMessage(onChange, {
     type: "subscribe_trigger",
@@ -233,7 +233,7 @@ export const subscribeTrigger = (
 export const testCondition = (
   hass: HomeAssistant,
   condition: Condition | Condition[],
-  variables?: {}
+  variables?: Record<string, unknown>
 ) =>
   hass.callWS<{ result: boolean }>({
     type: "test_condition",

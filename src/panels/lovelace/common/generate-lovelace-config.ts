@@ -173,6 +173,7 @@ export const computeCards = (
       const cardConfig = {
         type: "weather-forecast",
         entity: entityId,
+        show_forecast: false,
       };
       cards.push(cardConfig);
     } else if (

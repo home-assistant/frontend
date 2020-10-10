@@ -99,7 +99,7 @@ export class HaTabsSubpageDataTable extends LitElement {
    */
   @property() public tabs!: PageNavigation[];
 
-  @query("ha-data-table") private _dataTable!: HaDataTable;
+  @query("ha-data-table", true) private _dataTable!: HaDataTable;
 
   public clearSelection() {
     this._dataTable.clearSelection();

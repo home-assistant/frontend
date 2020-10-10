@@ -249,7 +249,7 @@ export class HaIntegrationCard extends LitElement {
               .label=${this.hass.localize("ui.common.overflow_menu")}
               slot="trigger"
             >
-              <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+              <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
             </mwc-icon-button>
             <mwc-list-item @request-selected="${this._handleSystemOptions}">
               ${this.hass.localize(

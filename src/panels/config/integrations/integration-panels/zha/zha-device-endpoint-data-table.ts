@@ -42,7 +42,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
 
   @property({ type: Array }) public deviceEndpoints: ZHADeviceEndpoint[] = [];
 
-  @query("ha-data-table") private _dataTable!: HaDataTable;
+  @query("ha-data-table", true) private _dataTable!: HaDataTable;
 
   private _deviceEndpoints = memoizeOne(
     (deviceEndpoints: ZHADeviceEndpoint[]) => {

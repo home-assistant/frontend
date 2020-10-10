@@ -571,7 +571,34 @@
                 "no_history_found": "No s'ha trobat cap historial d'estats."
             },
             "logbook": {
-                "entries_not_found": "No s'han trobat entrades al registre."
+                "by": "per",
+                "by_service": "pel servei",
+                "entries_not_found": "No s'han trobat entrades al registre.",
+                "messages": {
+                    "became_unavailable": "no està disponible",
+                    "changed_to_state": "a canviat a {state}",
+                    "cleared_device_class": "s'ha esborrat (no s'ha detectat cap {device_class})",
+                    "detected_device_class": "s'ha detectat {device_class}",
+                    "rose": "rosa",
+                    "set": "establert",
+                    "turned_off": "s'ha apagat",
+                    "turned_on": "s'ha engegat",
+                    "was_at_home": "és a casa",
+                    "was_at_state": "és {state}",
+                    "was_away": "és a fora",
+                    "was_closed": "s'ha tancat",
+                    "was_connected": "s'ha connectat",
+                    "was_disconnected": "s'ha desconnectat",
+                    "was_locked": "s'ha bloquejat",
+                    "was_low": "és baix/a",
+                    "was_normal": "és normal",
+                    "was_opened": "s'ha obert",
+                    "was_plugged_in": "s'ha endollat",
+                    "was_safe": "és segur",
+                    "was_unlocked": "s'ha desbloquejat",
+                    "was_unplugged": "s'ha desendollat",
+                    "was_unsafe": "és insegur"
+                }
             },
             "media-browser": {
                 "audio_not_supported": "El teu navegador no és compatible amb l'element d'àudio.",
@@ -648,9 +675,23 @@
                     "week": "{count} {count, plural,\n  one {setmana}\n  other {setmanes}\n}"
                 },
                 "future": "D'aquí a {time}",
+                "future_duration": {
+                    "day": "D'aquí a {count} {count, plural,\n  one {dia}\n  other {dies}\n}",
+                    "hour": "D'aquí a {count} {count, plural,\n  one {hora}\n  other {hores}\n}",
+                    "minute": "D'aquí a {count} {count, plural,\n  one {minut}\n  other {minuts}\n}",
+                    "second": "D'aquí a {count} {count, plural,\n  one {segon}\n  other {segons}\n}",
+                    "week": "D'aquí a {count} {count, plural,\n  one {setmana}\n  other {setmanes}\n}"
+                },
                 "just_now": "Ara mateix",
                 "never": "Mai",
-                "past": "Fa {time}"
+                "past": "Fa {time}",
+                "past_duration": {
+                    "day": "Fa {count} {count, plural,\n  one {dia}\n  other {dies}\n}",
+                    "hour": "Fa {count} {count, plural,\n  one {hora}\n  other {hores}\n}",
+                    "minute": "Fa {count} {count, plural,\n  one {minut}\n  other {minuts}\n}",
+                    "second": "Fa {count} {count, plural,\n  one {segon}\n  other {segons}\n}",
+                    "week": "Fa {count} {count, plural,\n  one {setmana}\n  other {setmanes}\n}"
+                }
             },
             "service-picker": {
                 "service": "Servei"
@@ -684,7 +725,8 @@
                     "unavailable": "Aquesta entitat no està disponible actualment.",
                     "update": "Actualitza"
                 },
-                "no_unique_id": "Aquesta entitat no té un ID únic, per tant, la seva configuració no pot ser gestionada des de la interfície d'usuari.",
+                "faq": "documentació",
+                "no_unique_id": "Aquesta entitat no té un ID únic, per tant, la seva configuració no pot ser gestionada des de la interfície d'usuari. Consulta {faq_link} per a més detalls.",
                 "related": "Relacionat",
                 "settings": "Configuració"
             },
@@ -741,6 +783,7 @@
                 "dismiss": "Desestimar el diàleg",
                 "edit": "Edita entitat",
                 "history": "Historial",
+                "last_updated": "Última actualització",
                 "person": {
                     "create_zone": "Crea una zona a partir de la ubicació actual"
                 },
@@ -795,6 +838,44 @@
                 "success": {
                     "description": "Opcions guardades amb èxit."
                 }
+            },
+            "quick-open": {
+                "commands": {
+                    "reload": {
+                        "automation": "Actualitza automatitzacions",
+                        "command_line": "Actualitza entitats de comandes",
+                        "core": "Actualitza ubicació i personalitzacions",
+                        "filesize": "Actualitza entitats de mida de fitxer",
+                        "filter": "Actualitza entitats de filtre",
+                        "generic": "Actualitza entitats genèriques de càmera IP",
+                        "generic_thermostat": "Actualitza entitats genèriques de termòstat",
+                        "group": "Actualitza grups, grups d'entitats i serveis de notificació",
+                        "history_stats": "Actualitza entitats d'estadístiques històriques",
+                        "homekit": "Actualitza HomeKit",
+                        "input_boolean": "Actualitza entrades booleanes",
+                        "input_datetime": "Actualitza entrades de data i hora",
+                        "input_number": "Actualitza entrades numèriques",
+                        "input_select": "Actualitza entrades de selecció",
+                        "input_text": "Actualitza entrades de text",
+                        "min_max": "Actualitza entitats min/max",
+                        "mqtt": "Actualitza entitats MQTT",
+                        "person": "Actualitza persones",
+                        "ping": "Actualitza entitats de sensors binaris de ping",
+                        "reload": "Actualitza {domain}",
+                        "rest": "Actualitza entitats de repòs i serveis de notificació",
+                        "rpi_gpio": "Actualitza entitats GPIO de la Raspberry Pi",
+                        "scene": "Actualitza escenes",
+                        "script": "Actualitza programes",
+                        "smtp": "Actualitza serveis de notificació SMTP",
+                        "statistics": "Actualitza entitats estadístiques",
+                        "telegram": "Actualitza serveis de notificació de Telegram",
+                        "template": "Actualitza entitats de plantilla",
+                        "trend": "Actualitza entitats de tendència",
+                        "universal": "Actualitza entitats del reproductor universal",
+                        "zone": "Actualitza zones"
+                    }
+                },
+                "filter_placeholder": "Filtre d'entitats"
             },
             "voice_command": {
                 "did_not_hear": "Home Assistant no ha sentit res",
@@ -910,7 +991,7 @@
                             "delete_confirm": "Segur que vols eliminar-ho?",
                             "duplicate": "Duplica",
                             "header": "Accions",
-                            "introduction": "Les accions són allò que farà Home Assistant quan es dispari l'automatització i es compleixin totes les condicions (si n'hi ha).",
+                            "introduction": "Les accions són allò que farà Home Assistant quan es dispari l'automatització.",
                             "learn_more": "Més informació sobre les accions",
                             "name": "Acció",
                             "type_select": "Tipus d'acció",
@@ -1864,7 +1945,8 @@
                     },
                     "select_instance": {
                         "header": "Selecciona una instància d'OpenZWave",
-                        "introduction": "Tens més d'una instància d'OpenZWave en funcionament. Quina instància vols gestionar?"
+                        "introduction": "Tens més d'una instància d'OpenZWave en funcionament. Quina instància vols gestionar?",
+                        "none_found": "No s'ha pogut trobar cap instància d'OpenZWave. Si creus que això és incorrecte, comprova les configuracions d'OpenZWave i MQTT i assegurat que Home Assistant pugui comunicar-se amb el teu broker MQTT."
                     },
                     "services": {
                         "add_node": "Afegeix node",
@@ -1879,6 +1961,9 @@
                     "create_person": "Crea persona",
                     "description": "Gestiona les persones a qui Home Assistant fa seguiment",
                     "detail": {
+                        "admin": "Administrador",
+                        "allow_login": "Permet l'inici de sessió de la persona",
+                        "confirm_delete_user": "Estàs segur que vols eliminar el compte d'usuari de {name}? Encara li podràs fer seguiment, però no podrà tornar a iniciar sessió.",
                         "create": "Crea",
                         "delete": "Elimina",
                         "device_tracker_intro": "Selecciona els dispositius que pertanyen a aquesta persona.",
@@ -1895,7 +1980,9 @@
                     },
                     "introduction": "Aquí pots definir cada persona d'interès en Home Assistant.",
                     "no_persons_created_yet": "Sembla que encara no has creat cap persona.",
-                    "note_about_persons_configured_in_yaml": "Nota: les persones configurades mitjançant configuration.yaml no es poden editar des de la UI."
+                    "note_about_persons_configured_in_yaml": "Nota: les persones configurades mitjançant configuration.yaml no es poden editar des de la UI.",
+                    "person_not_found": "No s'ha pogut trobar la persona que vols editar.",
+                    "person_not_found_title": "Persona no trobada"
                 },
                 "scene": {
                     "activated": "Escena {name} activada.",
@@ -1971,11 +2058,12 @@
                             "restart": "Reinici",
                             "single": "Individual (per defecte)"
                         },
+                        "save_script": "Desa l'script",
                         "sequence": "Seqüència",
                         "sequence_sentence": "Seqüència d'accions de l'script."
                     },
                     "picker": {
-                        "add_script": "Afegeix script",
+                        "add_script": "Crea un script nou",
                         "edit_script": "Edita l'script",
                         "header": "Editor de scripts",
                         "headers": {
@@ -1984,6 +2072,7 @@
                         "introduction": "L'editor de scripts et permet crear i editar scripts. Vés a l'enllaç de sota per veure'n les instruccions i assegurar-te que has configurat Home Assistant correctament.",
                         "learn_more": "Més informació sobre els scripts",
                         "no_scripts": "No s'ha pogut trobar cap script editable",
+                        "run_script": "Executa l'script",
                         "show_info": "Mostra informació sobre l'script",
                         "trigger_script": "Dispara l'script"
                     }
@@ -2051,6 +2140,7 @@
                     "create_automation": "Crea una automatització amb una etiqueta",
                     "description": "Gestiona les etiquetes",
                     "detail": {
+                        "companion_apps": "aplicacions de companion",
                         "create": "Crea",
                         "create_and_write": "Crea i escriu",
                         "delete": "Elimina",
@@ -2059,7 +2149,8 @@
                         "new_tag": "Nova etiqueta",
                         "tag_id": "ID de l'etiqueta",
                         "tag_id_placeholder": "Autogenerat si es deixa buit",
-                        "update": "Actualitza"
+                        "update": "Actualitza",
+                        "usage": "Una etiqueta pot disparar una automatització quan és escanejada, pots utilitzar etiquetes NFC, codis QR o qualsevol altre tipus d'etiqueta. Utilitza {companion_link} per escriure aquesta etiqueta a una etiqueta NFC programable o bé crea un codi QR."
                     },
                     "edit": "Edita",
                     "headers": {
@@ -2228,7 +2319,7 @@
                         "create": "Crea",
                         "delete": "Elimina",
                         "icon": "Icona",
-                        "icon_error_msg": "El nom de la icona ha de tenir el format prefix:nom_icona, per exemple: mdi: home",
+                        "icon_error_msg": "La icona ha de tenir el format \"prefix:nom_icona\", per exemple: \"mdi:home\"",
                         "latitude": "Latitud",
                         "longitude": "Longitud",
                         "name": "Nom",
@@ -2472,6 +2563,20 @@
                     "refresh": "Actualitza"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "Crida servei",
+                            "default_action": "Acció per defecte",
+                            "more-info": "Més informació",
+                            "navigate": "Navega",
+                            "none": "Sense acció",
+                            "toggle": "Commuta",
+                            "url": "URL"
+                        },
+                        "editor_service_data": "Les dades de servei només es poden introduir des de l'editor de codi",
+                        "navigation_path": "Ruta de navegació",
+                        "url_path": "Ruta de l'URL"
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "Estats disponibles",
@@ -2479,6 +2584,7 @@
                             "name": "Panell d'alarma"
                         },
                         "button": {
+                            "default_action_help": "L'acció predeterminada depèn de les característiques de l'entitat, o es commutarà o es mostrarà més informació.",
                             "description": "La targeta botó et permet afegir botons per realitzar diferents tasques.",
                             "name": "Botó"
                         },
@@ -2510,7 +2616,8 @@
                         },
                         "entities": {
                             "description": "La targeta entitats és la més habitual. Agrupa diferents tipus d'entitats en una llista.",
-                            "edit_special_row": "Edita la fila mitjançant l'editor de codi",
+                            "edit_special_row": "Fes clic al botó edita per veure els detalls de la fila",
+                            "entity_row_editor": "Editor de files d'entitats",
                             "entity_row": {
                                 "attribute": "Atribut",
                                 "button": "Botó",
@@ -2523,6 +2630,15 @@
                                 "weblink": "Enllaç web"
                             },
                             "name": "Entitats",
+                            "secondary_info_values": {
+                                "brightness": "Brillantor",
+                                "entity-id": "ID de l'entitat",
+                                "last-changed": "Últim canvi",
+                                "last-triggered": "Disparada per última vegada",
+                                "none": "Sense informació secundària",
+                                "position": "Posició",
+                                "tilt-position": "Inclinació"
+                            },
                             "show_header_toggle": "Mostra commutació a la capçalera?",
                             "special_row": "fila especial",
                             "toggle": "Commuta les entitats."
@@ -2683,6 +2799,8 @@
                         "edit": "Editar",
                         "header": "Configuració de la targeta",
                         "move": "Moure a la Vista",
+                        "move_after": "Mou targeta després",
+                        "move_before": "Mou targeta abans",
                         "options": "Més opcions",
                         "pick_card": "Quina targeta vols afegir?",
                         "pick_card_view_title": "Quina targeta vols afegir a la visualització {name}?",
@@ -2976,6 +3094,12 @@
                     "more_integrations": "Més"
                 },
                 "intro": "Estàs preparat donar vida pròpia a la teva llar, recuperar la teva privacitat i unir-te a una comunitat mundial de \"tinkerers\"?",
+                "restore": {
+                    "description": "També pots restaurar des d'una instantània anterior.",
+                    "hide_log": "Amaga el registre complet",
+                    "in_progress": "Restauració en curs",
+                    "show_log": "Mostra el registre complet"
+                },
                 "user": {
                     "create_account": "Crear compte",
                     "data": {

@@ -13,7 +13,7 @@ import { classMap } from "lit-html/directives/class-map";
 
 @customElement("mqtt-discovery-payload")
 class MQTTDiscoveryPayload extends LitElement {
-  @property() public payload!: object;
+  @property() public payload!: Record<string, unknown>;
 
   @property() public showAsYaml = false;
 

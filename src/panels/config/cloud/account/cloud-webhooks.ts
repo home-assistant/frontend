@@ -89,7 +89,7 @@ export class CloudWebhooks extends LitElement {
               `
             : this._localHooks.map(
                 (entry) => html`
-                  <ha-settings-row .narrow=${this.narrow}>
+                  <ha-settings-row .narrow=${this.narrow} .entry=${entry}>
                     <span slot="heading">
                       ${entry.name}
                       ${entry.domain !== entry.name.toLowerCase()
@@ -157,7 +157,7 @@ export class CloudWebhooks extends LitElement {
   }
 
   private async _enableWebhook(ev: MouseEvent) {
-    const entry = (ev.currentTarget as any).parentElement.entry;
+    const entry = (ev.currentTarget as any).parentElement!.entry as Webhook;
     this._progress = [...this._progress, entry.webhook_id];
     let updatedWebhook;
 

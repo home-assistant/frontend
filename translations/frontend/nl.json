@@ -571,7 +571,34 @@
                 "no_history_found": "Geen geschiedenis gevonden"
             },
             "logbook": {
-                "entries_not_found": "Geen logboekvermeldingen gevonden."
+                "by": "door",
+                "by_service": "door service",
+                "entries_not_found": "Geen logboekvermeldingen gevonden.",
+                "messages": {
+                    "became_unavailable": "is niet meer beschikbaar",
+                    "changed_to_state": "gewijzigd in {state}",
+                    "cleared_device_class": "niets gedetecteerd (geen {device_class} gedetecteerd)",
+                    "detected_device_class": "gedetecteerd {device_class}",
+                    "rose": "roos",
+                    "set": "stel  in",
+                    "turned_off": "is uitgeschakeld",
+                    "turned_on": "is ingeschakeld",
+                    "was_at_home": "was thuis",
+                    "was_at_state": "was bij {state}",
+                    "was_away": "was weg",
+                    "was_closed": "gesloten",
+                    "was_connected": "verbonden",
+                    "was_disconnected": "verbroken",
+                    "was_locked": "vergrendeld",
+                    "was_low": "was laag",
+                    "was_normal": "was normaal",
+                    "was_opened": "geopend",
+                    "was_plugged_in": "is aangesloten",
+                    "was_safe": "was veilig",
+                    "was_unlocked": "ontgrendeld",
+                    "was_unplugged": "is niet aangesloten",
+                    "was_unsafe": "was onveilig"
+                }
             },
             "media-browser": {
                 "audio_not_supported": "Uw browser ondersteunt het audio-element niet.",
@@ -684,7 +711,8 @@
                     "unavailable": "Deze entiteit is momenteel niet beschikbaar.",
                     "update": "Bijwerken"
                 },
-                "no_unique_id": "Deze entiteit heeft geen unieke ID, daarom kunnen de instellingen niet worden beheerd vanuit de gebruikersinterface.",
+                "faq": "documentatie",
+                "no_unique_id": "Deze entiteit heeft geen unieke ID, daarom kunnen de instellingen niet worden beheerd vanuit de gebruikersinterface. Zie de {faq_link} voor meer details",
                 "related": "Gerelateerd",
                 "settings": "instellingen"
             },
@@ -741,6 +769,7 @@
                 "dismiss": "Dialoogvenster sluiten",
                 "edit": "Entiteit bewerken",
                 "history": "Geschiedenis",
+                "last_updated": "Laatst bijgewerkt",
                 "person": {
                     "create_zone": "Creëer zone van huidige locatie"
                 },
@@ -1040,7 +1069,16 @@
                                     "before": "Voordat",
                                     "label": "Tijd",
                                     "type_input": "Waarde van een datum/tijdhelper",
-                                    "type_value": "Vaste tijd"
+                                    "type_value": "Vaste tijd",
+                                    "weekdays": {
+                                        "fri": "vrijdag",
+                                        "mon": "maandag",
+                                        "sat": "zaterdag",
+                                        "sun": "zondag",
+                                        "thu": "donderdag",
+                                        "tue": "dinsdag",
+                                        "wed": "woensdag"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Entiteit met locatie",
@@ -1855,7 +1893,8 @@
                     },
                     "select_instance": {
                         "header": "Selecteer een OpenZWave instantie",
-                        "introduction": "Je hebt meer dan één OpenZWave instantie lopen. Welke instantie wil je beheren?"
+                        "introduction": "Je hebt meer dan één OpenZWave instantie lopen. Welke instantie wil je beheren?",
+                        "none_found": "We konden geen OpenZWave-instantie vinden. Als u denkt dat dit niet klopt, controleer dan uw OpenZWave- en MQTT-instellingen en zorg ervoor dat Home Assistant kan communiceren met uw MQTT-broker."
                     },
                     "services": {
                         "add_node": "Knooppunt toevoegen",
@@ -1870,6 +1909,9 @@
                     "create_person": "Persoon aanmaken",
                     "description": "Beheer de personen die Home Assistant volgt.",
                     "detail": {
+                        "admin": "Administrator",
+                        "allow_login": "Persoon toestaan om in te loggen",
+                        "confirm_delete_user": "Weet u zeker dat u het gebruikersaccount voor {name} wilt verwijderen? U kunt de gebruiker nog steeds volgen, maar de persoon zal niet meer kunnen inloggen.",
                         "create": "Aanmaken",
                         "delete": "Verwijderen",
                         "device_tracker_intro": "Selecteer de apparaten die bij deze persoon horen.",
@@ -1962,11 +2004,12 @@
                             "restart": "Herstarten",
                             "single": "Enkelvoudig (standaard)"
                         },
+                        "save_script": "Script opslaan",
                         "sequence": "Reeks",
                         "sequence_sentence": "De reeks van acties in dit script."
                     },
                     "picker": {
-                        "add_script": "Script toevoegen",
+                        "add_script": "Maak een nieuw script",
                         "edit_script": "Bewerk script",
                         "header": "Script Editor",
                         "headers": {
@@ -1975,6 +2018,7 @@
                         "introduction": "Met de editor kunt u scripts maken en bewerken. Volg de onderstaande link om de instructies te lezen om ervoor te zorgen dat u Home Assistant correct hebt geconfigureerd.",
                         "learn_more": "Meer informatie over scripts",
                         "no_scripts": "We hebben geen bewerkbare scrips gevonden",
+                        "run_script": "Script uitvoeren",
                         "show_info": "Toon info over script",
                         "trigger_script": "Trigger script"
                     }
@@ -2219,7 +2263,7 @@
                         "create": "Aanmaken",
                         "delete": "Verwijder",
                         "icon": "Pictogram",
-                        "icon_error_msg": "Het pictogram moet de volgende opmaak hebben voorvoegsel:pictogramnaam, bijvoorbeeld: mdi:home",
+                        "icon_error_msg": "Het pictogram moet de volgende opmaak hebben \"voorvoegsel:pictogramnaam\", bijvoorbeeld: \"mdi:home\"",
                         "latitude": "Breedtegraad",
                         "longitude": "Lengtegraad",
                         "name": "Naam",
@@ -2463,6 +2507,20 @@
                     "refresh": "Vernieuwen"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "Service aanroepen",
+                            "default_action": "Standaardactie",
+                            "more-info": "Meer informatie",
+                            "navigate": "Navigeer",
+                            "none": "Geen actie",
+                            "toggle": "Schakelaar",
+                            "url": "Url"
+                        },
+                        "editor_service_data": "Servicegegevens kunnen alleen worden ingevoerd in de code-editor",
+                        "navigation_path": "Navigatiepad",
+                        "url_path": "URL-pad"
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "Beschikbare statussen",
@@ -2470,12 +2528,20 @@
                             "name": "Alarm paneel"
                         },
                         "button": {
+                            "default_action_help": "De standaard actie is afhankelijk van de mogelijkheden van de entiteit, deze zal ofwel worden omgeschakeld of meer informatie zal worden getoond.",
                             "description": "Met de Button-kaart kun je knoppen toevoegen om taken uit te voeren.",
                             "name": "Knop"
                         },
                         "calendar": {
+                            "calendar_entities": "Agenda entiteiten",
                             "description": "De kalenderkaart toont een kalender met dag-, week- en lijstweergaven",
-                            "name": "Kalender"
+                            "inital_view": "Eerste weergave",
+                            "name": "Kalender",
+                            "views": {
+                                "dayGridDay": "Dag",
+                                "dayGridMonth": "Maand",
+                                "listWeek": "Lijst"
+                            }
                         },
                         "conditional": {
                             "card": "Kaart",
@@ -2495,6 +2561,7 @@
                         "entities": {
                             "description": "De Entities-kaart is het meest voorkomende type kaart. Het groepeert items samen in lijsten.",
                             "edit_special_row": "Bewerk rij met behulp van de code-editor",
+                            "entity_row_editor": "Entiteitsrij editor",
                             "entity_row": {
                                 "attribute": "Attribuut",
                                 "button": "Knop",
@@ -2507,6 +2574,15 @@
                                 "weblink": "Web link"
                             },
                             "name": "Entiteiten",
+                            "secondary_info_values": {
+                                "brightness": "Helderheid",
+                                "entity-id": "Entiteit ID",
+                                "last-changed": "Laatst gewijzigd",
+                                "last-triggered": "Voor het laatst uitgevoerd",
+                                "none": "Geen secundaire informatie",
+                                "position": "Positie",
+                                "tilt-position": "Kantelpositie"
+                            },
                             "show_header_toggle": "Titel schakelaar weergeven?",
                             "special_row": "speciale rij",
                             "toggle": "Entiteiten in- en uitschakelen"
@@ -2667,6 +2743,8 @@
                         "edit": "Bewerken",
                         "header": "Kaart configuratie",
                         "move": "Verplaatsen",
+                        "move_after": "Verplaats kaart na",
+                        "move_before": "Verplaats kaart voor",
                         "options": "Meer opties",
                         "pick_card": "Welke kaart wil je toevoegen?",
                         "pick_card_view_title": "Welke kaart wil je toevoegen aan je {name} weergave?",
@@ -2960,6 +3038,12 @@
                     "more_integrations": "Meer"
                 },
                 "intro": "Ben je klaar om je huis wakker te maken, je privacy terug te winnen en deel te nemen aan een wereldwijde gemeenschap van knutselaars?",
+                "restore": {
+                    "description": "Als alternatief kunt u herstellen vanaf een eerdere snapshot",
+                    "hide_log": "Verberg volledig logboek",
+                    "in_progress": "Herstel in uitvoering",
+                    "show_log": "Volledig logboek weergeven"
+                },
                 "user": {
                     "create_account": "Account aanmaken",
                     "data": {

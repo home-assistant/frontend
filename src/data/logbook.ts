@@ -6,12 +6,14 @@ import { HomeAssistant } from "../types";
 import { UNAVAILABLE_STATES } from "./entity";
 
 const LOGBOOK_LOCALIZE_PATH = "ui.components.logbook.messages";
+export const CONTINUOUS_DOMAINS = ["proximity", "sensor"];
 
 export interface LogbookEntry {
   when: string;
   name: string;
   message?: string;
   entity_id?: string;
+  icon?: string;
   domain: string;
   context_user_id?: string;
   context_event_type?: string;
@@ -43,11 +45,12 @@ export const getLogbookData = async (
   );
 
   for (const entry of logbookData) {
-    if (entry.state) {
+    const stateObj = hass!.states[entry.entity_id!];
+    if (entry.state && stateObj) {
       entry.message = getLogbookMessage(
         hass,
         entry.state,
-        hass!.states[entry.entity_id!],
+        stateObj,
         computeDomain(entry.entity_id!)
       );
     }

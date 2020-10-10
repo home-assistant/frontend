@@ -355,8 +355,6 @@
         "select": "Select"
       },
       "relative_time": {
-        "past": "{time} ago",
-        "future": "In {time}",
         "never": "Never",
         "just_now": "Just now",
         "duration": {
@@ -365,6 +363,20 @@
           "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n}",
           "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
           "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
+        },
+        "past_duration": {
+          "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n} ago",
+          "minute": "{count} {count, plural,\n  one {minute}\n  other {minutes}\n} ago",
+          "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n} ago",
+          "day": "{count} {count, plural,\n  one {day}\n  other {days}\n} ago",
+          "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n} ago"
+        },
+        "future_duration": {
+          "second": "In {count} {count, plural,\n  one {second}\n  other {seconds}\n}",
+          "minute": "In {count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
+          "hour": "In {count} {count, plural,\n  one {hour}\n  other {hours}\n}",
+          "day": "In {count} {count, plural,\n  one {day}\n  other {days}\n}",
+          "week": "In {count} {count, plural,\n  one {week}\n  other {weeks}\n}"
         }
       },
       "history_charts": {
@@ -434,6 +446,44 @@
       }
     },
     "dialogs": {
+      "quick-open": {
+        "commands": {
+          "reload": {
+            "reload": "[%key:ui::panel::config::server_control::section::reloading::reload%]",
+            "core": "[%key:ui::panel::config::server_control::section::reloading::core%]",
+            "group": "[%key:ui::panel::config::server_control::section::reloading::group%]",
+            "automation": "[%key:ui::panel::config::server_control::section::reloading::automation%]",
+            "script": "[%key:ui::panel::config::server_control::section::reloading::script%]",
+            "scene": "[%key:ui::panel::config::server_control::section::reloading::scene%]",
+            "person": "[%key:ui::panel::config::server_control::section::reloading::person%]",
+            "zone": "[%key:ui::panel::config::server_control::section::reloading::zone%]",
+            "input_boolean": "[%key:ui::panel::config::server_control::section::reloading::input_boolean%]",
+            "input_text": "[%key:ui::panel::config::server_control::section::reloading::input_text%]",
+            "input_number": "[%key:ui::panel::config::server_control::section::reloading::input_number%]",
+            "input_datetime": "[%key:ui::panel::config::server_control::section::reloading::input_datetime%]",
+            "input_select": "[%key:ui::panel::config::server_control::section::reloading::input_select%]",
+            "template": "[%key:ui::panel::config::server_control::section::reloading::template%]",
+            "universal": "[%key:ui::panel::config::server_control::section::reloading::universal%]",
+            "rest": "[%key:ui::panel::config::server_control::section::reloading::rest%]",
+            "command_line": "[%key:ui::panel::config::server_control::section::reloading::command_line%]",
+            "filter": "[%key:ui::panel::config::server_control::section::reloading::filter%]",
+            "statistics": "[%key:ui::panel::config::server_control::section::reloading::statistics%]",
+            "generic": "[%key:ui::panel::config::server_control::section::reloading::generic%]",
+            "generic_thermostat": "[%key:ui::panel::config::server_control::section::reloading::generic_thermostat%]",
+            "homekit": "[%key:ui::panel::config::server_control::section::reloading::homekit%]",
+            "min_max": "[%key:ui::panel::config::server_control::section::reloading::min_max%]",
+            "history_stats": "[%key:ui::panel::config::server_control::section::reloading::history_stats%]",
+            "trend": "[%key:ui::panel::config::server_control::section::reloading::trend%]",
+            "ping": "[%key:ui::panel::config::server_control::section::reloading::ping%]",
+            "filesize": "[%key:ui::panel::config::server_control::section::reloading::filesize%]",
+            "telegram": "[%key:ui::panel::config::server_control::section::reloading::telegram%]",
+            "smtp": "[%key:ui::panel::config::server_control::section::reloading::smtp%]",
+            "mqtt": "[%key:ui::panel::config::server_control::section::reloading::mqtt%]",
+            "rpi_gpio": "[%key:ui::panel::config::server_control::section::reloading::rpi_gpio%]"
+          }
+        },
+        "filter_placeholder": "Entity Filter"
+      },
       "voice_command": {
         "did_not_hear": "Home Assistant did not hear anything",
         "found": "I found the following for you:",
@@ -720,7 +770,9 @@
             "delete": "Delete",
             "update": "Update",
             "create": "Create",
-            "create_and_write": "Create and Write"
+            "create_and_write": "Create and Write",
+            "usage": "A tag can trigger an automation when scanned, you can use NFC tags, QR codes or any other kind of tag. Use our {companion_link} to write this tag to a programmable NFC tag or create a QR code below.",
+            "companion_apps": "companion apps"
           }
         },
         "helpers": {
@@ -1274,9 +1326,10 @@
             "introduction": "The script editor allows you to create and edit scripts. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
             "learn_more": "Learn more about scripts",
             "no_scripts": "We couldn’t find any editable scripts",
-            "add_script": "Add script",
+            "add_script": "Create new script",
             "show_info": "Show info about script",
             "trigger_script": "Trigger script",
+            "run_script": "Run script",
             "edit_script": "Edit script",
             "headers": {
               "name": "Name"
@@ -1307,6 +1360,7 @@
             "load_error_not_editable": "Only scripts inside scripts.yaml are editable.",
             "delete_confirm": "Are you sure you want to delete this script?",
             "delete_script": "Delete script",
+            "save_script": "Save script",
             "sequence": "Sequence",
             "sequence_sentence": "The sequence of actions of this script.",
             "link_available_actions": "Learn more about available actions."
@@ -1638,11 +1692,14 @@
           "description": "Manage the people that Home Assistant tracks",
           "introduction": "Here you can define each person of interest in Home Assistant.",
           "note_about_persons_configured_in_yaml": "Note: people configured via configuration.yaml cannot be edited via the UI.",
+          "learn_more": "Learn more about people",
           "no_persons_created_yet": "Looks like you have not created any people yet.",
           "create_person": "Create Person",
           "add_person": "Add Person",
           "confirm_delete": "Are you sure you want to delete this person?",
           "confirm_delete2": "All devices belonging to this person will become unassigned.",
+          "person_not_found_title": "Person Not Found",
+          "person_not_found": "We couldn't find the person you were trying to edit.",
           "detail": {
             "new_person": "New Person",
             "name": "Name",
@@ -2243,9 +2300,11 @@
             "show_code_editor": "Show Code Editor",
             "add": "Add Card",
             "edit": "Edit",
-            "delete": "Delete Card",
-            "duplicate": "Duplicate Card",
+            "delete": "Delete card",
+            "duplicate": "Duplicate card",
             "move": "Move to View",
+            "move_before": "Move card before",
+            "move_after": "Move card after",
             "options": "More options",
             "search_cards": "Search cards"
           },
@@ -2331,7 +2390,7 @@
               "toggle": "Toggle entities.",
               "description": "The Entities card is the most common type of card. It groups items together into lists.",
               "special_row": "special row",
-              "edit_special_row": "Edit row using the code editor",
+              "edit_special_row": "View the details of this row by clicking the edit button",
               "entity_row_editor": "Entity Row Editor",
               "secondary_info_values": {
                 "none": "No Secondary Info",

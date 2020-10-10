@@ -48,7 +48,7 @@ const snowyStates = new Set<string>(["snowy", "snowy-rainy"]);
 
 const lightningStates = new Set<string>(["lightning", "lightning-rainy"]);
 
-export const cardinalDirections = [
+const cardinalDirections = [
   "N",
   "NNE",
   "NE",
@@ -77,11 +77,27 @@ const getWindBearingText = (degree: string): string => {
   return degree;
 };
 
-export const getWindBearing = (bearing: string): string => {
+const getWindBearing = (bearing: string): string => {
   if (bearing != null) {
     return getWindBearingText(bearing);
   }
   return "";
+};
+
+export const getWind = (
+  hass: HomeAssistant,
+  speed: string,
+  bearing: string
+): string => {
+  if (bearing !== null) {
+    const cardinalDirection = getWindBearing(bearing);
+    return `${speed} ${getWeatherUnit(hass!, "wind_speed")} (${
+      hass.localize(
+        `ui.card.weather.cardinal_direction.${cardinalDirection.toLowerCase()}`
+      ) || cardinalDirection
+    })`;
+  }
+  return `${speed} ${getWeatherUnit(hass!, "wind_speed")}`;
 };
 
 export const getWeatherUnit = (
@@ -210,7 +226,7 @@ export const weatherSVGStyles = css`
   }
 `;
 
-export const getWeatherStateSVG = (
+const getWeatherStateSVG = (
   state: string,
   nightTime?: boolean
 ): SVGTemplateResult => {

@@ -31,7 +31,7 @@ export class ZHAClustersDataTable extends LitElement {
 
   @property() public clusters: Cluster[] = [];
 
-  @query("ha-data-table") private _dataTable!: HaDataTable;
+  @query("ha-data-table", true) private _dataTable!: HaDataTable;
 
   private _clusters = memoizeOne((clusters: Cluster[]) => {
     let outputClusters: ClusterRowData[] = clusters;

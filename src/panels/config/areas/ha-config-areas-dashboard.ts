@@ -130,7 +130,7 @@ export class HaConfigAreasDashboard extends LitElement {
           )}"
           @click=${this._createArea}
         >
-          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </mwc-fab>
       </hass-tabs-subpage-data-table>
     `;

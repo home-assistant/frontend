@@ -39,7 +39,7 @@ class HassioRepositoriesDialog extends LitElement {
   @property({ attribute: false })
   private _dialogParams?: HassioRepositoryDialogParams;
 
-  @query("#repository_input") private _optionInput?: PaperInputElement;
+  @query("#repository_input", true) private _optionInput?: PaperInputElement;
 
   @internalProperty() private _opened = false;
 
@@ -91,7 +91,7 @@ class HassioRepositoriesDialog extends LitElement {
                       title="Remove"
                       @click=${this._removeRepository}
                     >
-                      <ha-svg-icon path=${mdiDelete}></ha-svg-icon>
+                      <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
                     </mwc-icon-button>
                   </paper-item>
                 `;

@@ -103,7 +103,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   @internalProperty() private _selectedEntities: string[] = [];
 
-  @query("hass-tabs-subpage-data-table")
+  @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
 
   private getDialog?: () => DialogEntityEditor | undefined;
@@ -463,7 +463,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                 "ui.panel.config.entities.picker.filter.filter"
               )}
             >
-              <ha-svg-icon path=${mdiFilterVariant}></ha-svg-icon>
+              <ha-svg-icon .path=${mdiFilterVariant}></ha-svg-icon>
             </mwc-icon-button>
             <mwc-list-item
               @request-selected="${this._showDisabledChanged}"
