@@ -1962,7 +1962,7 @@
                     "description": "管理 Home Assistant 跟踪的人员",
                     "detail": {
                         "admin": "管理员",
-                        "allow_login": "允许人员登录",
+                        "allow_login": "允许此人登录",
                         "confirm_delete_user": "您确定要删除用户 {name} 的帐户吗？您仍然可以跟踪该用户，但他将不能再登录。",
                         "create": "创建",
                         "delete": "删除",
