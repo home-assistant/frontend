@@ -97,6 +97,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   @internalProperty() private _filter = "";
 
+  @internalProperty() private _numHiddenEntities = 0;
+
   @internalProperty() private _searchParms = new URLSearchParams(
     window.location.search
   );
@@ -266,6 +268,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       showUnavailable: boolean,
       showReadOnly: boolean
     ): EntityRow[] => {
+      const startLength = entities.length + stateEntities.length;
+
       if (!showDisabled) {
         entities = entities.filter((entity) => !entity.disabled_by);
       }
@@ -319,6 +323,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         });
       }
 
+      this._numHiddenEntities = startLength - result.length;
       return result;
     }
   );
@@ -362,6 +367,16 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       this.hass.localize,
       this._entries
     );
+
+    const entityData = this._filteredEntities(
+      this._entities,
+      this._stateEntities,
+      this._searchParms,
+      this._showDisabled,
+      this._showUnavailable,
+      this._showReadOnly
+    );
+
     const headerToolbar = this._selectedEntities.length
       ? html`
           <p class="selected-txt">
@@ -457,6 +472,31 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                 >
               </div>`
             : ""}
+          ${this._numHiddenEntities && !activeFilters
+            ? html`<div class="active-filters">
+                ${this.narrow
+                  ? html` <div>
+                      <ha-icon icon="hass:filter-variant"></ha-icon>
+                      <paper-tooltip animation-delay="0" position="left">
+                        ${this.hass.localize(
+                          "ui.panel.config.entities.picker.filter.hidden_entities",
+                          "number",
+                          this._numHiddenEntities
+                        )}
+                      </paper-tooltip>
+                    </div>`
+                  : `${this.hass.localize(
+                      "ui.panel.config.entities.picker.filter.hidden_entities",
+                      "number",
+                      this._numHiddenEntities
+                    )}`}
+                <mwc-button @click=${this._showAll}
+                  >${this.hass.localize(
+                    "ui.panel.config.entities.picker.filter.show_all"
+                  )}</mwc-button
+                >
+              </div>`
+            : ""}
           <ha-button-menu corner="BOTTOM_START" multi>
             <mwc-icon-button
               slot="trigger"
@@ -521,14 +561,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         .route=${this.route}
         .tabs=${configSections.integrations}
         .columns=${this._columns(this.narrow, this.hass.language)}
-        .data=${this._filteredEntities(
-          this._entities,
-          this._stateEntities,
-          this._searchParms,
-          this._showDisabled,
-          this._showUnavailable,
-          this._showReadOnly
-        )}
+        .data=${entityData}
         .filter=${this._filter}
         selectable
         @selection-changed=${this._handleSelectionChanged}
@@ -725,6 +758,13 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   }
 
   private _clearFilter() {
+    navigate(this, window.location.pathname, true);
+  }
+
+  private _showAll() {
+    this._showDisabled = true;
+    this._showReadOnly = true;
+    this._showUnavailable = true;
     navigate(this, window.location.pathname, true);
   }
 

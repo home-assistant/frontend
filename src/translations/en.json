@@ -1600,7 +1600,9 @@
               "filter": "Filter",
               "show_disabled": "Show disabled entities",
               "show_unavailable": "Show unavailable entities",
-              "show_readonly": "Show read-only entities"
+              "show_readonly": "Show read-only entities",
+              "hidden_entities": "{number} {number, plural,\n  one {hidden entity}\n  other {hidden entities}\n}",
+              "show_all": "Show all"
             },
             "status": {
               "restored": "Restored",
