@@ -30,7 +30,7 @@ import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { SensorCardConfig, ShoppingListCardConfig } from "./types";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { mdiDrag } from "@mdi/js";
+import { mdiDrag, mdiSort, mdiPlus, mdiNotificationClearAll } from "@mdi/js";
 
 let Sortable;
 
@@ -114,15 +114,15 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
         })}
       >
         <div class="addRow">
-          <ha-icon
+          <ha-svg-icon
             class="addButton"
-            icon="hass:plus"
+            .path=${mdiPlus}
             .title=${this.hass!.localize(
               "ui.panel.lovelace.cards.shopping-list.add_item"
             )}
             @click=${this._addItem}
           >
-          </ha-icon>
+          </ha-svg-icon>
           <paper-input
             no-label-float
             class="addBox"
@@ -131,15 +131,15 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
             )}
             @keydown=${this._addKeyPress}
           ></paper-input>
-          <ha-icon
+          <ha-svg-icon
             class="reorderButton"
-            icon="hass:sort"
+            .path=${mdiSort}
             .title=${this.hass!.localize(
               "ui.panel.lovelace.cards.shopping-list.reorder_items"
             )}
             @click=${this._toggleReorder}
           >
-          </ha-icon>
+          </ha-svg-icon>
         </div>
         ${this._reordering
           ? html`
@@ -161,16 +161,16 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
                     "ui.panel.lovelace.cards.shopping-list.checked_items"
                   )}
                 </span>
-                <ha-icon
+                <ha-svg-icon
                   class="clearall"
                   tabindex="0"
-                  icon="hass:notification-clear-all"
+                  .path=${mdiNotificationClearAll}
                   .title=${this.hass!.localize(
                     "ui.panel.lovelace.cards.shopping-list.clear_items"
                   )}
                   @click=${this._clearItems}
                 >
-                </ha-icon>
+                </ha-svg-icon>
               </div>
               ${repeat(
                 this._checkedItems!,
