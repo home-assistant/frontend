@@ -360,5 +360,7 @@ export type WeatherEntity = HassEntityBase & {
     temperature: number;
     humidity?: number;
     forecast?: ForecastAttribute[];
+    wind_speed: string;
+    wind_bearing: string;
   };
 };
