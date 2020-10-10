@@ -208,6 +208,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       ha-card {
         position: relative;
         padding: 0 8px 8px;
+        box-sizing: border-box;
+        height: 100%;
       }
 
       .header {

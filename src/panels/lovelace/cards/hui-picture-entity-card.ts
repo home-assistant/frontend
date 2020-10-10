@@ -3,9 +3,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -182,6 +182,14 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
         min-height: 75px;
         overflow: hidden;
         position: relative;
+        height: 100%;
+        box-sizing: border-box;
+      }
+
+      hui-image {
+        display: block;
+        height: 100%;
+        width: 100%;
       }
 
       hui-image.clickable {
