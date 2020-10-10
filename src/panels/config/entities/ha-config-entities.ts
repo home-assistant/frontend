@@ -118,6 +118,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       filters.forEach((value, key) => {
         switch (key) {
           case "config_entry": {
+            // If we are requested to show the entities for a given config entry,
+            // also show the disabled ones by default.
+            this._showDisabled = true;
+
             if (!entries) {
               this._loadConfigEntries();
               break;
