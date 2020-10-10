@@ -1692,6 +1692,7 @@
           "description": "Manage the people that Home Assistant tracks",
           "introduction": "Here you can define each person of interest in Home Assistant.",
           "note_about_persons_configured_in_yaml": "Note: people configured via configuration.yaml cannot be edited via the UI.",
+          "learn_more": "Learn more about people",
           "no_persons_created_yet": "Looks like you have not created any people yet.",
           "create_person": "Create Person",
           "add_person": "Add Person",
