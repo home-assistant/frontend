@@ -50,6 +50,19 @@
                 "sleep": "睡眠"
             }
         },
+        "device_tracker": {
+            "source type": "源类型",
+            "latitude": "纬度",
+            "longitude": "经度",
+            "gps accuracy": "GPS精度",
+            "battery": "电池",
+            "category": "类别",
+            "speed": "速度",
+            "status": "状态",
+            "traccar id": "追踪ID",
+            "ignition": "点火",
+            "charge": "电源"
+        },
         "humidifier": {
             "mode": {
                 "auto": "自动",
