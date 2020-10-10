@@ -38,13 +38,12 @@ class DialogInsteonALDBRecord extends LitElement {
 
   @internalProperty() private _formData?: { [key: string]: any };
 
-  @internalProperty() private _change_count = 0;
-
   public async showDialog(
     params: InsteonALDBRecordDialogParams
   ): Promise<void> {
     this._record = params.record;
     this._formData = { ...params.record };
+    this._formData.mode = this._currentMode();
     this._schema = params.schema;
     this._callback = params.callback;
   }
@@ -125,7 +124,7 @@ class DialogInsteonALDBRecord extends LitElement {
   }
 
   private _currentMode(): string {
-    if (this._record!.mode === "C") {
+    if (this._record!.mode.toUpperCase() === "C") {
       return "Controller";
     }
     return "Responder";
