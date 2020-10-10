@@ -13,6 +13,7 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { repeat } from "lit-html/directives/repeat";
+import { guard } from "lit-html/directives/guard";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
@@ -22,12 +23,16 @@ import {
   fetchItems,
   ShoppingListItem,
   updateItem,
+  reorderItems,
 } from "../../../data/shopping-list";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { SensorCardConfig, ShoppingListCardConfig } from "./types";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { mdiDrag } from "@mdi/js";
+
+let Sortable;
 
 @customElement("hui-shopping-list-card")
 class HuiShoppingListCard extends SubscribeMixin(LitElement)
@@ -50,6 +55,12 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
   @internalProperty() private _uncheckedItems?: ShoppingListItem[];
 
   @internalProperty() private _checkedItems?: ShoppingListItem[];
+
+  @internalProperty() private _reordering = false;
+
+  @internalProperty() private _renderEmptySortable = false;
+
+  private _sortable?;
 
   public getCardSize(): number {
     return (this._config ? (this._config.title ? 1 : 0) : 0) + 3;
@@ -120,28 +131,27 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
             )}
             @keydown=${this._addKeyPress}
           ></paper-input>
+          <ha-icon
+            class="reorderButton"
+            icon="hass:sort"
+            .title=${this.hass!.localize(
+              "ui.panel.lovelace.cards.shopping-list.reorder_items"
+            )}
+            @click=${this._toggleReorder}
+          >
+          </ha-icon>
         </div>
-        ${repeat(
-          this._uncheckedItems!,
-          (item) => item.id,
-          (item) =>
-            html`
-              <div class="editRow">
-                <paper-checkbox
-                  tabindex="0"
-                  ?checked=${item.complete}
-                  .itemId=${item.id}
-                  @click=${this._completeItem}
-                ></paper-checkbox>
-                <paper-input
-                  no-label-float
-                  .value=${item.name}
-                  .itemId=${item.id}
-                  @change=${this._saveEdit}
-                ></paper-input>
+        ${this._reordering
+          ? html`
+              <div id="sortable">
+                ${guard([this._uncheckedItems, this._renderEmptySortable], () =>
+                  this._renderEmptySortable
+                    ? ""
+                    : this._renderItems(this._uncheckedItems!)
+                )}
               </div>
             `
-        )}
+          : this._renderItems(this._uncheckedItems!)}
         ${this._checkedItems!.length > 0
           ? html`
               <div class="divider"></div>
@@ -186,6 +196,44 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
             `
           : ""}
       </ha-card>
+    `;
+  }
+
+  private _renderItems(items: ShoppingListItem[]) {
+    return html`
+      ${repeat(
+        items,
+        (item) => item.id,
+        (item) =>
+          html`
+            <div class="editRow" item-id=${item.id}>
+              <paper-checkbox
+                tabindex="0"
+                ?checked=${item.complete}
+                .itemId=${item.id}
+                @click=${this._completeItem}
+              ></paper-checkbox>
+              <paper-input
+                no-label-float
+                .value=${item.name}
+                .itemId=${item.id}
+                @change=${this._saveEdit}
+              ></paper-input>
+              ${this._reordering
+                ? html`
+                    <ha-svg-icon
+                      .title=${this.hass!.localize(
+                        "ui.panel.lovelace.cards.shopping-list.drag_and_drop"
+                      )}
+                      class="reorderButton"
+                      .path=${mdiDrag}
+                    >
+                    </ha-svg-icon>
+                  `
+                : ""}
+            </div>
+          `
+      )}
     `;
   }
 
@@ -250,6 +298,50 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
     }
   }
 
+  private async _toggleReorder() {
+    if (!Sortable) {
+      const [sortableImport] = await Promise.all([
+        import("sortablejs/modular/sortable.core.esm"),
+      ]);
+      Sortable = sortableImport.Sortable;
+    }
+    this._reordering = !this._reordering;
+    await this.updateComplete;
+    if (this._reordering) {
+      this._createSortable();
+    } else {
+      this._sortable?.destroy();
+      this._sortable = undefined;
+    }
+  }
+
+  private _createSortable() {
+    this._sortable = new Sortable(this.shadowRoot!.getElementById("sortable"), {
+      animation: 150,
+      fallbackClass: "sortable-fallback",
+      dataIdAttr: "item-id",
+      handle: "ha-svg-icon",
+      onSort: async (evt) => {
+        reorderItems(this.hass!, this._sortable.toArray()).catch(() =>
+          this._fetchData()
+        );
+        // Move the shopping list item in memory.
+        this._uncheckedItems!.splice(
+          evt.newIndex,
+          0,
+          this._uncheckedItems!.splice(evt.oldIndex, 1)[0]
+        );
+        this._renderEmptySortable = true;
+        await this.updateComplete;
+        const container = this.shadowRoot!.getElementById("sortable")!;
+        while (container.lastElementChild) {
+          container.removeChild(container.lastElementChild);
+        }
+        this._renderEmptySortable = false;
+      },
+    });
+  }
+
   static get styles(): CSSResult {
     return css`
       ha-card {
@@ -275,6 +367,11 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
 
       .addButton {
         padding-right: 16px;
+        cursor: pointer;
+      }
+
+      .reorderButton {
+        padding-left: 16px;
         cursor: pointer;
       }
 
