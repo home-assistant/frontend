@@ -675,9 +675,23 @@
                     "week": "{count} {count, plural,\n  one {uke}\n  other {uker}\n}"
                 },
                 "future": "om {time}",
+                "future_duration": {
+                    "day": "In {count} {count, plural,\n  one {day}\n  other {days}\n}",
+                    "hour": "In {count} {count, plural,\n  one {hour}\n  other {hours}\n}",
+                    "minute": "In {count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
+                    "second": "In {count} {count, plural,\n  one {second}\n  other {seconds}\n}",
+                    "week": "In {count} {count, plural,\n  one {week}\n  other {weeks}\n}"
+                },
                 "just_now": "Akkurat nå",
                 "never": "Aldri",
-                "past": "{time} siden"
+                "past": "{time} siden",
+                "past_duration": {
+                    "day": "{count} {count, plural,\n  one {day}\n  other {days}\n} ago",
+                    "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n} ago",
+                    "minute": "{count} {count, plural,\n  one {minute}\n  other {minutes}\n} ago",
+                    "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n} ago",
+                    "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n} ago"
+                }
             },
             "service-picker": {
                 "service": "Tjeneste"
@@ -824,6 +838,44 @@
                 "success": {
                     "description": "Alternativene er lagret."
                 }
+            },
+            "quick-open": {
+                "commands": {
+                    "reload": {
+                        "automation": "Last inn automasjoner på nytt",
+                        "command_line": "Last inn kommandolinje entiteter på nytt",
+                        "core": "Last inn lokasjon og tilpassinger på nytt",
+                        "filesize": "Last inn filstørrelse entiteter på nytt",
+                        "filter": "Last inn filter entiteter på nytt",
+                        "generic": "Last inn generisk IP kamera entiteter på nytt",
+                        "generic_thermostat": "Last inn generisk termostat entiteter på nytt",
+                        "group": "Laste inn grupper, gruppeentiteter og varslingstjenester på nytt",
+                        "history_stats": "Last inn historisk tilstand entiteter på nytt",
+                        "homekit": "Last inn HomeKit på nytt",
+                        "input_boolean": "Last inn innputt boolske på nytt",
+                        "input_datetime": "Last inn innputt dato tider på nytt",
+                        "input_number": "Last inn innputt numeriske på nytt",
+                        "input_select": "Last inn innputt valg på nytt",
+                        "input_text": "Last inn innputt tekster på nytt",
+                        "min_max": "Last inn min/maks entiteter på nytt",
+                        "mqtt": "Last inn MQTT entiteter på nytt",
+                        "person": "Last inn personer på nytt",
+                        "ping": "Last inn Ping binær sensor entiteter på nytt",
+                        "reload": "Last inn {domain} på nytt",
+                        "rest": "Last inn REST entiteter og varslingstjenester på nytt",
+                        "rpi_gpio": "Last inn Raspberry Pi GPIO entiteter på nytt",
+                        "scene": "Last inn scener på nytt",
+                        "script": "Last inn skript på nytt",
+                        "smtp": "Last inn SMTP varslingstjenester på nytt",
+                        "statistics": "Last inn statistiske entiteter på nytt",
+                        "telegram": "Last inn Telegram varslingstjenester på nytt",
+                        "template": "Laste inn mal entiteter på nytt",
+                        "trend": "Last inn trend entiteter på nytt",
+                        "universal": "Laste inn universelle mediespiller entiteter på nytt",
+                        "zone": "Last inn soner på nytt"
+                    }
+                },
+                "filter_placeholder": "Entitetsfilter"
             },
             "voice_command": {
                 "did_not_hear": "Home Assistant hørte ikke noe",
@@ -1928,7 +1980,9 @@
                     },
                     "introduction": "Her kan du definere hver person av interesse i Home Assistant.",
                     "no_persons_created_yet": "Ser ut som du ikke har opprettet noen personer ennå.",
-                    "note_about_persons_configured_in_yaml": "Merk: personer konfigurert i configuration.yaml kan ikke redigeres via brukergrensesnittet."
+                    "note_about_persons_configured_in_yaml": "Merk: personer konfigurert i configuration.yaml kan ikke redigeres via brukergrensesnittet.",
+                    "person_not_found": "Vi fant ikke personen du prøvde å redigere.",
+                    "person_not_found_title": "Person ikke funnet"
                 },
                 "scene": {
                     "activated": "Aktivert scene {name}.",
@@ -2086,6 +2140,7 @@
                     "create_automation": "Opprett automatisering med tag",
                     "description": "Administrer tagger",
                     "detail": {
+                        "companion_apps": "ledsagerapper",
                         "create": "Opprett",
                         "create_and_write": "Opprette og skrive",
                         "delete": "Slett",
@@ -2094,7 +2149,8 @@
                         "new_tag": "Ny tag",
                         "tag_id": "Tag id",
                         "tag_id_placeholder": "Automatisk generert når den er tom",
-                        "update": "Oppdater"
+                        "update": "Oppdater",
+                        "usage": "En tag kan utløse en automatisering når den skannes, du kan bruke NFC-koder, QR-koder eller hvilken som helst annen type tag. Bruk {companion_link} til å skrive denne taggen til en programmerbar NFC-tag eller opprette en QR-kode nedenfor."
                     },
                     "edit": "Rediger",
                     "headers": {

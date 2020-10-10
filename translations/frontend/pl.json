@@ -675,9 +675,23 @@
                     "week": "{count} {count, plural,\n  one {tydzień}\n  few {tygodnie}\n  many {tygodni}\n  other {tygodni}\n}"
                 },
                 "future": "Za {time}",
+                "future_duration": {
+                    "day": "W {count} {count, plural,\n  one {dzień}\n  other {dni}\n}",
+                    "hour": "W {count} {count, plural,\n  one {godzinę}\n  few {godziny}\n  many {godzin}\n  other {godzin}\n}",
+                    "minute": "W {count} {count, plural,\n  one {minutę}\n  few {minuty}\n  many {minut}\n  other {minut}\n}",
+                    "second": "W {count} {count, plural,\n  one {sekundę}\n  few {sekundy}\n  many {sekund}\n  other {sekund}\n}",
+                    "week": "W {count} {count, plural,\n  one {tydzień}\n  few {tygodnie}\n  many {tygodni}\n  other {tygodni}\n}"
+                },
                 "just_now": "Właśnie teraz",
                 "never": "Nigdy",
-                "past": "{time} temu"
+                "past": "{time} temu",
+                "past_duration": {
+                    "day": "{count} {count, plural,\n  one {dzień}\n  other {dni}\n} temu",
+                    "hour": "{count} {count, plural,\n  one {godzina}\n  few {godziny}\n  many {godzin}\n  other {godzin}\n} temu",
+                    "minute": "{count} {count, plural,\n  one {minuta}\n  few {minuty}\n  many {minut}\n  other {minut}\n} temu",
+                    "second": "{count} {count, plural,\n  one {sekunda}\n  few {sekundy}\n  many {sekund}\n  other {sekund}\n} temu",
+                    "week": "{count} {count, plural,\n  one {tydzień}\n  few {tygodnie}\n  many {tygodni}\n  other {tygodni}\n} temu"
+                }
             },
             "service-picker": {
                 "service": "Usługa"
@@ -825,6 +839,44 @@
                     "description": "Opcje pomyślnie zapisane."
                 }
             },
+            "quick-open": {
+                "commands": {
+                    "reload": {
+                        "automation": "Automatyzacje",
+                        "command_line": "Encje komponentu linia komend",
+                        "core": "Lokalizację i dostosowywanie",
+                        "filesize": "[%key::ui::panel::config::server_control::section::reloading::filesize%]",
+                        "filter": "Encje komponentu filtr",
+                        "generic": "Encje komponentu kamera IP generic",
+                        "generic_thermostat": "Encje komponentu termostatu generic",
+                        "group": "Grupy, ich encje oraz usługi powiadomień",
+                        "history_stats": "[%key::ui::panel::config::server_control::section::reloading::history_stats%]",
+                        "homekit": "HomeKit",
+                        "input_boolean": "Pomocnicy typu przełącznik",
+                        "input_datetime": "Pomocnicy typu data i czas",
+                        "input_number": "Pomocnicy typu numer",
+                        "input_select": "Pomocnicy typu pole wyboru",
+                        "input_text": "Pomocnicy typu tekst",
+                        "min_max": "Encje komponentu min/max",
+                        "mqtt": "[%key::ui::panel::config::server_control::section::reloading::mqtt%]",
+                        "person": "Osoby",
+                        "ping": "[%key::ui::panel::config::server_control::section::reloading::ping%]",
+                        "reload": "Domenę {domain}",
+                        "rest": "Encje komponentu rest i usługi powiadomień",
+                        "rpi_gpio": "[%key::ui::panel::config::server_control::section::reloading::rpi_gpio%]",
+                        "scene": "Sceny",
+                        "script": "Skrypty",
+                        "smtp": "[%key::ui::panel::config::server_control::section::reloading::smtp%]",
+                        "statistics": "Encje komponentu statystyka",
+                        "telegram": "[%key::ui::panel::config::server_control::section::reloading::telegram%]",
+                        "template": "Szablony encji",
+                        "trend": "Encje komponentu trend",
+                        "universal": "Encje komponentu uniwersalny odtwarzacz mediów",
+                        "zone": "Strefy"
+                    }
+                },
+                "filter_placeholder": "Filtr encji"
+            },
             "voice_command": {
                 "did_not_hear": "Home Assistant niczego nie słyszał",
                 "error": "Ups, wystąpił błąd",
@@ -909,7 +961,7 @@
                         "confirmation_text": "Wszystkie urządzenia z tego obszaru pozostaną bez przypisanego obszaru.",
                         "confirmation_title": "Czy na pewno chcesz usunąć ten obszar?"
                     },
-                    "description": "Przegląd wszystkich obszarów w twoim domu",
+                    "description": "Zarządzaj obszarami w twoim domu",
                     "editor": {
                         "area_id": "Identyfikator obszaru",
                         "create": "Utwórz",
@@ -1518,7 +1570,6 @@
                 },
                 "entities": {
                     "caption": "Rejestr encji",
-                    "description": "Przegląd wszystkich znanych encji",
                     "picker": {
                         "disable_selected": {
                             "button": "Wyłącz wybrane",
@@ -1570,7 +1621,7 @@
                 "header": "Konfiguruj Home Assistanta",
                 "helpers": {
                     "caption": "Pomocnicy",
-                    "description": "Elementy, które mogą pomóc w tworzeniu automatyzacji",
+                    "description": "Zarządzaj elementami, które pomagają w tworzeniu automatyzacji",
                     "dialog": {
                         "add_helper": "Dodaj pomocnika",
                         "add_platform": "Dodaj {platform}",
@@ -1668,7 +1719,7 @@
                     },
                     "configure": "Konfiguruj",
                     "configured": "Skonfigurowane",
-                    "description": "Zarządzaj i konfiguruj integracje",
+                    "description": "Zarządzaj integracjami",
                     "details": "Szczegóły integracji",
                     "discovered": "Wykryte",
                     "home_assistant_website": "Home Assistanta",
@@ -1928,12 +1979,14 @@
                     },
                     "introduction": "Tutaj można zdefiniować osoby, których obecność będzie śledzona w Home Assistant.",
                     "no_persons_created_yet": "Wygląda na to, że nie utworzyłeś jeszcze żadnych osób.",
-                    "note_about_persons_configured_in_yaml": "Uwaga: osób skonfigurowanych za pomocą pliku configuration.yaml nie można edytować za pomocą interfejsu użytkownika."
+                    "note_about_persons_configured_in_yaml": "Uwaga: osób skonfigurowanych za pomocą pliku configuration.yaml nie można edytować za pomocą interfejsu użytkownika.",
+                    "person_not_found": "Nie znaleziono osoby, którą próbujesz edytować.",
+                    "person_not_found_title": "Nie znaleziono osoby"
                 },
                 "scene": {
                     "activated": "Aktywowana scena {name}.",
                     "caption": "Sceny",
-                    "description": "Twórz i edytuj sceny",
+                    "description": "Zarządzaj scenami",
                     "editor": {
                         "default_name": "Nowa scena",
                         "devices": {
@@ -1977,7 +2030,7 @@
                 },
                 "script": {
                     "caption": "Skrypty",
-                    "description": "Twórz i edytuj skrypty",
+                    "description": "Zarządzaj skryptami",
                     "editor": {
                         "alias": "Nazwa",
                         "default_name": "Nowy skrypt",
@@ -2009,7 +2062,7 @@
                         "sequence_sentence": "Sekwencja akcji tego skryptu."
                     },
                     "picker": {
-                        "add_script": "Dodaj skrypt",
+                        "add_script": "Utwórz nowy skrypt",
                         "edit_script": "Edytuj skrypt",
                         "header": "Edytor skryptów",
                         "headers": {
@@ -2086,15 +2139,17 @@
                     "create_automation": "Utwórz automatyzację z tagiem",
                     "description": "Zarządzaj tagami",
                     "detail": {
-                        "create": "Stwórz",
-                        "create_and_write": "Stwórz i zapisz",
+                        "companion_apps": "aplikacji towarzyszącej",
+                        "create": "Utwórz",
+                        "create_and_write": "Utwórz i zapisz",
                         "delete": "Usuń",
                         "description": "Opis",
                         "name": "Nazwa",
                         "new_tag": "Nowy tag",
                         "tag_id": "Identyfikator tagu",
                         "tag_id_placeholder": "Generowany automatycznie, gdy pole pozostawione puste",
-                        "update": "Aktualizuj"
+                        "update": "Aktualizuj",
+                        "usage": "Tag może wywołać automatyzację podczas skanowania, możesz użyć tagów NFC, kodów QR lub dowolnego innego rodzaju tagu. Skorzystaj z naszej {companion_link} aby zapisać ten tag do programowalnego tagu NFC lub utwórz kod QR poniżej."
                     },
                     "edit": "Edytuj",
                     "headers": {
@@ -2560,7 +2615,7 @@
                         },
                         "entities": {
                             "description": "Karta encji jest najbardziej popularnym rodzajem karty. Grupuje ona encje w listy.",
-                            "edit_special_row": "Edytuj wiersz za pomocą edytora kodu",
+                            "edit_special_row": "Wyświetl szczegóły tego wiersza, klikając przycisk edycji",
                             "entity_row_editor": "Edytor wiersza encji",
                             "entity_row": {
                                 "attribute": "Atrybut",
@@ -2836,7 +2891,7 @@
                 },
                 "menu": {
                     "close": "Zamknij",
-                    "configure_ui": "Konfiguracja interfejsu użytkownika",
+                    "configure_ui": "Edytuj dashboard",
                     "exit_edit_mode": "Wyjdź z trybu edycji interfejsu użytkownika",
                     "help": "Pomoc",
                     "refresh": "Wczytaj ponownie",
@@ -3113,7 +3168,7 @@
                     "name": "Nazwa",
                     "not_used": "Nigdy nie był używany",
                     "prompt_copy_token": "Skopiuj token. Nie będzie on już ponownie wyświetlany.",
-                    "prompt_name": "Nazwa"
+                    "prompt_name": "Nazwij token"
                 },
                 "mfa_setup": {
                     "close": "Zamknij",

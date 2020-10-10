@@ -675,9 +675,23 @@
                     "week": "{count} {count, plural,\n  one {周}\n  other {周}\n}"
                 },
                 "future": "{time}后",
+                "future_duration": {
+                    "day": "{count} {count, plural,\n  one {天}\n  other {天}\n}后",
+                    "hour": "{count} {count, plural,\n  one {小时}\n  other {小时}\n}后",
+                    "minute": "{count} {count, plural,\n  one {分钟}\n  other {分钟}\n}后",
+                    "second": "{count} {count, plural,\n  one {秒}\n  other {秒}\n}后",
+                    "week": "{count} {count, plural,\none {周}\nother {周}\n}后"
+                },
                 "just_now": "刚刚",
                 "never": "从未",
-                "past": "{time}前"
+                "past": "{time}前",
+                "past_duration": {
+                    "day": "{count} {count, plural,\n  one {天}\n  other {天}\n}前",
+                    "hour": "{count} {count, plural,\none {小时}\nother {小时}\n}前",
+                    "minute": "{count} {count, plural,\n  one {分钟}\n  other {分钟}\n}前",
+                    "second": "{count} {count, plural,\n  one {秒}\n  other {秒}\n}前",
+                    "week": "{count} {count, plural,\n  one {周}\n  other {周}\n}前"
+                }
             },
             "service-picker": {
                 "service": "服务"
@@ -824,6 +838,44 @@
                 "success": {
                     "description": "选项已成功保存。"
                 }
+            },
+            "quick-open": {
+                "commands": {
+                    "reload": {
+                        "automation": "重载自动化",
+                        "command_line": "重载命令行实体",
+                        "core": "重载位置和自定义",
+                        "filesize": "重载文件大小实体",
+                        "filter": "重载 filter 实体",
+                        "generic": "重载通用 IP 摄像机实体",
+                        "generic_thermostat": "重载通用恒温器实体",
+                        "group": "重载分组、分组实体及通知服务",
+                        "history_stats": "重载历史记录统计实体",
+                        "homekit": "重载 HomeKit",
+                        "input_boolean": "重载二元选择器",
+                        "input_datetime": "重载日期选择器",
+                        "input_number": "重载数值选择器",
+                        "input_select": "重载多项选择器",
+                        "input_text": "重载文字输入",
+                        "min_max": "重载最小值/最大值实体",
+                        "mqtt": "重载 mqtt 实体",
+                        "person": "重载人员",
+                        "ping": "重载 ping 二元传感器实体",
+                        "reload": "重载{domain}",
+                        "rest": "重载 REST 实体及通知服务",
+                        "rpi_gpio": "重载树莓派 GPIO 实体",
+                        "scene": "重载场景",
+                        "script": "重载脚本",
+                        "smtp": "重载 smtp 通知服务",
+                        "statistics": "重载 statistics 实体",
+                        "telegram": "重载 telegram 通知服务",
+                        "template": "重载模板实体",
+                        "trend": "重载 trend 实体",
+                        "universal": "重载通用媒体播放器实体",
+                        "zone": "重载地点"
+                    }
+                },
+                "filter_placeholder": "实体筛选"
             },
             "voice_command": {
                 "did_not_hear": "Home Assistant 什么也没有听到",
@@ -1928,7 +1980,9 @@
                     },
                     "introduction": "您可以在这里定义 Home Assistant 中关注的每个人员。",
                     "no_persons_created_yet": "您还没有创建人员。",
-                    "note_about_persons_configured_in_yaml": "注意：通过 configuration.yaml 配置的人员不能通过 UI 编辑。"
+                    "note_about_persons_configured_in_yaml": "注意：通过 configuration.yaml 配置的人员不能通过 UI 编辑。",
+                    "person_not_found": "无法找到您要编辑的人员。",
+                    "person_not_found_title": "未找到人员"
                 },
                 "scene": {
                     "activated": "已激活场景 {name}。",
@@ -2086,6 +2140,7 @@
                     "create_automation": "通过标签创建自动化",
                     "description": "管理标签",
                     "detail": {
+                        "companion_apps": "配套应用程序",
                         "create": "创建",
                         "create_and_write": "创建并写入",
                         "delete": "删除",
@@ -2094,7 +2149,8 @@
                         "new_tag": "新建标签",
                         "tag_id": "标签 ID",
                         "tag_id_placeholder": "留空则自动生成",
-                        "update": "更新"
+                        "update": "更新",
+                        "usage": "标签可以在被扫描时触发自动化。您可以使用 NFC 标签、二维码或各种其他类型的标签。请使用我们的{companion_link}将此标签写入可编程 NFC 标签，或在下面创建二维码。"
                     },
                     "edit": "编辑",
                     "headers": {
@@ -2402,7 +2458,7 @@
                         "column_example": "示例",
                         "column_parameter": "参数",
                         "data": "服务数据（格式为YAML，选填）",
-                        "description": "服务开发工具可让您在 Home Assistant 中调用任何可用的服务。",
+                        "description": "服务开发工具可让您调用 Home Assistant 中任何可用的服务。",
                         "fill_example_data": "填写示例数据",
                         "no_description": "没有描述",
                         "no_parameters": "此服务不带任何参数。",

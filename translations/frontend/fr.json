@@ -583,9 +583,9 @@
                     "set": "Défini",
                     "turned_off": "éteint",
                     "turned_on": "activé",
-                    "was_at_home": "Était à la maison",
+                    "was_at_home": "Présent",
                     "was_at_state": "était à {state}",
-                    "was_away": "était absent",
+                    "was_away": "Absent",
                     "was_closed": "était fermé",
                     "was_connected": "était connecté",
                     "was_disconnected": "était déconnecté",
@@ -712,7 +712,7 @@
                     "update": "Mise à jour"
                 },
                 "faq": "documentation",
-                "no_unique_id": "Cette entité n'a pas d'identifiant unique, ses paramètres ne peuvent donc pas être gérés à partir de l'interface utilisateur.",
+                "no_unique_id": "Cette entité n'a pas d'ID unique, par conséquent ses paramètres ne peuvent pas être gérés à partir de l'interface utilisateur. Consultez le {faq_link} pour plus de détails.",
                 "related": "Liées",
                 "settings": "Réglages"
             },
@@ -824,6 +824,9 @@
                 "success": {
                     "description": "Options enregistrées avec succès."
                 }
+            },
+            "quick-open": {
+                "filter_placeholder": "Filtre d'entité"
             },
             "voice_command": {
                 "did_not_hear": "Home Assistant n'a rien entendu",
@@ -1907,7 +1910,7 @@
                     "confirm_delete": "Êtes-vous sûr de vouloir supprimer cette personne?",
                     "confirm_delete2": "Tous les appareils appartenant à cette personne ne seront plus affectés.",
                     "create_person": "Créer une personne",
-                    "description": "Gérer les personnes suivies par Home Assistant.",
+                    "description": "Gérez les personnes suivies par Home Assistant",
                     "detail": {
                         "admin": "Administrateur",
                         "allow_login": "Autoriser la personne à se connecter",
@@ -1927,8 +1930,10 @@
                         "update": "Mettre à jour"
                     },
                     "introduction": "Ici, vous pouvez définir chaque personne d'intérêt dans Home Assistant.",
-                    "no_persons_created_yet": "Il semble que vous n'ayez pas encore créé de personnes.",
-                    "note_about_persons_configured_in_yaml": "Remarque: les personnes configurées via configuration.yaml ne peuvent pas être modifiées via l'interface utilisateur."
+                    "no_persons_created_yet": "Il semble que vous n’avez encore créé personne.",
+                    "note_about_persons_configured_in_yaml": "Remarque: les personnes configurées via configuration.yaml ne peuvent pas être modifiées via l'interface utilisateur.",
+                    "person_not_found": "Nous n'avons pas trouvé la personne que vous tentiez de modifier.",
+                    "person_not_found_title": "Personne introuvable"
                 },
                 "scene": {
                     "activated": "Scène activée {name}.",
@@ -2009,7 +2014,7 @@
                         "sequence_sentence": "La séquence d'actions de ce script."
                     },
                     "picker": {
-                        "add_script": "Ajouter un script",
+                        "add_script": "Créer un nouveau script",
                         "edit_script": "Éditer le script",
                         "header": "Éditeur de script",
                         "headers": {
@@ -2086,6 +2091,7 @@
                     "create_automation": "Créer une automatisation avec une balise",
                     "description": "Gérer les balises",
                     "detail": {
+                        "companion_apps": "applications associées",
                         "create": "Créer",
                         "create_and_write": "Créer et Ecrire",
                         "delete": "Supprimer",
@@ -2094,7 +2100,8 @@
                         "new_tag": "Nouvelle balise",
                         "tag_id": "Id de balise",
                         "tag_id_placeholder": "Généré automatiquement lorsque laissé vide",
-                        "update": "Mise à jour"
+                        "update": "Mise à jour",
+                        "usage": "Un tag peut déclencher une automatisation lorsqu'il est scanné, vous pouvez utiliser des tags NFC, des codes QR ou tout autre type de tag. Utilisez notre {companion_link} pour écrire cette balise sur une balise NFC programmable ou créez un code QR ci-dessous."
                     },
                     "edit": "Modifier",
                     "headers": {
@@ -2258,7 +2265,7 @@
                     "configured_in_yaml": "Les zones configurées via configuration.yaml ne peuvent pas être modifiées via l'interface utilisateur.",
                     "confirm_delete": "Êtes-vous sûr de vouloir supprimer cette zone ?",
                     "create_zone": "Créer une zone",
-                    "description": "Gérer les zones dans lesquelles vous voulez suivre les personnes.",
+                    "description": "Gérez les zones dans lesquelles vous souhaitez suivre les personnes",
                     "detail": {
                         "create": "Créer",
                         "delete": "Effacer",
@@ -2560,7 +2567,7 @@
                         },
                         "entities": {
                             "description": "La carte Entités est le type de carte le plus courant. Il regroupe les éléments dans des listes.",
-                            "edit_special_row": "Modifier la ligne à l'aide de l'éditeur de code",
+                            "edit_special_row": "Affichez les détails de cette ligne en cliquant sur le bouton Modifier",
                             "entity_row_editor": "Modifier à l'aide de l'éditeur de code",
                             "entity_row": {
                                 "attribute": "Attribut",
@@ -2738,7 +2745,7 @@
                     "edit_card": {
                         "add": "Ajouter une action",
                         "confirm_cancel": "Êtes-vous sûr de vouloir annuler ?",
-                        "delete": "Supprimer",
+                        "delete": "Supprimer la carte",
                         "duplicate": "Dupliquer la carte",
                         "edit": "Modifier",
                         "header": "Configuration de la carte",

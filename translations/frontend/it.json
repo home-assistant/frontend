@@ -675,9 +675,23 @@
                     "week": "{count} {count, plural,\none {settimana}\nother {settimane}\n}"
                 },
                 "future": "tra {time}",
+                "future_duration": {
+                    "day": "tra {count} {count, plural,\n  one {giorno}\n  other {giorni}\n}",
+                    "hour": "tra {count} {count, plural,\n  one {ora}\n  other {ore}\n}",
+                    "minute": "tra {count} {count, plural,\n  one {minuto}\n  other {minuti}\n}",
+                    "second": "tra {count} {count, plural,\n  one {secondo}\n  other {secondi}\n}",
+                    "week": "tra {count} {count, plural,\n  one {settimana}\n  other {settimane}\n}"
+                },
                 "just_now": "Proprio ora",
                 "never": "Mai",
-                "past": "{time} fa"
+                "past": "{time} fa",
+                "past_duration": {
+                    "day": "{count} {count, plural,\n  one {giorno}\n  other {giorni}\n} fa",
+                    "hour": "{count} {count, plural,\n  one {ora}\n  other {ore}\n} fa",
+                    "minute": "{count} {count, plural,\n  one {minuto}\n  other {minuti}\n} fa",
+                    "second": "{count} {count, plural,\n  one {secondo}\n  other {secondi}\n} fa",
+                    "week": "{count} {count, plural,\n  one {settimana}\n  other {settimane}\n} fa"
+                }
             },
             "service-picker": {
                 "service": "Servizio"
@@ -824,6 +838,44 @@
                 "success": {
                     "description": "Opzioni salvate correttamente."
                 }
+            },
+            "quick-open": {
+                "commands": {
+                    "reload": {
+                        "automation": "Ricarica le Automazioni",
+                        "command_line": "Ricarica le entità di riga di comando",
+                        "core": "Ricarica la Posizione e le Personalizzazioni",
+                        "filesize": "Ricarica le entità di dimensione file",
+                        "filter": "Ricarica le entità filtro",
+                        "generic": "Ricarica le entità della telecamera IP generica",
+                        "generic_thermostat": "Ricarica le entità del termostato generico",
+                        "group": "Ricarica gruppi, entità di gruppo e servizi di notifica",
+                        "history_stats": "Ricarica le entità delle statistiche storiche",
+                        "homekit": "Ricarica HomeKit",
+                        "input_boolean": "Ricarica input booleani",
+                        "input_datetime": "Ricarica input data e/o orari",
+                        "input_number": "Ricarica input numerici",
+                        "input_select": "Ricarica input a discesa",
+                        "input_text": "Ricarica input testuali",
+                        "min_max": "Ricarica le entità min/max",
+                        "mqtt": "Ricarica le entità MQTT",
+                        "person": "Ricarica le persone",
+                        "ping": "Ricarica le entità del sensore binario Ping",
+                        "reload": "Ricarica {domain}",
+                        "rest": "Ricarica le entità di rest e i servizi di notifica",
+                        "rpi_gpio": "Ricarica le entità GPIO di Raspberry Pi",
+                        "scene": "Ricarica le Scene",
+                        "script": "Ricarica gli Script",
+                        "smtp": "Ricarica i servizi di notifica SMTP",
+                        "statistics": "Ricarica le entità statistiche",
+                        "telegram": "Ricarica i servizi di notifica Telegram",
+                        "template": "Ricarica le entità modello",
+                        "trend": "Ricarica le entità di tendenza",
+                        "universal": "Ricarica le entità del lettore multimediale universale",
+                        "zone": "Ricarica le Zone"
+                    }
+                },
+                "filter_placeholder": "Filtro Entità"
             },
             "voice_command": {
                 "did_not_hear": "Home Assistant non ha sentito nulla",
@@ -1928,7 +1980,9 @@
                     },
                     "introduction": "Qui è possibile definire ogni persona di interesse in Home Assistant.",
                     "no_persons_created_yet": "Sembra che tu non abbia ancora creato nessuna persona.",
-                    "note_about_persons_configured_in_yaml": "Nota: le persone configurate tramite configuration.yaml non possono essere modificate tramite l'Interfaccia Utente."
+                    "note_about_persons_configured_in_yaml": "Nota: le persone configurate tramite configuration.yaml non possono essere modificate tramite l'Interfaccia Utente.",
+                    "person_not_found": "Non è stato possibile trovare la persona che si stava tentando di modificare.",
+                    "person_not_found_title": "Persona non trovata"
                 },
                 "scene": {
                     "activated": "Scena attivata {name}.",
@@ -2024,48 +2078,48 @@
                     }
                 },
                 "server_control": {
-                    "caption": "Controlli del server",
-                    "description": "Riavviare e arrestare il server Home Assistant",
+                    "caption": "Controlli del Server",
+                    "description": "Riavviare e arrestare il Server Home Assistant",
                     "section": {
                         "reloading": {
                             "automation": "Ricarica le Automazioni",
-                            "command_line": "Ricarica le entità della riga di comando",
+                            "command_line": "Ricarica le entità di riga di comando",
                             "core": "Ricarica la Posizione e le Personalizzazioni",
-                            "filesize": "Ricarica entità dimensione file",
-                            "filter": "Ricaricare le entità filtro",
-                            "generic": "Ricaricare le entità delle generiche telecamere IP",
-                            "generic_thermostat": "Ricaricare le entità termostati generiche",
+                            "filesize": "Ricarica le entità di dimensione file",
+                            "filter": "Ricarica le entità filtro",
+                            "generic": "Ricarica le entità della telecamera IP generica",
+                            "generic_thermostat": "Ricarica le entità del termostato generico",
                             "group": "Ricarica gruppi, entità di gruppo e servizi di notifica",
                             "heading": "Ricarica Configurazione YAML",
-                            "history_stats": "Ricarica le entità delle statistiche della cronologia",
+                            "history_stats": "Ricarica le entità delle statistiche storiche",
                             "homekit": "Ricarica HomeKit",
                             "input_boolean": "Ricarica input booleani",
-                            "input_datetime": "Ricarica input data e/o tempo",
+                            "input_datetime": "Ricarica input data e/o orari",
                             "input_number": "Ricarica input numerici",
                             "input_select": "Ricarica input a discesa",
                             "input_text": "Ricarica input testuali",
-                            "introduction": "Alcune parti di Home Assistant possono essere ricaricate senza richiedere un riavvio. Premendo su Ricarica si rimuoverà la loro Configurazione YAML  attuale e si caricherà la versione aggiornata.",
-                            "min_max": "Ricaricare le entità min/max",
-                            "mqtt": "Ricarica le entità mqtt",
-                            "person": "Ricaricare le persone",
-                            "ping": "Ricarica le entità del sensore binario ping",
+                            "introduction": "Alcune parti di Home Assistant possono essere ricaricate senza richiedere un riavvio. Premendo su Ricarica si rimuoverà la loro Configurazione YAML attuale e si caricherà la versione aggiornata.",
+                            "min_max": "Ricarica le entità min/max",
+                            "mqtt": "Ricarica le entità MQTT",
+                            "person": "Ricarica le persone",
+                            "ping": "Ricarica le entità del sensore binario Ping",
                             "reload": "Ricarica {domain}",
                             "rest": "Ricarica le entità di rest e i servizi di notifica",
-                            "rpi_gpio": "Ricarica le entità GPIO di Raspberry Pi ",
+                            "rpi_gpio": "Ricarica le entità GPIO di Raspberry Pi",
                             "scene": "Ricarica le Scene",
                             "script": "Ricarica gli Script",
-                            "smtp": "Ricarica i servizi di notifica smtp",
-                            "statistics": "Ricaricare le entità statistiche",
-                            "telegram": "Ricarica i servizi di notifica telegram",
-                            "template": "Ricaricare le entità modello",
-                            "trend": "Ricaricare le entità di tendenza",
+                            "smtp": "Ricarica i servizi di notifica SMTP",
+                            "statistics": "Ricarica le entità statistiche",
+                            "telegram": "Ricarica i servizi di notifica Telegram",
+                            "template": "Ricarica le entità modello",
+                            "trend": "Ricarica le entità di tendenza",
                             "universal": "Ricarica le entità del lettore multimediale universale",
-                            "zone": "Ricarica le zone"
+                            "zone": "Ricarica le Zone"
                         },
                         "server_management": {
                             "confirm_restart": "Sei sicuro di voler riavviare Home Assistant?",
-                            "confirm_stop": "Sei sicuro di voler fermare Home Assistant?",
-                            "heading": "Gestione del server",
+                            "confirm_stop": "Sei sicuro di voler arrestare Home Assistant?",
+                            "heading": "Gestione del Server",
                             "introduction": "Controllare il server Home Assistant... da Home Assistant.",
                             "restart": "Riavviare",
                             "stop": "Arrestare"
@@ -2086,6 +2140,7 @@
                     "create_automation": "Creare un'automazione con l'etichetta",
                     "description": "Gestisci le etichette",
                     "detail": {
+                        "companion_apps": "app complementari",
                         "create": "Crea",
                         "create_and_write": "Crea e Scrivi",
                         "delete": "Cancella",
@@ -2094,7 +2149,8 @@
                         "new_tag": "Nuova Etichetta",
                         "tag_id": "Id Etichetta",
                         "tag_id_placeholder": "Autogenerato quando lasciato vuoto",
-                        "update": "Aggiorna"
+                        "update": "Aggiorna",
+                        "usage": "Un tag può attivare un'automazione quando viene scansionato, puoi utilizzare tag NFC, codici QR o qualsiasi altro tipo di tag. Utilizza il nostro {companion_link} per scrivere questo tag su un tag NFC programmabile o crea un codice QR di seguito."
                     },
                     "edit": "Modifica",
                     "headers": {
