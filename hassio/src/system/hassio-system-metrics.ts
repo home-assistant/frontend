@@ -65,7 +65,9 @@ class HassioSystemMetrics extends LitElement {
       {
         description: "Used Space",
         value: this._getUsedSpace(this.hostInfo),
-        tooltip: `${this.hostInfo.disk_used} GB/${this.hostInfo.disk_total} GB`,
+        tooltip: `${
+          this.hostInfo.disk_used
+        } GB/${this.hostInfo.disk_total} GB`,
       },
     ];
 
