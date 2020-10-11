@@ -52,7 +52,10 @@
         },
         "humidifier": {
             "mode": {
-                "auto": "Auto"
+                "auto": "Auto",
+                "away": "Preč",
+                "comfort": "Komfort",
+                "eco": "Útlm"
             }
         }
     },
@@ -519,6 +522,7 @@
             },
             "date-range-picker": {
                 "end_date": "Dátum konca",
+                "select": "Výber",
                 "start_date": "Dátum začiatku"
             },
             "device-picker": {
@@ -635,6 +639,10 @@
                     "week": "{count} {count, plural,\none {týždeň}\nother {týždne}\n}"
                 },
                 "future": "O {time}",
+                "future_duration": {
+                    "day": "Za {count} {count, plural,\n  one {deň}\n  other {dní}\n}",
+                    "week": "Za {count} {count, plural,\n  one {týždeň}\n  other {týždňov}\n}"
+                },
                 "never": "Nikdy",
                 "past": "Pred {time}"
             },
@@ -778,13 +786,22 @@
                     "description": "Možnosti boli úspešne uložené."
                 }
             },
+            "quick-open": {
+                "commands": {
+                    "reload": {
+                        "mqtt": "Znovu načítať mqtt entity",
+                        "rpi_gpio": "Znovu načítať Raspberry Pi GPIO entity"
+                    }
+                },
+                "filter_placeholder": "Filter entít"
+            },
             "voice_command": {
                 "label": "Zadajte otázku a stlačte \"Enter\"",
                 "label_voice": "Zadajte a stlačte \"Enter\" alebo kliknite na mikrofón pre hlasové ovládanie"
             },
             "zha_device_info": {
                 "buttons": {
-                    "add": "Pridať zariadenia",
+                    "add": "Pridanie zariadení cez toto zariadenie",
                     "reconfigure": "Prekonfigurovať zariadenie",
                     "remove": "Odstrániť zariadenie",
                     "zigbee_information": "Informácie o Zigbee"
@@ -832,6 +849,7 @@
         "notification_toast": {
             "connection_lost": "Prerušené spojenie. Opätovné pripájanie...",
             "service_call_failed": "Nepodarilo sa zavolať službu {service}.",
+            "started": "Home Assistant je spustený!",
             "triggered": "Spustené {name}"
         },
         "panel": {
@@ -927,6 +945,7 @@
                                     "timeout": "Timeout (voliteľne)"
                                 },
                                 "wait_template": {
+                                    "continue_timeout": "Pokračovať v časovom limite",
                                     "label": "Čakať",
                                     "timeout": "Časový limit (voliteľné)",
                                     "wait_template": "Šablóna čakania"
@@ -1027,6 +1046,8 @@
                             "queued": "Fronta",
                             "restart": "Reštart"
                         },
+                        "move_down": "Posunúť dole",
+                        "move_up": "Posunúť hore",
                         "save": "Uložiť",
                         "triggers": {
                             "add": "Pridať spúšťač",
@@ -1237,10 +1258,13 @@
                     },
                     "google": {
                         "banner": "Úprava týchto entít cez  toto používateľské rozhranie je zakázaná, pretože ste nakonfigurovali filtre entít v súbore Configuration.yaml.",
+                        "dont_expose_entity": "Nevystavovať entitu",
                         "expose": "Sprístupniť pre Google Assistant",
+                        "expose_entity": "Vystaviť entitu",
                         "exposed": "{selected} vystavená",
                         "exposed_entities": "Zverejnené entity",
                         "follow_domain": "Sledovanie domény",
+                        "manage_domains": "Správa domén",
                         "not_exposed": "{selected} nevystavená",
                         "not_exposed_entities": "Nezverejnené entity",
                         "sync_to_google": "Synchronizujú sa zmeny v službe Google.",
@@ -1466,10 +1490,12 @@
                     "custom_uis": "Vlastné používateľské rozhrania:",
                     "description": "Zobraziť informácie o inštalácii Home Assistant",
                     "developed_by": "Vyvinuté partiou úžasných ľudí.",
+                    "documentation": "Dokumentácia",
                     "frontend": "frontend-ui",
                     "frontend_version": "Verzia frontendu: {version} - {type}",
                     "home_assistant_logo": "Home Assistant logo",
                     "icons_by": "Ikony od",
+                    "integrations": "Integrácie",
                     "license": "Publikované pod licenciou Apache 2.0",
                     "path_configuration": "Cesta k configuration.yaml: {path}",
                     "server": "server",
@@ -1717,6 +1743,7 @@
                     "create_person": "Vytvoriť osobu",
                     "description": "Spravujte osoby, ktoré Home Assistant sleduje.",
                     "detail": {
+                        "admin": "Administrator",
                         "allow_login": "Povoliť osobe prihlásiť sa",
                         "confirm_delete_user": "Naozaj chcete odstrániť používateľský účet pre {name} ? Stále môžete sledovať používateľa, ale osoba sa už nebude môcť prihlásiť.",
                         "create": "Vytvoriť",
@@ -1735,7 +1762,9 @@
                     },
                     "introduction": "Tu môžete definovať každú osobu, ktorá vás zaujíma v Home Assistant.",
                     "no_persons_created_yet": "Zdá sa, že ste ešte nevytvorili žiadne osoby.",
-                    "note_about_persons_configured_in_yaml": "Poznámka: osoby nakonfigurované prostredníctvom configuration.yaml nie je možné upravovať pomocou používateľského rozhrania."
+                    "note_about_persons_configured_in_yaml": "Poznámka: osoby nakonfigurované prostredníctvom configuration.yaml nie je možné upravovať pomocou používateľského rozhrania.",
+                    "person_not_found": "Nemohli sme nájsť osobu, ktorú ste sa snažili upraviť.",
+                    "person_not_found_title": "Osoba sa nenašla"
                 },
                 "scene": {
                     "activated": "Aktivovaná scéna {name}.",
@@ -1807,6 +1836,7 @@
                             "queued": "Fronta",
                             "restart": "Reštart"
                         },
+                        "save_script": "Uložiť skript",
                         "sequence": "Sekvencia",
                         "sequence_sentence": "Sled akcií tohto skriptu"
                     },
@@ -1819,6 +1849,7 @@
                         "introduction": "Editor skriptov vám umožňuje vytvárať a upravovať skripty. Postupujte podľa odkazu nižšie a prečítajte si pokyny, aby ste sa uistili, že ste Home Assistant nakonfigurovali správne.",
                         "learn_more": "Viac informácií o skriptoch",
                         "no_scripts": "Nenašli sa žiadne editovateľné skripty",
+                        "run_script": "Spustiť skript",
                         "show_info": "Zobraziť informácie o skripte"
                     }
                 },
@@ -1871,6 +1902,12 @@
                     "add_tag": "Pridať značku",
                     "caption": "Značky",
                     "description": "Správa značiek",
+                    "detail": {
+                        "companion_apps": "sprievodné aplikácie",
+                        "create": "Vytvoriť",
+                        "delete": "Odstrániť",
+                        "update": "Aktualizovať"
+                    },
                     "never_scanned": "Nikdy neskenované",
                     "no_tags": "Žiadne značky",
                     "write": "Zapísať"
@@ -2245,6 +2282,7 @@
                         },
                         "button": {
                             "default_action_help": "Predvolená akcia závisí od schopností entity, bude buď prepnutá, alebo sa zobrazí viac informácií.",
+                            "description": "Karta Button umožňuje pridávať tlačidlá na vykonávanie úloh.",
                             "name": "Tlačidlo"
                         },
                         "calendar": {
@@ -2260,6 +2298,8 @@
                         },
                         "conditional": {
                             "card": "Karta",
+                            "change_type": "Zmeniť typ",
+                            "condition_explanation": "Karta sa zobrazí, keď budú splnené VŠETKY nižšie uvedené podmienky.",
                             "conditions": "Podmienky",
                             "description": "Karta Podmienka zobrazuje ďalšiu kartu na základe stavu entity"
                         },
@@ -2268,6 +2308,7 @@
                             "required": "Požadované"
                         },
                         "entities": {
+                            "description": "Karta Entity je najbežnejším typom karty. Zoskupuje položky do zoznamov.",
                             "entity_row_editor": "Editor riadkov entít",
                             "entity_row": {
                                 "attribute": "Atribút",
@@ -2282,15 +2323,18 @@
                             "name": "Entity",
                             "secondary_info_values": {
                                 "brightness": "Jas",
+                                "entity-id": "ID entity",
                                 "last-changed": "Posledná zmena",
                                 "last-triggered": "Naposledy spustené",
                                 "none": "Žiadne sekundárne informácie",
-                                "position": "Pozícia"
+                                "position": "Pozícia",
+                                "tilt-position": "Pozícia dlaždice"
                             },
                             "show_header_toggle": "Zobraziť prepínač hlavičky?",
                             "toggle": "Prepnúť entity."
                         },
                         "entity-filter": {
+                            "description": "Karta Entity Filter vám umožňuje definovať zoznam entít, ktoré chcete sledovať, iba ak sú v určitom stave.",
                             "name": "Filter entít"
                         },
                         "entity": {
@@ -2298,6 +2342,7 @@
                             "name": "Entita"
                         },
                         "gauge": {
+                            "description": "Karta Gauge je základná karta, ktorá umožňuje vizuálne vidieť údaje senzora.",
                             "severity": {
                                 "green": "zelená",
                                 "red": "červená",
@@ -2336,12 +2381,15 @@
                         },
                         "glance": {
                             "columns": "Stĺpce",
+                            "description": "Karta Glance je užitočná na zoskupenie viacerých senzorov do kompaktného prehľadu.",
                             "name": "Náhľad"
                         },
                         "history-graph": {
+                            "description": "Karta Graf histórie umožňuje zobraziť graf pre každú z uvedených entít.",
                             "name": "Graf Histórie"
                         },
                         "horizontal-stack": {
+                            "description": "Karta Horizontal Stack vám umožňuje spojiť viac kariet, takže vždy sedia vedľa seba v priestore jedného stĺpca.",
                             "name": "Horizontálne zarovnanie"
                         },
                         "humidifier": {
@@ -2432,6 +2480,8 @@
                         "edit": "Upraviť",
                         "header": "Konfigurácia karty",
                         "move": "Presunúť",
+                        "move_after": "Presunúť kartu za",
+                        "move_before": "Presunúť kartu pred",
                         "options": "Viac možností",
                         "pick_card": "Ktorú kartu chcete pridať?",
                         "pick_card_view_title": "Ktorú kartu chcete pridať do svojho zobrazenia {name} ?",
@@ -2492,6 +2542,7 @@
                     "save_config": {
                         "cancel": "Zrušiť",
                         "close": "Zavrieť",
+                        "empty_config": "Začnite s prázdnou tabuľou",
                         "header": "Prevziať kontrolu rozhrania Lovelace",
                         "para": "Štandardne bude Home Assistant udržiavať vaše používateľské rozhranie a aktualizovať ho, keď budú k dispozícii nové entity alebo komponenty rozhrania Lovelace. Ak prevezmete kontrolu, už za vás nebudeme automaticky robiť zmeny.",
                         "para_sure": "Skutočne chcete prevziať kontrolu vášho používateľského rozhrania?",
@@ -2707,6 +2758,7 @@
                     "intro": "Dobrý deň, {name}, vitajte v Home Assistant. Ako by ste chceli pomenovať svoj domov?",
                     "intro_location": "Radi by sme vedeli, kde žijete. Tieto informácie vám pomôžu pri zobrazovaní informácií a nastavovaní automatizácie na základe slnka. Tieto údaje sa nikdy nezdieľajú mimo vašej siete.",
                     "intro_location_detect": "Môžeme vám pomôcť vyplniť tieto informácie jednorazovou žiadosťou o externú službu.",
+                    "location_name": "Názov vašej inštalácie Home Assistant",
                     "location_name_default": "Domov"
                 },
                 "integration": {
@@ -2823,6 +2875,9 @@
                     "last_used": "Naposledy použitý {date} z {location}",
                     "not_used": "Nikdy nebol použitý",
                     "token_title": "Obnovovací token pre {clientId}"
+                },
+                "suspend": {
+                    "header": "Automaticky ukončiť pripojenie"
                 },
                 "themes": {
                     "accent_color": "Farba zvýraznenia",
