@@ -8,6 +8,7 @@ import {
 import { css, html, svg, SVGTemplateResult, TemplateResult } from "lit-element";
 import { styleMap } from "lit-html/directives/style-map";
 import "../components/ha-icon";
+import "../components/ha-svg-icon";
 import type { HomeAssistant, WeatherEntity } from "../types";
 import { roundWithOneDecimal } from "../util/calculate";
 
