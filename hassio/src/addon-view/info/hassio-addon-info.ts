@@ -798,10 +798,10 @@ class HassioAddonInfo extends LitElement {
       );
       if (!validate.data.valid) {
         await showConfirmationDialog(this, {
-          title: "Failed to start addon - configruation validation faled!",
+          title: "Failed to start addon - configuration validation failed!",
           text: validate.data.message.split(" Got ")[0],
           confirm: () => this._openConfiguration(),
-          confirmText: "Go to configruation",
+          confirmText: "Go to configuration",
           dismissText: "Cancel",
         });
         button.progress = false;
