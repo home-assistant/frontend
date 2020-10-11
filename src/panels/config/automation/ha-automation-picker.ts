@@ -19,7 +19,6 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../components/entity/ha-entity-toggle";
-import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import {
   AutomationConfig,
