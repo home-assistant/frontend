@@ -71,7 +71,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   @internalProperty() private _errors?: string;
 
-  @internalProperty() private _mode = "gui";
+  @internalProperty() private _mode: "gui" | "yaml" = "gui";
 
   @query("ha-yaml-editor", true) private _editor?: HaYamlEditor;
 
@@ -109,7 +109,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
               ? html`<ha-svg-icon
                   slot="graphic"
                   .path=${mdiCheck}
-                ></ha-svg-icon> `
+                ></ha-svg-icon>`
               : ``}
           </mwc-list-item>
           <mwc-list-item
@@ -124,7 +124,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
               ? html`<ha-svg-icon
                   slot="graphic"
                   .path=${mdiCheck}
-                ></ha-svg-icon> `
+                ></ha-svg-icon>`
               : ``}
           </mwc-list-item>
 
@@ -152,9 +152,9 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           ${this._mode === "gui"
             ? html`
                 <div
-                  class="${classMap({
+                  class=${classMap({
                     rtl: computeRTL(this.hass),
-                  })}"
+                  })}
                 >
                   ${this._config
                     ? html`
@@ -191,7 +191,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                               >
                               </ha-icon-input>
                               ${!this.scriptEntityId
-                                ? html` <paper-input
+                                ? html`<paper-input
                                     .label=${this.hass.localize(
                                       "ui.panel.config.script.editor.id"
                                     )}
@@ -247,7 +247,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                               </paper-dropdown-menu-light>
                               ${this._config.mode &&
                               MODES_MAX.includes(this._config.mode)
-                                ? html` <paper-input
+                                ? html`<paper-input
                                     .label=${this.hass.localize(
                                       `ui.panel.config.script.editor.max.${this._config.mode}`
                                     )}
@@ -321,7 +321,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
             ? html`
                 <ha-config-section .isWide=${false}>
                   ${!this.narrow
-                    ? html` <span slot="header">${this._config?.alias}</span> `
+                    ? html`<span slot="header">${this._config?.alias}</span>`
                     : ``}
                   <ha-card>
                     <div class="card-content">
@@ -354,8 +354,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                         `
                       : ``}
                   </ha-card>
-                  <ha-config-section> </ha-config-section
-                ></ha-config-section>
+                </ha-config-section>
               `
             : ``}
         </div>

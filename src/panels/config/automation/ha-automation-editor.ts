@@ -93,7 +93,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   @internalProperty() private _entityId?: string;
 
-  @internalProperty() private _mode = "gui";
+  @internalProperty() private _mode: "gui" | "yaml" = "gui";
 
   @query("ha-yaml-editor", true) private _editor?: HaYamlEditor;
 
@@ -134,7 +134,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
               ? html`<ha-svg-icon
                   slot="graphic"
                   .path=${mdiCheck}
-                ></ha-svg-icon> `
+                ></ha-svg-icon>`
               : ``}
           </mwc-list-item>
           <mwc-list-item
@@ -149,7 +149,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
               ? html`<ha-svg-icon
                   slot="graphic"
                   .path=${mdiCheck}
-                ></ha-svg-icon> `
+                ></ha-svg-icon>`
               : ``}
           </mwc-list-item>
 
@@ -272,7 +272,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                             </paper-dropdown-menu-light>
                             ${this._config.mode &&
                             MODES_MAX.includes(this._config.mode)
-                              ? html` <paper-input
+                              ? html`<paper-input
                                   .label=${this.hass.localize(
                                     `ui.panel.config.automation.editor.max.${this._config.mode}`
                                   )}
