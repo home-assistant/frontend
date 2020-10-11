@@ -1,5 +1,6 @@
 import "@material/mwc-fab";
-import { mdiPlus } from "@mdi/js";
+import "@material/mwc-icon-button";
+import { mdiPlus, mdiHelpCircle } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   CSSResult,
@@ -16,8 +17,8 @@ import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../components/entity/ha-entity-toggle";
-import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import {
   AutomationConfig,
@@ -31,6 +32,7 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { showThingtalkDialog } from "./show-dialog-thingtalk";
+import { documentationUrl } from "../../../util/documentation-url";
 
 @customElement("ha-automation-picker")
 class HaAutomationPicker extends LitElement {
@@ -169,6 +171,9 @@ class HaAutomationPicker extends LitElement {
         )}
         hasFab
       >
+        <mwc-icon-button slot="toolbar-icon" @click=${this._showHelp}>
+          <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
+        </mwc-icon-button>
         <mwc-fab
           slot="fab"
           title=${this.hass.localize(
@@ -186,6 +191,26 @@ class HaAutomationPicker extends LitElement {
     ev.stopPropagation();
     const entityId = ev.currentTarget.automation.entity_id;
     fireEvent(this, "hass-more-info", { entityId });
+  }
+
+  private _showHelp() {
+    showAlertDialog(this, {
+      title: this.hass.localize("ui.panel.config.automation.caption"),
+      text: html`
+        ${this.hass.localize("ui.panel.config.automation.picker.introduction")}
+        <p>
+          <a
+            href="${documentationUrl(this.hass, "/docs/automation/editor/")}"
+            target="_blank"
+            rel="noreferrer"
+          >
+            ${this.hass.localize(
+              "ui.panel.config.automation.picker.learn_more"
+            )}
+          </a>
+        </p>
+      `,
+    });
   }
 
   private _execute(ev) {
