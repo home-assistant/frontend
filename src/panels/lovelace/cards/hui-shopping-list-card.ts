@@ -10,6 +10,7 @@ import {
   internalProperty,
   PropertyValues,
   TemplateResult,
+  query,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { repeat } from "lit-html/directives/repeat";
@@ -61,6 +62,8 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
   @internalProperty() private _renderEmptySortable = false;
 
   private _sortable?;
+
+  @query("#sortable", true) private _sortableEl?: HTMLElement;
 
   public getCardSize(): number {
     return (this._config ? (this._config.title ? 1 : 0) : 0) + 3;
@@ -300,7 +303,9 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
 
   private async _toggleReorder() {
     if (!Sortable) {
-      const sortableImport = await import("sortablejs/modular/sortable.core.esm");
+      const sortableImport = await import(
+        "sortablejs/modular/sortable.core.esm"
+      );
       Sortable = sortableImport.Sortable;
     }
     this._reordering = !this._reordering;
@@ -331,9 +336,11 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
         );
         this._renderEmptySortable = true;
         await this.updateComplete;
-        const container = this.shadowRoot!.getElementById("sortable")!;
-        while (container.lastElementChild) {
-          container.removeChild(container.lastElementChild);
+        const container = this._sortableEl;
+        if (container) {
+          while (container.lastElementChild) {
+            container.removeChild(container.lastElementChild);
+          }
         }
         this._renderEmptySortable = false;
       },
