@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import "../../../../components/ha-icon-button";
 import "@polymer/paper-tabs/paper-tab";
-import "@polymer/paper-tabs/paper-tabs";
+import "../../../../components/paper-tabs/paper-tabs";
 import {
   css,
   CSSResult,
@@ -158,9 +158,7 @@ export class HuiDialogEditView extends LitElement {
         .heading=${true}
       >
         <div slot="heading">
-          <h2>
-            ${this._viewConfigTitle}
-          </h2>
+          <h2>${this._viewConfigTitle}</h2>
           <paper-tabs
             scrollable
             hide-scroll-buttons

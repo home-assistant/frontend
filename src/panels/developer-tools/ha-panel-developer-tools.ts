@@ -3,7 +3,7 @@ import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "../../layouts/ha-app-layout";
 import "../../components/ha-icon-button";
 import "@polymer/paper-tabs/paper-tab";
-import "@polymer/paper-tabs/paper-tabs";
+import "../../components/paper-tabs/paper-tabs";
 import {
   css,
   CSSResultArray,
