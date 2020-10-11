@@ -172,13 +172,14 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
 
       return [state, start, end];
     };
-    
+
     const formatTooltipBeforeBody = (item, data) => {
       if (!item[0]) {
-        return '';
+        return "";
       }
+      // Extract the entity ID from the dataset.
       const values = data.datasets[item[0].datasetIndex];
-      return values.entity_id || '';
+      return values.entity_id || "";
     };
 
     const chartOptions = {
