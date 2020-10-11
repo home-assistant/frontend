@@ -1979,6 +1979,7 @@
                         "update": "Update"
                     },
                     "introduction": "Here you can define each person of interest in Home Assistant.",
+                    "learn_more": "Learn more about people",
                     "no_persons_created_yet": "Looks like you have not created any people yet.",
                     "note_about_persons_configured_in_yaml": "Note: people configured via configuration.yaml cannot be edited via the UI.",
                     "person_not_found": "We couldn't find the person you were trying to edit.",

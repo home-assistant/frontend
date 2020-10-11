@@ -611,6 +611,7 @@
                     "playlist": "Wiedergabeliste",
                     "podcast": "Podcast",
                     "season": "Episode",
+                    "track": "Titel",
                     "tv_show": "TV-Sendung",
                     "url": "URL",
                     "video": "Video"
@@ -804,6 +805,18 @@
                 },
                 "success": {
                     "description": "Optionen wurden erfolgreich gespeichert."
+                }
+            },
+            "quick-open": {
+                "commands": {
+                    "reload": {
+                        "filesize": "Dateigröße-Entitäten neu laden",
+                        "filter": "Filter-Entitäten neu laden",
+                        "mqtt": "MQTT-Entitäten neu laden",
+                        "reload": "{domain} neu laden",
+                        "scene": "Szenen neu laden",
+                        "script": "Skripte neu laden"
+                    }
                 }
             },
             "voice_command": {
@@ -1987,18 +2000,18 @@
                 },
                 "tags": {
                     "add_tag": "Tag hinzufügen",
-                    "automation_title": "Tag {name} ist gescannt",
-                    "caption": "Tags",
-                    "create_automation": "Automatisierung mit Tag erstellen",
-                    "description": "Tags verwalten",
+                    "automation_title": "NFC Tag {name} ist gescannt",
+                    "caption": "NFC Tags",
+                    "create_automation": "Automatisierung mit NFC Tag erstellen",
+                    "description": "NFC Tags verwalten",
                     "detail": {
                         "create": "Erstellen",
                         "create_and_write": "Erstellen und schreiben",
                         "delete": "Löschen",
                         "description": "Beschreibung",
                         "name": "Name",
-                        "new_tag": "Neuer Tag",
-                        "tag_id": "Tag ID",
+                        "new_tag": "Neuer NFC Tag",
+                        "tag_id": "NFC Tag ID",
                         "tag_id_placeholder": "Automatisch generiert, wenn leer gelassen",
                         "update": "Aktualisieren"
                     },
@@ -2008,7 +2021,7 @@
                         "name": "Name"
                     },
                     "never_scanned": "Nie gescannt",
-                    "no_tags": "Keine Tags",
+                    "no_tags": "Keine NFC Tags",
                     "write": "Schreiben"
                 },
                 "users": {
@@ -2435,6 +2448,7 @@
                             "name": "Schaltfläche"
                         },
                         "calendar": {
+                            "calendar_entities": "Kalender-Entitäten",
                             "description": "Die Kalenderkarte zeigt einen Kalender mit Tages-, Wochen- und Listenansichten an",
                             "inital_view": "Initiale Ansicht",
                             "name": "Kalender",
@@ -2468,6 +2482,7 @@
                                 "buttons": "Tasten",
                                 "call-service": "Dienst ausführen",
                                 "cast": "Cast",
+                                "conditional": "Bedingte Elemente",
                                 "divider": "Trennlinie",
                                 "weblink": "Webseiten Link"
                             },
@@ -2636,9 +2651,12 @@
                         "edit": "Bearbeiten",
                         "header": "Kartenkonfiguration",
                         "move": "Zur Ansicht Bewegen",
+                        "move_after": "Karte nach hinten verschieben",
+                        "move_before": "Karte nach vorne verschieben",
                         "options": "Mehr Optionen",
                         "pick_card": "Karte auswählen, die hinzugefügt werden soll.",
                         "pick_card_view_title": "Welche Karte möchten Sie Ihrer {name} -Ansicht hinzufügen?",
+                        "search_cards": "Karten suchen",
                         "show_code_editor": "Code-Editor anzeigen",
                         "show_visual_editor": "Visuellen Editor anzeigen",
                         "toggle_editor": "Editor umschalten",

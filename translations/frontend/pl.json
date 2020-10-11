@@ -676,11 +676,11 @@
                 },
                 "future": "Za {time}",
                 "future_duration": {
-                    "day": "W {count} {count, plural,\n  one {dzień}\n  other {dni}\n}",
-                    "hour": "W {count} {count, plural,\n  one {godzinę}\n  few {godziny}\n  many {godzin}\n  other {godzin}\n}",
-                    "minute": "W {count} {count, plural,\n  one {minutę}\n  few {minuty}\n  many {minut}\n  other {minut}\n}",
-                    "second": "W {count} {count, plural,\n  one {sekundę}\n  few {sekundy}\n  many {sekund}\n  other {sekund}\n}",
-                    "week": "W {count} {count, plural,\n  one {tydzień}\n  few {tygodnie}\n  many {tygodni}\n  other {tygodni}\n}"
+                    "day": "Za {count} {count, plural,\n  one {dzień}\n  other {dni}\n}",
+                    "hour": "Za {count} {count, plural,\n  one {godzinę}\n  few {godziny}\n  many {godzin}\n  other {godzin}\n}",
+                    "minute": "Za {count} {count, plural,\n  one {minutę}\n  few {minuty}\n  many {minut}\n  other {minut}\n}",
+                    "second": "Za {count} {count, plural,\n  one {sekundę}\n  few {sekundy}\n  many {sekund}\n  other {sekund}\n}",
+                    "week": "Za {count} {count, plural,\n  one {tydzień}\n  few {tygodnie}\n  many {tygodni}\n  other {tygodni}\n}"
                 },
                 "just_now": "Właśnie teraz",
                 "never": "Nigdy",
@@ -891,7 +891,7 @@
                     "clusters": "Zarządzaj klastrami",
                     "reconfigure": "Rekonfiguracja urządzenia",
                     "remove": "Usuń urządzenie",
-                    "zigbee_information": "Informacje Zigbee"
+                    "zigbee_information": "Sygnatura urządzenia Zigbee"
                 },
                 "confirmations": {
                     "remove": "Czy na pewno chcesz usunąć urządzenie?"
@@ -1570,6 +1570,7 @@
                 },
                 "entities": {
                     "caption": "Rejestr encji",
+                    "description": "Zarządzaj znanymi encjami",
                     "picker": {
                         "disable_selected": {
                             "button": "Wyłącz wybrane",
@@ -2186,7 +2187,7 @@
                         "name": "Nazwa",
                         "new_password": "Nowe hasło",
                         "owner": "Właściciel",
-                        "password_changed": "Hasło zostało zmienione!",
+                        "password_changed": "Hasło zostało zmienione pomyślnie",
                         "system_generated": "Wygenerowany przez system",
                         "system_generated_users_not_editable": "Nie można zaktualizować użytkowników generowanych przez system.",
                         "system_generated_users_not_removable": "Nie można usunąć użytkowników wygenerowanych przez system.",
