@@ -336,11 +336,8 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
         );
         this._renderEmptySortable = true;
         await this.updateComplete;
-        const container = this._sortableEl;
-        if (container) {
-          while (container.lastElementChild) {
-            container.removeChild(container.lastElementChild);
-          }
+        while (this._sortableEl?.lastElementChild) {
+          this._sortableEl.removeChild(this._sortableEl.lastElementChild);
         }
         this._renderEmptySortable = false;
       },
