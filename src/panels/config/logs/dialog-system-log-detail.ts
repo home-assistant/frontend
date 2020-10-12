@@ -207,7 +207,6 @@ class DialogSystemLogDetail extends LitElement {
         }
         .heading {
           display: flex;
-          display: flex;
           align-items: center;
           justify-content: space-between;
         }
