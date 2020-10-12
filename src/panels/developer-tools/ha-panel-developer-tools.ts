@@ -46,7 +46,6 @@ class PanelDeveloperTools extends LitElement {
           </app-toolbar>
           <paper-tabs
             scrollable
-            hide-scroll-buttons
             attr-for-selected="page-name"
             .selected=${page}
             @iron-activate=${this.handlePageSelected}
