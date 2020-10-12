@@ -76,7 +76,7 @@ class SystemHealthCard extends LitElement {
           );
         }
         sections.push(html`
-          <table class="table-${domain}">
+          <table>
             ${keys}
           </table>
         `);
@@ -86,7 +86,9 @@ class SystemHealthCard extends LitElement {
     return html`
       <ha-card>
         <div class="card-header">
-          ${domainToName(this.hass.localize, "system_health")}
+          <div class="card-header-text">
+            ${domainToName(this.hass.localize, "system_health")}
+          </div>
           <mwc-icon-button id="copy" @click=${this._copyInfo}>
             <ha-svg-icon .path=${mdiContentCopy}></ha-svg-icon>
           </mwc-icon-button>
@@ -126,15 +128,25 @@ class SystemHealthCard extends LitElement {
   }
 
   private _copyInfo(): void {
-    const copyElement = this.shadowRoot?.querySelector(
-      ".table-homeassistant"
+    // We have to copy title text and content separately, because
+    // copying the whole <ha-card> would also copy the tooltip text.
+    const selection = window.getSelection()!;
+    selection.removeAllRanges();
+
+    let copyElement = this.shadowRoot?.querySelector(
+      ".card-header-text"
     ) as HTMLElement;
 
-    const selection = window.getSelection()!;
-    const range = document.createRange();
-
+    let range = document.createRange();
     range.selectNodeContents(copyElement);
-    selection.removeAllRanges();
+    selection.addRange(range);
+
+    copyElement = this.shadowRoot?.querySelector(
+      ".card-content"
+    ) as HTMLElement;
+
+    range = document.createRange();
+    range.selectNodeContents(copyElement);
     selection.addRange(range);
 
     document.execCommand("copy");
@@ -160,8 +172,9 @@ class SystemHealthCard extends LitElement {
         justify-content: center;
       }
 
-      #copy {
-        float: right;
+      .card-header {
+        justify-content: space-between;
+        display: flex;
       }
     `;
   }
