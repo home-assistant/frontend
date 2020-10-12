@@ -1979,6 +1979,7 @@
                         "update": "更新"
                     },
                     "introduction": "此處可定義 Home Assistant 中的每一位成員。",
+                    "learn_more": "詳細了解人員",
                     "no_persons_created_yet": "看起來您還沒有新增任何人員。",
                     "note_about_persons_configured_in_yaml": "請注意：透過 configuration.yaml 設定的人員將無法透過 UI 進行編輯。",
                     "person_not_found": "找不到任何可編輯人員",
