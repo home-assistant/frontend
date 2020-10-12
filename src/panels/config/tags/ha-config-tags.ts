@@ -213,6 +213,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
     showAlertDialog(this, {
       title: this.hass.localize("ui.panel.config.tags.caption"),
       text: html`
+        <p>
         ${this.hass.localize(
           "ui.panel.config.tags.detail.usage",
           "companion_link",
@@ -225,6 +226,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
             )}</a
           >`
         )}
+        </p>
         <p>
           <a
             href="${documentationUrl(this.hass, "/integrations/tag/")}"
