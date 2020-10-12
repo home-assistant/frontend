@@ -446,7 +446,7 @@
       }
     },
     "dialogs": {
-      "quick-open": {
+      "quick-bar": {
         "commands": {
           "reload": {
             "reload": "[%key:ui::panel::config::server_control::section::reloading::reload%]",
