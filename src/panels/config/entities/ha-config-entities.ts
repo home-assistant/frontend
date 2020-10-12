@@ -269,6 +269,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       showReadOnly: boolean
     ): EntityRow[] => {
       const result: EntityRow[] = [];
+      // If nothing gets filtered, this is our correct count of entities
+      let startLength = entities.length + stateEntities.length;
 
       entities = showReadOnly ? entities.concat(stateEntities) : entities;
 
@@ -278,11 +280,17 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             entities = entities.filter(
               (entity) => entity.config_entry_id === value
             );
+            // If we have an active filter and `showReadOnly` is true, the length of `entities` is correct.
+            // If however, the read-only entities were not added before, we need to check how many would
+            // have matched the active filter and add that number to the count.
+            startLength = entities.length;
+            if (!showReadOnly)
+              startLength += stateEntities.filter(
+                (entity) => entity.config_entry_id === value
+              ).length;
             break;
         }
       });
-
-      const startLength = entities.length;
 
       if (!showDisabled) {
         entities = entities.filter((entity) => !entity.disabled_by);
@@ -786,7 +794,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     this._showDisabled = true;
     this._showReadOnly = true;
     this._showUnavailable = true;
-    navigate(this, window.location.pathname, true);
   }
 
   static get styles(): CSSResult[] {
