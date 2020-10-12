@@ -3,9 +3,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -21,19 +21,20 @@ import "../../../components/ha-icon";
 import { UNAVAILABLE } from "../../../data/entity";
 import {
   getSecondaryWeatherAttribute,
-  getWeatherUnit,
   getWeatherStateIcon,
+  getWeatherUnit,
   getWind,
+  weatherAttrIcons,
   weatherSVGStyles,
 } from "../../../data/weather";
 import type { HomeAssistant, WeatherEntity } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entites";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { installResizeObserver } from "../common/install-resize-observer";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { WeatherForecastCardConfig } from "./types";
-import { installResizeObserver } from "../common/install-resize-observer";
 
 const DAY_IN_MILLISECONDS = 86400000;
 
@@ -222,9 +223,19 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
               <div class="attribute">
                 ${this._config.secondary_info_attribute !== undefined
                   ? html`
-                      ${this.hass!.localize(
-                        `ui.card.weather.attributes.${this._config.secondary_info_attribute}`
-                      )}
+                      ${this._config.secondary_info_attribute in
+                      weatherAttrIcons
+                        ? html`
+                            <ha-svg-icon
+                              class="attr-icon"
+                              .path=${weatherAttrIcons[
+                                this._config.secondary_info_attribute
+                              ]}
+                            ></ha-svg-icon>
+                          `
+                        : this.hass!.localize(
+                            `ui.card.weather.attributes.${this._config.secondary_info_attribute}`
+                          )}
                       ${this._config.secondary_info_attribute === "wind_speed"
                         ? getWind(
                             this.hass,
@@ -477,6 +488,10 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
         .forecast-icon {
           --mdc-icon-size: 40px;
+        }
+
+        .attr-icon {
+          --mdc-icon-size: 20px;
         }
 
         .attribute,

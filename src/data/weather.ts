@@ -1,6 +1,14 @@
-import { SVGTemplateResult, svg, html, TemplateResult, css } from "lit-element";
+import {
+  mdiGauge,
+  mdiWaterPercent,
+  mdiWeatherFog,
+  mdiWeatherRainy,
+  mdiWeatherWindy,
+} from "@mdi/js";
+import { css, html, svg, SVGTemplateResult, TemplateResult } from "lit-element";
 import { styleMap } from "lit-html/directives/style-map";
-
+import "../components/ha-icon";
+import "../components/ha-svg-icon";
 import type { HomeAssistant, WeatherEntity } from "../types";
 import { roundWithOneDecimal } from "../util/calculate";
 
@@ -23,6 +31,15 @@ export const weatherSVGs = new Set<string>([
 
 export const weatherIcons = {
   exceptional: "hass:alert-circle-outline",
+};
+
+export const weatherAttrIcons = {
+  humidity: mdiWaterPercent,
+  wind_bearing: mdiWeatherWindy,
+  wind_speed: mdiWeatherWindy,
+  pressure: mdiGauge,
+  visibility: mdiWeatherFog,
+  precipitation: mdiWeatherRainy,
 };
 
 const cloudyStates = new Set<string>([
@@ -110,6 +127,7 @@ export const getWeatherUnit = (
       return lengthUnit === "km" ? "hPa" : "inHg";
     case "wind_speed":
       return `${lengthUnit}/h`;
+    case "visibility":
     case "length":
       return lengthUnit;
     case "precipitation":
@@ -125,7 +143,7 @@ export const getWeatherUnit = (
 export const getSecondaryWeatherAttribute = (
   hass: HomeAssistant,
   stateObj: WeatherEntity
-): string | undefined => {
+): TemplateResult | undefined => {
   const extrema = getWeatherExtrema(hass, stateObj);
 
   if (extrema) {
@@ -149,17 +167,22 @@ export const getSecondaryWeatherAttribute = (
     return undefined;
   }
 
-  return `
-    ${hass!.localize(
-      `ui.card.weather.attributes.${attribute}`
-    )} ${roundWithOneDecimal(value)} ${getWeatherUnit(hass!, attribute)}
+  const weatherAttrIcon = weatherAttrIcons[attribute];
+
+  return html`
+    ${weatherAttrIcon
+      ? html`
+          <ha-svg-icon class="attr-icon" .path=${weatherAttrIcon}></ha-svg-icon>
+        `
+      : hass!.localize(`ui.card.weather.attributes.${attribute}`)}
+    ${roundWithOneDecimal(value)} ${getWeatherUnit(hass!, attribute)}
   `;
 };
 
 const getWeatherExtrema = (
   hass: HomeAssistant,
   stateObj: WeatherEntity
-): string | undefined => {
+): TemplateResult | undefined => {
   if (!stateObj.attributes.forecast?.length) {
     return undefined;
   }
@@ -189,22 +212,18 @@ const getWeatherExtrema = (
 
   const unit = getWeatherUnit(hass!, "temperature");
 
-  return `
-    ${
-      tempHigh
-        ? `
+  return html`
+    ${tempHigh
+      ? `
             ${tempHigh} ${unit}
           `
-        : ""
-    }
+      : ""}
     ${tempLow && tempHigh ? " / " : ""}
-    ${
-      tempLow
-        ? `
+    ${tempLow
+      ? `
           ${tempLow} ${unit}
         `
-        : ""
-    }
+      : ""}
   `;
 };
 
