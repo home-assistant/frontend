@@ -268,12 +268,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       showUnavailable: boolean,
       showReadOnly: boolean
     ): EntityRow[] => {
-      const startLength = entities.length + stateEntities.length;
-
-      if (!showDisabled) {
-        entities = entities.filter((entity) => !entity.disabled_by);
-      }
-
       const result: EntityRow[] = [];
 
       entities = showReadOnly ? entities.concat(stateEntities) : entities;
@@ -287,6 +281,12 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             break;
         }
       });
+
+      const startLength = entities.length;
+
+      if (!showDisabled) {
+        entities = entities.filter((entity) => !entity.disabled_by);
+      }
 
       for (const entry of entities) {
         const entity = this.hass.states[entry.entity_id];
