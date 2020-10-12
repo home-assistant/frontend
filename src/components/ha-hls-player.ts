@@ -154,6 +154,7 @@ class HaHLSPlayer extends LitElement {
   }
 
   private _resizeExoPlayer = () => {
+    if (!this._videoEl) return;
     const rect = this._videoEl.getBoundingClientRect();
     this.hass!.auth.external!.fireMessage({
       type: "exoplayer/resize",
