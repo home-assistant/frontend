@@ -58,7 +58,10 @@ import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "../../../components/ha-svg-icon";
 import { mdiContentSave } from "@mdi/js";
-import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
+import {
+  HAKeyboardShortcut,
+  KeyboardShortcutMixin,
+} from "../../../mixins/keyboard-shortcut-mixin";
 
 interface DeviceEntities {
   id: string;
@@ -414,6 +417,10 @@ export class HaSceneEditor extends SubscribeMixin(
     `;
   }
 
+  protected firstUpdated() {
+    this.registerShortcut(HAKeyboardShortcut.CTRL_S, () => this._saveScene());
+  }
+
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
@@ -717,10 +724,6 @@ export class HaSceneEditor extends SubscribeMixin(
       this._errors = err.body.message || err.message;
       throw err;
     }
-  }
-
-  protected handleKeyboardSave() {
-    this._saveScene();
   }
 
   static get styles(): CSSResult[] {

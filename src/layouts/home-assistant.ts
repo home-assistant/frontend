@@ -17,10 +17,23 @@ import {
 import "./ha-init-page";
 import "./home-assistant-main";
 import { storeState } from "../util/ha-pref-storage";
-import QuickBarMixin from "../state/quick-bar-mixin";
+import {
+  KeyboardShortcutMixin,
+  HAKeyboardShortcut,
+} from "../mixins/keyboard-shortcut-mixin";
+import {
+  QuickBarParams,
+  showQuickBar,
+} from "../dialogs/quick-bar/show-dialog-quick-bar";
+
+declare global {
+  interface HASSDomEvents {
+    "hass-quick-open": QuickBarParams;
+  }
+}
 
 @customElement("home-assistant")
-export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
+export class HomeAssistantAppEl extends KeyboardShortcutMixin(HassElement) {
   @internalProperty() private _route?: Route;
 
   @internalProperty() private _error = false;
@@ -131,6 +144,18 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
       const { auth, conn } = result;
       this._haVersion = conn.haVersion;
       this.initializeHass(auth, conn);
+
+      this.registerShortcut(
+        HAKeyboardShortcut.CTRL_P,
+        () => showQuickBar(this, {}),
+        document
+      );
+
+      this.registerShortcut(
+        HAKeyboardShortcut.CTRL_SHIFT_P,
+        () => showQuickBar(this, { commandMode: true }),
+        document
+      );
     } catch (err) {
       this._error = true;
     }
