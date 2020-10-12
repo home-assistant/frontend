@@ -20,7 +20,7 @@ import { componentsWithService } from "../../common/config/components_with_servi
 import { domainIcon } from "../../common/entity/domain_icon";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { domainToName } from "../../data/integration";
-import { QuickOpenDialogParams } from "./show-dialog-quick-open";
+import { QuickBarParams } from "./show-dialog-quick-bar";
 import { HassEntity } from "home-assistant-js-websocket";
 import { compare } from "../../common/string/compare";
 import memoizeOne from "memoize-one";
@@ -29,8 +29,8 @@ interface CommandItem extends ServiceCallRequest {
   text: string;
 }
 
-@customElement("ha-quick-open-dialog")
-export class QuickOpenDialog extends LitElement {
+@customElement("ha-quick-bar")
+export class QuickBar extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @internalProperty() private _commandItems: CommandItem[] = [];
@@ -41,7 +41,7 @@ export class QuickOpenDialog extends LitElement {
 
   @internalProperty() private _commandMode = false;
 
-  public async showDialog(params: QuickOpenDialogParams) {
+  public async showDialog(params: QuickBarParams) {
     this._commandMode = params.commandMode || false;
     this._opened = true;
     this._commandItems = this._generateCommandItems();
@@ -67,7 +67,7 @@ export class QuickOpenDialog extends LitElement {
           class="heading"
           @value-changed=${this._entityFilterChanged}
           .label=${this.hass.localize(
-            "ui.dialogs.quick-open.filter_placeholder"
+            "ui.dialogs.quick-bar.filter_placeholder"
           )}
           type="search"
           value=${this._commandMode ? `>${this._itemFilter}` : this._itemFilter}
@@ -138,9 +138,9 @@ export class QuickOpenDialog extends LitElement {
 
     return reloadableDomains.map((domain) => ({
       text:
-        this.hass.localize(`ui.dialogs.quick-open.commands.reload.${domain}`) ||
+        this.hass.localize(`ui.dialogs.quick-bar.commands.reload.${domain}`) ||
         this.hass.localize(
-          "ui.dialogs.quick-open.commands.reload.reload",
+          "ui.dialogs.quick-bar.commands.reload.reload",
           "domain",
           domainToName(this.hass.localize, domain)
         ),
@@ -220,6 +220,6 @@ export class QuickOpenDialog extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-quick-open-dialog": QuickOpenDialog;
+    "ha-quick-bar": QuickBar;
   }
 }
