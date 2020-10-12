@@ -174,7 +174,7 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
     };
 
     const formatTooltipBeforeBody = (item, data) => {
-      if (!item[0]) {
+      if (!this.hass.userData?.showAdvanced || !item[0]) {
         return "";
       }
       // Extract the entity ID from the dataset.
