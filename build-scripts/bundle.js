@@ -52,7 +52,10 @@ module.exports.terserOptions = (latestBuild) => ({
 module.exports.babelOptions = ({ latestBuild }) => ({
   babelrc: false,
   presets: [
-    !latestBuild && [require("@babel/preset-env").default, { modules: false }],
+    !latestBuild && [
+      require("@babel/preset-env").default,
+      { modules: false, useBuiltIns: "entry", corejs: 3 },
+    ],
     require("@babel/preset-typescript").default,
   ].filter(Boolean),
   plugins: [
