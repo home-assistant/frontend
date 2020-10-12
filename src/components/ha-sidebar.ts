@@ -1,3 +1,5 @@
+import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-list/mwc-list";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-icon-button";
 import {
@@ -9,8 +11,6 @@ import {
   mdiPlus,
   mdiViewDashboard,
 } from "@mdi/js";
-import "@polymer/paper-item/paper-icon-item";
-import type { PaperIconItemElement } from "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
@@ -48,6 +48,7 @@ import "./ha-icon";
 import "./ha-menu-button";
 import "./ha-svg-icon";
 import "./user/ha-user-badge";
+import { navigate } from "../common/navigate";
 
 const SHOW_AFTER_SPACER = ["config", "developer-tools", "hassio"];
 
@@ -201,6 +202,8 @@ class HaSidebar extends LitElement {
 
   private _sortable?;
 
+  private _selectItem(ev: Event) {}
+
   protected render() {
     const hass = this.hass;
 
@@ -255,12 +258,11 @@ class HaSidebar extends LitElement {
             : "Home Assistant"}
         </div>
       </div>
-      <paper-listbox
-        attr-for-selected="data-panel"
+      <mwc-list
+        activatable
+        @selected=${this._selectItem}
         class="ha-scrollbar"
-        .selected=${hass.panelUrl}
-        @focusin=${this._listboxFocusIn}
-        @focusout=${this._listboxFocusOut}
+        attr-for-selected="data-panel"
         @scroll=${this._listboxScroll}
         @keydown=${this._listboxKeydown}
       >
@@ -273,7 +275,8 @@ class HaSidebar extends LitElement {
               )}
             </div>`
           : this._renderPanels(beforeSpacer)}
-        <div class="spacer" disabled></div>
+
+        <mwc-list-item class="spacer" disabled></mwc-list-item>
         ${this.editMode && this._hiddenPanels.length
           ? html`
               ${this._hiddenPanels.map((url) => {
@@ -281,7 +284,7 @@ class HaSidebar extends LitElement {
                 if (!panel) {
                   return "";
                 }
-                return html`<paper-icon-item
+                return html`<mwc-list-item
                   @click=${this._unhidePanel}
                   class="hidden-panel"
                   .panel=${url}
@@ -292,35 +295,32 @@ class HaSidebar extends LitElement {
                       ? "mdi:view-dashboard"
                       : panel.icon}
                   ></ha-icon>
-                  <span class="item-text"
-                    >${panel.url_path === this.hass.defaultPanel
-                      ? hass.localize("panel.states")
-                      : hass.localize(`panel.${panel.title}`) ||
-                        panel.title}</span
-                  >
+                  ${panel.url_path === this.hass.defaultPanel
+                    ? hass.localize("panel.states")
+                    : hass.localize(`panel.${panel.title}`) || panel.title}
                   <mwc-icon-button class="show-panel">
                     <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
                   </mwc-icon-button>
-                </paper-icon-item>`;
+                </mwc-list-item>`;
               })}
-              <div class="spacer" disabled></div>
+              <mwc-list-item class="spacer" disabled></mwc-list-item>>
             `
           : ""}
         ${this._renderPanels(afterSpacer)}
         ${this._externalConfig && this._externalConfig.hasSettingsScreen
           ? html`
-              <a
-                aria-role="option"
-                aria-label=${hass.localize(
-                  "ui.sidebar.external_app_configuration"
-                )}
-                href="#external-app-configuration"
-                tabindex="-1"
-                @click=${this._handleExternalAppConfiguration}
-                @mouseenter=${this._itemMouseEnter}
-                @mouseleave=${this._itemMouseLeave}
-              >
-                <paper-icon-item>
+              <mwc-list-item>
+                <a
+                  aria-role="option"
+                  aria-label=${hass.localize(
+                    "ui.sidebar.external_app_configuration"
+                  )}
+                  href="#external-app-configuration"
+                  tabindex="-1"
+                  @click=${this._handleExternalAppConfiguration}
+                  @mouseenter=${this._itemMouseEnter}
+                  @mouseleave=${this._itemMouseLeave}
+                >
                   <ha-svg-icon
                     slot="item-icon"
                     .path=${mdiCellphoneCog}
@@ -328,70 +328,59 @@ class HaSidebar extends LitElement {
                   <span class="item-text">
                     ${hass.localize("ui.sidebar.external_app_configuration")}
                   </span>
-                </paper-icon-item>
-              </a>
+                </a>
+              </mwc-list-item>
             `
           : ""}
-      </paper-listbox>
+      </mwc-list>
 
       <div class="divider"></div>
 
-      <div
-        class="notifications-container"
+      <mwc-list-item
+        class="notifications"
+        aria-role="option"
+        @click=${this._handleShowNotificationDrawer}
         @mouseenter=${this._itemMouseEnter}
         @mouseleave=${this._itemMouseLeave}
+        graphic="icon"
       >
-        <paper-icon-item
-          class="notifications"
-          aria-role="option"
-          @click=${this._handleShowNotificationDrawer}
-        >
-          <ha-svg-icon slot="item-icon" .path=${mdiBell}></ha-svg-icon>
-          ${!this.expanded && notificationCount > 0
-            ? html`
-                <span class="notification-badge" slot="item-icon">
-                  ${notificationCount}
-                </span>
-              `
-            : ""}
-          <span class="item-text">
-            ${hass.localize("ui.notification_drawer.title")}
-          </span>
-          ${this.expanded && notificationCount > 0
-            ? html`
-                <span class="notification-badge">${notificationCount}</span>
-              `
-            : ""}
-        </paper-icon-item>
-      </div>
-
-      <a
+        <ha-svg-icon slot="graphic" .path=${mdiBell}></ha-svg-icon>
+        ${!this.expanded && notificationCount > 0
+          ? html`
+              <span class="notification-badge" slot="graphic">
+                ${notificationCount}
+              </span>
+            `
+          : ""}
+        ${hass.localize("ui.notification_drawer.title")}
+        ${this.expanded && notificationCount > 0
+          ? html` <span class="notification-badge">${notificationCount}</span> `
+          : ""}
+      </mwc-list-item>
+      <mwc-list-item
         class=${classMap({
           profile: true,
           // Mimick behavior that paper-listbox provides
           "iron-selected": hass.panelUrl === "profile",
         })}
-        href="/profile"
-        data-panel="panel"
-        tabindex="-1"
+        .url=${`/profile`}
+        data-panel=${"profile"}
+        .activated=${this.hass.panelUrl === "profile"}
         aria-role="option"
         aria-label=${hass.localize("panel.profile")}
+        @click=${this._navigateToPanel}
         @mouseenter=${this._itemMouseEnter}
         @mouseleave=${this._itemMouseLeave}
+        graphic="avatar"
       >
-        <paper-icon-item>
-          <ha-user-badge
-            slot="item-icon"
-            .user=${hass.user}
-            .hass=${hass}
-          ></ha-user-badge>
-
-          <span class="item-text">
-            ${hass.user ? hass.user.name : ""}
-          </span>
-        </paper-icon-item>
-      </a>
-      <div disabled class="bottom-spacer"></div>
+        <ha-user-badge
+          .user=${hass.user}
+          .hass=${hass}
+          slot="graphic"
+        ></ha-user-badge>
+        ${hass.user ? hass.user.name : ""}
+      </mwc-list-item>
+      <mwc-list-item disabled class="bottom-spacer"></mwc-list-item>
       <div class="tooltip"></div>
     `;
   }
@@ -491,7 +480,7 @@ class HaSidebar extends LitElement {
     if (!Sortable) {
       const [sortableImport, sortStylesImport] = await Promise.all([
         import("sortablejs/modular/sortable.core.esm"),
-        import("../resources/ha-sortable-style"),
+        import("../resources/ha-sortable-style-mwc"),
       ]);
 
       const style = document.createElement("style");
@@ -513,7 +502,7 @@ class HaSidebar extends LitElement {
       animation: 150,
       fallbackClass: "sortable-fallback",
       dataIdAttr: "data-panel",
-      handle: "paper-icon-item",
+      handle: "mwc-list-item",
       onSort: async () => {
         this._panelOrder = this._sortable.toArray();
       },
@@ -575,7 +564,7 @@ class HaSidebar extends LitElement {
       clearTimeout(this._mouseLeaveTimeout);
       this._mouseLeaveTimeout = undefined;
     }
-    this._showTooltip(ev.currentTarget as PaperIconItemElement);
+    this._showTooltip(ev.currentTarget);
   }
 
   private _itemMouseLeave() {
@@ -591,7 +580,7 @@ class HaSidebar extends LitElement {
     if (this.expanded || ev.target.nodeName !== "A") {
       return;
     }
-    this._showTooltip(ev.target.querySelector("paper-icon-item"));
+    this._showTooltip(ev.target.querySelector("mwc-list-item"));
   }
 
   private _listboxFocusOut() {
@@ -615,18 +604,20 @@ class HaSidebar extends LitElement {
     this._recentKeydownActiveUntil = new Date().getTime() + 100;
   }
 
-  private _showTooltip(item: PaperIconItemElement) {
+  private _showTooltip(_item: EventTarget) {
+    const item = _item as any;
+
     if (this._tooltipHideTimeout) {
       clearTimeout(this._tooltipHideTimeout);
       this._tooltipHideTimeout = undefined;
     }
     const tooltip = this._tooltip;
-    const listbox = this.shadowRoot!.querySelector("paper-listbox")!;
+    const listbox = this.shadowRoot!.querySelector("mwc-list")!;
     let top = item.offsetTop + 11;
     if (listbox.contains(item)) {
       top -= listbox.scrollTop;
     }
-    tooltip.innerHTML = item.querySelector(".item-text")!.innerHTML;
+    tooltip.innerHTML = item.text;
     tooltip.style.display = "block";
     tooltip.style.top = `${top}px`;
     tooltip.style.left = `${item.offsetLeft + item.clientWidth + 4}px`;
@@ -675,6 +666,10 @@ class HaSidebar extends LitElement {
     );
   }
 
+  private _navigateToPanel(ev: Event) {
+    navigate(this, (ev.currentTarget as any).url);
+  }
+
   private _renderPanel(
     urlPath: string,
     title: string | null,
@@ -682,23 +677,19 @@ class HaSidebar extends LitElement {
     iconPath?: string | null
   ) {
     return html`
-      <a
-        aria-role="option"
-        href=${`/${urlPath}`}
+      <mwc-list-item
+        @click=${this._navigateToPanel}
+        .url=${`/${urlPath}`}
         data-panel=${urlPath}
-        tabindex="-1"
+        .activated=${urlPath === this.hass.panelUrl}
+        graphic="icon"
         @mouseenter=${this._itemMouseEnter}
         @mouseleave=${this._itemMouseLeave}
       >
-        <paper-icon-item>
-          ${iconPath
-            ? html`<ha-svg-icon
-                slot="item-icon"
-                .path=${iconPath}
-              ></ha-svg-icon>`
-            : html`<ha-icon slot="item-icon" .icon=${icon}></ha-icon>`}
-          <span class="item-text">${title}</span>
-        </paper-icon-item>
+        ${iconPath
+          ? html`<ha-svg-icon .path=${iconPath} slot="graphic"></ha-svg-icon>`
+          : html`<ha-icon .icon=${icon} slot="graphic"></ha-icon>`}
+        ${title}
         ${this.editMode
           ? html`<mwc-icon-button
               class="hide-panel"
@@ -708,7 +699,7 @@ class HaSidebar extends LitElement {
               <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
             </mwc-icon-button>`
           : ""}
-      </a>
+      </mwc-list-item>
     `;
   }
 
@@ -788,7 +779,7 @@ class HaSidebar extends LitElement {
           display: none;
         }
 
-        paper-listbox {
+        mwc-list {
           padding: 4px 0;
           display: flex;
           flex-direction: column;
@@ -799,7 +790,7 @@ class HaSidebar extends LitElement {
           margin-left: env(safe-area-inset-left);
         }
 
-        :host([rtl]) paper-listbox {
+        :host([rtl]) mwc-list {
           margin-left: initial;
           margin-right: env(safe-area-inset-right);
         }
@@ -814,7 +805,7 @@ class HaSidebar extends LitElement {
           outline: 0;
         }
 
-        paper-icon-item {
+        mwc-list-item {
           box-sizing: border-box;
           margin: 4px 8px;
           padding-left: 12px;
@@ -822,10 +813,10 @@ class HaSidebar extends LitElement {
           --paper-item-min-height: 40px;
           width: 48px;
         }
-        :host([expanded]) paper-icon-item {
+        :host([expanded]) mwc-list-item {
           width: 240px;
         }
-        :host([rtl]) paper-icon-item {
+        :host([rtl]) mwc-list-item {
           padding-left: auto;
           padding-right: 12px;
         }
@@ -834,8 +825,8 @@ class HaSidebar extends LitElement {
         ha-svg-icon[slot="item-icon"] {
           color: var(--sidebar-icon-color);
         }
-
-        .iron-selected paper-icon-item::before,
+        /* 
+        .iron-selected mwc-list-item::before,
         a:not(.iron-selected):focus::before {
           border-radius: 4px;
           position: absolute;
@@ -848,7 +839,7 @@ class HaSidebar extends LitElement {
           transition: opacity 15ms linear;
           will-change: opacity;
         }
-        .iron-selected paper-icon-item::before {
+        .iron-selected mwc-list-item::before {
           background-color: var(--sidebar-selected-icon-color);
           opacity: 0.12;
         }
@@ -857,37 +848,25 @@ class HaSidebar extends LitElement {
           opacity: var(--dark-divider-opacity);
           margin: 4px 8px;
         }
-        .iron-selected paper-icon-item:focus::before,
-        .iron-selected:focus paper-icon-item::before {
+        .iron-selected mwc-list-item:focus::before,
+        .iron-selected:focus mwc-list-item::before {
           opacity: 0.2;
         }
 
-        .iron-selected paper-icon-item[pressed]:before {
+        .iron-selected mwc-list-item[pressed]:before {
           opacity: 0.37;
-        }
+        } */
 
-        paper-icon-item span {
+        mwc-list-item span {
           color: var(--sidebar-text-color);
           font-weight: 500;
           font-size: 14px;
         }
-
-        a.iron-selected paper-icon-item ha-icon,
-        a.iron-selected paper-icon-item ha-svg-icon {
+        /* 
+        a.iron-selected mwc-list-item ha-icon,
+        a.iron-selected mwc-list-item ha-svg-icon {
           color: var(--sidebar-selected-icon-color);
-        }
-
-        a.iron-selected .item-text {
-          color: var(--sidebar-selected-text-color);
-        }
-
-        paper-icon-item .item-text {
-          display: none;
-          max-width: calc(100% - 56px);
-        }
-        :host([expanded]) paper-icon-item .item-text {
-          display: block;
-        }
+        } */
 
         .divider {
           bottom: 112px;
@@ -899,18 +878,14 @@ class HaSidebar extends LitElement {
           height: 1px;
           background-color: var(--divider-color);
         }
-        .notifications-container {
-          display: flex;
-          margin-left: env(safe-area-inset-left);
-        }
-        :host([rtl]) .notifications-container {
+
+        :host([rtl]) .notifications {
           margin-left: initial;
           margin-right: env(safe-area-inset-right);
         }
         .notifications {
+          margin-left: env(safe-area-inset-left);
           cursor: pointer;
-        }
-        .notifications .item-text {
           flex: 1;
         }
         .profile {
@@ -920,19 +895,19 @@ class HaSidebar extends LitElement {
           margin-left: initial;
           margin-right: env(safe-area-inset-right);
         }
-        .profile paper-icon-item {
+        .profile mwc-list-item {
           padding-left: 4px;
         }
-        :host([rtl]) .profile paper-icon-item {
+        :host([rtl]) .profile mwc-list-item {
           padding-left: auto;
           padding-right: 4px;
         }
-        .profile .item-text {
+        /* .profile .item-text {
           margin-left: 8px;
         }
         :host([rtl]) .profile .item-text {
           margin-right: 8px;
-        }
+        } */
 
         .notification-badge {
           min-width: 20px;
@@ -995,6 +970,7 @@ class HaSidebar extends LitElement {
           transform: scaleX(-1);
         }
       `,
+      // END CSS
     ];
   }
 }
