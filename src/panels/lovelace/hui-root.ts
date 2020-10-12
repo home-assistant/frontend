@@ -285,7 +285,6 @@ class HUIRoot extends LitElement {
                 <div sticky>
                   <paper-tabs
                     scrollable
-                    hide-scroll-buttons
                     .selected="${this._curView}"
                     @iron-activate="${this._handleViewSelected}"
                     dir="${computeRTLDirection(this.hass!)}"
