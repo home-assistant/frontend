@@ -33,6 +33,11 @@ class OZWNodeRouter extends HassRouterPage {
             /* webpackChunkName: "ozw-node-dashboard" */ "./ozw-node-dashboard"
           ),
       },
+      config: {
+        tag: "ozw-node-config",
+        load: () =>
+          import(/* webpackChunkName: "ozw-node-config" */ "./ozw-node-config"),
+      },
     },
   };
 
