@@ -11,6 +11,7 @@ import "../ha-config-section";
 import "../ha-entity-config";
 import { configSections } from "../ha-panel-config";
 import "./ha-form-customize";
+import { documentationUrl } from "../../../util/documentation-url";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -34,6 +35,14 @@ class HaConfigCustomize extends LocalizeMixin(PolymerElement) {
             </span>
             <span slot="introduction">
               [[localize('ui.panel.config.customize.picker.introduction')]]
+              <br />
+              <a
+                href="[[_computeDocumentationUrl(hass)]]"
+                target="_blank"
+                rel="noreferrer"
+              >
+                [[localize("ui.panel.config.customize.picker.documentation")]]
+              </a>
             </span>
             <ha-entity-config
               hass="[[hass]]"
@@ -90,6 +99,13 @@ class HaConfigCustomize extends LocalizeMixin(PolymerElement) {
     return Object.keys(hass.states)
       .map((key) => hass.states[key])
       .sort(sortStatesByName);
+  }
+
+  _computeDocumentationUrl(hass) {
+    return documentationUrl(
+      hass,
+      "/docs/configuration/customizing-devices/#customization-using-the-ui"
+    );
   }
 }
 customElements.define("ha-config-customize", HaConfigCustomize);
