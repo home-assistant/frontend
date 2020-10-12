@@ -8,7 +8,7 @@ import {
 import { fireEvent } from "../../common/dom/fire_event";
 import type { PolymerChangedEvent } from "../../polymer-types";
 import type { HomeAssistant } from "../../types";
-import { fetchUsers, User } from "../../data/user";
+import { User } from "../../data/user";
 import "./ha-user-picker";
 
 @customElement("ha-users-picker")

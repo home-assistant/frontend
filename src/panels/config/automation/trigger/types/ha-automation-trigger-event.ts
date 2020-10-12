@@ -81,7 +81,7 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
     }
   }
 
-  private async _getUsers(): User[] {
+  private async _getUsers(): void {
     this._users = await fetchUsers(this.hass);
   }
 }
