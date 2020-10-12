@@ -1,4 +1,5 @@
 import IntlMessageFormat from "intl-messageformat";
+import { shouldPolyfill } from "@formatjs/intl-pluralrules/should-polyfill";
 import { Resources } from "../../types";
 
 export type LocalizeFunc = (key: string, ...args: any[]) => string;
@@ -12,7 +13,7 @@ export interface FormatsType {
   time: FormatType;
 }
 
-if (!Intl.PluralRules) {
+if (shouldPolyfill()) {
   import("@formatjs/intl-pluralrules/polyfill-locales");
 }
 

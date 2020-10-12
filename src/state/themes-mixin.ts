@@ -108,7 +108,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           );
         }
         const themeColor =
-          headerColor.trim() ||
+          headerColor?.trim() ||
           (themeMeta.getAttribute("default-content") as string);
         themeMeta.setAttribute("content", themeColor);
       }

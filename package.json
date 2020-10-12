@@ -22,7 +22,8 @@
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "Apache-2.0",
   "dependencies": {
-    "@formatjs/intl-pluralrules": "^1.5.8",
+    "@formatjs/intl-getcanonicallocales": "^1.4.6",
+    "@formatjs/intl-pluralrules": "^3.4.10",
     "@fullcalendar/common": "5.1.0",
     "@fullcalendar/core": "5.1.0",
     "@fullcalendar/daygrid": "5.1.0",
