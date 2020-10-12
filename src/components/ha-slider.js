@@ -1,4 +1,5 @@
 import "@polymer/paper-slider";
+import { setTouchAction } from "@polymer/polymer/lib/utils/gestures";
 
 const PaperSliderClass = customElements.get("paper-slider");
 let subTemplate;
@@ -76,6 +77,24 @@ class HaSlider extends PaperSliderClass {
       );
     }
     return subTemplate;
+  }
+
+  ready() {
+    super.ready();
+    if (this.ignoreBarTouch) {
+      setTouchAction(this.$.sliderBar, "auto");
+    }
+    this.addEventListener("mousewheel", (e) => {
+      if (e.wheelDelta > 0) {
+        this.increment();
+      } else if (e.wheelDelta < 0) {
+        this.decrement();
+      } else {
+        return;
+      }
+      this.fire("change");
+      e.preventDefault();
+    });
   }
 
   _calcStep(value) {
