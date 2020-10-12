@@ -571,15 +571,18 @@
                 "no_history_found": "Ingen historik hittad."
             },
             "logbook": {
+                "by": "av",
+                "by_service": "efter tjänst",
                 "entries_not_found": "Inga inlägg i loggboken hittades",
                 "messages": {
                     "became_unavailable": "blev otillgänglig",
-                    "changed_to_state": "ändrades till",
+                    "changed_to_state": "ändrades till {state}",
                     "rose": "gick upp",
                     "set": "gick ned",
                     "turned_off": "Slogs av",
                     "turned_on": "Slogs på",
                     "was_at_home": "var hemma",
+                    "was_at_state": "var på {state}",
                     "was_away": "var borta",
                     "was_closed": "var stängd",
                     "was_connected": "var ansluten",
@@ -589,8 +592,10 @@
                     "was_normal": "var normal",
                     "was_opened": "var öppen",
                     "was_plugged_in": "var inkopplad",
+                    "was_safe": "var säker",
                     "was_unlocked": "var olåst",
-                    "was_unplugged": "var urkopplad"
+                    "was_unplugged": "var urkopplad",
+                    "was_unsafe": "var osäker"
                 }
             },
             "media-browser": {
@@ -815,6 +820,24 @@
                 "success": {
                     "description": "Inställningar sparade"
                 }
+            },
+            "quick-open": {
+                "commands": {
+                    "reload": {
+                        "automation": "Ladda om automationer",
+                        "homekit": "Ladda om HomeKit",
+                        "min_max": "Ladda om min/max entiteter",
+                        "mqtt": "Ladda om mqtt entiteter",
+                        "person": "Ladda om personer",
+                        "reload": "Ladda om {domain}",
+                        "scene": "Ladda om scener",
+                        "script": "Ladda om skripts",
+                        "smtp": "Ladda om smtp notifieringstjänster",
+                        "telegram": "Ladda om telegram notifieringstjänster",
+                        "zone": "Ladda om zoner"
+                    }
+                },
+                "filter_placeholder": "Entitetsfilter"
             },
             "voice_command": {
                 "did_not_hear": "Home Assistant hörde ingenting",
@@ -1909,8 +1932,11 @@
                         "update": "Uppdatera"
                     },
                     "introduction": "Här kan du definiera personer av intresse för Home Assistant.",
+                    "learn_more": "Lär dig mer om personer",
                     "no_persons_created_yet": "Det verkar som att du inte har skapat några personer ännu.",
-                    "note_about_persons_configured_in_yaml": "Observera: personer som konfigureras via configuration.yaml kan inte redigeras via det grafiska gränssnittet."
+                    "note_about_persons_configured_in_yaml": "Observera: personer som konfigureras via configuration.yaml kan inte redigeras via det grafiska gränssnittet.",
+                    "person_not_found": "Vi kunde inte hitta personen du försökte redigera.",
+                    "person_not_found_title": "Personen hittades inte"
                 },
                 "scene": {
                     "activated": "Aktiverat scenario {name} .",
@@ -2483,6 +2509,7 @@
                         "actions": {
                             "default_action": "Standardåtgärd",
                             "more-info": "Mer information",
+                            "navigate": "Navigera",
                             "none": "Ingen åtgärd",
                             "toggle": "Växla",
                             "url": "URL"
@@ -2526,6 +2553,7 @@
                         },
                         "entities": {
                             "description": "Entitetskortet är den vanligaste korttypen. Det grupperar objekt i listor.",
+                            "edit_special_row": "Visa detaljerna för denna rad genom att klicka på redigeringsknappen",
                             "entity_row": {
                                 "attribute": "Attribut",
                                 "button": "Knapp",
@@ -2543,10 +2571,12 @@
                                 "entity-id": "Entitets-ID",
                                 "last-changed": "Senast ändrad",
                                 "last-triggered": "Senast utlöst",
+                                "none": "Ingen sekundärinformation",
                                 "position": "Position",
                                 "tilt-position": "Lutningsposition"
                             },
                             "show_header_toggle": "Visa rubrikväljare?",
+                            "special_row": "speciell rad",
                             "toggle": "Växla entiteter."
                         },
                         "entity-filter": {
@@ -2705,6 +2735,8 @@
                         "edit": "Redigera",
                         "header": "Kortkonfiguration",
                         "move": "Flytta till vy",
+                        "move_after": "Flytta kort efter",
+                        "move_before": "Flytta kort innan",
                         "options": "Fler alternativ",
                         "pick_card": "Vilket kort vill du lägga till?",
                         "pick_card_view_title": "Vilket kort vill du lägga till i {name} -vyn?",

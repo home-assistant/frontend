@@ -1338,7 +1338,7 @@
                             "title": "Kaugjuhtimine"
                         },
                         "sign_out": "Logi välja",
-                        "thank_you_note": "Täname, et liitusite Home Assistanti pilvega. Just teiesuguste inimeste tõttu suudame  me pakkudakõigile suurepärase Home Assistanti kogemuse. Aitäh!",
+                        "thank_you_note": "Täname, et liitusite Home Assistanti pilvega. Just teiesuguste inimeste tõttu suudame  me pakkuda kõigile suurepärase Home Assistanti kogemuse. Aitäh!",
                         "webhooks": {
                             "disable_hook_error_msg": "Veebihaagi keelamine ebaõnnestus:",
                             "info": "Kõigele mis on konfigureeritud veebihaagi käivitamisel võib anda avalikult ligipääsetava URL-i, mis võimaldab teil saata andmeid Home Assistantile kõikjalt ilma et Teie seade oleks Internetis nähtav.",
@@ -1979,6 +1979,7 @@
                         "update": "Uuenda"
                     },
                     "introduction": "Siin saate määratleda iga huvipakkuva isiku Home Assistantis.",
+                    "learn_more": "Lisateave isikute kohta",
                     "no_persons_created_yet": "Paistab, et sa pole veel ühtegi isikut lisanud.",
                     "note_about_persons_configured_in_yaml": "Märkus: configuration.yaml kaudu seadistatud isikuid ei saa kasutajaliidese kaudu muuta.",
                     "person_not_found": "Ei leidnud inimest  keda proovid seadistada.",

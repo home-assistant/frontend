@@ -1978,6 +1978,7 @@
                         "update": "Aktualizace"
                     },
                     "introduction": "Zde můžete definovat každou osobu v Home Assistant.",
+                    "learn_more": "Další informace o osobách",
                     "no_persons_created_yet": "Vypadá to, že jste dosud žádné osoby nevytvořili.",
                     "note_about_persons_configured_in_yaml": "Poznámka: Osoby konfigurované pomocí configuration.yaml nelze upravovat pomocí uživatelského rozhraní.",
                     "person_not_found": "Nedaří se nám najít osobu, kterou jste se pokoušeli upravit.",

@@ -1979,6 +1979,7 @@
                         "update": "更新"
                     },
                     "introduction": "您可以在这里定义 Home Assistant 中关注的每个人员。",
+                    "learn_more": "详细了解人员",
                     "no_persons_created_yet": "您还没有创建人员。",
                     "note_about_persons_configured_in_yaml": "注意：通过 configuration.yaml 配置的人员不能通过 UI 编辑。",
                     "person_not_found": "无法找到您要编辑的人员。",
@@ -2669,7 +2670,7 @@
                             "double_tap_action": "双击动作",
                             "entities": "实体",
                             "entity": "实体",
-                            "hold_action": "保持操作",
+                            "hold_action": "长按动作",
                             "hours_to_show": "显示时间",
                             "icon": "图标",
                             "icon_height": "图标高度",

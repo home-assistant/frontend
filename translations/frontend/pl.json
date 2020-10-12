@@ -1979,6 +1979,7 @@
                         "update": "Aktualizuj"
                     },
                     "introduction": "Tutaj można zdefiniować osoby, których obecność będzie śledzona w Home Assistant.",
+                    "learn_more": "Dowiedz się więcej o osobach",
                     "no_persons_created_yet": "Wygląda na to, że nie utworzyłeś jeszcze żadnych osób.",
                     "note_about_persons_configured_in_yaml": "Uwaga: osób skonfigurowanych za pomocą pliku configuration.yaml nie można edytować za pomocą interfejsu użytkownika.",
                     "person_not_found": "Nie znaleziono osoby, którą próbujesz edytować.",
