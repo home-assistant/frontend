@@ -223,7 +223,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
               <div class="attribute">
                 ${this._config.secondary_info_attribute !== undefined
                   ? html`
-                      ${this._config.secondary_info_attribute in weatherAttrIcons
+                      ${this._config.secondary_info_attribute in
+                      weatherAttrIcons
                         ? html`
                             <ha-svg-icon
                               class="attr-icon"
