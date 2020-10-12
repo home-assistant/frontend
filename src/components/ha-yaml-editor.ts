@@ -105,6 +105,10 @@ export class HaYamlEditor extends LitElement {
 
     fireEvent(this, "value-changed", { value: parsed, isValid } as any);
   }
+
+  get yaml() {
+    return this._editor?.value;
+  }
 }
 
 declare global {
