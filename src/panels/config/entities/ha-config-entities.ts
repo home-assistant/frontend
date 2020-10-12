@@ -284,10 +284,11 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             // If however, the read-only entities were not added before, we need to check how many would
             // have matched the active filter and add that number to the count.
             startLength = entities.length;
-            if (!showReadOnly)
+            if (!showReadOnly) {
               startLength += stateEntities.filter(
                 (entity) => entity.config_entry_id === value
               ).length;
+            }
             break;
         }
       });
