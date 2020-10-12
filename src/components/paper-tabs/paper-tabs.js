@@ -542,8 +542,8 @@ Polymer({
 
   _onRightScrollButtonDown: function () {
     this._scrollToRight();
-    // eslint-disable-next-line @typescript-eslint/no-implied-eval
     this._holdJob = setInterval(
+      // eslint-disable-next-line @typescript-eslint/no-implied-eval
       this._scrollToRight.bind(this),
       this._holdDelay
     );
