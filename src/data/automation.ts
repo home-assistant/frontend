@@ -112,7 +112,7 @@ export interface TemplateTrigger {
 export interface ContextConstraint {
   context_id: string;
   parent_id?: string;
-  user_id?: string[];
+  user_id?: string | string[];
 }
 
 export interface EventTrigger {

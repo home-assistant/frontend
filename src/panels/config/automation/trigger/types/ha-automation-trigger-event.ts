@@ -55,11 +55,16 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
           "ui.panel.config.automation.editor.triggers.type.event.context_user_pick"
         )}
         .hass=${this.hass}
-        .value=${[].concat(context.user_id || [])}
+        .value=${this._wrapUsersInArray(context)}
         .users=${this._users}
         @value-changed=${this._valueChanged}
       ></ha-users-picker>
     `;
+  }
+
+  private _wrapUsersInArray(context): string[] {
+    var empty: string[] = [];
+    return empty.concat(context.user_id || []);
   }
 
   private _valueChanged(ev: CustomEvent): void {
@@ -81,7 +86,7 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
     }
   }
 
-  private async _getUsers(): void {
+  private async _getUsers(): Promise<void> {
     this._users = await fetchUsers(this.hass);
   }
 }
