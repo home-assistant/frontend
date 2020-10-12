@@ -55,7 +55,7 @@ export const provideHass = (
 
   function updateTranslations(fragment: null | string, language?: string) {
     const lang = language || getLocalLanguage();
-    getTranslation(fragment, lang).then((translation) => {
+    getTranslation(fragment, lang).then(async (translation) => {
       const resources = {
         [lang]: {
           ...(hass().resources && hass().resources[lang]),
@@ -64,7 +64,7 @@ export const provideHass = (
       };
       hass().updateHass({
         resources,
-        localize: computeLocalize(elements[0], lang, resources),
+        localize: await computeLocalize(elements[0], lang, resources),
       });
     });
   }

@@ -13,9 +13,7 @@ export interface FormatsType {
   time: FormatType;
 }
 
-if (shouldPolyfill()) {
-  import("@formatjs/intl-pluralrules/polyfill-locales");
-}
+let polyfillLoaded = false;
 
 /**
  * Adapted from Polymer app-localize-behavior.
@@ -38,12 +36,19 @@ if (shouldPolyfill()) {
  * }
  */
 
-export const computeLocalize = (
+export const computeLocalize = async (
   cache: any,
   language: string,
   resources: Resources,
   formats?: FormatsType
-): LocalizeFunc => {
+): Promise<LocalizeFunc> => {
+  if (!polyfillLoaded && shouldPolyfill()) {
+    await import("@formatjs/intl-pluralrules/polyfill-locales");
+    polyfillLoaded = true;
+  } else if (!polyfillLoaded) {
+    polyfillLoaded = true;
+  }
+
   // Everytime any of the parameters change, invalidate the strings cache.
   cache._localizationCache = {};
 

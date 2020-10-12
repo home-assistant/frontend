@@ -29,7 +29,7 @@ const createWebpackConfig = ({
     module: {
       rules: [
         {
-          test: /\..?js$\.ts$/,
+          test: /\..?js$|\.ts$/,
           exclude: bundle.babelExclude(),
           use: {
             loader: "babel-loader",
