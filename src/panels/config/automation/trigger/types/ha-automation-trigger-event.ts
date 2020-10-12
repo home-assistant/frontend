@@ -63,7 +63,7 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
   }
 
   private _wrapUsersInArray(context): string[] {
-    let empty: string[] = [];
+    const empty: string[] = [];
     return empty.concat(context.user_id || []);
   }
 
