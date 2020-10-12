@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import "../../../../components/ha-icon-button";
 import "@polymer/paper-tabs/paper-tab";
-import "../../../../components/paper-tabs/paper-tabs";
+import "../../../../components/ha-tabs";
 import {
   css,
   CSSResult,
@@ -159,7 +159,7 @@ export class HuiDialogEditView extends LitElement {
       >
         <div slot="heading">
           <h2>${this._viewConfigTitle}</h2>
-          <paper-tabs
+          <ha-tabs
             scrollable
             hide-scroll-buttons
             .selected="${this._curTabIndex}"
@@ -180,7 +180,7 @@ export class HuiDialogEditView extends LitElement {
                 "ui.panel.lovelace.editor.edit_view.tab_visibility"
               )}</paper-tab
             >
-          </paper-tabs>
+          </ha-tabs>
         </div>
         ${content}
         ${this._params.viewIndex !== undefined
@@ -377,7 +377,7 @@ export class HuiDialogEditView extends LitElement {
           padding: 20px 24px 9px;
           border-bottom: 1px solid transparent;
         }
-        paper-tabs {
+        ha-tabs {
           --paper-tabs-selection-bar-color: var(--primary-color);
           color: var(--primary-text-color);
           text-transform: uppercase;
