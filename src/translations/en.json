@@ -998,6 +998,7 @@
           "picker": {
             "header": "Customizations",
             "introduction": "Tweak per-entity attributes. Added/edited customizations will take effect immediately. Removed customizations will take effect when the entity is updated.",
+            "documentation": "Customization documentation",
             "entity": "Entity"
           },
           "warning": {
