@@ -21,6 +21,22 @@ class HaTabs extends PaperTabsClass {
     return subTemplate;
   }
 
+  ready() {
+    super.ready();
+    this.setScrollDirection("y", this.$.tabsContainer);
+
+    this.addEventListener("mousewheel", (e) => {
+      if (e.wheelDelta > 0) {
+        this._scrollToRight();
+      } else if (e.wheelDelta < 0) {
+        this._scrollToLeft();
+      } else {
+        return;
+      }
+      e.preventDefault();
+    });
+  }
+
   _affectScroll(dx) {
     super._affectScroll(dx);
     this.$.tabsContainer.scrollLeft += dx;
