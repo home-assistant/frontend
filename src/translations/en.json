@@ -1090,7 +1090,8 @@
                   "label": "Event",
                   "event_type": "Event type",
                   "event_data": "Event data",
-                  "context": "Event context"
+                  "context_user_picked": "User firing event",
+                  "context_user_pick": "Add user"
                 },
                 "geo_location": {
                   "label": "Geolocation",

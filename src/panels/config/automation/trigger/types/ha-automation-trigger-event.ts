@@ -1,13 +1,20 @@
 import "@polymer/paper-input/paper-input";
-import { customElement, LitElement, property } from "lit-element";
+import {
+  customElement,
+  LitElement,
+  property,
+  internalProperty,
+} from "lit-element";
 import { html } from "lit-html";
 import "../../../../../components/ha-yaml-editor";
 import { EventTrigger } from "../../../../../data/automation";
+import { fetchUsers, User } from "../../../../../data/user";
 import { HomeAssistant } from "../../../../../types";
 import {
   handleChangeEvent,
   TriggerElement,
 } from "../ha-automation-trigger-row";
+import "../../../../../components/user/ha-users-picker";
 
 @customElement("ha-automation-trigger-event")
 export class HaEventTrigger extends LitElement implements TriggerElement {
@@ -15,8 +22,10 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
 
   @property() public trigger!: EventTrigger;
 
+  @internalProperty() private _users?: User[];
+
   public static get defaultConfig() {
-    return { event_type: "", event_data: {}, context: {} };
+    return { event_type: "", event_data: {}, context: { user_id: [] } };
   }
 
   protected render() {
@@ -38,14 +47,18 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
         .defaultValue=${event_data}
         @value-changed=${this._dataChanged}
       ></ha-yaml-editor>
-      <ha-yaml-editor
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.type.event.context"
+      <ha-users-picker
+        .pickedUserLabel=${this.hass.localize(
+          "ui.panel.config.automation.editor.triggers.type.event.context_user_picked"
         )}
-        .name=${"context"}
-        .defaultValue=${context}
-        @value-changed=${this._dataChanged}
-      ></ha-yaml-editor>
+        .pickUserLabel=${this.hass.localize(
+          "ui.panel.config.automation.editor.triggers.type.event.context_user_pick"
+        )}
+        .hass=${this.hass}
+        .value=${[].concat(context.user_id || [])}
+        .users=${this._users}
+        @value-changed=${this._valueChanged}
+      ></ha-users-picker>
     `;
   }
 
@@ -60,6 +73,16 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
       return;
     }
     handleChangeEvent(this, ev);
+  }
+
+  protected firstUpdated(): void {
+    if (!this._users) {
+      this._getUsers();
+    }
+  }
+
+  private async _getUsers(): User[] {
+    this._users = await fetchUsers(this.hass);
   }
 }
 

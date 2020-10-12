@@ -109,11 +109,17 @@ export interface TemplateTrigger {
   value_template: string;
 }
 
+export interface Context {
+  context_id: string;
+  parent_id?: string;
+  user_id?: string[];
+}
+
 export interface EventTrigger {
   platform: "event";
   event_type: string;
   event_data: any;
-  context: any;
+  context: Context;
 }
 
 export type Trigger =
