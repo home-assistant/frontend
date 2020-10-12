@@ -2,7 +2,7 @@ export const extractSearchParamsObject = (): { [key: string]: string } => {
   const query = {};
   const searchParams = new URLSearchParams(location.search);
   for (const [key, value] of searchParams.entries()) {
-    query[key] = decodeURIComponent(value);
+    query[key] = value;
   }
   return query;
 };
