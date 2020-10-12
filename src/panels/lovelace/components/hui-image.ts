@@ -21,7 +21,6 @@ import { CameraEntity, HomeAssistant } from "../../../types";
 
 const UPDATE_INTERVAL = 10000;
 const DEFAULT_FILTER = "grayscale(100%)";
-const INVERT_FILTER = "invert(100%)";
 
 export interface StateSpecificConfig {
   [state: string]: string;
@@ -47,7 +46,9 @@ export class HuiImage extends LitElement {
 
   @property() public stateFilter?: StateSpecificConfig;
 
-  @property() public darkMode?: boolean;
+  @property() public darkModeImage?: string;
+
+  @property() public darkModeFilter?: string;
 
   @internalProperty() private _loadError?: boolean;
 
@@ -100,6 +101,8 @@ export class HuiImage extends LitElement {
         imageSrc = this.image;
         imageFallback = true;
       }
+    } else if (this.darkModeImage && this.hass.themes.darkMode) {
+      imageSrc = this.darkModeImage;
     } else {
       imageSrc = this.image;
     }
@@ -110,7 +113,10 @@ export class HuiImage extends LitElement {
 
     // Figure out filter to use
     let filter = this.filter || "";
-    filter += this.darkMode ? INVERT_FILTER : "";
+
+    if (this.hass.themes.darkMode && this.darkModeFilter) {
+      filter += this.darkModeFilter;
+    }
 
     if (this.stateFilter && this.stateFilter[state]) {
       filter += this.stateFilter[state];
