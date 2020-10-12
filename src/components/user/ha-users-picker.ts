@@ -32,8 +32,6 @@ class HaUsersPickerLight extends LitElement {
     }
 
     const currentUsers = this._currentUsers;
-    console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-    console.log(currentUsers);
     return html`
       ${currentUsers.map(
         (user_id) => html`
