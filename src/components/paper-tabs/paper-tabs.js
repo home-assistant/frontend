@@ -536,13 +536,13 @@ Polymer({
 
   _onLeftScrollButtonDown: function () {
     this._scrollToLeft();
-    // eslint-disable-next-line no-implied-eval
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval
     this._holdJob = setInterval(this._scrollToLeft.bind(this), this._holdDelay);
   },
 
   _onRightScrollButtonDown: function () {
     this._scrollToRight();
-    // eslint-disable-next-line no-implied-eval
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval
     this._holdJob = setInterval(
       this._scrollToRight.bind(this),
       this._holdDelay
