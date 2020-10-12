@@ -138,11 +138,11 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             filterTexts.push(
               `${this.hass.localize(
                 "ui.panel.config.integrations.integration"
-              )} ${integrationName}${
+              )} "${integrationName}${
                 integrationName !== configEntry.title
                   ? `: ${configEntry.title}`
                   : ""
-              }`
+              }"`
             );
             break;
           }
@@ -460,11 +460,32 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                           "ui.panel.config.filtering.filtering_by"
                         )}
                         ${activeFilters.join(", ")}
+                        ${this._numHiddenEntities
+                          ? "(" +
+                            this.hass.localize(
+                              "ui.panel.config.entities.picker.filter.hidden_entities",
+                              "number",
+                              this._numHiddenEntities
+                            ) +
+                            ")"
+                          : ""}
                       </paper-tooltip>
                     </div>`
                   : `${this.hass.localize(
                       "ui.panel.config.filtering.filtering_by"
-                    )} ${activeFilters.join(", ")}`}
+                    )} ${activeFilters.join(", ")}
+                    ${
+                      this._numHiddenEntities
+                        ? "(" +
+                          this.hass.localize(
+                            "ui.panel.config.entities.picker.filter.hidden_entities",
+                            "number",
+                            this._numHiddenEntities
+                          ) +
+                          ")"
+                        : ""
+                    }
+                    `}
                 <mwc-button @click=${this._clearFilter}
                   >${this.hass.localize(
                     "ui.panel.config.filtering.clear"
