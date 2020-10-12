@@ -7,20 +7,20 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
-import "@polymer/polymer/polymer-legacy.js";
-import "@polymer/iron-flex-layout/iron-flex-layout.js";
-import "@polymer/iron-icon/iron-icon.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import "@polymer/paper-styles/color.js";
-import "@polymer/paper-tabs/paper-tabs-icons.js";
-import "@polymer/paper-tabs/paper-tab.js";
+import "@polymer/polymer/polymer-legacy";
+import "@polymer/iron-flex-layout/iron-flex-layout";
+import "@polymer/iron-icon/iron-icon";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-styles/color";
+import "@polymer/paper-tabs/paper-tabs-icons";
+import "@polymer/paper-tabs/paper-tab";
 
-import { IronMenuBehaviorImpl } from "@polymer/iron-menu-behavior/iron-menu-behavior.js";
-import { IronMenubarBehavior } from "@polymer/iron-menu-behavior/iron-menubar-behavior.js";
-import { IronResizableBehavior } from "@polymer/iron-resizable-behavior/iron-resizable-behavior.js";
-import { Polymer } from "@polymer/polymer/lib/legacy/polymer-fn.js";
-import { dom } from "@polymer/polymer/lib/legacy/polymer.dom.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { IronMenuBehaviorImpl } from "@polymer/iron-menu-behavior/iron-menu-behavior";
+import { IronMenubarBehavior } from "@polymer/iron-menu-behavior/iron-menubar-behavior";
+import { IronResizableBehavior } from "@polymer/iron-resizable-behavior/iron-resizable-behavior";
+import { Polymer } from "@polymer/polymer/lib/legacy/polymer-fn";
+import { dom } from "@polymer/polymer/lib/legacy/polymer.dom";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
 
 /**
 Material design: [Tabs](https://www.google.com/design/spec/components/tabs.html)
@@ -98,6 +98,7 @@ Custom property | Description | Default
 */
 Polymer({
   /** @override */
+  // eslint-disable-next-line lit/no-legacy-template-syntax
   _template: html`
     <style>
       :host {
@@ -356,7 +357,7 @@ Polymer({
   },
 
   _noinkChanged: function (noink) {
-    var childTabs = dom(this).querySelectorAll("paper-tab");
+    const childTabs = dom(this).querySelectorAll("paper-tab");
     childTabs.forEach(
       noink ? this._setNoinkAttribute : this._removeNoinkAttribute
     );
@@ -395,7 +396,9 @@ Polymer({
   _computeSelectionBarClass: function (noBar, alignBottom) {
     if (noBar) {
       return "hidden";
-    } else if (alignBottom) {
+    }
+
+    if (alignBottom) {
       return "align-bottom";
     }
 
@@ -433,12 +436,12 @@ Polymer({
     );
   },
 
-  _activateHandler: function () {
+  _activateHandler: function (...args) {
     // Cancel item activations scheduled by keyboard events when any other
     // action causes an item to be activated (e.g. clicks).
     this._cancelPendingActivation();
 
-    IronMenuBehaviorImpl._activateHandler.apply(this, arguments);
+    IronMenuBehaviorImpl._activateHandler.apply(this, args);
   },
 
   /**
@@ -456,7 +459,7 @@ Polymer({
    * Activates the last item given to `_scheduleActivation`.
    */
   _delayedActivationHandler: function () {
-    var item = this._pendingActivationItem;
+    const item = this._pendingActivationItem;
     this._pendingActivationItem = undefined;
     this._pendingActivationTimeout = undefined;
     item.fire(this.activateEvent, null, { bubbles: true, cancelable: true });
@@ -500,7 +503,7 @@ Polymer({
       return;
     }
 
-    var ddx = (detail && -detail.ddx) || 0;
+    const ddx = (detail && -detail.ddx) || 0;
     this._affectScroll(ddx);
   },
 
@@ -518,14 +521,14 @@ Polymer({
   _affectScroll: function (dx) {
     this.$.tabsContainer.scrollLeft += dx;
 
-    var scrollLeft = this.$.tabsContainer.scrollLeft;
+    const scrollLeft = this.$.tabsContainer.scrollLeft;
 
     this._leftHidden = scrollLeft - this.firstElementChild.clientWidth < 0;
     this._rightHidden =
       scrollLeft + this.lastElementChild.clientWidth >
       this._tabContainerScrollSize;
 
-    if (this._lastLeftHiddenState != this._leftHidden) {
+    if (this._lastLeftHiddenState !== this._leftHidden) {
       this._lastLeftHiddenState = this._leftHidden;
       this.$.tabsContainer.scrollLeft += this._leftHidden ? -54 : 54;
     }
@@ -566,10 +569,10 @@ Polymer({
       return;
     }
 
-    var r = this.$.tabsContent.getBoundingClientRect();
-    var w = r.width;
-    var tabRect = tab.getBoundingClientRect();
-    var tabOffsetLeft = tabRect.left - r.left;
+    const r = this.$.tabsContent.getBoundingClientRect();
+    const w = r.width;
+    const tabRect = tab.getBoundingClientRect();
+    const tabOffsetLeft = tabRect.left - r.left;
 
     this._pos = {
       width: this._calcPercent(tabRect.width, w),
@@ -584,16 +587,16 @@ Polymer({
       return;
     }
 
-    var oldRect = old.getBoundingClientRect();
-    var oldIndex = this.items.indexOf(old);
-    var index = this.items.indexOf(tab);
-    var m = 5;
+    const oldRect = old.getBoundingClientRect();
+    const oldIndex = this.items.indexOf(old);
+    const index = this.items.indexOf(tab);
+    const m = 5;
 
     // bar animation: expand
     this.$.selectionBar.classList.add("expand");
 
-    var moveRight = oldIndex < index;
-    var isRTL = this._isRTL;
+    let moveRight = oldIndex < index;
+    const isRTL = this._isRTL;
     if (isRTL) {
       moveRight = !moveRight;
     }
@@ -616,7 +619,7 @@ Polymer({
   },
 
   _scrollToSelectedIfNeeded: function (tabWidth, tabOffsetLeft) {
-    var l = tabOffsetLeft - this.$.tabsContainer.scrollLeft;
+    let l = tabOffsetLeft - this.$.tabsContainer.scrollLeft;
     if (l < 0) {
       this.$.tabsContainer.scrollLeft += l;
     } else {
@@ -644,7 +647,7 @@ Polymer({
   },
 
   _onBarTransitionEnd: function (e) {
-    var cl = this.$.selectionBar.classList;
+    const cl = this.$.selectionBar.classList;
     // bar animation: expand -> contract
     if (cl.contains("expand")) {
       cl.remove("expand");
