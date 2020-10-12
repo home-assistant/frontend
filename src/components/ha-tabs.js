@@ -12,7 +12,7 @@ class HaTabs extends PaperTabsClass {
 
       superStyle.appendChild(
         document.createTextNode(`
-          .hidden, .not-visible {
+          .not-visible {
             display: none;
           }
         `)
@@ -23,7 +23,6 @@ class HaTabs extends PaperTabsClass {
 
   ready() {
     super.ready();
-    this.setScrollDirection("y", this.$.tabsContainer);
 
     this.addEventListener("mousewheel", (e) => {
       if (e.wheelDelta > 0) {
@@ -37,16 +36,26 @@ class HaTabs extends PaperTabsClass {
     });
   }
 
+  // Get first and last tab's width for _affectScroll
+  _tabChanged(tab, old) {
+    super._tabChanged(tab, old);
+    this.firstTabWidth = this.firstElementChild.clientWidth;
+    this.lastTabWidth = this.lastElementChild.clientWidth;
+  }
+
+  /**
+   * Modify _affectScroll so that when the scroll arrows appear
+   * while scrolling and the tab container shrinks we can counteract
+   * the jump in tab position so that the scroll still appears smooth.
+   */
   _affectScroll(dx) {
-    super._affectScroll(dx);
     this.$.tabsContainer.scrollLeft += dx;
 
     const scrollLeft = this.$.tabsContainer.scrollLeft;
 
-    this._leftHidden = scrollLeft - this.firstElementChild.clientWidth < 0;
+    this._leftHidden = scrollLeft - this.firstTabWidth < 0;
     this._rightHidden =
-      scrollLeft + this.lastElementChild.clientWidth >
-      this._tabContainerScrollSize;
+      scrollLeft + this.lastTabWidth > this._tabContainerScrollSize;
 
     if (this._lastLeftHiddenState !== this._leftHidden) {
       this._lastLeftHiddenState = this._leftHidden;
