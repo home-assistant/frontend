@@ -113,3 +113,22 @@ hassAttributeUtil.LOGIC_STATE_ATTRIBUTES = hassAttributeUtil.LOGIC_STATE_ATTRIBU
 };
 
 export default hassAttributeUtil;
+
+// Convert from internal snake_case format to external / user-friendly format
+export function formatAttributeNameOut(value: string): string {
+  value = value.replace(/_/g, " ").replace(/\bid\b/g, "ID");
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+// Convert from internal snake_case format to external / user-friendly format
+export function formatAttributeNamesOut(value: string[]): string[] {
+  return value.map((x) => formatAttributeNameOut(x));
+}
+
+// Convert from external / user-friendly format to internal snake_case format
+export function formatAttributeNameIn(value: string): string {
+  return String(value)
+    .replace(/ /g, "_")
+    .replace(/\bID\b/g, "id")
+    .toLowerCase();
+}

@@ -18,27 +18,13 @@ import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import "../ha-icon-button";
 import "./state-badge";
+import {
+  formatAttributeNameOut,
+  formatAttributeNamesOut,
+  formatAttributeNameIn,
+} from "../../util/hass-attributes-util";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
-
-// Convert from internal snake_case format to external / user-friendly format
-function formatAttributeNameOut(value: string): string {
-  value = value.replace(/_/g, " ").replace(/\bid\b/g, "ID");
-  return value.charAt(0).toUpperCase() + value.slice(1);
-}
-
-// Convert from internal snake_case format to external / user-friendly format
-function formatAttributeNamesOut(value: string[]): string[] {
-  return value.map((x) => formatAttributeNameOut(x));
-}
-
-// Convert from external / user-friendly format to internal snake_case format
-function formatAttributeNameIn(value: string): string {
-  return String(value)
-    .replace(/ /g, "_")
-    .replace(/\bID\b/g, "id")
-    .toLowerCase();
-}
 
 const rowRenderer = (root: HTMLElement, _owner, model: { item: string }) => {
   if (!root.firstElementChild) {
