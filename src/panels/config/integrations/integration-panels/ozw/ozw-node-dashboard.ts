@@ -87,28 +87,31 @@ class OZWNodeDashboard extends LitElement {
           ${this._node
             ? html`
                 <ha-card class="content">
-                  <div class="card-content">
-                    <b>
-                      ${this._node.node_manufacturer_name}
-                      ${this._node.node_product_name}
-                    </b>
-                    ${this._metadata?.metadata.ProductPicBase64
-                      ? html`<img
-                          src="data:image/png;base64,${this._metadata?.metadata
-                            .ProductPicBase64}"
-                          class="product-image"
-                        />`
-                      : ``}
-                    <br />
-                    Node ID: ${this._node.node_id}<br />
-                    Query Stage: ${this._node.node_query_stage}
-                    ${this._metadata?.metadata.ProductManualURL
-                      ? html` <a
-                          href="${this._metadata.metadata.ProductManualURL}"
-                        >
-                          <p>Product Manual</p>
-                        </a>`
-                      : ``}
+                  <div class="card-content flex">
+                    <div class="node-details">
+                      <b>
+                        ${this._node.node_manufacturer_name}
+                        ${this._node.node_product_name}
+                      </b>
+                      <br />
+                      Node ID: ${this._node.node_id}<br />
+                      Query Stage: ${this._node.node_query_stage}
+                      ${this._metadata?.metadata.ProductManualURL
+                        ? html` <a
+                            href="${this._metadata.metadata.ProductManualURL}"
+                          >
+                            <p>Product Manual</p>
+                          </a>`
+                        : ``}
+                    </div>
+                    <div class="product-image">
+                      ${this._metadata?.metadata.ProductPicBase64
+                        ? html`<img
+                            src="data:image/png;base64,${this._metadata
+                              ?.metadata.ProductPicBase64}"
+                          />`
+                        : ``}
+                    </div>
                   </div>
                   <div class="card-actions">
                     <mwc-button @click=${this._refreshNodeClicked}>
@@ -207,6 +210,11 @@ class OZWNodeDashboard extends LitElement {
           max-width: 600px;
         }
 
+        .flex {
+          display: flex;
+          justify-content: space-between;
+        }
+
         .card-actions.warning ha-call-service-button {
           color: var(--error-color);
         }
@@ -227,11 +235,14 @@ class OZWNodeDashboard extends LitElement {
         [hidden] {
           display: none;
         }
+
         .product-image {
+          padding: 12px;
+        }
+
+        .product-image img {
           max-height: 140px;
           max-width: 140px;
-          padding: 12px;
-          float: right;
         }
         .card-actions {
           clear: right;
