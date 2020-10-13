@@ -15,25 +15,16 @@ class HaTabs extends PaperTabsClass {
           .not-visible {
             display: none;
           }
+          :host > paper-icon-button:first-of-type {
+            padding-left: 0;
+          }
+          paper-icon-button {
+            margin: 0 -8px 0 0;
+          }
         `)
       );
     }
     return subTemplate;
-  }
-
-  ready() {
-    super.ready();
-
-    this.addEventListener("mousewheel", (e) => {
-      if (e.wheelDelta > 0) {
-        this._scrollToRight();
-      } else if (e.wheelDelta < 0) {
-        this._scrollToLeft();
-      } else {
-        return;
-      }
-      e.preventDefault();
-    });
   }
 
   // Get first and last tab's width for _affectScroll
@@ -59,7 +50,7 @@ class HaTabs extends PaperTabsClass {
 
     if (this._lastLeftHiddenState !== this._leftHidden) {
       this._lastLeftHiddenState = this._leftHidden;
-      this.$.tabsContainer.scrollLeft += this._leftHidden ? -54 : 54;
+      this.$.tabsContainer.scrollLeft += this._leftHidden ? -46 : 46;
     }
   }
 }
