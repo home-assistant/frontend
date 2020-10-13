@@ -10,6 +10,7 @@ class HaTabs extends PaperTabsClass {
 
       const superStyle = subTemplate.content.querySelector("style");
 
+      // Add "noink" attribute to scroll buttons to disable click animation.
       [...subTemplate.content.querySelectorAll("paper-icon-button")].forEach(
         (arrow) => {
           arrow.setAttribute("noink", "");
