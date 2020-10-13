@@ -682,7 +682,7 @@
                     "second": "{count} {count, plural,\n  one {sekund}\n  other {sekundi}\n} pärast",
                     "week": "{count} {count, plural,\n  one {nädal}\n  other {nädala}\n} pärast"
                 },
-                "just_now": "Kohe",
+                "just_now": "Just praegu",
                 "never": "Iial",
                 "past": "{time} tagasi",
                 "past_duration": {
@@ -839,7 +839,7 @@
                     "description": "Valikud on edukalt salvestatud."
                 }
             },
-            "quick-open": {
+            "quick-bar": {
                 "commands": {
                     "reload": {
                         "automation": "Taaslae automatiseeringud",

@@ -839,7 +839,7 @@
                     "description": "Salva com sucesso"
                 }
             },
-            "quick-open": {
+            "quick-bar": {
                 "commands": {
                     "reload": {
                         "automation": "Recarregar automações",

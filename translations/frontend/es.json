@@ -839,7 +839,7 @@
                     "description": "Las opciones se guardaron correctamente."
                 }
             },
-            "quick-open": {
+            "quick-bar": {
                 "commands": {
                     "reload": {
                         "automation": "Recargar automatizaciones",
@@ -1979,7 +1979,7 @@
                         "update": "Actualizar"
                     },
                     "introduction": "Aquí puedes definir a cada persona de interés en Home Assistant.",
-                    "learn_more": "Saber más sobre gente",
+                    "learn_more": "Saber más sobre las personas",
                     "no_persons_created_yet": "Parece que aún no has creado ninguna persona.",
                     "note_about_persons_configured_in_yaml": "Nota: las personas configuradas a través de configuration.yaml no se pueden editar a través de la IU.",
                     "person_not_found": "No pudimos encontrar a la persona que intentabas editar.",

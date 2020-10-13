@@ -838,7 +838,7 @@
                     "description": "Volby byly úspěšně uloženy."
                 }
             },
-            "quick-open": {
+            "quick-bar": {
                 "commands": {
                     "reload": {
                         "automation": "Nově načíst automatizace",

@@ -676,21 +676,21 @@
                 },
                 "future": "om {time}",
                 "future_duration": {
-                    "day": "In {count} {count, plural,\n  one {day}\n  other {days}\n}",
-                    "hour": "In {count} {count, plural,\n  one {hour}\n  other {hours}\n}",
-                    "minute": "In {count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
-                    "second": "In {count} {count, plural,\n  one {second}\n  other {seconds}\n}",
-                    "week": "In {count} {count, plural,\n  one {week}\n  other {weeks}\n}"
+                    "day": "Om {count} {count, plural,\n  one {dag}\n  other {dager}\n}",
+                    "hour": "Om {count} {count, plural,\n  one {time}\n  other {timer}\n}",
+                    "minute": "Om {count} {count, plural,\n  one {minutt}\n  other {minutter}\n}",
+                    "second": "Om {count} {count, plural,\n  one {sekund}\n  other {sekunder}\n}",
+                    "week": "Om {count} {count, plural,\n  one {uke}\n  other {uker}\n}"
                 },
                 "just_now": "Akkurat nå",
                 "never": "Aldri",
                 "past": "{time} siden",
                 "past_duration": {
-                    "day": "{count} {count, plural,\n  one {day}\n  other {days}\n} ago",
-                    "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n} ago",
-                    "minute": "{count} {count, plural,\n  one {minute}\n  other {minutes}\n} ago",
-                    "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n} ago",
-                    "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n} ago"
+                    "day": "{count} {count, plural,\n  one {dag}\n  other {dager}\n} siden",
+                    "hour": "{count} {count, plural,\n  one {time}\n  other {timer}\n} siden",
+                    "minute": "{count} {count, plural,\n  one {minutt}\n  other {minutter}\n} siden",
+                    "second": "{count} {count, plural,\n  one {sekund}\n  other {sekunder}\n} siden",
+                    "week": "{count} {count, plural,\n  one {uke}\n  other {uker}\n} siden"
                 }
             },
             "service-picker": {
@@ -839,7 +839,7 @@
                     "description": "Alternativene er lagret."
                 }
             },
-            "quick-open": {
+            "quick-bar": {
                 "commands": {
                     "reload": {
                         "automation": "Last inn automasjoner på nytt",
@@ -1979,6 +1979,7 @@
                         "update": "Oppdater"
                     },
                     "introduction": "Her kan du definere hver person av interesse i Home Assistant.",
+                    "learn_more": "Lær mer om personer",
                     "no_persons_created_yet": "Ser ut som du ikke har opprettet noen personer ennå.",
                     "note_about_persons_configured_in_yaml": "Merk: personer konfigurert i configuration.yaml kan ikke redigeres via brukergrensesnittet.",
                     "person_not_found": "Vi fant ikke personen du prøvde å redigere.",
@@ -2140,7 +2141,7 @@
                     "create_automation": "Opprett automatisering med tag",
                     "description": "Administrer tagger",
                     "detail": {
-                        "companion_apps": "ledsagerapper",
+                        "companion_apps": "kompanjong apper",
                         "create": "Opprett",
                         "create_and_write": "Opprette og skrive",
                         "delete": "Slett",
@@ -2150,7 +2151,7 @@
                         "tag_id": "Tag id",
                         "tag_id_placeholder": "Automatisk generert når den er tom",
                         "update": "Oppdater",
-                        "usage": "En tag kan utløse en automatisering når den skannes, du kan bruke NFC-koder, QR-koder eller hvilken som helst annen type tag. Bruk {companion_link} til å skrive denne taggen til en programmerbar NFC-tag eller opprette en QR-kode nedenfor."
+                        "usage": "En tag kan utløse en automasjon når den skannes, du kan bruke NFC-koder, QR-koder eller hvilken som helst annen type tag. Bruk {companion_link} til å skrive denne taggen til en programmerbar NFC-tag eller opprette en QR-kode nedenfor."
                     },
                     "edit": "Rediger",
                     "headers": {

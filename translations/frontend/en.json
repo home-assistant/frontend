@@ -839,7 +839,7 @@
                     "description": "Options successfully saved."
                 }
             },
-            "quick-open": {
+            "quick-bar": {
                 "commands": {
                     "reload": {
                         "automation": "Reload automations",
@@ -1140,6 +1140,7 @@
                             },
                             "unsupported_condition": "No UI support for condition: {condition}"
                         },
+                        "copy_to_clipboard": "Copy to Clipboard",
                         "default_name": "New Automation",
                         "description": {
                             "label": "Description",
@@ -1497,6 +1498,7 @@
                     "different_include": "Possibly via a domain, a glob or a different include.",
                     "pick_attribute": "Pick an attribute to override",
                     "picker": {
+                        "documentation": "Customization documentation",
                         "entity": "Entity",
                         "header": "Customizations",
                         "introduction": "Tweak per-entity attributes. Added/edited customizations will take effect immediately. Removed customizations will take effect when the entity is updated."
@@ -1584,6 +1586,8 @@
                         },
                         "filter": {
                             "filter": "Filter",
+                            "hidden_entities": "{number} hidden {number, plural,\n  one {entity}\n  other {entities}\n}",
+                            "show_all": "Show all",
                             "show_disabled": "Show disabled entities",
                             "show_readonly": "Show read-only entities",
                             "show_unavailable": "Show unavailable entities"

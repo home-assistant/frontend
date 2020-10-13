@@ -467,7 +467,7 @@
                 "currently": "当前",
                 "on_off": "开/关",
                 "operation": "操作",
-                "target_temperature": "目标温度"
+                "target_temperature": "设定温度"
             },
             "weather": {
                 "attributes": {
@@ -839,7 +839,7 @@
                     "description": "选项已成功保存。"
                 }
             },
-            "quick-open": {
+            "quick-bar": {
                 "commands": {
                     "reload": {
                         "automation": "重载自动化",
@@ -1544,7 +1544,7 @@
                     "device_info": "设备信息",
                     "device_not_found": "未找到设备。",
                     "entities": {
-                        "add_entities_lovelace": "添加设备的所有实体到 Lovelace UI",
+                        "add_entities_lovelace": "添加到 Lovelace",
                         "disabled_entities": "+{count} {count, plural,\n  one {个已禁用实体}\n  other {个已禁用实体}\n}",
                         "entities": "实体",
                         "hide_disabled": "隐藏已禁用的实体",

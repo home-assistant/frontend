@@ -839,7 +839,7 @@
                     "description": "Οι επιλογές αποθηκεύτηκαν με επιτυχία."
                 }
             },
-            "quick-open": {
+            "quick-bar": {
                 "commands": {
                     "reload": {
                         "automation": "Επαναφόρτωση αυτοματισμών",
