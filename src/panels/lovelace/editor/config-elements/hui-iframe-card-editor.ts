@@ -13,7 +13,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../types";
 import { IframeCardConfig } from "../../cards/types";
 import { LovelaceCardEditor } from "../../types";
-import { EditorTarget } from "../types";
+import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = object({
@@ -90,7 +90,7 @@ export class HuiIframeCardEditor extends LitElement
     `;
   }
 
-  private _valueChanged(ev: CustomEvent): void {
+  private _valueChanged(ev: EntitiesEditorEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
