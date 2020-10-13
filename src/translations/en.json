@@ -2292,6 +2292,9 @@
               "select_users": "Select which users should see this view in the navigation"
             }
           },
+          "edit_badges": {
+            "panel_mode": "These badges will not be displayed because this view is in \"Panel Mode\"."
+          },
           "edit_card": {
             "header": "Card Configuration",
             "typed_header": "{type} Card Configuration",
@@ -2564,7 +2567,7 @@
           "view": {
             "panel_mode": {
               "title": "Panel Mode?",
-              "description": "This renders the first card at full width; other cards in this view will not be rendered.",
+              "description": "This renders the first card at full width. Other cards in this view as well as badges will not be rendered.",
               "warning_multiple_cards": "This view contains more than one card, but a panel view can only show 1 card."
             }
           },
