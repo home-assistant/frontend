@@ -123,7 +123,6 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
       img {
         display: block;
         width: 100%;
-        height: 100%;
       }
     `;
   }

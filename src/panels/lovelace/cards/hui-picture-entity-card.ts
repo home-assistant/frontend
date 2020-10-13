@@ -139,9 +139,9 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
         </div>
       `;
     } else if (this._config.show_name) {
-      footer = html` <div class="footer">${name}</div> `;
+      footer = html`<div class="footer">${name}</div>`;
     } else if (this._config.show_state) {
-      footer = html` <div class="footer state">${state}</div> `;
+      footer = html`<div class="footer state">${state}</div>`;
     }
 
     return html`
@@ -184,12 +184,6 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
         position: relative;
         height: 100%;
         box-sizing: border-box;
-      }
-
-      hui-image {
-        display: block;
-        height: 100%;
-        width: 100%;
       }
 
       hui-image.clickable {

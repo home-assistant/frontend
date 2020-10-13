@@ -125,9 +125,9 @@ export class HuiImage extends LitElement {
               ? `${((100 * ratio.h) / ratio.w).toFixed(2)}%`
               : "",
         })}
-        class="container ${classMap({
+        class=${classMap({
           ratio: Boolean(ratio && ratio.w > 0 && ratio.h > 0),
-        })}"
+        })}
       >
         ${this.cameraImage && this.cameraView === "live"
           ? html`
@@ -228,10 +228,6 @@ export class HuiImage extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      .container {
-        height: 100%;
-      }
-
       img {
         display: block;
         height: auto;

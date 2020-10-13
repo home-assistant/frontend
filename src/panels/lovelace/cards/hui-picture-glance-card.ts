@@ -266,7 +266,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
           `}
         ></ha-icon-button>
         ${this._config!.show_state !== true && entityConf.show_state !== true
-          ? html` <div class="state"></div> `
+          ? html`<div class="state"></div>`
           : html`
               <div class="state">
                 ${entityConf.attribute
@@ -299,12 +299,6 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
         overflow: hidden;
         height: 100%;
         box-sizing: border-box;
-      }
-
-      hui-image {
-        display: block;
-        height: 100%;
-        width: 100%;
       }
 
       hui-image.clickable {
