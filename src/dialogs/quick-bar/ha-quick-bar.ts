@@ -179,11 +179,12 @@ export class QuickBar extends LitElement {
 
   private _filterEntityItems(filter: string): HassEntity[] {
     return this._entities
-      .filter(({ entity_id, attributes: { friendly_name } }) =>
-        fuzzySequentialMatch(filter.toLowerCase(), [
-          entity_id,
-          ...(friendly_name ? [friendly_name] : []),
-        ])
+      .filter(({ entity_id, attributes: { friendly_name } }) => {
+      	const values = [entity_id];
+        if (friendly_name) {
+        	values.push(friendly_name);
+        }
+        return fuzzySequentialMatch(filter.toLowerCase(), values);}
       )
       .sort((entityA, entityB) =>
         compare(entityA.entity_id, entityB.entity_id)
