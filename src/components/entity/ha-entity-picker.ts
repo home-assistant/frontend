@@ -267,13 +267,11 @@ export class HaEntityPicker extends LitElement {
   private _filterChanged(ev): void {
     const filterString = ev.detail.value.toLowerCase();
 
-    const filteredStates = this._states.filter(
-      (state) =>
-        fuzzySequentialMatch(filterString, state.entity_id.toLowerCase()) ||
-        fuzzySequentialMatch(
-          filterString,
-          computeStateName(state).toLowerCase()
-        )
+    const filteredStates = this._states.filter((state) =>
+      fuzzySequentialMatch(filterString, [
+        state.entity_id.toLowerCase(),
+        computeStateName(state).toLowerCase(),
+      ])
     );
 
     (this._comboBox as any).filteredItems = filteredStates;
