@@ -18,6 +18,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
+import { fuzzySequentialMatch } from "../../common/string/sequence_matching";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import "../ha-icon-button";
@@ -101,6 +102,8 @@ export class HaEntityPicker extends LitElement {
 
   private _initedStates = false;
 
+  private _states: HassEntity[] = [];
+
   private _getStates = memoizeOne(
     (
       _opened: boolean,
@@ -166,7 +169,7 @@ export class HaEntityPicker extends LitElement {
 
   protected updated(changedProps: PropertyValues) {
     if (!this._initedStates || (changedProps.has("_opened") && this._opened)) {
-      const states = this._getStates(
+      this._states = this._getStates(
         this._opened,
         this.hass,
         this.includeDomains,
@@ -174,7 +177,7 @@ export class HaEntityPicker extends LitElement {
         this.entityFilter,
         this.includeDeviceClasses
       );
-      (this._comboBox as any).filteredItems = states;
+      (this._comboBox as any).filteredItems = this._states;
       this._initedStates = true;
     }
   }
@@ -264,19 +267,13 @@ export class HaEntityPicker extends LitElement {
   private _filterChanged(ev): void {
     const filterString = ev.detail.value.toLowerCase();
 
-    const states = this._getStates(
-      this._opened,
-      this.hass,
-      this.includeDomains,
-      this.excludeDomains,
-      this.entityFilter,
-      this.includeDeviceClasses
-    );
-
-    const filteredStates = states.filter(
+    const filteredStates = this._states.filter(
       (state) =>
-        state.entity_id.toLowerCase().includes(filterString) ||
-        computeStateName(state).toLowerCase().includes(filterString)
+        fuzzySequentialMatch(filterString, state.entity_id.toLowerCase()) ||
+        fuzzySequentialMatch(
+          filterString,
+          computeStateName(state).toLowerCase()
+        )
     );
 
     (this._comboBox as any).filteredItems = filteredStates;
