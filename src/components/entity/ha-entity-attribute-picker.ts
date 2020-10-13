@@ -80,6 +80,7 @@ class HaEntityAttributePicker extends LitElement {
         .value=${this._value}
         .allowCustomValue=${this.allowCustomValue}
         .renderer=${rowRenderer}
+        attr-for-value="bind-value"
         @opened-changed=${this._openedChanged}
         @value-changed=${this._valueChanged}
       >

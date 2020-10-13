@@ -13,6 +13,7 @@ import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-switch";
+import "../../../../components/entity/ha-entity-attribute-picker";
 import { HomeAssistant } from "../../../../types";
 import { WeatherForecastCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
@@ -102,7 +103,9 @@ export class HuiWeatherForecastCardEditor extends LitElement
           ></hui-theme-select-editor>
         </div>
         <div class="side-by-side">
-          <paper-input
+          <ha-entity-attribute-picker
+            .hass=${this.hass}
+            .entityId=${this._entity}
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.secondary_info_attribute"
             )} (${this.hass.localize(
@@ -111,7 +114,7 @@ export class HuiWeatherForecastCardEditor extends LitElement
             .value=${this._secondary_info_attribute}
             .configValue=${"secondary_info_attribute"}
             @value-changed=${this._valueChanged}
-          ></paper-input>
+          ></ha-entity-attribute-picker>
           <ha-formfield
             .label=${this.hass.localize(
               "ui.panel.lovelace.editor.card.weather-forecast.show_forecast"
