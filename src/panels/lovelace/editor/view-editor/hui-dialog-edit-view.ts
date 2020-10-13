@@ -127,6 +127,15 @@ export class HuiDialogEditView extends LitElement {
                     `;
                   })}
                 </div>
+                ${this._config?.panel
+                  ? html`
+                      <p class="warning">
+                        ${this.hass!.localize(
+                          "ui.panel.lovelace.editor.edit_badges.panel_mode"
+                        )}
+                      </p>
+                    `
+                  : ""}
               `
             : ""}
           <hui-entity-editor
@@ -410,6 +419,10 @@ export class HuiDialogEditView extends LitElement {
           justify-content: center;
           margin: 12px 16px;
           flex-wrap: wrap;
+        }
+        .warning {
+          color: var(--warning-color);
+          text-align: center;
         }
 
         @media all and (min-width: 600px) {
