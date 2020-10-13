@@ -482,5 +482,4 @@ export const demoLovelaceKernehed: DemoConfig["lovelace"] = () => ({
       icon: "mdi:server-network",
     },
   ],
-  append_view_title: false,
 });

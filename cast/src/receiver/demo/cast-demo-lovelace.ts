@@ -89,6 +89,5 @@ export const castDemoLovelace: () => LovelaceConfig = () => {
         ],
       },
     ],
-    append_view_title: false,
   };
 };

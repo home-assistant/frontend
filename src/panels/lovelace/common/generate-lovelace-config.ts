@@ -173,7 +173,7 @@ export const computeCards = (
       const cardConfig = {
         type: "weather-forecast",
         entity: entityId,
-        show_forecast: false
+        show_forecast: false,
       };
       cards.push(cardConfig);
     } else if (
@@ -396,7 +396,6 @@ export const generateLovelaceConfigFromData = async (
           cards: [{ type: "safe-mode" }],
         },
       ],
-      append_view_title: false,
     };
   }
 
@@ -462,12 +461,9 @@ export const generateLovelaceConfigFromData = async (
     });
   }
 
-  const append_view_title = false
-
   return {
     title,
     views,
-    append_view_title,
   };
 };
 
@@ -483,7 +479,6 @@ export const generateLovelaceConfigFromHass = async (
           cards: [{ type: "starting" }],
         },
       ],
-      append_view_title: false,
     };
   }
 
@@ -495,7 +490,6 @@ export const generateLovelaceConfigFromHass = async (
           cards: [{ type: "safe-mode" }],
         },
       ],
-      append_view_title: false,
     };
   }
 

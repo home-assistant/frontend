@@ -1417,5 +1417,4 @@ export const demoLovelaceJimpower: DemoConfig["lovelace"] = () => ({
         'center / cover no-repeat url("/assets/jimpower/background-15.jpg") fixed',
     },
   ],
-  append_view_title: false,
 });
