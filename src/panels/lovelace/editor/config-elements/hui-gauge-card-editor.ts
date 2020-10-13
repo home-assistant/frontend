@@ -19,7 +19,7 @@ import { GaugeCardConfig, SeverityConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
-import { EditorTarget } from "../types";
+import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = object({
@@ -218,7 +218,7 @@ export class HuiGaugeCardEditor extends LitElement
     ];
   }
 
-  private _toggleSeverity(ev: CustomEvent): void {
+  private _toggleSeverity(ev: EntitiesEditorEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
@@ -239,7 +239,7 @@ export class HuiGaugeCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _severityChanged(ev: CustomEvent): void {
+  private _severityChanged(ev: EntitiesEditorEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
@@ -255,7 +255,7 @@ export class HuiGaugeCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _valueChanged(ev: CustomEvent): void {
+  private _valueChanged(ev: EntitiesEditorEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
