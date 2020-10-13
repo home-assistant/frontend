@@ -102,7 +102,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                 slot="trigger"
                 .title=${this.hass.localize("ui.common.menu")}
                 .label=${this.hass.localize("ui.common.overflow_menu")}
-                ><ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon
+                ><ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon
               ></mwc-icon-button>
               <mwc-list-item .disabled=${selected === -1}>
                 ${yamlMode

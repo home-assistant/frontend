@@ -3,7 +3,7 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultArray,
   customElement,
   html,
   internalProperty,
@@ -68,7 +68,6 @@ export class HuiAlarmPanelCardEditor extends LitElement
     const states = ["arm_home", "arm_away", "arm_night", "arm_custom_bypass"];
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <ha-entity-picker
           .label="${this.hass.localize(
@@ -128,22 +127,25 @@ export class HuiAlarmPanelCardEditor extends LitElement
     `;
   }
 
-  static get styles(): CSSResult {
-    return css`
-      .states {
-        display: flex;
-        flex-direction: row;
-      }
-      .deleteState {
-        visibility: hidden;
-      }
-      .states:hover > .deleteState {
-        visibility: visible;
-      }
-      ha-icon {
-        padding-top: 12px;
-      }
-    `;
+  static get styles(): CSSResultArray {
+    return [
+      configElementStyle,
+      css`
+        .states {
+          display: flex;
+          flex-direction: row;
+        }
+        .deleteState {
+          visibility: hidden;
+        }
+        .states:hover > .deleteState {
+          visibility: visible;
+        }
+        ha-icon {
+          padding-top: 12px;
+        }
+      `,
+    ];
   }
 
   private _stateRemoved(ev: CustomEvent): void {

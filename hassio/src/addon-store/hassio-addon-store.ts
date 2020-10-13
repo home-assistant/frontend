@@ -98,14 +98,14 @@ class HassioAddonStore extends LitElement {
         main-page
         .tabs=${supervisorTabs}
       >
-        <span slot="header">Add-on store</span>
+        <span slot="header">Add-on Store</span>
         <ha-button-menu
           corner="BOTTOM_START"
           slot="toolbar-icon"
           @action=${this._handleAction}
         >
           <mwc-icon-button slot="trigger" alt="menu">
-            <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+            <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
           </mwc-icon-button>
           <mwc-list-item>
             Repositories

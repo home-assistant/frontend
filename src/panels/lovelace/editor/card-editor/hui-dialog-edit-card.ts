@@ -1,42 +1,42 @@
+import { mdiHelpCircle } from "@mdi/js";
 import deepFreeze from "deep-freeze";
 import {
   css,
   CSSResultArray,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
+  PropertyValues,
   query,
   TemplateResult,
-  PropertyValues,
 } from "lit-element";
-import { mdiHelpCircle } from "@mdi/js";
-
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { haStyleDialog } from "../../../../resources/styles";
-import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
-import { addCard, replaceCard } from "../config-util";
-import { getCardDocumentationURL } from "../get-card-documentation-url";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
-import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
-
-import type { HomeAssistant } from "../../../../types";
-import type { GUIModeChangedEvent } from "../types";
-import type { ConfigChangedEvent, HuiCardEditor } from "./hui-card-editor";
-import type { EditCardDialogParams } from "./show-edit-card-dialog";
-import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import "../../../../components/ha-circular-progress";
+import "../../../../components/ha-dialog";
+import "../../../../components/ha-header-bar";
 import type {
   LovelaceCardConfig,
   LovelaceViewConfig,
 } from "../../../../data/lovelace";
-
-import "./hui-card-editor";
+import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
+import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { haStyleDialog } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
+import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
+import { addCard, replaceCard } from "../config-util";
+import { getCardDocumentationURL } from "../get-card-documentation-url";
+import "../hui-element-editor";
+import type {
+  ConfigChangedEvent,
+  HuiElementEditor,
+} from "../hui-element-editor";
+import type { GUIModeChangedEvent } from "../types";
 import "./hui-card-preview";
-import "../../../../components/ha-dialog";
-import "../../../../components/ha-header-bar";
-import "../../../../components/ha-circular-progress";
+import type { EditCardDialogParams } from "./show-edit-card-dialog";
 
 declare global {
   // for fire event
@@ -50,7 +50,8 @@ declare global {
 }
 
 @customElement("hui-dialog-edit-card")
-export class HuiDialogEditCard extends LitElement implements HassDialog {
+export class HuiDialogEditCard extends LitElement
+  implements HassDialog<EditCardDialogParams> {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @internalProperty() private _params?: EditCardDialogParams;
@@ -65,7 +66,7 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
 
   @internalProperty() private _guiModeAvailable? = true;
 
-  @query("hui-card-editor") private _cardEditorEl?: HuiCardEditor;
+  @query("hui-element-editor", true) private _cardEditorEl?: HuiElementEditor;
 
   @internalProperty() private _GUImode = true;
 
@@ -174,7 +175,7 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
                     dir=${computeRTLDirection(this.hass)}
                   >
                     <mwc-icon-button>
-                      <ha-svg-icon path=${mdiHelpCircle}></ha-svg-icon>
+                      <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
                     </mwc-icon-button>
                   </a>
                 `
@@ -183,14 +184,14 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
         </div>
         <div class="content">
           <div class="element-editor">
-            <hui-card-editor
+            <hui-element-editor
               .hass=${this.hass}
               .lovelace=${this._params.lovelaceConfig}
               .value=${this._cardConfig}
               @config-changed=${this._handleConfigChanged}
               @GUImode-changed=${this._handleGUIModeChanged}
               @editor-save=${this._save}
-            ></hui-card-editor>
+            ></hui-element-editor>
           </div>
           <div class="element-preview">
             <hui-card-preview
@@ -238,7 +239,7 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
                     ? html`
                         <ha-circular-progress
                           active
-                          alt="Saving"
+                          title="Saving"
                           size="small"
                         ></ha-circular-progress>
                       `
@@ -364,6 +365,8 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
         @media all and (min-width: 850px) {
           ha-dialog {
             --mdc-dialog-min-width: 845px;
+            --dialog-surface-top: 40px;
+            --mdc-dialog-max-height: calc(100% - 72px);
           }
         }
 
@@ -402,6 +405,9 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
           ha-dialog {
             --mdc-dialog-max-width: calc(100% - 32px);
             --mdc-dialog-min-width: 1000px;
+            --dialog-surface-position: fixed;
+            --dialog-surface-top: 40px;
+            --mdc-dialog-max-height: calc(100% - 72px);
           }
 
           .content {
@@ -418,10 +424,6 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
             margin: auto 0px;
             max-width: 500px;
           }
-        }
-
-        mwc-button ha-circular-progress {
-          margin-right: 20px;
         }
         .hidden {
           display: none;

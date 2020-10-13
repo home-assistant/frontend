@@ -56,6 +56,7 @@ export function hasConfigOrEntitiesChanged(
 
   return entities.some(
     (entity) =>
+      "entity" in entity &&
       oldHass.states[entity.entity] !== element.hass!.states[entity.entity]
   );
 }

@@ -1,25 +1,25 @@
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultArray,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { slugify } from "../../../../common/string/slugify";
-import "../../../../components/ha-switch";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-input";
+import "../../../../components/ha-switch";
 import { LovelaceViewConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import "../../components/hui-theme-select-editor";
 import { configElementStyle } from "../config-elements/config-elements-style";
 import { EditorTarget } from "../types";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 
 declare global {
   interface HASSDomEvents {
@@ -84,7 +84,6 @@ export class HuiViewEditor extends LitElement {
     }
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <paper-input
           .label="${this.hass.localize(
@@ -182,13 +181,16 @@ export class HuiViewEditor extends LitElement {
     fireEvent(this, "view-config-changed", { config });
   }
 
-  static get styles(): CSSResult {
-    return css`
-      .panel {
-        color: var(--secondary-text-color);
-        display: block;
-      }
-    `;
+  static get styles(): CSSResultArray {
+    return [
+      configElementStyle,
+      css`
+        .panel {
+          color: var(--secondary-text-color);
+          display: block;
+        }
+      `,
+    ];
   }
 }
 

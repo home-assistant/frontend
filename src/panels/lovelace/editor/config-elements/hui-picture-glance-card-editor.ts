@@ -3,6 +3,7 @@ import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
+  CSSResult,
   customElement,
   html,
   internalProperty,
@@ -83,7 +84,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
     return this._config!.camera_view || "auto";
   }
 
-  get _state_image(): {} {
+  get _state_image(): Record<string, unknown> {
     return this._config!.state_image || {};
   }
 
@@ -112,7 +113,6 @@ export class HuiPictureGlanceCardEditor extends LitElement
     const views = ["auto", "live"];
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <paper-input
           .label="${this.hass.localize(
@@ -257,6 +257,10 @@ export class HuiPictureGlanceCardEditor extends LitElement
       }
     }
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  static get styles(): CSSResult {
+    return configElementStyle;
   }
 }
 

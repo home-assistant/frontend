@@ -2,9 +2,12 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import {
   LovelaceBadgeConfig,
   LovelaceCardConfig,
+  LovelaceViewConfig,
+  LovelaceViewElement,
 } from "../../../data/lovelace";
 import { CUSTOM_TYPE_PREFIX } from "../../../data/lovelace_custom_cards";
 import type { HuiErrorCard } from "../cards/hui-error-card";
+import type { ErrorCardConfig } from "../cards/types";
 import { LovelaceElement, LovelaceElementConfig } from "../elements/types";
 import { LovelaceRow, LovelaceRowConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
@@ -14,8 +17,8 @@ import {
   LovelaceCardConstructor,
   LovelaceHeaderFooter,
   LovelaceHeaderFooterConstructor,
+  LovelaceRowConstructor,
 } from "../types";
-import type { ErrorCardConfig } from "../cards/types";
 
 const TIMEOUT = 2000;
 
@@ -38,12 +41,17 @@ interface CreateElementConfigTypes {
   row: {
     config: LovelaceRowConfig;
     element: LovelaceRow;
-    constructor: unknown;
+    constructor: LovelaceRowConstructor;
   };
   "header-footer": {
     config: LovelaceHeaderFooterConfig;
     element: LovelaceHeaderFooter;
     constructor: LovelaceHeaderFooterConstructor;
+  };
+  view: {
+    config: LovelaceViewConfig;
+    element: LovelaceViewElement;
+    constructor: unknown;
   };
 }
 

@@ -159,7 +159,7 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
       if (prevState !== null) {
         dataRow.push([prevLastChanged, endTime, locState, prevState]);
       }
-      datasets.push({ data: dataRow });
+      datasets.push({ data: dataRow, entity_id: stateInfo.entity_id });
       labels.push(entityDisplay);
     });
 
@@ -173,12 +173,22 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
       return [state, start, end];
     };
 
+    const formatTooltipBeforeBody = (item, data) => {
+      if (!this.hass.userData || !this.hass.userData.showAdvanced || !item[0]) {
+        return "";
+      }
+      // Extract the entity ID from the dataset.
+      const values = data.datasets[item[0].datasetIndex];
+      return values.entity_id || "";
+    };
+
     const chartOptions = {
       type: "timeline",
       options: {
         tooltips: {
           callbacks: {
             label: formatTooltipLabel,
+            beforeBody: formatTooltipBeforeBody,
           },
         },
         scales: {

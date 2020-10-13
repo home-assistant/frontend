@@ -1,7 +1,7 @@
 // @ts-ignore
 import fullcalendarStyle from "@fullcalendar/common/main.css";
-import { Calendar } from "@fullcalendar/core";
 import type { CalendarOptions } from "@fullcalendar/core";
+import { Calendar } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 // @ts-ignore
 import daygridStyle from "@fullcalendar/daygrid/main.css";
@@ -73,9 +73,11 @@ class HAFullCalendar extends LitElement {
     "dayGridDay",
   ];
 
+  @property() public initialView: FullCalendarView = "dayGridMonth";
+
   @internalProperty() private calendar?: Calendar;
 
-  @internalProperty() private _activeView: FullCalendarView = "dayGridMonth";
+  @internalProperty() private _activeView?: FullCalendarView;
 
   protected render(): TemplateResult {
     const viewToggleButtons = this._viewToggleButtons(this.views);
@@ -176,8 +178,11 @@ class HAFullCalendar extends LitElement {
       this.calendar.addEventSource(this.events);
     }
 
-    if (changedProps.has("views") && !this.views.includes(this._activeView)) {
-      this._activeView = this.views[0];
+    if (changedProps.has("views") && !this.views.includes(this._activeView!)) {
+      this._activeView =
+        this.initialView && this.views.includes(this.initialView)
+          ? this.initialView
+          : this.views[0];
       this.calendar!.changeView(this._activeView);
       this._fireViewChanged();
     }
@@ -187,7 +192,10 @@ class HAFullCalendar extends LitElement {
     const config: CalendarOptions = {
       ...defaultFullCalendarConfig,
       locale: this.hass.language,
+      initialView: this.initialView,
     };
+
+    this._activeView = this.initialView;
 
     config.dateClick = (info) => this._handleDateClick(info);
     config.eventClick = (info) => this._handleEventClick(info);
@@ -237,7 +245,7 @@ class HAFullCalendar extends LitElement {
 
   private _handleView(ev): void {
     this._activeView = ev.detail.value;
-    this.calendar!.changeView(this._activeView);
+    this.calendar!.changeView(this._activeView!);
     this._fireViewChanged();
   }
 

@@ -1,24 +1,24 @@
-import "../../../components/ha-circular-progress";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import "../../../components/ha-circular-progress";
 import { fetchRecent } from "../../../data/history";
 import { HomeAssistant } from "../../../types";
+import { findEntities } from "../common/find-entites";
 import { coordinates } from "../common/graph/coordinates";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-graph-base";
 import { LovelaceHeaderFooter, LovelaceHeaderFooterEditor } from "../types";
 import { GraphHeaderFooterConfig } from "./types";
-import { findEntities } from "../common/find-entites";
 
 const MINUTE = 60000;
 const DAY = 86400000;

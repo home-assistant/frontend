@@ -93,9 +93,11 @@ export class HaEntityPicker extends LitElement {
 
   @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
 
+  @property({ type: Boolean }) public hideClearIcon = false;
+
   @property({ type: Boolean }) private _opened = false;
 
-  @query("vaadin-combo-box-light") private _comboBox!: HTMLElement;
+  @query("vaadin-combo-box-light", true) private _comboBox!: HTMLElement;
 
   private _initedStates = false;
 
@@ -204,7 +206,7 @@ export class HaEntityPicker extends LitElement {
           autocorrect="off"
           spellcheck="false"
         >
-          ${this.value
+          ${this.value && !this.hideClearIcon
             ? html`
                 <ha-icon-button
                   aria-label=${this.hass.localize(
@@ -213,6 +215,7 @@ export class HaEntityPicker extends LitElement {
                   slot="suffix"
                   class="clear-button"
                   icon="hass:close"
+                  tabindex="-1"
                   @click=${this._clearValue}
                   no-ripple
                 >
@@ -228,6 +231,7 @@ export class HaEntityPicker extends LitElement {
             slot="suffix"
             class="toggle-button"
             .icon=${this._opened ? "hass:menu-up" : "hass:menu-down"}
+            tabindex="-1"
           >
             Toggle
           </ha-icon-button>

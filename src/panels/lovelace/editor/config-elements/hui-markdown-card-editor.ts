@@ -1,6 +1,7 @@
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
 import {
+  CSSResult,
   customElement,
   html,
   internalProperty,
@@ -54,7 +55,6 @@ export class HuiMarkdownCardEditor extends LitElement
     }
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <paper-input
           .label="${this.hass.localize(
@@ -115,6 +115,10 @@ export class HuiMarkdownCardEditor extends LitElement
       }
     }
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  static get styles(): CSSResult {
+    return configElementStyle;
   }
 }
 

@@ -109,7 +109,7 @@ export class HaConfigLovelaceRescources extends LitElement {
           )}
           @click=${this._addResource}
         >
-          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </mwc-fab>
       </hass-tabs-subpage-data-table>
     `;

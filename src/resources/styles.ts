@@ -86,6 +86,7 @@ export const derivedStyles = {
   "mdc-radio-disabled-color": "var(--disabled-text-color)",
   "mdc-tab-text-label-color-default": "var(--primary-text-color)",
   "mdc-button-disabled-ink-color": "var(--disabled-text-color)",
+  "mdc-dialog-scroll-divider-color": "var(--divider-color)",
 };
 
 export const haStyle = css`
@@ -296,6 +297,10 @@ export const haStyleDialog = css`
   ha-dialog .form {
     padding-bottom: 24px;
     color: var(--primary-text-color);
+  }
+
+  a {
+    color: var(--primary-color);
   }
 
   /* make dialog fullscreen on small screens */

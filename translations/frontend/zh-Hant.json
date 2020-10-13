@@ -496,9 +496,11 @@
                     "wnw": "西北西",
                     "wsw": "西南西"
                 },
+                "day": "白天",
                 "forecast": "預報",
                 "high": "高",
-                "low": "低"
+                "low": "低",
+                "night": "夜晚"
             }
         },
         "common": {
@@ -569,7 +571,34 @@
                 "no_history_found": "找不到狀態歷史。"
             },
             "logbook": {
-                "entries_not_found": "找不到實體日誌。"
+                "by": "由",
+                "by_service": "由服務",
+                "entries_not_found": "找不到實體日誌。",
+                "messages": {
+                    "became_unavailable": "變成不可用",
+                    "changed_to_state": "變更為{state}",
+                    "cleared_device_class": "安全（無{device_class}偵測）",
+                    "detected_device_class": "偵測到{device_class}",
+                    "rose": "升高",
+                    "set": "設定",
+                    "turned_off": "關閉",
+                    "turned_on": "開啟",
+                    "was_at_home": "狀態在家",
+                    "was_at_state": "狀態{state}",
+                    "was_away": "狀態離家",
+                    "was_closed": "狀態關閉",
+                    "was_connected": "狀態連線",
+                    "was_disconnected": "狀態斷線",
+                    "was_locked": "狀態上鎖",
+                    "was_low": "狀態過低",
+                    "was_normal": "狀態正常",
+                    "was_opened": "狀態開啟",
+                    "was_plugged_in": "狀態插上",
+                    "was_safe": "狀態安全",
+                    "was_unlocked": "狀態解鎖",
+                    "was_unplugged": "狀態拔下",
+                    "was_unsafe": "狀態不安全"
+                }
             },
             "media-browser": {
                 "audio_not_supported": "瀏覽器不支援音效元件。",
@@ -646,9 +675,23 @@
                     "week": "{count} {count, plural,\n  one {週}\n  other {週}\n}"
                 },
                 "future": "{time}後",
+                "future_duration": {
+                    "day": "於{count} {count, plural,\n  one {天}\n  other {天}\n}",
+                    "hour": "於{count} {count, plural,\n  one {小時}\n  other {小時}\n}",
+                    "minute": "於{count} {count, plural,\n  one {分鐘}\n  other {分鐘}\n}",
+                    "second": "於{count} {count, plural,\n  one {秒}\n  other {秒}\n}",
+                    "week": "於{count} {count, plural,\n  one {週}\n  other {週}\n}"
+                },
                 "just_now": "現在",
                 "never": "未執行",
-                "past": "{time}前"
+                "past": "{time}前",
+                "past_duration": {
+                    "day": "{count} {count, plural,\n  one {天}\n  other {天}\n}以前",
+                    "hour": "{count} {count, plural,\n  one {小時}\n  other {小時}\n}以前",
+                    "minute": "{count} {count, plural,\n  one {分鐘}\n  other {分鐘}\n}以前",
+                    "second": "{count} {count, plural,\n  one {秒}\n  other {秒}\n}以前",
+                    "week": "{count} {count, plural,\n  one {週}\n  other {週}\n}以前"
+                }
             },
             "service-picker": {
                 "service": "服務"
@@ -682,7 +725,8 @@
                     "unavailable": "該實體目前不可用。",
                     "update": "更新"
                 },
-                "no_unique_id": "此實體不包含唯一 ID、因此無法由 UI 進行管理設定。",
+                "faq": "相關文件",
+                "no_unique_id": "此實體不包含唯一 ID、因此無法由 UI 進行管理設定。請參閱{faq_link}以獲得更詳細資訊。",
                 "related": "相關",
                 "settings": "設定"
             },
@@ -739,6 +783,7 @@
                 "dismiss": "忽略對話",
                 "edit": "編輯實體",
                 "history": "歷史",
+                "last_updated": "最後更新",
                 "person": {
                     "create_zone": "使用目前位置新增區域"
                 },
@@ -793,6 +838,44 @@
                 "success": {
                     "description": "選項已儲存。"
                 }
+            },
+            "quick-bar": {
+                "commands": {
+                    "reload": {
+                        "automation": "重新載入自動化",
+                        "command_line": "重新載入命令列實體",
+                        "core": "重新載入座標與自訂化",
+                        "filesize": "重新載入檔案大小實體",
+                        "filter": "重新載入過濾器實體",
+                        "generic": "重新載入通用 IP 攝影機實體",
+                        "generic_thermostat": "重新載入通用溫控器實體",
+                        "group": "重新載入群組、群組實體及通知服務",
+                        "history_stats": "重新載入歷史狀態實體",
+                        "homekit": "重新載入 Homekit",
+                        "input_boolean": "重新載入輸入 boolean",
+                        "input_datetime": "重新載入輸入日期時間",
+                        "input_number": "重新載入輸入數字",
+                        "input_select": "重新載入輸入選擇",
+                        "input_text": "重新載入輸入文字",
+                        "min_max": "重新載入最低/最高實體",
+                        "mqtt": "重新載入 MQTT 實體",
+                        "person": "重新載入人員",
+                        "ping": "重新載入 Ping 二進位傳感器實體",
+                        "reload": "重新載入{domain}",
+                        "rest": "重新載入剩餘實體及通知服務",
+                        "rpi_gpio": "重新載入 Raspberry Pi GPIO 實體",
+                        "scene": "重新載入場景",
+                        "script": "重新載入腳本",
+                        "smtp": "重新載入 SMTP 通知服務",
+                        "statistics": "重新載入統計資訊實體",
+                        "telegram": "重新載入 Telegram 通知服務",
+                        "template": "重新載入模板實體",
+                        "trend": "重新載入趨勢實體",
+                        "universal": "重新載入通用媒體播放器實體",
+                        "zone": "重新載入區域"
+                    }
+                },
+                "filter_placeholder": "實體過濾"
             },
             "voice_command": {
                 "did_not_hear": "Home Assistant 未收到任何語音",
@@ -1038,7 +1121,16 @@
                                     "before": "在...之前",
                                     "label": "時間",
                                     "type_input": "日期/時間協助數值",
-                                    "type_value": "固定時間"
+                                    "type_value": "固定時間",
+                                    "weekdays": {
+                                        "fri": "星期五",
+                                        "mon": "星期一",
+                                        "sat": "星期六",
+                                        "sun": "星期天",
+                                        "thu": "星期四",
+                                        "tue": "星期二",
+                                        "wed": "星期三"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "區域實體",
@@ -1853,7 +1945,8 @@
                     },
                     "select_instance": {
                         "header": "選擇 OpenZWave 設備",
-                        "introduction": "超過一個以上的 OpenZWave 設備執行中，要管理哪個設備？"
+                        "introduction": "超過一個以上的 OpenZWave 設備執行中，要管理哪個設備？",
+                        "none_found": "找不到 Openzwave 設備。假如您認為有問題，請再確認 Openzwave 與 MQTT 設定、並確定 Home Assistant 能夠與 MQTT Broker 進行通訊。"
                     },
                     "services": {
                         "add_node": "新增節點",
@@ -1868,6 +1961,9 @@
                     "create_person": "新增人員",
                     "description": "管理 Home Assistant 追蹤人員",
                     "detail": {
+                        "admin": "管理員",
+                        "allow_login": "允許人員登入",
+                        "confirm_delete_user": "確定要刪除帳號{name}使用者？依舊可以追蹤使用者，但人員將無法進行登入。",
                         "create": "新增",
                         "delete": "刪除",
                         "device_tracker_intro": "選擇此人員所擁有的設備。",
@@ -1883,8 +1979,11 @@
                         "update": "更新"
                     },
                     "introduction": "此處可定義 Home Assistant 中的每一位成員。",
+                    "learn_more": "詳細了解人員",
                     "no_persons_created_yet": "看起來您還沒有新增任何人員。",
-                    "note_about_persons_configured_in_yaml": "請注意：透過 configuration.yaml 設定的人員將無法透過 UI 進行編輯。"
+                    "note_about_persons_configured_in_yaml": "請注意：透過 configuration.yaml 設定的人員將無法透過 UI 進行編輯。",
+                    "person_not_found": "找不到任何可編輯人員",
+                    "person_not_found_title": "找不到人員"
                 },
                 "scene": {
                     "activated": "已啟用場景 {name}。",
@@ -1960,11 +2059,12 @@
                             "restart": "重啟",
                             "single": "單一（預設）"
                         },
+                        "save_script": "儲存腳本",
                         "sequence": "連續",
                         "sequence_sentence": "此腳本所含的操作動作。"
                     },
                     "picker": {
-                        "add_script": "新增腳本",
+                        "add_script": "新增新腳本",
                         "edit_script": "編輯腳本",
                         "header": "腳本編輯器",
                         "headers": {
@@ -1973,6 +2073,7 @@
                         "introduction": "腳本編輯器允許新增或編輯腳本。請參考下方教學連結，以確保正確的設定 Home Assistant。",
                         "learn_more": "詳細了解腳本",
                         "no_scripts": "無法找到任何可編輯的腳本",
+                        "run_script": "執行腳本",
                         "show_info": "顯示關於腳本資訊",
                         "trigger_script": "觸發腳本"
                     }
@@ -2002,7 +2103,7 @@
                             "min_max": "重新載入最低/最高實體",
                             "mqtt": "重新載入 MQTT 實體",
                             "person": "重新載入人員",
-                            "ping": "重新載入 Pung 二進位傳感器實體",
+                            "ping": "重新載入 Ping 二進位傳感器實體",
                             "reload": "重新載入{domain}",
                             "rest": "重新載入剩餘實體及通知服務",
                             "rpi_gpio": "重新載入 Raspberry Pi GPIO 實體",
@@ -2040,6 +2141,7 @@
                     "create_automation": "以標籤新增自動化",
                     "description": "管理標籤",
                     "detail": {
+                        "companion_apps": "行動程式 App",
                         "create": "新增",
                         "create_and_write": "新增與編寫",
                         "delete": "刪除",
@@ -2048,7 +2150,8 @@
                         "new_tag": "新標籤",
                         "tag_id": "標籤 ID",
                         "tag_id_placeholder": "空白時將自動產生",
-                        "update": "更新"
+                        "update": "更新",
+                        "usage": "標籤可以於掃描後驅動自動化、可以使用 NFC 標籤、QR 碼或任何其他標籤。使用{companion_link}以寫入此標籤至可程式 NFC 標籤或於下方新增 QR 碼。"
                     },
                     "edit": "編輯",
                     "headers": {
@@ -2085,7 +2188,7 @@
                         "name": "名稱",
                         "new_password": "新密碼",
                         "owner": "擁有者",
-                        "password_changed": "密碼已變更！",
+                        "password_changed": "密碼變更成功",
                         "system_generated": "系統產生",
                         "system_generated_users_not_editable": "無法更新系統產生用戶",
                         "system_generated_users_not_removable": "無法移除系統產生用戶",
@@ -2217,7 +2320,7 @@
                         "create": "新增",
                         "delete": "刪除",
                         "icon": "圖示",
-                        "icon_error_msg": "圖示格式為 prefix:iconname、例如：mdi:home",
+                        "icon_error_msg": "圖示格式為 ''prefix:iconname''、例如：''mdi:home''",
                         "latitude": "緯度",
                         "longitude": "經度",
                         "name": "名稱",
@@ -2461,6 +2564,20 @@
                     "refresh": "更新"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "執行服務",
+                            "default_action": "預設動作",
+                            "more-info": "更多資訊",
+                            "navigate": "導航",
+                            "none": "沒有動作",
+                            "toggle": "開關",
+                            "url": "網址"
+                        },
+                        "editor_service_data": "服務資料僅能於代碼編輯器中輸入",
+                        "navigation_path": "導航路徑",
+                        "url_path": "網址路徑"
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "可用狀態",
@@ -2468,12 +2585,20 @@
                             "name": "警報器面板"
                         },
                         "button": {
+                            "default_action_help": "預設動作視實體的功能有所不同，可能為開關或顯示更多訊息。",
                             "description": "按鈕面板可供新增按鈕以執行任務。",
                             "name": "按鈕面板"
                         },
                         "calendar": {
+                            "calendar_entities": "日曆實體",
                             "description": "行事曆面板可顯示包含日、週及列表的行事曆",
-                            "name": "行事曆"
+                            "inital_view": "起始面板",
+                            "name": "行事曆",
+                            "views": {
+                                "dayGridDay": "日",
+                                "dayGridMonth": "週",
+                                "listWeek": "列表"
+                            }
                         },
                         "conditional": {
                             "card": "面板",
@@ -2492,8 +2617,31 @@
                         },
                         "entities": {
                             "description": "實體列表面板為最常用的面板。將實體分組為列表使用。",
+                            "edit_special_row": "點選編輯按鈕以檢視此列詳細資訊",
+                            "entity_row_editor": "實體編輯器",
+                            "entity_row": {
+                                "attribute": "屬性",
+                                "button": "按鈕",
+                                "buttons": "按鈕",
+                                "call-service": "執行服務",
+                                "cast": "Cast",
+                                "conditional": "條件式",
+                                "divider": "分配",
+                                "section": "部分",
+                                "weblink": "網站連結"
+                            },
                             "name": "實體",
+                            "secondary_info_values": {
+                                "brightness": "亮度",
+                                "entity-id": "實體 ID",
+                                "last-changed": "上次變更",
+                                "last-triggered": "上次觸發",
+                                "none": "無次要資訊",
+                                "position": "位置",
+                                "tilt-position": "標題位置"
+                            },
                             "show_header_toggle": "於頁首顯示開關？",
+                            "special_row": "特殊列",
                             "toggle": "切換實體。"
                         },
                         "entity-filter": {
@@ -2614,7 +2762,8 @@
                             "description": "傳感器面板、可供以選項圖像方式檢視傳感器時間變化與狀態。",
                             "graph_detail": "圖像精細度",
                             "graph_type": "圖像類型",
-                            "name": "傳感器面板"
+                            "name": "傳感器面板",
+                            "show_more_detail": "顯示更多資訊"
                         },
                         "shopping-list": {
                             "description": "購物清單面板、可供新增、編輯、勾選或清除購物清單項目。",
@@ -2651,6 +2800,8 @@
                         "edit": "編輯",
                         "header": "面板設定",
                         "move": "移動至視圖",
+                        "move_after": "向後移動面板",
+                        "move_before": "向前移動面板",
                         "options": "更多選項",
                         "pick_card": "選擇所要新增的面板？",
                         "pick_card_view_title": "要加入 {name} 視圖的面板？",
@@ -2944,6 +3095,12 @@
                     "more_integrations": "更多"
                 },
                 "intro": "準備喚醒您的智能家庭、取得隱私自主權，並加入由全球愛好者共同維護的社群了嗎？",
+                "restore": {
+                    "description": "或者可以自之前的 Snapshot 進行回復。",
+                    "hide_log": "隱藏完整日誌",
+                    "in_progress": "回復進行中",
+                    "show_log": "顯示完整日誌"
+                },
                 "user": {
                     "create_account": "創建帳號",
                     "data": {

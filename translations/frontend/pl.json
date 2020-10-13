@@ -496,9 +496,11 @@
                     "wnw": "zach. płn.-zach.",
                     "wsw": "zach. płd.-zach."
                 },
+                "day": "Dzień",
                 "forecast": "Prognoza",
                 "high": "wysoka",
-                "low": "niska"
+                "low": "niska",
+                "night": "Noc"
             }
         },
         "common": {
@@ -569,7 +571,34 @@
                 "no_history_found": "Nie znaleziono historii."
             },
             "logbook": {
-                "entries_not_found": "Nie znaleziono wpisów w dzienniku."
+                "by": "przez",
+                "by_service": "przez usługę",
+                "entries_not_found": "Nie znaleziono wpisów w dzienniku.",
+                "messages": {
+                    "became_unavailable": "jest niedostępny(-a)",
+                    "changed_to_state": "zmienił(-a) się na {state}",
+                    "cleared_device_class": "brak (nie {device_class} ruchu)",
+                    "detected_device_class": "wykryto {device_class}",
+                    "rose": "podniosło się",
+                    "set": "ustaw",
+                    "turned_off": "wyłączony(-a)",
+                    "turned_on": "włączony(-a)",
+                    "was_at_home": "był w domu",
+                    "was_at_state": "był w {state}",
+                    "was_away": "był poza domem",
+                    "was_closed": "zostały(-o) zamknięte(-a)",
+                    "was_connected": "został podłączony",
+                    "was_disconnected": "został odłączony",
+                    "was_locked": "został zamknięty",
+                    "was_low": "był niski",
+                    "was_normal": "był normalny",
+                    "was_opened": "zostały(-o) otwarte(-a)",
+                    "was_plugged_in": "został(-a) podłączony(-a)",
+                    "was_safe": "nie było zagrożenia",
+                    "was_unlocked": "został otwarty",
+                    "was_unplugged": "został(-a) odłączony(-a)",
+                    "was_unsafe": "było zagrożenie"
+                }
             },
             "media-browser": {
                 "audio_not_supported": "Twoja przeglądarka nie obsługuje elementu audio.",
@@ -646,9 +675,23 @@
                     "week": "{count} {count, plural,\n  one {tydzień}\n  few {tygodnie}\n  many {tygodni}\n  other {tygodni}\n}"
                 },
                 "future": "Za {time}",
+                "future_duration": {
+                    "day": "Za {count} {count, plural,\n  one {dzień}\n  other {dni}\n}",
+                    "hour": "Za {count} {count, plural,\n  one {godzinę}\n  few {godziny}\n  many {godzin}\n  other {godzin}\n}",
+                    "minute": "Za {count} {count, plural,\n  one {minutę}\n  few {minuty}\n  many {minut}\n  other {minut}\n}",
+                    "second": "Za {count} {count, plural,\n  one {sekundę}\n  few {sekundy}\n  many {sekund}\n  other {sekund}\n}",
+                    "week": "Za {count} {count, plural,\n  one {tydzień}\n  few {tygodnie}\n  many {tygodni}\n  other {tygodni}\n}"
+                },
                 "just_now": "Właśnie teraz",
                 "never": "Nigdy",
-                "past": "{time} temu"
+                "past": "{time} temu",
+                "past_duration": {
+                    "day": "{count} {count, plural,\n  one {dzień}\n  other {dni}\n} temu",
+                    "hour": "{count} {count, plural,\n  one {godzina}\n  few {godziny}\n  many {godzin}\n  other {godzin}\n} temu",
+                    "minute": "{count} {count, plural,\n  one {minuta}\n  few {minuty}\n  many {minut}\n  other {minut}\n} temu",
+                    "second": "{count} {count, plural,\n  one {sekunda}\n  few {sekundy}\n  many {sekund}\n  other {sekund}\n} temu",
+                    "week": "{count} {count, plural,\n  one {tydzień}\n  few {tygodnie}\n  many {tygodni}\n  other {tygodni}\n} temu"
+                }
             },
             "service-picker": {
                 "service": "Usługa"
@@ -678,11 +721,12 @@
                     "icon": "Nadpisanie ikony",
                     "icon_error": "Ikony powinny mieć format 'prefix:iconname', np. 'mdi:home'",
                     "name": "Nadpisanie nazwy",
-                    "note": "Uwaga: może to jeszcze nie działać ze wszystkimi integracjami.",
+                    "note": "Uwaga: to może jeszcze nie działać ze wszystkimi integracjami.",
                     "unavailable": "Ta encja nie jest obecnie dostępna.",
                     "update": "AKTUALIZUJ"
                 },
-                "no_unique_id": "Ten encja nie ma unikalnego identyfikatora, dlatego z poziomu interfejsu użytkownika nie można zarządzać jej ustawieniami.",
+                "faq": "dokumentacja",
+                "no_unique_id": "Ta encja nie ma unikalnego identyfikatora, dlatego z poziomu interfejsu użytkownika nie można zarządzać jej ustawieniami. Więcej szczegółów znajdziesz w {faq_link}.",
                 "related": "Powiązane",
                 "settings": "Ustawienia"
             },
@@ -739,6 +783,7 @@
                 "dismiss": "Zamknij okno dialogowe",
                 "edit": "Edytuj encję",
                 "history": "Historia",
+                "last_updated": "Ostatnio zaktualizowano",
                 "person": {
                     "create_zone": "Utwórz strefę z bieżącej lokalizacji"
                 },
@@ -794,6 +839,44 @@
                     "description": "Opcje pomyślnie zapisane."
                 }
             },
+            "quick-bar": {
+                "commands": {
+                    "reload": {
+                        "automation": "Automatyzacje",
+                        "command_line": "Encje komponentu linia komend",
+                        "core": "Lokalizację i dostosowywanie",
+                        "filesize": "Encje komponentu wielkość pliku",
+                        "filter": "Encje komponentu filtr",
+                        "generic": "Encje komponentu kamera IP generic",
+                        "generic_thermostat": "Encje komponentu termostatu generic",
+                        "group": "Grupy, ich encje oraz usługi powiadomień",
+                        "history_stats": "Encje komponentu historia stanów",
+                        "homekit": "HomeKit",
+                        "input_boolean": "Pomocnicy typu przełącznik",
+                        "input_datetime": "Pomocnicy typu data i czas",
+                        "input_number": "Pomocnicy typu numer",
+                        "input_select": "Pomocnicy typu pole wyboru",
+                        "input_text": "Pomocnicy typu tekst",
+                        "min_max": "Encje komponentu min/max",
+                        "mqtt": "Encje komponentu MQTT",
+                        "person": "Osoby",
+                        "ping": "Encje komponentu ping",
+                        "reload": "Domenę {domain}",
+                        "rest": "Encje komponentu rest i usługi powiadomień",
+                        "rpi_gpio": "Encje komponentu Raspberry Pi GPIO",
+                        "scene": "Sceny",
+                        "script": "Skrypty",
+                        "smtp": "Usługi powiadomień komponentu SMTP",
+                        "statistics": "Encje komponentu statystyka",
+                        "telegram": "Usługi powiadomień komponentu Telegram",
+                        "template": "Szablony encji",
+                        "trend": "Encje komponentu trend",
+                        "universal": "Encje komponentu uniwersalny odtwarzacz mediów",
+                        "zone": "Strefy"
+                    }
+                },
+                "filter_placeholder": "Filtr encji"
+            },
             "voice_command": {
                 "did_not_hear": "Home Assistant niczego nie słyszał",
                 "error": "Ups, wystąpił błąd",
@@ -808,7 +891,7 @@
                     "clusters": "Zarządzaj klastrami",
                     "reconfigure": "Rekonfiguracja urządzenia",
                     "remove": "Usuń urządzenie",
-                    "zigbee_information": "Informacje Zigbee"
+                    "zigbee_information": "Sygnatura urządzenia Zigbee"
                 },
                 "confirmations": {
                     "remove": "Czy na pewno chcesz usunąć urządzenie?"
@@ -878,7 +961,7 @@
                         "confirmation_text": "Wszystkie urządzenia z tego obszaru pozostaną bez przypisanego obszaru.",
                         "confirmation_title": "Czy na pewno chcesz usunąć ten obszar?"
                     },
-                    "description": "Przegląd wszystkich obszarów w twoim domu",
+                    "description": "Zarządzaj obszarami w twoim domu",
                     "editor": {
                         "area_id": "Identyfikator obszaru",
                         "create": "Utwórz",
@@ -900,7 +983,7 @@
                 },
                 "automation": {
                     "caption": "Automatyzacje",
-                    "description": "Twórz i edytuj automatyzacje",
+                    "description": "Zarządzaj automatyzacjami",
                     "editor": {
                         "actions": {
                             "add": "Dodaj akcję",
@@ -1038,7 +1121,16 @@
                                     "before": "Przed",
                                     "label": "Czas",
                                     "type_input": "Wartość pomocnika typu data/czas",
-                                    "type_value": "Ustalony czas"
+                                    "type_value": "Ustalony czas",
+                                    "weekdays": {
+                                        "fri": "Piątek",
+                                        "mon": "Poniedziałek",
+                                        "sat": "Sobota",
+                                        "sun": "Niedziela",
+                                        "thu": "Czwartek",
+                                        "tue": "Wtorek",
+                                        "wed": "Środa"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Encja z lokalizacją",
@@ -1478,7 +1570,7 @@
                 },
                 "entities": {
                     "caption": "Rejestr encji",
-                    "description": "Przegląd wszystkich znanych encji",
+                    "description": "Zarządzaj znanymi encjami",
                     "picker": {
                         "disable_selected": {
                             "button": "Wyłącz wybrane",
@@ -1530,7 +1622,7 @@
                 "header": "Konfiguruj Home Assistanta",
                 "helpers": {
                     "caption": "Pomocnicy",
-                    "description": "Elementy, które mogą pomóc w tworzeniu automatyzacji",
+                    "description": "Zarządzaj elementami, które pomagają w tworzeniu automatyzacji",
                     "dialog": {
                         "add_helper": "Dodaj pomocnika",
                         "add_platform": "Dodaj {platform}",
@@ -1628,7 +1720,7 @@
                     },
                     "configure": "Konfiguruj",
                     "configured": "Skonfigurowane",
-                    "description": "Zarządzaj i konfiguruj integracje",
+                    "description": "Zarządzaj integracjami",
                     "details": "Szczegóły integracji",
                     "discovered": "Wykryte",
                     "home_assistant_website": "Home Assistanta",
@@ -1853,7 +1945,8 @@
                     },
                     "select_instance": {
                         "header": "Wybierz instancję OpenZWave",
-                        "introduction": "Masz uruchomionych więcej niż jedną instancję OpenZWave. Którą instancją chcesz zarządzać?"
+                        "introduction": "Masz uruchomionych więcej niż jedną instancję OpenZWave. Którą instancją chcesz zarządzać?",
+                        "none_found": "Nie mogliśmy znaleźć instancji OpenZWave. Jeśli uważasz, że to nieprawda, sprawdź ustawienia OpenZWave oraz MQTT i upewnij się, że Home Assistant może komunikować się z Twoim brokerem MQTT."
                     },
                     "services": {
                         "add_node": "Dodaj węzeł",
@@ -1868,6 +1961,9 @@
                     "create_person": "Utwórz osobę",
                     "description": "Zarządzaj osobami, które śledzi Home Assistant",
                     "detail": {
+                        "admin": "Administrator",
+                        "allow_login": "Zezwalaj osobie na logowanie",
+                        "confirm_delete_user": "Czy na pewno chcesz usunąć konto użytkownika {name}? Nadal możesz śledzić tego użytkownika, ale osoba ta nie będzie już mogła się zalogować.",
                         "create": "Utwórz",
                         "delete": "Usuń",
                         "device_tracker_intro": "Wybierz urządzenia należące do tej osoby.",
@@ -1883,13 +1979,16 @@
                         "update": "Aktualizuj"
                     },
                     "introduction": "Tutaj można zdefiniować osoby, których obecność będzie śledzona w Home Assistant.",
+                    "learn_more": "Dowiedz się więcej o osobach",
                     "no_persons_created_yet": "Wygląda na to, że nie utworzyłeś jeszcze żadnych osób.",
-                    "note_about_persons_configured_in_yaml": "Uwaga: osób skonfigurowanych za pomocą pliku configuration.yaml nie można edytować za pomocą interfejsu użytkownika."
+                    "note_about_persons_configured_in_yaml": "Uwaga: osób skonfigurowanych za pomocą pliku configuration.yaml nie można edytować za pomocą interfejsu użytkownika.",
+                    "person_not_found": "Nie znaleziono osoby, którą próbujesz edytować.",
+                    "person_not_found_title": "Nie znaleziono osoby"
                 },
                 "scene": {
                     "activated": "Aktywowana scena {name}.",
                     "caption": "Sceny",
-                    "description": "Twórz i edytuj sceny",
+                    "description": "Zarządzaj scenami",
                     "editor": {
                         "default_name": "Nowa scena",
                         "devices": {
@@ -1933,7 +2032,7 @@
                 },
                 "script": {
                     "caption": "Skrypty",
-                    "description": "Twórz i edytuj skrypty",
+                    "description": "Zarządzaj skryptami",
                     "editor": {
                         "alias": "Nazwa",
                         "default_name": "Nowy skrypt",
@@ -1960,11 +2059,12 @@
                             "restart": "Restart",
                             "single": "Pojedynczy (domyślnie)"
                         },
+                        "save_script": "Zapisz skrypt",
                         "sequence": "Sekwencja",
                         "sequence_sentence": "Sekwencja akcji tego skryptu."
                     },
                     "picker": {
-                        "add_script": "Dodaj skrypt",
+                        "add_script": "Utwórz nowy skrypt",
                         "edit_script": "Edytuj skrypt",
                         "header": "Edytor skryptów",
                         "headers": {
@@ -1973,6 +2073,7 @@
                         "introduction": "Edytor skryptów pozwala tworzyć i edytować skrypty. Kliknij poniższy link, aby przeczytać instrukcję, jak poprawnie konfigurować skrypty w Home Assistant.",
                         "learn_more": "Dowiedz się więcej o skryptach",
                         "no_scripts": "Nie znaleziono żadnych edytowalnych skryptów",
+                        "run_script": "Uruchom skrypt",
                         "show_info": "Pokaż informacje o skrypcie",
                         "trigger_script": "Uruchom skrypt"
                     }
@@ -1989,7 +2090,7 @@
                             "filter": "Encje komponentu filtr",
                             "generic": "Encje komponentu kamera IP generic",
                             "generic_thermostat": "Encje komponentu termostatu generic",
-                            "group": "Grupy",
+                            "group": "Grupy, ich encje oraz usługi powiadomień",
                             "heading": "Ponowne wczytanie konfiguracji YAML",
                             "history_stats": "Encje komponentu historia stanów",
                             "homekit": "HomeKit",
@@ -2004,7 +2105,7 @@
                             "person": "Osoby",
                             "ping": "Encje komponentu ping",
                             "reload": "Domenę {domain}",
-                            "rest": "Encje komponentu rest",
+                            "rest": "Encje komponentu rest i usługi powiadomień",
                             "rpi_gpio": "Encje komponentu Raspberry Pi GPIO",
                             "scene": "Sceny",
                             "script": "Skrypty",
@@ -2040,15 +2141,17 @@
                     "create_automation": "Utwórz automatyzację z tagiem",
                     "description": "Zarządzaj tagami",
                     "detail": {
-                        "create": "Stwórz",
-                        "create_and_write": "Stwórz i zapisz",
+                        "companion_apps": "aplikacji towarzyszącej",
+                        "create": "Utwórz",
+                        "create_and_write": "Utwórz i zapisz",
                         "delete": "Usuń",
                         "description": "Opis",
                         "name": "Nazwa",
                         "new_tag": "Nowy tag",
                         "tag_id": "Identyfikator tagu",
                         "tag_id_placeholder": "Generowany automatycznie, gdy pole pozostawione puste",
-                        "update": "Aktualizuj"
+                        "update": "Aktualizuj",
+                        "usage": "Tag może wywołać automatyzację podczas skanowania, możesz użyć tagów NFC, kodów QR lub dowolnego innego rodzaju tagu. Skorzystaj z naszej {companion_link} aby zapisać ten tag do programowalnego tagu NFC lub utwórz kod QR poniżej."
                     },
                     "edit": "Edytuj",
                     "headers": {
@@ -2085,7 +2188,7 @@
                         "name": "Nazwa",
                         "new_password": "Nowe hasło",
                         "owner": "Właściciel",
-                        "password_changed": "Hasło zostało zmienione!",
+                        "password_changed": "Hasło zostało zmienione pomyślnie",
                         "system_generated": "Wygenerowany przez system",
                         "system_generated_users_not_editable": "Nie można zaktualizować użytkowników generowanych przez system.",
                         "system_generated_users_not_removable": "Nie można usunąć użytkowników wygenerowanych przez system.",
@@ -2217,7 +2320,7 @@
                         "create": "Utwórz",
                         "delete": "Usuń",
                         "icon": "Ikona",
-                        "icon_error_msg": "Ikona powinna mieć format prefiks:nazwa-ikony, na przykład: mdi:home",
+                        "icon_error_msg": "Ikona powinna mieć format \"prefiks:nazwa-ikony\", na przykład: mdi:home",
                         "latitude": "Szerokość geograficzna",
                         "longitude": "Długość geograficzna",
                         "name": "Nazwa",
@@ -2457,10 +2560,24 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Zaktualizowano konfigurację interfejsu Lovelace, czy  wczytać ją ponownie?",
+                    "message": "Zaktualizowano konfigurację interfejsu Lovelace, czy wczytać ją ponownie?",
                     "refresh": "Wczytaj ponownie"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "Wywołaj usługę",
+                            "default_action": "Akcja domyślna",
+                            "more-info": "Okno więcej informacji",
+                            "navigate": "Przejdź",
+                            "none": "Brak akcji",
+                            "toggle": "Przełącz",
+                            "url": "URL"
+                        },
+                        "editor_service_data": "Dane usługi można wprowadzać tylko w edytorze kodu",
+                        "navigation_path": "Ścieżka",
+                        "url_path": "Ścieżka adresu URL"
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "Dostępne stany",
@@ -2468,12 +2585,20 @@
                             "name": "Panel alarmu"
                         },
                         "button": {
+                            "default_action_help": "Domyślna akcja zależy od możliwości encji, encja zostanie przełączona lub zostanie wyświetlone okno więcej informacji.",
                             "description": "Karta przycisku umożliwia dodawanie przycisków do wykonywania zadań.",
                             "name": "Przycisk"
                         },
                         "calendar": {
+                            "calendar_entities": "Encje kalendarza",
                             "description": "Karta kalendarza wyświetla kalendarz zawierający widoki dnia, tygodnia i listy",
-                            "name": "Kalendarz"
+                            "inital_view": "Wstępny widok",
+                            "name": "Kalendarz",
+                            "views": {
+                                "dayGridDay": "Dzień",
+                                "dayGridMonth": "Miesiąc",
+                                "listWeek": "Lista"
+                            }
                         },
                         "conditional": {
                             "card": "Karta",
@@ -2492,8 +2617,31 @@
                         },
                         "entities": {
                             "description": "Karta encji jest najbardziej popularnym rodzajem karty. Grupuje ona encje w listy.",
+                            "edit_special_row": "Wyświetl szczegóły tego wiersza, klikając przycisk edycji",
+                            "entity_row_editor": "Edytor wiersza encji",
+                            "entity_row": {
+                                "attribute": "Atrybut",
+                                "button": "Przycisk",
+                                "buttons": "Przyciski",
+                                "call-service": "Wywołaj usługę",
+                                "cast": "Cast",
+                                "conditional": "Warunkowe",
+                                "divider": "Dzielnik",
+                                "section": "Sekcja",
+                                "weblink": "Łącze internetowe"
+                            },
                             "name": "Encje",
+                            "secondary_info_values": {
+                                "brightness": "Jasność",
+                                "entity-id": "Identyfikator encji",
+                                "last-changed": "Ostatnia zmiana",
+                                "last-triggered": "Ostatnie uruchomienie",
+                                "none": "Brak dodatkowych informacji",
+                                "position": "Pozycja",
+                                "tilt-position": "Pochylenie"
+                            },
                             "show_header_toggle": "Pokaż przełącznik w nagłówku",
+                            "special_row": "wiersz specjalny",
                             "toggle": "Przełącz encje"
                         },
                         "entity-filter": {
@@ -2614,11 +2762,12 @@
                             "description": "Karta sensor zapewnia szybki przegląd stanu sensorów z opcjonalnym wykresem, aby wizualizować zmiany w czasie.",
                             "graph_detail": "Szczegół wykresu",
                             "graph_type": "Rodzaj wykresu",
-                            "name": "Sensor"
+                            "name": "Sensor",
+                            "show_more_detail": "Pokaż więcej informacji"
                         },
                         "shopping-list": {
                             "description": "Karta lista zakupów umożliwia dodawanie, edytowanie, zaznaczanie i usuwanie pozycji z listy zakupów.",
-                            "integration_not_loaded": "Ta karta wymaga ustawienia integracji  `shopping_list`.",
+                            "integration_not_loaded": "Ta karta wymaga ustawienia integracji `shopping_list`.",
                             "name": "Lista zakupów"
                         },
                         "thermostat": {
@@ -2651,6 +2800,8 @@
                         "edit": "Edytuj",
                         "header": "Konfiguracja karty",
                         "move": "Przenieś",
+                        "move_after": "Przesuń kartę za",
+                        "move_before": "Przesuń kartę przed",
                         "options": "Więcej opcji",
                         "pick_card": "Wybierz kartę, którą chcesz dodać.",
                         "pick_card_view_title": "Którą kartę chcesz dodać do widoku {name}?",
@@ -2742,7 +2893,7 @@
                 },
                 "menu": {
                     "close": "Zamknij",
-                    "configure_ui": "Konfiguracja interfejsu użytkownika",
+                    "configure_ui": "Edytuj dashboard",
                     "exit_edit_mode": "Wyjdź z trybu edycji interfejsu użytkownika",
                     "help": "Pomoc",
                     "refresh": "Wczytaj ponownie",
@@ -2851,7 +3002,7 @@
                                     "data": {
                                         "password": "Hasło API"
                                     },
-                                    "description": "Proszę wprowadzić hasło API w konfiguracji  HTTP:"
+                                    "description": "Proszę wprowadzić hasło API w konfiguracji HTTP:"
                                 },
                                 "mfa": {
                                     "data": {
@@ -2944,6 +3095,12 @@
                     "more_integrations": "Więcej"
                 },
                 "intro": "Czy jesteś gotowy, aby ożywić swój dom, odzyskać prywatność i dołączyć do światowej społeczności majsterkowiczów?",
+                "restore": {
+                    "description": "Alternatywnie możesz przywrócić z poprzedniej migawki.",
+                    "hide_log": "Ukryj cały log",
+                    "in_progress": "Trwa przywracanie",
+                    "show_log": "Pokaż cały log"
+                },
                 "user": {
                     "create_account": "Utwórz konto",
                     "data": {
@@ -3013,7 +3170,7 @@
                     "name": "Nazwa",
                     "not_used": "Nigdy nie był używany",
                     "prompt_copy_token": "Skopiuj token. Nie będzie on już ponownie wyświetlany.",
-                    "prompt_name": "Nazwa"
+                    "prompt_name": "Nazwij token"
                 },
                 "mfa_setup": {
                     "close": "Zamknij",

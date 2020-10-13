@@ -13,7 +13,11 @@ import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { throttle } from "../../common/util/throttle";
 import "../../components/ha-circular-progress";
 import "../../components/state-history-charts";
-import { getLogbookData, LogbookEntry } from "../../data/logbook";
+import {
+  CONTINUOUS_DOMAINS,
+  getLogbookData,
+  LogbookEntry,
+} from "../../data/logbook";
 import "../../panels/logbook/ha-logbook";
 import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
@@ -40,7 +44,12 @@ export class MoreInfoLogbook extends LitElement {
     }
     const stateObj = this.hass.states[this.entityId];
 
-    if (!stateObj) {
+    if (!stateObj || stateObj.attributes.unit_of_measurement) {
+      return html``;
+    }
+
+    const domain = computeStateDomain(stateObj);
+    if (CONTINUOUS_DOMAINS.includes(domain)) {
       return html``;
     }
 
@@ -60,6 +69,7 @@ export class MoreInfoLogbook extends LitElement {
                 narrow
                 no-icon
                 no-name
+                relative-time
                 .hass=${this.hass}
                 .entries=${this._logbookEntries}
                 .userIdToName=${this._persons}
@@ -152,6 +162,11 @@ export class MoreInfoLogbook extends LitElement {
         ha-logbook {
           max-height: 250px;
           overflow: auto;
+        }
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          ha-logbook {
+            max-height: unset;
+          }
         }
         ha-circular-progress {
           display: flex;

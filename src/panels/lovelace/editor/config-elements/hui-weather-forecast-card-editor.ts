@@ -1,4 +1,5 @@
 import {
+  CSSResult,
   customElement,
   html,
   internalProperty,
@@ -68,7 +69,6 @@ export class HuiWeatherForecastCardEditor extends LitElement
     }
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <ha-entity-picker
           .label="${this.hass.localize(
@@ -150,6 +150,10 @@ export class HuiWeatherForecastCardEditor extends LitElement
       }
     }
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  static get styles(): CSSResult {
+    return configElementStyle;
   }
 }
 

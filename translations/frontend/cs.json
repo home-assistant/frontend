@@ -496,9 +496,11 @@
                     "wnw": "ZSZ",
                     "wsw": "ZJZ"
                 },
+                "day": "Den",
                 "forecast": "Předpověď",
                 "high": "Vysoká",
-                "low": "Nízká"
+                "low": "Nízká",
+                "night": "Noc"
             }
         },
         "common": {
@@ -569,7 +571,33 @@
                 "no_history_found": "Historie stavu chybí."
             },
             "logbook": {
-                "entries_not_found": "Nenalezeny žádné záznamy."
+                "by_service": "službou",
+                "entries_not_found": "Nenalezeny žádné záznamy.",
+                "messages": {
+                    "became_unavailable": "stalo se nedostupným",
+                    "changed_to_state": "změněno na {state}",
+                    "cleared_device_class": "zrušeno (nebylo zjištěno {device_class})",
+                    "detected_device_class": "zjištěno {device_class}",
+                    "rose": "vzrostlo",
+                    "set": "nastaveno",
+                    "turned_off": "vypnuto",
+                    "turned_on": "zapnuto",
+                    "was_at_home": "byl doma",
+                    "was_at_state": "bylo v {state}",
+                    "was_away": "byl pryč",
+                    "was_closed": "bylo zavřeno",
+                    "was_connected": "bylo připojeno",
+                    "was_disconnected": "bylo odpojeno",
+                    "was_locked": "bylo uzamčeno",
+                    "was_low": "bylo nízké",
+                    "was_normal": "bylo normální",
+                    "was_opened": "bylo otevřeno",
+                    "was_plugged_in": "bylo zapojeno",
+                    "was_safe": "bylo v bezpečí",
+                    "was_unlocked": "bylo odemčeno",
+                    "was_unplugged": "bylo odpojeno",
+                    "was_unsafe": "bylo v nebezpečí"
+                }
             },
             "media-browser": {
                 "audio_not_supported": "Váš prohlížeč nepodporuje element \"audio\".",
@@ -640,15 +668,29 @@
             "relative_time": {
                 "duration": {
                     "day": "{count} {count, plural,\none {den}\nfew {dny}\nother {dnů}\n}",
-                    "hour": "{count} {count, plural,\none {hodinu}\nfew {hodiny}\nother {hodin}\n}",
-                    "minute": "{count} {count, plural,\none {minutu}\nfew {minuty}\nother {minut}\n}",
-                    "second": "{count} {count, plural,\none {sekundu}\nfew {sekundy}\nother {sekund}\n}",
-                    "week": "{count} {count, plural,\none {týden}\nother {týdnů}\n}"
+                    "hour": "{count} {count, plural,\none {hodina}\nfew {hodiny}\nother {hodin}\n}",
+                    "minute": "{count} {count, plural,\none {minuta}\nfew {minuty}\nother {minut}\n}",
+                    "second": "{count} {count, plural,\none {sekunda}\nfew {sekundy}\nother {sekund}\n}",
+                    "week": "{count} {count, plural,\none {týden}\nfew {týdny}\nother {týdnů}\n}"
                 },
                 "future": "Za {time}",
+                "future_duration": {
+                    "day": "Za {count} {count, plural,\none {den}\nfew {dny}\nother {dní}\n}",
+                    "hour": "Za {count} {count, plural,\none {hodinu}\nfew {hodiny}\nother {hodin}\n}",
+                    "minute": "Za {count} {count, plural,\none {minutu}\nfew {minuty}\nother {minut}\n}",
+                    "second": "Za {count} {count, plural,\none {sekundu}\nfew {sekundy}\nother {sekund}\n}",
+                    "week": "Za {count} {count, plural,\none {týden}\nfew {týdny}\nother {týdnů}\n}"
+                },
                 "just_now": "Právě teď",
                 "never": "Nikdy",
-                "past": "Před {time}"
+                "past": "Před {time}",
+                "past_duration": {
+                    "day": "Před {count} {count, plural,\none {dnem}\nother {dny}\n}",
+                    "hour": "Před {count} {count, plural,\none {hodinou}\nother {hodinami}\n}",
+                    "minute": "Před {count} {count, plural,\none {minutou}\nother {minutami}\n}",
+                    "second": "Před {count} {count, plural,\none {sekundou}\nother {sekundami}\n}",
+                    "week": "Před {count} {count, plural,\none {týdnem}\nother {týdny}\n}"
+                }
             },
             "service-picker": {
                 "service": "Služba"
@@ -682,7 +724,8 @@
                     "unavailable": "Tato entita není momentálně k dispozici.",
                     "update": "Aktualizovat"
                 },
-                "no_unique_id": "Tato entita nemá jedinečné ID, proto její nastavení nelze spravovat z uživatelského rozhraní.",
+                "faq": "dokumentace",
+                "no_unique_id": "Tato entita nemá jedinečné ID, proto její nastavení nelze spravovat z uživatelského rozhraní. Další podrobnosti naleznete na stránce {faq_link}.",
                 "related": "Související",
                 "settings": "Nastavení"
             },
@@ -739,6 +782,7 @@
                 "dismiss": "Zavřít dialog",
                 "edit": "Upravit entitu",
                 "history": "Historie",
+                "last_updated": "Poslední aktualizace",
                 "person": {
                     "create_zone": "Vytvořit zónu z aktuálního umístění"
                 },
@@ -793,6 +837,44 @@
                 "success": {
                     "description": "Volby byly úspěšně uloženy."
                 }
+            },
+            "quick-bar": {
+                "commands": {
+                    "reload": {
+                        "automation": "Nově načíst automatizace",
+                        "command_line": "Nově načíst entity integrace Command line",
+                        "core": "Nově načíst umístění a přizpůsobení",
+                        "filesize": "Nově načíst entity integrace File size",
+                        "filter": "Nově načíst entity integrace Filter",
+                        "generic": "Nově načíst entity integrace Generic IP camera",
+                        "generic_thermostat": "Nově načíst entity integrace Generic thermostat",
+                        "group": "Nově načíst skupiny, skupiny entit a notifikační služby",
+                        "history_stats": "Nově načíst entity integrace History stats",
+                        "homekit": "Nově načíst entity integrace HomeKit",
+                        "input_boolean": "Nově načíst pomocníky - přepínače",
+                        "input_datetime": "Nově načíst pomocníky - data/časy",
+                        "input_number": "Nově načíst pomocníky - čísla",
+                        "input_select": "Nově načíst pomocníky - výběry",
+                        "input_text": "Nově načíst pomocníky - texty",
+                        "min_max": "Nově načíst entity integrace Min/Max",
+                        "mqtt": "Nově načíst entity integrace MQTT",
+                        "person": "Nově načíst osoby",
+                        "ping": "Nově načíst entity integrace Ping",
+                        "reload": "Nově načíst integraci {domain}",
+                        "rest": "Nově načíst entity a notifikační služby integrace Rest",
+                        "rpi_gpio": "Nově načíst entity integrace Raspberry Pi GPIO",
+                        "scene": "Nově načíst scény",
+                        "script": "Nově načíst skripty",
+                        "smtp": "Nově načíst notifikační služby integrace SMTP",
+                        "statistics": "Nově načíst entity integrace Statistics",
+                        "telegram": "Nově načíst notifikační služby integrace Telegram",
+                        "template": "Nově načíst entity integrace Template",
+                        "trend": "Nově načíst entity integrace Trend",
+                        "universal": "Nově načíst entity integrace Universal media player",
+                        "zone": "Nově načíst zóny"
+                    }
+                },
+                "filter_placeholder": "Filtr entit"
             },
             "voice_command": {
                 "did_not_hear": "Home Assistant nic neslyšel",
@@ -1038,7 +1120,16 @@
                                     "before": "Před",
                                     "label": "Čas",
                                     "type_input": "Hodnota pomocníka \"Datum a/nebo čas\"",
-                                    "type_value": "Pevný čas"
+                                    "type_value": "Pevný čas",
+                                    "weekdays": {
+                                        "fri": "Pátek",
+                                        "mon": "Pondělí",
+                                        "sat": "Sobota",
+                                        "sun": "Neděle",
+                                        "thu": "Čtvrtek",
+                                        "tue": "Úterý",
+                                        "wed": "Středa"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Entita s umístěním",
@@ -1853,7 +1944,8 @@
                     },
                     "select_instance": {
                         "header": "Vyberte instanci OpenZWave",
-                        "introduction": "Máte více než jednu instanci OpenZWave. Kterou instanci chcete spravovat?"
+                        "introduction": "Máte více než jednu instanci OpenZWave. Kterou instanci chcete spravovat?",
+                        "none_found": "Instance OpenZWave nebyla nalezena. Pokud se domníváte, že to není správně, zkontrolujte nastavení OpenZWave a MQTT a zajistěte, aby Home Assistant mohl komunikovat s vaším MQTT."
                     },
                     "services": {
                         "add_node": "Přidat uzel",
@@ -1868,6 +1960,9 @@
                     "create_person": "Vytvořit osobu",
                     "description": "Správa osob, které Home Assistant sleduje",
                     "detail": {
+                        "admin": "Administrátor",
+                        "allow_login": "Povolit osobě se přihlásit",
+                        "confirm_delete_user": "Opravdu chcete smazat uživatelský účet pro {name} ? Stále můžete uživatele sledovat, ale daná osoba se již nebude moci přihlásit.",
                         "create": "Vytvořit",
                         "delete": "Smazat",
                         "device_tracker_intro": "Vyberte zařízení, která patří této osobě.",
@@ -1883,8 +1978,11 @@
                         "update": "Aktualizace"
                     },
                     "introduction": "Zde můžete definovat každou osobu v Home Assistant.",
+                    "learn_more": "Další informace o osobách",
                     "no_persons_created_yet": "Vypadá to, že jste dosud žádné osoby nevytvořili.",
-                    "note_about_persons_configured_in_yaml": "Poznámka: Osoby konfigurované pomocí configuration.yaml nelze upravovat pomocí uživatelského rozhraní."
+                    "note_about_persons_configured_in_yaml": "Poznámka: Osoby konfigurované pomocí configuration.yaml nelze upravovat pomocí uživatelského rozhraní.",
+                    "person_not_found": "Nedaří se nám najít osobu, kterou jste se pokoušeli upravit.",
+                    "person_not_found_title": "Osoba nenalezena"
                 },
                 "scene": {
                     "activated": "Aktivovaná scéna {name}.",
@@ -1960,11 +2058,12 @@
                             "restart": "Restart",
                             "single": "Jediný (výchozí)"
                         },
+                        "save_script": "Uložit skript",
                         "sequence": "Sekvence",
                         "sequence_sentence": "Posloupnost akcí tohoto skriptu."
                     },
                     "picker": {
-                        "add_script": "Přidat skript",
+                        "add_script": "Vytvořit skript",
                         "edit_script": "Upravit skript",
                         "header": "Editor skriptů",
                         "headers": {
@@ -1973,6 +2072,7 @@
                         "introduction": "Editor skriptů umožňuje vytvářet a upravovat skripty. Postupujte podle níže uvedeného odkazu a přečtěte si pokyny, abyste se ujistili, že jste Home Assistant nakonfigurovali správně.",
                         "learn_more": "Další informace o skriptech",
                         "no_scripts": "Nemohli jsme najít žádné upravitelné skripty",
+                        "run_script": "Spustit skript",
                         "show_info": "Zobrazit informace o skriptu",
                         "trigger_script": "Spustit skript"
                     }
@@ -2040,6 +2140,7 @@
                     "create_automation": "Vytvořit automatizaci se značkou",
                     "description": "Správa značek",
                     "detail": {
+                        "companion_apps": "doprovodné aplikace",
                         "create": "Vytvořit",
                         "create_and_write": "Vytvořit a zapsat",
                         "delete": "Smazat",
@@ -2048,7 +2149,8 @@
                         "new_tag": "Nová značka",
                         "tag_id": "ID značky",
                         "tag_id_placeholder": "Automaticky vygenerováno, pokud zůstane prázdné",
-                        "update": "Aktualizovat"
+                        "update": "Aktualizovat",
+                        "usage": "Značka může po naskenování spustit automatizaci. Můžete použít NFC značky, QR kódy nebo jakýkoli jiný druh značky. Použijte naše {companion_link} k zapsání této značky na programovatelnou NFC značku nebo vytvořte QR kód níže."
                     },
                     "edit": "Upravit",
                     "headers": {
@@ -2085,7 +2187,7 @@
                         "name": "Jméno",
                         "new_password": "Nové heslo",
                         "owner": "Vlastník",
-                        "password_changed": "Heslo změněno!",
+                        "password_changed": "Heslo bylo změněno",
                         "system_generated": "Generovaný systémem",
                         "system_generated_users_not_editable": "Nelze aktualizovat uživatele generované systémem.",
                         "system_generated_users_not_removable": "Nelze odebrat uživatele generované systémem.",
@@ -2217,7 +2319,7 @@
                         "create": "Vytvořit",
                         "delete": "Smazat",
                         "icon": "Ikona",
-                        "icon_error_msg": "Ikona by měla být ve formátu předpona:jménoIcony, například: mdi:home",
+                        "icon_error_msg": "Ikona by měla být ve formátu \"předpona:jménoIkony\", například: \"mdi:home\"",
                         "latitude": "Zeměpisná šířka",
                         "longitude": "Zeměpisná délka",
                         "name": "Název",
@@ -2367,8 +2469,8 @@
                         "alert_entity_field": "Entita je povinné pole",
                         "attributes": "Atributy",
                         "current_entities": "Současné entity",
-                        "description1": "Nastavte zobrazení zařízení v Home Assistant",
-                        "description2": "Toto nebude komunikovat se skutečným zařízením.",
+                        "description1": "Nastavte stav zařízení v Home Assistant.",
+                        "description2": "Stav skutečného zařízení se nezmění.",
                         "entity": "Entita",
                         "filter_attributes": "Filtrovat atributy",
                         "filter_entities": "Filtrovat entity",
@@ -2461,6 +2563,20 @@
                     "refresh": "Obnovit"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "Zavolání služby",
+                            "default_action": "Výchozí akce",
+                            "more-info": "Více informací",
+                            "navigate": "Přechod na jinou stránku",
+                            "none": "Žádná akce",
+                            "toggle": "Přepínač",
+                            "url": "Url adresa"
+                        },
+                        "editor_service_data": "Data služby lze zadat pouze v editoru kódu",
+                        "navigation_path": "Cesta stránky",
+                        "url_path": "Url adresa"
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "Dostupné režimy",
@@ -2468,12 +2584,20 @@
                             "name": "Ovládací panel alarmu"
                         },
                         "button": {
+                            "default_action_help": "Výchozí akce závisí na vlastnostech entity - bude buď přepnuta, nebo se zobrazí další informace.",
                             "description": "Karta Tlačítko umožňuje přidat tlačítka k provádění úkolů.",
                             "name": "Tlačítko"
                         },
                         "calendar": {
+                            "calendar_entities": "Entity kalendáře",
                             "description": "Karta Kalendář zobrazuje kalendář včetně zobrazení dnů, týdnů a seznamů",
-                            "name": "Kalendář"
+                            "inital_view": "Výchozí pohled",
+                            "name": "Kalendář",
+                            "views": {
+                                "dayGridDay": "Den",
+                                "dayGridMonth": "Měsíc",
+                                "listWeek": "Seznam"
+                            }
                         },
                         "conditional": {
                             "card": "Karta",
@@ -2492,8 +2616,31 @@
                         },
                         "entities": {
                             "description": "Karta Entity je nejběžnějším typem karty. Seskupuje položky do seznamů.",
+                            "edit_special_row": "Použijte tlačítko Upravit k zobrazení podrobností tohoto řádku",
+                            "entity_row_editor": "Editor řádku entity",
+                            "entity_row": {
+                                "attribute": "Atribut",
+                                "button": "Tlačítko",
+                                "buttons": "Tlačítka",
+                                "call-service": "Volání služby",
+                                "cast": "Cast",
+                                "conditional": "Podmínka",
+                                "divider": "Oddělovač",
+                                "section": "Sekce",
+                                "weblink": "Webový odkaz"
+                            },
                             "name": "Entity",
+                            "secondary_info_values": {
+                                "brightness": "Jas",
+                                "entity-id": "ID entity",
+                                "last-changed": "Naposledy změněno",
+                                "last-triggered": "Naposledy spuštěno",
+                                "none": "Žádné doplňující informace",
+                                "position": "Pozice",
+                                "tilt-position": "Náklon"
+                            },
                             "show_header_toggle": "Zobrazit přepínač záhlaví?",
+                            "special_row": "speciální řádek",
                             "toggle": "Přepnout entity."
                         },
                         "entity-filter": {
@@ -2614,7 +2761,8 @@
                             "description": "Karta Sensor poskytuje rychlý přehled o stavu senzorů s volitelným grafem pro vizualizaci změn v průběhu času.",
                             "graph_detail": "Detail grafu",
                             "graph_type": "Typ grafu",
-                            "name": "Senzor"
+                            "name": "Senzor",
+                            "show_more_detail": "Zobrazit více podrobností"
                         },
                         "shopping-list": {
                             "description": "Karta Nákupní seznam umožňuje přidávat, upravovat, odškrtávat a mazat položky z nákupního seznamu.",
@@ -2647,10 +2795,12 @@
                         "add": "Přidat kartu",
                         "confirm_cancel": "Opravdu chcete zahodit změny?",
                         "delete": "Smazat kartu",
-                        "duplicate": "Duplikovat Kartu",
+                        "duplicate": "Duplikovat kartu",
                         "edit": "Upravit",
                         "header": "Konfigurace karty",
                         "move": "Přesunout",
+                        "move_after": "Posunout kartu za",
+                        "move_before": "Posunout kartu před",
                         "options": "Více možností",
                         "pick_card": "Kterou kartu chcete přidat?",
                         "pick_card_view_title": "Kterou kartu byste chtěli přidat do svého {name} pohledu?",
@@ -2944,6 +3094,12 @@
                     "more_integrations": "Více"
                 },
                 "intro": "Jste připraveni oživit svůj domov, zachovat si své soukromí a připojit se k celosvětové komunitě tvůrců?",
+                "restore": {
+                    "description": "Případně můžete Home Assistant obnovit z poslední zálohy.",
+                    "hide_log": "Skrýt celý log",
+                    "in_progress": "Probíhá obnovení",
+                    "show_log": "Zobrazit celý log"
+                },
                 "user": {
                     "create_account": "Vytvořit účet",
                     "data": {

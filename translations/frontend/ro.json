@@ -1978,7 +1978,17 @@
                         },
                         "entities": {
                             "description": "Cardul Entities este cel mai comun tip de card. Acesta grupează elementele împreună în liste.",
+                            "entity_row_editor": "Editează rândul entității",
                             "name": "Entități",
+                            "secondary_info_values": {
+                                "brightness": "Luminozitate",
+                                "entity-id": "ID-ul entității",
+                                "last-changed": "Schimbat Ultima Dată",
+                                "last-triggered": "Accesat Ultima Dată",
+                                "none": "NU există informații suplimentare",
+                                "position": "Poziție",
+                                "tilt-position": "Înclinare"
+                            },
                             "toggle": "Schimbati entitatile"
                         },
                         "entity-filter": {

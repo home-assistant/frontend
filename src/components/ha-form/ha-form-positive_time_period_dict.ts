@@ -20,7 +20,7 @@ export class HaFormTimePeriod extends LitElement implements HaFormElement {
 
   @property() public suffix!: string;
 
-  @query("paper-time-input") private _input?: HTMLElement;
+  @query("paper-time-input", true) private _input?: HTMLElement;
 
   public focus() {
     if (this._input) {

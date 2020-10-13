@@ -1,4 +1,5 @@
 import {
+  CSSResult,
   customElement,
   html,
   internalProperty,
@@ -28,9 +29,12 @@ import { configElementStyle } from "./config-elements-style";
 const cardConfigStruct = object({
   type: string(),
   title: optional(union([string(), boolean()])),
+  initial_view: optional(string()),
   theme: optional(string()),
   entities: array(string()),
 });
+
+const views = ["dayGridMonth", "dayGridDay", "listWeek"];
 
 @customElement("hui-calendar-card-editor")
 export class HuiCalendarCardEditor extends LitElement
@@ -51,6 +55,10 @@ export class HuiCalendarCardEditor extends LitElement
     return this._config!.title || "";
   }
 
+  get _initial_view(): string {
+    return this._config!.initial_view || "dayGridMonth";
+  }
+
   get _theme(): string {
     return this._config!.theme || "";
   }
@@ -61,7 +69,6 @@ export class HuiCalendarCardEditor extends LitElement
     }
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <div class="side-by-side">
           <paper-input
@@ -74,16 +81,41 @@ export class HuiCalendarCardEditor extends LitElement
             .configValue=${"title"}
             @value-changed=${this._valueChanged}
           ></paper-input>
-          <hui-theme-select-editor
-            .hass=${this.hass}
-            .value=${this._theme}
-            .configValue=${"theme"}
-            @value-changed=${this._valueChanged}
-          ></hui-theme-select-editor>
+          <paper-dropdown-menu
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.calendar.inital_view"
+            )}
+          >
+            <paper-listbox
+              slot="dropdown-content"
+              attr-for-selected="view"
+              .selected=${this._initial_view}
+              .configValue=${"initial_view"}
+              @iron-select=${this._viewChanged}
+            >
+              ${views.map((view) => {
+                return html`
+                  <paper-item .view=${view}
+                    >${this.hass!.localize(
+                      `ui.panel.lovelace.editor.card.calendar.views.${view}`
+                    )}
+                  </paper-item>
+                `;
+              })}
+            </paper-listbox>
+          </paper-dropdown-menu>
         </div>
+        <hui-theme-select-editor
+          .hass=${this.hass}
+          .value=${this._theme}
+          .configValue=${"theme"}
+          @value-changed=${this._valueChanged}
+        ></hui-theme-select-editor>
       </div>
       <h3>
-        ${"Calendar Entities" +
+        ${this.hass.localize(
+          "ui.panel.lovelace.editor.card.calendar.calendar_entities"
+        ) +
         " (" +
         this.hass!.localize("ui.panel.lovelace.editor.card.config.required") +
         ")"}
@@ -124,6 +156,27 @@ export class HuiCalendarCardEditor extends LitElement
     }
 
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  private _viewChanged(ev: CustomEvent): void {
+    if (!this._config || !this.hass) {
+      return;
+    }
+
+    if (ev.detail.item.view === "") {
+      this._config = { ...this._config };
+      delete this._config.initial_view;
+    } else {
+      this._config = {
+        ...this._config,
+        initial_view: ev.detail.item.view,
+      };
+    }
+    fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  static get styles(): CSSResult {
+    return configElementStyle;
   }
 }
 

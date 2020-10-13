@@ -5,7 +5,7 @@
 // as much as it can, without ever going more than once per `wait` duration;
 // but if you'd like to disable the execution on the leading edge, pass
 // `false for leading`. To disable execution on the trailing edge, ditto.
-export const throttle = <T extends Function>(
+export const throttle = <T extends (...args) => unknown>(
   func: T,
   wait: number,
   leading = true,

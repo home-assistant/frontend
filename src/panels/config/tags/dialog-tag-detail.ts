@@ -10,6 +10,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+
 import { fireEvent } from "../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
@@ -21,8 +22,11 @@ import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { TagDetailDialogParams } from "./show-dialog-tag-detail";
 
+const QR_LOGO_URL = "/static/icons/favicon-192x192.png";
+
 @customElement("dialog-tag-detail")
-class DialogTagDetail extends LitElement implements HassDialog {
+class DialogTagDetail extends LitElement
+  implements HassDialog<TagDetailDialogParams> {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @internalProperty() private _id?: string;
@@ -34,6 +38,8 @@ class DialogTagDetail extends LitElement implements HassDialog {
   @internalProperty() private _params?: TagDetailDialogParams;
 
   @internalProperty() private _submitting = false;
+
+  @internalProperty() private _qrCode?: TemplateResult;
 
   public showDialog(params: TagDetailDialogParams): void {
     this._params = params;
@@ -48,6 +54,7 @@ class DialogTagDetail extends LitElement implements HassDialog {
 
   public closeDialog(): void {
     this._params = undefined;
+    this._qrCode = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -106,6 +113,36 @@ class DialogTagDetail extends LitElement implements HassDialog {
                 ></paper-input>`
               : ""}
           </div>
+          ${this._params.entry
+            ? html`
+                <div>
+                  <p>
+                    ${this.hass!.localize(
+                      "ui.panel.config.tags.detail.usage",
+                      "companion_link",
+                      html`<a
+                        href="https://companion.home-assistant.io/"
+                        target="_blank"
+                        rel="noreferrer"
+                        >${this.hass!.localize(
+                          "ui.panel.config.tags.detail.companion_apps"
+                        )}</a
+                      >`
+                    )}
+                  </p>
+                </div>
+
+                <div id="qr">
+                  ${this._qrCode
+                    ? this._qrCode
+                    : html`
+                        <mwc-button @click=${this._generateQR}
+                          >Generate QR code
+                        </mwc-button>
+                      `}
+                </div>
+              `
+            : ``}
         </div>
         ${this._params.entry
           ? html`
@@ -191,12 +228,42 @@ class DialogTagDetail extends LitElement implements HassDialog {
     }
   }
 
+  private async _generateQR() {
+    const qrcode = await import("qrcode");
+    const canvas = await qrcode.toCanvas(
+      `https://home-assistant.io/tag/${this._params?.entry?.id}`,
+      {
+        width: 180,
+        errorCorrectionLevel: "Q",
+      }
+    );
+    const context = canvas.getContext("2d");
+
+    const imageObj = new Image();
+    imageObj.src = QR_LOGO_URL;
+    await new Promise((resolve) => {
+      imageObj.onload = resolve;
+    });
+    context.drawImage(
+      imageObj,
+      canvas.width / 3,
+      canvas.height / 3,
+      canvas.width / 3,
+      canvas.height / 3
+    );
+
+    this._qrCode = html`<img src=${canvas.toDataURL()}></img>`;
+  }
+
   static get styles(): CSSResult[] {
     return [
       haStyleDialog,
       css`
         a {
           color: var(--primary-color);
+        }
+        #qr {
+          text-align: center;
         }
       `,
     ];

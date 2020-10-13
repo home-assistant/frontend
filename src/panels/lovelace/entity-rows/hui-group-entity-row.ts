@@ -29,7 +29,7 @@ class HuiGroupEntityRow extends LitElement implements LovelaceRow {
       if (domain === "group") {
         return this._computeCanToggle(
           hass,
-          this.hass?.states[entityId].attributes["entity_id"]
+          this.hass?.states[entityId].attributes.entity_id
         );
       }
       return DOMAINS_TOGGLE.has(domain);

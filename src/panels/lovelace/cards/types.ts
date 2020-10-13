@@ -1,8 +1,13 @@
 import { ActionConfig, LovelaceCardConfig } from "../../../data/lovelace";
+import { FullCalendarView } from "../../../types";
 import { Condition } from "../common/validate-condition";
 import { HuiImage } from "../components/hui-image";
 import { LovelaceElementConfig } from "../elements/types";
-import { EntityConfig, EntityFilterEntityConfig } from "../entity-rows/types";
+import {
+  EntityConfig,
+  EntityFilterEntityConfig,
+  LovelaceRowConfig,
+} from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 
 export interface AlarmPanelCardConfig extends LovelaceCardConfig {
@@ -14,6 +19,7 @@ export interface AlarmPanelCardConfig extends LovelaceCardConfig {
 
 export interface CalendarCardConfig extends LovelaceCardConfig {
   entities: string[];
+  initial_view?: FullCalendarView;
   title?: string;
   theme?: string;
 }
@@ -44,7 +50,7 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
     | "brightness";
   action_name?: string;
   service?: string;
-  service_data?: object;
+  service_data?: Record<string, unknown>;
   url?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
@@ -58,7 +64,7 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
   type: "entities";
   show_header_toggle?: boolean;
   title?: string;
-  entities: Array<EntitiesCardEntityConfig | string>;
+  entities: Array<LovelaceRowConfig | string>;
   theme?: string;
   icon?: string;
   header?: LovelaceHeaderFooterConfig;
@@ -206,7 +212,7 @@ export interface PictureElementsCardConfig extends LovelaceCardConfig {
   image?: string;
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
-  state_image?: {};
+  state_image?: Record<string, unknown>;
   state_filter?: string[];
   aspect_ratio?: string;
   entity?: string;
@@ -220,7 +226,7 @@ export interface PictureEntityCardConfig extends LovelaceCardConfig {
   image?: string;
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
-  state_image?: {};
+  state_image?: Record<string, unknown>;
   state_filter?: string[];
   aspect_ratio?: string;
   tap_action?: ActionConfig;
@@ -237,7 +243,7 @@ export interface PictureGlanceCardConfig extends LovelaceCardConfig {
   image?: string;
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
-  state_image?: {};
+  state_image?: Record<string, unknown>;
   state_filter?: string[];
   aspect_ratio?: string;
   entity?: string;

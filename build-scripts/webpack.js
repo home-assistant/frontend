@@ -2,7 +2,6 @@ const webpack = require("webpack");
 const path = require("path");
 const TerserPlugin = require("terser-webpack-plugin");
 const ManifestPlugin = require("webpack-manifest-plugin");
-const WorkerPlugin = require("worker-plugin");
 const paths = require("./paths.js");
 const bundle = require("./bundle");
 
@@ -55,7 +54,6 @@ const createWebpackConfig = ({
       ],
     },
     plugins: [
-      new WorkerPlugin(),
       new ManifestPlugin({
         // Only include the JS of entrypoints
         filter: (file) => file.isInitial && !file.name.endsWith(".map"),

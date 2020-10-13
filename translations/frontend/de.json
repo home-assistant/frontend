@@ -419,6 +419,7 @@
                 "unlock": "Entriegeln"
             },
             "media_player": {
+                "browse_media": "Medien durchsuchen",
                 "media_next_track": "Weiter",
                 "media_play": "Abspielen",
                 "sound_mode": "Sound-Modus",
@@ -492,9 +493,11 @@
                     "wnw": "WNW",
                     "wsw": "WSW"
                 },
+                "day": "Tag",
                 "forecast": "Prognose",
                 "high": "Hoch",
-                "low": "Niedrig"
+                "low": "Niedrig",
+                "night": "Nacht"
             }
         },
         "common": {
@@ -550,6 +553,10 @@
                 "toggle": "Umschalten"
             },
             "entity": {
+                "entity-attribute-picker": {
+                    "attribute": "Attribut",
+                    "show_attributes": "Attribute anzeigen"
+                },
                 "entity-picker": {
                     "clear": "Löschen",
                     "entity": "Entität",
@@ -561,7 +568,28 @@
                 "no_history_found": "Kein Zustandsverlauf gefunden."
             },
             "logbook": {
-                "entries_not_found": "Keine Logbucheinträge gefunden."
+                "entries_not_found": "Keine Logbucheinträge gefunden.",
+                "messages": {
+                    "changed_to_state": "wechselte zu {state}",
+                    "detected_device_class": "erkannt {device_class}",
+                    "set": "einstellen",
+                    "turned_off": "ausgeschaltet",
+                    "turned_on": "eingeschaltet",
+                    "was_at_home": "war zu Hause",
+                    "was_away": "war abwesend",
+                    "was_closed": "wurde geschlossen",
+                    "was_connected": "wurde verbunden",
+                    "was_disconnected": "wurde getrennt",
+                    "was_locked": "wurde gesperrt",
+                    "was_low": "war niedrig",
+                    "was_normal": "war normal",
+                    "was_opened": "wurde geöffnet",
+                    "was_plugged_in": "wurde eingesteckt",
+                    "was_safe": "war sicher",
+                    "was_unlocked": "wurde entsperrt",
+                    "was_unplugged": "wurde ausgesteckt",
+                    "was_unsafe": "war unsicher"
+                }
             },
             "media-browser": {
                 "audio_not_supported": "Ihr Browser unterstützt das Audioelement nicht.",
@@ -569,14 +597,22 @@
                 "class": {
                     "album": "Album",
                     "app": "App",
+                    "artist": "Künstler",
+                    "channel": "Kanal",
+                    "composer": "Komponist",
+                    "contributing_artist": "Mitwirkender Künstler",
                     "directory": "Bibliothek",
                     "episode": "Episode",
                     "game": "Spiel",
+                    "genre": "Genre",
+                    "image": "Bild",
                     "movie": "Film",
                     "music": "Musik",
                     "playlist": "Wiedergabeliste",
                     "podcast": "Podcast",
                     "season": "Episode",
+                    "track": "Titel",
+                    "tv_show": "TV-Sendung",
                     "url": "URL",
                     "video": "Video"
                 },
@@ -588,12 +624,15 @@
                     "server": "Server"
                 },
                 "documentation": "Dokumentation",
+                "learn_adding_local_media": "Erfahre mehr über das Hinzufügen von Medien in der {documentation}.",
                 "local_media_files": "Platziere deine Video-, Audio- und Bilddateien im Medienverzeichnis, um sie im Browser oder auf unterstützten Mediaplayern durchsuchen und abspielen zu können.",
                 "no_items": "Keine Einträge",
                 "no_local_media_found": "Keine lokalen Medien gefunden",
                 "no_media_folder": "Es sieht so aus, als hätten Sie noch kein Medienverzeichnis erstellt.",
                 "play": "Abspielen",
-                "video_not_supported": "Ihr Browser unterstützt das Videoelement nicht."
+                "setup_local_help": "Lese die {documentation} über die Einrichtung lokaler Medien.",
+                "video_not_supported": "Ihr Browser unterstützt das Videoelement nicht.",
+                "web-browser": "Webbrowser"
             },
             "picture-upload": {
                 "label": "Bild",
@@ -635,6 +674,7 @@
                 "update": "Aktualisieren"
             },
             "domain_toggler": {
+                "reset_entities": "Entitäten zurücksetzen",
                 "title": "Domänen umschalten"
             },
             "entity_registry": {
@@ -654,7 +694,8 @@
                     "unavailable": "Diese Entität ist derzeit nicht verfügbar.",
                     "update": "Aktualisieren"
                 },
-                "no_unique_id": "Diese Entität hat keine eindeutige ID, daher können die Einstellungen nicht über die UI verwaltet werden.",
+                "faq": "Dokumentation",
+                "no_unique_id": "Diese Entität hat keine eindeutige ID, daher können die Einstellungen nicht über die UI verwaltet werden. Schauen Sie in der {faq_link} nach für mehr Details.",
                 "related": "Verwandte",
                 "settings": "Einstellungen"
             },
@@ -702,11 +743,15 @@
                 "required_error_msg": "Dieses Feld ist erforderlich",
                 "yaml_not_editable": "Die Einstellungen dieser Entität können nicht über die Benutzeroberfläche bearbeitet werden. Nur über die Benutzeroberfläche eingerichtete Entitäten können über die Benutzeroberfläche konfiguriert werden."
             },
+            "image_cropper": {
+                "crop": "Zuschneiden"
+            },
             "more_info_control": {
                 "details": "Details",
                 "dismiss": "Dialog ausblenden",
                 "edit": "Entität bearbeiten",
                 "history": "Verlauf",
+                "last_updated": "Letztes Update",
                 "person": {
                     "create_zone": "Zone vom aktuellen Standort erstellen"
                 },
@@ -760,6 +805,18 @@
                 },
                 "success": {
                     "description": "Optionen wurden erfolgreich gespeichert."
+                }
+            },
+            "quick-bar": {
+                "commands": {
+                    "reload": {
+                        "filesize": "Dateigröße-Entitäten neu laden",
+                        "filter": "Filter-Entitäten neu laden",
+                        "mqtt": "MQTT-Entitäten neu laden",
+                        "reload": "{domain} neu laden",
+                        "scene": "Szenen neu laden",
+                        "script": "Skripte neu laden"
+                    }
                 }
             },
             "voice_command": {
@@ -821,7 +878,7 @@
         },
         "notification_toast": {
             "connection_lost": "Verbindung getrennt. Verbinde erneut...",
-            "service_call_failed": "Fehler beim Aufrufen des Service {service}.",
+            "service_call_failed": "Fehler beim Aufrufen des Diensts {service}.",
             "started": "Home Assistant wurde vollständig gestartet!",
             "starting": "Home Assistant startet. Währenddessen kann es sein, dass nicht alles verfügbar ist.",
             "triggered": "{name} ausgelöst"
@@ -918,9 +975,11 @@
                                             "label": "Anzahl"
                                         },
                                         "until": {
+                                            "conditions": "Bis Bedingungen",
                                             "label": "Bis"
                                         },
                                         "while": {
+                                            "conditions": "Während Bedingungen",
                                             "label": "Während"
                                         }
                                     }
@@ -932,7 +991,11 @@
                                     "label": "Dienst ausführen",
                                     "service_data": "Dienstdaten"
                                 },
+                                "wait_for_trigger": {
+                                    "label": "Auf Auslöser warten"
+                                },
                                 "wait_template": {
+                                    "continue_timeout": "Bei Timeout fortsetzen",
                                     "label": "Warten",
                                     "timeout": "Timeout (optional)",
                                     "wait_template": "Warte-Template"
@@ -996,7 +1059,17 @@
                                 "time": {
                                     "after": "Nach",
                                     "before": "Vor",
-                                    "label": "Zeit"
+                                    "label": "Zeit",
+                                    "type_value": "Feste Zeit",
+                                    "weekdays": {
+                                        "fri": "Freitag",
+                                        "mon": "Montag",
+                                        "sat": "Samstag",
+                                        "sun": "Sonntag",
+                                        "thu": "Donnerstag",
+                                        "tue": "Dienstag",
+                                        "wed": "Mittwoch"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Entität mit Standort",
@@ -1096,6 +1169,9 @@
                                     "offset": "Versatz (optional)",
                                     "sunrise": "Sonnenaufgang",
                                     "sunset": "Sonnenuntergang"
+                                },
+                                "tag": {
+                                    "label": "Tag"
                                 },
                                 "template": {
                                     "label": "Template",
@@ -1216,9 +1292,11 @@
                     },
                     "alexa": {
                         "banner": "Das Bearbeiten der Entitäten, die über diese Benutzeroberfläche verfügbar gemacht werden, ist deaktiviert, da in configuration.yaml Entitätsfilter konfiguriert sind.",
+                        "dont_expose_entity": "Entität nicht anzeigen",
                         "expose": "In Alexa anzeigen",
+                        "expose_entity": "Entität anzeigen",
                         "exposed_entities": "Exponierte Entitäten",
-                        "not_exposed_entities": "Nicht exponierte Entitäten",
+                        "not_exposed_entities": "Nicht angezeigte Entitäten",
                         "title": "Alexa"
                     },
                     "caption": "Home Assistant Cloud",
@@ -1257,7 +1335,7 @@
                         "disable_2FA": "Zweifaktor-Authentifizierung deaktivieren",
                         "expose": "Im Google Assistenten anzeigen",
                         "exposed_entities": "Exponierte Entitäten",
-                        "not_exposed_entities": "Nicht exponierte Entitäten",
+                        "not_exposed_entities": "Nicht angezeigte Entitäten",
                         "sync_to_google": "Änderungen mit Google synchronisieren.",
                         "title": "Google Assistant"
                     },
@@ -1471,7 +1549,7 @@
                 "header": "Home Assistant konfigurieren",
                 "helpers": {
                     "caption": "Helfer",
-                    "description": "Elemente, die beim Aufbau von Automatisierungen helfen können.",
+                    "description": "Elemente verwalten, die beim Aufbau von Automatisierungen helfen können.",
                     "dialog": {
                         "add_helper": "Helfer hinzufügen",
                         "add_platform": "{platform} hinzufügen",
@@ -1731,12 +1809,21 @@
                     "network": {
                         "header": "Netzwerkverwaltung"
                     },
+                    "node_query_stages": {
+                        "associations": "Aktualisiert die verbundenen Gruppen und Mitgliedschaften"
+                    },
                     "nodes_table": {
                         "failed": "Fehlgeschlagen",
-                        "manufacturer": "Hersteller"
+                        "id": "ID",
+                        "manufacturer": "Hersteller",
+                        "zwave_plus": "Z-Wave Plus"
                     },
                     "refresh_node": {
                         "start_refresh_button": "Aktualisierung starten"
+                    },
+                    "services": {
+                        "add_node": "Knoten hinzufügen",
+                        "remove_node": "Knoten entfernen"
                     }
                 },
                 "person": {
@@ -1747,6 +1834,9 @@
                     "create_person": "Person erstellen",
                     "description": "Verwalte die Personen, die Home Assistant verfolgt.",
                     "detail": {
+                        "admin": "Administrator",
+                        "allow_login": "Erlauben Sie dieser Person, sich einzuloggen.",
+                        "confirm_delete_user": "Bist Du sicher, dass Du das Benutzerkonto von {name} löschen möchtest? Du kannst das Benutzerkonto immer noch verfolgen, aber es kann nicht mehr zum Anmelden verwendet werden.",
                         "create": "Erstellen",
                         "delete": "Löschen",
                         "device_tracker_intro": "Wähle die Geräte, die dieser Person gehören.",
@@ -1763,7 +1853,9 @@
                     },
                     "introduction": "Hier können Sie jede Person von Interesse in Home Assistant definieren.",
                     "no_persons_created_yet": "Sieht so aus, als hättest du noch keine Personen angelegt.",
-                    "note_about_persons_configured_in_yaml": "Hinweis: Personen, die über configuration.yaml konfiguriert wurden, können nicht über die Benutzeroberfläche bearbeitet werden."
+                    "note_about_persons_configured_in_yaml": "Hinweis: Personen, die über configuration.yaml konfiguriert wurden, können nicht über die Benutzeroberfläche bearbeitet werden.",
+                    "person_not_found": "Wir konnten die Person, die du bearbeiten wolltest, nicht finden.",
+                    "person_not_found_title": "Person nicht gefunden"
                 },
                 "scene": {
                     "activated": "Aktivierte Szene {name}.",
@@ -1839,11 +1931,12 @@
                             "restart": "Neu starten",
                             "single": "Einzeln (Standard)"
                         },
+                        "save_script": "Skript speichern",
                         "sequence": "Sequenz",
                         "sequence_sentence": "Die Abfolge der Aktionen dieses Skripts."
                     },
                     "picker": {
-                        "add_script": "Skript hinzufügen",
+                        "add_script": "Neues Skript erstellen",
                         "edit_script": "Skript bearbeiten",
                         "header": "Skript-Editor",
                         "headers": {
@@ -1852,6 +1945,7 @@
                         "introduction": "Mit dem Skript-Editor können Skripte erstellt und bearbeitet werden. Bitte folge dem untenstehenden Link, um die Anleitung zu finden. Das stellt sicher, dass Home Assistant richtig konfiguriert ist.",
                         "learn_more": "Weitere Informationen zu Skripten",
                         "no_scripts": "Wir konnten keine bearbeitbaren Skripte finden",
+                        "run_script": "Skript ausführen",
                         "show_info": "Informationen zum Skript anzeigen",
                         "trigger_script": "Skript auslösen"
                     }
@@ -1863,6 +1957,8 @@
                         "reloading": {
                             "automation": "Automatisierungen neu laden",
                             "core": "Ort & Anpassungen neu laden",
+                            "filesize": "Dateigröße-Entitäten neu laden",
+                            "filter": "Filter-Entitäten neu laden",
                             "group": "Gruppen, Gruppenentitäten und Benachrichtigungsdienste neu laden",
                             "heading": "Neuladen der YAML-Konfiguration",
                             "homekit": "HomeKit neu laden",
@@ -1872,10 +1968,16 @@
                             "input_select": "Eingabe-Auswahl neu laden",
                             "input_text": "Eingabetexte neu laden",
                             "introduction": "Einige Komponenten von Home Assistant können ohne einen Neustart neu geladen werden. \"Neu laden\" entlädt dabei die aktuelle Konfiguration und lädt die neue Konfiguration.",
+                            "min_max": "Min/Max-Entitäten neu laden",
+                            "mqtt": "MQTT-Entitäten neu laden",
                             "person": "Personen neu laden",
+                            "reload": "Neu laden {domain}",
                             "rest": "Rest Entitäten und Benachrichtigungsdienste neu laden",
+                            "rpi_gpio": "Raspberry Pi GPIO Entitäten neu laden",
                             "scene": "Szenen neu laden",
                             "script": "Skripte neu laden",
+                            "smtp": "SMTP-Benachrichtigungsdienste neu laden",
+                            "statistics": "Statistik-Entitäten neu laden",
                             "telegram": "Telegram-Benachrichtigungsdienste neu laden",
                             "zone": "Zonen neu laden"
                         },
@@ -1897,10 +1999,20 @@
                     }
                 },
                 "tags": {
+                    "add_tag": "Tag hinzufügen",
+                    "automation_title": "NFC Tag {name} ist gescannt",
+                    "caption": "NFC Tags",
+                    "create_automation": "Automatisierung mit NFC Tag erstellen",
+                    "description": "NFC Tags verwalten",
                     "detail": {
+                        "create": "Erstellen",
+                        "create_and_write": "Erstellen und schreiben",
                         "delete": "Löschen",
                         "description": "Beschreibung",
                         "name": "Name",
+                        "new_tag": "Neuer NFC Tag",
+                        "tag_id": "NFC Tag ID",
+                        "tag_id_placeholder": "Automatisch generiert, wenn leer gelassen",
                         "update": "Aktualisieren"
                     },
                     "edit": "Bearbeiten",
@@ -1909,6 +2021,7 @@
                         "name": "Name"
                     },
                     "never_scanned": "Nie gescannt",
+                    "no_tags": "Keine NFC Tags",
                     "write": "Schreiben"
                 },
                 "users": {
@@ -1918,6 +2031,7 @@
                         "name": "Name",
                         "password": "Passwort",
                         "password_confirm": "Passwort bestätigen",
+                        "password_not_match": "Passwörter stimmen nicht überein",
                         "username": "Benutzername"
                     },
                     "caption": "Benutzer",
@@ -1936,7 +2050,7 @@
                         "name": "Name",
                         "new_password": "Neues Passwort",
                         "owner": "Besitzer",
-                        "password_changed": "Das Passwort wurde geändert!",
+                        "password_changed": "Das Passwort wurde erfolgreich geändert",
                         "system_generated": "System generiert",
                         "system_generated_users_not_editable": "Systemgenerierte Benutzer können nicht aktualisiert werden.",
                         "system_generated_users_not_removable": "Vom System generierte Benutzer können nicht entfernt werden.",
@@ -2068,7 +2182,7 @@
                         "create": "Erstellen",
                         "delete": "Löschen",
                         "icon": "Icon",
-                        "icon_error_msg": "Das Icon sollte das Format Präfix:ICONNAME haben, zum Beispiel: mdi:home",
+                        "icon_error_msg": "Das Icon sollte das Format \"Präfix:ICONNAME\" haben, zum Beispiel: \"mdi:home\"",
                         "latitude": "Breitengrad",
                         "longitude": "Längengrad",
                         "name": "Name",
@@ -2233,7 +2347,9 @@
                     },
                     "templates": {
                         "description": "Vorlagen werden durch die Jinja2-Template-Engine mit einigen für Home Assistant spezifischen Erweiterungen gerendert.",
+                        "domain": "Domain",
                         "editor": "Vorlageneditor",
+                        "entity": "Entität",
                         "jinja_documentation": "Jinja2 Template Dokumentation",
                         "reset": "Zurücksetzen auf Demo-Vorlage",
                         "template_extensions": "Home Assistant-Vorlagenerweiterungen",
@@ -2307,6 +2423,20 @@
                     "refresh": "Aktualisieren"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "Dienst ausführen",
+                            "default_action": "Standardaktion",
+                            "more-info": "Mehr Info",
+                            "navigate": "Navigieren",
+                            "none": "Keine Aktion",
+                            "toggle": "Umschalten",
+                            "url": "Url"
+                        },
+                        "editor_service_data": "Servicedaten können nur im Code-Editor eingegeben werden",
+                        "navigation_path": "Navigationspfad",
+                        "url_path": "URL Pfad"
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "Verfügbare Zustände",
@@ -2318,7 +2448,15 @@
                             "name": "Schaltfläche"
                         },
                         "calendar": {
-                            "name": "Kalender"
+                            "calendar_entities": "Kalender-Entitäten",
+                            "description": "Die Kalenderkarte zeigt einen Kalender mit Tages-, Wochen- und Listenansichten an",
+                            "inital_view": "Initiale Ansicht",
+                            "name": "Kalender",
+                            "views": {
+                                "dayGridDay": "Tag",
+                                "dayGridMonth": "Monat",
+                                "listWeek": "Liste"
+                            }
                         },
                         "conditional": {
                             "card": "Karte",
@@ -2337,7 +2475,26 @@
                         },
                         "entities": {
                             "description": "Die Entitäts-Karte ist der am häufigsten verwendete Kartentyp. Sie gruppiert Elemente in Listen.",
+                            "edit_special_row": "Zeige die Details dieser Zeile an, indem du auf die Schaltfläche Bearbeiten klickst",
+                            "entity_row": {
+                                "attribute": "Attribut",
+                                "button": "Schalter",
+                                "buttons": "Tasten",
+                                "call-service": "Dienst ausführen",
+                                "cast": "Cast",
+                                "conditional": "Bedingte Elemente",
+                                "divider": "Trennlinie",
+                                "weblink": "Webseiten Link"
+                            },
                             "name": "Elemente",
+                            "secondary_info_values": {
+                                "brightness": "Helligkeit",
+                                "entity-id": "Entitäts-ID",
+                                "last-changed": "Zuletzt geändert",
+                                "last-triggered": "Zuletzt ausgelöst",
+                                "none": "Keine Sekundärinfo",
+                                "position": "Position"
+                            },
                             "show_header_toggle": "Schalter anzeigen?",
                             "toggle": "Entitäten umschalten"
                         },
@@ -2458,7 +2615,8 @@
                             "description": "Die Sensorkarte gibt dir einen schnellen Überblick über Ihren Sensorstatus mit einem optionalen Diagramm, um Änderungen im Zeitverlauf zu visualisieren.",
                             "graph_detail": "Diagrammdetail",
                             "graph_type": "Typ",
-                            "name": "Sensor"
+                            "name": "Sensor",
+                            "show_more_detail": "Weitere Details anzeigen"
                         },
                         "shopping-list": {
                             "description": "Mit der Einkaufslistenkarte kannst du Artikel zu deiner Einkaufsliste hinzufügen, bearbeiten, abhaken und löschen.",
@@ -2480,20 +2638,25 @@
                         }
                     },
                     "cardpicker": {
+                        "by_entity": "Nach Entität",
                         "custom_card": "Benutzerdefiniert",
+                        "entity": "Entität",
                         "no_description": "Keine Beschreibung verfügbar."
                     },
                     "edit_card": {
                         "add": "Karte hinzufügen",
                         "confirm_cancel": "Bist du sicher, dass du Abbrechen willst?",
-                        "delete": "Löschen",
+                        "delete": "Karte löschen",
                         "duplicate": "Karte duplizieren",
                         "edit": "Bearbeiten",
                         "header": "Kartenkonfiguration",
                         "move": "Zur Ansicht Bewegen",
+                        "move_after": "Karte nach hinten verschieben",
+                        "move_before": "Karte nach vorne verschieben",
                         "options": "Mehr Optionen",
                         "pick_card": "Karte auswählen, die hinzugefügt werden soll.",
                         "pick_card_view_title": "Welche Karte möchten Sie Ihrer {name} -Ansicht hinzufügen?",
+                        "search_cards": "Karten suchen",
                         "show_code_editor": "Code-Editor anzeigen",
                         "show_visual_editor": "Visuellen Editor anzeigen",
                         "toggle_editor": "Editor umschalten",
@@ -2516,7 +2679,7 @@
                         "move_right": "Ansicht nach rechts verschieben",
                         "tab_badges": "Abzeichen",
                         "tab_settings": "Einstellungen",
-                        "tab_visibility": "Sichtweite",
+                        "tab_visibility": "Sichtbarkeit",
                         "visibility": {
                             "select_users": "Wähle aus, welche Benutzer diese Ansicht in der Navigation sehen sollen"
                         }
@@ -2531,6 +2694,9 @@
                         "migrate": "Konfiguration migrieren",
                         "para_migrate": "Home Assistant kann für alle deine Karten und Ansichten die IDs automatisch generieren, wenn du den \"Konfiguration migrieren\"-Button klickst.",
                         "para_no_id": "Dieses Element hat keine ID. Bitte füge diesem Element eine ID in 'ui-lovelace.yaml' hinzu."
+                    },
+                    "move_card": {
+                        "header": "Wähle eine Ansicht, in die die Karte verschoben werden soll"
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "Wir generieren automatisch deine Lovelace-Ansichten mit deinen Bereichen und Geräten, wenn du deine Lovelace-Konfiguration entfernst.",
@@ -2558,6 +2724,9 @@
                         "yaml_config": "Um dir den Einstieg zu erleichtern, findest du hier die aktuelle Konfiguration dieses Dashboards:",
                         "yaml_control": "Um die Kontrolle im YAML-Modus zu übernehmen, erstelle eine YAML-Datei mit dem Namen, den du in Deiner Konfiguration für dieses Dashboard angegeben hast, oder mit der Standardeinstellung 'ui-lovelace.yaml'.",
                         "yaml_mode": "Du verwendest den YAML-Modus für dieses Dashboard. Dies bedeutet, dass Du Deine Lovelace-Konfiguration nicht über die Benutzeroberfläche ändern kannst. Wenn du dieses Dashboard über die Benutzeroberfläche verwalten möchtest, entferne \"mode: yaml\" aus Deiner Lovelace-Konfiguration in \"configuration.yaml\"."
+                    },
+                    "select_view": {
+                        "header": "Wähle eine Ansicht"
                     },
                     "suggest_card": {
                         "add": "Zu Lovelace hinzufügen",
@@ -2776,6 +2945,12 @@
                     "more_integrations": "Mehr"
                 },
                 "intro": "Sind Sie bereit, dein Zuhause zu wecken, Ihre Privatsphäre zurückzugewinnen und einer weltweiten Gemeinschaft von Tüftlern beizutreten?",
+                "restore": {
+                    "description": "Alternativ kannst du von einem vorherigen Snapshot wiederherstellen.",
+                    "hide_log": "Vollständiges Log verstecken",
+                    "in_progress": "Wiederherstellung im Prozess",
+                    "show_log": "Vollständiges Protokoll anzeigen"
+                },
                 "user": {
                     "create_account": "Benutzerkonto anlegen",
                     "data": {
@@ -2808,7 +2983,9 @@
                 },
                 "current_user": "Sie sind derzeit als {fullName} angemeldet.",
                 "customize_sidebar": {
-                    "button": "Bearbeiten"
+                    "button": "Bearbeiten",
+                    "description": "Du kannst auch die Kopfzeile der Seitenleiste gedrückt halten, um den Bearbeitungsmodus zu aktivieren.",
+                    "header": "Elemente in der Seitenleiste verstecken und Reihenfolge ändern"
                 },
                 "dashboard": {
                     "description": "Wähle ein Standard-Dashboard für dieses Gerät.",
