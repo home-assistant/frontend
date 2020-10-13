@@ -11,13 +11,15 @@ declare global {
   }
 }
 
+const isMacOS = /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform);
+
 export default <T extends Constructor<HassElement>>(superClass: T) =>
   class extends superClass {
     protected firstUpdated(changedProps: PropertyValues) {
       super.firstUpdated(changedProps);
 
       document.addEventListener("keydown", (e: KeyboardEvent) => {
-        if (e.code === "KeyP" && e.metaKey) {
+        if (this.isOSCtrlKey(e) && e.code === "KeyP") {
           e.preventDefault();
           const eventParams: QuickBarParams = {};
           if (e.shiftKey) {
@@ -27,5 +29,9 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
           showQuickBar(this, eventParams);
         }
       });
+    }
+
+    private isOSCtrlKey(e: KeyboardEvent) {
+      return isMacOS ? e.metaKey : e.ctrlKey;
     }
   };
