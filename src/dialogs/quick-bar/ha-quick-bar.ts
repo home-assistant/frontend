@@ -36,6 +36,8 @@ export class QuickBar extends LitElement {
 
   @internalProperty() private _commandItems: CommandItem[] = [];
 
+  @internalProperty() private _entities: HassEntity[] = [];
+
   @internalProperty() private _itemFilter = "";
 
   @internalProperty() private _opened = false;
@@ -46,6 +48,9 @@ export class QuickBar extends LitElement {
     this._commandMode = params.commandMode || false;
     this._opened = true;
     this._commandItems = this._generateCommandItems();
+    this._entities = Object.keys(this.hass.states).map<HassEntity>(
+      (entity_id) => this.hass.states[entity_id]
+    );
   }
 
   public closeDialog() {
@@ -101,19 +106,31 @@ export class QuickBar extends LitElement {
   });
 
   protected renderEntityList = memoizeOne((filter) => {
-    const entities = this._filterEntityItems(
-      Object.keys(this.hass.states),
-      filter
-    );
+    const entities = this._filterEntityItems(filter);
 
     return html`
       <mwc-list activatable @selected=${this._entityMoreInfo}>
-        ${entities.map((entityId) => {
-          const domain = computeDomain(entityId);
+        ${entities.map((entity) => {
+          const domain = computeDomain(entity.entity_id);
           return html`
-            <mwc-list-item graphic="icon" .entityId=${entityId}>
+            <mwc-list-item
+              twoline
+              .entityId=${entity.entity_id}
+              graphic="avatar"
+            >
               <ha-icon .icon=${domainIcon(domain)} slot="graphic"></ha-icon>
-              ${entityId}
+              ${entity.attributes?.friendly_name
+                ? html`
+                    <span>
+                      ${entity.attributes?.friendly_name}
+                    </span>
+                    <span slot="secondary">${entity.entity_id}</span>
+                  `
+                : html`
+                    <span>
+                      ${entity.entity_id}
+                    </span>
+                  `}
             </mwc-list-item>
           `;
         })}
@@ -155,25 +172,28 @@ export class QuickBar extends LitElement {
   ): CommandItem[] {
     return items
       .filter(({ text }) =>
-        fuzzySequentialMatch(filter.toLowerCase(), text.toLowerCase())
+        fuzzySequentialMatch(filter.toLowerCase(), [text.toLowerCase()])
       )
       .sort((itemA, itemB) => compare(itemA.text, itemB.text));
   }
 
-  private _filterEntityItems(
-    entityIds: HassEntity["entity_id"][],
-    filter: string
-  ): HassEntity["entity_id"][] {
-    return entityIds
-      .filter((entityId) =>
-        fuzzySequentialMatch(filter.toLowerCase(), entityId)
+  private _filterEntityItems(filter: string): HassEntity[] {
+    return this._entities
+      .filter(({ entity_id, attributes: { friendly_name } }) => {
+      	const values = [entity_id];
+        if (friendly_name) {
+        	values.push(friendly_name);
+        }
+        return fuzzySequentialMatch(filter.toLowerCase(), values);}
       )
-      .sort();
+      .sort((entityA, entityB) =>
+        compare(entityA.entity_id, entityB.entity_id)
+      );
   }
 
   private async _processItemAndCloseDialog(ev: SingleSelectedEvent) {
-    const index = ev.detail.index;
-    const item = (ev.target as any).items[index].item;
+    const _index = ev.detail.index;
+    const item = (ev.target as any).items[_index].item;
 
     await this.hass.callService(item.domain, item.service, item.serviceData);
 
@@ -181,10 +201,11 @@ export class QuickBar extends LitElement {
   }
 
   private _entityMoreInfo(ev: SingleSelectedEvent) {
-    const index = ev.detail.index;
-    const entityId = (ev.target as any).items[index].entityId;
+    const _index = ev.detail.index;
+    const entityId = (ev.target as any).items[_index].entityId;
 
     fireEvent(this, "hass-more-info", { entityId });
+
     this.closeDialog();
   }
 
