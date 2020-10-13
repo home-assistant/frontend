@@ -10,6 +10,12 @@ class HaTabs extends PaperTabsClass {
 
       const superStyle = subTemplate.content.querySelector("style");
 
+      [...subTemplate.content.querySelectorAll("paper-icon-button")].forEach(
+        (arrow) => {
+          arrow.setAttribute("noink", "");
+        }
+      );
+
       superStyle.appendChild(
         document.createTextNode(`
           .not-visible {
