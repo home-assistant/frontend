@@ -29,7 +29,7 @@ const createWebpackConfig = ({
     module: {
       rules: [
         {
-          test: /\..?js$|\.ts$/,
+          test: /\.m?js$|\.ts$/,
           exclude: bundle.babelExclude(),
           use: {
             loader: "babel-loader",
@@ -52,6 +52,9 @@ const createWebpackConfig = ({
           terserOptions: bundle.terserOptions(latestBuild),
         }),
       ],
+    },
+    experiments: {
+      topLevelAwait: true,
     },
     plugins: [
       new ManifestPlugin({

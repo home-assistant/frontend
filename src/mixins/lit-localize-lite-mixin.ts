@@ -36,13 +36,11 @@ export const litLocalizeLiteMixin = <T extends Constructor<LitElement>>(
         (changedProperties.has("language") ||
           changedProperties.has("resources"))
       ) {
-        computeLocalize(
+        this.localize = computeLocalize(
           this.constructor.prototype,
           this.language,
           this.resources
-        ).then((localize) => {
-          this.localize = localize;
-        });
+        );
       }
     }
 
