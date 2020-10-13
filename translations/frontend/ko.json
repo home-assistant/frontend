@@ -1870,6 +1870,7 @@
                     "create_person": "구성원 만들기",
                     "description": "Home Assistant 가 추적하는 구성원을 관리합니다",
                     "detail": {
+                        "admin": "관리자",
                         "create": "만들기",
                         "delete": "삭제",
                         "device_tracker_intro": "이 구성원에게 속한 기기를 선택해주세요.",

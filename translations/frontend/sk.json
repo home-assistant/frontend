@@ -786,7 +786,7 @@
                     "description": "Možnosti boli úspešne uložené."
                 }
             },
-            "quick-open": {
+            "quick-bar": {
                 "commands": {
                     "reload": {
                         "mqtt": "Znovu načítať mqtt entity",

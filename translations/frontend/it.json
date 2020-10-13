@@ -839,7 +839,7 @@
                     "description": "Opzioni salvate correttamente."
                 }
             },
-            "quick-open": {
+            "quick-bar": {
                 "commands": {
                     "reload": {
                         "automation": "Ricarica le Automazioni",

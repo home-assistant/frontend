@@ -839,7 +839,7 @@
                     "description": "Opcje pomyślnie zapisane."
                 }
             },
-            "quick-open": {
+            "quick-bar": {
                 "commands": {
                     "reload": {
                         "automation": "Automatyzacje",

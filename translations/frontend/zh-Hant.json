@@ -839,7 +839,7 @@
                     "description": "選項已儲存。"
                 }
             },
-            "quick-open": {
+            "quick-bar": {
                 "commands": {
                     "reload": {
                         "automation": "重新載入自動化",

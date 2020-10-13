@@ -807,7 +807,7 @@
                     "description": "Optionen wurden erfolgreich gespeichert."
                 }
             },
-            "quick-open": {
+            "quick-bar": {
                 "commands": {
                     "reload": {
                         "filesize": "Dateigröße-Entitäten neu laden",

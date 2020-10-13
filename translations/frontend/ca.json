@@ -839,7 +839,7 @@
                     "description": "Opcions guardades amb èxit."
                 }
             },
-            "quick-open": {
+            "quick-bar": {
                 "commands": {
                     "reload": {
                         "automation": "Actualitza automatitzacions",

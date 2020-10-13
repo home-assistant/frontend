@@ -825,7 +825,7 @@
                     "description": "Options enregistrées avec succès."
                 }
             },
-            "quick-open": {
+            "quick-bar": {
                 "filter_placeholder": "Filtre d'entité"
             },
             "voice_command": {

@@ -839,7 +839,7 @@
                     "description": "Параметры успешно сохранены."
                 }
             },
-            "quick-open": {
+            "quick-bar": {
                 "commands": {
                     "reload": {
                         "automation": "Перезагрузить автоматизации",

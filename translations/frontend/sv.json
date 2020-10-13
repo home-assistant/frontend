@@ -821,7 +821,7 @@
                     "description": "Inställningar sparade"
                 }
             },
-            "quick-open": {
+            "quick-bar": {
                 "commands": {
                     "reload": {
                         "automation": "Ladda om automationer",
