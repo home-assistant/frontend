@@ -174,12 +174,21 @@ export class QuickBar extends LitElement {
   }
 
   private _focusInputField(ev: KeyboardEvent) {
+    const re = new RegExp("[a-z0-9._]");
+
     if (ev.code === "ArrowUp") {
       ev.preventDefault();
       const inputField = this.shadowRoot?.querySelector(
         "paper-input"
       ) as HTMLElement;
       inputField.focus();
+    } else if (ev.key.length === 1 && re.test(ev.key)) {
+      ev.preventDefault();
+      const inputField = this.shadowRoot?.querySelector(
+        "paper-input"
+      ) as HTMLElement;
+      inputField.focus();
+      inputField.value += ev.key;
     }
   }
 
