@@ -4,19 +4,19 @@ import {
   CSSResult,
   customElement,
   html,
-  internalProperty,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
-import { assert, object, optional, string } from "superstruct";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../types";
 import { ShoppingListCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
-import { EditorTarget } from "../types";
+import { EditorTarget, EntitiesEditorEvent } from "../types";
+import { string, assert, object, optional } from "superstruct";
 
 const cardConfigStruct = object({
   type: string(),
@@ -80,7 +80,7 @@ export class HuiShoppingListEditor extends LitElement
     `;
   }
 
-  private _valueChanged(ev: CustomEvent): void {
+  private _valueChanged(ev: EntitiesEditorEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
