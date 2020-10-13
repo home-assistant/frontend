@@ -34,28 +34,28 @@ import { hassioStyle } from "../resources/hassio-style";
 const ISSUES = {
   container: {
     title: "Containers known to cause issues",
-    url: "/more-info/unsupported-container",
+    url: "/more-info/unsupported/container",
   },
-  dbus: { title: "DBUS", url: "/more-info/unsupported-dbus" },
+  dbus: { title: "DBUS", url: "/more-info/unsupported/dbus" },
   docker_configuration: {
     title: "Docker Configuration",
-    url: "/more-info/unsupported-docker_configuration",
+    url: "/more-info/unsupported/docker_configuration",
   },
   docker_version: {
     title: "Docker Version",
-    url: "/more-info/unsupported-docker_version",
+    url: "/more-info/unsupported/docker_version",
   },
-  lxc: { title: "LXC", url: "/more-info/unsupported-lxc" },
+  lxc: { title: "LXC", url: "/more-info/unsupported/lxc" },
   network_manager: {
     title: "Network Manager",
-    url: "/more-info/unsupported-network_manager",
+    url: "/more-info/unsupported/network_manager",
   },
-  os: { title: "Operating System", url: "/more-info/unsupported-os" },
+  os: { title: "Operating System", url: "/more-info/unsupported/os" },
   privileged: {
     title: "Supervisor is not privileged",
-    url: "/more-info/unsupported-privileged",
+    url: "/more-info/unsupported/privileged",
   },
-  systemd: { title: "Systemd", url: "/more-info/unsupported-systemd" },
+  systemd: { title: "Systemd", url: "/more-info/unsupported/systemd" },
 };
 
 @customElement("hassio-supervisor-info")
