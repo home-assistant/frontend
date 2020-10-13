@@ -233,7 +233,6 @@ export class HuiImage extends LitElement {
         height: auto;
         transition: filter 0.2s linear;
         width: 100%;
-        height: 100%;
       }
 
       .ratio {

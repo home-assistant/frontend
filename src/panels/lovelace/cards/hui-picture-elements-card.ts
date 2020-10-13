@@ -140,7 +140,6 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     return css`
       #root {
         position: relative;
-        height: 100%;
       }
 
       .element {
