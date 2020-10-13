@@ -15,6 +15,11 @@ export const configElementStyle = css`
     margin: 0 8px;
   }
   .header-footer-heading {
-    margin-bottom: 0;
+    font-size: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
   }
 `;

@@ -232,8 +232,9 @@ export class HuiEntitiesCardRowEditor extends LitElement {
   }
 
   private _editRow(ev: CustomEvent): void {
-    fireEvent(this, "edit-row", {
+    fireEvent(this, "edit-detail-element", {
       index: (ev.currentTarget as any).index,
+      elementType: "row",
     });
   }
 

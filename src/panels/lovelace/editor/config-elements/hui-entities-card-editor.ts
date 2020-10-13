@@ -1,4 +1,6 @@
+import { mdiClose, mdiPencil } from "@mdi/js";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
@@ -28,14 +30,15 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-switch";
-import { HomeAssistant } from "../../../../types";
-import { EntitiesCardConfig } from "../../cards/types";
+import type { HomeAssistant } from "../../../../types";
+import type { EntitiesCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
-import { LovelaceRowConfig } from "../../entity-rows/types";
+import type { LovelaceRowConfig } from "../../entity-rows/types";
 import { headerFooterConfigStructs } from "../../header-footer/types";
-import { LovelaceCardEditor } from "../../types";
+import type { LovelaceCardEditor } from "../../types";
+import "../hui-advanced-element-editor";
 import "../hui-detail-editor-base";
-import { HuiElementEditor } from "../hui-element-editor";
+import type { HuiElementEditor } from "../hui-element-editor";
 import "../hui-entities-card-row-editor";
 import { processEditorEntities } from "../process-editor-entities";
 import {
@@ -46,13 +49,14 @@ import {
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
-interface EditRowEvent {
-  index: number;
+interface EditDetailElementEvent {
+  index?: number;
+  elementType: string;
 }
 
 declare global {
   interface HASSDomEvents {
-    "edit-row": EditRowEvent;
+    "edit-detail-element": EditDetailElementEvent;
   }
 }
 
@@ -76,13 +80,15 @@ export class HuiEntitiesCardEditor extends LitElement
 
   @internalProperty() private _configEntities?: LovelaceRowConfig[];
 
-  @internalProperty() private _editRowConfig?: LovelaceRowConfig;
+  @internalProperty() private _detailElementConfig?: LovelaceRowConfig;
 
-  @internalProperty() private _editRowIndex?: number;
+  @internalProperty() private _detailElementIndex?: number;
 
-  @internalProperty() private _editRowGuiModeAvailable? = true;
+  @internalProperty() private _detailElementGuiModeAvailable = true;
 
-  @internalProperty() private _editRowGuiMode? = true;
+  @internalProperty() private _detailElementGuiMode = true;
+
+  @internalProperty() private _detailElementType?;
 
   @query("hui-element-editor") private _cardEditorEl?: HuiElementEditor;
 
@@ -105,12 +111,12 @@ export class HuiEntitiesCardEditor extends LitElement
       return html``;
     }
 
-    if (this._editRowConfig) {
+    if (this._detailElementConfig) {
       return html`
         <hui-detail-editor-base
           .hass=${this.hass}
-          .guiModeAvailable=${this._editRowGuiModeAvailable}
-          .guiMode=${this._editRowGuiMode}
+          .guiModeAvailable=${this._detailElementGuiModeAvailable}
+          .guiMode=${this._detailElementGuiMode}
           @toggle-gui-mode=${this._toggleMode}
           @go-back=${this._goBack}
         >
@@ -121,7 +127,7 @@ export class HuiEntitiesCardEditor extends LitElement
           >
           <hui-element-editor
             .hass=${this.hass}
-            .value=${this._editRowConfig}
+            .value=${this._detailElementConfig}
             elementType="row"
             @config-changed=${this._handleEntityRowConfigChanged}
             @GUImode-changed=${this._handleGUIModeChanged}
@@ -131,56 +137,119 @@ export class HuiEntitiesCardEditor extends LitElement
     }
 
     return html`
-      <div class="card-config">
-        <paper-input
-          .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.generic.title"
-          )} (${this.hass.localize(
-            "ui.panel.lovelace.editor.card.config.optional"
-          )})"
-          .value=${this._title}
-          .configValue=${"title"}
-          @value-changed=${this._valueChanged}
-        ></paper-input>
-        <hui-theme-select-editor
-          .hass=${this.hass}
-          .value=${this._theme}
-          .configValue=${"theme"}
-          @value-changed=${this._valueChanged}
-        ></hui-theme-select-editor>
-        <div class="side-by-side">
-          <ha-formfield
-            .label=${this.hass.localize(
-              "ui.panel.lovelace.editor.card.entities.show_header_toggle"
-            )}
-            .dir=${computeRTLDirection(this.hass)}
-          >
-            <ha-switch
-              .checked=${this._config!.show_header_toggle !== false}
-              .configValue=${"show_header_toggle"}
-              @change=${this._valueChanged}
-            ></ha-switch>
-          </ha-formfield>
-          <ha-formfield
-            .label=${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.state_color"
-            )}
-            .dir=${computeRTLDirection(this.hass)}
-          >
-            <ha-switch
-              .checked=${this._config!.state_color}
-              .configValue=${"state_color"}
-              @change=${this._valueChanged}
-            ></ha-switch>
-          </ha-formfield>
+      <hui-advanced-element-editor .hass=${this.hass}>
+        <div slot="editor">
+          <div class="card-config">
+            <paper-input
+              .label="${this.hass.localize(
+                "ui.panel.lovelace.editor.card.generic.title"
+              )} (${this.hass.localize(
+                "ui.panel.lovelace.editor.card.config.optional"
+              )})"
+              .value=${this._title}
+              .configValue=${"title"}
+              @value-changed=${this._valueChanged}
+            ></paper-input>
+            <hui-theme-select-editor
+              .hass=${this.hass}
+              .value=${this._theme}
+              .configValue=${"theme"}
+              @value-changed=${this._valueChanged}
+            ></hui-theme-select-editor>
+            <div class="side-by-side">
+              <ha-formfield
+                .label=${this.hass.localize(
+                  "ui.panel.lovelace.editor.card.entities.show_header_toggle"
+                )}
+                .dir=${computeRTLDirection(this.hass)}
+              >
+                <ha-switch
+                  .checked=${this._config!.show_header_toggle !== false}
+                  .configValue=${"show_header_toggle"}
+                  @change=${this._valueChanged}
+                ></ha-switch>
+              </ha-formfield>
+              <ha-formfield
+                .label=${this.hass.localize(
+                  "ui.panel.lovelace.editor.card.generic.state_color"
+                )}
+                .dir=${computeRTLDirection(this.hass)}
+              >
+                <ha-switch
+                  .checked=${this._config!.state_color}
+                  .configValue=${"state_color"}
+                  @change=${this._valueChanged}
+                ></ha-switch>
+              </ha-formfield>
+            </div>
+          </div>
+          <hui-entities-card-row-editor
+            .hass=${this.hass}
+            .entities=${this._configEntities}
+            @entities-changed=${this._valueChanged}
+            @edit-row=${this._editDetailElement}
+          ></hui-entities-card-row-editor>
         </div>
-      </div>
-      <hui-entities-card-row-editor
-        .hass=${this.hass}
-        .entities=${this._configEntities}
-        @entities-changed=${this._valueChanged}
-        @edit-row=${this._editRow}
-      ></hui-entities-card-row-editor>
+        <div slot="advanced">
+          <div class="header-footer-heading">
+            <span>
+              ${this.hass.localize(
+                `ui.panel.lovelace.editor.header-footer.header`
+              )}:
+              ${this.hass!.localize(
+                `ui.panel.lovelace.editor.header-footer.${this._config.header?.type}.name`
+              ) || "None"}
+            </span>
+            <div>
+              <mwc-icon-button
+                aria-label=${this.hass!.localize(
+                  "ui.components.entity.entity-picker.clear"
+                )}
+                class="remove-icon"
+              >
+                <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+              </mwc-icon-button>
+              <mwc-icon-button
+                aria-label=${this.hass!.localize(
+                  "ui.components.entity.entity-picker.edit"
+                )}
+                class="edit-icon"
+                .elementType=${"headerfooter"}
+              >
+                <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
+              </mwc-icon-button>
+            </div>
+          </div>
+          <div class="header-footer-heading">
+            <span>
+              ${this.hass.localize(
+                `ui.panel.lovelace.editor.header-footer.footer`
+              )}:
+              ${this.hass!.localize(
+                `ui.panel.lovelace.editor.header-footer.${this._config.footer?.type}.name`
+              ) || "None"}
+            </span>
+            <div>
+              <mwc-icon-button
+                aria-label=${this.hass!.localize(
+                  "ui.components.entity.entity-picker.clear"
+                )}
+                class="remove-icon"
+              >
+                <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+              </mwc-icon-button>
+              <mwc-icon-button
+                aria-label=${this.hass!.localize(
+                  "ui.components.entity.entity-picker.edit"
+                )}
+                class="edit-icon"
+              >
+                <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
+              </mwc-icon-button>
+            </div>
+          </div>
+        </div>
+      </hui-advanced-element-editor>
     `;
   }
 
@@ -218,16 +287,20 @@ export class HuiEntitiesCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _editRow(ev: HASSDomEvent<EditRowEvent>): void {
-    this._editRowIndex = ev.detail.index;
-    this._editRowConfig = this._configEntities![this._editRowIndex];
+  private _editDetailElement(ev: HASSDomEvent<EditDetailElementEvent>): void {
+    if (ev.detail.elementType === "row") {
+      this._detailElementIndex = ev.detail.index!;
+      this._detailElementConfig = this._configEntities![
+        this._detailElementIndex
+      ];
+    }
   }
 
   private _goBack(): void {
-    this._editRowIndex = undefined;
-    this._editRowConfig = undefined;
-    this._editRowGuiModeAvailable = true;
-    this._editRowGuiMode = true;
+    this._detailElementIndex = undefined;
+    this._detailElementConfig = undefined;
+    this._detailElementGuiModeAvailable = true;
+    this._detailElementGuiMode = true;
   }
 
   private _toggleMode(): void {
@@ -237,18 +310,18 @@ export class HuiEntitiesCardEditor extends LitElement
   private _handleEntityRowConfigChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     const value = ev.detail.config as LovelaceRowConfig;
-    this._editRowGuiModeAvailable = ev.detail.guiModeAvailable;
+    this._detailElementGuiModeAvailable = ev.detail.guiModeAvailable;
 
     const newConfigEntities = this._configEntities!.concat();
 
     if (!value) {
-      newConfigEntities.splice(this._editRowIndex!, 1);
+      newConfigEntities.splice(this._detailElementIndex!, 1);
       this._goBack();
     } else {
-      newConfigEntities[this._editRowIndex!] = value;
+      newConfigEntities[this._detailElementIndex!] = value;
     }
 
-    this._editRowConfig = value;
+    this._detailElementConfig = value;
 
     this._config = { ...this._config!, entities: newConfigEntities };
 
@@ -259,8 +332,8 @@ export class HuiEntitiesCardEditor extends LitElement
 
   private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {
     ev.stopPropagation();
-    this._editRowGuiMode = ev.detail.guiMode;
-    this._editRowGuiModeAvailable = ev.detail.guiModeAvailable;
+    this._detailElementGuiMode = ev.detail.guiMode;
+    this._detailElementGuiModeAvailable = ev.detail.guiModeAvailable;
   }
 
   static get styles(): CSSResultArray {
@@ -272,6 +345,14 @@ export class HuiEntitiesCardEditor extends LitElement
           justify-content: space-between;
           align-items: center;
           font-size: 18px;
+        }
+        div[slot="advanced"] {
+          padding-top: 8px;
+        }
+        .remove-icon,
+        .edit-icon {
+          --mdc-icon-button-size: 36px;
+          color: var(--secondary-text-color);
         }
       `,
     ];

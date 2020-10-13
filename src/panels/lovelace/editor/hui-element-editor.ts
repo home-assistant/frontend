@@ -24,6 +24,7 @@ import type {
 import type { HomeAssistant } from "../../../types";
 import { handleStructError } from "../common/structs/handle-errors";
 import { getCardElementClass } from "../create-element/create-card-element";
+import { getHeaderFooterElementClass } from "../create-element/create-header-footer-element";
 import { getRowElementClass } from "../create-element/create-row-element";
 import type { LovelaceRowConfig } from "../entity-rows/types";
 import type {
@@ -66,7 +67,7 @@ export class HuiElementEditor extends LitElement {
 
   @property({ attribute: false }) public lovelace?: LovelaceConfig;
 
-  @property() public elementType: "row" | "card" = "card";
+  @property() public elementType: "row" | "card" | "headerfooter" = "card";
 
   @internalProperty() private _yaml?: string;
 
@@ -293,6 +294,8 @@ export class HuiElementEditor extends LitElement {
           elClass = await getCardElementClass(type);
         } else if (this.elementType === "row" && type !== GENERIC_ROW_TYPE) {
           elClass = await getRowElementClass(type);
+        } else if (this.elementType === "headerfooter") {
+          elClass = await getHeaderFooterElementClass(type);
         }
 
         this._loading = true;
