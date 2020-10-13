@@ -44,7 +44,7 @@ import "../../../components/user/ha-user-badge";
 import { fetchUsers, User } from "../../../data/user";
 import memoizeOne from "memoize-one";
 import { compare } from "../../../common/string/compare";
-import { HaSwitch } from "../../../components/ha-switch";
+import type { HaSwitch } from "../../../components/ha-switch";
 
 @customElement("hui-action-editor")
 export class HuiActionEditor extends LitElement {
@@ -391,11 +391,10 @@ export class HuiActionEditor extends LitElement {
   }
 
   private _change(ev: Event) {
-    console.log("change");
     if (!this._config || !this.hass) {
       return;
     }
-    console.log("change");
+
     const target = ev.target! as EditorTarget;
     const value = target.checked;
 
