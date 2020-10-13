@@ -96,7 +96,7 @@ export const actionConfigStruct = object({
   url_path: optional(string()),
   service: optional(string()),
   service_data: optional(union([string(), object()])),
-  confirmation: optional(confirmationConfigStruct),
+  confirmation: optional(union([boolean(), confirmationConfigStruct])),
 });
 
 const buttonEntitiesRowConfigStruct = object({

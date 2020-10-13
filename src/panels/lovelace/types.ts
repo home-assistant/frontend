@@ -79,9 +79,3 @@ export interface LovelaceActionEditor extends HTMLElement {
   setConfig(config: ActionConfig): void;
   refreshYamlEditor?: (focus: boolean) => void;
 }
-
-export interface LovelaceConfirmationEditor extends HTMLElement {
-  hass?: HomeAssistant;
-  setConfig(config: ConfirmationRestrictionConfig): void;
-  refreshYamlEditor?: (focus: boolean) => void;
-}

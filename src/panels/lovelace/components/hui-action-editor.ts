@@ -1,9 +1,10 @@
-import "../../../components/ha-yaml-editor";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-item/paper-icon-item";
+import "@polymer/paper-item/paper-item-body";
 
 import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
 import {
@@ -14,53 +15,48 @@ import {
   internalProperty,
   LitElement,
   property,
-  query,
+  PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { repeat } from "lit-html/directives/repeat";
 import { assert } from "superstruct";
-import { mdiClose, mdiGestureTap, mdiPencil } from "@mdi/js";
+import { mdiUnfoldLessHorizontal, mdiUnfoldMoreHorizontal } from "@mdi/js";
 
-import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
-import { computeServiceDescription } from "../../../common/service/compute_service_description";
+import { fireEvent } from "../../../common/dom/fire_event";
 import {
   ActionConfig,
   CallServiceActionConfig,
   ConfirmationRestrictionConfig,
   NavigateActionConfig,
+  RestrictionConfig,
   UrlActionConfig,
 } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
-import {
-  actionConfigStruct,
-  EditorTarget,
-  GUIModeChangedEvent,
-} from "../editor/types";
+import { actionConfigStruct, EditorTarget } from "../editor/types";
 import { computeServiceAttributes } from "../../../common/service/compute_service_attributes";
-import { LovelaceActionEditor } from "../types";
-import { HuiElementEditor } from "../editor/hui-element-editor";
+import { computeServiceDescription } from "../../../common/service/compute_service_description";
 
+import "../../../components/ha-yaml-editor";
 import "../../../components/ha-service-picker";
 import "../../../components/ha-help-tooltip";
-import "../editor/hui-detail-editor-base";
+import "../../../components/ha-switch";
+import "../../../components/user/ha-user-badge";
+import { fetchUsers, User } from "../../../data/user";
+import memoizeOne from "memoize-one";
+import { compare } from "../../../common/string/compare";
+import { HaSwitch } from "../../../components/ha-switch";
 
 @customElement("hui-action-editor")
-export class HuiActionEditor extends LitElement
-  implements LovelaceActionEditor {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+export class HuiActionEditor extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public tooltipText?: string;
 
   @internalProperty() private _config?: ActionConfig;
 
-  @internalProperty()
-  protected _editConfirmationConfig?: ConfirmationRestrictionConfig;
+  @internalProperty() private _editConfirmation?: boolean;
 
-  @internalProperty() protected _editConfirmationGuiModeAvailable? = true;
-
-  @internalProperty() protected _editConfirmationGuiMode? = true;
-
-  @query("hui-element-editor") private _cardEditorEl?: HuiElementEditor;
+  @internalProperty() private _users!: User[];
 
   public setConfig(config: ActionConfig): void {
     assert(config, actionConfigStruct);
@@ -90,8 +86,16 @@ export class HuiActionEditor extends LitElement
     return config.service_data || {};
   }
 
-  get _confirmation(): ConfirmationRestrictionConfig {
-    return this._config?.confirmation || {};
+  get _confirmation(): ConfirmationRestrictionConfig | boolean {
+    return this._config?.confirmation || false;
+  }
+
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+
+    fetchUsers(this.hass).then((users) => {
+      this._users = users.filter((user) => !user.system_generated);
+    });
   }
 
   protected render(): TemplateResult {
@@ -108,31 +112,6 @@ export class HuiActionEditor extends LitElement
       "none",
     ];
 
-    if (this._editConfirmationConfig) {
-      return html`
-        <hui-detail-editor-base
-          .hass=${this.hass}
-          .guiModeAvailable=${this._editConfirmationGuiModeAvailable}
-          .guiMode=${this._editConfirmationGuiMode}
-          @toggle-gui-mode=${this._toggleMode}
-          @go-back=${this._goBack}
-        >
-          <span slot="title"
-            >${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.confirmation"
-            )}</span
-          >
-          <hui-element-editor
-            .hass=${this.hass}
-            .value=${this._editConfirmationConfig}
-            elementType="confirmation"
-            @config-changed=${this._handleConfirmationConfigChanged}
-            @GUImode-changed=${this._handleGUIModeChanged}
-          ></hui-element-editor>
-        </hui-detail-editor-base>
-      `;
-    }
-
     return html`
       <div class="dropdown">
         <paper-dropdown-menu
@@ -145,14 +124,14 @@ export class HuiActionEditor extends LitElement
             .selected=${this._config?.action ?? "default"}
           >
             <paper-item .value=${"default"}
-              >${this.hass!.localize(
+              >${this.hass.localize(
                 "ui.panel.lovelace.editor.action-editor.actions.default_action"
               )}</paper-item
             >
             ${actions.map((action) => {
               return html`
                 <paper-item .value=${action}
-                  >${this.hass!.localize(
+                  >${this.hass.localize(
                     `ui.panel.lovelace.editor.action-editor.actions.${action}`
                   )}</paper-item
                 >
@@ -167,59 +146,70 @@ export class HuiActionEditor extends LitElement
           : ""}
       </div>
       <div class="confirmation">
+        <span
+          >${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.confirmation"
+          )}
+        </span>
         <div>
-          <ha-svg-icon .path=${mdiGestureTap}></ha-svg-icon>
-          <span
-            >${this.hass!.localize(
-              "ui.panel.lovelace.editor.card.generic.confirmation"
-            )}
-            -
-            ${Object.keys(this._confirmation).length > 0
-              ? this.hass!.localize(
-                  "ui.panel.lovelace.editor.card.generic.enabled"
-                )
-              : this.hass!.localize(
-                  "ui.panel.lovelace.editor.action-editor.confirmation.none"
-                )}</span
-          >
-        </div>
-        <div>
+          <ha-switch
+            .checked=${this._confirmation !== false}
+            .configValue=${"confirmation"}
+            @change=${this._change}
+          ></ha-switch>
           <mwc-icon-button
-            aria-label=${this.hass!.localize(
+            .label=${this.hass.localize(
               "ui.components.entity.entity-picker.edit"
             )}
             class="edit-icon"
-            @click=${this._editConfirmation}
+            @click=${this._toggleConfirmation}
           >
-            <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-          </mwc-icon-button>
-          <mwc-icon-button
-            aria-label=${this.hass!.localize(
-              "ui.components.entity.entity-picker.clear"
-            )}
-            class="remove-icon"
-            @click=${this._clearConfirmation}
-          >
-            <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+            <ha-svg-icon
+              .path=${this._editConfirmation
+                ? mdiUnfoldLessHorizontal
+                : mdiUnfoldMoreHorizontal}
+            ></ha-svg-icon>
           </mwc-icon-button>
         </div>
       </div>
-      ${Object.keys(this._confirmation).length > 0
-        ? html` <div class="secondary">
-            ${this._confirmation?.exemptions
-              ? html`${this.hass!.localize(
-                  "ui.panel.lovelace.editor.action-editor.confirmation.exempt_users"
-                )}:
-                ${this._confirmation.exemptions}`
-              : this.hass!.localize(
-                  "ui.panel.lovelace.editor.action-editor.confirmation.no_exemptions"
-                )}
-          </div>`
+      ${this._editConfirmation
+        ? html` <paper-input
+              label=${this.hass!.localize(
+                "ui.panel.lovelace.editor.action-editor.confirmation.text"
+              )}
+              .value=${typeof this._confirmation === "object"
+                ? this._confirmation.text
+                : ""}
+              .configValue=${"text"}
+              @value-changed=${this._confirmationValueChanged}
+            ></paper-input>
+            <p>
+              ${this.hass.localize(
+                "ui.panel.lovelace.editor.action-editor.confirmation.select_users"
+              )}
+            </p>
+            ${this._sortedUsers(this._users).map(
+              (user) => html`
+                <paper-icon-item>
+                  <ha-user-badge
+                    slot="item-icon"
+                    .hass=${this.hass}
+                    .user=${user}
+                  ></ha-user-badge>
+                  <paper-item-body>${user.name}</paper-item-body>
+                  <ha-switch
+                    .userId=${user.id}
+                    @change=${this._userChanged}
+                    .checked=${this._checkUser(user.id)}
+                  ></ha-switch>
+                </paper-icon-item>
+              `
+            )}`
         : ""}
       ${this._config?.action === "navigate"
         ? html`
             <paper-input
-              label=${this.hass!.localize(
+              label=${this.hass.localize(
                 "ui.panel.lovelace.editor.action-editor.navigation_path"
               )}
               .value=${this._navigation_path}
@@ -231,7 +221,7 @@ export class HuiActionEditor extends LitElement
       ${this._config?.action === "url"
         ? html`
             <paper-input
-              label=${this.hass!.localize(
+              label=${this.hass.localize(
                 "ui.panel.lovelace.editor.action-editor.url_path"
               )}
               .value=${this._url_path}
@@ -266,13 +256,19 @@ export class HuiActionEditor extends LitElement
                   <table class="attributes">
                     <tr>
                       <th>
-                        Parameter - Translate
+                        ${this.hass.localize(
+                          "ui.common.services.column_parameter"
+                        )}
                       </th>
                       <th>
-                        Description - Translate
+                        ${this.hass.localize(
+                          "ui.common.services.column_description"
+                        )}
                       </th>
                       <th>
-                        Example - Translate
+                        ${this.hass.localize(
+                          "ui.common.services.column_example"
+                        )}
                       </th>
                     </tr>
                     ${repeat(
@@ -298,55 +294,53 @@ export class HuiActionEditor extends LitElement
     `;
   }
 
-  private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {
-    ev.stopPropagation();
-    this._editConfirmationGuiMode = ev.detail.guiMode;
-    this._editConfirmationGuiModeAvailable = ev.detail.guiModeAvailable;
+  private _checkUser(userId: string): boolean | undefined {
+    return typeof this._confirmation === "object"
+      ? this._confirmation.exemptions?.some((u) => u.user === userId)
+      : false;
   }
 
-  private _toggleMode(): void {
-    this._cardEditorEl?.toggleMode();
-  }
-
-  private _editConfirmation(): void {
-    this._editConfirmationConfig = this._confirmation;
-  }
-
-  private _clearConfirmation(): void {
-    if (!this._config || !this.hass) {
+  private _userChanged(ev: Event): void {
+    if (!this._config) {
       return;
     }
 
-    const newConfig = { ...this._config };
-    delete newConfig.confirmation;
+    const userId = (ev.currentTarget as any).userId;
+    const checked = (ev.currentTarget as HaSwitch).checked;
 
-    fireEvent(this, "config-changed", { config: newConfig });
-  }
+    let exemptions =
+      typeof this._confirmation === "object"
+        ? this._confirmation?.exemptions || []
+        : [];
 
-  private _goBack(): void {
-    this._editConfirmationConfig = undefined;
-    this._editConfirmationGuiModeAvailable = true;
-    this._editConfirmationGuiMode = true;
-  }
-
-  private _handleConfirmationConfigChanged(ev: CustomEvent): void {
-    ev.stopPropagation();
-
-    const config = ev.detail.config as ConfirmationRestrictionConfig;
-    this._editConfirmationGuiModeAvailable = ev.detail.guiModeAvailable;
-
-    if (this._confirmation === config) {
-      return;
+    if (checked === true) {
+      const newEntry: RestrictionConfig = {
+        user: userId,
+      };
+      exemptions.push(newEntry);
+    } else {
+      exemptions = (exemptions as RestrictionConfig[]).filter(
+        (c) => c.user !== userId
+      );
     }
 
-    this._editConfirmationConfig = config;
+    fireEvent(this, "config-changed", {
+      config: {
+        ...this._config,
+        confirmation:
+          typeof this._confirmation === "object"
+            ? { ...this._confirmation, exemptions }
+            : { exemptions },
+      },
+    });
+  }
 
-    this._config = {
-      ...this._config!,
-      confirmation: this._editConfirmationConfig,
-    };
+  private _sortedUsers = memoizeOne((users: User[]) => {
+    return users.sort((a, b) => compare(a.name, b.name));
+  });
 
-    fireEvent(this, "config-changed", { config: this._config! });
+  private _toggleConfirmation(): void {
+    this._editConfirmation = !this._editConfirmation;
   }
 
   private _actionPicked(ev: CustomEvent): void {
@@ -370,6 +364,50 @@ export class HuiActionEditor extends LitElement
     }
     fireEvent(this, "config-changed", {
       config: { ...this._config, action: value },
+    });
+  }
+
+  private _confirmationValueChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    if (!this._config || !this.hass) {
+      return;
+    }
+    const target = ev.target! as EditorTarget;
+    const value = ev.detail.value;
+    if (this._confirmation[`${target.configValue}`] === value) {
+      return;
+    }
+    if (target.configValue) {
+      fireEvent(this, "config-changed", {
+        config: {
+          ...this._config,
+          confirmation:
+            typeof this._confirmation === "object"
+              ? { ...this._confirmation, [target.configValue!]: value }
+              : { [target.configValue!]: value },
+        },
+      });
+    }
+  }
+
+  private _change(ev: Event) {
+    console.log("change");
+    if (!this._config || !this.hass) {
+      return;
+    }
+    console.log("change");
+    const target = ev.target! as EditorTarget;
+    const value = target.checked;
+
+    if (this[`_${target.configValue}`] === value) {
+      return;
+    }
+
+    fireEvent(this, "config-changed", {
+      config: {
+        ...this._config,
+        [target.configValue!]: value,
+      },
     });
   }
 
@@ -438,7 +476,10 @@ export class HuiActionEditor extends LitElement
         justify-content: space-between;
       }
 
-      .remove-icon,
+      .confirmation ha-switch {
+        padding-top: 10px;
+      }
+
       .edit-icon {
         --mdc-icon-button-size: 36px;
         color: var(--secondary-text-color);
