@@ -40,7 +40,10 @@ import {
 } from "../../../data/script";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/ha-app-layout";
-import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
+import {
+  HAKeyboardShortcut,
+  KeyboardShortcutMixin,
+} from "../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -374,6 +377,10 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     `;
   }
 
+  protected firstUpdated() {
+    this.registerShortcut(HAKeyboardShortcut.CTRL_S, () => this._saveScript());
+  }
+
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
@@ -503,7 +510,10 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   }
 
   private _sequenceChanged(ev: CustomEvent): void {
-    this._config = { ...this._config!, sequence: ev.detail.value as Action[] };
+    this._config = {
+      ...this._config!,
+      sequence: ev.detail.value as Action[],
+    };
     this._errors = undefined;
     this._dirty = true;
   }
@@ -594,10 +604,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         throw errors;
       }
     );
-  }
-
-  protected handleKeyboardSave() {
-    this._saveScript();
   }
 
   static get styles(): CSSResult[] {

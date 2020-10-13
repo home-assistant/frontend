@@ -49,7 +49,10 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/ha-app-layout";
 import "../../../layouts/hass-tabs-subpage";
-import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
+import {
+  KeyboardShortcutMixin,
+  HAKeyboardShortcut,
+} from "../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -473,6 +476,12 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     `;
   }
 
+  protected firstUpdated() {
+    this.registerShortcut(HAKeyboardShortcut.CTRL_S, () =>
+      this._saveAutomation()
+    );
+  }
+
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
@@ -585,7 +594,10 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   }
 
   private _triggerChanged(ev: CustomEvent): void {
-    this._config = { ...this._config!, trigger: ev.detail.value as Trigger[] };
+    this._config = {
+      ...this._config!,
+      trigger: ev.detail.value as Trigger[],
+    };
     this._errors = undefined;
     this._dirty = true;
   }
@@ -600,7 +612,10 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   }
 
   private _actionChanged(ev: CustomEvent): void {
-    this._config = { ...this._config!, action: ev.detail.value as Action[] };
+    this._config = {
+      ...this._config!,
+      action: ev.detail.value as Action[],
+    };
     this._errors = undefined;
     this._dirty = true;
   }
@@ -728,10 +743,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         throw errors;
       }
     );
-  }
-
-  protected handleKeyboardSave() {
-    this._saveAutomation();
   }
 
   static get styles(): CSSResult[] {
