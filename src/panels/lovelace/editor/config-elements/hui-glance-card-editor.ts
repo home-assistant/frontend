@@ -20,7 +20,7 @@ import {
   string,
   union,
 } from "superstruct";
-import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/entity/state-badge";
 import "../../../../components/ha-card";
@@ -200,7 +200,7 @@ export class HuiGlanceCardEditor extends LitElement
     `;
   }
 
-  private _valueChanged(ev: HASSDomEvent<EntitiesEditorEvent>): void {
+  private _valueChanged(ev: EntitiesEditorEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
