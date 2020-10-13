@@ -15,7 +15,7 @@ import { HomeAssistant } from "../../../../types";
 import { MarkdownCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
-import { EditorTarget } from "../types";
+import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = object({
@@ -94,7 +94,7 @@ export class HuiMarkdownCardEditor extends LitElement
     ev.stopPropagation();
   }
 
-  private _valueChanged(ev: CustomEvent): void {
+  private _valueChanged(ev: EntitiesEditorEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
