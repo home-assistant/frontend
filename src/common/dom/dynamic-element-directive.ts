@@ -10,7 +10,7 @@ export const dynamicElement = directive(
 
     let element = part.value as HTMLElement | undefined;
 
-    if (element !== undefined && tag.toUpperCase() === element.tagName) {
+    if (tag === element?.localName) {
       if (properties) {
         Object.entries(properties).forEach(([key, value]) => {
           element![key] = value;
