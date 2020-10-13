@@ -12,7 +12,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { array, assert, object, optional, string } from "superstruct";
-import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import { ActionConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
@@ -27,7 +27,6 @@ import {
   actionConfigStruct,
   EditorTarget,
   entitiesConfigStruct,
-  EntitiesEditorEvent,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
@@ -230,7 +229,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
     `;
   }
 
-  private _valueChanged(ev: HASSDomEvent<EntitiesEditorEvent>): void {
+  private _valueChanged(ev: CustomEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
