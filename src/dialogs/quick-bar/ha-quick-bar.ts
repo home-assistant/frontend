@@ -9,6 +9,7 @@ import {
   internalProperty,
   LitElement,
   property,
+  query,
 } from "lit-element";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-dialog";
@@ -50,6 +51,10 @@ export class QuickBar extends LitElement {
 
   @internalProperty() private _selectedIndex?: number;
 
+  @query("paper-input", false) private _filterInputField?: HTMLElement;
+
+  @query("mwc-list-item", false) private _firstListItem?: HTMLElement;
+
   public async showDialog(params: QuickBarParams) {
     this._commandMode = params.commandMode || false;
     this._opened = true;
@@ -83,7 +88,7 @@ export class QuickBar extends LitElement {
           )}
           type="search"
           value=${this._commandMode ? `>${this._itemFilter}` : this._itemFilter}
-          @keydown=${this._focusFirstElement}
+          @keydown=${this._handleInputKeyDown}
         ></paper-input>
         ${this._commandMode
           ? this.renderCommandsList(this._itemFilter)
@@ -105,7 +110,8 @@ export class QuickBar extends LitElement {
               .activated=${index === 0}
               .selected=${index === this._selectedIndex}
               .item=${item}
-              @keydown=${this._focusInputField}
+              .index=${index}
+              @keydown=${this._handleListItemKeyDown}
               graphic="icon"
             >
               <ha-icon
@@ -135,7 +141,8 @@ export class QuickBar extends LitElement {
               .entityId=${entity.entity_id}
               .activated=${index === 0}
               graphic="avatar"
-              @keydown=${this._focusInputField}
+              .index=${index}
+              @keydown=${this._handleListItemKeyDown}
             >
               <ha-icon .icon=${domainIcon(domain)} slot="graphic"></ha-icon>
               ${entity.attributes?.friendly_name
@@ -157,7 +164,7 @@ export class QuickBar extends LitElement {
     `;
   });
 
-  private _focusFirstElement(ev: KeyboardEvent) {
+  private _handleInputKeyDown(ev: KeyboardEvent) {
     if (ev.code === "Enter") {
       if (this._commandMode) {
         this._runCommandAndCloseDialog(this._topCommandResult);
@@ -166,29 +173,15 @@ export class QuickBar extends LitElement {
       }
     } else if (ev.code === "ArrowDown") {
       ev.preventDefault();
-      const listItem = this.shadowRoot?.querySelector(
-        "mwc-list-item"
-      ) as HTMLElement;
-      listItem.focus();
+      this._firstListItem?.focus();
     }
   }
 
-  private _focusInputField(ev: KeyboardEvent) {
-    const re = new RegExp("[a-z0-9._]");
-
-    if (ev.code === "ArrowUp") {
-      ev.preventDefault();
-      const inputField = this.shadowRoot?.querySelector(
-        "paper-input"
-      ) as HTMLElement;
-      inputField.focus();
-    } else if (ev.key.length === 1 && re.test(ev.key)) {
-      ev.preventDefault();
-      const inputField = this.shadowRoot?.querySelector(
-        "paper-input"
-      ) as HTMLElement;
-      inputField.focus();
-      inputField.value += ev.key;
+  private _handleListItemKeyDown(ev: KeyboardEvent) {
+    const isSingleCharacter = ev.key.length === 1;
+    const isFirstListItem = (ev.target as any).index === 0;
+    if ((ev.code === "ArrowUp" && isFirstListItem) || isSingleCharacter) {
+      this._filterInputField?.focus();
     }
   }
 
