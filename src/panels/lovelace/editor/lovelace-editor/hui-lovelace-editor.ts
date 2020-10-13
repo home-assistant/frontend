@@ -65,7 +65,7 @@ export class HuiLovelaceEditor extends LitElement {
           .dir=${computeRTLDirection(this.hass)}
         >
           <ha-switch
-            .checked=${this._append_view_title !== false}
+            .checked=${this._append_view_title}
             .configValue=${"append_view_title"}
             @change=${this._appendViewTitleChanged}
           ></ha-switch
