@@ -21,6 +21,25 @@ import "./state-badge";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 
+// Convert from internal snake_case format to external / user-friendly format
+function formatAttributeNameOut(value: string): string {
+  value = value.replace(/_/g, " ").replace(/\bid\b/g, "ID");
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+// Convert from internal snake_case format to external / user-friendly format
+function formatAttributeNamesOut(value: string[]): string[] {
+  return value.map((x) => formatAttributeNameOut(x));
+}
+
+// Convert from external / user-friendly format to internal snake_case format
+function formatAttributeNameIn(value: string): string {
+  return String(value)
+    .replace(/ /g, "_")
+    .replace(/\bID\b/g, "id")
+    .toLowerCase();
+}
+
 const rowRenderer = (root: HTMLElement, _owner, model: { item: string }) => {
   if (!root.firstElementChild) {
     root.innerHTML = `
@@ -65,7 +84,7 @@ class HaEntityAttributePicker extends LitElement {
     if (changedProps.has("_opened") && this._opened) {
       const state = this.entityId ? this.hass.states[this.entityId] : undefined;
       (this._comboBox as any).items = state
-        ? Object.keys(state.attributes)
+        ? formatAttributeNamesOut(Object.keys(state.attributes))
         : [];
     }
   }
@@ -80,6 +99,7 @@ class HaEntityAttributePicker extends LitElement {
         .value=${this._value}
         .allowCustomValue=${this.allowCustomValue}
         .renderer=${rowRenderer}
+        attr-for-value="bind-value"
         @opened-changed=${this._openedChanged}
         @value-changed=${this._valueChanged}
       >
@@ -135,7 +155,7 @@ class HaEntityAttributePicker extends LitElement {
   }
 
   private get _value() {
-    return this.value || "";
+    return this.value ? formatAttributeNameOut(this.value) : "";
   }
 
   private _openedChanged(ev: PolymerChangedEvent<boolean>) {
@@ -150,6 +170,8 @@ class HaEntityAttributePicker extends LitElement {
   }
 
   private _setValue(value: string) {
+    // Ensure that we send the correct internal snake_case name to the callbacks / events
+    value = formatAttributeNameIn(value);
     this.value = value;
     setTimeout(() => {
       fireEvent(this, "value-changed", { value });
