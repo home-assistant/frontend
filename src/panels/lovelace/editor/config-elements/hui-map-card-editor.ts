@@ -18,7 +18,7 @@ import {
   optional,
   string,
 } from "superstruct";
-import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-switch";
@@ -178,7 +178,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     `;
   }
 
-  private _entitiesValueChanged(ev: HASSDomEvent<EntitiesEditorEvent>): void {
+  private _entitiesValueChanged(ev: EntitiesEditorEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
