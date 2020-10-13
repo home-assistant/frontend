@@ -87,16 +87,22 @@ class HaConfigPerson extends LitElement {
                   </p>
                 `
               : ""}
-
+            
             <a
-              href=${documentationUrl(this.hass, "/integrations/person/")}
+              href=${documentationUrl(
+              this.hass,
+              "/integrations/person/"
+              )}
               target="_blank"
               rel="noreferrer"
             >
-              ${this.hass.localize("ui.panel.config.person.learn_more")}
+              ${this.hass.localize(
+              "ui.panel.config.person.learn_more"
+              )}
             </a>
           </span>
 
+          
           <ha-card class="storage">
             ${this._storageItems.map((entry) => {
               return html`
