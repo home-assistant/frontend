@@ -24,15 +24,6 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
       super.disconnectedCallback();
     }
 
-    protected registerShortcut(
-      shortcut: HAKeyboardShortcut,
-      callback: () => void,
-      element: HTMLElement | Document = this
-    ) {
-      element.addEventListener("keydown", (event) => this._keydownEvent(event));
-      this._registeredShortcuts[shortcut] = callback;
-    }
-
     private _executeShortcut(
       event: KeyboardEvent,
       shortcut: HAKeyboardShortcut
@@ -44,6 +35,15 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
           shortcutAction();
         }
       }
+    }
+
+    protected registerShortcut(
+      shortcut: HAKeyboardShortcut,
+      callback: () => void,
+      element: HTMLElement | Document = this
+    ) {
+      element.addEventListener("keydown", (event) => this._keydownEvent(event));
+      this._registeredShortcuts[shortcut] = callback;
     }
 
     private _keydownEvent = (event: KeyboardEvent) => {
