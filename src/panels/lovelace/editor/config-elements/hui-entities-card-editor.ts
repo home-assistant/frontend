@@ -1,3 +1,4 @@
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
@@ -31,20 +32,11 @@ import { HomeAssistant } from "../../../../types";
 import { EntitiesCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
 import { LovelaceRowConfig } from "../../entity-rows/types";
-import {
-  headerFooterConfigStructs,
-  LovelaceHeaderFooterConfig,
-} from "../../header-footer/types";
-import type {
-  LovelaceCardEditor,
-  LovelaceHeaderFooterEditor,
-} from "../../types";
-import { getHeaderFooterEditor } from "../get-header-footer-editor";
-import "../hui-advanced-element-editor";
+import { headerFooterConfigStructs } from "../../header-footer/types";
+import { LovelaceCardEditor } from "../../types";
 import "../hui-detail-editor-base";
 import { HuiElementEditor } from "../hui-element-editor";
 import "../hui-entities-card-row-editor";
-import "../hui-header-footer-dropdown";
 import { processEditorEntities } from "../process-editor-entities";
 import {
   EditorTarget,
@@ -94,21 +86,10 @@ export class HuiEntitiesCardEditor extends LitElement
 
   @query("hui-element-editor") private _cardEditorEl?: HuiElementEditor;
 
-  @internalProperty() private _footerElement?: LovelaceHeaderFooterEditor;
-
-  @internalProperty() private _headerElement?: LovelaceHeaderFooterEditor;
-
   public setConfig(config: EntitiesCardConfig): void {
     assert(config, cardConfigStruct);
     this._config = config;
     this._configEntities = processEditorEntities(config.entities);
-
-    if (this._config.header?.type) {
-      this._updateHeaderFooterElement("header", this._config.header);
-    }
-    if (this._config.footer?.type) {
-      this._updateHeaderFooterElement("footer", this._config.footer);
-    }
   }
 
   get _title(): string {
@@ -150,105 +131,63 @@ export class HuiEntitiesCardEditor extends LitElement
     }
 
     return html`
-      ${configElementStyle}
-      <hui-advanced-element-editor .hass=${this.hass}>
-        <div slot="editor">
-          <div class="card-config">
-            <paper-input
-              .label="${this.hass.localize(
-                "ui.panel.lovelace.editor.card.generic.title"
-              )} (${this.hass.localize(
-                "ui.panel.lovelace.editor.card.config.optional"
-              )})"
-              .value=${this._title}
-              .configValue=${"title"}
-              @value-changed=${this._valueChanged}
-            ></paper-input>
-            <hui-theme-select-editor
-              .hass=${this.hass}
-              .value=${this._theme}
-              .configValue=${"theme"}
-              @value-changed=${this._valueChanged}
-            ></hui-theme-select-editor>
-            <ha-formfield
-              .label=${this.hass.localize(
-                "ui.panel.lovelace.editor.card.entities.show_header_toggle"
-              )}
-              .dir=${computeRTLDirection(this.hass)}
-            >
-              <ha-switch
-                .checked=${this._config!.show_header_toggle !== false}
-                .configValue=${"show_header_toggle"}
-                @change=${this._valueChanged}
-              ></ha-switch>
-            </ha-formfield>
-            <ha-formfield
-              .label=${this.hass.localize(
-                "ui.panel.lovelace.editor.card.generic.state_color"
-              )}
-              .dir=${computeRTLDirection(this.hass)}
-            >
-              <ha-switch
-                .checked=${this._config!.state_color}
-                .configValue=${"state_color"}
-                @change=${this._valueChanged}
-              ></ha-switch>
-            </ha-formfield>
-          </div>
-          <hui-entity-editor
-            .hass=${this.hass}
-            .entities=${this._configEntities}
-            @entities-changed=${this._valueChanged}
-          ></hui-entity-editor>
-        </div>
-        <div slot="advanced">
-          <h3 class="header-footer-heading">
-            ${this.hass.localize(
-              `ui.panel.lovelace.editor.header-footer.header`
+      <div class="card-config">
+        <paper-input
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.title"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
+          .value=${this._title}
+          .configValue=${"title"}
+          @value-changed=${this._valueChanged}
+        ></paper-input>
+        <hui-theme-select-editor
+          .hass=${this.hass}
+          .value=${this._theme}
+          .configValue=${"theme"}
+          @value-changed=${this._valueChanged}
+        ></hui-theme-select-editor>
+        <div class="side-by-side">
+          <ha-formfield
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.entities.show_header_toggle"
             )}
-          </h3>
-          <hui-header-footer-dropdown
-            .hass=${this.hass}
-            .value=${this._config.header?.type}
-            .configValue=${"header"}
-            @change=${this._headerFooterChanged}
-          ></hui-header-footer-dropdown>
-          ${this._headerElement
-            ? html`
-                <div class="header-footer">
-                  ${this._headerElement}
-                </div>
-              `
-            : ""}
-          <h3 class="header-footer-heading">
-            ${this.hass.localize(
-              `ui.panel.lovelace.editor.header-footer.footer`
+            .dir=${computeRTLDirection(this.hass)}
+          >
+            <ha-switch
+              .checked=${this._config!.show_header_toggle !== false}
+              .configValue=${"show_header_toggle"}
+              @change=${this._valueChanged}
+            ></ha-switch>
+          </ha-formfield>
+          <ha-formfield
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.state_color"
             )}
-          </h3>
-          <hui-header-footer-dropdown
-            .hass=${this.hass}
-            .value=${this._config.footer?.type}
-            .configValue=${"footer"}
-            @change=${this._headerFooterChanged}
-          ></hui-header-footer-dropdown>
-          ${this._footerElement
-            ? html`
-                <div class="header-footer">
-                  ${this._footerElement}
-                </div>
-              `
-            : ""}
+            .dir=${computeRTLDirection(this.hass)}
+          >
+            <ha-switch
+              .checked=${this._config!.state_color}
+              .configValue=${"state_color"}
+              @change=${this._valueChanged}
+            ></ha-switch>
+          </ha-formfield>
         </div>
-      </hui-advanced-element-editor>
+      </div>
+      <hui-entities-card-row-editor
+        .hass=${this.hass}
+        .entities=${this._configEntities}
+        @entities-changed=${this._valueChanged}
+        @edit-row=${this._editRow}
+      ></hui-entities-card-row-editor>
     `;
   }
 
-  private _valueChanged(ev: HASSDomEvent<EntitiesEditorEvent>): void {
+  private _valueChanged(ev: EntitiesEditorEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
-
-    ev.stopPropagation();
 
     const target = ev.target! as EditorTarget;
 
@@ -263,11 +202,6 @@ export class HuiEntitiesCardEditor extends LitElement
       this._config = { ...this._config, entities: ev.detail.entities };
 
       this._configEntities = processEditorEntities(this._config.entities);
-    } else if (ev.detail && target.configValue) {
-      this._config = {
-        ...this._config,
-        [target.configValue]: ev.detail.config,
-      };
     } else if (target.configValue) {
       if (target.value === "") {
         this._config = { ...this._config };
@@ -284,59 +218,6 @@ export class HuiEntitiesCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _headerFooterChanged(ev: CustomEvent): void {
-    if (!this._config || !this.hass) {
-      return;
-    }
-
-    const target = ev.currentTarget as any;
-
-    if (!target.value) {
-      this[`_${target.configValue}Element`] = undefined;
-      this._config = { ...this._config };
-      delete this._config[target.configValue!];
-
-      fireEvent(this, "config-changed", { config: this._config });
-      return;
-    }
-
-    this._updateHeaderFooterElement(target.configValue!, {
-      type: target.value,
-    });
-  }
-
-  private async _updateHeaderFooterElement(
-    type: "header" | "footer",
-    config: LovelaceHeaderFooterConfig | { type: string }
-  ): Promise<void> {
-    if (!this._config || !this.hass) {
-      return;
-    }
-
-    const headerFooterEditor = await getHeaderFooterEditor(
-      this.hass,
-      config,
-      this._configEntities?.map((confEntity) => confEntity.entity) || []
-    );
-
-    this[`_${type}Element`] = headerFooterEditor?.configElement;
-
-    if (!this[`_${type}Element`]) {
-      return;
-    }
-
-    this._config = {
-      ...this._config,
-      [type]: { ...headerFooterEditor!.config },
-    };
-
-    this[`_${type}Element`].hass = this.hass;
-    this[`_${type}Element`].configValue = type;
-    this[`_${type}Element`].setConfig(headerFooterEditor!.config);
-    this[`_${type}Element`].addEventListener("config-changed", (ev) =>
-      this._valueChanged(ev as HASSDomEvent<EntitiesEditorEvent>)
-    );
-  }
   private _editRow(ev: HASSDomEvent<EditRowEvent>): void {
     this._editRowIndex = ev.detail.index;
     this._editRowConfig = this._configEntities![this._editRowIndex];
