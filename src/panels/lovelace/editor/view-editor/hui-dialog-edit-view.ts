@@ -318,7 +318,7 @@ export class HuiDialogEditView extends LitElement {
     }
   }
 
-  private _badgesChanged(ev: HASSDomEvent<EntitiesEditorEvent>): void {
+  private _badgesChanged(ev: EntitiesEditorEvent): void {
     if (!this._badges || !this.hass || !ev.detail || !ev.detail.entities) {
       return;
     }
