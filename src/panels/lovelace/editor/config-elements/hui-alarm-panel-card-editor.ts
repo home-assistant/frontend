@@ -19,7 +19,7 @@ import { HomeAssistant } from "../../../../types";
 import { AlarmPanelCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
-import { EditorTarget } from "../types";
+import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = object({
@@ -148,7 +148,7 @@ export class HuiAlarmPanelCardEditor extends LitElement
     ];
   }
 
-  private _stateRemoved(ev: CustomEvent): void {
+  private _stateRemoved(ev: EntitiesEditorEvent): void {
     if (!this._config || !this._states || !this.hass) {
       return;
     }
@@ -167,7 +167,7 @@ export class HuiAlarmPanelCardEditor extends LitElement
     }
   }
 
-  private _stateAdded(ev: CustomEvent): void {
+  private _stateAdded(ev: EntitiesEditorEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
@@ -186,7 +186,7 @@ export class HuiAlarmPanelCardEditor extends LitElement
     });
   }
 
-  private _valueChanged(ev: CustomEvent): void {
+  private _valueChanged(ev: EntitiesEditorEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
