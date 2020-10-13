@@ -48,6 +48,8 @@ export class QuickBar extends LitElement {
 
   @internalProperty() private _topCommandResult?: CommandItem;
 
+  @internalProperty() private _selectedIndex?: number;
+
   public async showDialog(params: QuickBarParams) {
     this._commandMode = params.commandMode || false;
     this._opened = true;
@@ -81,7 +83,7 @@ export class QuickBar extends LitElement {
           )}
           type="search"
           value=${this._commandMode ? `>${this._itemFilter}` : this._itemFilter}
-          @keydown=${this._activateFirstItem}
+          @keydown=${this._focusFirstElement}
         ></paper-input>
         ${this._commandMode
           ? this.renderCommandsList(this._itemFilter)
@@ -101,7 +103,9 @@ export class QuickBar extends LitElement {
           (item, index) => html`
             <mwc-list-item
               .activated=${index === 0}
+              .selected=${index === this._selectedIndex}
               .item=${item}
+              @keydown=${this._focusInputField}
               graphic="icon"
             >
               <ha-icon
@@ -131,6 +135,7 @@ export class QuickBar extends LitElement {
               .entityId=${entity.entity_id}
               .activated=${index === 0}
               graphic="avatar"
+              @keydown=${this._focusInputField}
             >
               <ha-icon .icon=${domainIcon(domain)} slot="graphic"></ha-icon>
               ${entity.attributes?.friendly_name
@@ -152,13 +157,29 @@ export class QuickBar extends LitElement {
     `;
   });
 
-  private _activateFirstItem(ev: KeyboardEvent) {
+  private _focusFirstElement(ev: KeyboardEvent) {
     if (ev.code === "Enter") {
       if (this._commandMode) {
         this._runCommandAndCloseDialog(this._topCommandResult);
       } else {
         this._launchMoreInfoDialog(this._topEntityIdResult);
       }
+    } else if (ev.code === "ArrowDown") {
+      ev.preventDefault();
+      const listItem = this.shadowRoot?.querySelector(
+        "mwc-list-item"
+      ) as HTMLElement;
+      listItem.focus();
+    }
+  }
+
+  private _focusInputField(ev: KeyboardEvent) {
+    if (ev.code === "ArrowUp") {
+      ev.preventDefault();
+      const inputField = this.shadowRoot?.querySelector(
+        "paper-input"
+      ) as HTMLElement;
+      inputField.focus();
     }
   }
 
