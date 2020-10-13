@@ -45,11 +45,7 @@ export class QuickBar extends LitElement {
 
   @internalProperty() private _commandMode = false;
 
-  @internalProperty() private _topEntityIdResult?: string;
-
-  @internalProperty() private _topCommandResult?: CommandItem;
-
-  @internalProperty() private _selectedIndex?: number;
+  @internalProperty() private _activatedIndex = 0;
 
   @query("paper-input", false) private _filterInputField?: HTMLElement;
 
@@ -67,6 +63,7 @@ export class QuickBar extends LitElement {
   public closeDialog() {
     this._opened = false;
     this._itemFilter = "";
+    this._resetActivatedIndex();
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -89,26 +86,24 @@ export class QuickBar extends LitElement {
           type="search"
           value=${this._commandMode ? `>${this._itemFilter}` : this._itemFilter}
           @keydown=${this._handleInputKeyDown}
+          @focus=${this._resetActivatedIndex}
         ></paper-input>
         ${this._commandMode
-          ? this.renderCommandsList(this._itemFilter)
-          : this.renderEntityList(this._itemFilter)}
+          ? this.renderCommandsList(this._itemFilter, this._activatedIndex)
+          : this.renderEntityList(this._itemFilter, this._activatedIndex)}
       </ha-dialog>
     `;
   }
 
-  protected renderCommandsList = memoizeOne((filter) => {
+  protected renderCommandsList = memoizeOne((filter, activatedIndex) => {
     const items = this._filterCommandItems(this._commandItems, filter);
-
-    this._topCommandResult = items[0];
 
     return html`
       <mwc-list activatable @selected=${this._processCommand}>
         ${items.map(
           (item, index) => html`
             <mwc-list-item
-              .activated=${index === 0}
-              .selected=${index === this._selectedIndex}
+              .activated=${index === activatedIndex}
               .item=${item}
               .index=${index}
               @keydown=${this._handleListItemKeyDown}
@@ -126,10 +121,8 @@ export class QuickBar extends LitElement {
     `;
   });
 
-  protected renderEntityList = memoizeOne((filter) => {
+  protected renderEntityList = memoizeOne((filter, activatedIndex) => {
     const entities = this._filterEntityItems(filter);
-
-    this._topEntityIdResult = entities[0];
 
     return html`
       <mwc-list activatable @selected=${this._entityMoreInfo}>
@@ -139,8 +132,8 @@ export class QuickBar extends LitElement {
             <mwc-list-item
               twoline
               .entityId=${entity.entity_id}
-              .activated=${index === 0}
               graphic="avatar"
+              .activated=${index === activatedIndex}
               .index=${index}
               @keydown=${this._handleListItemKeyDown}
             >
@@ -164,13 +157,13 @@ export class QuickBar extends LitElement {
     `;
   });
 
+  private _resetActivatedIndex() {
+    this._activatedIndex = 0;
+  }
+
   private _handleInputKeyDown(ev: KeyboardEvent) {
     if (ev.code === "Enter") {
-      if (this._commandMode) {
-        this._runCommandAndCloseDialog(this._topCommandResult);
-      } else {
-        this._launchMoreInfoDialog(this._topEntityIdResult);
-      }
+      this._firstListItem?.click();
     } else if (ev.code === "ArrowDown") {
       ev.preventDefault();
       this._firstListItem?.focus();
@@ -180,8 +173,19 @@ export class QuickBar extends LitElement {
   private _handleListItemKeyDown(ev: KeyboardEvent) {
     const isSingleCharacter = ev.key.length === 1;
     const isFirstListItem = (ev.target as any).index === 0;
-    if ((ev.code === "ArrowUp" && isFirstListItem) || isSingleCharacter) {
+    if (ev.key === "ArrowUp") {
+      if (isFirstListItem) {
+        this._filterInputField?.focus();
+      } else {
+        this._activatedIndex--;
+      }
+    } else if (ev.key === "ArrowDown") {
+      this._activatedIndex++;
+    }
+
+    if (ev.key === "Backspace" || isSingleCharacter) {
       this._filterInputField?.focus();
+      this._resetActivatedIndex();
     }
   }
 
