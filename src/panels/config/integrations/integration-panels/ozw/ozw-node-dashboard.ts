@@ -104,14 +104,12 @@ class OZWNodeDashboard extends LitElement {
                           </a>`
                         : ``}
                     </div>
-                    <div class="product-image">
-                      ${this._metadata?.metadata.ProductPicBase64
-                        ? html`<img
-                            src="data:image/png;base64,${this._metadata
-                              ?.metadata.ProductPicBase64}"
-                          />`
-                        : ``}
-                    </div>
+                    ${this._metadata?.metadata.ProductPicBase64
+                      ? html`<img
+                          src="data:image/png;base64,${this._metadata?.metadata
+                            .ProductPicBase64}"
+                        />`
+                      : ``}
                   </div>
                   <div class="card-actions">
                     <mwc-button @click=${this._refreshNodeClicked}>
@@ -238,9 +236,6 @@ class OZWNodeDashboard extends LitElement {
 
         .product-image {
           padding: 12px;
-        }
-
-        .product-image img {
           max-height: 140px;
           max-width: 140px;
         }
