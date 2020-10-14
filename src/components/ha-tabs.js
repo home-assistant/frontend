@@ -39,6 +39,12 @@ class HaTabs extends PaperTabsClass {
     super._tabChanged(tab, old);
     this.firstTabWidth = this.firstElementChild.clientWidth;
     this.lastTabWidth = this.lastElementChild.clientWidth;
+
+    // Scroll active tab into view if needed.
+    const selected = this.querySelector(".iron-selected");
+    if (selected) {
+      selected.scrollIntoView();
+    }
   }
 
   /**
