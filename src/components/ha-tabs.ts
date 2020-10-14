@@ -1,16 +1,28 @@
 import "@polymer/paper-tabs";
+import { customElement, property } from "lit-element";
+import { PaperTabsElement } from "@polymer/paper-tabs/paper-tabs";
+import { Constructor } from "../types";
 
-const PaperTabsClass = customElements.get("paper-tabs");
+const PaperTabs = customElements.get("paper-tabs") as Constructor<
+  PaperTabsElement
+>;
+
 let subTemplate;
 
-class HaTabs extends PaperTabsClass {
+@customElement("ha-tabs")
+export class HaTabs extends PaperTabs {
+  @property({ type: Number }) public firstTabWidth = 0;
+
+  @property({ type: Number }) public lastTabWidth = 0;
+
+  @property({ type: Boolean }) public _lastLeftHiddenState = false;
+
   static get template() {
     if (!subTemplate) {
-      subTemplate = PaperTabsClass.template.cloneNode(true);
+      subTemplate = PaperTabs.template.cloneNode(true);
 
       const superStyle = subTemplate.content.querySelector("style");
 
-      // Add "noink" attribute to scroll buttons to disable click animation.
       [...subTemplate.content.querySelectorAll("paper-icon-button")].forEach(
         (arrow) => {
           arrow.setAttribute("noink", "");
@@ -34,13 +46,14 @@ class HaTabs extends PaperTabsClass {
     return subTemplate;
   }
 
-  _tabChanged(tab, old) {
+  // Get first and last tab's width for _affectScroll
+  public _tabChanged(tab, old) {
     super._tabChanged(tab, old);
-
-    // Get first and last tab's width for _affectScroll
     const tabs = this.querySelectorAll("paper-tab:not(.hide-tab)");
-    this.firstTabWidth = tabs[0].clientWidth;
-    this.lastTabWidth = tabs[tabs.length - 1].clientWidth;
+    if (tabs.length > 1) {
+      this.firstTabWidth = tabs[1].clientWidth;
+      this.lastTabWidth = tabs[tabs.length - 1].clientWidth;
+    }
 
     // Scroll active tab into view if needed.
     const selected = this.querySelector(".iron-selected");
@@ -54,7 +67,11 @@ class HaTabs extends PaperTabsClass {
    * while scrolling and the tab container shrinks we can counteract
    * the jump in tab position so that the scroll still appears smooth.
    */
-  _affectScroll(dx) {
+  public _affectScroll(dx) {
+    if (!this.firstTabWidth || !this.lastTabWidth) {
+      return;
+    }
+
     this.$.tabsContainer.scrollLeft += dx;
 
     const scrollLeft = this.$.tabsContainer.scrollLeft;
