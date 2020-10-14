@@ -67,7 +67,7 @@ export class HaTabs extends PaperTabs {
    * while scrolling and the tab container shrinks we can counteract
    * the jump in tab position so that the scroll still appears smooth.
    */
-  public _affectScroll(dx) {
+  public _affectScroll(dx: number):void {
     if (!this.firstTabWidth || !this.lastTabWidth) {
       return;
     }
