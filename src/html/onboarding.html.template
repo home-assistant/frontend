@@ -52,17 +52,17 @@
     <%= renderTemplate('_js_base') %>
     <%= renderTemplate('_preload_roboto') %>
 
-    <script type="module" crossorigin="use-credentials">
-      import "<%= latestPageJS %>";
+    <script crossorigin="use-credentials">
+      import("<%= latestPageJS %>");
+      window.latestJS = true;
       window.stepsPromise = fetch("/api/onboarding", {
         credentials: "same-origin",
       });
     </script>
 
-    <script nomodule>
+    <script>
       (function() {
-        // Safari 10.1 supports type=module but ignores nomodule, so we add this check.
-        if (!isS101) {
+        if (!window.latestJS) {
           <% if (useRollup) { %>
             _ls("/static/js/s.min.js").onload = function() {
               System.import("<%= es5PageJS %>");
