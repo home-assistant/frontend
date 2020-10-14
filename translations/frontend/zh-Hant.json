@@ -1140,6 +1140,7 @@
                             },
                             "unsupported_condition": "UI 介面不支援觸發判斷：{condition}"
                         },
+                        "copy_to_clipboard": "複製至剪貼簿",
                         "default_name": "建立新的自動化",
                         "description": {
                             "label": "說明",
@@ -1497,6 +1498,7 @@
                     "different_include": "可能透過區域、全局或不同的包含。",
                     "pick_attribute": "選擇欲覆寫屬性",
                     "picker": {
+                        "documentation": "自訂化文件",
                         "entity": "實體",
                         "header": "自訂化",
                         "introduction": "調整每個實體屬性。新增/編輯自訂化將可以立即生效，移除自訂化則必須等到實體更新時、方能生效。"
@@ -1584,6 +1586,8 @@
                         },
                         "filter": {
                             "filter": "過濾器",
+                            "hidden_entities": "{number} 隱藏 {number, plural,\n  one {個實體}\n  other {個實體}\n}",
+                            "show_all": "顯示全部",
                             "show_disabled": "顯示關閉實體",
                             "show_readonly": "顯示唯讀實體",
                             "show_unavailable": "顯示無法使用實體"

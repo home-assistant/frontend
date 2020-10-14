@@ -675,9 +675,23 @@
                     "week": "{count} {count, plural,\none {week}\nother {weken}\n}"
                 },
                 "future": "Over {time}",
+                "future_duration": {
+                    "day": "Binnen {count} {count, plural,\n  one {dag}\n  other {dagen}\n}",
+                    "hour": "Binnen {count} {count, plural,\n  one {uur}\n  other {uren}\n}",
+                    "minute": "Binnen {count} {count, plural,\n  one {minuut}\n  other {minuten}\n}",
+                    "second": "Binnen {count} {count, plural,\n  one {seconde}\n  other {seconden}\n}",
+                    "week": "Binnen {count} {count, plural,\n  one {week}\n  other {weken}\n}"
+                },
                 "just_now": "Zojuist",
                 "never": "Nooit",
-                "past": "{time} geleden"
+                "past": "{time} geleden",
+                "past_duration": {
+                    "day": "{count} {count, plural,\n  one {dag}\n  other {dagen}\n} geleden",
+                    "hour": "{count} {count, plural,\n  one {uur}\n  other {uren}\n} geleden",
+                    "minute": "{count} {count, plural,\n  one {minuut}\n  other {minuten}\n} geleden",
+                    "second": "{count} {count, plural,\n  one {seconde}\n  other {seconden}\n} geleden",
+                    "week": "{count} {count, plural,\n  one {week}\n  other {weken}\n} geleden"
+                }
             },
             "service-picker": {
                 "service": "Service"
@@ -824,6 +838,41 @@
                 "success": {
                     "description": "Instellingen succesvol opgeslagen."
                 }
+            },
+            "quick-bar": {
+                "commands": {
+                    "reload": {
+                        "automation": "Herlaad automatiseringen",
+                        "command_line": "Herlaad commandline entiteiten",
+                        "core": "Herlaad locatie & aanpassingen",
+                        "filesize": "Herlaad bestandsgroote entiteiten",
+                        "filter": "Herlaad filter entiteiten",
+                        "generic": "Herlaad",
+                        "generic_thermostat": "Herlaad",
+                        "homekit": "Herlaad HomeKit",
+                        "input_boolean": "Herlaad input booleans",
+                        "input_datetime": "Herlaad input datatijd",
+                        "input_number": "Herlaad input nummers",
+                        "input_select": "Herlaad input selecties",
+                        "input_text": "Herlaad input teksten",
+                        "min_max": "Laad min/max entiteiten opnieuw",
+                        "mqtt": "Herlaad mqtt entiteiten",
+                        "person": "Herlaad personen",
+                        "reload": "Herlaad {domain}",
+                        "rest": "Herlaad rest entiteiten en notificatieservices",
+                        "rpi_gpio": "Herlaad Raspberry PI GPIO entiteiten",
+                        "scene": "Herlaad scenes",
+                        "script": "Herlaad scripts",
+                        "smtp": "Herlaad smtp notificatie services",
+                        "statistics": "Herlaad statistieken entiteiten",
+                        "telegram": "Herlaad telegram notificatie services",
+                        "template": "Herlaad template entiteiten",
+                        "trend": "Herlaad trend entiteiten",
+                        "universal": "Herlaad universele mediaplayer entiteiten",
+                        "zone": "Herlaad zones"
+                    }
+                },
+                "filter_placeholder": "Entiteitsfilter"
             },
             "voice_command": {
                 "did_not_hear": "Home Assistant heeft niets gehoord",
@@ -1088,6 +1137,7 @@
                             },
                             "unsupported_condition": "Geen UI-ondersteuning voor voorwaarde: {condition}"
                         },
+                        "copy_to_clipboard": "Kopieer naar klembord",
                         "default_name": "Nieuwe automatisering",
                         "description": {
                             "label": "Beschrijving",
@@ -1445,6 +1495,7 @@
                     "different_include": "Mogelijk via een domein, een glob of een andere include.",
                     "pick_attribute": "Kies een attribuut om te overschrijven",
                     "picker": {
+                        "documentation": "Documentatie aanpassen",
                         "entity": "Entiteit",
                         "header": "Aanpassingen",
                         "introduction": "Pas attributen per entiteit aan. Toegevoegde/gewijzigde aanpassingen worden onmiddellijk van kracht. Verwijderde aanpassingen worden van kracht wanneer de entiteit wordt bijgewerkt."
@@ -1532,6 +1583,8 @@
                         },
                         "filter": {
                             "filter": "filter",
+                            "hidden_entities": "{number} verborgen {number, plural,\n  one {entiteit}\n  other {entiteiten}\n}",
+                            "show_all": "Alles weergeven",
                             "show_disabled": "Uitgeschakelde entiteiten weergeven",
                             "show_readonly": "Alleen-lezen entiteiten weergeven",
                             "show_unavailable": "Onbeschikbare entiteiten weergeven"
@@ -1927,8 +1980,11 @@
                         "update": "Bijwerken"
                     },
                     "introduction": "Hier kan je personen toevoegen die gebruik maken van Home Assistant.",
+                    "learn_more": "Meer informatie over personen",
                     "no_persons_created_yet": "Het lijkt erop dat je nog geen personen hebt aangemaakt.",
-                    "note_about_persons_configured_in_yaml": "Opmerking: personen die zijn geconfigureerd via configuration.yaml kunnen niet worden bewerkt via de UI."
+                    "note_about_persons_configured_in_yaml": "Opmerking: personen die zijn geconfigureerd via configuration.yaml kunnen niet worden bewerkt via de UI.",
+                    "person_not_found": "We kunnen de persoon die u probeerde te bewerken niet vinden.",
+                    "person_not_found_title": "Persoon niet gevonden"
                 },
                 "scene": {
                     "activated": "Scène {name} geactiveerd.",
@@ -2086,6 +2142,7 @@
                     "create_automation": "Creëer automatisering met tag",
                     "description": "Beheer tags",
                     "detail": {
+                        "companion_apps": "bijbehorende apps",
                         "create": "Creëer",
                         "create_and_write": "Creëer en schrijf",
                         "delete": "Verwijder",
@@ -2094,7 +2151,8 @@
                         "new_tag": "Nieuwe tag",
                         "tag_id": "Tag-ID",
                         "tag_id_placeholder": "Automatisch gegenereerd wanneer leeg gelaten",
-                        "update": "Werk bij"
+                        "update": "Werk bij",
+                        "usage": "Een tag kan een automatisering activeren wanneer deze wordt gescand, u kunt NFC-tags, QR-codes of een ander soort tag gebruiken. Gebruik onze {companion_link} om deze tag naar een programmeerbare NFC-tag te schrijven of maak hieronder een QR-code."
                     },
                     "edit": "Bewerk",
                     "headers": {
@@ -2560,7 +2618,7 @@
                         },
                         "entities": {
                             "description": "De Entities-kaart is het meest voorkomende type kaart. Het groepeert items samen in lijsten.",
-                            "edit_special_row": "Bewerk rij met behulp van de code-editor",
+                            "edit_special_row": "Bekijk de details van deze rij door op de knop Bewerken te klikken",
                             "entity_row_editor": "Entiteitsrij editor",
                             "entity_row": {
                                 "attribute": "Attribuut",

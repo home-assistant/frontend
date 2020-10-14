@@ -1140,6 +1140,7 @@
                             },
                             "unsupported_condition": "图形界面暂不支持环境条件：{condition}"
                         },
+                        "copy_to_clipboard": "复制到剪贴板",
                         "default_name": "新建自动化",
                         "description": {
                             "label": "描述",
@@ -1497,6 +1498,7 @@
                     "different_include": "可能是通过域、全局或其他引用。",
                     "pick_attribute": "选择要覆盖的属性",
                     "picker": {
+                        "documentation": "自定义文档",
                         "entity": "实体",
                         "header": "自定义",
                         "introduction": "调整每个实体的属性。添加/编辑的自定义设置将立即生效，删除的自定义设置将在实体更新时生效。"
@@ -1584,6 +1586,8 @@
                         },
                         "filter": {
                             "filter": "筛选",
+                            "hidden_entities": "{number} 个隐藏{number, plural,\n  one {实体}\n  other {实体}\n}",
+                            "show_all": "显示全部",
                             "show_disabled": "显示已禁用的实体",
                             "show_readonly": "显示只读实体",
                             "show_unavailable": "显示不可用的实体"
