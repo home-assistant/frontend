@@ -34,9 +34,10 @@ class HaTabs extends PaperTabsClass {
     return subTemplate;
   }
 
-  // Get first and last tab's width for _affectScroll
   _tabChanged(tab, old) {
     super._tabChanged(tab, old);
+    
+    // Get first and last tab's width for _affectScroll
     this.firstTabWidth = this.firstElementChild.clientWidth;
     this.lastTabWidth = this.lastElementChild.clientWidth;
 
