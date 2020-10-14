@@ -51,7 +51,7 @@ export class HaTabs extends PaperTabs {
     super._tabChanged(tab, old);
     const tabs = this.querySelectorAll("paper-tab:not(.hide-tab)");
     if (tabs.length) {
-      this.firstTabWidth = tabs[1].clientWidth;
+      this.firstTabWidth = tabs[0].clientWidth;
       this.lastTabWidth = tabs[tabs.length - 1].clientWidth;
     }
 
