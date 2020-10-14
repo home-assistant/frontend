@@ -1,3 +1,4 @@
+import "../../components/ha-circular-progress";
 import "../../components/ha-header-bar";
 import "@polymer/paper-input/paper-input";
 import "@material/mwc-list/mwc-list-item";
@@ -9,6 +10,7 @@ import {
   internalProperty,
   LitElement,
   property,
+  query,
 } from "lit-element";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-dialog";
@@ -23,7 +25,6 @@ import { domainToName } from "../../data/integration";
 import { QuickBarParams } from "./show-dialog-quick-bar";
 import { HassEntity } from "home-assistant-js-websocket";
 import { compare } from "../../common/string/compare";
-import memoizeOne from "memoize-one";
 import { SingleSelectedEvent } from "@material/mwc-list/mwc-list-foundation";
 
 interface CommandItem extends ServiceCallRequest {
@@ -44,6 +45,14 @@ export class QuickBar extends LitElement {
 
   @internalProperty() private _commandMode = false;
 
+  @internalProperty() private _commandTriggered = -1;
+
+  @internalProperty() private _activatedIndex = 0;
+
+  @query("paper-input", false) private _filterInputField?: HTMLElement;
+
+  @query("mwc-list-item", false) private _firstListItem?: HTMLElement;
+
   public async showDialog(params: QuickBarParams) {
     this._commandMode = params.commandMode || false;
     this._opened = true;
@@ -56,6 +65,8 @@ export class QuickBar extends LitElement {
   public closeDialog() {
     this._opened = false;
     this._itemFilter = "";
+    this._commandTriggered = -1;
+    this._resetActivatedIndex();
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -77,46 +88,68 @@ export class QuickBar extends LitElement {
           )}
           type="search"
           value=${this._commandMode ? `>${this._itemFilter}` : this._itemFilter}
+          @keydown=${this._handleInputKeyDown}
+          @focus=${this._resetActivatedIndex}
         ></paper-input>
         ${this._commandMode
-          ? this.renderCommandsList(this._itemFilter)
-          : this.renderEntityList(this._itemFilter)}
+          ? this.renderCommandsList()
+          : this.renderEntityList()}
       </ha-dialog>
     `;
   }
 
-  protected renderCommandsList = memoizeOne((filter) => {
-    const items = this._filterCommandItems(this._commandItems, filter);
+  protected renderCommandsList() {
+    const items = this._filterCommandItems(
+      this._commandItems,
+      this._itemFilter
+    );
 
     return html`
-      <mwc-list @selected=${this._processItemAndCloseDialog}>
+      <mwc-list activatable @selected=${this._processCommand}>
         ${items.map(
-          (item) => html`
-            <mwc-list-item .item=${item} graphic="icon">
+          (item, index) => html`
+            <mwc-list-item
+              .activated=${index === this._activatedIndex}
+              .item=${item}
+              .index=${index}
+              @keydown=${this._handleListItemKeyDown}
+              hasMeta
+              graphic="icon"
+            >
               <ha-icon
                 .icon=${domainIcon(item.domain)}
                 slot="graphic"
               ></ha-icon>
               ${item.text}
+              ${this._commandTriggered === index
+                ? html`<ha-circular-progress
+                    size="small"
+                    active
+                    slot="meta"
+                  ></ha-circular-progress>`
+                : null}
             </mwc-list-item>
           `
         )}
       </mwc-list>
     `;
-  });
+  }
 
-  protected renderEntityList = memoizeOne((filter) => {
-    const entities = this._filterEntityItems(filter);
+  protected renderEntityList() {
+    const entities = this._filterEntityItems(this._itemFilter);
 
     return html`
       <mwc-list activatable @selected=${this._entityMoreInfo}>
-        ${entities.map((entity) => {
+        ${entities.map((entity, index) => {
           const domain = computeDomain(entity.entity_id);
           return html`
             <mwc-list-item
               twoline
               .entityId=${entity.entity_id}
               graphic="avatar"
+              .activated=${index === this._activatedIndex}
+              .index=${index}
+              @keydown=${this._handleListItemKeyDown}
             >
               <ha-icon .icon=${domainIcon(domain)} slot="graphic"></ha-icon>
               ${entity.attributes?.friendly_name
@@ -136,7 +169,39 @@ export class QuickBar extends LitElement {
         })}
       </mwc-list>
     `;
-  });
+  }
+
+  private _resetActivatedIndex() {
+    this._activatedIndex = 0;
+  }
+
+  private _handleInputKeyDown(ev: KeyboardEvent) {
+    if (ev.code === "Enter") {
+      this._firstListItem?.click();
+    } else if (ev.code === "ArrowDown") {
+      ev.preventDefault();
+      this._firstListItem?.focus();
+    }
+  }
+
+  private _handleListItemKeyDown(ev: KeyboardEvent) {
+    const isSingleCharacter = ev.key.length === 1;
+    const isFirstListItem = (ev.target as any).index === 0;
+    if (ev.key === "ArrowUp") {
+      if (isFirstListItem) {
+        this._filterInputField?.focus();
+      } else {
+        this._activatedIndex--;
+      }
+    } else if (ev.key === "ArrowDown") {
+      this._activatedIndex++;
+    }
+
+    if (ev.key === "Backspace" || isSingleCharacter) {
+      this._filterInputField?.focus();
+      this._resetActivatedIndex();
+    }
+  }
 
   private _entityFilterChanged(ev: PolymerChangedEvent<string>) {
     const newFilter = ev.detail.value;
@@ -180,32 +245,49 @@ export class QuickBar extends LitElement {
   private _filterEntityItems(filter: string): HassEntity[] {
     return this._entities
       .filter(({ entity_id, attributes: { friendly_name } }) => {
-      	const values = [entity_id];
+        const values = [entity_id];
         if (friendly_name) {
-        	values.push(friendly_name);
+          values.push(friendly_name);
         }
-        return fuzzySequentialMatch(filter.toLowerCase(), values);}
-      )
+        return fuzzySequentialMatch(filter.toLowerCase(), values);
+      })
       .sort((entityA, entityB) =>
         compare(entityA.entity_id, entityB.entity_id)
       );
   }
 
-  private async _processItemAndCloseDialog(ev: SingleSelectedEvent) {
-    const _index = ev.detail.index;
-    const item = (ev.target as any).items[_index].item;
+  private async _processCommand(ev: SingleSelectedEvent) {
+    const index = ev.detail.index;
+    const item = (ev.target as any).items[index].item;
 
-    await this.hass.callService(item.domain, item.service, item.serviceData);
+    this._commandTriggered = index;
 
-    this.closeDialog();
+    this._runCommandAndCloseDialog({
+      domain: item.domain,
+      service: item.service,
+      serviceData: item.serviceData,
+    });
+  }
+
+  private async _runCommandAndCloseDialog(request?: ServiceCallRequest) {
+    if (!request) {
+      return;
+    }
+
+    this.hass
+      .callService(request.domain, request.service, request.serviceData)
+      .then(() => this.closeDialog());
   }
 
   private _entityMoreInfo(ev: SingleSelectedEvent) {
-    const _index = ev.detail.index;
-    const entityId = (ev.target as any).items[_index].entityId;
+    const index = ev.detail.index;
+    const entityId = (ev.target as any).items[index].entityId;
 
+    this._launchMoreInfoDialog(entityId);
+  }
+
+  private _launchMoreInfoDialog(entityId) {
     fireEvent(this, "hass-more-info", { entityId });
-
     this.closeDialog();
   }
 
