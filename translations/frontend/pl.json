@@ -579,8 +579,8 @@
                     "changed_to_state": "zmienił(-a) się na {state}",
                     "cleared_device_class": "brak (nie {device_class} ruchu)",
                     "detected_device_class": "wykryto {device_class}",
-                    "rose": "podniosło się",
-                    "set": "ustaw",
+                    "rose": "wzeszło",
+                    "set": "zaszło",
                     "turned_off": "wyłączony(-a)",
                     "turned_on": "włączony(-a)",
                     "was_at_home": "był w domu",
@@ -1140,6 +1140,7 @@
                             },
                             "unsupported_condition": "Nieobsługiwany warunek: {condition}"
                         },
+                        "copy_to_clipboard": "Skopiuj do schowka",
                         "default_name": "Nowa automatyzacja",
                         "description": {
                             "label": "Opis",
@@ -1497,6 +1498,7 @@
                     "different_include": "Możliwe poprzez domenę, globalnie lub inny plik.",
                     "pick_attribute": "Wybierz atrybut do nadpisania",
                     "picker": {
+                        "documentation": "Dokumentacja dostosowywania",
                         "entity": "Encja",
                         "header": "Dostosowywanie",
                         "introduction": "Dostosuj atrybuty encji. Dodawane/edytowane dostosowywania zostaną wprowadzone natychmiast. Usunięte dostosowania zostaną uwzględnione, gdy encja zostanie zaktualizowana."
@@ -1584,6 +1586,8 @@
                         },
                         "filter": {
                             "filter": "Filtr",
+                            "hidden_entities": "Ukryte: {number} {number, plural,\n  one {encja}\n  few {encje}\n  many {encji}\n  other {encji}\n}",
+                            "show_all": "Pokaż wszystkie",
                             "show_disabled": "Wyświetlaj wyłączone encje",
                             "show_readonly": "Wyświetlaj encje tylko do odczytu",
                             "show_unavailable": "Wyświetlaj niedostępne encje"
@@ -2916,7 +2920,7 @@
                     "title": "Nieużywane encje"
                 },
                 "views": {
-                    "confirm_delete": "Na pewno chcesz usunąć ten widok?",
+                    "confirm_delete": "Usunąć widok?",
                     "confirm_delete_existing_cards": "Usunięcie tego widoku spowoduje również usunięcie kart",
                     "confirm_delete_existing_cards_text": "Czy na pewno chcesz usunąć widok ''{name}''? Widok zawiera {number} kart(ę/y), które zostaną usunięte. Tej akcji nie można cofnąć.",
                     "confirm_delete_text": "Czy na pewno chcesz usunąć widok ''{name}''?"

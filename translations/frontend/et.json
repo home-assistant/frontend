@@ -1140,6 +1140,7 @@
                             },
                             "unsupported_condition": "Kasutajaliides ei toeta tingimust: {condition}"
                         },
+                        "copy_to_clipboard": "Kopeeri lõikelauale",
                         "default_name": "Uus automatiseering",
                         "description": {
                             "label": "Kirjeldus",
@@ -1497,6 +1498,7 @@
                     "different_include": "Võimalik domeeni, globaalse või mõne muu lisamise kaudu.",
                     "pick_attribute": "Vali muudetav atribuut",
                     "picker": {
+                        "documentation": "Kohandamiste dokumentatsioon",
                         "entity": "Olem",
                         "header": "Kohandamine",
                         "introduction": "Kohanda olemi atribuute. Lisatud või muudetud kohandused rakenduvad kohe. Eemaldatud kohandused rakenduvad olemi värskendamisel."
@@ -1584,6 +1586,8 @@
                         },
                         "filter": {
                             "filter": "Filter",
+                            "hidden_entities": "{number} hidden {number, plural,\n  one {olem}\n  other {olemit}\n}",
+                            "show_all": "Kuva kõik",
                             "show_disabled": "Kuva keelatud olemid",
                             "show_readonly": "Näita kirjutuskaitstud olemeid",
                             "show_unavailable": "Kuva kättesaamatud olemid"

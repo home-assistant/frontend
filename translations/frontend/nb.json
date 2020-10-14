@@ -623,7 +623,7 @@
                     "season": "Sesong",
                     "track": "Spor",
                     "tv_show": "TV Serie",
-                    "url": "Url",
+                    "url": "URL",
                     "video": "Video"
                 },
                 "content-type": {
@@ -1020,7 +1020,7 @@
                                     "label": "Enhet"
                                 },
                                 "event": {
-                                    "event": "Hendelse",
+                                    "event": "Hendelse:",
                                     "label": "Utfør hendelse",
                                     "service_data": "Tjenestedata"
                                 },
@@ -1052,7 +1052,7 @@
                                 "wait_for_trigger": {
                                     "continue_timeout": "Fortsett ved tidsavbrudd",
                                     "label": "Vent på utløser",
-                                    "timeout": "Tidsavbrudd"
+                                    "timeout": "Tidsavbrudd (valgfritt)"
                                 },
                                 "wait_template": {
                                     "continue_timeout": "Fortsett ved tidsavbrudd",
@@ -1140,6 +1140,7 @@
                             },
                             "unsupported_condition": "Ingen brukergrensesnitt for bruk: {condition}"
                         },
+                        "copy_to_clipboard": "Kopiere til utklippstavle",
                         "default_name": "Ny automasjon",
                         "description": {
                             "label": "Beskrivelse",
@@ -1497,6 +1498,7 @@
                     "different_include": "Muligens via et domene, en glob eller noe annent som er inkluderet",
                     "pick_attribute": "Velg et attributt som skal overstyres",
                     "picker": {
+                        "documentation": "Dokumentasjon for tilpassing",
                         "entity": "Entitet",
                         "header": "Tilpasninger",
                         "introduction": "Justér attributter per entitet. Lagt til eller redigerte tilpasninger trer i kraft umiddelbart. Fjernede tilpasninger trer i kraft når entiteten blir oppdatert."
@@ -1584,6 +1586,8 @@
                         },
                         "filter": {
                             "filter": "",
+                            "hidden_entities": "{number} skjult {number, plural,\n  one {entitet}\n  other {entiteter}\n}",
+                            "show_all": "Vis alle",
                             "show_disabled": "Vis deaktiverte entiteter",
                             "show_readonly": "Vis skrivebeskyttede entiteter",
                             "show_unavailable": "Vis utilgjengelige entiteter"
@@ -1660,7 +1664,7 @@
                     "integrations": "Integrasjoner",
                     "issues": "Problemer",
                     "license": "Publisert under Apache 2.0-lisensen",
-                    "path_configuration": "Sti til configuration.yaml: {path}",
+                    "path_configuration": "Bane til configuration.yaml: {path}",
                     "server": "core",
                     "source": "Kilder:",
                     "system_health_error": "System tilstand komponenten er ikke lastet inn. Legg til 'system_health:' i configuration.yaml",
@@ -1789,7 +1793,7 @@
                             "title": "Tittel",
                             "title_required": "Tittel er påkrevd.",
                             "update": "Oppdater",
-                            "url": "",
+                            "url": "URL",
                             "url_error_msg": "URLen skal inneholde en - og kan ikke inneholde mellomrom eller spesialtegn, bortsett fra _ og -"
                         },
                         "picker": {
@@ -1817,8 +1821,8 @@
                             "new_resource": "Legg til ny ressurs",
                             "type": "Ressurstype",
                             "update": "Oppdater",
-                            "url": "",
-                            "url_error_msg": "URL-adresse er et obligatorisk felt",
+                            "url": "URL",
+                            "url_error_msg": "URL er et obligatorisk felt",
                             "warning_header": "Vær forsiktig!",
                             "warning_text": "Det kan være farlig å legge til ressurser, sørg for at du kjenner kilden til ressursen og stoler på dem. Dårlige ressurser kan skade systemet ditt alvorlig."
                         },
@@ -1826,7 +1830,7 @@
                             "add_resource": "Legg til ressurs",
                             "headers": {
                                 "type": "",
-                                "url": ""
+                                "url": "URL"
                             },
                             "no_resources": "Ingen ressurser"
                         },
@@ -2344,7 +2348,7 @@
                     "common": {
                         "index": "Indeks",
                         "instance": "Forekomst",
-                        "unknown": "ukjent",
+                        "unknown": "Ukjent",
                         "value": "Verdi",
                         "wakeup_interval": "Våkningsintervall"
                     },
@@ -2435,22 +2439,22 @@
             "developer-tools": {
                 "tabs": {
                     "events": {
-                        "alert_event_type": "Hendelsestype er et obligatorisk felt",
+                        "alert_event_type": "Hendelsetype er et obligatorisk felt",
                         "available_events": "Tilgjengelige hendelser",
                         "count_listeners": " ({count} lyttere)",
-                        "data": "Hendelsesdata (YAML, valgfritt)",
+                        "data": "Hendelsedata (YAML, valgfritt)",
                         "description": "Send ut en hendelse på hendelsesbussen",
-                        "documentation": "Hendelsesdokumentasjon.",
+                        "documentation": "Hendelsedokumentasjon.",
                         "event_fired": "Hendelse {name} utført",
                         "fire_event": "Utfør hendelse",
                         "listen_to_events": "Lytt til hendelser",
                         "listening_to": "Lytte til",
-                        "notification_event_fired": "Hendelsen {type} vellykket utløst!",
+                        "notification_event_fired": "Hendelse {type} vellykket utløst!",
                         "start_listening": "Begynn å lytte",
                         "stop_listening": "Stopp lytting",
                         "subscribe_to": "Hendelse for å abonnere på",
                         "title": "Hendelser",
-                        "type": "Type hendelse"
+                        "type": "Hendelse type"
                     },
                     "services": {
                         "alert_parsing_yaml": "Feil ved parsing av YAML: {data}",
@@ -2572,11 +2576,11 @@
                             "navigate": "Navigere",
                             "none": "Ingen handling",
                             "toggle": "Veksle",
-                            "url": "Url"
+                            "url": "URL"
                         },
                         "editor_service_data": "Tjenestedata kan bare legges inn i kodeditoren",
                         "navigation_path": "Navigasjonsbane",
-                        "url_path": "Url-bane"
+                        "url_path": "URL bane"
                     },
                     "card": {
                         "alarm-panel": {
@@ -2693,7 +2697,7 @@
                             "theme": "Tema",
                             "title": "Tittel",
                             "unit": "Betegnelse",
-                            "url": ""
+                            "url": "URL"
                         },
                         "glance": {
                             "columns": "Kolonner",

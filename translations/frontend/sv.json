@@ -670,10 +670,24 @@
                     "second": "{count} {count, plural,\n  one {sekund}\n  other {sekunder}\n}",
                     "week": "{count} {count, plural,\none {vecka}\nother {veckor}\n}"
                 },
-                "future": "{time} sedan",
+                "future": "Om {time}",
+                "future_duration": {
+                    "day": "Om {count} {count, plural,\n  one {dag}\n  other {dagar}\n}",
+                    "hour": "Om {count} {count, plural,\n  one {timme}\n  other {timmar}\n}",
+                    "minute": "Om {count} {count, plural,\n  one {minut}\n  other {minuter}\n}",
+                    "second": "Om {count} {count, plural,\n  one {sekund}\n  other {sekunder}\n}",
+                    "week": "Om {count} {count, plural,\n  one {vecka}\n  other {veckor}\n}"
+                },
                 "just_now": "Nyss",
                 "never": "Aldrig",
-                "past": "{time} sedan"
+                "past": "{time} sedan",
+                "past_duration": {
+                    "day": "{count} {count, plural,\n  one {dag}\n  other {dagar}\n} sedan",
+                    "hour": "{count} {count, plural,\n  one {timme}\n  other {timmar}\n} sedan",
+                    "minute": "{count} {count, plural,\n  one {minut}\n  other {minuter}\n} sedan",
+                    "second": "{count} {count, plural,\n  one {sekund}\n  other {sekunder}\n} sedan",
+                    "week": "{count} {count, plural,\n  one {vecka}\n  other {veckor}\n} sedan"
+                }
             },
             "service-picker": {
                 "service": "Tjänst"
@@ -826,10 +840,12 @@
                     "reload": {
                         "automation": "Ladda om automationer",
                         "homekit": "Ladda om HomeKit",
+                        "input_datetime": "Ladda om inmatningsdatum/tid",
                         "min_max": "Ladda om min/max entiteter",
                         "mqtt": "Ladda om mqtt entiteter",
                         "person": "Ladda om personer",
                         "reload": "Ladda om {domain}",
+                        "rpi_gpio": "Ladda om Raspberry Pi GPIO entiteter",
                         "scene": "Ladda om scener",
                         "script": "Ladda om skripts",
                         "smtp": "Ladda om smtp notifieringstjänster",
@@ -1102,6 +1118,7 @@
                             },
                             "unsupported_condition": "Inget gränssnittsstöd för villkor: {condition}"
                         },
+                        "copy_to_clipboard": "Kopiera till Urklipp",
                         "default_name": "Ny automation",
                         "description": {
                             "label": "Beskrivning",
@@ -1546,6 +1563,7 @@
                         },
                         "filter": {
                             "filter": "Filter",
+                            "show_all": "Visa alla",
                             "show_disabled": "Visa inaktiverade entiteter",
                             "show_readonly": "Visa skrivskyddade entiteter",
                             "show_unavailable": "Visa otillgängliga entiteter"

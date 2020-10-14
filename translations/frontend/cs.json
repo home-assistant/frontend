@@ -1139,6 +1139,7 @@
                             },
                             "unsupported_condition": "Podmínka {condition} není podporována v uživatelském rozhraní"
                         },
+                        "copy_to_clipboard": "Zkopírovat do schránky",
                         "default_name": "Nová automatizace",
                         "description": {
                             "label": "Popis",
@@ -1496,6 +1497,7 @@
                     "different_include": "Možné přidat přes doménu",
                     "pick_attribute": "Vyberte vlastnost, kterou chcete přepsat",
                     "picker": {
+                        "documentation": "Dokumentace přizpůsobení",
                         "entity": "Entita",
                         "header": "Přizpůsobení",
                         "introduction": "Upravit atributy entity. Přídání/úprava bude mít okamžitý efekt. Odebraní se projeví až po aktualizaci entity."
@@ -1583,6 +1585,8 @@
                         },
                         "filter": {
                             "filter": "Filtr",
+                            "hidden_entities": "{number} {number, plural,\n  one {skrytá entita}\n  few {skryté entity}\n  other {skrytých entit}\n}",
+                            "show_all": "Zobrazit vše",
                             "show_disabled": "Zobrazit zakázané entity",
                             "show_readonly": "Zobrazit entity jen pro čtení",
                             "show_unavailable": "Zobrazit nedostupné entity"

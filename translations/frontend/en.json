@@ -2796,6 +2796,9 @@
                         "entity": "Entity",
                         "no_description": "No description available."
                     },
+                    "edit_badges": {
+                        "panel_mode": "These badges will not be displayed because this view is in \"Panel Mode\"."
+                    },
                     "edit_card": {
                         "add": "Add Card",
                         "confirm_cancel": "Are you sure you want to cancel?",
@@ -2889,7 +2892,7 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "This renders the first card at full width; other cards in this view will not be rendered.",
+                            "description": "This renders the first card at full width. Other cards in this view as well as badges will not be rendered.",
                             "title": "Panel Mode?",
                             "warning_multiple_cards": "This view contains more than one card, but a panel view can only show 1 card."
                         }
