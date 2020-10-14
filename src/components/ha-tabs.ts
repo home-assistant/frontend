@@ -11,11 +11,11 @@ let subTemplate;
 
 @customElement("ha-tabs")
 export class HaTabs extends PaperTabs {
-  @property({ type: Number }) public firstTabWidth = 0;
+  private _firstTabWidth = 0;
 
-  @property({ type: Number }) public lastTabWidth = 0;
+  private _lastTabWidth = 0;
 
-  @property({ type: Boolean }) public _lastLeftHiddenState = false;
+  private _lastLeftHiddenState = false;
 
   static get template() {
     if (!subTemplate) {
