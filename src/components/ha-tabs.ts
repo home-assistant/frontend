@@ -1,5 +1,5 @@
 import "@polymer/paper-tabs";
-import { customElement, property } from "lit-element";
+import { customElement } from "lit-element";
 import { PaperTabsElement } from "@polymer/paper-tabs/paper-tabs";
 import { Constructor } from "../types";
 
@@ -19,11 +19,11 @@ export class HaTabs extends PaperTabs {
 
   static get template() {
     if (!subTemplate) {
-      subTemplate = PaperTabs.template.cloneNode(true);
+      subTemplate = ((PaperTabs as any).template as HTMLTemplateElement).cloneNode(true);
 
       const superStyle = subTemplate.content.querySelector("style");
 
-      [...subTemplate.content.querySelectorAll("paper-icon-button")].forEach(
+      subTemplate.content.querySelectorAll("paper-icon-button").forEach(
         (arrow) => {
           arrow.setAttribute("noink", "");
         }
@@ -50,9 +50,9 @@ export class HaTabs extends PaperTabs {
   public _tabChanged(tab, old) {
     super._tabChanged(tab, old);
     const tabs = this.querySelectorAll("paper-tab:not(.hide-tab)");
-    if (tabs.length) {
-      this.firstTabWidth = tabs[0].clientWidth;
-      this.lastTabWidth = tabs[tabs.length - 1].clientWidth;
+    if (tabs.length > 0) {
+      this._firstTabWidth = tabs[0].clientWidth;
+      this._lastTabWidth = tabs[tabs.length - 1].clientWidth;
     }
 
     // Scroll active tab into view if needed.
@@ -68,7 +68,7 @@ export class HaTabs extends PaperTabs {
    * the jump in tab position so that the scroll still appears smooth.
    */
   public _affectScroll(dx: number):void {
-    if (!this.firstTabWidth || !this.lastTabWidth) {
+    if (!this._firstTabWidth || !this._lastTabWidth) {
       return;
     }
 
@@ -76,9 +76,9 @@ export class HaTabs extends PaperTabs {
 
     const scrollLeft = this.$.tabsContainer.scrollLeft;
 
-    this._leftHidden = scrollLeft - this.firstTabWidth < 0;
+    this._leftHidden = scrollLeft - this._firstTabWidth < 0;
     this._rightHidden =
-      scrollLeft + this.lastTabWidth > this._tabContainerScrollSize;
+      scrollLeft + this._lastTabWidth > this._tabContainerScrollSize;
 
     if (this._lastLeftHiddenState !== this._leftHidden) {
       this._lastLeftHiddenState = this._leftHidden;
