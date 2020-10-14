@@ -1,5 +1,6 @@
 import { customElement } from "lit-element";
-import { PaperTabsElement } from "@polymer/paper-tabs/paper-tabs";
+import "@polymer/paper-tabs/paper-tabs";
+import type { PaperTabsElement } from "@polymer/paper-tabs/paper-tabs";
 import { Constructor } from "../types";
 
 const PaperTabs = customElements.get("paper-tabs") as Constructor<
