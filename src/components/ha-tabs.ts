@@ -1,4 +1,3 @@
-import "@polymer/paper-tabs";
 import { customElement } from "lit-element";
 import { PaperTabsElement } from "@polymer/paper-tabs/paper-tabs";
 import { Constructor } from "../types";
