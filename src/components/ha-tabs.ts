@@ -36,10 +36,11 @@ class HaTabs extends PaperTabsClass {
 
   _tabChanged(tab, old) {
     super._tabChanged(tab, old);
-    
+
     // Get first and last tab's width for _affectScroll
-    this.firstTabWidth = this.firstElementChild.clientWidth;
-    this.lastTabWidth = this.lastElementChild.clientWidth;
+    const tabs = this.querySelectorAll("paper-tab:not(.hide-tab)");
+    this.firstTabWidth = tabs[1].clientWidth;
+    this.lastTabWidth = tabs[tabs.length - 1].clientWidth;
 
     // Scroll active tab into view if needed.
     const selected = this.querySelector(".iron-selected");
