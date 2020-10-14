@@ -69,4 +69,9 @@ class HaTabs extends PaperTabsClass {
     }
   }
 }
-customElements.define("ha-tabs", HaTabs);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-tabs": HaTabs;
+  }
+}
