@@ -1,3 +1,4 @@
+import "../../components/ha-circular-progress";
 import "../../components/ha-header-bar";
 import "@polymer/paper-input/paper-input";
 import "@material/mwc-list/mwc-list-item";
@@ -24,7 +25,6 @@ import { domainToName } from "../../data/integration";
 import { QuickBarParams } from "./show-dialog-quick-bar";
 import { HassEntity } from "home-assistant-js-websocket";
 import { compare } from "../../common/string/compare";
-import memoizeOne from "memoize-one";
 import { SingleSelectedEvent } from "@material/mwc-list/mwc-list-foundation";
 
 interface CommandItem extends ServiceCallRequest {
@@ -45,6 +45,8 @@ export class QuickBar extends LitElement {
 
   @internalProperty() private _commandMode = false;
 
+  @internalProperty() private _commandTriggered = -1;
+
   @internalProperty() private _activatedIndex = 0;
 
   @query("paper-input", false) private _filterInputField?: HTMLElement;
@@ -63,6 +65,7 @@ export class QuickBar extends LitElement {
   public closeDialog() {
     this._opened = false;
     this._itemFilter = "";
+    this._commandTriggered = -1;
     this._resetActivatedIndex();
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -89,24 +92,28 @@ export class QuickBar extends LitElement {
           @focus=${this._resetActivatedIndex}
         ></paper-input>
         ${this._commandMode
-          ? this.renderCommandsList(this._itemFilter, this._activatedIndex)
-          : this.renderEntityList(this._itemFilter, this._activatedIndex)}
+          ? this.renderCommandsList()
+          : this.renderEntityList()}
       </ha-dialog>
     `;
   }
 
-  protected renderCommandsList = memoizeOne((filter, activatedIndex) => {
-    const items = this._filterCommandItems(this._commandItems, filter);
+  protected renderCommandsList() {
+    const items = this._filterCommandItems(
+      this._commandItems,
+      this._itemFilter
+    );
 
     return html`
       <mwc-list activatable @selected=${this._processCommand}>
         ${items.map(
           (item, index) => html`
             <mwc-list-item
-              .activated=${index === activatedIndex}
+              .activated=${index === this._activatedIndex}
               .item=${item}
               .index=${index}
               @keydown=${this._handleListItemKeyDown}
+              hasMeta
               graphic="icon"
             >
               <ha-icon
@@ -114,15 +121,22 @@ export class QuickBar extends LitElement {
                 slot="graphic"
               ></ha-icon>
               ${item.text}
+              ${this._commandTriggered === index
+                ? html`<ha-circular-progress
+                    size="small"
+                    active
+                    slot="meta"
+                  ></ha-circular-progress>`
+                : null}
             </mwc-list-item>
           `
         )}
       </mwc-list>
     `;
-  });
+  }
 
-  protected renderEntityList = memoizeOne((filter, activatedIndex) => {
-    const entities = this._filterEntityItems(filter);
+  protected renderEntityList() {
+    const entities = this._filterEntityItems(this._itemFilter);
 
     return html`
       <mwc-list activatable @selected=${this._entityMoreInfo}>
@@ -133,7 +147,7 @@ export class QuickBar extends LitElement {
               twoline
               .entityId=${entity.entity_id}
               graphic="avatar"
-              .activated=${index === activatedIndex}
+              .activated=${index === this._activatedIndex}
               .index=${index}
               @keydown=${this._handleListItemKeyDown}
             >
@@ -155,7 +169,7 @@ export class QuickBar extends LitElement {
         })}
       </mwc-list>
     `;
-  });
+  }
 
   private _resetActivatedIndex() {
     this._activatedIndex = 0;
@@ -246,6 +260,8 @@ export class QuickBar extends LitElement {
     const index = ev.detail.index;
     const item = (ev.target as any).items[index].item;
 
+    this._commandTriggered = index;
+
     this._runCommandAndCloseDialog({
       domain: item.domain,
       service: item.service,
@@ -258,13 +274,9 @@ export class QuickBar extends LitElement {
       return;
     }
 
-    await this.hass.callService(
-      request.domain,
-      request.service,
-      request.serviceData
-    );
-
-    this.closeDialog();
+    this.hass
+      .callService(request.domain, request.service, request.serviceData)
+      .then(() => this.closeDialog());
   }
 
   private _entityMoreInfo(ev: SingleSelectedEvent) {
