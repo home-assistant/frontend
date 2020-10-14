@@ -106,6 +106,7 @@ class OZWNodeDashboard extends LitElement {
                     </div>
                     ${this._metadata?.metadata.ProductPicBase64
                       ? html`<img
+                          class="product-image"
                           src="data:image/png;base64,${this._metadata?.metadata
                             .ProductPicBase64}"
                         />`
