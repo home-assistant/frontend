@@ -19,7 +19,7 @@ export class HaTabs extends PaperTabs {
 
   private _lastLeftHiddenState = false;
 
-  static get template(): object {
+  static get template() {
     if (!subTemplate) {
       subTemplate = ((PaperTabs as any)
         .template as HTMLTemplateElement).cloneNode(true);
