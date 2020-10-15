@@ -329,7 +329,7 @@ export class HaDataTable extends LitElement {
                         <div
                           aria-rowindex=${index}
                           role="row"
-                          .rowId="${row[this.id]}"
+                          .rowId=${row[this.id]}
                           @click=${this._handleRowClick}
                           class="mdc-data-table__row ${classMap({
                             "mdc-data-table__row--selected": this._checkedRows.includes(
@@ -353,6 +353,7 @@ export class HaDataTable extends LitElement {
                                   <ha-checkbox
                                     class="mdc-data-table__row-checkbox"
                                     @change=${this._handleRowCheckboxClick}
+                                    .rowId=${row[this.id]}
                                     .disabled=${row.selectable === false}
                                     .checked=${this._checkedRows.includes(
                                       String(row[this.id])
@@ -460,9 +461,7 @@ export class HaDataTable extends LitElement {
   );
 
   private _handleHeaderClick(ev: Event) {
-    const columnId = ((ev.target as HTMLElement).closest(
-      ".mdc-data-table__header-cell"
-    ) as any).columnId;
+    const columnId = (ev.currentTarget as any).columnId;
     if (!this.columns[columnId].sortable) {
       return;
     }
@@ -496,8 +495,8 @@ export class HaDataTable extends LitElement {
   }
 
   private _handleRowCheckboxClick(ev: Event) {
-    const checkbox = ev.target as HaCheckbox;
-    const rowId = (checkbox.closest(".mdc-data-table__row") as any).rowId;
+    const checkbox = ev.currentTarget as HaCheckbox;
+    const rowId = (checkbox as any).rowId;
 
     if (checkbox.checked) {
       if (this._checkedRows.includes(rowId)) {
@@ -515,7 +514,7 @@ export class HaDataTable extends LitElement {
     if (target.tagName === "HA-CHECKBOX") {
       return;
     }
-    const rowId = (target.closest(".mdc-data-table__row") as any).rowId;
+    const rowId = (ev.currentTarget as any).rowId;
     fireEvent(this, "row-click", { id: rowId }, { bubbles: false });
   }
 
