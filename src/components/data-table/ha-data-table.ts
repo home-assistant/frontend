@@ -94,6 +94,8 @@ export class HaDataTable extends LitElement {
 
   @property({ type: Boolean }) public selectable = false;
 
+  @property({ type: Boolean }) public clickable = false;
+
   @property({ type: Boolean }) public hasFab = false;
 
   @property({ type: Boolean, attribute: "auto-height" })
@@ -333,6 +335,7 @@ export class HaDataTable extends LitElement {
                             "mdc-data-table__row--selected": this._checkedRows.includes(
                               String(row[this.id])
                             ),
+                            clickable: this.clickable,
                           })}"
                           aria-selected=${ifDefined(
                             this._checkedRows.includes(String(row[this.id]))
@@ -885,6 +888,9 @@ export class HaDataTable extends LitElement {
       }
       .forceLTR {
         direction: ltr;
+      }
+      .clickable {
+        cursor: pointer;
       }
     `;
   }
