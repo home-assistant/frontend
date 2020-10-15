@@ -72,7 +72,7 @@ class MoreInfoGroup extends LitElement {
     if (!this.hass || !this.stateObj) {
       return html``;
     }
-    return html` ${this._moreInfoType
+    return html`${this._moreInfoType
       ? dynamicElement(this._moreInfoType, {
           hass: this.hass,
           stateObj: this._groupDomainStateObj,
