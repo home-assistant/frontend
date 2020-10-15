@@ -96,6 +96,7 @@ export class HaConfigUsers extends LitElement {
         .data=${this._users}
         @row-click=${this._editUser}
         hasFab
+        clickable
       >
         <mwc-fab
           slot="fab"

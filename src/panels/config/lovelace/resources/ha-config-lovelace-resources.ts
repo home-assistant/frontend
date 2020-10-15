@@ -101,6 +101,7 @@ export class HaConfigLovelaceRescources extends LitElement {
         )}
         @row-click=${this._editResource}
         hasFab
+        clickable
       >
         <mwc-fab
           slot="fab"
