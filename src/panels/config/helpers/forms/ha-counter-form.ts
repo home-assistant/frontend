@@ -33,7 +33,7 @@ class HaCounterForm extends LitElement {
 
   @internalProperty() private _minimum?: number;
 
-  @internalProperty() private _restore?: bool;
+  @internalProperty() private _restore?: boolean;
 
   @internalProperty() private _initial?: number;
 
