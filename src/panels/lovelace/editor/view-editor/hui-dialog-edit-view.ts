@@ -158,7 +158,9 @@ export class HuiDialogEditView extends LitElement {
         .heading=${true}
       >
         <div slot="heading">
-          <h2>${this._viewConfigTitle}</h2>
+          <h2>
+            ${this._viewConfigTitle}
+          </h2>
           <paper-tabs
             scrollable
             hide-scroll-buttons
