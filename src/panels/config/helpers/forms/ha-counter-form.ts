@@ -46,7 +46,7 @@ class HaCounterForm extends LitElement {
       this._icon = item.icon || "";
       this._maximum = item.maximum;
       this._minimum = item.minimum;
-      this._restore = item.restore || true;
+      this._restore = item.restore ?? true;
       this._step = item.step ?? 1;
       this._initial = item.initial ?? 0;
     } else {
@@ -126,19 +126,6 @@ class HaCounterForm extends LitElement {
         ></paper-input>
         ${this.hass.userData?.showAdvanced
           ? html`
-              <div class="row">
-                <ha-switch
-                  .checked=${this._restore}
-                  .configValue=${"restore"}
-                  @value-changed=${this._restoreChanged}
-                >
-                </ha-switch>
-                <div>
-                  ${this.hass.localize(
-                    "ui.dialogs.helper_settings.counter.restore"
-                  )}
-                </div>
-              </div>
               <paper-input
                 .value=${this._step}
                 .configValue=${"step"}
@@ -148,14 +135,23 @@ class HaCounterForm extends LitElement {
                   "ui.dialogs.helper_settings.counter.step"
                 )}
               ></paper-input>
+              <div class="row">
+                <ha-switch
+                  .checked=${this._restore}
+                  .configValue=${"restore"}
+                  @change=${this._valueChanged}
+                >
+                </ha-switch>
+                <div>
+                  ${this.hass.localize(
+                    "ui.dialogs.helper_settings.counter.restore"
+                  )}
+                </div>
+              </div>
             `
           : ""}
       </div>
     `;
-  }
-
-  private _restoreChanged(ev: Event): void {
-    this._restore = (ev.target as HaSwitch).checked;
   }
 
   private _valueChanged(ev: CustomEvent) {
@@ -166,7 +162,11 @@ class HaCounterForm extends LitElement {
     const target = ev.target as any;
     const configValue = target.configValue;
     const value =
-      target.type === "number" ? Number(ev.detail.value) : ev.detail.value;
+      target.type === "number"
+        ? Number(ev.detail.value)
+        : target.localName === "ha-switch"
+        ? (ev.target as HaSwitch).checked
+        : ev.detail.value;
     if (this[`_${configValue}`] === value) {
       return;
     }
@@ -174,7 +174,7 @@ class HaCounterForm extends LitElement {
     if (value === undefined || value === "") {
       delete newValue[configValue];
     } else {
-      newValue[configValue] = ev.detail.value;
+      newValue[configValue] = value;
     }
     fireEvent(this, "value-changed", {
       value: newValue,
@@ -189,13 +189,14 @@ class HaCounterForm extends LitElement {
           color: var(--primary-text-color);
         }
         .row {
-          margin-top: 8px;
+          margin-top: 12px;
+          margin-bottom: 12px;
           color: var(--primary-text-color);
           display: flex;
           align-items: center;
         }
-        ha-paper-dropdown-menu {
-          display: block;
+        .row div {
+          margin-left: 16px;
         }
       `,
     ];
