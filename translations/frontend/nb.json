@@ -520,8 +520,8 @@
             "previous": "Forrige",
             "refresh": "Oppdater",
             "save": "Lagre",
-            "successfully_deleted": "Slettet",
-            "successfully_saved": "Vellykket lagring",
+            "successfully_deleted": "Sletting vellykket",
+            "successfully_saved": "Lagring vellykket",
             "undo": "Angre",
             "yes": "Ja"
         },
@@ -584,7 +584,7 @@
                     "turned_off": "slått av",
                     "turned_on": "slått på",
                     "was_at_home": "var hjemme",
-                    "was_at_state": "var på {state}",
+                    "was_at_state": "var {state}",
                     "was_away": "var borte",
                     "was_closed": "var stengt",
                     "was_connected": "var koblet til",
@@ -623,7 +623,7 @@
                     "season": "Sesong",
                     "track": "Spor",
                     "tv_show": "TV Serie",
-                    "url": "Url",
+                    "url": "URL",
                     "video": "Video"
                 },
                 "content-type": {
@@ -675,9 +675,23 @@
                     "week": "{count} {count, plural,\n  one {uke}\n  other {uker}\n}"
                 },
                 "future": "om {time}",
+                "future_duration": {
+                    "day": "Om {count} {count, plural,\n  one {dag}\n  other {dager}\n}",
+                    "hour": "Om {count} {count, plural,\n  one {time}\n  other {timer}\n}",
+                    "minute": "Om {count} {count, plural,\n  one {minutt}\n  other {minutter}\n}",
+                    "second": "Om {count} {count, plural,\n  one {sekund}\n  other {sekunder}\n}",
+                    "week": "Om {count} {count, plural,\n  one {uke}\n  other {uker}\n}"
+                },
                 "just_now": "Akkurat nå",
                 "never": "Aldri",
-                "past": "{time} siden"
+                "past": "{time} siden",
+                "past_duration": {
+                    "day": "{count} {count, plural,\n  one {dag}\n  other {dager}\n} siden",
+                    "hour": "{count} {count, plural,\n  one {time}\n  other {timer}\n} siden",
+                    "minute": "{count} {count, plural,\n  one {minutt}\n  other {minutter}\n} siden",
+                    "second": "{count} {count, plural,\n  one {sekund}\n  other {sekunder}\n} siden",
+                    "week": "{count} {count, plural,\n  one {uke}\n  other {uker}\n} siden"
+                }
             },
             "service-picker": {
                 "service": "Tjeneste"
@@ -825,6 +839,44 @@
                     "description": "Alternativene er lagret."
                 }
             },
+            "quick-bar": {
+                "commands": {
+                    "reload": {
+                        "automation": "Last inn automasjoner på nytt",
+                        "command_line": "Last inn kommandolinje entiteter på nytt",
+                        "core": "Last inn lokasjon og tilpassinger på nytt",
+                        "filesize": "Last inn filstørrelse entiteter på nytt",
+                        "filter": "Last inn filter entiteter på nytt",
+                        "generic": "Last inn generisk IP kamera entiteter på nytt",
+                        "generic_thermostat": "Last inn generisk termostat entiteter på nytt",
+                        "group": "Laste inn grupper, gruppeentiteter og varslingstjenester på nytt",
+                        "history_stats": "Last inn historisk tilstand entiteter på nytt",
+                        "homekit": "Last inn HomeKit på nytt",
+                        "input_boolean": "Last inn innputt boolske på nytt",
+                        "input_datetime": "Last inn innputt dato tider på nytt",
+                        "input_number": "Last inn innputt numeriske på nytt",
+                        "input_select": "Last inn innputt valg på nytt",
+                        "input_text": "Last inn innputt tekster på nytt",
+                        "min_max": "Last inn min/maks entiteter på nytt",
+                        "mqtt": "Last inn MQTT entiteter på nytt",
+                        "person": "Last inn personer på nytt",
+                        "ping": "Last inn Ping binær sensor entiteter på nytt",
+                        "reload": "Last inn {domain} på nytt",
+                        "rest": "Last inn REST entiteter og varslingstjenester på nytt",
+                        "rpi_gpio": "Last inn Raspberry Pi GPIO entiteter på nytt",
+                        "scene": "Last inn scener på nytt",
+                        "script": "Last inn skript på nytt",
+                        "smtp": "Last inn SMTP varslingstjenester på nytt",
+                        "statistics": "Last inn statistiske entiteter på nytt",
+                        "telegram": "Last inn Telegram varslingstjenester på nytt",
+                        "template": "Laste inn mal entiteter på nytt",
+                        "trend": "Last inn trend entiteter på nytt",
+                        "universal": "Laste inn universelle mediespiller entiteter på nytt",
+                        "zone": "Last inn soner på nytt"
+                    }
+                },
+                "filter_placeholder": "Entitetsfilter"
+            },
             "voice_command": {
                 "did_not_hear": "Home Assistant hørte ikke noe",
                 "error": "Beklager, det har oppstått en feil",
@@ -865,11 +917,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\none {dag}\nother {dager}\n}",
-            "hour": "{count} {count, plural,\none {time}\nother {timer}\n}",
+            "day": "{count} {count, plural,\n  one {dag}\n  other {dager}\n}",
+            "hour": "{count} {count, plural,\n  one {time}\n  other {timer}\n}",
             "minute": "{count} {count, plural,\none {minutt}\nother {minutter}\n}",
             "second": "{count} {count, plural,\none {sekund}\nother {sekunder}\n}",
-            "week": "{count} {count, plural,\none {uke}\nother {uker}\n}"
+            "week": "{count} {count, plural,\n  one {uke}\n  other {uker}\n}"
         },
         "login-form": {
             "log_in": "Logg inn",
@@ -968,7 +1020,7 @@
                                     "label": "Enhet"
                                 },
                                 "event": {
-                                    "event": "Hendelse",
+                                    "event": "Hendelse:",
                                     "label": "Utfør hendelse",
                                     "service_data": "Tjenestedata"
                                 },
@@ -1000,7 +1052,7 @@
                                 "wait_for_trigger": {
                                     "continue_timeout": "Fortsett ved tidsavbrudd",
                                     "label": "Vent på utløser",
-                                    "timeout": "Tidsavbrudd"
+                                    "timeout": "Tidsavbrudd (valgfritt)"
                                 },
                                 "wait_template": {
                                     "continue_timeout": "Fortsett ved tidsavbrudd",
@@ -1088,6 +1140,7 @@
                             },
                             "unsupported_condition": "Ingen brukergrensesnitt for bruk: {condition}"
                         },
+                        "copy_to_clipboard": "Kopiere til utklippstavle",
                         "default_name": "Ny automasjon",
                         "description": {
                             "label": "Beskrivelse",
@@ -1445,6 +1498,7 @@
                     "different_include": "Muligens via et domene, en glob eller noe annent som er inkluderet",
                     "pick_attribute": "Velg et attributt som skal overstyres",
                     "picker": {
+                        "documentation": "Dokumentasjon for tilpassing",
                         "entity": "Entitet",
                         "header": "Tilpasninger",
                         "introduction": "Justér attributter per entitet. Lagt til eller redigerte tilpasninger trer i kraft umiddelbart. Fjernede tilpasninger trer i kraft når entiteten blir oppdatert."
@@ -1532,6 +1586,8 @@
                         },
                         "filter": {
                             "filter": "",
+                            "hidden_entities": "{number} skjult {number, plural,\n  one {entitet}\n  other {entiteter}\n}",
+                            "show_all": "Vis alle",
                             "show_disabled": "Vis deaktiverte entiteter",
                             "show_readonly": "Vis skrivebeskyttede entiteter",
                             "show_unavailable": "Vis utilgjengelige entiteter"
@@ -1608,7 +1664,7 @@
                     "integrations": "Integrasjoner",
                     "issues": "Problemer",
                     "license": "Publisert under Apache 2.0-lisensen",
-                    "path_configuration": "Sti til configuration.yaml: {path}",
+                    "path_configuration": "Bane til configuration.yaml: {path}",
                     "server": "core",
                     "source": "Kilder:",
                     "system_health_error": "System tilstand komponenten er ikke lastet inn. Legg til 'system_health:' i configuration.yaml",
@@ -1737,7 +1793,7 @@
                             "title": "Tittel",
                             "title_required": "Tittel er påkrevd.",
                             "update": "Oppdater",
-                            "url": "",
+                            "url": "URL",
                             "url_error_msg": "URLen skal inneholde en - og kan ikke inneholde mellomrom eller spesialtegn, bortsett fra _ og -"
                         },
                         "picker": {
@@ -1765,8 +1821,8 @@
                             "new_resource": "Legg til ny ressurs",
                             "type": "Ressurstype",
                             "update": "Oppdater",
-                            "url": "",
-                            "url_error_msg": "URL-adresse er et obligatorisk felt",
+                            "url": "URL",
+                            "url_error_msg": "URL er et obligatorisk felt",
                             "warning_header": "Vær forsiktig!",
                             "warning_text": "Det kan være farlig å legge til ressurser, sørg for at du kjenner kilden til ressursen og stoler på dem. Dårlige ressurser kan skade systemet ditt alvorlig."
                         },
@@ -1774,7 +1830,7 @@
                             "add_resource": "Legg til ressurs",
                             "headers": {
                                 "type": "",
-                                "url": ""
+                                "url": "URL"
                             },
                             "no_resources": "Ingen ressurser"
                         },
@@ -1927,8 +1983,11 @@
                         "update": "Oppdater"
                     },
                     "introduction": "Her kan du definere hver person av interesse i Home Assistant.",
+                    "learn_more": "Lær mer om personer",
                     "no_persons_created_yet": "Ser ut som du ikke har opprettet noen personer ennå.",
-                    "note_about_persons_configured_in_yaml": "Merk: personer konfigurert i configuration.yaml kan ikke redigeres via brukergrensesnittet."
+                    "note_about_persons_configured_in_yaml": "Merk: personer konfigurert i configuration.yaml kan ikke redigeres via brukergrensesnittet.",
+                    "person_not_found": "Vi fant ikke personen du prøvde å redigere.",
+                    "person_not_found_title": "Person ikke funnet"
                 },
                 "scene": {
                     "activated": "Aktivert scene {name}.",
@@ -2086,6 +2145,7 @@
                     "create_automation": "Opprett automatisering med tag",
                     "description": "Administrer tagger",
                     "detail": {
+                        "companion_apps": "kompanjong apper",
                         "create": "Opprett",
                         "create_and_write": "Opprette og skrive",
                         "delete": "Slett",
@@ -2094,7 +2154,8 @@
                         "new_tag": "Ny tag",
                         "tag_id": "Tag id",
                         "tag_id_placeholder": "Automatisk generert når den er tom",
-                        "update": "Oppdater"
+                        "update": "Oppdater",
+                        "usage": "En tag kan utløse en automasjon når den skannes, du kan bruke NFC-koder, QR-koder eller hvilken som helst annen type tag. Bruk {companion_link} til å skrive denne taggen til en programmerbar NFC-tag eller opprette en QR-kode nedenfor."
                     },
                     "edit": "Rediger",
                     "headers": {
@@ -2287,7 +2348,7 @@
                     "common": {
                         "index": "Indeks",
                         "instance": "Forekomst",
-                        "unknown": "ukjent",
+                        "unknown": "Ukjent",
                         "value": "Verdi",
                         "wakeup_interval": "Våkningsintervall"
                     },
@@ -2378,22 +2439,22 @@
             "developer-tools": {
                 "tabs": {
                     "events": {
-                        "alert_event_type": "Hendelsestype er et obligatorisk felt",
+                        "alert_event_type": "Hendelsetype er et obligatorisk felt",
                         "available_events": "Tilgjengelige hendelser",
                         "count_listeners": " ({count} lyttere)",
-                        "data": "Hendelsesdata (YAML, valgfritt)",
+                        "data": "Hendelsedata (YAML, valgfritt)",
                         "description": "Send ut en hendelse på hendelsesbussen",
-                        "documentation": "Hendelsesdokumentasjon.",
+                        "documentation": "Hendelsedokumentasjon.",
                         "event_fired": "Hendelse {name} utført",
                         "fire_event": "Utfør hendelse",
                         "listen_to_events": "Lytt til hendelser",
                         "listening_to": "Lytte til",
-                        "notification_event_fired": "Hendelsen {type} vellykket utløst!",
+                        "notification_event_fired": "Hendelse {type} vellykket utløst!",
                         "start_listening": "Begynn å lytte",
                         "stop_listening": "Stopp lytting",
                         "subscribe_to": "Hendelse for å abonnere på",
                         "title": "Hendelser",
-                        "type": "Type hendelse"
+                        "type": "Hendelse type"
                     },
                     "services": {
                         "alert_parsing_yaml": "Feil ved parsing av YAML: {data}",
@@ -2515,11 +2576,11 @@
                             "navigate": "Navigere",
                             "none": "Ingen handling",
                             "toggle": "Veksle",
-                            "url": "Url"
+                            "url": "URL"
                         },
                         "editor_service_data": "Tjenestedata kan bare legges inn i kodeditoren",
                         "navigation_path": "Navigasjonsbane",
-                        "url_path": "Url-bane"
+                        "url_path": "URL bane"
                     },
                     "card": {
                         "alarm-panel": {
@@ -2636,7 +2697,7 @@
                             "theme": "Tema",
                             "title": "Tittel",
                             "unit": "Betegnelse",
-                            "url": ""
+                            "url": "URL"
                         },
                         "glance": {
                             "columns": "Kolonner",
@@ -2666,7 +2727,7 @@
                         "map": {
                             "dark_mode": "Mørk modus?",
                             "default_zoom": "Standard zoom",
-                            "description": "Kartkortet som lar deg vise entiteter på et kart.",
+                            "description": "Kart kortet som lar deg vise entiteter på et kart.",
                             "geo_location_sources": "Kilder for geolokasjon",
                             "hours_to_show": "Timer som skal vises",
                             "name": "Kart",
@@ -2734,6 +2795,9 @@
                         "domain": "Domene",
                         "entity": "Entitet",
                         "no_description": "Ingen beskrivelse tilgjengelig."
+                    },
+                    "edit_badges": {
+                        "panel_mode": "Disse merkene vises ikke fordi denne visningen er i \"Panelmodus\"."
                     },
                     "edit_card": {
                         "add": "Legg til kort",
@@ -2828,7 +2892,7 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "Dette gjengir det første kortet i full bredde; andre kort i denne visningen vil ikke bli gitt.",
+                            "description": "Dette gjengir det første kortet i full bredde. Andre kort i denne visningen samt merker vil ikke bli gjengitt.",
                             "title": "Panel modus?",
                             "warning_multiple_cards": "Denne visningen inneholder mer enn ett kort, men en panelvisning kan bare vise 1 kort."
                         }

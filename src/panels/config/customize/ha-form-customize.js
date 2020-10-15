@@ -40,35 +40,35 @@ class HaFormCustomize extends LocalizeMixin(PolymerElement) {
         </div>
       </template>
       <template is="dom-if" if="[[hasLocalAttributes]]">
-        <h4 class="attributes-text">
+        <p class="attributes-text">
           [[localize('ui.panel.config.customize.attributes_customize')]]<br />
-        </h4>
+        </p>
         <ha-form-customize-attributes
           attributes="{{localAttributes}}"
         ></ha-form-customize-attributes>
       </template>
       <template is="dom-if" if="[[hasGlobalAttributes]]">
-        <h4 class="attributes-text">
+        <p class="attributes-text">
           [[localize('ui.panel.config.customize.attributes_outside')]]<br />
           [[localize('ui.panel.config.customize.different_include')]]
-        </h4>
+        </p>
         <ha-form-customize-attributes
           attributes="{{globalAttributes}}"
         ></ha-form-customize-attributes>
       </template>
       <template is="dom-if" if="[[hasExistingAttributes]]">
-        <h4 class="attributes-text">
+        <p class="attributes-text">
           [[localize('ui.panel.config.customize.attributes_set')]]<br />
           [[localize('ui.panel.config.customize.attributes_override')]]
-        </h4>
+        </p>
         <ha-form-customize-attributes
           attributes="{{existingAttributes}}"
         ></ha-form-customize-attributes>
       </template>
       <template is="dom-if" if="[[hasNewAttributes]]">
-        <h4 class="attributes-text">
+        <p class="attributes-text">
           [[localize('ui.panel.config.customize.attributes_not_set')]]
-        </h4>
+        </p>
         <ha-form-customize-attributes
           attributes="{{newAttributes}}"
         ></ha-form-customize-attributes>

@@ -446,7 +446,7 @@
       }
     },
     "dialogs": {
-      "quick-open": {
+      "quick-bar": {
         "commands": {
           "reload": {
             "reload": "[%key:ui::panel::config::server_control::section::reloading::reload%]",
@@ -998,6 +998,7 @@
           "picker": {
             "header": "Customizations",
             "introduction": "Tweak per-entity attributes. Added/edited customizations will take effect immediately. Removed customizations will take effect when the entity is updated.",
+            "documentation": "Customization documentation",
             "entity": "Entity"
           },
           "warning": {
@@ -1064,6 +1065,7 @@
             },
             "edit_yaml": "Edit as YAML",
             "edit_ui": "Edit with UI",
+            "copy_to_clipboard": "Copy to Clipboard",
             "triggers": {
               "name": "Trigger",
               "header": "Triggers",
@@ -1652,7 +1654,9 @@
               "filter": "Filter",
               "show_disabled": "Show disabled entities",
               "show_unavailable": "Show unavailable entities",
-              "show_readonly": "Show read-only entities"
+              "show_readonly": "Show read-only entities",
+              "hidden_entities": "{number} hidden {number, plural,\n  one {entity}\n  other {entities}\n}",
+              "show_all": "Show all"
             },
             "status": {
               "restored": "Restored",
@@ -1692,6 +1696,7 @@
           "description": "Manage the people that Home Assistant tracks",
           "introduction": "Here you can define each person of interest in Home Assistant.",
           "note_about_persons_configured_in_yaml": "Note: people configured via configuration.yaml cannot be edited via the UI.",
+          "learn_more": "Learn more about people",
           "no_persons_created_yet": "Looks like you have not created any people yet.",
           "create_person": "Create Person",
           "add_person": "Add Person",
@@ -2287,6 +2292,9 @@
               "select_users": "Select which users should see this view in the navigation"
             }
           },
+          "edit_badges": {
+            "panel_mode": "These badges will not be displayed because this view is in \"Panel Mode\"."
+          },
           "edit_card": {
             "header": "Card Configuration",
             "typed_header": "{type} Card Configuration",
@@ -2559,7 +2567,7 @@
           "view": {
             "panel_mode": {
               "title": "Panel Mode?",
-              "description": "This renders the first card at full width; other cards in this view will not be rendered.",
+              "description": "This renders the first card at full width. Other cards in this view as well as badges will not be rendered.",
               "warning_multiple_cards": "This view contains more than one card, but a panel view can only show 1 card."
             }
           },

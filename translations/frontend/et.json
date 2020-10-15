@@ -675,9 +675,23 @@
                     "week": "{count} {count, plural,\n  one {nädal}\n  other {nädalat}\n}"
                 },
                 "future": "{time} pärast",
-                "just_now": "Kohe",
+                "future_duration": {
+                    "day": "{count} {count, plural,\n  one {päev}\n  other {päeva}\n} pärast",
+                    "hour": "{count} {count, plural,\n  one {tund}\n  other {tunni}\n} pärast",
+                    "minute": "{count} {count, plural,\n  one {minut}\n  other {minutit}\n} pärast",
+                    "second": "{count} {count, plural,\n  one {sekund}\n  other {sekundi}\n} pärast",
+                    "week": "{count} {count, plural,\n  one {nädal}\n  other {nädala}\n} pärast"
+                },
+                "just_now": "Just praegu",
                 "never": "Iial",
-                "past": "{time} tagasi"
+                "past": "{time} tagasi",
+                "past_duration": {
+                    "day": "{count} {count, plural,\n  one {päev}\n  other {päeva}\n} eest",
+                    "hour": "{count} {count, plural,\n  one {tund}\n  other {tunni}\n} eest",
+                    "minute": "{count} {count, plural,\n  one {minut}\n  other {minuti}\n} eest",
+                    "second": "{count} {count, plural,\n  one {sekund}\n  other {sekundi}\n} eest",
+                    "week": "{count} {count, plural,\n  one {nädal}\n  other {nädala}\n} eest"
+                }
             },
             "service-picker": {
                 "service": "Teenus"
@@ -824,6 +838,44 @@
                 "success": {
                     "description": "Valikud on edukalt salvestatud."
                 }
+            },
+            "quick-bar": {
+                "commands": {
+                    "reload": {
+                        "automation": "Taaslae automatiseeringud",
+                        "command_line": "Taaslae käsurea olemid",
+                        "core": "Taaslae asukohad ja mugandamised",
+                        "filesize": "Taaslae faili suuruse olemid",
+                        "filter": "Taaslae filtri olemid",
+                        "generic": "Taaslae IP kaamerate olemid",
+                        "generic_thermostat": "Taaslae termostaadi olemid",
+                        "group": "Taaslae grupid, grupiolemid ja teavitusteenused",
+                        "history_stats": "Taaslae ajaloo olemid",
+                        "homekit": "Taaslae HomeKit",
+                        "input_boolean": "Taaslae loogikasisestused",
+                        "input_datetime": "Taaslae ajaväärtused",
+                        "input_number": "Taaslae arvsisestused",
+                        "input_select": "Taaslae sisendivalikud",
+                        "input_text": "Taaslae tekstisisestused",
+                        "min_max": "Taaslae min/maks olemid",
+                        "mqtt": "Taaslae MQTT olemid",
+                        "person": "Taaslae isikud",
+                        "ping": "Taaslae ping binaaranduri olemid",
+                        "reload": "Taaslae {domain}",
+                        "rest": "Taaslae REST olemid ja teavitusteenused",
+                        "rpi_gpio": "Taaslae Raspberry PI viikude olemid",
+                        "scene": "Taaslae stseenid",
+                        "script": "Taaslae skriptid",
+                        "smtp": "Taaslae SMTP teavitusteenused",
+                        "statistics": "Taaslae statistika olemid",
+                        "telegram": "Taaslae TELEGRAM-i teavitusteenused",
+                        "template": "Taaslae mallisisestused",
+                        "trend": "Taaslae trendide olemid",
+                        "universal": "Taaslae meediumimängija olemid",
+                        "zone": "Tasslae tsoonid"
+                    }
+                },
+                "filter_placeholder": "Olemite filter"
             },
             "voice_command": {
                 "did_not_hear": "Home Assistant ei kuulnud midagi",
@@ -1088,6 +1140,7 @@
                             },
                             "unsupported_condition": "Kasutajaliides ei toeta tingimust: {condition}"
                         },
+                        "copy_to_clipboard": "Kopeeri lõikelauale",
                         "default_name": "Uus automatiseering",
                         "description": {
                             "label": "Kirjeldus",
@@ -1286,7 +1339,7 @@
                             "title": "Kaugjuhtimine"
                         },
                         "sign_out": "Logi välja",
-                        "thank_you_note": "Täname, et liitusite Home Assistanti pilvega. Just teiesuguste inimeste tõttu suudame  me pakkudakõigile suurepärase Home Assistanti kogemuse. Aitäh!",
+                        "thank_you_note": "Täname, et liitusite Home Assistanti pilvega. Just teiesuguste inimeste tõttu suudame  me pakkuda kõigile suurepärase Home Assistanti kogemuse. Aitäh!",
                         "webhooks": {
                             "disable_hook_error_msg": "Veebihaagi keelamine ebaõnnestus:",
                             "info": "Kõigele mis on konfigureeritud veebihaagi käivitamisel võib anda avalikult ligipääsetava URL-i, mis võimaldab teil saata andmeid Home Assistantile kõikjalt ilma et Teie seade oleks Internetis nähtav.",
@@ -1445,6 +1498,7 @@
                     "different_include": "Võimalik domeeni, globaalse või mõne muu lisamise kaudu.",
                     "pick_attribute": "Vali muudetav atribuut",
                     "picker": {
+                        "documentation": "Kohandamiste dokumentatsioon",
                         "entity": "Olem",
                         "header": "Kohandamine",
                         "introduction": "Kohanda olemi atribuute. Lisatud või muudetud kohandused rakenduvad kohe. Eemaldatud kohandused rakenduvad olemi värskendamisel."
@@ -1532,6 +1586,8 @@
                         },
                         "filter": {
                             "filter": "Filter",
+                            "hidden_entities": "{number} hidden {number, plural,\n  one {olem}\n  other {olemit}\n}",
+                            "show_all": "Kuva kõik",
                             "show_disabled": "Kuva keelatud olemid",
                             "show_readonly": "Näita kirjutuskaitstud olemeid",
                             "show_unavailable": "Kuva kättesaamatud olemid"
@@ -1927,8 +1983,11 @@
                         "update": "Uuenda"
                     },
                     "introduction": "Siin saate määratleda iga huvipakkuva isiku Home Assistantis.",
+                    "learn_more": "Lisateave isikute kohta",
                     "no_persons_created_yet": "Paistab, et sa pole veel ühtegi isikut lisanud.",
-                    "note_about_persons_configured_in_yaml": "Märkus: configuration.yaml kaudu seadistatud isikuid ei saa kasutajaliidese kaudu muuta."
+                    "note_about_persons_configured_in_yaml": "Märkus: configuration.yaml kaudu seadistatud isikuid ei saa kasutajaliidese kaudu muuta.",
+                    "person_not_found": "Ei leidnud inimest  keda proovid seadistada.",
+                    "person_not_found_title": "Isikuid ei leitud"
                 },
                 "scene": {
                     "activated": "Aktiveeritud stseen {name} .",
@@ -2086,6 +2145,7 @@
                     "create_automation": "Lisa automatiseering TAG abil",
                     "description": "Halda TAGe",
                     "detail": {
+                        "companion_apps": "mobiilirakendused",
                         "create": "Loo",
                         "create_and_write": "Loo ja kirjuta",
                         "delete": "Kustuta",
@@ -2094,7 +2154,8 @@
                         "new_tag": "Uus TAG",
                         "tag_id": "TAG ID",
                         "tag_id_placeholder": "Tühjaks jätmise korral luuakse automaatselt",
-                        "update": "Uuenda"
+                        "update": "Uuenda",
+                        "usage": "Silt võib skannimisel käivitada automaatiseeringu. Võite kasutada NFC-silte, QR-koode või muud tüüpi silte. Kasutage meie äppi {companion_link}, et kirjutada see silt programmeeritavale NFC-märgendile või luua allpool QR-kood."
                     },
                     "edit": "Muuda",
                     "headers": {
@@ -2735,6 +2796,9 @@
                         "entity": "Üksus",
                         "no_description": "Kirjeldus puudub."
                     },
+                    "edit_badges": {
+                        "panel_mode": "Neid märke ei kuvata kuna see vaade on paneelirežiimis."
+                    },
                     "edit_card": {
                         "add": "Lisa kaart",
                         "confirm_cancel": "Kas oled kindel, et tahad loobuda?",
@@ -2828,7 +2892,7 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "Esimene kaart kuvatakse täislaiuses, teisi selle vaate kaarte ei kuvata",
+                            "description": "Esimene kaart kuvatakse täislaiuses, teisi selle vaate kaarte ja märke ei kuvata",
                             "title": "Üksiku kaardi režiim?",
                             "warning_multiple_cards": "See vaade koosneb rohkem kui ühest kaardist, aga paneeli vaade saab näidata ainult ühte kaarti"
                         }

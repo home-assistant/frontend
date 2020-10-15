@@ -11,6 +11,8 @@ import {
 import { html, TemplateResult } from "lit-html";
 import { HomeAssistant } from "../../../types";
 
+import { getWind, getWeatherUnit } from "../../../data/weather";
+
 import {
   mdiAlertCircleOutline,
   mdiEye,
@@ -32,26 +34,6 @@ import {
   mdiWeatherWindy,
   mdiWeatherWindyVariant,
 } from "@mdi/js";
-
-const cardinalDirections = [
-  "N",
-  "NNE",
-  "NE",
-  "ENE",
-  "E",
-  "ESE",
-  "SE",
-  "SSE",
-  "S",
-  "SSW",
-  "SW",
-  "WSW",
-  "W",
-  "WNW",
-  "NW",
-  "NNW",
-  "N",
-];
 
 const weatherIcons = {
   "clear-night": mdiWeatherNight,
@@ -106,7 +88,8 @@ class MoreInfoWeather extends LitElement {
           ${this.hass.localize("ui.card.weather.attributes.temperature")}
         </div>
         <div>
-          ${this.stateObj.attributes.temperature} ${this.getUnit("temperature")}
+          ${this.stateObj.attributes.temperature}
+          ${getWeatherUnit(this.hass, "temperature")}
         </div>
       </div>
       ${this._showValue(this.stateObj.attributes.pressure)
@@ -118,7 +101,7 @@ class MoreInfoWeather extends LitElement {
               </div>
               <div>
                 ${this.stateObj.attributes.pressure}
-                ${this.getUnit("air_pressure")}
+                ${getWeatherUnit(this.hass, "air_pressure")}
               </div>
             </div>
           `
@@ -142,7 +125,8 @@ class MoreInfoWeather extends LitElement {
                 ${this.hass.localize("ui.card.weather.attributes.wind_speed")}
               </div>
               <div>
-                ${this.getWind(
+                ${getWind(
+                  this.hass,
                   this.stateObj.attributes.wind_speed,
                   this.stateObj.attributes.wind_bearing
                 )}
@@ -158,7 +142,8 @@ class MoreInfoWeather extends LitElement {
                 ${this.hass.localize("ui.card.weather.attributes.visibility")}
               </div>
               <div>
-                ${this.stateObj.attributes.visibility} ${this.getUnit("length")}
+                ${this.stateObj.attributes.visibility}
+                ${getWeatherUnit(this.hass, "length")}
               </div>
             </div>
           `
@@ -191,12 +176,14 @@ class MoreInfoWeather extends LitElement {
                           ${this.computeDate(item.datetime)}
                         </div>
                         <div class="templow">
-                          ${item.templow} ${this.getUnit("temperature")}
+                          ${item.templow}
+                          ${getWeatherUnit(this.hass, "temperature")}
                         </div>
                       `
                     : ""}
                   <div class="temp">
-                    ${item.temperature} ${this.getUnit("temperature")}
+                    ${item.temperature}
+                    ${getWeatherUnit(this.hass, "temperature")}
                   </div>
                 </div>
               `;
@@ -267,41 +254,6 @@ class MoreInfoWeather extends LitElement {
       weekday: "long",
       hour: "numeric",
     });
-  }
-
-  private getUnit(measure: string): string {
-    const lengthUnit = this.hass.config.unit_system.length || "";
-    switch (measure) {
-      case "air_pressure":
-        return lengthUnit === "km" ? "hPa" : "inHg";
-      case "length":
-        return lengthUnit;
-      case "precipitation":
-        return lengthUnit === "km" ? "mm" : "in";
-      default:
-        return this.hass.config.unit_system[measure] || "";
-    }
-  }
-
-  private windBearingToText(degree: string): string {
-    const degreenum = parseInt(degree, 10);
-    if (isFinite(degreenum)) {
-      // eslint-disable-next-line no-bitwise
-      return cardinalDirections[(((degreenum + 11.25) / 22.5) | 0) % 16];
-    }
-    return degree;
-  }
-
-  private getWind(speed: string, bearing: string) {
-    if (bearing != null) {
-      const cardinalDirection = this.windBearingToText(bearing);
-      return `${speed} ${this.getUnit("length")}/h (${
-        this.hass.localize(
-          `ui.card.weather.cardinal_direction.${cardinalDirection.toLowerCase()}`
-        ) || cardinalDirection
-      })`;
-    }
-    return `${speed} ${this.getUnit("length")}/h`;
   }
 
   private _showValue(item: string): boolean {

@@ -839,7 +839,7 @@
                     "description": "Options successfully saved."
                 }
             },
-            "quick-open": {
+            "quick-bar": {
                 "commands": {
                     "reload": {
                         "automation": "Reload automations",
@@ -1140,6 +1140,7 @@
                             },
                             "unsupported_condition": "No UI support for condition: {condition}"
                         },
+                        "copy_to_clipboard": "Copy to Clipboard",
                         "default_name": "New Automation",
                         "description": {
                             "label": "Description",
@@ -1497,6 +1498,7 @@
                     "different_include": "Possibly via a domain, a glob or a different include.",
                     "pick_attribute": "Pick an attribute to override",
                     "picker": {
+                        "documentation": "Customization documentation",
                         "entity": "Entity",
                         "header": "Customizations",
                         "introduction": "Tweak per-entity attributes. Added/edited customizations will take effect immediately. Removed customizations will take effect when the entity is updated."
@@ -1584,6 +1586,8 @@
                         },
                         "filter": {
                             "filter": "Filter",
+                            "hidden_entities": "{number} hidden {number, plural,\n  one {entity}\n  other {entities}\n}",
+                            "show_all": "Show all",
                             "show_disabled": "Show disabled entities",
                             "show_readonly": "Show read-only entities",
                             "show_unavailable": "Show unavailable entities"
@@ -1979,6 +1983,7 @@
                         "update": "Update"
                     },
                     "introduction": "Here you can define each person of interest in Home Assistant.",
+                    "learn_more": "Learn more about people",
                     "no_persons_created_yet": "Looks like you have not created any people yet.",
                     "note_about_persons_configured_in_yaml": "Note: people configured via configuration.yaml cannot be edited via the UI.",
                     "person_not_found": "We couldn't find the person you were trying to edit.",
@@ -2791,6 +2796,9 @@
                         "entity": "Entity",
                         "no_description": "No description available."
                     },
+                    "edit_badges": {
+                        "panel_mode": "These badges will not be displayed because this view is in \"Panel Mode\"."
+                    },
                     "edit_card": {
                         "add": "Add Card",
                         "confirm_cancel": "Are you sure you want to cancel?",
@@ -2884,7 +2892,7 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "This renders the first card at full width; other cards in this view will not be rendered.",
+                            "description": "This renders the first card at full width. Other cards in this view as well as badges will not be rendered.",
                             "title": "Panel Mode?",
                             "warning_multiple_cards": "This view contains more than one card, but a panel view can only show 1 card."
                         }

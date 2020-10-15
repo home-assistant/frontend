@@ -7,7 +7,16 @@
  *
  * return true if word contains sequence. Otherwise false.
  */
-export const fuzzySequentialMatch = (filter: string, word: string) => {
+export const fuzzySequentialMatch = (filter: string, words: string[]) => {
+  for (const word of words) {
+    if (_fuzzySequentialMatch(filter, word)) {
+      return true;
+    }
+  }
+  return false;
+};
+
+const _fuzzySequentialMatch = (filter: string, word: string) => {
   if (filter === "") {
     return true;
   }
@@ -22,7 +31,7 @@ export const fuzzySequentialMatch = (filter: string, word: string) => {
     const newWord = word.substring(pos + 1);
     const newFilter = filter.substring(1);
 
-    return fuzzySequentialMatch(newFilter, newWord);
+    return _fuzzySequentialMatch(newFilter, newWord);
   }
 
   return true;

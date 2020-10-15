@@ -88,6 +88,7 @@ export class HuiNotificationDrawer extends EventsMixin(
       notifications: {
         type: Array,
         computed: "_computeNotifications(open, hass, _notificationsBackend)",
+        observer: "_notificationsChanged",
       },
       _notificationsBackend: {
         type: Array,
@@ -127,6 +128,17 @@ export class HuiNotificationDrawer extends EventsMixin(
     } else if (this._unsubNotifications) {
       this._unsubNotifications();
       this._unsubNotifications = undefined;
+    }
+  }
+
+  _notificationsChanged(newNotifications, oldNotifications) {
+    // automatically close drawer when last notification has been dismissed
+    if (
+      this.open &&
+      oldNotifications.length > 0 &&
+      !newNotifications.length === 0
+    ) {
+      this.open = false;
     }
   }
 
