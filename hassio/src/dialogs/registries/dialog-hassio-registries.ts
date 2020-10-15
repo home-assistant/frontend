@@ -3,8 +3,7 @@ import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiDelete } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
+import "@material/mwc-list/mwc-list-item";
 import {
   css,
   CSSResult,
@@ -56,8 +55,8 @@ class HassioRegistriesDialog extends LitElement {
         scrimClickAction
         escapeKeyAction
         .heading=${this._addingRegistry
-          ? "Add new docker registry"
-          : "Manage docker registries"}
+          ? "Add New Docker Registry"
+          : "Manage Docker Registries"}
       >
         <div class="form">
           ${this._addingRegistry
@@ -92,25 +91,26 @@ class HassioRegistriesDialog extends LitElement {
             : html`${this._registries?.length
                   ? this._registries.map((entry) => {
                       return html`
-                        <paper-item class="option">
-                          <paper-item-body>
-                            <div>${entry.registry}</div>
-                            <div secondary>Username: ${entry.username}</div>
-                          </paper-item-body>
+                        <mwc-list-item class="option" hasMeta twoline>
+                          <span>${entry.registry}</span>
+                          <span slot="secondary"
+                            >Username: ${entry.username}</span
+                          >
                           <mwc-icon-button
                             .entry=${entry}
                             title="Remove"
+                            slot="meta"
                             @click=${this._removeRegistry}
                           >
                             <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
                           </mwc-icon-button>
-                        </paper-item>
+                        </mwc-list-item>
                       `;
                     })
                   : html`
-                      <paper-item>
-                        No registries
-                      </paper-item>
+                      <mwc-list-item>
+                        <span>No registries configured</span>
+                      </mwc-list-item>
                     `}
                 <mwc-button @click=${this._addRegistry}>
                   Add new registry
@@ -216,6 +216,16 @@ class HassioRegistriesDialog extends LitElement {
         }
         mwc-button {
           margin-left: 8px;
+        }
+        mwc-icon-button {
+          color: var(--error-color);
+          margin: -10px;
+        }
+        mwc-list-item {
+          cursor: default;
+        }
+        mwc-list-item span[slot="secondary"] {
+          color: var(--secondary-text-color);
         }
         ha-paper-dropdown-menu {
           display: block;
