@@ -1,3 +1,4 @@
+import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-icon-item";
@@ -24,7 +25,6 @@ import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import "../ha-svg-icon";
 import "./state-badge";
-import "@material/mwc-icon-button/mwc-icon-button";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 
@@ -267,12 +267,12 @@ export class HaEntityPicker extends LitElement {
   }
 
   private _filterChanged(ev): void {
-    const filterString = ev.detail.value.toLowerCase();
+    const filterString = ev.detail.value;
 
     const filteredStates = this._states.filter((state) =>
       fuzzySequentialMatch(filterString, [
-        state.entity_id.toLowerCase(),
-        computeStateName(state).toLowerCase(),
+        state.entity_id,
+        computeStateName(state),
       ])
     );
 

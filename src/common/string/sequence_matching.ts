@@ -9,7 +9,7 @@
  */
 export const fuzzySequentialMatch = (filter: string, words: string[]) => {
   for (const word of words) {
-    if (_fuzzySequentialMatch(filter, word)) {
+    if (_fuzzySequentialMatch(filter.toLowerCase(), word.toLowerCase())) {
       return true;
     }
   }
