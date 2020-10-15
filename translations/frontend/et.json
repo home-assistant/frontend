@@ -2796,6 +2796,9 @@
                         "entity": "Üksus",
                         "no_description": "Kirjeldus puudub."
                     },
+                    "edit_badges": {
+                        "panel_mode": "Neid märke ei kuvata kuna see vaade on paneelirežiimis."
+                    },
                     "edit_card": {
                         "add": "Lisa kaart",
                         "confirm_cancel": "Kas oled kindel, et tahad loobuda?",
@@ -2889,7 +2892,7 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "Esimene kaart kuvatakse täislaiuses, teisi selle vaate kaarte ei kuvata",
+                            "description": "Esimene kaart kuvatakse täislaiuses, teisi selle vaate kaarte ja märke ei kuvata",
                             "title": "Üksiku kaardi režiim?",
                             "warning_multiple_cards": "See vaade koosneb rohkem kui ühest kaardist, aga paneeli vaade saab näidata ainult ühte kaarti"
                         }

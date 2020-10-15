@@ -849,6 +849,8 @@
                         "filter": "Herlaad filter entiteiten",
                         "generic": "Herlaad",
                         "generic_thermostat": "Herlaad",
+                        "group": "Herlaad groepen, groepsentiteiten en notificatieservices",
+                        "history_stats": "Herlaad historische statistieken entiteiten",
                         "homekit": "Herlaad HomeKit",
                         "input_boolean": "Herlaad input booleans",
                         "input_datetime": "Herlaad input datatijd",
@@ -858,6 +860,7 @@
                         "min_max": "Laad min/max entiteiten opnieuw",
                         "mqtt": "Herlaad mqtt entiteiten",
                         "person": "Herlaad personen",
+                        "ping": "Herlaad binaire ping-sensorentiteiten",
                         "reload": "Herlaad {domain}",
                         "rest": "Herlaad rest entiteiten en notificatieservices",
                         "rpi_gpio": "Herlaad Raspberry PI GPIO entiteiten",
@@ -2793,6 +2796,9 @@
                         "entity": "Entiteit",
                         "no_description": "Er is geen beschrijving beschikbaar"
                     },
+                    "edit_badges": {
+                        "panel_mode": "Deze badges worden niet weergegeven omdat deze weergave zich in de \"Paneelmodus\" bevindt."
+                    },
                     "edit_card": {
                         "add": "Kaart toevoegen",
                         "confirm_cancel": "Weet u zeker dat u wilt afbreken?",
@@ -2886,7 +2892,7 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "Hierdoor wordt de eerste kaart op volledige breedte weergegeven; andere kaarten in deze weergave worden niet weergegeven.",
+                            "description": "Dit maakt de eerste kaart op volle breedte. Andere kaarten in deze weergave en badges worden niet weergegeven.",
                             "title": "Paneelmodus?",
                             "warning_multiple_cards": "Deze weergave bevat meer dan één kaart, maar een paneelweergave kan slechts 1 kaart tonen."
                         }

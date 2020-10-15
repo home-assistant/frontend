@@ -2796,6 +2796,9 @@
                         "entity": "实体",
                         "no_description": "没有描述。"
                     },
+                    "edit_badges": {
+                        "panel_mode": "这些徽章将不会显示，因为此视图处于面板模式。"
+                    },
                     "edit_card": {
                         "add": "添加卡片",
                         "confirm_cancel": "确实要取消吗？",
@@ -2889,7 +2892,7 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "这将使第一张卡片全屏显示。此视图中的其他卡片将不会呈现。",
+                            "description": "这将使第一张卡片全屏显示。此视图中的其他卡片和徽章将不会呈现。",
                             "title": "面板模式？",
                             "warning_multiple_cards": "此视图包含多张卡片，但面板视图只能显示一张卡片。"
                         }

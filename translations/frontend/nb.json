@@ -520,8 +520,8 @@
             "previous": "Forrige",
             "refresh": "Oppdater",
             "save": "Lagre",
-            "successfully_deleted": "Slettet",
-            "successfully_saved": "Vellykket lagring",
+            "successfully_deleted": "Sletting vellykket",
+            "successfully_saved": "Lagring vellykket",
             "undo": "Angre",
             "yes": "Ja"
         },
@@ -584,7 +584,7 @@
                     "turned_off": "slått av",
                     "turned_on": "slått på",
                     "was_at_home": "var hjemme",
-                    "was_at_state": "var på {state}",
+                    "was_at_state": "var {state}",
                     "was_away": "var borte",
                     "was_closed": "var stengt",
                     "was_connected": "var koblet til",
@@ -917,11 +917,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\none {dag}\nother {dager}\n}",
-            "hour": "{count} {count, plural,\none {time}\nother {timer}\n}",
+            "day": "{count} {count, plural,\n  one {dag}\n  other {dager}\n}",
+            "hour": "{count} {count, plural,\n  one {time}\n  other {timer}\n}",
             "minute": "{count} {count, plural,\none {minutt}\nother {minutter}\n}",
             "second": "{count} {count, plural,\none {sekund}\nother {sekunder}\n}",
-            "week": "{count} {count, plural,\none {uke}\nother {uker}\n}"
+            "week": "{count} {count, plural,\n  one {uke}\n  other {uker}\n}"
         },
         "login-form": {
             "log_in": "Logg inn",
@@ -2727,7 +2727,7 @@
                         "map": {
                             "dark_mode": "Mørk modus?",
                             "default_zoom": "Standard zoom",
-                            "description": "Kartkortet som lar deg vise entiteter på et kart.",
+                            "description": "Kart kortet som lar deg vise entiteter på et kart.",
                             "geo_location_sources": "Kilder for geolokasjon",
                             "hours_to_show": "Timer som skal vises",
                             "name": "Kart",
@@ -2795,6 +2795,9 @@
                         "domain": "Domene",
                         "entity": "Entitet",
                         "no_description": "Ingen beskrivelse tilgjengelig."
+                    },
+                    "edit_badges": {
+                        "panel_mode": "Disse merkene vises ikke fordi denne visningen er i \"Panelmodus\"."
                     },
                     "edit_card": {
                         "add": "Legg til kort",
@@ -2889,7 +2892,7 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "Dette gjengir det første kortet i full bredde; andre kort i denne visningen vil ikke bli gitt.",
+                            "description": "Dette gjengir det første kortet i full bredde. Andre kort i denne visningen samt merker vil ikke bli gjengitt.",
                             "title": "Panel modus?",
                             "warning_multiple_cards": "Denne visningen inneholder mer enn ett kort, men en panelvisning kan bare vise 1 kort."
                         }
