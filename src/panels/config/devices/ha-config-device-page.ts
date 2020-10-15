@@ -36,7 +36,7 @@ import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
 } from "../../../dialogs/device-registry-detail/show-dialog-device-registry-detail";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import { showQuestionDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-tabs-subpage";
 import { HomeAssistant, Route } from "../../../types";
@@ -567,13 +567,14 @@ export class HaConfigDevicePage extends LitElement {
 
         const renameEntityid =
           this.showAdvanced &&
-          (await showConfirmationDialog(this, {
+          (await showQuestionDialog(this, {
             title: this.hass.localize(
               "ui.panel.config.devices.confirm_rename_entity_ids"
             ),
             text: this.hass.localize(
               "ui.panel.config.devices.confirm_rename_entity_ids_warning"
             ),
+            warning: true,
           }));
 
         const updateProms = entities.map((entity) => {
