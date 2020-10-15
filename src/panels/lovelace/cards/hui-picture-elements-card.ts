@@ -129,6 +129,8 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
             .cameraView=${this._config.camera_view}
             .entity=${this._config.entity}
             .aspectRatio=${this._config.aspect_ratio}
+            .darkModeFilter=${this._config.dark_mode_filter}
+            .darkModeImage=${this._config.dark_mode_image}
           ></hui-image>
           ${this._elements}
         </div>

@@ -218,6 +218,8 @@ export interface PictureElementsCardConfig extends LovelaceCardConfig {
   entity?: string;
   elements: LovelaceElementConfig[];
   theme?: string;
+  dark_mode_image?: string;
+  dark_mode_filter?: string;
 }
 
 export interface PictureEntityCardConfig extends LovelaceCardConfig {
