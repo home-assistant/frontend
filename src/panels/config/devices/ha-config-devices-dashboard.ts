@@ -310,6 +310,7 @@ export class HaConfigDeviceDashboard extends LitElement {
           this.hass.localize
         )}
         @row-click=${this._handleRowClicked}
+        clickable
       >
       </hass-tabs-subpage-data-table>
     `;
