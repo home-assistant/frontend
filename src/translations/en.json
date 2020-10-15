@@ -677,7 +677,8 @@
       "click_to_configure": "Click button to configure {entity}",
       "empty": "No Notifications",
       "title": "Notifications",
-      "close": "Close"
+      "close": "Close",
+      "dismiss_all": "Dismiss all"
     },
     "notification_toast": {
       "service_call_failed": "Failed to call service {service}.",
