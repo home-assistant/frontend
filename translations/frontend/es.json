@@ -2796,6 +2796,9 @@
                         "entity": "Entidad",
                         "no_description": "No hay descripción disponible."
                     },
+                    "edit_badges": {
+                        "panel_mode": "Estas insignias no se mostrarán porque esta vista está en \"Modo panel\"."
+                    },
                     "edit_card": {
                         "add": "Añadir tarjeta",
                         "confirm_cancel": "¿Estás seguro de que quieres cancelar?",
@@ -2889,7 +2892,7 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "Esto muestra la primera tarjeta a ancho completo; otras tarjetas en esta vista no se mostrarán.",
+                            "description": "Esto muestra la primera tarjeta a ancho completo. Otras tarjetas en esta vista, así como las insignias, no se mostrarán.",
                             "title": "¿Modo de panel?",
                             "warning_multiple_cards": "Esta vista contiene más de una tarjeta, pero una vista de panel solo puede mostrar 1 tarjeta."
                         }

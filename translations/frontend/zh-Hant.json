@@ -2796,6 +2796,9 @@
                         "entity": "實體",
                         "no_description": "無描述可使用。"
                     },
+                    "edit_badges": {
+                        "panel_mode": "\"面板模式\"下、圓標圖示將不會顯示。"
+                    },
                     "edit_card": {
                         "add": "新增面板",
                         "confirm_cancel": "確定要取消？",
@@ -2889,7 +2892,7 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "將會以全寬度製作第一張面板，視圖中其他面板將不進行呈現。",
+                            "description": "將會以全寬度製作第一張面板，其他面板與圓標圖示將不會顯示。",
                             "title": "面板模式？",
                             "warning_multiple_cards": "此視圖包含超過一張面板，但面板視圖僅能顯示一張面板。"
                         }

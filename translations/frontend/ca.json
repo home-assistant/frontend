@@ -1140,6 +1140,7 @@
                             },
                             "unsupported_condition": "Condició no suportada per la UI: {condition}"
                         },
+                        "copy_to_clipboard": "Copiar al porta-retalls",
                         "default_name": "Nova automatització",
                         "description": {
                             "label": "Descripció",
@@ -1497,6 +1498,7 @@
                     "different_include": "Possiblement a través d'un domini o una altra inclusió diferent.",
                     "pick_attribute": "Selecciona un atribut per substituir-lo",
                     "picker": {
+                        "documentation": "Documentació de personalització",
                         "entity": "Entitat",
                         "header": "Personalitzacions",
                         "introduction": "Personalitza els atributs de les entitats al teu gust. Les personalitzacions afegides/modificades apareixeran immediatament, les que s'hagin eliminat tindran efecte quan l'entitat s'actualitzi."
@@ -1584,6 +1586,7 @@
                         },
                         "filter": {
                             "filter": "Filtre",
+                            "show_all": "Mostra-ho tot",
                             "show_disabled": "Mostra entitats desactivades",
                             "show_readonly": "Mostra entitats de només lectura",
                             "show_unavailable": "Mostra entitats no disponibles"
@@ -1979,6 +1982,7 @@
                         "update": "Actualitza"
                     },
                     "introduction": "Aquí pots definir cada persona d'interès en Home Assistant.",
+                    "learn_more": "Obteniu més informació sobre les persones",
                     "no_persons_created_yet": "Sembla que encara no has creat cap persona.",
                     "note_about_persons_configured_in_yaml": "Nota: les persones configurades mitjançant configuration.yaml no es poden editar des de la UI.",
                     "person_not_found": "No s'ha pogut trobar la persona que vols editar.",

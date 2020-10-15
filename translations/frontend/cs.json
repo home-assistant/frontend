@@ -2795,6 +2795,9 @@
                         "entity": "Entita",
                         "no_description": "Žádný popis není k dispozici."
                     },
+                    "edit_badges": {
+                        "panel_mode": "Tyto odznaky se nebudou zobrazovat, protože pohled má nastaven režim \"Panel\"."
+                    },
                     "edit_card": {
                         "add": "Přidat kartu",
                         "confirm_cancel": "Opravdu chcete zahodit změny?",
@@ -2888,7 +2891,7 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "Toto vykreslí první kartu v plné šířce; ostatní karty v tomto pohledu nebudou vykresleny.",
+                            "description": "První karta bude zobrazena v plné šířce. Ostatní karty nebo odznaky nebudou v tomto pohledu vůbec zobrazeny.",
                             "title": "Režim panelu?",
                             "warning_multiple_cards": "Toto zobrazení obsahuje více než jednu kartu, ale v panelovém zobrazení může zobrazovat pouze 1 kartu."
                         }

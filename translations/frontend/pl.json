@@ -1586,7 +1586,7 @@
                         },
                         "filter": {
                             "filter": "Filtr",
-                            "hidden_entities": "Ukryte: {number} {number, plural,\n  one {encja}\n  few {encje}\n  many {encji}\n  other {encji}\n}",
+                            "hidden_entities": "{number} {number, plural,\n  one {encja ukryta}\n  few {encje ukryte}\n  many {encji ukrytych}\n  other {encji ukrytych}\n}",
                             "show_all": "Pokaż wszystkie",
                             "show_disabled": "Wyświetlaj wyłączone encje",
                             "show_readonly": "Wyświetlaj encje tylko do odczytu",
@@ -2796,6 +2796,9 @@
                         "entity": "Encja",
                         "no_description": "Brak dostępnego opisu."
                     },
+                    "edit_badges": {
+                        "panel_mode": "Te odznaki nie zostaną wyświetlone, ponieważ ten widok jest w \"Trybie panelu”."
+                    },
                     "edit_card": {
                         "add": "Dodaj kartę",
                         "confirm_cancel": "Czy na pewno chcesz anulować?",
@@ -2889,7 +2892,7 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "Pierwsza karta renderowana jest w pełnej szerokości; inne karty w tym widoku nie będą renderowane.",
+                            "description": "Pierwsza karta renderowana jest w pełnej szerokości. Inne karty w tym widoku, jak i odznaki nie będą renderowane.",
                             "title": "Tryb panelu?",
                             "warning_multiple_cards": "Ten widok zawiera więcej niż jedną kartę, a widok panelu może wyświetlać tylko jedną kartę."
                         }
