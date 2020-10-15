@@ -511,6 +511,11 @@ export class HaIntegrationCard extends LitElement {
         }
         h3 {
           word-wrap: break-word;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 3;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
         ha-button-menu {
           color: var(--secondary-text-color);
