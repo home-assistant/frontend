@@ -9,7 +9,7 @@ const PaperTabs = customElements.get("paper-tabs") as Constructor<
   PaperTabsElement
 >;
 
-let subTemplate: any;
+let subTemplate: HTMLTemplateElement;
 
 @customElement("ha-tabs")
 export class HaTabs extends PaperTabs {
@@ -19,10 +19,9 @@ export class HaTabs extends PaperTabs {
 
   private _lastLeftHiddenState = false;
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     if (!subTemplate) {
-      subTemplate = ((PaperTabs as any)
-        .template as HTMLTemplateElement).cloneNode(true);
+      subTemplate = (PaperTabs as any).template.cloneNode(true);
 
       const superStyle = subTemplate.content.querySelector("style");
 
@@ -33,7 +32,7 @@ export class HaTabs extends PaperTabs {
           arrow.setAttribute("noink", "");
         });
 
-      superStyle.appendChild(
+      superStyle!.appendChild(
         document.createTextNode(`
           .not-visible {
             display: none;
