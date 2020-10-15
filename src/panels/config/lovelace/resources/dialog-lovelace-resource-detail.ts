@@ -173,6 +173,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
   private _urlChanged(ev: PolymerChangedEvent<string>) {
     this._error = undefined;
     this._url = ev.detail.value;
+    this._type = this._detectResourceType(this._url);
   }
 
   private _typeChanged(ev: CustomEvent) {
@@ -212,6 +213,15 @@ export class DialogLovelaceResourceDetail extends LitElement {
 
   private _close(): void {
     this._params = undefined;
+  }
+
+  private _detectResourceType(url: string) {
+    const ext = url.split(".").pop() || "";
+    const styleSheetExt = ["css", "scss", "sass"];
+
+    if (styleSheetExt.includes(ext)) return "css";
+
+    return "module";
   }
 
   static get styles(): CSSResult[] {
