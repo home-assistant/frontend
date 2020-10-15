@@ -1,4 +1,3 @@
-import "../../../components/ha-icon-button";
 import "@thomasloven/round-slider";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
@@ -6,9 +5,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   svg,
   TemplateResult,
@@ -18,8 +17,9 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-card";
-import { HumidifierEntity } from "../../../data/humidifier";
+import "../../../components/ha-icon-button";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { HumidifierEntity } from "../../../data/humidifier";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entites";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -61,7 +61,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
   @internalProperty() private _setHum?: number;
 
   public getCardSize(): number {
-    return 5;
+    return 6;
   }
 
   public setConfig(config: HumidifierCardConfig): void {

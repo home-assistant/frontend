@@ -96,7 +96,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     }
     // +1 for the header
     let size =
-      (this._config.title || this._showHeaderToggle ? 1 : 0) +
+      (this._config.title || this._showHeaderToggle ? 2 : 0) +
       (this._config.entities.length || 1);
     if (this._headerElement) {
       const headerSize = computeCardSize(this._headerElement);

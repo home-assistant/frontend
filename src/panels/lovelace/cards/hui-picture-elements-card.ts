@@ -3,9 +3,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -149,6 +149,8 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
 
       ha-card {
         overflow: hidden;
+        height: 100%;
+        box-sizing: border-box;
       }
     `;
   }
