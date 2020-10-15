@@ -1,3 +1,4 @@
+import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-icon-item";
@@ -19,11 +20,11 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
+import { fuzzySequentialMatch } from "../../common/string/sequence_matching";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import "../ha-svg-icon";
 import "./state-badge";
-import "@material/mwc-icon-button/mwc-icon-button";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 
@@ -103,6 +104,8 @@ export class HaEntityPicker extends LitElement {
 
   private _initedStates = false;
 
+  private _states: HassEntity[] = [];
+
   private _getStates = memoizeOne(
     (
       _opened: boolean,
@@ -168,7 +171,7 @@ export class HaEntityPicker extends LitElement {
 
   protected updated(changedProps: PropertyValues) {
     if (!this._initedStates || (changedProps.has("_opened") && this._opened)) {
-      const states = this._getStates(
+      this._states = this._getStates(
         this._opened,
         this.hass,
         this.includeDomains,
@@ -176,7 +179,7 @@ export class HaEntityPicker extends LitElement {
         this.entityFilter,
         this.includeDeviceClasses
       );
-      (this._comboBox as any).items = states;
+      (this._comboBox as any).filteredItems = this._states;
       this._initedStates = true;
     }
   }
@@ -194,6 +197,7 @@ export class HaEntityPicker extends LitElement {
         .renderer=${rowRenderer}
         @opened-changed=${this._openedChanged}
         @value-changed=${this._valueChanged}
+        @filter-changed=${this._filterChanged}
       >
         <paper-input
           .autofocus=${this.autofocus}
@@ -260,6 +264,15 @@ export class HaEntityPicker extends LitElement {
     if (newValue !== this._value) {
       this._setValue(newValue);
     }
+  }
+
+  private _filterChanged(ev): void {
+    (this._comboBox as any).filteredItems = this._states.filter((state) =>
+      fuzzySequentialMatch(ev.detail.value, [
+        state.entity_id,
+        computeStateName(state),
+      ])
+    );
   }
 
   private _setValue(value: string) {
