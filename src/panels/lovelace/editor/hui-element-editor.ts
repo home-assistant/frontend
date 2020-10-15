@@ -67,7 +67,7 @@ export class HuiElementEditor extends LitElement {
 
   @property({ attribute: false }) public lovelace?: LovelaceConfig;
 
-  @property() public elementType: "row" | "card" | "headerfooter" = "card";
+  @property() public elementType?: "row" | "card" | "header" | "footer";
 
   @internalProperty() private _yaml?: string;
 
@@ -231,6 +231,7 @@ export class HuiElementEditor extends LitElement {
 
   protected updated(changedProperties) {
     super.updated(changedProperties);
+
     if (this._configElement && changedProperties.has("hass")) {
       this._configElement.hass = this.hass;
     }
@@ -258,6 +259,7 @@ export class HuiElementEditor extends LitElement {
   }
 
   private async _updateConfigElement(): Promise<void> {
+    await this.updateComplete;
     if (!this.value) {
       return;
     }
@@ -294,7 +296,10 @@ export class HuiElementEditor extends LitElement {
           elClass = await getCardElementClass(type);
         } else if (this.elementType === "row" && type !== GENERIC_ROW_TYPE) {
           elClass = await getRowElementClass(type);
-        } else if (this.elementType === "headerfooter") {
+        } else if (
+          this.elementType === "header" ||
+          this.elementType === "footer"
+        ) {
           elClass = await getHeaderFooterElementClass(type);
         }
 

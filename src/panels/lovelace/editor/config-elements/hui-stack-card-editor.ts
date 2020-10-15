@@ -144,6 +144,7 @@ export class HuiStackCardEditor extends LitElement
                   .hass=${this.hass}
                   .value=${this._config.cards[selected]}
                   .lovelace=${this.lovelace}
+                  elementType="card"
                   @config-changed=${this._handleConfigChanged}
                   @GUImode-changed=${this._handleGUIModeChanged}
                 ></hui-element-editor>

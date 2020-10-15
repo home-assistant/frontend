@@ -112,6 +112,7 @@ export class HuiConditionalCardEditor extends LitElement
                       .hass=${this.hass}
                       .value=${this._config.card}
                       .lovelace=${this.lovelace}
+                      elementType="card"
                       @config-changed=${this._handleCardChanged}
                       @GUImode-changed=${this._handleGUIModeChanged}
                     ></hui-element-editor>

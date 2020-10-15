@@ -2587,6 +2587,13 @@
             "graph": {
               "name": "Graph"
             }
+          },
+          "detail-editor": {
+            "types": {
+              "header": "Header Editor",
+              "footer": "Footer Editor",
+              "row": "Entity Row Editor"
+            }
           }
         },
         "warning": {

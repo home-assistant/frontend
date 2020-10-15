@@ -1,4 +1,3 @@
-import { mdiClose, mdiPencil } from "@mdi/js";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
@@ -34,12 +33,16 @@ import type { HomeAssistant } from "../../../../types";
 import type { EntitiesCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
 import type { LovelaceRowConfig } from "../../entity-rows/types";
-import { headerFooterConfigStructs } from "../../header-footer/types";
+import {
+  headerFooterConfigStructs,
+  LovelaceHeaderFooterConfig,
+} from "../../header-footer/types";
 import type { LovelaceCardEditor } from "../../types";
 import "../hui-advanced-element-editor";
 import "../hui-detail-editor-base";
 import type { HuiElementEditor } from "../hui-element-editor";
 import "../hui-entities-card-row-editor";
+import "../hui-header-footer-editor";
 import { processEditorEntities } from "../process-editor-entities";
 import {
   EditorTarget,
@@ -52,6 +55,7 @@ import { configElementStyle } from "./config-elements-style";
 interface EditDetailElementEvent {
   index?: number;
   elementType: string;
+  config?: LovelaceHeaderFooterConfig | LovelaceRowConfig;
 }
 
 declare global {
@@ -80,7 +84,9 @@ export class HuiEntitiesCardEditor extends LitElement
 
   @internalProperty() private _configEntities?: LovelaceRowConfig[];
 
-  @internalProperty() private _detailElementConfig?: LovelaceRowConfig;
+  @internalProperty() private _detailElementConfig?:
+    | LovelaceRowConfig
+    | LovelaceHeaderFooterConfig;
 
   @internalProperty() private _detailElementIndex?: number;
 
@@ -88,7 +94,7 @@ export class HuiEntitiesCardEditor extends LitElement
 
   @internalProperty() private _detailElementGuiMode = true;
 
-  @internalProperty() private _detailElementType?;
+  @internalProperty() private _detailElementType?: string;
 
   @query("hui-element-editor") private _cardEditorEl?: HuiElementEditor;
 
@@ -122,13 +128,13 @@ export class HuiEntitiesCardEditor extends LitElement
         >
           <span slot="title"
             >${this.hass.localize(
-              "ui.panel.lovelace.editor.card.entities.entity_row_editor"
+              `ui.panel.lovelace.editor.detail-editor.${this._detailElementType}`
             )}</span
           >
           <hui-element-editor
             .hass=${this.hass}
             .value=${this._detailElementConfig}
-            elementType="row"
+            .elementType=${this._detailElementType!}
             @config-changed=${this._handleEntityRowConfigChanged}
             @GUImode-changed=${this._handleGUIModeChanged}
           ></hui-element-editor>
@@ -187,67 +193,22 @@ export class HuiEntitiesCardEditor extends LitElement
             .hass=${this.hass}
             .entities=${this._configEntities}
             @entities-changed=${this._valueChanged}
-            @edit-row=${this._editDetailElement}
+            @edit-detail-element=${this._editDetailElement}
           ></hui-entities-card-row-editor>
         </div>
         <div slot="advanced">
-          <div class="header-footer-heading">
-            <span>
-              ${this.hass.localize(
-                `ui.panel.lovelace.editor.header-footer.header`
-              )}:
-              ${this.hass!.localize(
-                `ui.panel.lovelace.editor.header-footer.${this._config.header?.type}.name`
-              ) || "None"}
-            </span>
-            <div>
-              <mwc-icon-button
-                aria-label=${this.hass!.localize(
-                  "ui.components.entity.entity-picker.clear"
-                )}
-                class="remove-icon"
-              >
-                <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-              </mwc-icon-button>
-              <mwc-icon-button
-                aria-label=${this.hass!.localize(
-                  "ui.components.entity.entity-picker.edit"
-                )}
-                class="edit-icon"
-                .elementType=${"headerfooter"}
-              >
-                <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-              </mwc-icon-button>
-            </div>
-          </div>
-          <div class="header-footer-heading">
-            <span>
-              ${this.hass.localize(
-                `ui.panel.lovelace.editor.header-footer.footer`
-              )}:
-              ${this.hass!.localize(
-                `ui.panel.lovelace.editor.header-footer.${this._config.footer?.type}.name`
-              ) || "None"}
-            </span>
-            <div>
-              <mwc-icon-button
-                aria-label=${this.hass!.localize(
-                  "ui.components.entity.entity-picker.clear"
-                )}
-                class="remove-icon"
-              >
-                <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-              </mwc-icon-button>
-              <mwc-icon-button
-                aria-label=${this.hass!.localize(
-                  "ui.components.entity.entity-picker.edit"
-                )}
-                class="edit-icon"
-              >
-                <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-              </mwc-icon-button>
-            </div>
-          </div>
+          <hui-header-footer-editor
+            .hass=${this.hass}
+            .configValue=${"header"}
+            .config=${this._config.header}
+            @edit-detail-element=${this._editDetailElement}
+          ></hui-header-footer-editor>
+          <hui-header-footer-editor
+            .hass=${this.hass}
+            .configValue=${"footer"}
+            .config=${this._config.footer}
+            @edit-detail-element=${this._editDetailElement}
+          ></hui-header-footer-editor>
         </div>
       </hui-advanced-element-editor>
     `;
@@ -288,15 +249,18 @@ export class HuiEntitiesCardEditor extends LitElement
   }
 
   private _editDetailElement(ev: HASSDomEvent<EditDetailElementEvent>): void {
-    if (ev.detail.elementType === "row") {
-      this._detailElementIndex = ev.detail.index!;
-      this._detailElementConfig = this._configEntities![
-        this._detailElementIndex
-      ];
+    const { elementType, config, index } = ev.detail;
+
+    this._detailElementType = elementType;
+    this._detailElementConfig = config;
+
+    if (elementType === "row") {
+      this._detailElementIndex = index!;
     }
   }
 
   private _goBack(): void {
+    this._detailElementType = undefined;
     this._detailElementIndex = undefined;
     this._detailElementConfig = undefined;
     this._detailElementGuiModeAvailable = true;
@@ -324,7 +288,6 @@ export class HuiEntitiesCardEditor extends LitElement
     this._detailElementConfig = value;
 
     this._config = { ...this._config!, entities: newConfigEntities };
-
     this._configEntities = processEditorEntities(this._config!.entities);
 
     fireEvent(this, "config-changed", { config: this._config! });
@@ -348,11 +311,6 @@ export class HuiEntitiesCardEditor extends LitElement
         }
         div[slot="advanced"] {
           padding-top: 8px;
-        }
-        .remove-icon,
-        .edit-icon {
-          --mdc-icon-button-size: 36px;
-          color: var(--secondary-text-color);
         }
       `,
     ];

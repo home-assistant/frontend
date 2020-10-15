@@ -14,12 +14,4 @@ export const configElementStyle = css`
   .suffix {
     margin: 0 8px;
   }
-  .header-footer-heading {
-    font-size: 16px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 12px;
-  }
 `;
