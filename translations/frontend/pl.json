@@ -687,9 +687,9 @@
                 "past": "{time} temu",
                 "past_duration": {
                     "day": "{count} {count, plural,\n  one {dzień}\n  other {dni}\n} temu",
-                    "hour": "{count} {count, plural,\n  one {godzina}\n  few {godziny}\n  many {godzin}\n  other {godzin}\n} temu",
-                    "minute": "{count} {count, plural,\n  one {minuta}\n  few {minuty}\n  many {minut}\n  other {minut}\n} temu",
-                    "second": "{count} {count, plural,\n  one {sekunda}\n  few {sekundy}\n  many {sekund}\n  other {sekund}\n} temu",
+                    "hour": "{count} {count, plural,\n  one {godzinę}\n  few {godziny}\n  many {godzin}\n  other {godzin}\n} temu",
+                    "minute": "{count} {count, plural,\n  one {minutę}\n  few {minuty}\n  many {minut}\n  other {minut}\n} temu",
+                    "second": "{count} {count, plural,\n  one {sekundę}\n  few {sekundy}\n  many {sekund}\n  other {sekund}\n} temu",
                     "week": "{count} {count, plural,\n  one {tydzień}\n  few {tygodnie}\n  many {tygodni}\n  other {tygodni}\n} temu"
                 }
             },
@@ -1761,7 +1761,7 @@
                     "details": "Szczegóły loga ({level})",
                     "load_full_log": "Załaduj cały log Home Assistanta",
                     "loading_log": "Ładowanie loga błędów…",
-                    "multiple_messages": "wiadomość pojawiła się po raz pierwszy o godzinie {time} i powtarzała się {counter} razy",
+                    "multiple_messages": "wiadomość pojawiła się po raz pierwszy {time} i powtarzała się {counter} razy",
                     "no_errors": "Nie zgłoszono żadnych błędów.",
                     "no_issues": "Nie ma nowych problemów!",
                     "refresh": "Odśwież",

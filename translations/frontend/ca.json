@@ -1140,7 +1140,7 @@
                             },
                             "unsupported_condition": "Condició no suportada per la UI: {condition}"
                         },
-                        "copy_to_clipboard": "Copiar al porta-retalls",
+                        "copy_to_clipboard": "Copia al porta-retalls",
                         "default_name": "Nova automatització",
                         "description": {
                             "label": "Descripció",
@@ -1586,6 +1586,7 @@
                         },
                         "filter": {
                             "filter": "Filtre",
+                            "hidden_entities": "{number} {number, plural,\n  one {entitat amagada}\n  other {entitats amagades}\n}",
                             "show_all": "Mostra-ho tot",
                             "show_disabled": "Mostra entitats desactivades",
                             "show_readonly": "Mostra entitats de només lectura",
@@ -1982,7 +1983,7 @@
                         "update": "Actualitza"
                     },
                     "introduction": "Aquí pots definir cada persona d'interès en Home Assistant.",
-                    "learn_more": "Obteniu més informació sobre les persones",
+                    "learn_more": "Obté més informació sobre persones",
                     "no_persons_created_yet": "Sembla que encara no has creat cap persona.",
                     "note_about_persons_configured_in_yaml": "Nota: les persones configurades mitjançant configuration.yaml no es poden editar des de la UI.",
                     "person_not_found": "No s'ha pogut trobar la persona que vols editar.",
@@ -2795,6 +2796,9 @@
                         "entity": "Entitat",
                         "no_description": "No hi ha cap descripció disponible."
                     },
+                    "edit_badges": {
+                        "panel_mode": "Aquestes insígnies no es mostraran ja que aquesta visualització està en \"mode panell\""
+                    },
                     "edit_card": {
                         "add": "Afegir targeta",
                         "confirm_cancel": "Segur que vols cancel·lar?",
@@ -2829,7 +2833,7 @@
                         "header_name": "Configuració de la visualització {name}",
                         "move_left": "Desplaça la visualització cap a l'esquerra",
                         "move_right": "Desplaça la visualització cap a la dreta",
-                        "tab_badges": "Etiquetes",
+                        "tab_badges": "Insígnies",
                         "tab_settings": "Configuració",
                         "tab_visibility": "Visibilitat",
                         "visibility": {
@@ -2888,7 +2892,7 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "Es renderitzarà la primera targeta a amplada completa; les altres targetes d'aquesta visualització no es mostraran.",
+                            "description": "Això renderitza la primera targeta a amplada completa. Les altres targetes i insígnies d'aquesta visualització no es renderitzaran.",
                             "title": "Mode panell?",
                             "warning_multiple_cards": "Aquesta vista conté més d'una targeta, però una vista en mode panell només pot mostrar una targeta."
                         }

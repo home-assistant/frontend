@@ -1653,6 +1653,7 @@
                         "options": "Optionen",
                         "reload": "Neu laden",
                         "reload_confirm": "Die Integration wurde neu geladen",
+                        "reload_restart_confirm": "Home Assistant neustarten, um das Neuladen dieser Integration abzuschließen",
                         "rename": "Umbenennen",
                         "restart_confirm": "Starte Home Assistant neu, um das Entfernen dieser Integration abzuschließen",
                         "settings_button": "Einstellungen für {integration} bearbeiten",
