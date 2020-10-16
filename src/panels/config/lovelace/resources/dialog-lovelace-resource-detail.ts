@@ -23,16 +23,17 @@ import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceResourceDetailsDialogParams } from "./show-dialog-lovelace-resource-detail";
 
-function detectResourceType(url: string) {
+const styleSheetExt = ["css", "scss", "sass"];
+
+const detectResourceType = (url: string) => {
   const ext = url.split(".").pop() || "";
-  const styleSheetExt = ["css", "scss", "sass"];
 
   if (styleSheetExt.includes(ext)) {
     return "css";
   }
 
   return "module";
-}
+};
 
 @customElement("dialog-lovelace-resource-detail")
 export class DialogLovelaceResourceDetail extends LitElement {
