@@ -250,9 +250,6 @@ export class HuiEntitiesCardEditor extends LitElement
           align-items: center;
           font-size: 18px;
         }
-        div[slot="advanced"] {
-          padding-top: 8px;
-        }
       `,
     ];
   }
