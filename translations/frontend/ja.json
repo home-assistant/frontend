@@ -661,9 +661,23 @@
                     "week": "{count} {count, plural,\n  one {週間}\n  other {週間}\n}"
                 },
                 "future": "{time}以内",
+                "future_duration": {
+                    "day": "{count} {count, plural,\n  one {日}\n  other {日}\n}",
+                    "hour": "{count} {count, plural,\n  one {時間}\n  other {時間}\n}",
+                    "minute": "{count} {count, plural,\n  one {分}\n  other {分}\n}",
+                    "second": "{count} {count, plural,\n  one {秒}\n  other {秒}\n}",
+                    "week": "{count} {count, plural,\n  one {週}\n  other {週}\n}"
+                },
                 "just_now": "ちょうど今",
                 "never": "未実行",
-                "past": "{time}前"
+                "past": "{time}前",
+                "past_duration": {
+                    "day": "{count} {count, plural,\n  one {日}\n  other {日}\n}前",
+                    "hour": "{count} {count, plural,\n  one {時間}\n  other {時間}\n}前",
+                    "minute": "{count} {count, plural,\n  one {分}\n  other {分}\n}前",
+                    "second": "{count} {count, plural,\n  one {秒}\n  other {秒}\n}前",
+                    "week": "{count} {count, plural,\n  one {週}\n  other {週}前\n}"
+                }
             },
             "service-picker": {
                 "service": "サービス"
@@ -810,6 +824,44 @@
                 "success": {
                     "description": "オプションを保存しました。"
                 }
+            },
+            "quick-bar": {
+                "commands": {
+                    "reload": {
+                        "automation": "オートメーションの再読込",
+                        "command_line": "コマンドラインエンティティをリロードする",
+                        "core": "場所とカスタマイズをリロード",
+                        "filesize": "ファイルサイズエンティティをリロードします",
+                        "filter": "フィルタエンティティをリロードします",
+                        "generic": "IPカメラエンティティをリロードします",
+                        "generic_thermostat": "サーモスタットエンティティをリロードします",
+                        "group": "グループの再読込",
+                        "history_stats": "履歴エンティティをリロードします",
+                        "homekit": "HomeKitをリロード",
+                        "input_boolean": "入力ブール値を再読み込み",
+                        "input_datetime": "入力日時を再読み込み",
+                        "input_number": "入力番号を再読み込み",
+                        "input_select": "入力選択をリロード",
+                        "input_text": "入力テキストを再読み込み",
+                        "min_max": "最小/最大エンティティをリロードします",
+                        "mqtt": "mqttエンティティをリロードします",
+                        "person": "人の再読込",
+                        "ping": "pingバイナリセンサーエンティティをリロードします",
+                        "reload": "{domain}をリロードします",
+                        "rest": "残りのエンティティをリロードし通知します",
+                        "rpi_gpio": "Raspberry Pi GPIOエンティティをリロードします",
+                        "scene": "シーンの再読込",
+                        "script": "スクリプトの再読込",
+                        "smtp": "SMTP通知サービスをリロードします",
+                        "statistics": "統計エンティティをリロードします",
+                        "telegram": "テレグラム通知サービスをリロードします",
+                        "template": "テンプレートエンティティをリロードします",
+                        "trend": "トレンドエンティティをリロードします",
+                        "universal": "ユニバーサルメディアプレーヤーエンティティをリロードします",
+                        "zone": "ゾーンの再読込"
+                    }
+                },
+                "filter_placeholder": "エンティティフィルター"
             },
             "voice_command": {
                 "did_not_hear": "Home Assistant は何も聞きませんでした",
@@ -1074,6 +1126,7 @@
                             },
                             "unsupported_condition": "未サポートの条件：{condition}"
                         },
+                        "copy_to_clipboard": "クリップボードにコピー",
                         "default_name": "新しいオートメーション",
                         "description": {
                             "label": "説明",
@@ -1431,6 +1484,7 @@
                     "different_include": "おそらくドメインを介して、globまたは別のものを含む。",
                     "pick_attribute": "オーバーライドする属性を選択してください",
                     "picker": {
+                        "documentation": "カスタマイズドキュメント",
                         "entity": "エンティティ",
                         "header": "カスタマイズ",
                         "introduction": "エンティティごとの属性を微調整します。追加/編集されたカスタマイズは、すぐに有効になります。削除されたカスタマイズは、エンティティが更新されたときに有効になります。"
@@ -1518,6 +1572,8 @@
                         },
                         "filter": {
                             "filter": "フィルター",
+                            "hidden_entities": "{number} 非表示 {number, plural,\n  one {エンティティ}\n  other {エンティティ}\n}",
+                            "show_all": "すべてを表示",
                             "show_disabled": "無効なエンティティを表示",
                             "show_readonly": "読み取り専用のエンティティを表示",
                             "show_unavailable": "利用できないエンティティの表示"
@@ -1913,8 +1969,11 @@
                         "update": "更新"
                     },
                     "introduction": "ここでは、Home Assistantで関心のある各人を定義できます。",
+                    "learn_more": "ユーザーの詳細",
                     "no_persons_created_yet": "まだ人を作成していませんですね。",
-                    "note_about_persons_configured_in_yaml": "注：configuration.yaml で設定された人は、UI で編集できません。"
+                    "note_about_persons_configured_in_yaml": "注：configuration.yaml で設定された人は、UI で編集できません。",
+                    "person_not_found": "編集しようとしている人が見つかりませんでした。",
+                    "person_not_found_title": "人が見つかりません"
                 },
                 "scene": {
                     "activated": "アクティブ化されたシーン {name}。",
@@ -1990,6 +2049,7 @@
                             "restart": "再起動",
                             "single": "シングル（デフォルト）"
                         },
+                        "save_script": "スクリプトを保存",
                         "sequence": "シーケンス",
                         "sequence_sentence": "このスクリプトのアクションのシーケンス。"
                     },
@@ -2003,6 +2063,7 @@
                         "introduction": "スクリプトエディタを使用すると、スクリプトを作成および編集できます。以下のリンクに従って手順を読み、Home Assistantが正しく設定されていることを確認してください。",
                         "learn_more": "スクリプトの詳細",
                         "no_scripts": "編集可能なスクリプトが見つかりませんでした",
+                        "run_script": "スクリプトを実行する",
                         "show_info": "スクリプトに関する情報を表示",
                         "trigger_script": "トリガースクリプト"
                     }
@@ -2070,6 +2131,7 @@
                     "create_automation": "タグを使用したオートメーションの作成",
                     "description": "タグの管理",
                     "detail": {
+                        "companion_apps": "コンパニオン アプリ",
                         "create": "作成",
                         "create_and_write": "作成と書き込み",
                         "delete": "削除",
@@ -2078,7 +2140,8 @@
                         "new_tag": "新しいタグ",
                         "tag_id": "タグID",
                         "tag_id_placeholder": "空のままにすると自動生成",
-                        "update": "更新"
+                        "update": "更新",
+                        "usage": "タグは、スキャン時にオートメーションをトリガーすることができ、NFCタグ、QRコード、または他の種類のタグを使用することができます。{companion_link} を使用して、このタグをプログラム可能な NFC タグに書き込むか、以下の QR コードを作成してください。"
                     },
                     "edit": "編集",
                     "headers": {
@@ -2719,6 +2782,9 @@
                         "entity": "エンティティ",
                         "no_description": "説明がありません。"
                     },
+                    "edit_badges": {
+                        "panel_mode": "このビューは「パネルモード」になっているため、これらのバッジは表示されません。"
+                    },
                     "edit_card": {
                         "add": "カードを追加",
                         "confirm_cancel": "キャンセルしてもよいですか?",
@@ -2727,6 +2793,8 @@
                         "edit": "編集",
                         "header": "カード設定",
                         "move": "ビューに移動",
+                        "move_after": "後にカードを移動",
+                        "move_before": "前にカードを移動",
                         "options": "その他のオプション",
                         "pick_card": "どのカードを追加しますか？",
                         "pick_card_view_title": "{name}ビューにどのカードを追加しますか？",

@@ -344,7 +344,7 @@
             },
             "automation": {
                 "last_triggered": "Pēdējais izsaukums",
-                "trigger": "Izsaukt"
+                "trigger": "Izpildīt"
             },
             "camera": {
                 "not_available": "Attēls nav pieejams"
@@ -538,11 +538,11 @@
                     "icon": "Pielāgota ikona",
                     "icon_error": "Ikonām jābūt formātā “prefikss:nosaukums”, piemēram, “mdi:home”",
                     "name": "Nosaukuma pārlabošana",
-                    "note": "Ievērībai: pašlaik tas var nedarboties ar visām integrācijām.",
+                    "note": "Ievērībai: Pašlaik tas var nedarboties ar visām integrācijām.",
                     "unavailable": "Šī vienība pašlaik nav pieejama.",
                     "update": "Atjaunināt"
                 },
-                "no_unique_id": "Šai vienībai nav unikāla ID, tāpēc tās iestatījumus nevar pārvaldīt, izmantojot lietotāja saskarni.",
+                "no_unique_id": "Šai vienībai nav unikāla ID, tāpēc tās iestatījumus nevar pārvaldīt, izmantojot lietotāja saskarni. Plašāku informāciju skatiet {faq_link}.",
                 "related": "Saistības",
                 "settings": "Iestatījumi"
             },
@@ -625,7 +625,7 @@
             },
             "zha_device_info": {
                 "buttons": {
-                    "add": "Pievienot ierīces",
+                    "add": "Pievienot ierīces, izmantojot so ierīci",
                     "reconfigure": "Pārkonfigurēt ierīci",
                     "remove": "Noņemt ierīci"
                 },
@@ -638,7 +638,7 @@
                 },
                 "zha_device_card": {
                     "area_picker_label": "Apgabals",
-                    "device_name_placeholder": "Lietotāja dots vārds",
+                    "device_name_placeholder": "Mainīt ierīces nosaukumu",
                     "update_name_button": "Atjaunināt nosaukumu"
                 }
             }
@@ -673,12 +673,12 @@
                 },
                 "areas": {
                     "caption": "Apgabali",
-                    "description": "Pārskats par visiem jūsu mājās apgabaliem.",
+                    "description": "Pārvaldiet mājas apgabalus",
                     "editor": {
-                        "create": "IZVEIDOT",
-                        "delete": "DZĒST",
+                        "create": "Izveidot",
+                        "delete": "Dzēst",
                         "name": "Nosaukums",
-                        "update": "ATJAUNINĀT"
+                        "update": "Atjaunināt"
                     },
                     "picker": {
                         "header": "Apgabali",
@@ -689,7 +689,7 @@
                 },
                 "automation": {
                     "caption": "Automatizācijas",
-                    "description": "Veidojiet un rediģējiet automatizācijas",
+                    "description": "Pārvaldiet automatizācijas",
                     "editor": {
                         "actions": {
                             "add": "Pievienot darbību",
@@ -882,7 +882,7 @@
                                     "seconds": "Sekundes"
                                 },
                                 "time": {
-                                    "at": "Pie",
+                                    "at": "plkst.",
                                     "label": "Laiks"
                                 },
                                 "webhook": {
@@ -1055,7 +1055,7 @@
                 },
                 "entities": {
                     "caption": "Vienības",
-                    "description": "Pārskats par visām zināmajām vienībām.",
+                    "description": "Pārvaldiet zināmās vienības",
                     "picker": {
                         "disable_selected": {
                             "button": "Atspējot atlasītās",
@@ -1084,7 +1084,7 @@
                         "introduction2": "Izmantojiet vienību reģistru, lai pārlabotu nosaukumu, mainītu vienības ID vai noņemtu ierakstu no Home Assistant.",
                         "remove_selected": {
                             "button": "Noņemt atlasītās",
-                            "confirm_text": "Vienības var noņemt tikai tad, kad tās vairs nerada attiecīgā integrācija.",
+                            "confirm_text": "Jums vajadzētu noņemt tos no Lovelace konfigurācijām un automatizācijām, ja tie satur šīs vienības.",
                             "confirm_title": "Vai vēlaties noņemt {number} vienības?"
                         },
                         "selected": "{number} atlasītas",
@@ -1096,10 +1096,14 @@
                         }
                     }
                 },
+                "filtering": {
+                    "clear": "Notīrīt",
+                    "filtering_by": "Filtrēšana pēc"
+                },
                 "header": "Home Assistant konfigurēšana",
                 "helpers": {
                     "caption": "Palīgi",
-                    "description": "Elementi, kas var palīdzēt automatizāciju veidošanā",
+                    "description": "Pārvaldiet elementus, kas palīdz veidot automatizācijas",
                     "dialog": {
                         "add_helper": "Pievienot palīgu",
                         "add_platform": "Pievienot {platform}",
@@ -1142,13 +1146,18 @@
                     "title": "Informācija"
                 },
                 "integrations": {
+                    "add_integration": "Pievienot integrāciju",
+                    "attention": "Nepieciešama uzmanība",
                     "caption": "Integrācijas",
                     "config_entry": {
                         "area": "Apgabalā {area}",
+                        "delete": "Dzēst",
                         "delete_button": "Dzēst {integration}",
                         "delete_confirm": "Vai tiešām vēlaties dzēst šo integrāciju?",
                         "device_unavailable": "ierīce nav pieejama",
+                        "devices": "{count} {count, plural,\n  one {ierīce}\n  other {ierīces}\n}",
                         "documentation": "Dokumentācija",
+                        "entities": "{count} {count, plural,\n  one {vienība}\n  other {vienības}\n}",
                         "entity_unavailable": "vienība nav pieejama",
                         "firmware": "Programmaparatūra: {version}",
                         "hub": "Savienots caur",
@@ -1156,8 +1165,15 @@
                         "no_area": "Nav apgabala",
                         "no_device": "Vienības bez ierīcēm",
                         "no_devices": "Šai integrācijai nav ierīču.",
+                        "options": "Opcijas",
+                        "reload": "Pārlādēt",
+                        "reload_confirm": "Integrācija tika pārlādēta",
+                        "reload_restart_confirm": "Restartējiet Home Assistant, lai pabeigtu šīs integrācijas pārlādēšanu",
+                        "rename": "Pārdēvēt",
                         "restart_confirm": "Restartēt Home Assistant, lai pabeigtu šīs integrācijas noņemšanu",
+                        "services": "{count} {count, plural,\n  one {serviss}\n  other {servisi}\n}",
                         "settings_button": "Rediģēt {integration} integrācijas iestatījumus",
+                        "system_options": "Sistēmas opcijas",
                         "system_options_button": "Sistēmas opcijas {integration} integrācijai"
                     },
                     "config_flow": {
@@ -1171,12 +1187,13 @@
                             "open_site": "Atvērt tīmekļa vietni"
                         },
                         "finish": "Pabeigt",
+                        "loading_first_time": "Lūdzu, uzgaidiet, kamēr tiek instalēta integrācija",
                         "not_all_required_fields": "Ne visi obligātie lauki ir aizpildīti.",
                         "submit": "Iesniegt"
                     },
                     "configure": "Konfigurēt",
                     "configured": "Nokonfigurētās",
-                    "description": "Pārvaldīt un iestatīt integrācijas",
+                    "description": "Pārvaldiet integrācijas",
                     "details": "Integrācijas detaļas",
                     "discovered": "Atklātās",
                     "home_assistant_website": "Home Assistant tīmekļa vietne",
@@ -1191,12 +1208,19 @@
                         "show_ignored": "Rādīt ignorētās integrācijas",
                         "stop_ignore": "Pārtraukt ignorēšanu"
                     },
+                    "integration": "integrācija",
                     "integration_not_found": "Integrācija nav atrasta.",
                     "new": "Pievienot jaunu integrāciju",
+                    "no_integrations": "Šķiet, ka jums pagaidām nav nokonfigurēta neviena integrācija. Noklikšķiniet uz pogas zemāk, lai pievienotu savu pirmo integrāciju!",
                     "none": "Pagaidām nekas nav nokonfigurēts",
+                    "none_found": "Integrācija nav atrasta",
                     "none_found_detail": "Pielāgot meklēšanas kritērijus.",
                     "note_about_integrations": "Pagaidām ne visas integrācijas var nokonfigurēt, izmantojot lietotāja saskarni.",
-                    "note_about_website_reference": "Vairāk informācijas vietnē "
+                    "note_about_website_reference": "Vairāk informācijas vietnē ",
+                    "reconfigure": "Pārkonfigurēt",
+                    "rename_dialog": "Rediģējiet šī konfigurācijas ieraksta nosaukumu",
+                    "rename_input_label": "Ieraksta nosaukums",
+                    "search": "Meklēt integrācijas"
                 },
                 "introduction": "Šeit iespējams konfigurēt Jūsu komponentus un pašu Home Assistant. Pagaidām ne visu ir iespējams konfigurēt, izmantojot lietotāja saskarni, bet mēs strādājam pie tā.",
                 "logs": {
@@ -1254,7 +1278,7 @@
                             "open": "Atvērt"
                         }
                     },
-                    "description": "Konfigurējiet savus Lovelace infopaneļus",
+                    "description": "Pārvaldiet savus Lovelace infopaneļus",
                     "resources": {
                         "cant_edit_yaml": "Jūs izmantojat Lovelace YAML režīmā, tāpēc jūs nevarat pārvaldīt savus resursus, izmantojot lietotāja saskarni. Pārvaldiet tos konfigurācijā.yaml.",
                         "caption": "Resursi",
@@ -1282,6 +1306,9 @@
                     "create_person": "Izveidot personu",
                     "description": "Pārvaldīt personas, kuras izseko Home Assistant.",
                     "detail": {
+                        "admin": "Administrators",
+                        "allow_login": "Atļaut personai pieteikties",
+                        "confirm_delete_user": "Vai tiešām vēlaties dzēst lietotāja {name} kontu? Jūs joprojām varat izsekot lietotāju, taču persona vairs nevarēs pieteikties.",
                         "create": "Izveidot",
                         "delete": "Dzēst",
                         "device_tracker_intro": "Atlasiet ierīces, kas pieder šai personai.",
@@ -1298,12 +1325,14 @@
                     },
                     "introduction": "Šeit jūs varat definēt personas izmantošanai Home Assistant.",
                     "no_persons_created_yet": "Izskatās, ka vēl neesat izveidojis nevienu personu.",
-                    "note_about_persons_configured_in_yaml": "Ievērībai: configuration.yaml konfigurētās personas nevar rediģēt, izmantojot lietotāja saskarni."
+                    "note_about_persons_configured_in_yaml": "Ievērībai: configuration.yaml konfigurētās personas nevar rediģēt, izmantojot lietotāja saskarni.",
+                    "person_not_found": "Mēs nevarējām atrast personu, kuru mēģinājāt rediģēt.",
+                    "person_not_found_title": "Persona nav atrasta"
                 },
                 "scene": {
                     "activated": "Aktivizēta aina {name}.",
                     "caption": "Ainas",
-                    "description": "Izveidojiet un rediģējiet ainas",
+                    "description": "Pārvaldiet ainas",
                     "editor": {
                         "default_name": "Jauna aina",
                         "devices": {
@@ -1343,7 +1372,7 @@
                 },
                 "script": {
                     "caption": "Skripti",
-                    "description": "Veidojiet un rediģējiet skriptus",
+                    "description": "Pārvaldiet skriptus",
                     "editor": {
                         "alias": "Nosaukums",
                         "default_name": "Jauns skripts",
@@ -1357,7 +1386,7 @@
                         "sequence_sentence": "Šī skripta darbību secība."
                     },
                     "picker": {
-                        "add_script": "Pievienot skriptu",
+                        "add_script": "Pievienot jaunu skriptu",
                         "edit_script": "Rediģēt skriptu",
                         "header": "Skriptu redaktors",
                         "introduction": "Skriptu redaktors ļauj jums izveidot un rediģēt skriptus. Lūdzu, izmantojiet zemāk esošo saiti, lai izlasītu instrukcijas, lai pārliecinātos, ka esat pareizi konfigurējis Home Assistant.",
@@ -1374,12 +1403,19 @@
                         "reloading": {
                             "automation": "Pārlādēt automatizācijas",
                             "core": "Pārlādēt lokāciju un pielāgojumus",
-                            "group": "Pārlādēt grupas",
-                            "heading": "Konfigurācijas pārlādēšana",
-                            "introduction": "Atsevišķas Home Assistant daļas var pārlādēt bez nepieciešamības restartēt. Veicot pārlādēšanu iepriekšējā konfigurācija tiks atiestatīta un tiks ielādēta jaunā.",
+                            "group": "Pārlādēt grupas, grupas vienības un notify servisus",
+                            "heading": "YAML konfigurācijas pārlādēšana",
+                            "history_stats": "Pārlādēt history stats vienības",
+                            "introduction": "Atsevišķas Home Assistant daļas var pārlādēt bez nepieciešamības restartēt. Veicot pārlādēšanu, pašreizējā YAML konfigurācija tiks atiestatīta un tiks ielādēta jaunā.",
+                            "mqtt": "Pārlādēt mqtt vienības",
                             "person": "Pārlādēt personas",
+                            "reload": "Pārlādēt {domain}",
+                            "rest": "Pārlādēt rest vienības un notify servisus",
+                            "rpi_gpio": "Pārlādēt Raspberry Pi GPIO vienības",
                             "scene": "Pārlādēt ainas",
                             "script": "Pārlādēt skriptus",
+                            "smtp": "Pārlādēt smtp notify servisus",
+                            "telegram": "Pārlādēt telegram notify servisus",
                             "zone": "Pārlādēt zonas"
                         },
                         "server_management": {
@@ -1431,6 +1467,7 @@
                         "create": "Izveidot",
                         "name": "Vārds",
                         "password": "Parole",
+                        "password_confirm": "Apstipriniet paroli",
                         "username": "Lietotājvārds"
                     },
                     "caption": "Lietotāji",
@@ -1507,7 +1544,7 @@
                         "create": "Izveidot",
                         "delete": "Dzēst",
                         "icon": "Ikona",
-                        "icon_error_msg": "Ikonai jābūt formātā prefikss:nosaukums, piemēram: mdi:home",
+                        "icon_error_msg": "Ikonai jābūt formātā \"prefikss:nosaukums\", piemēram: \"mdi:home\"",
                         "latitude": "Platums",
                         "longitude": "Garums",
                         "name": "Nosaukums",
@@ -1670,7 +1707,7 @@
                             "name": "Mitrinātājs"
                         },
                         "iframe": {
-                            "name": "iFrame"
+                            "name": "Tīmekļa lapa"
                         },
                         "light": {
                             "name": "Gaisma"
@@ -1723,7 +1760,7 @@
                     },
                     "edit_lovelace": {
                         "edit_title": "Rediģēt virsrakstu",
-                        "explanation": "Šis nosaukums tiek parādīts virs visiem Jūsu Lovelace skatiem.",
+                        "explanation": "Šis nosaukums tiek parādīts virs visiem jūsu Lovelace skatiem.",
                         "header": "Jūsu Lovelace UI virsraksts"
                     },
                     "edit_view": {
@@ -1762,14 +1799,14 @@
                         "cancel": "Atcelt",
                         "close": "Aizvērt",
                         "header": "Pārņemt kontroli pār savu Lovelace lietotāja saskarni",
-                        "para": "Pēc noklusējuma Home Assistant uzturēs jūsu lietotāja saskarni, atjauninot to, kad būs pieejamas jaunas vienības vai Lovelace UI komponenti. Ja jūs uzņematies kontroli, mēs jums vairs neveiksim izmaiņas automātiski jūsu vietā.",
+                        "para": "Šo infopaneli pašlaik konktrolē Home Assistant, automātiski atjauninot, kad kļūst pieejamas jaunas vienības vai Lovelace UI komponenti. Ja pārņemsiet kontroli, šis informācijas panelis vairs netiks automātiski atjaunināts. Izmēģinājumiem jūs vienmēr varat izveidot jaunu infopaneli konfigurācijā.",
                         "para_sure": "Vai tiešām vēlaties pārņemt kontroli pār lietotāja saskarni?",
                         "save": "Pārņemt kontroli"
                     }
                 },
                 "menu": {
                     "close": "Aizvērt",
-                    "configure_ui": "Konfigurēt lietotāja saskarni",
+                    "configure_ui": "Rediģēt lietotāja saskarni",
                     "exit_edit_mode": "Iziet no UI rediģēšanas režīma",
                     "help": "Palīdzība",
                     "refresh": "Atsvaidzināt",
@@ -1800,7 +1837,7 @@
                 "abort_intro": "Pieteikšanās priekšlaikus pārtraukta",
                 "authorizing_client": "Jūs gatavojaties piešķirt {clientId} piekļuvi jūsu Home Assistant.",
                 "form": {
-                    "next": "Neste",
+                    "next": "Nākamais",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -1862,7 +1899,7 @@
                                     "data": {
                                         "password": "API parole"
                                     },
-                                    "description": "Lūdzu, ievadiet API paroli savā http config:"
+                                    "description": "Lūdzu, ievadiet API paroli savā HTTP konfigurācijā:"
                                 },
                                 "mfa": {
                                     "data": {
@@ -2014,7 +2051,7 @@
                     "delete_failed": "Neizdevās dzēst piekļuves pilnvaru.",
                     "description": "Izveidojiet ilgtermiņa piekļuves pilnvaras, lai ļautu jūsu skriptiem mijiedarboties ar jūsu Home Assistant instanci. Katra pilnvara būs derīga 10 gadus pēc tās izveidošanas. Pašlaik ir aktīvas sekojošas ilgtermiņa piekļuves pilvaras.",
                     "empty_state": "Jums vēl nav ilgtermiņa piekļuves pilnvaru.",
-                    "header": "Ilgtermiņas piekļuves pilnvaras",
+                    "header": "Ilgtermiņa piekļuves pilnvaras",
                     "last_used": "Pēdējo reizi izmantota {date} no {location}",
                     "learn_auth_requests": "Uzziniet, kā veikt autentificētus pieprasījumus.",
                     "name": "Nosaukums",
@@ -2080,7 +2117,7 @@
             "shopping-list": {
                 "add_item": "Pievienot vienumu",
                 "clear_completed": "Noņemt izpildītos",
-                "microphone_tip": "Pieskarieties mikrofonam augšējā labajā stūrī un sakiet \"Pievienojiet konfektes manam iepirkumu sarakstam\""
+                "microphone_tip": "Pieskarieties mikrofonam augšējā labajā stūrī un sakiet vai rakstiet \"Pievienot konfektes manam iepirkumu sarakstam\""
             }
         },
         "sidebar": {
