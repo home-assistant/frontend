@@ -37,11 +37,11 @@ class HassioRegistriesDialog extends LitElement {
     username: string;
   }[];
 
-  @query("#registry") private _newRegistry?: PaperInputElement;
+  @query("#registry", true) private _newRegistry?: PaperInputElement;
 
-  @query("#username") private _newUsername?: PaperInputElement;
+  @query("#username", true) private _newUsername?: PaperInputElement;
 
-  @query("#password") private _newPassword?: PaperInputElement;
+  @query("#password", true) private _newPassword?: PaperInputElement;
 
   @internalProperty() private _opened = false;
 
