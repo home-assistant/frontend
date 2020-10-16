@@ -37,10 +37,12 @@ import {
   AutomationConfig,
   AutomationEntity,
   Condition,
+  StateCondition,
   deleteAutomation,
   getAutomationEditorInitData,
   showAutomationEditor,
   Trigger,
+  TimeTrigger,
   triggerAutomation,
 } from "../../../data/automation";
 import { Action } from "../../../data/script";
@@ -61,6 +63,7 @@ import { HaDeviceAction } from "./action/types/ha-automation-action-device_id";
 import "./condition/ha-automation-condition";
 import "./trigger/ha-automation-trigger";
 import { HaDeviceTrigger } from "./trigger/types/ha-automation-trigger-device";
+import { constrainPoint } from "@fullcalendar/core";
 
 const MODES = ["single", "restart", "queued", "parallel"];
 const MODES_MAX = ["queued", "parallel"];
@@ -501,12 +504,63 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         )
         .then(
           (config) => {
-            // Normalize data: ensure trigger, action and condition are lists
-            // Happens when people copy paste their automations into the config
+            // Normalize data: Ensure trigger, action and condition are lists.
+            // Happens when people copy paste their automations into the config.
             for (const key of ["trigger", "condition", "action"]) {
               const value = config[key];
               if (value && !Array.isArray(value)) {
                 config[key] = [value];
+              }
+
+              // Ensure the times of a trigger are a list. Then condense them into a single
+              // trigger first (in case the user has multiple time triggers), then split them into
+              // two triggers: One for literal time values and one for input_datetime entities.
+              // Needed since for each of those types, we will need a separate trigger row.
+              if (key === "trigger") {
+                const literalTimeTrigger: TimeTrigger = {
+                  platform: "time",
+                  at: [],
+                };
+                const entityTimeTriger: TimeTrigger = {
+                  platform: "time",
+                  at: [],
+                };
+
+                for (const trigger of config[key]?.filter(
+                  (x) => x.platform === "time"
+                ) || []) {
+                  const timeTrigger = trigger as TimeTrigger;
+                  if (!Array.isArray(timeTrigger.at)) {
+                    timeTrigger.at = [timeTrigger.at];
+                  }
+
+                  for (const at of timeTrigger.at) {
+                    if (at.startsWith("input_datetime.")) {
+                      literalTimeTrigger.at.push(at);
+                    } else {
+                      entityTimeTriger.at.push(at);
+                    }
+                  }
+                }
+
+                // Remove old time triggers and replace with the two new collected ones
+                config[key] = config[key]?.filter((x) => x.platform !== "time");
+                if (entityTimeTriger.at.length)
+                  config[key].push(entityTimeTriger);
+                if (literalTimeTrigger.at.length)
+                  config[key].push(literalTimeTrigger);
+              }
+
+              // Ensure the states of a condition are a list.
+              if (key === "condition") {
+                for (const cond of config[key]?.filter(
+                  (x) => x.condition === "state"
+                ) || []) {
+                  const stateCond = cond as StateCondition;
+                  if (!Array.isArray(stateCond.state)) {
+                    stateCond.state = [stateCond.state];
+                  }
+                }
               }
             }
             this._dirty = false;

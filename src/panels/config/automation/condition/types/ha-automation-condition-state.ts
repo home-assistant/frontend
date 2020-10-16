@@ -6,6 +6,7 @@ import { StateCondition } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
 import {
   ConditionElement,
+  handleChange,
   handleChangeEvent,
 } from "../ha-automation-condition-row";
 
@@ -16,7 +17,7 @@ export class HaStateCondition extends LitElement implements ConditionElement {
   @property() public condition!: StateCondition;
 
   public static get defaultConfig() {
-    return { entity_id: "", state: "" };
+    return { entity_id: "", state: [""] };
   }
 
   protected render() {
@@ -41,19 +42,36 @@ export class HaStateCondition extends LitElement implements ConditionElement {
         @value-changed=${this._valueChanged}
         allow-custom-value
       ></ha-entity-attribute-picker>
-      <paper-input
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.conditions.type.state.state"
-        )}
-        .name=${"state"}
-        .value=${state}
-        @value-changed=${this._valueChanged}
-      ></paper-input>
+      ${state.map(
+        (value, idx) => html` <paper-input
+          .label=${this.hass.localize(
+            "ui.panel.config.automation.editor.conditions.type.state.state"
+          )}
+          .name=${"state-" + idx}
+          .value=${value}
+          @value-changed=${this._valueChanged}
+        ></paper-input>`
+      )}
     `;
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    handleChangeEvent(this, ev);
+    const name = (ev.target as any)?.name;
+
+    if (name.startsWith("state-")) {
+      ev.stopPropagation();
+      const value = ev.detail.value;
+      const idx = name.split("-").pop();
+
+      if ((this.condition.state[idx] || "") === value) {
+        return;
+      }
+
+      this.condition.state[idx] = value;
+      handleChange(this, "state", this.condition.state);
+    } else {
+      handleChangeEvent(this, ev);
+    }
   }
 }
 

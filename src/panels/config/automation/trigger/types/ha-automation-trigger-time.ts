@@ -12,6 +12,7 @@ import "../../../../../components/ha-radio";
 import { TimeTrigger } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
 import {
+  handleChange,
   handleChangeEvent,
   TriggerElement,
 } from "../ha-automation-trigger-row";
@@ -27,12 +28,14 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
   @internalProperty() private _inputMode?: boolean;
 
   public static get defaultConfig() {
-    return { at: "" };
+    return { at: [""] };
   }
 
   protected render() {
     const { at } = this.trigger;
-    const inputMode = this._inputMode ?? at?.startsWith("input_datetime.");
+    // Since we ensured in HaAutomationEditor::updated() that each trigger can only
+    // have either literal or entity time triggers, it's sufficient to check the first element.
+    const inputMode = this._inputMode ?? at[0]?.startsWith("input_datetime.");
     return html`
       <ha-formfield
         .label=${this.hass!.localize(
@@ -59,24 +62,28 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
         ></ha-radio>
       </ha-formfield>
       ${inputMode
-        ? html`<ha-entity-picker
-            .label=${this.hass.localize(
-              "ui.panel.config.automation.editor.triggers.type.time.at"
-            )}
-            .includeDomains=${includeDomains}
-            .name=${"at"}
-            .value=${at?.startsWith("input_datetime.") ? at : ""}
-            @value-changed=${this._valueChanged}
-            .hass=${this.hass}
-          ></ha-entity-picker>`
-        : html`<paper-input
-            .label=${this.hass.localize(
-              "ui.panel.config.automation.editor.triggers.type.time.at"
-            )}
-            name="at"
-            .value=${at?.startsWith("input_datetime.") ? "" : at}
-            @value-changed=${this._valueChanged}
-          ></paper-input>`}
+        ? at.map(
+            (value, idx) => html` <ha-entity-picker
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.triggers.type.time.at"
+              )}
+              .includeDomains=${includeDomains}
+              .name=${"at-" + idx}
+              .value=${value?.startsWith("input_datetime.") ? value : ""}
+              @value-changed=${this._valueChanged}
+              .hass=${this.hass}
+            ></ha-entity-picker>`
+          )
+        : at.map(
+            (value, idx) => html` <paper-input
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.triggers.type.time.at"
+              )}
+              name=${"at-" + idx}
+              .value=${value?.startsWith("input_datetime.") ? "" : value}
+              @value-changed=${this._valueChanged}
+            ></paper-input>`
+          )}
     `;
   }
 
@@ -85,7 +92,22 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    handleChangeEvent(this, ev);
+    const name = (ev.target as any)?.name;
+
+    if (name.startsWith("at-")) {
+      ev.stopPropagation();
+      const value = ev.detail.value;
+      const idx = name.split("-").pop();
+
+      if ((this.trigger.at[idx] || "") === value) {
+        return;
+      }
+
+      this.trigger.at[idx] = value;
+      handleChange(this, "at", this.trigger.at);
+    } else {
+      handleChangeEvent(this, ev);
+    }
   }
 }
 

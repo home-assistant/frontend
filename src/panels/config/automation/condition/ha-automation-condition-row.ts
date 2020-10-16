@@ -25,20 +25,15 @@ export interface ConditionElement extends LitElement {
   condition: Condition;
 }
 
-export const handleChangeEvent = (
+export const handleChange = (
   element: ConditionElement,
-  ev: CustomEvent
+  name: string,
+  value: any
 ) => {
-  ev.stopPropagation();
-  const name = (ev.target as any)?.name;
   if (!name) {
     return;
   }
-  const newVal = ev.detail.value;
-
-  if ((element.condition[name] || "") === newVal) {
-    return;
-  }
+  const newVal = value;
 
   let newCondition: Condition;
   if (!newVal) {
@@ -48,6 +43,21 @@ export const handleChangeEvent = (
     newCondition = { ...element.condition, [name]: newVal };
   }
   fireEvent(element, "value-changed", { value: newCondition });
+};
+
+export const handleChangeEvent = (
+  element: ConditionElement,
+  ev: CustomEvent
+) => {
+  ev.stopPropagation();
+  const name = (ev.target as any)?.name;
+  const newVal = ev.detail.value;
+
+  if ((element.condition[name] || "") === newVal) {
+    return;
+  }
+
+  handleChange(element, name, newVal);
 };
 
 @customElement("ha-automation-condition-row")

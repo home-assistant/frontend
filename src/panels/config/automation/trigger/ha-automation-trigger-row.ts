@@ -59,17 +59,15 @@ export interface TriggerElement extends LitElement {
   trigger: Trigger;
 }
 
-export const handleChangeEvent = (element: TriggerElement, ev: CustomEvent) => {
-  ev.stopPropagation();
-  const name = (ev.target as any)?.name;
+export const handleChange = (
+  element: TriggerElement,
+  name: string,
+  value: any
+) => {
   if (!name) {
     return;
   }
-  const newVal = ev.detail.value;
-
-  if ((element.trigger[name] || "") === newVal) {
-    return;
-  }
+  const newVal = value;
 
   let newTrigger: Trigger;
   if (!newVal) {
@@ -79,6 +77,18 @@ export const handleChangeEvent = (element: TriggerElement, ev: CustomEvent) => {
     newTrigger = { ...element.trigger, [name]: newVal };
   }
   fireEvent(element, "value-changed", { value: newTrigger });
+};
+
+export const handleChangeEvent = (element: TriggerElement, ev: CustomEvent) => {
+  ev.stopPropagation();
+  const name = (ev.target as any)?.name;
+  const newVal = ev.detail.value;
+
+  if ((element.trigger[name] || "") === newVal) {
+    return;
+  }
+
+  handleChange(element, name, newVal);
 };
 
 @customElement("ha-automation-trigger-row")

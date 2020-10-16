@@ -101,7 +101,7 @@ export interface TagTrigger {
 
 export interface TimeTrigger {
   platform: "time";
-  at: string;
+  at: string[];
 }
 
 export interface TemplateTrigger {
@@ -147,7 +147,7 @@ export interface StateCondition {
   condition: "state";
   entity_id: string;
   attribute?: string;
-  state: string | number;
+  state: string[] | number[];
 }
 
 export interface NumericStateCondition {
