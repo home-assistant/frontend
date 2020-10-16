@@ -206,7 +206,6 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
     return {
       hass: {
         type: Object,
-        observer: "hassChanged",
       },
 
       domainService: {
@@ -254,10 +253,6 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
         computed: "_computeRTL(hass)",
       },
     };
-  }
-
-  hassChanged() {
-    console.log("object: %O", this.hass.services);
   }
 
   _domainServiceChanged() {
