@@ -110,6 +110,11 @@ export const haStyle = css`
     color: var(--app-header-text-color, white);
   }
 
+  app-toolbar,
+  div[sticky] {
+    height: 48px;
+  }
+
   app-toolbar [main-title] {
     margin-left: 20px;
   }
