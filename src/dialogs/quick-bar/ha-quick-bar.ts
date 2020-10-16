@@ -1,6 +1,5 @@
 import "../../components/ha-circular-progress";
 import "../../components/ha-header-bar";
-import "@polymer/paper-input/paper-input";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-list/mwc-list";
 import {
@@ -10,17 +9,17 @@ import {
   internalProperty,
   LitElement,
   property,
+  PropertyValues,
   query,
 } from "lit-element";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-dialog";
 import { haStyleDialog } from "../../resources/styles";
-import { HomeAssistant } from "../../types";
-import { PolymerChangedEvent } from "../../polymer-types";
 import {
   fuzzyFilterSort,
   ScorableTextItem,
 } from "../../common/string/filter/sequence-matching";
+import { HomeAssistant } from "../../types";
 import { componentsWithService } from "../../common/config/components_with_service";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -29,6 +28,11 @@ import { QuickBarParams } from "./show-dialog-quick-bar";
 import { compare } from "../../common/string/compare";
 import { SingleSelectedEvent } from "@material/mwc-list/mwc-list-foundation";
 import { computeStateName } from "../../common/entity/compute_state_name";
+import memoizeOne from "memoize-one";
+import "../../common/search/search-input";
+import { mdiConsoleLine } from "@mdi/js";
+import { scroll } from "lit-virtualizer";
+import { styleMap } from "lit-html/directives/style-map";
 
 interface QuickBarItem extends ScorableTextItem {
   icon: string;
@@ -43,9 +47,9 @@ export class QuickBar extends LitElement {
 
   @internalProperty() private _entityItems: QuickBarItem[] = [];
 
-  @internalProperty() private _items: QuickBarItem[] = [];
+  @internalProperty() private _items?: QuickBarItem[] = [];
 
-  @internalProperty() private _itemFilter = "";
+  @internalProperty() private _filter = "";
 
   @internalProperty() private _opened = false;
 
@@ -55,23 +59,35 @@ export class QuickBar extends LitElement {
 
   @internalProperty() private _activatedIndex = 0;
 
-  @query("paper-input", false) private _filterInputField?: HTMLElement;
+  @query("search-input", false) private _filterInputField?: HTMLElement;
 
   @query("mwc-list-item", false) private _firstListItem?: HTMLElement;
 
   public async showDialog(params: QuickBarParams) {
     this._commandMode = params.commandMode || false;
-    this._opened = true;
     this._commandItems = this._generateCommandItems();
     this._entityItems = this._generateEntityItems();
+    this._opened = true;
   }
 
   public closeDialog() {
     this._opened = false;
-    this._itemFilter = "";
+    this._filter = "";
     this._commandTriggered = -1;
+    this._items = [];
     this._resetActivatedIndex();
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  protected updated(changedProperties: PropertyValues) {
+    if (
+      this._opened &&
+      (changedProperties.has("_opened") ||
+        changedProperties.has("_filter") ||
+        changedProperties.has("_commandMode"))
+    ) {
+      this._setFilteredItems();
+    }
   }
 
   protected render() {
@@ -81,53 +97,75 @@ export class QuickBar extends LitElement {
 
     return html`
       <ha-dialog .heading=${true} open @closed=${this.closeDialog} hideActions>
-        <paper-input
+        <search-input
           dialogInitialFocus
           no-label-float
           slot="heading"
           class="heading"
-          @value-changed=${this._entityFilterChanged}
+          @value-changed=${this._handleSearchChange}
           .label=${this.hass.localize(
             "ui.dialogs.quick-bar.filter_placeholder"
           )}
-          type="search"
-          value=${this._commandMode ? `>${this._itemFilter}` : this._itemFilter}
+          .filter=${this._commandMode ? `>${this._filter}` : this._filter}
           @keydown=${this._handleInputKeyDown}
           @focus=${this._resetActivatedIndex}
-        ></paper-input>
-        <mwc-list activatable @selected=${this.processItemAndCloseDialog}>
-          ${this._items.map(
-            (item, index) => html`
-              <mwc-list-item
-                .twoline=${Boolean(item.altText)}
-                .activated=${index === this._activatedIndex}
-                .item=${item}
-                .index=${index}
-                @keydown=${this._handleListItemKeyDown}
-                hasMeta
-                graphic=${item.altText ? "avatar" : "icon"}
-              >
-                <ha-icon .icon=${item.icon} slot="graphic"></ha-icon>
-                <span>${item.text}</span>
-                ${item.altText
-                  ? html`
-                      <span slot="secondary" class="secondary"
-                        >${item.altText}</span
-                      >
-                    `
-                  : null}
-                ${this._commandTriggered === index
-                  ? html`<ha-circular-progress
-                      size="small"
-                      active
-                      slot="meta"
-                    ></ha-circular-progress>`
-                  : null}
-              </mwc-list-item>
-            `
-          )}
-        </mwc-list>
+        >
+          ${this._commandMode
+            ? html`<ha-svg-icon
+                slot="prefix"
+                class="prefix"
+                .path=${mdiConsoleLine}
+              ></ha-svg-icon>`
+            : ""}
+        </search-input>
+        ${!this._items
+          ? html`<ha-circular-progress
+              size="small"
+              active
+            ></ha-circular-progress>`
+          : html`<mwc-list
+              activatable
+              @selected=${this.processItemAndCloseDialog}
+              style=${styleMap({
+                height: `${Math.min(this._items.length * 72 + 26, 500)}px`,
+              })}
+            >
+              ${scroll({
+                items: this._items as [],
+                renderItem: (item: QuickBarItem, index?: number) =>
+                  this.renderItem(item, index),
+              })}
+            </mwc-list>`}
       </ha-dialog>
+    `;
+  }
+
+  private renderItem(item: QuickBarItem, index?: number) {
+    return html`
+      <mwc-list-item
+        .twoline=${Boolean(item.altText)}
+        .activated=${index === this._activatedIndex}
+        .item=${item}
+        .index=${index}
+        @keydown=${this._handleListItemKeyDown}
+        hasMeta
+        graphic=${item.altText ? "avatar" : "icon"}
+      >
+        <ha-icon .icon=${item.icon} slot="graphic"></ha-icon>
+        <span>${item.text}</span>
+        ${item.altText
+          ? html`
+              <span slot="secondary" class="secondary">${item.altText}</span>
+            `
+          : null}
+        ${this._commandTriggered === index
+          ? html`<ha-circular-progress
+              size="small"
+              active
+              slot="meta"
+            ></ha-circular-progress>`
+          : null}
+      </mwc-list-item>
     `;
   }
 
@@ -154,6 +192,23 @@ export class QuickBar extends LitElement {
     }
   }
 
+  private _handleSearchChange(ev: CustomEvent): void {
+    const newFilter = ev.detail.value;
+    const oldCommandMode = this._commandMode;
+
+    if (newFilter.startsWith(">")) {
+      this._commandMode = true;
+      this._filter = newFilter.substring(1);
+    } else {
+      this._commandMode = false;
+      this._filter = newFilter;
+    }
+
+    if (oldCommandMode !== this._commandMode) {
+      this._items = undefined;
+    }
+  }
+
   private _handleListItemKeyDown(ev: KeyboardEvent) {
     const isSingleCharacter = ev.key.length === 1;
     const isFirstListItem = (ev.target as any).index === 0;
@@ -170,27 +225,6 @@ export class QuickBar extends LitElement {
     if (ev.key === "Backspace" || isSingleCharacter) {
       this._filterInputField?.focus();
       this._resetActivatedIndex();
-    }
-  }
-
-  private _entityFilterChanged(ev: PolymerChangedEvent<string>) {
-    const newFilter = ev.detail.value;
-
-    if (newFilter.startsWith(">")) {
-      this._commandMode = true;
-      this._itemFilter = newFilter.substring(1);
-    } else {
-      this._commandMode = false;
-      this._itemFilter = newFilter;
-    }
-
-    this._items = this._commandMode ? this._commandItems : this._entityItems;
-
-    if (this._itemFilter !== "") {
-      this._items = fuzzyFilterSort<QuickBarItem>(
-        this._itemFilter.trimLeft(),
-        this._items
-      );
     }
   }
 
@@ -227,6 +261,18 @@ export class QuickBar extends LitElement {
       .sort((a, b) => compare(a.text.toLowerCase(), b.text.toLowerCase()));
   }
 
+  private async _setFilteredItems() {
+    this._items = this._commandMode ? this._commandItems : this._entityItems;
+    if (this._filter !== "") {
+      this._items = this._filterItems(this._items || [], this._filter);
+    }
+  }
+
+  private _filterItems = memoizeOne(
+    (items: QuickBarItem[], filter: string): QuickBarItem[] =>
+      fuzzyFilterSort<QuickBarItem>(filter.trimLeft(), items)
+  );
+
   static get styles() {
     return [
       haStyleDialog,
@@ -242,7 +288,7 @@ export class QuickBar extends LitElement {
 
         ha-dialog {
           --dialog-z-index: 8;
-          --dialog-content-padding: 0px 24px 20px;
+          --dialog-content-padding: 0;
         }
 
         @media (min-width: 800px) {
@@ -253,6 +299,26 @@ export class QuickBar extends LitElement {
             --dialog-surface-top: 40px;
             --mdc-dialog-max-height: calc(100% - 72px);
           }
+        }
+
+        ha-svg-icon.prefix {
+          margin: 8px;
+        }
+
+        .uni-virtualizer-host {
+          display: block;
+          position: relative;
+          contain: strict;
+          overflow: auto;
+          height: 100%;
+        }
+
+        .uni-virtualizer-host > * {
+          box-sizing: border-box;
+        }
+
+        mwc-list-item {
+          width: 100%;
         }
       `,
     ];
