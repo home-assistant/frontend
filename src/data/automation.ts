@@ -118,8 +118,8 @@ export interface ContextConstraint {
 export interface EventTrigger {
   platform: "event";
   event_type: string;
-  event_data: any;
-  context: ContextConstraint;
+  event_data?: any;
+  context?: ContextConstraint;
 }
 
 export type Trigger =

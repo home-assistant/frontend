@@ -7,6 +7,7 @@ import {
 } from "lit-element";
 import { html } from "lit-html";
 import "../../../../../components/ha-yaml-editor";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import { EventTrigger } from "../../../../../data/automation";
 import { fetchUsers, User } from "../../../../../data/user";
 import { HomeAssistant } from "../../../../../types";
@@ -25,7 +26,7 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
   @internalProperty() private _users?: User[];
 
   public static get defaultConfig() {
-    return { event_type: "", event_data: {}, context: { user_id: [] } };
+    return { event_type: "" };
   }
 
   protected render() {
@@ -55,16 +56,21 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
           "ui.panel.config.automation.editor.triggers.type.event.context_user_pick"
         )}
         .hass=${this.hass}
-        .value=${this._wrapUsersInArray(context)}
+        .value=${this._wrapUsersInArray(context?.user_id)}
         .users=${this._users}
-        @value-changed=${this._valueChanged}
+        @value-changed=${this._usersChanged}
       ></ha-users-picker>
     `;
   }
 
-  private _wrapUsersInArray(context): string[] {
-    const empty: string[] = [];
-    return empty.concat(context.user_id || []);
+  private _wrapUsersInArray(user_id: string | string[] | undefined): string[] {
+    if (!user_id) {
+      return [];
+    }
+    if (typeof user_id === "string") {
+      return [user_id];
+    }
+    return user_id;
   }
 
   private _valueChanged(ev: CustomEvent): void {
@@ -80,10 +86,18 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
     handleChangeEvent(this, ev);
   }
 
+  private _usersChanged(ev) {
+    ev.stopPropagation();
+    fireEvent(this, "value-changed", {
+      value: {
+        ...this.trigger,
+        context: { ...this.trigger.context, user_id: ev.detail.value },
+      },
+    });
+  }
+
   protected firstUpdated(): void {
-    if (!this._users) {
-      this._getUsers();
-    }
+    this._getUsers();
   }
 
   private async _getUsers(): Promise<void> {
