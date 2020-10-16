@@ -17,6 +17,7 @@ import "../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../types";
 import "./entity-row-editor/hui-row-element-editor";
 import type { HuiRowElementEditor } from "./entity-row-editor/hui-row-element-editor";
+import "./header-footer-editor/hui-header-footer-element-editor";
 import type { GUIModeChangedEvent, SubElementEditorConfig } from "./types";
 
 declare global {
@@ -46,13 +47,12 @@ export class HuiSubElementEditor extends LitElement {
           </mwc-icon-button>
           <span slot="title"
             >${this.hass.localize(
-              `ui.panel.lovelace.editor.sub-element-editor.${this.config?.type}`
+              `ui.panel.lovelace.editor.sub-element-editor.types.${this.config?.type}`
             )}</span
           >
         </div>
         <mwc-button
           slot="secondaryAction"
-          class="gui-mode-button"
           .disabled=${!this._guiModeAvailable}
           @click=${this._toggleMode}
         >
@@ -72,6 +72,16 @@ export class HuiSubElementEditor extends LitElement {
               @config-changed=${this._handleConfigChanged}
               @GUImode-changed=${this._handleGUIModeChanged}
             ></hui-row-element-editor>
+          `
+        : this.config.type === "header" || this.config.type === "footer"
+        ? html`
+            <hui-headerfooter-element-editor
+              class="editor"
+              .hass=${this.hass}
+              .value=${this.config.elementConfig}
+              @config-changed=${this._handleConfigChanged}
+              @GUImode-changed=${this._handleGUIModeChanged}
+            ></hui-headerfooter-element-editor>
           `
         : ""}
     `;

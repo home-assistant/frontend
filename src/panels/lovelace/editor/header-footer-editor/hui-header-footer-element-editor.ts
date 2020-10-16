@@ -3,8 +3,8 @@ import { getHeaderFooterElementClass } from "../../create-element/create-header-
 import { LovelaceHeaderFooterEditor } from "../../types";
 import { HuiElementEditor } from "../hui-element-editor";
 
-@customElement("hui-card-element-editor")
-export class HuiCardElementEditor extends HuiElementEditor {
+@customElement("hui-headerfooter-element-editor")
+export class HuiHeaderFooterElementEditor extends HuiElementEditor {
   public async getConfigElement(): Promise<
     LovelaceHeaderFooterEditor | undefined
   > {
@@ -23,6 +23,6 @@ export class HuiCardElementEditor extends HuiElementEditor {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-card-element-editor": HuiCardElementEditor;
+    "hui-headerfooter-element-editor": HuiHeaderFooterElementEditor;
   }
 }
