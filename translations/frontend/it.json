@@ -1140,6 +1140,7 @@
                             },
                             "unsupported_condition": "Nessun supporto dell'Interfaccia Utente per la condizione: {condition}"
                         },
+                        "copy_to_clipboard": "Copia negli Appunti",
                         "default_name": "Nuova Automazione",
                         "description": {
                             "label": "Descrizione",
@@ -1497,6 +1498,7 @@
                     "different_include": "Possibilmente tramite un dominio, un glob o un'altra inclusione.",
                     "pick_attribute": "Scegli un attributo da sovrascrivere",
                     "picker": {
+                        "documentation": "Documentazione di personalizzazione",
                         "entity": "Entità",
                         "header": "Personalizzazioni",
                         "introduction": "Modificare gli attributi per entità. \nLe personalizzazioni aggiunte/modificate avranno effetto immediato. \nLe personalizzazioni rimosse avranno effetto quando l'entità sarà aggiornata."
@@ -1584,6 +1586,8 @@
                         },
                         "filter": {
                             "filter": "Filtro",
+                            "hidden_entities": "{number} {number, plural,\n  one {entità}\n  other {entità} \n} nascoste",
+                            "show_all": "Mostra tutto",
                             "show_disabled": "Mostra entità disabilitate",
                             "show_readonly": "Mostra entità di sola lettura",
                             "show_unavailable": "Mostra entità non disponibili"
@@ -1979,6 +1983,7 @@
                         "update": "Aggiorna"
                     },
                     "introduction": "Qui è possibile definire ogni persona di interesse in Home Assistant.",
+                    "learn_more": "Ulteriori informazioni sulle persone",
                     "no_persons_created_yet": "Sembra che tu non abbia ancora creato nessuna persona.",
                     "note_about_persons_configured_in_yaml": "Nota: le persone configurate tramite configuration.yaml non possono essere modificate tramite l'Interfaccia Utente.",
                     "person_not_found": "Non è stato possibile trovare la persona che si stava tentando di modificare.",
@@ -2791,6 +2796,9 @@
                         "entity": "Entità",
                         "no_description": "Nessuna descrizione disponibile."
                     },
+                    "edit_badges": {
+                        "panel_mode": "Questi badge non verranno visualizzati perché questa vista è in \"Modalità pannello\"."
+                    },
                     "edit_card": {
                         "add": "Aggiungi scheda",
                         "confirm_cancel": "Sei sicuro di voler annullare?",
@@ -2884,7 +2892,7 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "In questo modo viene eseguito il rendering della prima scheda a larghezza intera; altre schede in questa vista non verranno renderizzate.",
+                            "description": "Questo renderizza la prima scheda a tutta larghezza. Le altre schede in questa vista e i badge non verranno renderizzati.",
                             "title": "Modalità pannello?",
                             "warning_multiple_cards": "Questa vista contiene più di una scheda, ma una vista a pannello può mostrare solo una scheda."
                         }

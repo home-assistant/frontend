@@ -825,6 +825,9 @@
                     "description": "Optiounen erfollegräich gespäichert."
                 }
             },
+            "quick-bar": {
+                "filter_placeholder": "Entitéite Filter"
+            },
             "voice_command": {
                 "did_not_hear": "Home Assistant huet näischt héieren.",
                 "error": "Ups, ee Feeler ass opgetrueden",
@@ -1088,6 +1091,7 @@
                             },
                             "unsupported_condition": "Keng UI Ënnerstëtzung fir Konditioun: {condition}"
                         },
+                        "copy_to_clipboard": "An de Tëschespäicher kopéieren",
                         "default_name": "Néien Automatismus",
                         "description": {
                             "label": "Beschreiwung",
@@ -1445,6 +1449,7 @@
                     "different_include": "Eventuell iwwer e Domän, e Glob oder eng aner Include Method.",
                     "pick_attribute": "Wielt een Attribut aus fir z'iwwerschreiwen",
                     "picker": {
+                        "documentation": "Dokumentatioun vun der Personalisatioun",
                         "entity": "Entitéit",
                         "header": "Personaliséieren",
                         "introduction": "Manipulatioun vun den Attributen pro Entitéit. Nei/geännert Personlisatiounen sinn direkt effektiv. Geläschte Personalisatioune ginn effektiv wann d'Entitéit sech aktualiséiert."
@@ -1532,6 +1537,7 @@
                         },
                         "filter": {
                             "filter": "Filter",
+                            "show_all": "All uweisen",
                             "show_disabled": "Deaktivéiert Entitéiten uweisen",
                             "show_readonly": "Schreifgeséchert Entitéiten uweisen",
                             "show_unavailable": "Net ereechbar Entitéite uweisen"
@@ -1924,8 +1930,11 @@
                         "update": "Aktualiséieren"
                     },
                     "introduction": "Hei kënnt dir all wichteg Persoun am Home Assistant definéieren.",
+                    "learn_more": "Méi iwwert Persoune léieren",
                     "no_persons_created_yet": "Et gesäit sou aus wéi wann nach keng Persounen erstallt goufen.",
-                    "note_about_persons_configured_in_yaml": "Note: Persounen konfiguréiert via configuration.yaml können net via den UI geännert ginn."
+                    "note_about_persons_configured_in_yaml": "Note: Persounen konfiguréiert via configuration.yaml können net via den UI geännert ginn.",
+                    "person_not_found": "Persoun net fonnt déi sollt verännert ginn",
+                    "person_not_found_title": "Persoun net fonnt"
                 },
                 "scene": {
                     "activated": "Zeen {name} aktivéiert.",
@@ -2001,6 +2010,7 @@
                             "restart": "Neistart",
                             "single": "Eenzel (Standard)"
                         },
+                        "save_script": "Skript späicheren",
                         "sequence": "Sequenz",
                         "sequence_sentence": "D'Sequenz vun Aktiounen an dësem Skript."
                     },
@@ -2014,6 +2024,7 @@
                         "introduction": "De Skript Editeur erlaabt Iech Skripten ze erstellen an z'änneren. Follegt de Link hei ënnendrënner fir d'Instruktiounen ze liese fir sécher ze stellen, datt Dir den Home Assistant richteg konfiguréiert hutt",
                         "learn_more": "Méi iwwert Skripten léieren",
                         "no_scripts": "Keng Skripte fir ze ännere fonnt",
+                        "run_script": "Skript ausféieren",
                         "show_info": "Informatiounen vum Skript uweisen",
                         "trigger_script": "Skript ausléisen"
                     }
@@ -2738,6 +2749,8 @@
                         "edit": "Änneren",
                         "header": "Kaart Konfiguratioun",
                         "move": "Zur Usiicht réckelen",
+                        "move_after": "Kaart réckelen no",
+                        "move_before": "Kaart réckelen virun",
                         "options": "Méi Optiounen",
                         "pick_card": "Wielt eng Kaart aus déi soll dobäigesat ginn.",
                         "pick_card_view_title": "Wéieng Kaart wëllt dir zu ärer {name}Usiicht dobäisetzen?",

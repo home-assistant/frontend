@@ -4,9 +4,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -19,9 +19,9 @@ import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entites";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { PlantAttributeTarget, PlantStatusCardConfig } from "./types";
-import { createEntityNotFoundWarning } from "../components/hui-warning";
 
 const SENSORS = {
   moisture: "hass:water",
@@ -163,6 +163,10 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
+      ha-card {
+        height: 100%;
+        box-sizing: border-box;
+      }
       .banner {
         display: flex;
         align-items: flex-end;

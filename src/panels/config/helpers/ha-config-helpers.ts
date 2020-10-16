@@ -153,6 +153,7 @@ export class HaConfigHelpers extends LitElement {
         .data=${this._getItems(this._stateItems)}
         @row-click=${this._openEditDialog}
         hasFab
+        clickable
         .noDataText=${this.hass.localize(
           "ui.panel.config.helpers.picker.no_helpers"
         )}

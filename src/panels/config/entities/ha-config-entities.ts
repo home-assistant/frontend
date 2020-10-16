@@ -594,6 +594,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         .data=${entityData}
         .filter=${this._filter}
         selectable
+        clickable
         @selection-changed=${this._handleSelectionChanged}
         @row-click=${this._openEditEntry}
         id="entity_id"
