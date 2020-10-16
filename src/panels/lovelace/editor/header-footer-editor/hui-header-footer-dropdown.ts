@@ -45,7 +45,7 @@ export class HuiHeaderFooterDropdown extends LitElement {
                   html`
                     <paper-item .itemName=${headerFooter}
                       >${this.hass!.localize(
-                        `ui.panel.lovelace.editor.header-footer.${headerFooter}.name`
+                        `ui.panel.lovelace.editor.header-footer.types.${headerFooter}.name`
                       )}</paper-item
                     >
                   `

@@ -2580,10 +2580,12 @@
             "by_card": "By Card"
           },
           "header-footer": {
-            "header": { "name": "Header" },
-            "footer": { "name": "Footer" },
-            "graph": {
-              "name": "Graph"
+            "header": "Header",
+            "footer": "Footer",
+            "types": {
+              "graph": {
+                "name": "Graph"
+              }
             }
           },
           "sub-element-editor": {

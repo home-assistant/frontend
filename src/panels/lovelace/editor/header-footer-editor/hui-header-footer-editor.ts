@@ -44,7 +44,7 @@ export class HuiHeaderFooterEditor extends LitElement {
             `ui.panel.lovelace.editor.header-footer.${this.configValue}`
           )}:
           ${this.hass!.localize(
-            `ui.panel.lovelace.editor.header-footer.${this.config?.type}.name`
+            `ui.panel.lovelace.editor.header-footer.types.${this.config?.type}.name`
           ) || "None"}
         </span>
       </div>
@@ -73,8 +73,10 @@ export class HuiHeaderFooterEditor extends LitElement {
 
   private _edit(): void {
     fireEvent(this, "edit-detail-element", {
-      config: this.config,
-      elementType: this.configValue,
+      subElementConfig: {
+        elementConfig: this.config,
+        type: this.configValue,
+      },
     });
   }
 
