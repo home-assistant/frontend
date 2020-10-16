@@ -256,7 +256,6 @@ export class HuiElementEditor extends LitElement {
   }
 
   private async _updateConfigElement(): Promise<void> {
-    await this.updateComplete;
     if (!this.value) {
       return;
     }
