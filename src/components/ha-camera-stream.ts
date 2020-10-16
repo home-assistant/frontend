@@ -41,20 +41,8 @@ class HaCameraStream extends LitElement {
 
   @internalProperty() private _url?: string;
 
-  @internalProperty() private _attached = false;
-
-  public connectedCallback() {
-    super.connectedCallback();
-    this._attached = true;
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    this._attached = false;
-  }
-
   protected render(): TemplateResult {
-    if (!this._attached || !this.stateObj) {
+    if (!this.stateObj) {
       return html``;
     }
 
