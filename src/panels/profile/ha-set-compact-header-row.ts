@@ -5,6 +5,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-switch";
 import type { HaSwitch } from "../../components/ha-switch";
 import type { HomeAssistant } from "../../types";
@@ -34,12 +35,13 @@ class HaSetCompactHeaderRow extends LitElement {
   }
 
   private async _checkedChanged(ev: Event) {
-    const newValue = (ev.target as HaSwitch).checked;
-    if (newValue === this.hass.compactHeader) {
+    const compact = (ev.target as HaSwitch).checked;
+    if (compact === this.hass.compactHeader) {
       return;
-    } else {
-      this.hass.compactHeader = newValue;
     }
+    fireEvent(this, "hass-compact-header", {
+      compactHeader: compact,
+    });
   }
 }
 

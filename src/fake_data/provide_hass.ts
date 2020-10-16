@@ -205,6 +205,7 @@ export const provideHass = (
     translationMetadata: translationMetadata as any,
     dockedSidebar: "auto",
     vibrate: true,
+    compactHeader: false,
     suspendWhenHidden: false,
     moreInfoEntityId: null as any,
     // @ts-ignore
