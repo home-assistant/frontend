@@ -181,14 +181,11 @@ export class QuickBar extends LitElement {
 
   private _handleInputKeyDown(ev: KeyboardEvent) {
     if (ev.code === "Enter") {
-      // wait for debounce
-      setTimeout(() => {
-        if (!this._items?.length) {
-          return;
-        }
+      if (!this._items?.length) {
+        return;
+      }
 
-        this.processItemAndCloseDialog(this._items[0], 0);
-      }, 100);
+      this.processItemAndCloseDialog(this._items[0], 0);
     } else if (ev.code === "ArrowDown") {
       ev.preventDefault();
       this._list?.focus();
@@ -272,8 +269,13 @@ export class QuickBar extends LitElement {
   }
 
   private _filterItems = memoizeOne(
-    (items: QuickBarItem[], filter: string): QuickBarItem[] =>
-      fuzzyFilterSort<QuickBarItem>(filter.trimLeft(), items)
+    (items: QuickBarItem[], filter: string): QuickBarItem[] => {
+      const filteredAndSortedItems = fuzzyFilterSort<QuickBarItem>(
+        filter.trimLeft(),
+        items
+      );
+      return filteredAndSortedItems;
+    }
   );
 
   static get styles() {
@@ -302,6 +304,10 @@ export class QuickBar extends LitElement {
             --dialog-surface-top: 40px;
             --mdc-dialog-max-height: calc(100% - 72px);
           }
+        }
+
+        ha-icon {
+          color: var(--secondary-text-color);
         }
 
         ha-svg-icon.prefix {
