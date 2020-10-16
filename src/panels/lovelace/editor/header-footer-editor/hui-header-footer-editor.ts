@@ -16,11 +16,11 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-paper-dropdown-menu";
-import "../../../components/ha-svg-icon";
-import type { HomeAssistant } from "../../../types";
-import { LovelaceHeaderFooterConfig } from "../header-footer/types";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-paper-dropdown-menu";
+import "../../../../components/ha-svg-icon";
+import type { HomeAssistant } from "../../../../types";
+import { LovelaceHeaderFooterConfig } from "../../header-footer/types";
 
 @customElement("hui-header-footer-editor")
 export class HuiHeaderFooterEditor extends LitElement {

@@ -1,21 +1,18 @@
-import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
 import {
-  LitElement,
-  TemplateResult,
-  html,
-  property,
   css,
   CSSResult,
   customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
-
-import { headerFooters } from "./lovelace-cards";
-import { fireEvent } from "../../../common/dom/fire_event";
-
-import type { HomeAssistant } from "../../../types";
-
-import "../../../components/ha-paper-dropdown-menu";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-paper-dropdown-menu";
+import type { HomeAssistant } from "../../../../types";
+import { headerFooters } from "../lovelace-cards";
 
 @customElement("hui-header-footer-dropdown")
 export class HuiHeaderFooterDropdown extends LitElement {

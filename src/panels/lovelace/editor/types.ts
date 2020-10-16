@@ -14,7 +14,8 @@ import {
   LovelaceViewConfig,
   ShowViewConfig,
 } from "../../../data/lovelace";
-import { EntityConfig } from "../entity-rows/types";
+import { EntityConfig, LovelaceRowConfig } from "../entity-rows/types";
+import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 
 export interface YamlChangedEvent extends Event {
   detail: {
@@ -80,6 +81,14 @@ export interface HeaderFooter {
 
 export interface CardPickTarget extends EventTarget {
   config: LovelaceCardConfig;
+}
+
+export interface SubElementEditorConfig {
+  index?: number;
+  elementConfig?: LovelaceRowConfig | LovelaceHeaderFooterConfig;
+  guiModeAvailable: boolean;
+  guiMode: string;
+  type: string;
 }
 
 export const actionConfigStruct = object({

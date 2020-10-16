@@ -13,6 +13,7 @@ import {
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-svg-icon";
 import { HomeAssistant } from "../../../types";
+import { SubElementEditorConfig } from "./types";
 
 declare global {
   interface HASSDomEvents {
@@ -21,13 +22,15 @@ declare global {
   }
 }
 
-@customElement("hui-detail-editor-base")
-export class HuiDetailEditorBase extends LitElement {
+@customElement("hui-sub-element-editor")
+export class HuiSubElementEditor extends LitElement {
   public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public guiModeAvailable? = true;
 
   @property({ type: Boolean }) public guiMode? = true;
+
+  @property({ attribute: false }) public config!: SubElementEditorConfig;
 
   protected render(): TemplateResult {
     return html`
@@ -36,7 +39,11 @@ export class HuiDetailEditorBase extends LitElement {
           <mwc-icon-button @click=${this._goBack}>
             <ha-svg-icon .path=${mdiArrowLeft}></ha-svg-icon>
           </mwc-icon-button>
-          <slot name="title"></slot>
+          <span slot="title"
+            >${this.hass.localize(
+              `ui.panel.lovelace.editor.detail-editor.${this.config?.type}`
+            )}</span
+          >
         </div>
         <mwc-button
           slot="secondaryAction"
@@ -51,7 +58,13 @@ export class HuiDetailEditorBase extends LitElement {
           )}
         </mwc-button>
       </div>
-      <slot></slot>
+      <hui-element-editor
+        .hass=${this.hass}
+        .value=${this.config.elementConfig}
+        .elementType=${this.config?.type}
+        @config-changed=${this._handleEntityRowConfigChanged}
+        @GUImode-changed=${this._handleGUIModeChanged}
+      ></hui-element-editor>
     `;
   }
 
@@ -81,6 +94,6 @@ export class HuiDetailEditorBase extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-detail-editor-base": HuiDetailEditorBase;
+    "hui-sub-element-editor": HuiSubElementEditor;
   }
 }

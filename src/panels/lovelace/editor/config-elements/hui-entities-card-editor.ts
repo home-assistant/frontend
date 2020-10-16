@@ -38,17 +38,17 @@ import {
   LovelaceHeaderFooterConfig,
 } from "../../header-footer/types";
 import type { LovelaceCardEditor } from "../../types";
-import "../hui-advanced-element-editor";
-import "../hui-detail-editor-base";
+import "../header-footer-editor/hui-header-footer-editor";
 import type { HuiElementEditor } from "../hui-element-editor";
 import "../hui-entities-card-row-editor";
-import "../hui-header-footer-editor";
+import "../hui-sub-element-editor";
 import { processEditorEntities } from "../process-editor-entities";
 import {
   EditorTarget,
   entitiesConfigStruct,
   EntitiesEditorEvent,
   GUIModeChangedEvent,
+  SubElementEditorConfig,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
@@ -83,6 +83,8 @@ export class HuiEntitiesCardEditor extends LitElement
   @internalProperty() private _config?: EntitiesCardConfig;
 
   @internalProperty() private _configEntities?: LovelaceRowConfig[];
+
+  @internalProperty() private _subElementEditorConfig?: SubElementEditorConfig;
 
   @internalProperty() private _detailElementConfig?:
     | LovelaceRowConfig
@@ -119,7 +121,7 @@ export class HuiEntitiesCardEditor extends LitElement
 
     if (this._detailElementConfig) {
       return html`
-        <hui-detail-editor-base
+        <hui-sub-element-editor
           .hass=${this.hass}
           .guiModeAvailable=${this._detailElementGuiModeAvailable}
           .guiMode=${this._detailElementGuiMode}
@@ -138,65 +140,55 @@ export class HuiEntitiesCardEditor extends LitElement
             @config-changed=${this._handleEntityRowConfigChanged}
             @GUImode-changed=${this._handleGUIModeChanged}
           ></hui-element-editor>
-        </hui-detail-editor-base>
+        </hui-sub-element-editor>
       `;
     }
 
     return html`
-      <hui-advanced-element-editor .hass=${this.hass}>
-        <div slot="editor">
-          <div class="card-config">
-            <paper-input
-              .label="${this.hass.localize(
-                "ui.panel.lovelace.editor.card.generic.title"
-              )} (${this.hass.localize(
-                "ui.panel.lovelace.editor.card.config.optional"
-              )})"
-              .value=${this._title}
-              .configValue=${"title"}
-              @value-changed=${this._valueChanged}
-            ></paper-input>
-            <hui-theme-select-editor
-              .hass=${this.hass}
-              .value=${this._theme}
-              .configValue=${"theme"}
-              @value-changed=${this._valueChanged}
-            ></hui-theme-select-editor>
-            <div class="side-by-side">
-              <ha-formfield
-                .label=${this.hass.localize(
-                  "ui.panel.lovelace.editor.card.entities.show_header_toggle"
-                )}
-                .dir=${computeRTLDirection(this.hass)}
-              >
-                <ha-switch
-                  .checked=${this._config!.show_header_toggle !== false}
-                  .configValue=${"show_header_toggle"}
-                  @change=${this._valueChanged}
-                ></ha-switch>
-              </ha-formfield>
-              <ha-formfield
-                .label=${this.hass.localize(
-                  "ui.panel.lovelace.editor.card.generic.state_color"
-                )}
-                .dir=${computeRTLDirection(this.hass)}
-              >
-                <ha-switch
-                  .checked=${this._config!.state_color}
-                  .configValue=${"state_color"}
-                  @change=${this._valueChanged}
-                ></ha-switch>
-              </ha-formfield>
-            </div>
-          </div>
-          <hui-entities-card-row-editor
-            .hass=${this.hass}
-            .entities=${this._configEntities}
-            @entities-changed=${this._valueChanged}
-            @edit-detail-element=${this._editDetailElement}
-          ></hui-entities-card-row-editor>
+      <div class="card-config">
+        <paper-input
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.title"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
+          .value=${this._title}
+          .configValue=${"title"}
+          @value-changed=${this._valueChanged}
+        ></paper-input>
+        <hui-theme-select-editor
+          .hass=${this.hass}
+          .value=${this._theme}
+          .configValue=${"theme"}
+          @value-changed=${this._valueChanged}
+        ></hui-theme-select-editor>
+        <div class="side-by-side">
+          <ha-formfield
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.entities.show_header_toggle"
+            )}
+            .dir=${computeRTLDirection(this.hass)}
+          >
+            <ha-switch
+              .checked=${this._config!.show_header_toggle !== false}
+              .configValue=${"show_header_toggle"}
+              @change=${this._valueChanged}
+            ></ha-switch>
+          </ha-formfield>
+          <ha-formfield
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.state_color"
+            )}
+            .dir=${computeRTLDirection(this.hass)}
+          >
+            <ha-switch
+              .checked=${this._config!.state_color}
+              .configValue=${"state_color"}
+              @change=${this._valueChanged}
+            ></ha-switch>
+          </ha-formfield>
         </div>
-        <div slot="advanced">
+        <div class="side-by-side">
           <hui-header-footer-editor
             .hass=${this.hass}
             .configValue=${"header"}
@@ -210,7 +202,13 @@ export class HuiEntitiesCardEditor extends LitElement
             @edit-detail-element=${this._editDetailElement}
           ></hui-header-footer-editor>
         </div>
-      </hui-advanced-element-editor>
+      </div>
+      <hui-entities-card-row-editor
+        .hass=${this.hass}
+        .entities=${this._configEntities}
+        @entities-changed=${this._valueChanged}
+        @edit-detail-element=${this._editDetailElement}
+      ></hui-entities-card-row-editor>
     `;
   }
 

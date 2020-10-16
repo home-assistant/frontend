@@ -2588,7 +2588,7 @@
               "name": "Graph"
             }
           },
-          "detail-editor": {
+          "sub-element-editor": {
             "types": {
               "header": "Header Editor",
               "footer": "Footer Editor",
