@@ -187,7 +187,44 @@ class HUIRoot extends LitElement {
                     .hass=${this.hass}
                     .narrow=${this.narrow}
                   ></ha-menu-button>
-                  <div main-title>${this.config.title || "Home Assistant"}</div>
+                  ${this.hass.compactHeader &&
+                  this.lovelace!.config.views.length > 1
+                    ? html`
+                        <ha-tabs
+                          scrollable
+                          .selected="${this._curView}"
+                          @iron-activate="${this._handleViewSelected}"
+                          dir="${computeRTLDirection(this.hass!)}"
+                        >
+                          ${this.lovelace!.config.views.map(
+                            (view) => html`
+                              <paper-tab
+                                aria-label="${view.title}"
+                                class="${classMap({
+                                  "hide-tab": Boolean(
+                                    view.visible !== undefined &&
+                                      ((Array.isArray(view.visible) &&
+                                        !view.visible.some(
+                                          (e) => e.user === this.hass!.user!.id
+                                        )) ||
+                                        view.visible === false)
+                                  ),
+                                })}"
+                              >
+                                ${view.icon
+                                  ? html`
+                                      <ha-icon
+                                        title="${view.title}"
+                                        .icon="${view.icon}"
+                                      ></ha-icon>
+                                    `
+                                  : view.title || "Unnamed view"}
+                              </paper-tab>
+                            `
+                          )}
+                        </ha-tabs>
+                      `
+                    : html`<div main-title>${this.config.title}</div>`}
                   ${this._conversation(this.hass.config.components)
                     ? html`
                         <mwc-icon-button
@@ -280,7 +317,9 @@ class HUIRoot extends LitElement {
                   </ha-button-menu>
                 </app-toolbar>
               `}
-          ${this.lovelace!.config.views.length > 1 || this._editMode
+          ${(this.lovelace!.config.views.length > 1 &&
+            !this.hass.compactHeader) ||
+          this._editMode
             ? html`
                 <div sticky>
                   <ha-tabs
@@ -372,7 +411,9 @@ class HUIRoot extends LitElement {
           id="view"
           class="${classMap({
             "tabs-hidden":
-              !this._editMode && this.lovelace!.config.views.length < 2,
+              !this._editMode &&
+              (this.lovelace!.config.views.length < 2 ||
+                this.hass.compactHeader),
           })}"
           @ll-rebuild="${this._debouncedConfigChanged}"
         ></div>
@@ -554,10 +595,12 @@ class HUIRoot extends LitElement {
 
   private _enableEditMode(): void {
     this.lovelace!.setEditMode(true);
+    fireEvent(this, "iron-resize");
   }
 
   private _editModeDisable(): void {
     this.lovelace!.setEditMode(false);
+    fireEvent(this, "iron-resize");
   }
 
   private _editLovelace() {
@@ -703,6 +746,10 @@ class HUIRoot extends LitElement {
           margin-right: max(env(safe-area-inset-right), 24px);
           --paper-tabs-selection-bar-color: var(--text-primary-color, #fff);
           text-transform: uppercase;
+        }
+        app-toolbar ha-tabs {
+          width: 100%;
+          margin: 0 8px;
         }
         .edit-mode {
           background-color: var(--dark-color, #455a64);
