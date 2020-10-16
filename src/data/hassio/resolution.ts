@@ -9,7 +9,7 @@ export const fetchHassioResolution = async (hass: HomeAssistant) => {
   return hassioApiResultExtractor(
     await hass.callApi<HassioResponse<HassioResolution>>(
       "GET",
-      "hassio/resolution"
+      "hassio/resolution/info"
     )
   );
 };
