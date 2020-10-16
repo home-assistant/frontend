@@ -2582,8 +2582,8 @@
             "by_card": "By Card"
           },
           "header-footer": {
-            "header": "Header",
-            "footer": "Footer",
+            "header": { "name": "Header" },
+            "footer": { "name": "Footer" },
             "graph": {
               "name": "Graph"
             }

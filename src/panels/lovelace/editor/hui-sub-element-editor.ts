@@ -22,7 +22,6 @@ import type { GUIModeChangedEvent, SubElementEditorConfig } from "./types";
 declare global {
   interface HASSDomEvents {
     "go-back": undefined;
-    "toggle-gui-mode": undefined;
   }
 }
 
@@ -47,7 +46,7 @@ export class HuiSubElementEditor extends LitElement {
           </mwc-icon-button>
           <span slot="title"
             >${this.hass.localize(
-              `ui.panel.lovelace.editor.detail-editor.${this.config?.type}`
+              `ui.panel.lovelace.editor.sub-element-editor.${this.config?.type}`
             )}</span
           >
         </div>

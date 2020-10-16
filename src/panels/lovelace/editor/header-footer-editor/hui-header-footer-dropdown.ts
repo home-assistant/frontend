@@ -12,7 +12,7 @@ import {
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-paper-dropdown-menu";
 import type { HomeAssistant } from "../../../../types";
-import { headerFooters } from "../lovelace-cards";
+import { footerElements, headerElements } from "../lovelace-headerfooters";
 
 @customElement("hui-header-footer-dropdown")
 export class HuiHeaderFooterDropdown extends LitElement {
@@ -38,18 +38,18 @@ export class HuiHeaderFooterDropdown extends LitElement {
           @selected-changed=${this._headerFooterChanged}
         >
           <paper-item></paper-item>
-          ${headerFooters
-            .filter((headerFooter) => headerFooter.isHeader)
-            .map(
-              (headerFooter) =>
-                html`
-                  <paper-item .itemName=${headerFooter.type}
-                    >${this.hass!.localize(
-                      `ui.panel.lovelace.editor.header-footer.${headerFooter.type}.name`
-                    )}</paper-item
-                  >
-                `
-            )}
+          ${this.configValue === "header"
+            ? headerElements
+            : footerElements.map(
+                (headerFooter) =>
+                  html`
+                    <paper-item .itemName=${headerFooter}
+                      >${this.hass!.localize(
+                        `ui.panel.lovelace.editor.header-footer.${headerFooter}.name`
+                      )}</paper-item
+                    >
+                  `
+              )}
         </paper-listbox>
       </ha-paper-dropdown-menu>
     `;
