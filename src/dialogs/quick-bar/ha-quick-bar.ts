@@ -26,7 +26,6 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { domainToName } from "../../data/integration";
 import { QuickBarParams } from "./show-dialog-quick-bar";
 import { compare } from "../../common/string/compare";
-import { SingleSelectedEvent } from "@material/mwc-list/mwc-list-foundation";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import memoizeOne from "memoize-one";
 import "../../common/search/search-input";
@@ -61,7 +60,7 @@ export class QuickBar extends LitElement {
 
   @query("search-input", false) private _filterInputField?: HTMLElement;
 
-  @query("mwc-list-item", false) private _firstListItem?: HTMLElement;
+  @query("mwc-list", false) private _list?: HTMLElement;
 
   public async showDialog(params: QuickBarParams) {
     this._commandMode = params.commandMode || false;
@@ -169,10 +168,7 @@ export class QuickBar extends LitElement {
     `;
   }
 
-  private async processItemAndCloseDialog(ev: SingleSelectedEvent) {
-    const index = ev.detail.index;
-    const item = (ev.target as any).items[index].item;
-
+  private async processItemAndCloseDialog(item: QuickBarItem, index: number) {
     this._commandTriggered = index;
 
     await item.action();
@@ -185,10 +181,17 @@ export class QuickBar extends LitElement {
 
   private _handleInputKeyDown(ev: KeyboardEvent) {
     if (ev.code === "Enter") {
-      this._firstListItem?.click();
+      // wait for debounce
+      setTimeout(() => {
+        if (!this._items?.length) {
+          return;
+        }
+
+        this.processItemAndCloseDialog(this._items[0], 0);
+      }, 100);
     } else if (ev.code === "ArrowDown") {
       ev.preventDefault();
-      this._firstListItem?.focus();
+      this._list?.focus();
     }
   }
 
