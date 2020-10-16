@@ -11,6 +11,7 @@ import {
   PropertyValues,
 } from "lit-element";
 import { html, TemplateResult } from "lit-html";
+import { atLeastVersion } from "../../../src/common/config/version";
 import "../../../src/common/search/search-input";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-svg-icon";
@@ -24,6 +25,7 @@ import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import "../../../src/layouts/hass-loading-screen";
 import "../../../src/layouts/hass-tabs-subpage";
 import { HomeAssistant, Route } from "../../../src/types";
+import { showRegistriesDialog } from "../dialogs/registries/show-dialog-registries";
 import { showRepositoriesDialog } from "../dialogs/repositories/show-dialog-repositories";
 import { supervisorTabs } from "../hassio-tabs";
 import "./hassio-addon-repository";
@@ -113,6 +115,12 @@ class HassioAddonStore extends LitElement {
           <mwc-list-item>
             Reload
           </mwc-list-item>
+          ${this.hass.userData?.showAdvanced &&
+          atLeastVersion(this.hass.config.version, 0, 117)
+            ? html`<mwc-list-item>
+                Registries
+              </mwc-list-item>`
+            : ""}
         </ha-button-menu>
         ${repos.length === 0
           ? html`<hass-loading-screen no-toolbar></hass-loading-screen>`
@@ -157,6 +165,9 @@ class HassioAddonStore extends LitElement {
       case 1:
         this.refreshData();
         break;
+      case 2:
+        this._manageRegistries();
+        break;
     }
   }
 
@@ -171,6 +182,10 @@ class HassioAddonStore extends LitElement {
       repos: this._repos!,
       loadData: () => this._loadData(),
     });
+  }
+
+  private async _manageRegistries() {
+    showRegistriesDialog(this);
   }
 
   private async _loadData() {

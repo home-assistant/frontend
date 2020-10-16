@@ -728,6 +728,7 @@ class HaSidebar extends LitElement {
           width: 64px;
         }
         :host([expanded]) {
+          width: 256px;
           width: calc(256px + env(safe-area-inset-left));
         }
         :host([rtl]) {

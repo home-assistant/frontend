@@ -29,7 +29,7 @@ const createWebpackConfig = ({
     module: {
       rules: [
         {
-          test: /\.js$|\.ts$/,
+          test: /\.m?js$|\.ts$/,
           exclude: bundle.babelExclude(),
           use: {
             loader: "babel-loader",
@@ -52,6 +52,9 @@ const createWebpackConfig = ({
           terserOptions: bundle.terserOptions(latestBuild),
         }),
       ],
+    },
+    experiments: {
+      topLevelAwait: true,
     },
     plugins: [
       new ManifestPlugin({
@@ -107,6 +110,22 @@ const createWebpackConfig = ({
           return `${chunk.name}.js`;
         }
         return `${chunk.name}.${chunk.hash.substr(0, 8)}.js`;
+      },
+      environment: {
+        // The environment supports arrow functions ('() => { ... }').
+        arrowFunction: latestBuild,
+        // The environment supports BigInt as literal (123n).
+        bigIntLiteral: false,
+        // The environment supports const and let for variable declarations.
+        const: latestBuild,
+        // The environment supports destructuring ('{ a, b } = obj').
+        destructuring: latestBuild,
+        // The environment supports an async import() function to import EcmaScript modules.
+        dynamicImport: latestBuild,
+        // The environment supports 'for of' iteration ('for (const x of array) { ... }').
+        forOf: latestBuild,
+        // The environment supports ECMAScript Module syntax to import ECMAScript modules (import ... from '...').
+        module: latestBuild,
       },
       chunkFilename:
         isProdBuild && !isStatsBuild

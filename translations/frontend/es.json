@@ -1140,6 +1140,7 @@
                             },
                             "unsupported_condition": "No hay soporte en la IU para la condición: {condition}"
                         },
+                        "copy_to_clipboard": "Copiar al portapapeles",
                         "default_name": "Nueva automatización",
                         "description": {
                             "label": "Descripción",
@@ -1497,6 +1498,7 @@
                     "different_include": "Posiblemente a través de un dominio, un glob o un include diferente.",
                     "pick_attribute": "Selecciona un atributo para anular",
                     "picker": {
+                        "documentation": "Documentación de personalización",
                         "entity": "Entidad",
                         "header": "Personalizaciones",
                         "introduction": "Ajustar los atributos de cada entidad. Las personalizaciones añadidas/editadas tendrán efecto inmediatamente. Las personalizaciones eliminadas tendrán efecto cuando la entidad se actualice."
@@ -1584,6 +1586,8 @@
                         },
                         "filter": {
                             "filter": "Filtrar",
+                            "hidden_entities": "{number} {number, plural,\n  one {entidad oculta}\n  other {entidades ocultas}\n}",
+                            "show_all": "Mostrar todo",
                             "show_disabled": "Mostrar entidades deshabilitadas",
                             "show_readonly": "Mostrar entidades de solo lectura",
                             "show_unavailable": "Mostrar entidades no disponibles"
@@ -2792,6 +2796,9 @@
                         "entity": "Entidad",
                         "no_description": "No hay descripción disponible."
                     },
+                    "edit_badges": {
+                        "panel_mode": "Estas insignias no se mostrarán porque esta vista está en \"Modo panel\"."
+                    },
                     "edit_card": {
                         "add": "Añadir tarjeta",
                         "confirm_cancel": "¿Estás seguro de que quieres cancelar?",
@@ -2885,7 +2892,7 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "Esto muestra la primera tarjeta a ancho completo; otras tarjetas en esta vista no se mostrarán.",
+                            "description": "Esto muestra la primera tarjeta a ancho completo. Otras tarjetas en esta vista, así como las insignias, no se mostrarán.",
                             "title": "¿Modo de panel?",
                             "warning_multiple_cards": "Esta vista contiene más de una tarjeta, pero una vista de panel solo puede mostrar 1 tarjeta."
                         }

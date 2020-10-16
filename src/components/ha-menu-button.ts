@@ -98,8 +98,8 @@ class HaMenuButton extends LitElement {
       return;
     }
 
-    this.style.visibility =
-      newNarrow || this._alwaysVisible ? "initial" : "hidden";
+    this.style.display =
+      newNarrow || this._alwaysVisible ? "initial" : "none";
 
     if (!newNarrow) {
       this._hasNotifications = false;

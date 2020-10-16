@@ -1071,7 +1071,7 @@
                                     "after": "Après",
                                     "before": "Avant",
                                     "label": "Heure",
-                                    "type_input": "Valeur d'une aide de date/heure",
+                                    "type_input": "Valeur d'une entrée de date/heure",
                                     "type_value": "Temps fixe",
                                     "weekdays": {
                                         "fri": "Vendredi",
@@ -1198,7 +1198,7 @@
                                 "time": {
                                     "at": "À",
                                     "label": "Heure",
-                                    "type_input": "Valeur d'une aide de date/heure",
+                                    "type_input": "Valeur d'une entrée de date/heure",
                                     "type_value": "Temps fixe"
                                 },
                                 "webhook": {

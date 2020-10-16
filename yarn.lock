@@ -1777,12 +1777,28 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@formatjs/intl-pluralrules@^1.5.8":
-  version "1.5.8"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-pluralrules/-/intl-pluralrules-1.5.8.tgz#ad8dd9ec669b8dac0e284d51772a65d92efa4ef9"
-  integrity sha512-OtL/rgKSSGljpxk2lRUC92ZqmzZjabwXO5zbBh2Bj8OM+z4U3H1Q5iK+ZY4k7a6EAoY7hWCr3F4k7EL8tcnQow==
+"@formatjs/ecma402-abstract@^1.2.5":
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/@formatjs/ecma402-abstract/-/ecma402-abstract-1.2.5.tgz#5a61ac1990ff2df8d1348ab12e186c1ca2a2bd71"
+  integrity sha512-k0fqS3LBNOHueAoMdgig8Ni6TchsH+zbzWBzX2gTFm50X9mxHwnuXdCk0XLlCIbvgVVlzcO254Men/mHAheMbg==
   dependencies:
-    "@formatjs/intl-utils" "^2.2.5"
+    tslib "^2.0.1"
+
+"@formatjs/intl-getcanonicallocales@^1.4.6":
+  version "1.4.6"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-getcanonicallocales/-/intl-getcanonicallocales-1.4.6.tgz#348a0b8dd87f2b0513a4942a6273c937dd91ead0"
+  integrity sha512-V54a+Ks02vke2CSmuGJ4GCvrdWfN105GSH7oZRoW5QSiwuac+fmxb5Qpu4002HetuRu0rrRTm+NMUTfZ1VB2xw==
+  dependencies:
+    cldr-core "36.0.0"
+    tslib "^2.0.1"
+
+"@formatjs/intl-pluralrules@^3.4.10":
+  version "3.4.10"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-pluralrules/-/intl-pluralrules-3.4.10.tgz#7ed3b03190971f21d482cb0e46791d90783a74d3"
+  integrity sha512-KcZZv38bu0pho9+9pMUOsCAi9/Kayh4+V5QZ/I9ps5OFSQlQaFMP5sX/zHBp41SsT6HxTfrPw5CHWpGrS75NQQ==
+  dependencies:
+    "@formatjs/ecma402-abstract" "^1.2.5"
+    tslib "^2.0.1"
 
 "@formatjs/intl-unified-numberformat@^3.3.5":
   version "3.3.5"
@@ -1795,11 +1811,6 @@
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/@formatjs/intl-utils/-/intl-utils-2.2.4.tgz#fe62a96799d1f7dbe621fd38a4bd2e5a6a16cb0e"
   integrity sha512-83fsJywew0o9wQsW3VuEp33HRiFd0qbQDyFFnwZCwk59eLZ33CtKyJ5ofKMrU2KK6hk1zaIdzisrZeoNfmI3Tw==
-
-"@formatjs/intl-utils@^2.2.5":
-  version "2.2.5"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-utils/-/intl-utils-2.2.5.tgz#eaafd94df3d102ee13e54e80f992a33868a6b1e8"
-  integrity sha512-p7gcmazKROteL4IECCp03Qrs790fZ8tbemUAjQu0+K0AaAlK49rI1SIFFq3LzDUAqXIshV95JJhRe/yXxkal5g==
 
 "@fullcalendar/common@5.1.0", "@fullcalendar/common@~5.1.0":
   version "5.1.0"
@@ -5413,6 +5424,11 @@ class-utils@^0.3.5:
     define-property "^0.2.5"
     isobject "^3.0.0"
     static-extend "^0.1.1"
+
+cldr-core@36.0.0:
+  version "36.0.0"
+  resolved "https://registry.yarnpkg.com/cldr-core/-/cldr-core-36.0.0.tgz#1d2148ed6802411845baeeb21432d7bbfde7d4f7"
+  integrity sha512-QLnAjt20rZe38c8h8OJ9jPND+O4o5O8Nw0TK/P3KpNn1cmOhMu0rk6Kc3ap96c5OStQ9gAngs9+Be2sum26NOw==
 
 clean-css@^4.2.1:
   version "4.2.3"
@@ -13895,6 +13911,11 @@ tslib@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.0.0.tgz#18d13fc2dce04051e20f074cc8387fd8089ce4f3"
   integrity sha512-lTqkx847PI7xEDYJntxZH89L2/aXInsyF2luSafe/+0fHOMjlBNXdH6th7f70qxLDhul7KZK0zC8V5ZIyHl0/g==
+
+tslib@^2.0.1:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.0.3.tgz#8e0741ac45fc0c226e58a17bfc3e64b9bc6ca61c"
+  integrity sha512-uZtkfKblCEQtZKBF6EBXVZeQNl82yqtDQdv+eck8u7tdPxjLu2/lp5/uPW+um2tpuxINHWy3GhiccY7QgEaVHQ==
 
 tsutils@^3.17.1:
   version "3.17.1"

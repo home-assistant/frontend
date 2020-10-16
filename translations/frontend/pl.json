@@ -579,8 +579,8 @@
                     "changed_to_state": "zmienił(-a) się na {state}",
                     "cleared_device_class": "brak (nie {device_class} ruchu)",
                     "detected_device_class": "wykryto {device_class}",
-                    "rose": "podniosło się",
-                    "set": "ustaw",
+                    "rose": "wzeszło",
+                    "set": "zaszło",
                     "turned_off": "wyłączony(-a)",
                     "turned_on": "włączony(-a)",
                     "was_at_home": "był w domu",
@@ -687,9 +687,9 @@
                 "past": "{time} temu",
                 "past_duration": {
                     "day": "{count} {count, plural,\n  one {dzień}\n  other {dni}\n} temu",
-                    "hour": "{count} {count, plural,\n  one {godzina}\n  few {godziny}\n  many {godzin}\n  other {godzin}\n} temu",
-                    "minute": "{count} {count, plural,\n  one {minuta}\n  few {minuty}\n  many {minut}\n  other {minut}\n} temu",
-                    "second": "{count} {count, plural,\n  one {sekunda}\n  few {sekundy}\n  many {sekund}\n  other {sekund}\n} temu",
+                    "hour": "{count} {count, plural,\n  one {godzinę}\n  few {godziny}\n  many {godzin}\n  other {godzin}\n} temu",
+                    "minute": "{count} {count, plural,\n  one {minutę}\n  few {minuty}\n  many {minut}\n  other {minut}\n} temu",
+                    "second": "{count} {count, plural,\n  one {sekundę}\n  few {sekundy}\n  many {sekund}\n  other {sekund}\n} temu",
                     "week": "{count} {count, plural,\n  one {tydzień}\n  few {tygodnie}\n  many {tygodni}\n  other {tygodni}\n} temu"
                 }
             },
@@ -1140,6 +1140,7 @@
                             },
                             "unsupported_condition": "Nieobsługiwany warunek: {condition}"
                         },
+                        "copy_to_clipboard": "Skopiuj do schowka",
                         "default_name": "Nowa automatyzacja",
                         "description": {
                             "label": "Opis",
@@ -1497,6 +1498,7 @@
                     "different_include": "Możliwe poprzez domenę, globalnie lub inny plik.",
                     "pick_attribute": "Wybierz atrybut do nadpisania",
                     "picker": {
+                        "documentation": "Dokumentacja dostosowywania",
                         "entity": "Encja",
                         "header": "Dostosowywanie",
                         "introduction": "Dostosuj atrybuty encji. Dodawane/edytowane dostosowywania zostaną wprowadzone natychmiast. Usunięte dostosowania zostaną uwzględnione, gdy encja zostanie zaktualizowana."
@@ -1584,6 +1586,8 @@
                         },
                         "filter": {
                             "filter": "Filtr",
+                            "hidden_entities": "{number} {number, plural,\n  one {encja ukryta}\n  few {encje ukryte}\n  many {encji ukrytych}\n  other {encji ukrytych}\n}",
+                            "show_all": "Pokaż wszystkie",
                             "show_disabled": "Wyświetlaj wyłączone encje",
                             "show_readonly": "Wyświetlaj encje tylko do odczytu",
                             "show_unavailable": "Wyświetlaj niedostępne encje"
@@ -1757,7 +1761,7 @@
                     "details": "Szczegóły loga ({level})",
                     "load_full_log": "Załaduj cały log Home Assistanta",
                     "loading_log": "Ładowanie loga błędów…",
-                    "multiple_messages": "wiadomość pojawiła się po raz pierwszy o godzinie {time} i powtarzała się {counter} razy",
+                    "multiple_messages": "wiadomość pojawiła się po raz pierwszy {time} i powtarzała się {counter} razy",
                     "no_errors": "Nie zgłoszono żadnych błędów.",
                     "no_issues": "Nie ma nowych problemów!",
                     "refresh": "Odśwież",
@@ -2792,6 +2796,9 @@
                         "entity": "Encja",
                         "no_description": "Brak dostępnego opisu."
                     },
+                    "edit_badges": {
+                        "panel_mode": "Te odznaki nie zostaną wyświetlone, ponieważ ten widok jest w \"Trybie panelu”."
+                    },
                     "edit_card": {
                         "add": "Dodaj kartę",
                         "confirm_cancel": "Czy na pewno chcesz anulować?",
@@ -2885,7 +2892,7 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "Pierwsza karta renderowana jest w pełnej szerokości; inne karty w tym widoku nie będą renderowane.",
+                            "description": "Pierwsza karta renderowana jest w pełnej szerokości. Inne karty w tym widoku, jak i odznaki nie będą renderowane.",
                             "title": "Tryb panelu?",
                             "warning_multiple_cards": "Ten widok zawiera więcej niż jedną kartę, a widok panelu może wyświetlać tylko jedną kartę."
                         }
@@ -2916,7 +2923,7 @@
                     "title": "Nieużywane encje"
                 },
                 "views": {
-                    "confirm_delete": "Na pewno chcesz usunąć ten widok?",
+                    "confirm_delete": "Usunąć widok?",
                     "confirm_delete_existing_cards": "Usunięcie tego widoku spowoduje również usunięcie kart",
                     "confirm_delete_existing_cards_text": "Czy na pewno chcesz usunąć widok ''{name}''? Widok zawiera {number} kart(ę/y), które zostaną usunięte. Tej akcji nie można cofnąć.",
                     "confirm_delete_text": "Czy na pewno chcesz usunąć widok ''{name}''?"

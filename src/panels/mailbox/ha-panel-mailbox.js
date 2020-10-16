@@ -6,7 +6,7 @@ import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-tabs/paper-tab";
-import "@polymer/paper-tabs/paper-tabs";
+import "../../components/ha-tabs";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -44,6 +44,13 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
         paper-item {
           cursor: pointer;
+        }
+
+        ha-tabs {
+          margin-left: max(env(safe-area-inset-left), 24px);
+          margin-right: max(env(safe-area-inset-right), 24px);
+          --paper-tabs-selection-bar-color: #fff;
+          text-transform: uppercase;
         }
 
         .empty {
@@ -86,7 +93,7 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
             <div main-title>[[localize('panel.mailbox')]]</div>
           </app-toolbar>
           <div sticky hidden$="[[areTabsHidden(platforms)]]">
-            <paper-tabs
+            <ha-tabs
               scrollable
               selected="[[_currentPlatform]]"
               on-iron-activate="handlePlatformSelected"
@@ -96,7 +103,7 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
                   [[getPlatformName(item)]]
                 </paper-tab>
               </template>
-            </paper-tabs>
+            </ha-tabs>
           </div>
         </app-header>
         <div class="content">

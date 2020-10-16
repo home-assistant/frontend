@@ -117,6 +117,7 @@ export class HaConfigAreasDashboard extends LitElement {
         )}
         id="area_id"
         hasFab
+        clickable
       >
         <ha-icon-button
           slot="toolbar-icon"

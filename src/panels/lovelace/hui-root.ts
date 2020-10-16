@@ -13,7 +13,6 @@ import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-scroll-effects/effects/waterfall";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-tabs/paper-tab";
-import "@polymer/paper-tabs/paper-tabs";
 import {
   css,
   CSSResult,
@@ -40,6 +39,7 @@ import "../../components/ha-icon-button-arrow-next";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
 import "../../components/ha-svg-icon";
+import "../../components/ha-tabs";
 import type {
   LovelaceConfig,
   LovelacePanelConfig,
@@ -283,7 +283,7 @@ class HUIRoot extends LitElement {
           ${this.lovelace!.config.views.length > 1 || this._editMode
             ? html`
                 <div sticky>
-                  <paper-tabs
+                  <ha-tabs
                     scrollable
                     .selected="${this._curView}"
                     @iron-activate="${this._handleViewSelected}"
@@ -363,7 +363,7 @@ class HUIRoot extends LitElement {
                           </mwc-icon-button>
                         `
                       : ""}
-                  </paper-tabs>
+                  </ha-tabs>
                 </div>
               `
             : ""}
@@ -698,9 +698,9 @@ class HUIRoot extends LitElement {
         ha-app-layout {
           min-height: 100%;
         }
-        paper-tabs {
-          margin-left: max(env(safe-area-inset-left), 12px);
-          margin-right: env(safe-area-inset-right);
+        ha-tabs {
+          margin-left: max(env(safe-area-inset-left), 24px);
+          margin-right: max(env(safe-area-inset-right), 24px);
           --paper-tabs-selection-bar-color: var(--text-primary-color, #fff);
           text-transform: uppercase;
         }
