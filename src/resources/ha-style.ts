@@ -47,6 +47,7 @@ documentContainer.innerHTML = `<custom-style>
       --card-background-color: #ffffff;
       --primary-background-color: #fafafa;
       --secondary-background-color: #e5e5e5; /* behind the cards on state */
+      --code-editor-background-color: #e5e5e5;
 
       /* for label-badge */
       --label-badge-red: #DF4C1E;
