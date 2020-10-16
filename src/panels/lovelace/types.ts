@@ -69,21 +69,15 @@ export interface LovelaceHeaderFooter extends HTMLElement {
   setConfig(config: LovelaceHeaderFooterConfig): void;
 }
 
-export interface LovelaceCardEditor extends HTMLElement {
+export type LovelaceCardEditor = LovelaceGenericElementEditor;
+
+export type LovelaceHeaderFooterEditor = LovelaceGenericElementEditor;
+
+export type LovelaceRowEditor = LovelaceGenericElementEditor;
+
+export interface LovelaceGenericElementEditor extends HTMLElement {
   hass?: HomeAssistant;
   lovelace?: LovelaceConfig;
-  setConfig(config: LovelaceCardConfig): void;
-  refreshYamlEditor?: (focus: boolean) => void;
-}
-
-export interface LovelaceHeaderFooterEditor extends HTMLElement {
-  hass?: HomeAssistant;
-  lovelace?: LovelaceConfig;
-  setConfig(config: LovelaceCardConfig): void;
-}
-
-export interface LovelaceRowEditor extends HTMLElement {
-  hass?: HomeAssistant;
   setConfig(config: LovelaceRowConfig): void;
   refreshYamlEditor?: (focus: boolean) => void;
 }

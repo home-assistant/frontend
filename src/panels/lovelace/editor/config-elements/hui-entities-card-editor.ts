@@ -10,7 +10,6 @@ import {
   internalProperty,
   LitElement,
   property,
-  query,
   TemplateResult,
 } from "lit-element";
 import {
@@ -33,13 +32,9 @@ import type { HomeAssistant } from "../../../../types";
 import type { EntitiesCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
 import type { LovelaceRowConfig } from "../../entity-rows/types";
-import {
-  headerFooterConfigStructs,
-  LovelaceHeaderFooterConfig,
-} from "../../header-footer/types";
+import { headerFooterConfigStructs } from "../../header-footer/types";
 import type { LovelaceCardEditor } from "../../types";
 import "../header-footer-editor/hui-header-footer-editor";
-import type { HuiElementEditor } from "../hui-element-editor";
 import "../hui-entities-card-row-editor";
 import "../hui-sub-element-editor";
 import { processEditorEntities } from "../process-editor-entities";
@@ -47,15 +42,12 @@ import {
   EditorTarget,
   entitiesConfigStruct,
   EntitiesEditorEvent,
-  GUIModeChangedEvent,
   SubElementEditorConfig,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 interface EditDetailElementEvent {
-  index?: number;
-  elementType: string;
-  config?: LovelaceHeaderFooterConfig | LovelaceRowConfig;
+  subElementConfig: SubElementEditorConfig;
 }
 
 declare global {
@@ -86,20 +78,6 @@ export class HuiEntitiesCardEditor extends LitElement
 
   @internalProperty() private _subElementEditorConfig?: SubElementEditorConfig;
 
-  @internalProperty() private _detailElementConfig?:
-    | LovelaceRowConfig
-    | LovelaceHeaderFooterConfig;
-
-  @internalProperty() private _detailElementIndex?: number;
-
-  @internalProperty() private _detailElementGuiModeAvailable = true;
-
-  @internalProperty() private _detailElementGuiMode = true;
-
-  @internalProperty() private _detailElementType?: string;
-
-  @query("hui-element-editor") private _cardEditorEl?: HuiElementEditor;
-
   public setConfig(config: EntitiesCardConfig): void {
     assert(config, cardConfigStruct);
     this._config = config;
@@ -119,27 +97,14 @@ export class HuiEntitiesCardEditor extends LitElement
       return html``;
     }
 
-    if (this._detailElementConfig) {
+    if (this._subElementEditorConfig) {
       return html`
         <hui-sub-element-editor
           .hass=${this.hass}
-          .guiModeAvailable=${this._detailElementGuiModeAvailable}
-          .guiMode=${this._detailElementGuiMode}
-          @toggle-gui-mode=${this._toggleMode}
+          .config=${this._subElementEditorConfig}
           @go-back=${this._goBack}
+          @config-changed=${this._handleEntityRowConfigChanged}
         >
-          <span slot="title"
-            >${this.hass.localize(
-              `ui.panel.lovelace.editor.detail-editor.${this._detailElementType}`
-            )}</span
-          >
-          <hui-element-editor
-            .hass=${this.hass}
-            .value=${this._detailElementConfig}
-            .elementType=${this._detailElementType!}
-            @config-changed=${this._handleEntityRowConfigChanged}
-            @GUImode-changed=${this._handleGUIModeChanged}
-          ></hui-element-editor>
         </hui-sub-element-editor>
       `;
     }
@@ -247,54 +212,32 @@ export class HuiEntitiesCardEditor extends LitElement
   }
 
   private _editDetailElement(ev: HASSDomEvent<EditDetailElementEvent>): void {
-    const { elementType, config, index } = ev.detail;
-
-    this._detailElementType = elementType;
-    this._detailElementConfig = config;
-
-    if (elementType === "row") {
-      this._detailElementIndex = index!;
-    }
+    this._subElementEditorConfig = ev.detail.subElementConfig;
   }
 
   private _goBack(): void {
-    this._detailElementType = undefined;
-    this._detailElementIndex = undefined;
-    this._detailElementConfig = undefined;
-    this._detailElementGuiModeAvailable = true;
-    this._detailElementGuiMode = true;
-  }
-
-  private _toggleMode(): void {
-    this._cardEditorEl?.toggleMode();
+    this._subElementEditorConfig = undefined;
   }
 
   private _handleEntityRowConfigChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     const value = ev.detail.config as LovelaceRowConfig;
-    this._detailElementGuiModeAvailable = ev.detail.guiModeAvailable;
 
     const newConfigEntities = this._configEntities!.concat();
 
     if (!value) {
-      newConfigEntities.splice(this._detailElementIndex!, 1);
+      newConfigEntities.splice(this._subElementEditorConfig!.index!, 1);
       this._goBack();
     } else {
-      newConfigEntities[this._detailElementIndex!] = value;
+      newConfigEntities[this._subElementEditorConfig!.index!] = value;
     }
 
-    this._detailElementConfig = value;
+    this._subElementEditorConfig!.elementConfig = value;
 
     this._config = { ...this._config!, entities: newConfigEntities };
     this._configEntities = processEditorEntities(this._config!.entities);
 
     fireEvent(this, "config-changed", { config: this._config! });
-  }
-
-  private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {
-    ev.stopPropagation();
-    this._detailElementGuiMode = ev.detail.guiMode;
-    this._detailElementGuiModeAvailable = ev.detail.guiModeAvailable;
   }
 
   static get styles(): CSSResultArray {

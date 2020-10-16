@@ -24,7 +24,7 @@ import type {
 import type { HomeAssistant } from "../../../types";
 import { handleStructError } from "../common/structs/handle-errors";
 import type { LovelaceRowConfig } from "../entity-rows/types";
-import type { LovelaceCardEditor, LovelaceRowEditor } from "../types";
+import type { LovelaceGenericElementEditor } from "../types";
 import "./config-elements/hui-generic-entity-row-editor";
 import { GUISupportError } from "./gui-support-error";
 import { GUIModeChangedEvent } from "./types";
@@ -51,8 +51,6 @@ export interface UIConfigChangedEvent extends Event {
   };
 }
 
-const GENERIC_ROW_TYPE = "generic-row";
-
 @customElement("hui-element-editor")
 export class HuiElementEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -61,13 +59,11 @@ export class HuiElementEditor extends LitElement {
 
   @internalProperty() private _yaml?: string;
 
-  @internalProperty() private _config?: LovelaceCardConfig | LovelaceRowConfig;
+  @internalProperty() private _config?: any;
 
-  @internalProperty() private _configElement?:
-    | LovelaceCardEditor
-    | LovelaceRowEditor;
+  @internalProperty() private _configElement?: LovelaceGenericElementEditor;
 
-  @internalProperty() protected _configElType?: string;
+  @internalProperty() protected _configElementType?: string;
 
   @internalProperty() private _GUImode = true;
 
@@ -99,11 +95,11 @@ export class HuiElementEditor extends LitElement {
     this._setConfig();
   }
 
-  public get value(): LovelaceCardConfig | LovelaceRowConfig | undefined {
+  public get value(): any | undefined {
     return this._config;
   }
 
-  public set value(config: LovelaceCardConfig | LovelaceRowConfig | undefined) {
+  public set value(config: any | undefined) {
     if (this._config && deepEqual(config, this._config)) {
       return;
     }
@@ -122,6 +118,7 @@ export class HuiElementEditor extends LitElement {
         this._error = err.message;
       }
     }
+
     fireEvent(this, "config-changed", {
       config: this.value!,
       error: this._error,
@@ -149,8 +146,14 @@ export class HuiElementEditor extends LitElement {
     });
   }
 
-  public async getConfigElement(): Promise<HTMLElement | undefined> {
-    return document.createElement("div");
+  public async getConfigElement(): Promise<
+    LovelaceGenericElementEditor | undefined
+  > {
+    return undefined;
+  }
+
+  public get configElementType(): string | undefined {
+    return this.value?.type;
   }
 
   public toggleMode() {
@@ -258,8 +261,65 @@ export class HuiElementEditor extends LitElement {
       return;
     }
 
+    let configElement: LovelaceGenericElementEditor | undefined;
+
+    try {
+      this._error = undefined;
+      this._warnings = undefined;
+
+      if (this._configElementType !== this.configElementType) {
+        // If the type has changed, we need to load a new GUI editor
+
+        if (!this.configElementType) {
+          throw new Error(`No card type defined`);
+        }
+
+        this._configElementType = this.configElementType;
+
+        this._loading = true;
+        configElement = await this.getConfigElement();
+
+        if (!configElement) {
+          throw new Error(
+            `No visual editor available for: ${this.configElementType}`
+          );
+        }
+
+        configElement.hass = this.hass;
+        if ("lovelace" in configElement) {
+          configElement.lovelace = this.lovelace;
+        }
+        configElement.addEventListener("config-changed", (ev) =>
+          this._handleUIConfigChanged(ev as UIConfigChangedEvent)
+        );
+      }
+
+      // Setup GUI editor and check that it can handle the current config
+      try {
+        // @ts-ignore
+        configElement!.setConfig(this.value);
+      } catch (err) {
+        throw new GUISupportError(
+          "Config is not supported",
+          handleStructError(err)
+        );
+      }
+    } catch (err) {
+      if (err instanceof GUISupportError) {
+        this._warnings = err.warnings ?? [err.message];
+      } else {
+        this._error = err;
+      }
+      this.GUImode = false;
+    } finally {
+      this._loading = false;
+    }
+
     this._configElement = await this.getConfigElement();
-    this._configElType = type;
+
+    if (!this._configElement) {
+      return;
+    }
 
     // Perform final setup
     this._configElement.hass = this.hass;

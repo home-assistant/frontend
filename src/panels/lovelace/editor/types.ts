@@ -86,8 +86,6 @@ export interface CardPickTarget extends EventTarget {
 export interface SubElementEditorConfig {
   index?: number;
   elementConfig?: LovelaceRowConfig | LovelaceHeaderFooterConfig;
-  guiModeAvailable: boolean;
-  guiMode: string;
   type: string;
 }
 
