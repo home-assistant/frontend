@@ -63,7 +63,6 @@ import { HaDeviceAction } from "./action/types/ha-automation-action-device_id";
 import "./condition/ha-automation-condition";
 import "./trigger/ha-automation-trigger";
 import { HaDeviceTrigger } from "./trigger/types/ha-automation-trigger-device";
-import { constrainPoint } from "@fullcalendar/core";
 
 const MODES = ["single", "restart", "queued", "parallel"];
 const MODES_MAX = ["queued", "parallel"];

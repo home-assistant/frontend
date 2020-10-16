@@ -147,7 +147,7 @@ export interface StateCondition {
   condition: "state";
   entity_id: string;
   attribute?: string;
-  state: string[] | number[];
+  state: string[];
 }
 
 export interface NumericStateCondition {
