@@ -1,11 +1,11 @@
 import { customElement } from "lit-element";
 import { getCardElementClass } from "../../create-element/create-card-element";
-import { LovelaceCardEditor } from "../../types";
+import type { LovelaceCardEditor } from "../../types";
 import { HuiElementEditor } from "../hui-element-editor";
 
 @customElement("hui-card-element-editor")
 export class HuiCardElementEditor extends HuiElementEditor {
-  public async getConfigElement(): Promise<LovelaceCardEditor | undefined> {
+  protected async getConfigElement(): Promise<LovelaceCardEditor | undefined> {
     const elClass = await getCardElementClass(this.configElementType!);
 
     // Check if a GUI editor exists

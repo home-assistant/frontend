@@ -63,17 +63,17 @@ export class HuiElementEditor extends LitElement {
 
   @internalProperty() private _configElement?: LovelaceGenericElementEditor;
 
-  @internalProperty() protected _configElementType?: string;
+  @internalProperty() private _configElementType?: string;
 
   @internalProperty() private _GUImode = true;
 
   // Error: Configuration broken - do not save
-  @internalProperty() protected _error?: string;
+  @internalProperty() private _error?: string;
 
   // Warning: GUI editor can't handle configuration - ok to save
-  @internalProperty() protected _warnings?: string[];
+  @internalProperty() private _warnings?: string[];
 
-  @internalProperty() protected _loading = false;
+  @internalProperty() private _loading = false;
 
   @query("ha-code-editor") _yamlEditor?: HaCodeEditor;
 
@@ -146,16 +146,6 @@ export class HuiElementEditor extends LitElement {
     });
   }
 
-  public async getConfigElement(): Promise<
-    LovelaceGenericElementEditor | undefined
-  > {
-    return undefined;
-  }
-
-  public get configElementType(): string | undefined {
-    return this.value?.type;
-  }
-
   public toggleMode() {
     this.GUImode = !this.GUImode;
   }
@@ -171,6 +161,16 @@ export class HuiElementEditor extends LitElement {
     if (focus) {
       this._yamlEditor.codemirror.focus();
     }
+  }
+
+  protected async getConfigElement(): Promise<
+    LovelaceGenericElementEditor | undefined
+  > {
+    return undefined;
+  }
+
+  protected get configElementType(): string | undefined {
+    return this.value?.type;
   }
 
   protected render(): TemplateResult {
@@ -241,7 +241,7 @@ export class HuiElementEditor extends LitElement {
     }
   }
 
-  protected _handleUIConfigChanged(ev: UIConfigChangedEvent) {
+  private _handleUIConfigChanged(ev: UIConfigChangedEvent) {
     ev.stopPropagation();
     const config = ev.detail.config;
     this.value = config;
@@ -292,6 +292,8 @@ export class HuiElementEditor extends LitElement {
         configElement.addEventListener("config-changed", (ev) =>
           this._handleUIConfigChanged(ev as UIConfigChangedEvent)
         );
+
+        this._configElement = configElement;
       }
 
       // Setup GUI editor and check that it can handle the current config
@@ -313,32 +315,6 @@ export class HuiElementEditor extends LitElement {
       this.GUImode = false;
     } finally {
       this._loading = false;
-    }
-
-    this._configElement = await this.getConfigElement();
-
-    if (!this._configElement) {
-      return;
-    }
-
-    // Perform final setup
-    this._configElement.hass = this.hass;
-    if ("lovelace" in this._configElement) {
-      this._configElement.lovelace = this.lovelace;
-    }
-    this._configElement.addEventListener("config-changed", (ev) =>
-      this._handleUIConfigChanged(ev as UIConfigChangedEvent)
-    );
-
-    // Setup GUI editor and check that it can handle the current config
-    try {
-      // @ts-ignore
-      this._configElement!.setConfig(this.value);
-    } catch (err) {
-      throw new GUISupportError(
-        "Config is not supported",
-        handleStructError(err)
-      );
     }
   }
 
