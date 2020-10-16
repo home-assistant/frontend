@@ -386,7 +386,7 @@ class HaSidebar extends LitElement {
             .hass=${hass}
           ></ha-user-badge>
 
-          <span class="item-text"> ${hass.user ? hass.user.name : ""} </span>
+          <span class="item-text">${hass.user ? hass.user.name : ""}</span>
         </paper-icon-item>
       </a>
       <div disabled class="bottom-spacer"></div>

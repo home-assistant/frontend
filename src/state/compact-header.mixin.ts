@@ -1,5 +1,6 @@
 import { HASSDomEvent } from "../common/dom/fire_event";
 import { Constructor, HomeAssistant } from "../types";
+import type { PropertyValues } from "lit-element";
 import { storeState } from "../util/ha-pref-storage";
 import { HassBaseEl } from "./hass-base-mixin";
 
@@ -20,10 +21,9 @@ declare global {
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
-    protected firstUpdated(changedProps) {
+    protected firstUpdated(changedProps: PropertyValues) {
       super.firstUpdated(changedProps);
       this.addEventListener("hass-compact-header", (ev) => {
-        console.log("Listener: ", ev.detail.compact);
         this._updateHass({ compactHeader: ev.detail.compact });
         storeState(this.hass!);
       });
