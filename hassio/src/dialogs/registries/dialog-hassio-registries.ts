@@ -45,8 +45,6 @@ class HassioRegistriesDialog extends LitElement {
 
   @internalProperty() private _addingRegistry = false;
 
-  @internalProperty() private _entriesAreFilled = false;
-
   protected render(): TemplateResult {
     return html`
       <ha-dialog
