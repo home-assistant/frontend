@@ -1,8 +1,8 @@
 import { assert } from "chai";
 
-import { fuzzySequentialMatch } from "../../../src/common/string/sequence_matching";
+import { fuzzySequentialMatchBasic } from "../../../src/common/string/filter/sequence-matching";
 
-describe("fuzzySequentialMatch", () => {
+describe("fuzzySequentialMatchBasic", () => {
   const entity = { entity_id: "automation.ticker", friendly_name: "Stocks" };
 
   const shouldMatchEntity = [
@@ -42,7 +42,7 @@ describe("fuzzySequentialMatch", () => {
   describe(`Entity '${entity.entity_id}'`, () => {
     for (const goodFilter of shouldMatchEntity) {
       it(`matches with '${goodFilter}'`, () => {
-        const res = fuzzySequentialMatch(goodFilter, [
+        const res = fuzzySequentialMatchBasic(goodFilter, [
           entity.entity_id,
           entity.friendly_name.toLowerCase(),
         ]);
@@ -52,7 +52,7 @@ describe("fuzzySequentialMatch", () => {
 
     for (const badFilter of shouldNotMatchEntity) {
       it(`fails to match with '${badFilter}'`, () => {
-        const res = fuzzySequentialMatch(badFilter, [
+        const res = fuzzySequentialMatchBasic(badFilter, [
           entity.entity_id,
           entity.friendly_name,
         ]);

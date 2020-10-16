@@ -17,7 +17,10 @@ import "../../components/ha-dialog";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { PolymerChangedEvent } from "../../polymer-types";
-import { fuzzySequentialMatch } from "../../common/string/sequence_matching";
+import {
+  fuzzySequentialMatch,
+  isPatternInWords,
+} from "../../common/string/filter/sequence-matching";
 import { componentsWithService } from "../../common/config/components_with_service";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -32,7 +35,11 @@ interface QuickBarItem {
   altText?: string;
   icon: string;
   action(data?: any): void;
-  score?: number;
+}
+
+export interface ScoredItem {
+  item: QuickBarItem;
+  score: ReturnType<typeof fuzzySequentialMatch>;
 }
 
 @customElement("ha-quick-bar")
@@ -185,15 +192,36 @@ export class QuickBar extends LitElement {
     }
 
     this._items = (this._commandMode ? this._commandItems : this._entityItems)
-      .filter(({ text, altText }) => {
-        const values = [text];
-        if (altText) {
-          values.push(altText);
-        }
-        return fuzzySequentialMatch(this._itemFilter.trimLeft(), values);
-      })
-      .sort((itemA, itemB) => compare(itemA.text, itemB.text));
+      .filter(({ text, altText }) =>
+        altText
+          ? isPatternInWords(this._itemFilter, text, altText)
+          : isPatternInWords(this._itemFilter, text)
+      )
+      .map<ScoredItem>((item) => ({
+        item,
+        score: item.altText
+          ? fuzzySequentialMatch(this._itemFilter, item.text, item.altText)
+          : fuzzySequentialMatch(this._itemFilter, item.text),
+      }))
+      .sort(this.compareFuzzyMatches)
+      .map((scoredItem) => scoredItem.item);
   }
+
+  private compareFuzzyMatches = (a: ScoredItem, b: ScoredItem) => {
+    const scoreA = a.score;
+    const scoreB = b.score;
+
+    if (!scoreA || !scoreB) {
+      return 0;
+    }
+
+    const isNumber = !isNaN(Number(scoreA));
+    if (isNumber) {
+      return scoreA > scoreB ? -1 : 1;
+    }
+
+    return compare(a.item.text, b.item.text);
+  };
 
   private _generateCommandItems(): QuickBarItem[] {
     return [...this._generateReloadCommands()];
