@@ -262,8 +262,8 @@ class HaConfigAreaPage extends LitElement {
                             ? html`
                                 <a
                                   href=${ifDefined(
-                                    state.attributes.id
-                                      ? `/config/script/edit/${state.attributes.id}`
+                                    state.entity_id
+                                      ? `/config/script/edit/${state.entity_id}`
                                       : undefined
                                   )}
                                 >
