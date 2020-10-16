@@ -145,6 +145,7 @@ class PanelMediaBrowser extends LitElement {
         .heading {
           overflow: hidden;
           white-space: nowrap;
+          margin-top: 4px;
         }
         .heading .secondary-text {
           font-size: 14px;
