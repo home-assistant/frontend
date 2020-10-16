@@ -20,15 +20,14 @@ export class HuiRowElementEditor extends HuiElementEditor {
       return document.createElement("hui-generic-entity-row-editor");
     }
 
-    let configElement: LovelaceRowEditor | undefined;
     const elClass = await getRowElementClass(this.configElementType!);
 
     // Check if a GUI editor exists
     if (elClass && elClass.getConfigElement) {
-      configElement = await elClass.getConfigElement();
+      return elClass.getConfigElement();
     }
 
-    return configElement!;
+    return undefined;
   }
 }
 

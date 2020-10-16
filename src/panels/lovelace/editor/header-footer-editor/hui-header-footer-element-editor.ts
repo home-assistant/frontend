@@ -8,16 +8,14 @@ export class HuiHeaderFooterElementEditor extends HuiElementEditor {
   public async getConfigElement(): Promise<
     LovelaceHeaderFooterEditor | undefined
   > {
-    let configElement: LovelaceHeaderFooterEditor | undefined;
-
     const elClass = await getHeaderFooterElementClass(this.configElementType!);
 
     // Check if a GUI editor exists
     if (elClass && elClass.getConfigElement) {
-      configElement = await elClass.getConfigElement();
+      return elClass.getConfigElement();
     }
 
-    return configElement!;
+    return undefined;
   }
 }
 
