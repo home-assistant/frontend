@@ -279,19 +279,23 @@ class HassioSupervisorInfo extends LitElement {
       title: "You are running an unsupported installation",
       text: html`Below is a list of issues found with your installation, click
         on the links to learn how you can resolve the issues. <br /><br />
-        ${resolution.unsupported.map(
-          (issue) => html`
-            <li>
-              <a
-                href="${documentationUrl(this.hass, ISSUES[issue].url)}"
-                target="_blank"
-                rel="noreferrer"
-              >
-                ${ISSUES[issue].title}
-              </a>
-            </li>
-          `
-        )}`,
+        ${resolution.unsupported
+          .filter((issue) => issue in ISSUES)
+          .map(
+            (issue) => html`
+              <ul>
+                <li>
+                  <a
+                    href="${documentationUrl(this.hass, ISSUES[issue].url)}"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    ${ISSUES[issue].title}
+                  </a>
+                </li>
+              </ul>
+            `
+          )}`,
     });
   }
 
