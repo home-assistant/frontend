@@ -2313,8 +2313,6 @@
             "move_before": "Move card before",
             "move_after": "Move card after",
             "options": "More options",
-            "editor": "Editor",
-            "advanced": "Advanced",
             "search_cards": "Search cards"
           },
           "move_card": {
