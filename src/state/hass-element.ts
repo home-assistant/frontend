@@ -4,6 +4,7 @@ import { connectionMixin } from "./connection-mixin";
 import { dialogManagerMixin } from "./dialog-manager-mixin";
 import DisconnectToastMixin from "./disconnect-toast-mixin";
 import { hapticMixin } from "./haptic-mixin";
+import compactHeaderMixin from "./compact-header.mixin";
 import { HassBaseEl } from "./hass-base-mixin";
 import MoreInfoMixin from "./more-info-mixin";
 import NotificationMixin from "./notification-mixin";
@@ -31,4 +32,5 @@ export class HassElement extends ext(HassBaseEl, [
   hapticMixin,
   panelTitleMixin,
   loggingMixin,
+  compactHeaderMixin,
 ]) {}

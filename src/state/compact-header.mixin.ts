@@ -4,7 +4,7 @@ import { storeState } from "../util/ha-pref-storage";
 import { HassBaseEl } from "./hass-base-mixin";
 
 interface CompactHeaderParams {
-  compactHeader: HomeAssistant["compactHeader"];
+  compact: HomeAssistant["compactHeader"];
 }
 
 declare global {
@@ -23,7 +23,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
       this.addEventListener("hass-compact-header", (ev) => {
-        this._updateHass({ compactHeader: ev.detail.compactHeader });
+        console.log("Listener: ", ev.detail.compact);
+        this._updateHass({ compactHeader: ev.detail.compact });
         storeState(this.hass!);
       });
     }
