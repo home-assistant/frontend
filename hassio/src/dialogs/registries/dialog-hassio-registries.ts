@@ -3,7 +3,7 @@ import "@material/mwc-icon-button/mwc-icon-button";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDelete } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
+import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
   css,
   CSSResult,
@@ -12,11 +12,9 @@ import {
   internalProperty,
   LitElement,
   property,
-  query,
   TemplateResult,
 } from "lit-element";
 import "../../../../src/components/ha-circular-progress";
-import "../../../../src/components/ha-dialog";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-svg-icon";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
@@ -38,11 +36,11 @@ class HassioRegistriesDialog extends LitElement {
     username: string;
   }[];
 
-  @query("#registry") private _newRegistry?: PaperInputElement;
+  @internalProperty() private _registry?: string;
 
-  @query("#username") private _newUsername?: PaperInputElement;
+  @internalProperty() private _username?: string;
 
-  @query("#password") private _newPassword?: PaperInputElement;
+  @internalProperty() private _password?: string;
 
   @internalProperty() private _opened = false;
 
@@ -64,26 +62,29 @@ class HassioRegistriesDialog extends LitElement {
             : "Manage Docker Registries"
         )}
       >
-        <div class="form" @keyup=${this._inputChanged}>
+        <div class="form">
           ${this._addingRegistry
             ? html`
                 <paper-input
+                  @value-changed=${this._inputChanged}
                   class="flex-auto"
-                  id="registry"
+                  name="registry"
                   label="Registry"
                   required
                   auto-validate
                 ></paper-input>
                 <paper-input
+                  @value-changed=${this._inputChanged}
                   class="flex-auto"
-                  id="username"
+                  name="username"
                   label="Username"
                   required
                   auto-validate
                 ></paper-input>
                 <paper-input
+                  @value-changed=${this._inputChanged}
                   class="flex-auto"
-                  id="password"
+                  name="password"
                   label="Password"
                   type="password"
                   required
@@ -91,7 +92,9 @@ class HassioRegistriesDialog extends LitElement {
                 ></paper-input>
 
                 <mwc-button
-                  ?disabled=${!this._entriesAreFilled}
+                  ?disabled=${Boolean(
+                    !this._registry || !this._username || !this._password
+                  )}
                   @click=${this._addNewRegistry}
                 >
                   Add registry
@@ -129,12 +132,9 @@ class HassioRegistriesDialog extends LitElement {
     `;
   }
 
-  private _inputChanged() {
-    this._entriesAreFilled = Boolean(
-      this._newRegistry?.value &&
-        this._newUsername?.value &&
-        this._newPassword?.value
-    );
+  private _inputChanged(ev: Event) {
+    const target = ev.currentTarget as PaperInputElement;
+    this[`_${target.name}`] = target.value;
   }
 
   public async showDialog(_dialogParams: any): Promise<void> {
@@ -169,18 +169,10 @@ class HassioRegistriesDialog extends LitElement {
   }
 
   private async _addNewRegistry(): Promise<void> {
-    if (
-      !this._newRegistry?.value ||
-      !this._newUsername?.value ||
-      !this._newPassword?.value
-    ) {
-      return;
-    }
-
     const data = {};
-    data[this._newRegistry.value] = {
-      username: this._newUsername.value,
-      password: this._newPassword.value,
+    data[this._registry!] = {
+      username: this._username,
+      password: this._password,
     };
 
     try {
