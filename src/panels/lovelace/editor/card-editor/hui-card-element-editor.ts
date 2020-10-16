@@ -13,7 +13,7 @@ export class HuiCardElementEditor extends HuiElementEditor {
       return elClass.getConfigElement();
     }
 
-    return undefined!;
+    return undefined;
   }
 }
 
