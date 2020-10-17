@@ -70,8 +70,21 @@ export class MoreInfoDialog extends LitElement {
     this._entityId = params.entityId;
     if (!this._entityId) {
       this.closeDialog();
+      return;
     }
     this.large = false;
+
+    const stateObj = this.hass.states[this._entityId];
+    if (!stateObj) {
+      return;
+    }
+    if (stateObj.attributes && "custom_ui_more_info" in stateObj.attributes) {
+      this._moreInfoType = stateObj.attributes.custom_ui_more_info;
+    } else {
+      const type = stateMoreInfoType(stateObj);
+      importMoreInfoControl(type);
+      this._moreInfoType = type === "hidden" ? undefined : `more-info-${type}`;
+    }
   }
 
   public closeDialog() {
@@ -92,23 +105,6 @@ export class MoreInfoDialog extends LitElement {
     }
 
     return false;
-  }
-
-  protected updated(changedProperties) {
-    if (!this.hass || !this._entityId || !changedProperties.has("_entityId")) {
-      return;
-    }
-    const stateObj = this.hass.states[this._entityId];
-    if (!stateObj) {
-      return;
-    }
-    if (stateObj.attributes && "custom_ui_more_info" in stateObj.attributes) {
-      this._moreInfoType = stateObj.attributes.custom_ui_more_info;
-    } else {
-      const type = stateMoreInfoType(stateObj);
-      importMoreInfoControl(type);
-      this._moreInfoType = type === "hidden" ? undefined : `more-info-${type}`;
-    }
   }
 
   protected render() {
