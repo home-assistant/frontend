@@ -95,7 +95,10 @@ export class EntityRegistrySettings extends LitElement {
           @value-changed=${this._iconChanged}
           .label=${this.hass.localize("ui.dialogs.entity_registry.editor.icon")}
           .placeholder=${this.entry.original_icon ||
-          domainIcon(computeDomain(this.entry.entity_id))}
+          domainIcon(
+            computeDomain(this.entry.entity_id),
+            this.hass.states[this.entry.entity_id]
+          )}
           .disabled=${this._submitting}
           .errorMessage=${this.hass.localize(
             "ui.dialogs.entity_registry.editor.icon_error"
