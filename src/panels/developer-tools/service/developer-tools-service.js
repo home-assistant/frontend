@@ -1,8 +1,9 @@
-import "@material/mwc-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { safeDump, safeLoad } from "js-yaml";
+import { computeRTL } from "../../../common/util/compute_rtl";
+import "../../../components/buttons/ha-progress-button";
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-code-editor";
 import "../../../components/ha-service-picker";
@@ -26,7 +27,6 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
           -moz-user-select: initial;
           display: block;
           padding: 16px;
-          direction: ltr;
         }
 
         .ha-form {
@@ -34,7 +34,7 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
           max-width: 400px;
         }
 
-        mwc-button {
+        ha-progress-button {
           margin-top: 8px;
         }
 
@@ -51,8 +51,13 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
           text-align: left;
         }
 
+        :host([rtl]) .attributes th {
+          text-align: right;
+        }
+
         .attributes tr {
           vertical-align: top;
+          direction: ltr;
         }
 
         .attributes tr:nth-child(odd) {
@@ -70,6 +75,7 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
 
         pre {
           margin: 0;
+          font-family: var(--code-font-family, monospace);
         }
 
         h1 {
@@ -81,7 +87,15 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
         }
 
         .error {
-          color: var(--google-red-500);
+          color: var(--error-color);
+        }
+
+        :host([rtl]) .desc-container {
+          text-align: right;
+        }
+
+        :host([rtl]) .desc-container h3 {
+          direction: ltr;
         }
       </style>
 
@@ -123,9 +137,13 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
             error="[[!validJSON]]"
             on-value-changed="_yamlChanged"
           ></ha-code-editor>
-          <mwc-button on-click="_callService" raised disabled="[[!validJSON]]">
+          <ha-progress-button
+            on-click="_callService"
+            raised
+            disabled="[[!validJSON]]"
+          >
             [[localize('ui.panel.developer-tools.tabs.services.call_service')]]
-          </mwc-button>
+          </ha-progress-button>
         </div>
 
         <template is="dom-if" if="[[!domainService]]">
@@ -141,7 +159,9 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
             </h1>
           </template>
           <template is="dom-if" if="[[_description]]">
-            <h3>[[_description]]</h3>
+            <div class="desc-container">
+              <h3>[[_description]]</h3>
+            </div>
 
             <table class="attributes">
               <tr>
@@ -227,6 +247,10 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
         type: String,
         computed: "_computeDescription(hass, _domain, _service)",
       },
+      rtl: {
+        reflectToAttribute: true,
+        computed: "_computeRTL(hass)",
+      },
     };
   }
 
@@ -288,7 +312,8 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
     return ENTITY_COMPONENT_DOMAINS.includes(domain) ? [domain] : null;
   }
 
-  _callService() {
+  _callService(ev) {
+    const button = ev.target;
     if (this.parsedJSON === ERROR_SENTINEL) {
       showAlertDialog(this, {
         text: this.hass.localize(
@@ -297,10 +322,17 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
           this.serviceData
         ),
       });
+      button.actionError();
       return;
     }
-
-    this.hass.callService(this._domain, this._service, this.parsedJSON);
+    this.hass
+      .callService(this._domain, this._service, this.parsedJSON)
+      .then(() => {
+        button.actionSuccess();
+      })
+      .catch(() => {
+        button.actionError();
+      });
   }
 
   _fillExampleData() {
@@ -328,6 +360,10 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
 
   _yamlChanged(ev) {
     this.serviceData = ev.detail.value;
+  }
+
+  _computeRTL(hass) {
+    return computeRTL(hass);
   }
 }
 

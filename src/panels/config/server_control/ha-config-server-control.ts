@@ -1,44 +1,31 @@
+import "@material/mwc-button";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "../../../layouts/hass-tabs-subpage";
-import { configSections } from "../ha-panel-config";
+import "@polymer/paper-input/paper-input";
 import {
-  LitElement,
-  property,
-  customElement,
-  html,
   css,
   CSSResult,
+  customElement,
+  html,
+  internalProperty,
+  LitElement,
+  property,
   TemplateResult,
 } from "lit-element";
-import { HomeAssistant, Route } from "../../../types";
-
-import "@material/mwc-button";
-import "@polymer/paper-input/paper-input";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { componentsWithService } from "../../../common/config/components_with_service";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-card";
-import "../ha-config-section";
-import { haStyle } from "../../../resources/styles";
 import { checkCoreConfig } from "../../../data/core";
-
-const reloadableDomains = [
-  "group",
-  "automation",
-  "script",
-  "scene",
-  "person",
-  "zone",
-  "input_boolean",
-  "input_text",
-  "input_number",
-  "input_datetime",
-  "input_select",
-];
+import { domainToName } from "../../../data/integration";
+import "../../../layouts/hass-tabs-subpage";
+import { haStyle } from "../../../resources/styles";
+import { HomeAssistant, Route } from "../../../types";
+import "../ha-config-section";
+import { configSections } from "../ha-panel-config";
 
 @customElement("ha-config-server-control")
 export class HaConfigServerControl extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public isWide!: boolean;
 
@@ -48,11 +35,26 @@ export class HaConfigServerControl extends LitElement {
 
   @property() public showAdvanced!: boolean;
 
-  @property() private _validating = false;
+  @internalProperty() private _validating = false;
+
+  @internalProperty() private _reloadableDomains: string[] = [];
 
   private _validateLog = "";
 
   private _isValid: boolean | null = null;
+
+  protected updated(changedProperties) {
+    const oldHass = changedProperties.get("hass");
+    if (
+      changedProperties.has("hass") &&
+      (!oldHass || oldHass.config.components !== this.hass.config.components)
+    ) {
+      this._reloadableDomains = componentsWithService(
+        this.hass,
+        "reload"
+      ).sort();
+    }
+  }
 
   protected render(): TemplateResult {
     return html`
@@ -200,19 +202,23 @@ export class HaConfigServerControl extends LitElement {
                       )}
                     </ha-call-service-button>
                   </div>
-                  ${reloadableDomains.map((domain) =>
-                    isComponentLoaded(this.hass, domain)
-                      ? html`<div class="card-actions">
-                          <ha-call-service-button
-                            .hass=${this.hass}
-                            .domain=${domain}
-                            service="reload"
-                            >${this.hass.localize(
-                              `ui.panel.config.server_control.section.reloading.${domain}`
-                            )}
-                          </ha-call-service-button>
-                        </div>`
-                      : ""
+                  ${this._reloadableDomains.map(
+                    (domain) =>
+                      html`<div class="card-actions">
+                        <ha-call-service-button
+                          .hass=${this.hass}
+                          .domain=${domain}
+                          service="reload"
+                          >${this.hass.localize(
+                            `ui.panel.config.server_control.section.reloading.${domain}`
+                          ) ||
+                          this.hass.localize(
+                            "ui.panel.config.server_control.section.reloading.reload",
+                            "domain",
+                            domainToName(this.hass.localize, domain)
+                          )}
+                        </ha-call-service-button>
+                      </div>`
                   )}
                 </ha-card>
               `
@@ -245,7 +251,7 @@ export class HaConfigServerControl extends LitElement {
         }
 
         .validate-result {
-          color: var(--google-green-500);
+          color: var(--success-color);
           font-weight: 500;
           margin-bottom: 1em;
         }
@@ -255,7 +261,7 @@ export class HaConfigServerControl extends LitElement {
         }
 
         .config-invalid .text {
-          color: var(--google-red-500);
+          color: var(--error-color);
           font-weight: 500;
         }
 
@@ -266,6 +272,10 @@ export class HaConfigServerControl extends LitElement {
         .validate-log {
           white-space: pre-wrap;
           direction: ltr;
+        }
+
+        ha-config-section {
+          padding-bottom: 24px;
         }
       `,
     ];

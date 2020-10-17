@@ -34,9 +34,9 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   version_latest: string;
   boot: "auto" | "manual";
   build: boolean;
-  options: object;
-  network: null | object;
-  network_description: null | object;
+  options: Record<string, unknown>;
+  network: null | Record<string, number>;
+  network_description: null | Record<string, string>;
   host_network: boolean;
   host_pid: boolean;
   host_ipc: boolean;
@@ -51,6 +51,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   changelog: boolean;
   hassio_api: boolean;
   hassio_role: "default" | "homeassistant" | "manager" | "admin";
+  startup: "initialize" | "system" | "services" | "application" | "once";
   homeassistant_api: boolean;
   auth_api: boolean;
   full_access: boolean;
@@ -72,6 +73,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   ingress_panel: boolean;
   ingress_entry: null | string;
   ingress_url: null | string;
+  watchdog: null | boolean;
 }
 
 export interface HassioAddonsInfo {
@@ -94,11 +96,12 @@ export interface HassioAddonRepository {
 export interface HassioAddonSetOptionParams {
   audio_input?: string | null;
   audio_output?: string | null;
-  options?: object | null;
+  options?: Record<string, unknown> | null;
   boot?: "auto" | "manual";
   auto_update?: boolean;
   ingress_panel?: boolean;
-  network?: object | null;
+  network?: Record<string, unknown> | null;
+  watchdog?: boolean;
 }
 
 export const reloadHassioAddons = async (hass: HomeAssistant) => {
@@ -154,6 +157,19 @@ export const setHassioAddonOption = async (
     `hassio/addons/${slug}/options`,
     data
   );
+};
+
+export const validateHassioAddonOption = async (
+  hass: HomeAssistant,
+  slug: string
+) => {
+  return await hass.callApi<
+    HassioResponse<{ message: string; valid: boolean }>
+  >("POST", `hassio/addons/${slug}/options/validate`);
+};
+
+export const startHassioAddon = async (hass: HomeAssistant, slug: string) => {
+  return hass.callApi<string>("POST", `hassio/addons/${slug}/start`);
 };
 
 export const setHassioAddonSecurity = async (

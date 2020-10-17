@@ -4,6 +4,7 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   TemplateResult,
@@ -13,6 +14,7 @@ import {
   fetchHassioAddonLogs,
   HassioAddonDetails,
 } from "../../../../src/data/hassio/addon";
+import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import "../../components/hassio-ansi-to-html";
@@ -24,9 +26,9 @@ class HassioAddonLogs extends LitElement {
 
   @property({ attribute: false }) public addon!: HassioAddonDetails;
 
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
-  @property() private _content?: string;
+  @internalProperty() private _content?: string;
 
   public async connectedCallback(): Promise<void> {
     super.connectedCallback();
@@ -62,7 +64,7 @@ class HassioAddonLogs extends LitElement {
           display: block;
         }
         .errors {
-          color: var(--google-red-500);
+          color: var(--error-color);
           margin-bottom: 16px;
         }
       `,
@@ -74,7 +76,7 @@ class HassioAddonLogs extends LitElement {
     try {
       this._content = await fetchHassioAddonLogs(this.hass, this.addon.slug);
     } catch (err) {
-      this._error = `Failed to get addon logs, ${err.body?.message || err}`;
+      this._error = `Failed to get addon logs, ${extractApiErrorMessage(err)}`;
     }
   }
 

@@ -6,6 +6,7 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   TemplateResult,
@@ -18,26 +19,26 @@ import { HomeAssistant } from "../../../../types";
 
 @customElement("ha-input_number-form")
 class HaInputNumberForm extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public new?: boolean;
 
   private _item?: Partial<InputNumber>;
 
-  @property() private _name!: string;
+  @internalProperty() private _name!: string;
 
-  @property() private _icon!: string;
+  @internalProperty() private _icon!: string;
 
-  @property() private _max?: number;
+  @internalProperty() private _max?: number;
 
-  @property() private _min?: number;
+  @internalProperty() private _min?: number;
 
-  @property() private _mode?: string;
+  @internalProperty() private _mode?: string;
 
-  @property() private _step?: number;
+  @internalProperty() private _step?: number;
 
   // eslint-disable-next-line: variable-name
-  @property() private _unit_of_measurement?: string;
+  @internalProperty() private _unit_of_measurement?: string;
 
   set item(item: InputNumber) {
     this._item = item;
@@ -47,12 +48,12 @@ class HaInputNumberForm extends LitElement {
       this._max = item.max ?? 100;
       this._min = item.min ?? 0;
       this._mode = item.mode || "slider";
-      this._step = item.step || 1;
+      this._step = item.step ?? 1;
       this._unit_of_measurement = item.unit_of_measurement;
     } else {
       this._item = {
         min: 0,
-        max: 0,
+        max: 100,
       };
       this._name = "";
       this._icon = "";
@@ -175,8 +176,10 @@ class HaInputNumberForm extends LitElement {
       return;
     }
     ev.stopPropagation();
-    const configValue = (ev.target as any).configValue;
-    const value = ev.detail.value;
+    const target = ev.target as any;
+    const configValue = target.configValue;
+    const value =
+      target.type === "number" ? Number(ev.detail.value) : ev.detail.value;
     if (this[`_${configValue}`] === value) {
       return;
     }

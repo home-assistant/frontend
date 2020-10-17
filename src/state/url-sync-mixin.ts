@@ -1,92 +1,109 @@
 /* eslint-disable no-console */
-import { fireEvent } from "../common/dom/fire_event";
+import { UpdatingElement } from "lit-element";
+import { HASSDomEvent } from "../common/dom/fire_event";
+import {
+  closeDialog,
+  DialogClosedParams,
+  DialogState,
+  showDialog,
+} from "../dialogs/make-dialog-manager";
+import { ProvideHassElement } from "../mixins/provide-hass-lit-mixin";
 import { Constructor } from "../types";
-import { HassBaseEl } from "./hass-base-mixin";
 
 const DEBUG = false;
 
-export const urlSyncMixin = <T extends Constructor<HassBaseEl>>(
+export const urlSyncMixin = <
+  T extends Constructor<UpdatingElement & ProvideHassElement>
+>(
   superClass: T
 ) =>
   // Disable this functionality in the demo.
   __DEMO__
     ? superClass
     : class extends superClass {
-        private _ignoreNextHassChange = false;
-
-        private _ignoreNextPopstate = false;
-
-        private _moreInfoOpenedFromPath?: string;
+        private _ignoreNextPopState = false;
 
         public connectedCallback(): void {
           super.connectedCallback();
           window.addEventListener("popstate", this._popstateChangeListener);
+          this.addEventListener("dialog-closed", this._dialogClosedListener);
         }
 
         public disconnectedCallback(): void {
           super.disconnectedCallback();
           window.removeEventListener("popstate", this._popstateChangeListener);
+          this.removeEventListener("dialog-closed", this._dialogClosedListener);
         }
 
-        protected hassChanged(newHass, oldHass): void {
-          super.hassChanged(newHass, oldHass);
-
-          if (this._ignoreNextHassChange) {
-            if (DEBUG) {
-              console.log("ignore hasschange");
-            }
-            this._ignoreNextHassChange = false;
-            return;
+        private _dialogClosedListener = (
+          ev: HASSDomEvent<DialogClosedParams>
+        ) => {
+          if (DEBUG) {
+            console.log("dialog closed", ev.detail.dialog);
           }
+          // If not closed by navigating back, and not a new dialog is open, remove the open state from history
           if (
-            !oldHass ||
-            oldHass.moreInfoEntityId === newHass.moreInfoEntityId
+            history.state?.open &&
+            history.state?.dialog === ev.detail.dialog
           ) {
             if (DEBUG) {
-              console.log("ignoring hass change");
+              console.log("remove state", ev.detail.dialog);
             }
-            return;
-          }
-
-          if (newHass.moreInfoEntityId) {
-            if (DEBUG) {
-              console.log("pushing state");
-            }
-            // We keep track of where we opened moreInfo from so that we don't
-            // pop the state when we close the modal if the modal has navigated
-            // us away.
-            this._moreInfoOpenedFromPath = window.location.pathname;
-            history.pushState(null, "", window.location.pathname);
-          } else if (
-            window.location.pathname === this._moreInfoOpenedFromPath
-          ) {
-            if (DEBUG) {
-              console.log("history back");
-            }
-            this._ignoreNextPopstate = true;
+            this._ignoreNextPopState = true;
             history.back();
           }
-        }
+        };
 
-        private _popstateChangeListener = (ev) => {
-          if (this._ignoreNextPopstate) {
-            if (DEBUG) {
-              console.log("ignore popstate");
-            }
-            this._ignoreNextPopstate = false;
+        private _popstateChangeListener = (ev: PopStateEvent) => {
+          if (this._ignoreNextPopState) {
+            this._ignoreNextPopState = false;
             return;
           }
-
-          if (DEBUG) {
-            console.log("popstate", ev);
-          }
-
-          if (this.hass && this.hass.moreInfoEntityId) {
+          if (ev.state && "dialog" in ev.state) {
             if (DEBUG) {
-              console.log("deselect entity");
+              console.log("popstate", ev);
             }
-            this._ignoreNextHassChange = true;
-            fireEvent(this, "hass-more-info", { entityId: null });
+            this._handleDialogStateChange(ev.state);
           }
         };
+
+        private async _handleDialogStateChange(state: DialogState) {
+          if (DEBUG) {
+            console.log("handle state", state);
+          }
+          if (!state.open) {
+            const closed = await closeDialog(state.dialog);
+            if (!closed) {
+              if (DEBUG) {
+                console.log("dialog could not be closed");
+              }
+              // dialog could not be closed, push state again
+              history.pushState(
+                {
+                  dialog: state.dialog,
+                  open: true,
+                  dialogParams: null,
+                  oldState: null,
+                },
+                ""
+              );
+              return;
+            }
+            if (state.oldState) {
+              if (DEBUG) {
+                console.log("handle old state");
+              }
+              this._handleDialogStateChange(state.oldState);
+            }
+            return;
+          }
+          if (state.dialogParams !== null) {
+            showDialog(
+              this,
+              this.shadowRoot!,
+              state.dialog,
+              state.dialogParams
+            );
+          }
+        }
       };

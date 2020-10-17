@@ -1,5 +1,10 @@
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { customElement, property, PropertyValues } from "lit-element";
+import {
+  customElement,
+  property,
+  internalProperty,
+  PropertyValues,
+} from "lit-element";
 import { compare } from "../../../common/string/compare";
 import {
   AreaRegistryEntry,
@@ -20,7 +25,7 @@ import "./ha-config-areas-dashboard";
 
 @customElement("ha-config-areas")
 class HaConfigAreas extends HassRouterPage {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
 
@@ -41,11 +46,12 @@ class HaConfigAreas extends HassRouterPage {
     },
   };
 
-  @property() private _configEntries: ConfigEntry[] = [];
+  @internalProperty() private _configEntries: ConfigEntry[] = [];
 
-  @property() private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
+  @internalProperty()
+  private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
 
-  @property() private _areas: AreaRegistryEntry[] = [];
+  @internalProperty() private _areas: AreaRegistryEntry[] = [];
 
   private _unsubs?: UnsubscribeFunc[];
 

@@ -3,6 +3,7 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   PropertyValues,
@@ -19,9 +20,9 @@ import { PictureElementsCardConfig } from "./types";
 
 @customElement("hui-picture-elements-card")
 class HuiPictureElementsCard extends LitElement implements LovelaceCard {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _elements?: LovelaceElement[];
+  @internalProperty() private _elements?: LovelaceElement[];
 
   public static getStubConfig(
     hass: HomeAssistant,
@@ -53,7 +54,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     };
   }
 
-  @property() private _config?: PictureElementsCardConfig;
+  @internalProperty() private _config?: PictureElementsCardConfig;
 
   public getCardSize(): number {
     return 4;
@@ -128,6 +129,8 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
             .cameraView=${this._config.camera_view}
             .entity=${this._config.entity}
             .aspectRatio=${this._config.aspect_ratio}
+            .darkModeFilter=${this._config.dark_mode_filter}
+            .darkModeImage=${this._config.dark_mode_image}
           ></hui-image>
           ${this._elements}
         </div>
@@ -148,6 +151,8 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
 
       ha-card {
         overflow: hidden;
+        height: 100%;
+        box-sizing: border-box;
       }
     `;
   }

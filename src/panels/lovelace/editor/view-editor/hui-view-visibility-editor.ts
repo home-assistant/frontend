@@ -1,10 +1,11 @@
-import "@polymer/paper-item/paper-item";
+import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   PropertyValues,
@@ -14,6 +15,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { compare } from "../../../../common/string/compare";
 import { HaSwitch } from "../../../../components/ha-switch";
+import "../../../../components/user/ha-user-badge";
 import { LovelaceViewConfig, ShowViewConfig } from "../../../../data/lovelace";
 import { fetchUsers, User } from "../../../../data/user";
 import { HomeAssistant } from "../../../../types";
@@ -34,13 +36,13 @@ export class HuiViewVisibilityEditor extends LitElement {
       this._config.visible === undefined ? true : this._config.visible;
   }
 
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public _config!: LovelaceViewConfig;
 
-  @property() private _users!: User[];
+  @internalProperty() private _users!: User[];
 
-  @property() private _visible!: boolean | ShowViewConfig[];
+  @internalProperty() private _visible!: boolean | ShowViewConfig[];
 
   private _sortedUsers = memoizeOne((users: User[]) => {
     return users.sort((a, b) => compare(a.name, b.name));
@@ -68,14 +70,19 @@ export class HuiViewVisibilityEditor extends LitElement {
       </p>
       ${this._sortedUsers(this._users).map(
         (user) => html`
-          <paper-item>
+          <paper-icon-item>
+            <ha-user-badge
+              slot="item-icon"
+              .hass=${this.hass}
+              .user=${user}
+            ></ha-user-badge>
             <paper-item-body>${user.name}</paper-item-body>
             <ha-switch
               .userId="${user.id}"
               @change=${this.valChange}
               .checked=${this.checkUser(user.id)}
             ></ha-switch>
-          </paper-item>
+          </paper-icon-item>
         `
       )}
     `;

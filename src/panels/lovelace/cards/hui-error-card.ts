@@ -4,7 +4,7 @@ import {
   customElement,
   html,
   LitElement,
-  property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
@@ -16,7 +16,7 @@ import { safeDump } from "js-yaml";
 export class HuiErrorCard extends LitElement implements LovelaceCard {
   public hass?: HomeAssistant;
 
-  @property() private _config?: ErrorCardConfig;
+  @internalProperty() private _config?: ErrorCardConfig;
 
   public getCardSize(): number {
     return 4;
@@ -43,12 +43,15 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
     return css`
       :host {
         display: block;
-        background-color: #ef5350;
-        color: white;
+        background-color: var(--error-color);
+        color: var(--color-on-error, white);
         padding: 8px;
         font-weight: 500;
         user-select: text;
         cursor: default;
+      }
+      pre {
+        font-family: var(--code-font-family, monospace);
       }
     `;
   }

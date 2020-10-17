@@ -10,6 +10,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   query,
   TemplateResult,
@@ -41,22 +42,22 @@ interface Results {
 
 @customElement("ha-voice-command-dialog")
 export class HaVoiceCommandDialog extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public results: Results | null = null;
 
-  @property() private _conversation: Message[] = [
+  @internalProperty() private _conversation: Message[] = [
     {
       who: "hass",
       text: "",
     },
   ];
 
-  @property() private _opened = false;
+  @internalProperty() private _opened = false;
 
-  @property() private _agentInfo?: AgentInfo;
+  @internalProperty() private _agentInfo?: AgentInfo;
 
-  @query("#messages") private messages!: PaperDialogScrollableElement;
+  @query("#messages", true) private messages!: PaperDialogScrollableElement;
 
   private recognition!: SpeechRecognition;
 
@@ -425,7 +426,7 @@ export class HaVoiceCommandDialog extends LitElement {
           text-align: right;
           border-bottom-right-radius: 0px;
           background-color: var(--light-primary-color);
-          color: var(--primary-text-color);
+          color: var(--text-light-primary-color, var(--primary-text-color));
         }
 
         .message.hass {
@@ -446,7 +447,7 @@ export class HaVoiceCommandDialog extends LitElement {
         }
 
         .message.error {
-          background-color: var(--google-red-500);
+          background-color: var(--error-color);
           color: var(--text-primary-color);
         }
 

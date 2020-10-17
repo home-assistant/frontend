@@ -1,11 +1,10 @@
-import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-circular-progress";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   TemplateResult,
@@ -13,7 +12,9 @@ import {
 import "../../../../../components/buttons/ha-call-api-button";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-circular-progress";
 import "../../../../../components/ha-icon";
+import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-service-description";
 import {
   fetchNetworkStatus,
@@ -25,19 +26,20 @@ import {
 } from "../../../../../data/zwave";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
+import { documentationUrl } from "../../../../../util/documentation-url";
 import "../../../ha-config-section";
 
 @customElement("zwave-network")
 export class ZwaveNetwork extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public isWide!: boolean;
 
-  @property() private _showHelp = false;
+  @internalProperty() private _showHelp = false;
 
-  @property() private _networkStatus?: ZWaveNetworkStatus;
+  @internalProperty() private _networkStatus?: ZWaveNetworkStatus;
 
-  @property() private _unsubs: Array<Promise<UnsubscribeFunc>> = [];
+  @internalProperty() private _unsubs: Array<Promise<UnsubscribeFunc>> = [];
 
   public disconnectedCallback(): void {
     this._unsubscribe();
@@ -70,7 +72,10 @@ export class ZwaveNetwork extends LitElement {
           )}
           <p>
             <a
-              href="https://www.home-assistant.io/docs/z-wave/control-panel/"
+              href="${documentationUrl(
+                this.hass,
+                "/docs/z-wave/control-panel/"
+              )}"
               target="_blank"
               rel="noreferrer"
             >
@@ -273,7 +278,7 @@ export class ZwaveNetwork extends LitElement {
         }
 
         .card-actions.warning ha-call-service-button {
-          color: var(--google-red-500);
+          color: var(--error-color);
         }
 
         .toggle-help-icon {

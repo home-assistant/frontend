@@ -8,6 +8,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../../components/ha-card";
@@ -17,15 +18,15 @@ import type { HomeAssistant } from "../../../types";
 
 @customElement("ha-config-url-form")
 class ConfigUrlForm extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
-  @property() private _working = false;
+  @internalProperty() private _working = false;
 
-  @property() private _external_url?: string;
+  @internalProperty() private _external_url?: string;
 
-  @property() private _internal_url?: string;
+  @internalProperty() private _internal_url?: string;
 
   protected render(): TemplateResult {
     const canEdit = ["storage", "default"].includes(

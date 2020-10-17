@@ -97,7 +97,7 @@ class MoreInfoCover extends LocalizeMixin(PolymerElement) {
   }
 
   computeClassNames(stateObj) {
-    var classes = [
+    const classes = [
       attributeClassNames(stateObj, [
         "current_position",
         "current_tilt_position",

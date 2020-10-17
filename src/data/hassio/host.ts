@@ -40,6 +40,10 @@ export const updateOS = async (hass: HomeAssistant) => {
   return hass.callApi<HassioResponse<void>>("POST", "hassio/os/update");
 };
 
+export const configSyncOS = async (hass: HomeAssistant) => {
+  return hass.callApi<HassioResponse<void>>("POST", "hassio/os/config/sync");
+};
+
 export const changeHostOptions = async (hass: HomeAssistant, options: any) => {
   return hass.callApi<HassioResponse<void>>(
     "POST",

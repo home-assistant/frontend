@@ -3,6 +3,7 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   PropertyValues,
@@ -17,11 +18,11 @@ import { turnOnOffEntities } from "../common/entity/turn-on-off-entities";
 
 @customElement("hui-entities-toggle")
 class HuiEntitiesToggle extends LitElement {
-  @property() public entities?: string[];
+  @property({ type: Array }) public entities?: string[];
 
-  @property() protected hass?: HomeAssistant;
+  @property({ attribute: false }) protected hass?: HomeAssistant;
 
-  @property() private _toggleEntities?: string[];
+  @internalProperty() private _toggleEntities?: string[];
 
   public updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
@@ -35,7 +36,7 @@ class HuiEntitiesToggle extends LitElement {
   }
 
   protected render(): TemplateResult {
-    if (!this._toggleEntities) {
+    if (!this._toggleEntities?.length) {
       return html``;
     }
 
@@ -44,11 +45,11 @@ class HuiEntitiesToggle extends LitElement {
         aria-label=${this.hass!.localize(
           "ui.panel.lovelace.card.entities.toggle"
         )}
-        .checked="${this._toggleEntities!.some((entityId) => {
+        .checked=${this._toggleEntities!.some((entityId) => {
           const stateObj = this.hass!.states[entityId];
           return stateObj && stateObj.state === "on";
-        })}"
-        @change="${this._callService}"
+        })}
+        @change=${this._callService}
       ></ha-switch>
     `;
   }

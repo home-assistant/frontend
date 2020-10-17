@@ -5,6 +5,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -16,11 +17,11 @@ import { CloudStatusLoggedIn, updateCloudPref } from "../../../../data/cloud";
 import type { HomeAssistant } from "../../../../types";
 
 export class CloudAlexaPref extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public cloudStatus?: CloudStatusLoggedIn;
 
-  @property() private _syncing = false;
+  @internalProperty() private _syncing = false;
 
   protected render(): TemplateResult {
     if (!this.cloudStatus) {
@@ -166,6 +167,10 @@ export class CloudAlexaPref extends LitElement {
         position: absolute;
         right: 24px;
         top: 32px;
+      }
+      :host([dir="rtl"]) .switch {
+        right: auto;
+        left: 24px;
       }
       .card-actions {
         display: flex;

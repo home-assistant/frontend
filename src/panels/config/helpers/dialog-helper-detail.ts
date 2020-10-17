@@ -6,6 +6,7 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   query,
@@ -40,17 +41,17 @@ const HELPERS = {
 
 @customElement("dialog-helper-detail")
 export class DialogHelperDetail extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _item?: Helper;
+  @internalProperty() private _item?: Helper;
 
-  @property() private _opened = false;
+  @internalProperty() private _opened = false;
 
-  @property() private _platform?: string;
+  @internalProperty() private _platform?: string;
 
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
-  @property() private _submitting = false;
+  @internalProperty() private _submitting = false;
 
   @query(".form") private _form?: HTMLDivElement;
 
@@ -135,7 +136,7 @@ export class DialogHelperDetail extends LitElement {
                     </paper-icon-item>
                     ${!isLoaded
                       ? html`
-                          <paper-tooltip
+                          <paper-tooltip animation-delay="0"
                             >${this.hass.localize(
                               "ui.dialogs.helper_settings.platform_not_loaded",
                               "platform",

@@ -23,7 +23,6 @@ import "../../../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../../../types";
 import { sortZHAGroups, formatAsPaddedHex } from "./functions";
 import { zhaTabs } from "./zha-config-dashboard";
-import { computeRTL } from "../../../../../common/util/compute_rtl";
 import { mdiPlus } from "@mdi/js";
 import { haStyle } from "../../../../../resources/styles";
 
@@ -34,7 +33,7 @@ export interface GroupRowData extends ZHAGroup {
 
 @customElement("zha-groups-dashboard")
 export class ZHAGroupsDashboard extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Object }) public route!: Route;
 
@@ -125,18 +124,16 @@ export class ZHAGroupsDashboard extends LitElement {
         .columns=${this._columns(this.narrow)}
         .data=${this._formattedGroups(this._groups)}
         @row-click=${this._handleRowClicked}
+        clickable
       >
+        <a href="/config/zha/group-add" slot="fab">
+          <mwc-fab
+            title=${this.hass!.localize("ui.panel.config.zha.groups.add_group")}
+          >
+            <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+          </mwc-fab>
+        </a>
       </hass-tabs-subpage-data-table>
-      <a href="/config/zha/group-add">
-        <mwc-fab
-          ?is-wide=${this.isWide}
-          ?narrow=${this.narrow}
-          title=${this.hass!.localize("ui.panel.config.zha.groups.add_group")}
-          ?rtl=${computeRTL(this.hass)}
-        >
-          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
-        </mwc-fab>
-      </a>
     `;
   }
 
@@ -153,31 +150,6 @@ export class ZHAGroupsDashboard extends LitElement {
     return [
       haStyle,
       css`
-        mwc-fab {
-          position: fixed;
-          bottom: 16px;
-          right: 16px;
-          z-index: 1;
-        }
-
-        mwc-fab[is-wide] {
-          bottom: 24px;
-          right: 24px;
-        }
-        mwc-fab[narrow] {
-          bottom: 84px;
-        }
-        mwc-fab[rtl] {
-          right: auto;
-          left: 16px;
-        }
-
-        mwc-fab[rtl][is-wide] {
-          bottom: 24px;
-          right: auto;
-          left: 24px;
-        }
-
         a {
           color: var(--primary-color);
         }

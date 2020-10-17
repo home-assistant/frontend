@@ -11,6 +11,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   query,
   TemplateResult,
 } from "lit-element";
@@ -23,19 +24,19 @@ import type { HomeAssistant } from "../../../../types";
 
 @customElement("ha-input_select-form")
 class HaInputSelectForm extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public new?: boolean;
 
   private _item?: InputSelect;
 
-  @property() private _name!: string;
+  @internalProperty() private _name!: string;
 
-  @property() private _icon!: string;
+  @internalProperty() private _icon!: string;
 
-  @property() private _options: string[] = [];
+  @internalProperty() private _options: string[] = [];
 
-  @query("#option_input") private _optionInput?: PaperInputElement;
+  @query("#option_input", true) private _optionInput?: PaperInputElement;
 
   set item(item: InputSelect) {
     this._item = item;

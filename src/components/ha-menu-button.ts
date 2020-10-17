@@ -8,6 +8,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
@@ -22,9 +23,9 @@ class HaMenuButton extends LitElement {
 
   @property() public narrow!: boolean;
 
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _hasNotifications = false;
+  @internalProperty() private _hasNotifications = false;
 
   private _alwaysVisible = false;
 
@@ -61,7 +62,7 @@ class HaMenuButton extends LitElement {
         aria-label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
         @click=${this._toggleMenu}
       >
-        <ha-svg-icon path=${mdiMenu}></ha-svg-icon>
+        <ha-svg-icon .path=${mdiMenu}></ha-svg-icon>
       </mwc-icon-button>
       ${hasNotifications ? html` <div class="dot"></div> ` : ""}
     `;
@@ -97,8 +98,7 @@ class HaMenuButton extends LitElement {
       return;
     }
 
-    this.style.visibility =
-      newNarrow || this._alwaysVisible ? "initial" : "hidden";
+    this.style.display = newNarrow || this._alwaysVisible ? "initial" : "none";
 
     if (!newNarrow) {
       this._hasNotifications = false;

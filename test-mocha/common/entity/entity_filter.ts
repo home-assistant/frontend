@@ -13,14 +13,14 @@ describe("EntityFilter", () => {
   });
 
   // case 2
-  it("allows whitelisting entities by entity id", () => {
+  it("allows entities by entity id", () => {
     const filter = generateFilter(undefined, ["light.kitchen"]);
 
     assert(filter("light.kitchen"));
     assert(!filter("light.living_room"));
   });
 
-  it("allows whitelisting entities by domain", () => {
+  it("allows entities by domain", () => {
     const filter = generateFilter(["switch"]);
 
     assert(filter("switch.bla"));
@@ -28,7 +28,7 @@ describe("EntityFilter", () => {
   });
 
   // case 3
-  it("allows blacklisting entities by entity id", () => {
+  it("excluding entities by entity id", () => {
     const filter = generateFilter(undefined, undefined, undefined, [
       "light.kitchen",
     ]);
@@ -37,7 +37,7 @@ describe("EntityFilter", () => {
     assert(filter("light.living_room"));
   });
 
-  it("allows blacklisting entities by domain", () => {
+  it("excluding entities by domain", () => {
     const filter = generateFilter(undefined, undefined, ["switch"]);
 
     assert(!filter("switch.bla"));
@@ -45,7 +45,7 @@ describe("EntityFilter", () => {
   });
 
   // case 4a
-  it("allows whitelisting domain and blacklisting entity", () => {
+  it("allows domain and excluding entity", () => {
     const filter = generateFilter(["switch"], undefined, undefined, [
       "switch.kitchen",
     ]);
@@ -55,7 +55,7 @@ describe("EntityFilter", () => {
     assert(!filter("sensor.bla"));
   });
 
-  it("allows whitelisting entity while whitelisting other domains", () => {
+  it("allows entity while other domains", () => {
     const filter = generateFilter(["switch"], ["light.kitchen"]);
 
     assert(filter("switch.living_room"));
@@ -64,7 +64,7 @@ describe("EntityFilter", () => {
   });
 
   // case 4b
-  it("allows blacklisting domain and whitelisting entity", () => {
+  it("excluding domain and entity", () => {
     const filter = generateFilter(undefined, ["switch.kitchen"], ["switch"]);
 
     assert(filter("switch.kitchen"));
@@ -72,7 +72,7 @@ describe("EntityFilter", () => {
     assert(filter("sensor.bla"));
   });
 
-  it("allows blacklisting domain and excluding entities", () => {
+  it("excluding domain and excluding entities", () => {
     const filter = generateFilter(
       undefined,
       undefined,
@@ -86,7 +86,7 @@ describe("EntityFilter", () => {
   });
 
   // case 4c
-  it("allows whitelisting entities", () => {
+  it("allows entities", () => {
     const filter = generateFilter(undefined, ["light.kitchen"]);
 
     assert(filter("light.kitchen"));

@@ -46,15 +46,15 @@
     "state_badge": {
         "alarm_control_panel": {
             "armed": "Gewapen",
-            "armed_away": "Gewapen",
+            "armed_away": "Aktief",
             "armed_custom_bypass": "Gewapen",
             "armed_home": "Gewapen",
-            "armed_night": "Gewapen",
+            "armed_night": "Aktief",
             "arming": "Bewapen Tans",
             "disarmed": "Ontwapen",
             "disarming": "Ontwapen",
             "pending": "Hangend",
-            "triggered": "Aktief"
+            "triggered": "Lui"
         },
         "default": {
             "entity_not_found": "Entiteit nie gevind nie",
@@ -440,6 +440,7 @@
         "common": {
             "cancel": "Kanselleer",
             "close": "Sluit",
+            "copied": "Copiato",
             "loading": "Laai tans",
             "save": "Stoor"
         },
@@ -467,8 +468,27 @@
                 }
             },
             "history_charts": {
-                "loading_history": "Laai tans staatsgeskiedenis ...",
-                "no_history_found": "Geen staatgeskiedenis gevind nie."
+                "loading_history": "Laai tans toestandsgeskiedenis ...",
+                "no_history_found": "Geen toestandsgeskiedenis gevind nie."
+            },
+            "media-browser": {
+                "class": {
+                    "composer": "Compositore",
+                    "directory": "Libreria",
+                    "episode": "Episodio",
+                    "game": "Gioco",
+                    "genre": "Genere",
+                    "image": "Immagine",
+                    "movie": "Film",
+                    "music": "Musica",
+                    "playlist": "Playlist",
+                    "podcast": "Podcast",
+                    "season": "Stagione",
+                    "track": "Traccia",
+                    "tv_show": "Programma televisivo",
+                    "url": "Url",
+                    "video": "Video"
+                }
             },
             "related-items": {
                 "area": "Area",
@@ -646,7 +666,7 @@
                         "create": "SKEP",
                         "default_name": "Nuwe Gebied",
                         "delete": "SKRAP",
-                        "update": "OPDATEER"
+                        "update": "Opdateer"
                     },
                     "picker": {
                         "create_area": "SKEP GEBIED",
@@ -694,7 +714,7 @@
                                     "wait_template": "Wag Templaat"
                                 }
                             },
-                            "unsupported_action": "Ongesteunde aksie: {action}"
+                            "unsupported_action": "Geen UI-ondersteuning vir aksie nie: {action}"
                         },
                         "alias": "Naam",
                         "conditions": {
@@ -715,8 +735,8 @@
                                     "value_template": "Waarde templaat (opsioneel)"
                                 },
                                 "state": {
-                                    "label": "Staat",
-                                    "state": "Staat"
+                                    "label": "Toestand",
+                                    "state": "Toestand"
                                 },
                                 "sun": {
                                     "after": "Na:",
@@ -796,7 +816,7 @@
                                 "state": {
                                     "for": "Vir",
                                     "from": "Vanaf",
-                                    "label": "Staat",
+                                    "label": "Toestand",
                                     "to": "Tot en met"
                                 },
                                 "sun": {
@@ -1021,6 +1041,7 @@
                         "delete": "Verwyder",
                         "delete_confirm": "Is u seker u wil hierdie integrasie skrap?",
                         "device_unavailable": "toestel nie beskikbaar nie",
+                        "documentation": "Dokumentasie",
                         "entity_unavailable": "entiteit nie beskikbaar nie",
                         "firmware": "Fermware: {version}",
                         "hub": "Gekonnekteer via",
@@ -1165,7 +1186,7 @@
                             "add": "Voeg 'n toestel by",
                             "delete": "Verwyder toestel",
                             "header": "toestelle",
-                            "introduction": "Voeg die toestelle wat u wil insluit in u toneel by. Stel al die toestelle op die staat wat u wil hê vir hierdie toneel."
+                            "introduction": "Voeg die toestelle wat u wil insluit in u toneel by. Stel toestande van toestelle na verlange in vir hierdie toneel."
                         },
                         "entities": {
                             "add": "Voeg 'n entiteit by",
@@ -1325,7 +1346,7 @@
                     "edit_home_zone_narrow": "Die ligging van u tuissone kan vanaf die algemene konfigurasiebladsy verander word. Die radius van die Tuis-sone kan nog nie vanaf die voorkant verander word nie. Wil u na die algemene opset gaan?",
                     "go_to_core_config": "Gaan na Algemene konfigurasie?",
                     "home_zone_core_config": "Die ligging van u tuissone kan vanaf die algemene konfigurasiebladsy verander word. Die radius van die Tuis-sone kan nog nie vanaf die voorkant verander word nie. Wil u na die algemene opset gaan?",
-                    "introduction": "Met sones kan u sekere streke op aarde spesifiseer. As 'n persoon binne 'n sone is, neem die staat die naam van die sone af. Sones kan ook as 'n sneller of toestand gebruik word binne outomatiseringsinstellings.",
+                    "introduction": "Met sones kan u sekere streke op aarde spesifiseer. As 'n persoon binne 'n sone is, neem die toestand die sonenaam aan. Sones kan ook as 'n sneller of toestand gebruik word in outomatiseringsinstellings.",
                     "no_zones_created_yet": "Lyk asof jy nog geen sones geskep het nie."
                 },
                 "zwave": {
@@ -1349,6 +1370,8 @@
                         "network_stopped": "Z-Wave Netwerk het Gestop"
                     },
                     "node_config": {
+                        "config_value": "Konfigurasiewaarde",
+                        "header": "Knooppuntkonfigurasieopsies",
                         "set_config_parameter": "Stel Config-parameter in"
                     },
                     "services": {
@@ -1431,6 +1454,9 @@
                         "add_item": "Voeg item by",
                         "checked_items": "Gemerkte items",
                         "clear_items": "Maak die gemerkte items skoon"
+                    },
+                    "starting": {
+                        "description": "Home Assistant begin tans, wag asseblief ..."
                     }
                 },
                 "changed_toast": {
@@ -1442,13 +1468,19 @@
                         "button": {
                             "name": "Knoppie"
                         },
+                        "humidifier": {
+                            "description": "Die Luchtbevochtigerkaart verleen beheer oor u lugbevochtiger-entiteit. Hiermee kan u die humiditeit en modus van die entiteit verander."
+                        },
+                        "iframe": {
+                            "name": "Webblad"
+                        },
                         "shopping-list": {
                             "integration_not_loaded": "Hierdie kaart vereis die ' shopping_list ' integrasie wat opgestel moet word."
                         }
                     },
                     "edit_card": {
                         "add": "Voeg Kaart by",
-                        "delete": "Skrap",
+                        "delete": "Skrap kaart",
                         "edit": "Wysig",
                         "header": "Kaart opstelling",
                         "move": "Skuif",

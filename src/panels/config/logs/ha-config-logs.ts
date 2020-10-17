@@ -17,8 +17,8 @@ import { configSections } from "../ha-panel-config";
 import "../../../layouts/hass-tabs-subpage";
 
 @customElement("ha-config-logs")
-export class HaPanelDevLogs extends LitElement {
-  @property() public hass!: HomeAssistant;
+export class HaConfigLogs extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
 
@@ -28,7 +28,7 @@ export class HaPanelDevLogs extends LitElement {
 
   @property() public route!: Route;
 
-  @query("system-log-card") private systemLog?: SystemLogCard;
+  @query("system-log-card", true) private systemLog?: SystemLogCard;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -74,6 +74,6 @@ export class HaPanelDevLogs extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "developer-tools-logs": HaPanelDevLogs;
+    "ha-config-logs": HaConfigLogs;
   }
 }

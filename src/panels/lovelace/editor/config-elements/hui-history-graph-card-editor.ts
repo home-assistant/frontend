@@ -1,15 +1,26 @@
 import "@polymer/paper-input/paper-input";
 import {
+  CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   TemplateResult,
 } from "lit-element";
+import {
+  array,
+  assert,
+  number,
+  object,
+  optional,
+  string,
+  union,
+} from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../types";
 import { HistoryGraphCardConfig } from "../../cards/types";
-import { struct } from "../../common/structs/struct";
+import { EntityId } from "../../common/structs/is-entity-id";
 import "../../components/hui-entity-editor";
 import { EntityConfig } from "../../entity-rows/types";
 import { LovelaceCardEditor } from "../../types";
@@ -17,33 +28,33 @@ import { processEditorEntities } from "../process-editor-entities";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
-const entitiesConfigStruct = struct.union([
-  {
-    entity: "entity-id",
-    name: "string?",
-  },
-  "entity-id",
+const entitiesConfigStruct = union([
+  object({
+    entity: EntityId,
+    name: optional(string()),
+  }),
+  EntityId,
 ]);
 
-const cardConfigStruct = struct({
-  type: "string",
-  entities: [entitiesConfigStruct],
-  title: "string?",
-  hours_to_show: "number?",
-  refresh_interval: "number?",
+const cardConfigStruct = object({
+  type: string(),
+  entities: array(entitiesConfigStruct),
+  title: optional(string()),
+  hours_to_show: optional(number()),
+  refresh_interval: optional(number()),
 });
 
 @customElement("hui-history-graph-card-editor")
 export class HuiHistoryGraphCardEditor extends LitElement
   implements LovelaceCardEditor {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: HistoryGraphCardConfig;
+  @internalProperty() private _config?: HistoryGraphCardConfig;
 
-  @property() private _configEntities?: EntityConfig[];
+  @internalProperty() private _configEntities?: EntityConfig[];
 
   public setConfig(config: HistoryGraphCardConfig): void {
-    config = cardConfigStruct(config);
+    assert(config, cardConfigStruct);
     this._config = config;
     this._configEntities = processEditorEntities(config.entities);
   }
@@ -70,7 +81,6 @@ export class HuiHistoryGraphCardEditor extends LitElement
     }
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <paper-input
           .label="${this.hass.localize(
@@ -126,10 +136,11 @@ export class HuiHistoryGraphCardEditor extends LitElement
     }
 
     if (ev.detail && ev.detail.entities) {
-      this._config.entities = ev.detail.entities;
+      this._config = { ...this._config, entities: ev.detail.entities };
       this._configEntities = processEditorEntities(this._config.entities);
     } else if (target.configValue) {
       if (target.value === "") {
+        this._config = { ...this._config };
         delete this._config[target.configValue!];
       } else {
         let value: any = target.value;
@@ -144,6 +155,10 @@ export class HuiHistoryGraphCardEditor extends LitElement
     }
 
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  static get styles(): CSSResult {
+    return configElementStyle;
   }
 }
 

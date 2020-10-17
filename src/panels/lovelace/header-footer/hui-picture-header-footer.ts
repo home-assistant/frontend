@@ -22,7 +22,7 @@ import { PictureHeaderFooterConfig } from "./types";
 @customElement("hui-picture-header-footer")
 export class HuiPictureHeaderFooter extends LitElement
   implements LovelaceHeaderFooter {
-  public static getStubConfig(): object {
+  public static getStubConfig(): Record<string, unknown> {
     return {
       image:
         "https://www.home-assistant.io/images/merchandise/shirt-frontpage.png",
@@ -31,7 +31,7 @@ export class HuiPictureHeaderFooter extends LitElement
     };
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() protected _config?: PictureHeaderFooterConfig;
 

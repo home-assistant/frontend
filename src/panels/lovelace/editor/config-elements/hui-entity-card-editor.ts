@@ -1,17 +1,20 @@
 import "@polymer/paper-input/paper-input";
 import {
+  CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   TemplateResult,
 } from "lit-element";
+import { assert, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stateIcon } from "../../../../common/entity/state_icon";
+import "../../../../components/entity/ha-entity-attribute-picker";
 import "../../../../components/ha-icon-input";
 import { HomeAssistant } from "../../../../types";
 import { EntityCardConfig } from "../../cards/types";
-import { struct } from "../../common/structs/struct";
 import "../../components/hui-action-editor";
 import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
@@ -20,26 +23,26 @@ import { LovelaceCardEditor } from "../../types";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
-const cardConfigStruct = struct({
-  type: "string",
-  entity: "string?",
-  name: "string?",
-  icon: "string?",
-  attribute: "string?",
-  unit: "string?",
-  theme: "string?",
-  footer: struct.optional(headerFooterConfigStructs),
+const cardConfigStruct = object({
+  type: string(),
+  entity: optional(string()),
+  name: optional(string()),
+  icon: optional(string()),
+  attribute: optional(string()),
+  unit: optional(string()),
+  theme: optional(string()),
+  footer: optional(headerFooterConfigStructs),
 });
 
 @customElement("hui-entity-card-editor")
 export class HuiEntityCardEditor extends LitElement
   implements LovelaceCardEditor {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: EntityCardConfig;
+  @internalProperty() private _config?: EntityCardConfig;
 
   public setConfig(config: EntityCardConfig): void {
-    config = cardConfigStruct(config);
+    assert(config, cardConfigStruct);
     this._config = config;
   }
 
@@ -73,7 +76,6 @@ export class HuiEntityCardEditor extends LitElement
     }
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <ha-entity-picker
           .label="${this.hass.localize(
@@ -112,7 +114,9 @@ export class HuiEntityCardEditor extends LitElement
           ></ha-icon-input>
         </div>
         <div class="side-by-side">
-          <paper-input
+          <ha-entity-attribute-picker
+            .hass=${this.hass}
+            .entityId=${this._entity}
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.attribute"
             )} (${this.hass.localize(
@@ -121,7 +125,7 @@ export class HuiEntityCardEditor extends LitElement
             .value=${this._attribute}
             .configValue=${"attribute"}
             @value-changed=${this._valueChanged}
-          ></paper-input>
+          ></ha-entity-attribute-picker>
           <paper-input
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.unit"
@@ -157,6 +161,7 @@ export class HuiEntityCardEditor extends LitElement
     }
     if (target.configValue) {
       if (target.value === "") {
+        this._config = { ...this._config };
         delete this._config[target.configValue!];
       } else {
         let newValue: string | undefined;
@@ -180,6 +185,10 @@ export class HuiEntityCardEditor extends LitElement
       }
     }
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  static get styles(): CSSResult {
+    return configElementStyle;
   }
 }
 

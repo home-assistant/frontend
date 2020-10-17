@@ -7,6 +7,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../../../../components/ha-card";
@@ -20,11 +21,11 @@ import { getConfigEntries } from "../../../../../data/config_entries";
 
 @customElement("mqtt-config-panel")
 class HaPanelDevMqtt extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private topic = "";
+  @internalProperty() private topic = "";
 
-  @property() private payload = "";
+  @internalProperty() private payload = "";
 
   private inited = false;
 

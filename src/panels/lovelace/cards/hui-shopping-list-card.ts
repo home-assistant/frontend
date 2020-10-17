@@ -1,10 +1,12 @@
 import "@polymer/paper-checkbox/paper-checkbox";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   PropertyValues,
@@ -22,11 +24,10 @@ import {
   ShoppingListItem,
   updateItem,
 } from "../../../data/shopping-list";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { SensorCardConfig, ShoppingListCardConfig } from "./types";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
 
 @customElement("hui-shopping-list-card")
 class HuiShoppingListCard extends SubscribeMixin(LitElement)
@@ -42,16 +43,16 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
     return { type: "shopping-list" };
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: ShoppingListCardConfig;
+  @internalProperty() private _config?: ShoppingListCardConfig;
 
-  @property() private _uncheckedItems?: ShoppingListItem[];
+  @internalProperty() private _uncheckedItems?: ShoppingListItem[];
 
-  @property() private _checkedItems?: ShoppingListItem[];
+  @internalProperty() private _checkedItems?: ShoppingListItem[];
 
   public getCardSize(): number {
-    return (this._config ? (this._config.title ? 1 : 0) : 0) + 3;
+    return (this._config ? (this._config.title ? 2 : 0) : 0) + 3;
   }
 
   public setConfig(config: ShoppingListCardConfig): void {
@@ -253,6 +254,8 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
     return css`
       ha-card {
         padding: 16px;
+        height: 100%;
+        box-sizing: border-box;
       }
 
       .has-header {

@@ -3,6 +3,7 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   TemplateResult,
@@ -19,21 +20,22 @@ import { ImageElementConfig, LovelaceElement } from "./types";
 
 @customElement("hui-image-element")
 export class HuiImageElement extends LitElement implements LovelaceElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: ImageElementConfig;
+  @internalProperty() private _config?: ImageElementConfig;
 
   public setConfig(config: ImageElementConfig): void {
     if (!config) {
       throw Error("Error in element configuration");
     }
 
+    this._config = { hold_action: { action: "more-info" }, ...config };
+
     // eslint-disable-next-line wc/no-self-class
     this.classList.toggle(
       "clickable",
-      config.tap_action && config.tap_action.action !== "none"
+      this._config.tap_action && this._config.tap_action.action !== "none"
     );
-    this._config = config;
   }
 
   protected render(): TemplateResult {

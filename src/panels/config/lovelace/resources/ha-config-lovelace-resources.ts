@@ -1,14 +1,13 @@
+import "@material/mwc-fab";
+import { mdiPlus } from "@mdi/js";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-tooltip/paper-tooltip";
-import "@material/mwc-fab";
 import {
-  css,
-  CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   PropertyValues,
@@ -21,6 +20,7 @@ import {
   RowClickedEvent,
 } from "../../../../components/data-table/ha-data-table";
 import "../../../../components/ha-icon";
+import "../../../../components/ha-svg-icon";
 import {
   createResource,
   deleteResource,
@@ -38,12 +38,10 @@ import { HomeAssistant, Route } from "../../../../types";
 import { loadLovelaceResources } from "../../../lovelace/common/load-resources";
 import { lovelaceTabs } from "../ha-config-lovelace";
 import { showResourceDetailDialog } from "./show-dialog-lovelace-resource-detail";
-import "../../../../components/ha-svg-icon";
-import { mdiPlus } from "@mdi/js";
 
 @customElement("ha-config-lovelace-resources")
 export class HaConfigLovelaceRescources extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public isWide!: boolean;
 
@@ -51,7 +49,7 @@ export class HaConfigLovelaceRescources extends LitElement {
 
   @property() public route!: Route;
 
-  @property() private _resources: LovelaceResource[] = [];
+  @internalProperty() private _resources: LovelaceResource[] = [];
 
   private _columns = memoize(
     (_language): DataTableColumnContainer => {
@@ -64,6 +62,7 @@ export class HaConfigLovelaceRescources extends LitElement {
           filterable: true,
           direction: "asc",
           grows: true,
+          forceLTR: true,
         },
         type: {
           title: this.hass.localize(
@@ -102,18 +101,18 @@ export class HaConfigLovelaceRescources extends LitElement {
         )}
         @row-click=${this._editResource}
         hasFab
+        clickable
       >
+        <mwc-fab
+          slot="fab"
+          title=${this.hass.localize(
+            "ui.panel.config.lovelace.resources.picker.add_resource"
+          )}
+          @click=${this._addResource}
+        >
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+        </mwc-fab>
       </hass-tabs-subpage-data-table>
-      <mwc-fab
-        ?is-wide=${this.isWide}
-        ?narrow=${this.narrow}
-        title=${this.hass.localize(
-          "ui.panel.config.lovelace.resources.picker.add_resource"
-        )}
-        @click=${this._addResource}
-      >
-        <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
-      </mwc-fab>
     `;
   }
 
@@ -198,23 +197,5 @@ export class HaConfigLovelaceRescources extends LitElement {
         }
       },
     });
-  }
-
-  static get styles(): CSSResult {
-    return css`
-      mwc-fab {
-        position: fixed;
-        bottom: 16px;
-        right: 16px;
-        z-index: 1;
-      }
-      mwc-fab[is-wide] {
-        bottom: 24px;
-        right: 24px;
-      }
-      mwc-fab[narrow] {
-        bottom: 84px;
-      }
-    `;
   }
 }

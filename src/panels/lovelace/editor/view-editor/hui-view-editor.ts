@@ -1,18 +1,20 @@
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultArray,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { slugify } from "../../../../common/string/slugify";
-import "../../../../components/ha-switch";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-input";
+import "../../../../components/ha-switch";
 import { LovelaceViewConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import "../../components/hui-theme-select-editor";
@@ -29,11 +31,11 @@ declare global {
 
 @customElement("hui-view-editor")
 export class HuiViewEditor extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public isNew!: boolean;
 
-  @property() private _config!: LovelaceViewConfig;
+  @internalProperty() private _config!: LovelaceViewConfig;
 
   private _suggestedPath = false;
 
@@ -82,7 +84,6 @@ export class HuiViewEditor extends LitElement {
     }
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <paper-input
           .label="${this.hass.localize(
@@ -126,6 +127,7 @@ export class HuiViewEditor extends LitElement {
           .label=${this.hass.localize(
             "ui.panel.lovelace.editor.view.panel_mode.title"
           )}
+          .dir=${computeRTLDirection(this.hass)}
         >
           <ha-switch
             .checked=${this._panel !== false}
@@ -172,19 +174,23 @@ export class HuiViewEditor extends LitElement {
       return;
     }
 
-    const config = { ...this._config, path: slugify(ev.currentTarget.value) };
+    const config = {
+      ...this._config,
+      path: slugify(ev.currentTarget.value, "-"),
+    };
     fireEvent(this, "view-config-changed", { config });
   }
 
-  static get styles(): CSSResult {
-    return css`
-      .panel {
-        color: var(--secondary-text-color);
-      }
-      ha-formfield {
-        display: block;
-      }
-    `;
+  static get styles(): CSSResultArray {
+    return [
+      configElementStyle,
+      css`
+        .panel {
+          color: var(--secondary-text-color);
+          display: block;
+        }
+      `,
+    ];
   }
 }
 

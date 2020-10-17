@@ -5,6 +5,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
@@ -19,9 +20,11 @@ import { HomeAssistant } from "../../../types";
 
 @customElement("integrations-card")
 class IntegrationsCard extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _manifests?: { [domain: string]: IntegrationManifest };
+  @internalProperty() private _manifests?: {
+    [domain: string]: IntegrationManifest;
+  };
 
   private _sortedIntegrations = memoizeOne((components: string[]) => {
     return components.filter((comp) => !comp.includes(".")).sort();

@@ -16,6 +16,7 @@ import "../../../../../components/entity/ha-state-icon";
 import type { Cluster } from "../../../../../data/zha";
 import type { HomeAssistant } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
+import { computeRTLDirection } from "../../../../../common/util/compute_rtl";
 
 export interface ClusterRowData extends Cluster {
   cluster?: Cluster;
@@ -24,13 +25,13 @@ export interface ClusterRowData extends Cluster {
 
 @customElement("zha-clusters-data-table")
 export class ZHAClustersDataTable extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow = false;
 
   @property() public clusters: Cluster[] = [];
 
-  @query("ha-data-table") private _dataTable!: HaDataTable;
+  @query("ha-data-table", true) private _dataTable!: HaDataTable;
 
   private _clusters = memoizeOne((clusters: Cluster[]) => {
     let outputClusters: ClusterRowData[] = clusters;
@@ -91,6 +92,9 @@ export class ZHAClustersDataTable extends LitElement {
         .id=${"cluster_id"}
         selectable
         auto-height
+        .dir=${computeRTLDirection(this.hass)}
+        .searchLabel=${this.hass.localize("ui.components.data-table.search")}
+        .noDataText=${this.hass.localize("ui.components.data-table.no-data")}
       ></ha-data-table>
     `;
   }

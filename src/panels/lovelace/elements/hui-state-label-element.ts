@@ -3,6 +3,7 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   PropertyValues,
@@ -17,22 +18,22 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 import "../components/hui-warning-element";
 import { LovelaceElement, StateLabelElementConfig } from "./types";
-import { createEntityNotFoundWarning } from "../components/hui-warning";
 
 @customElement("hui-state-label-element")
 class HuiStateLabelElement extends LitElement implements LovelaceElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: StateLabelElementConfig;
+  @internalProperty() private _config?: StateLabelElementConfig;
 
   public setConfig(config: StateLabelElementConfig): void {
     if (!config.entity) {
       throw Error("Invalid Configuration: 'entity' required");
     }
 
-    this._config = config;
+    this._config = { hold_action: { action: "more-info" }, ...config };
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {

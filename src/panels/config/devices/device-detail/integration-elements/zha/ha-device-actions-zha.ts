@@ -4,6 +4,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
   css,
   PropertyValues,
@@ -23,11 +24,11 @@ import { showZHAClusterDialog } from "../../../../integrations/integration-panel
 
 @customElement("ha-device-actions-zha")
 export class HaDeviceActionsZha extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public device!: DeviceRegistryEntry;
 
-  @property() private _zhaDevice?: ZHADevice;
+  @internalProperty() private _zhaDevice?: ZHADevice;
 
   protected updated(changedProperties: PropertyValues) {
     if (changedProperties.has("device")) {
@@ -118,9 +119,11 @@ export class HaDeviceActionsZha extends LitElement {
       return;
     }
 
-    this.hass.callService("zha", "remove", {
-      ieee_address: this._zhaDevice!.ieee,
+    await this.hass.callService("zha", "remove", {
+      ieee: this._zhaDevice!.ieee,
     });
+
+    history.back();
   }
 
   static get styles(): CSSResult[] {

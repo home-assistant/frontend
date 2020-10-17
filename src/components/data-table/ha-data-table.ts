@@ -3,7 +3,9 @@ import {
   css,
   CSSResult,
   customElement,
+  eventOptions,
   html,
+  internalProperty,
   LitElement,
   property,
   PropertyValues,
@@ -14,6 +16,8 @@ import { classMap } from "lit-html/directives/class-map";
 import { ifDefined } from "lit-html/directives/if-defined";
 import { styleMap } from "lit-html/directives/style-map";
 import { scroll } from "lit-virtualizer";
+import memoizeOne from "memoize-one";
+import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../common/search/search-input";
 import { debounce } from "../../common/util/debounce";
@@ -22,7 +26,6 @@ import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-icon";
 import { filterData, sortData } from "./sort-filter";
-import memoizeOne from "memoize-one";
 
 declare global {
   // for fire event
@@ -66,7 +69,13 @@ export interface DataTableColumnData extends DataTableSortColumnData {
   width?: string;
   maxWidth?: string;
   grows?: boolean;
+  forceLTR?: boolean;
+  hidden?: boolean;
 }
+
+type ClonedDataTableColumnData = Omit<DataTableColumnData, "title"> & {
+  title?: string;
+};
 
 export interface DataTableRowData {
   [key: string]: any;
@@ -74,7 +83,7 @@ export interface DataTableRowData {
 }
 
 export interface SortableColumnContainer {
-  [key: string]: DataTableSortColumnData;
+  [key: string]: ClonedDataTableColumnData;
 }
 
 @customElement("ha-data-table")
@@ -85,6 +94,8 @@ export class HaDataTable extends LitElement {
 
   @property({ type: Boolean }) public selectable = false;
 
+  @property({ type: Boolean }) public clickable = false;
+
   @property({ type: Boolean }) public hasFab = false;
 
   @property({ type: Boolean, attribute: "auto-height" })
@@ -94,21 +105,26 @@ export class HaDataTable extends LitElement {
 
   @property({ type: String }) public noDataText?: string;
 
+  @property({ type: String }) public searchLabel?: string;
+
+  @property({ type: Boolean, attribute: "no-label-float" })
+  public noLabelFloat? = false;
+
   @property({ type: String }) public filter = "";
 
-  @property({ type: Boolean }) private _filterable = false;
+  @internalProperty() private _filterable = false;
 
-  @property({ type: String }) private _filter = "";
+  @internalProperty() private _filter = "";
 
-  @property({ type: String }) private _sortColumn?: string;
+  @internalProperty() private _sortColumn?: string;
 
-  @property({ type: String }) private _sortDirection: SortingDirection = null;
+  @internalProperty() private _sortDirection: SortingDirection = null;
 
-  @property({ type: Array }) private _filteredData: DataTableRowData[] = [];
+  @internalProperty() private _filteredData: DataTableRowData[] = [];
+
+  @internalProperty() private _headerHeight = 0;
 
   @query("slot[name='header']") private _header!: HTMLSlotElement;
-
-  @query(".mdc-data-table__table") private _table!: HTMLDivElement;
 
   private _checkableRowsCount?: number;
 
@@ -117,6 +133,9 @@ export class HaDataTable extends LitElement {
   private _sortColumns: SortableColumnContainer = {};
 
   private curRequest = 0;
+
+  // @ts-ignore
+  @restoreScroll(".scroller") private _savedScrollPos?: number;
 
   private _debounceSearch = debounce(
     (value: string) => {
@@ -156,11 +175,13 @@ export class HaDataTable extends LitElement {
       }
 
       const clonedColumns: DataTableColumnContainer = deepClone(this.columns);
-      Object.values(clonedColumns).forEach((column: DataTableColumnData) => {
-        delete column.title;
-        delete column.type;
-        delete column.template;
-      });
+      Object.values(clonedColumns).forEach(
+        (column: ClonedDataTableColumnData) => {
+          delete column.title;
+          delete column.type;
+          delete column.template;
+        }
+      );
 
       this._sortColumns = clonedColumns;
     }
@@ -195,6 +216,8 @@ export class HaDataTable extends LitElement {
                 <div class="table-header">
                   <search-input
                     @value-changed=${this._handleSearchChange}
+                    .label=${this.searchLabel}
+                    .noLabelFloat=${this.noLabelFloat}
                   ></search-input>
                 </div>
               `
@@ -204,13 +227,15 @@ export class HaDataTable extends LitElement {
           class="mdc-data-table__table ${classMap({
             "auto-height": this.autoHeight,
           })}"
+          role="table"
+          aria-rowcount=${this._filteredData.length}
           style=${styleMap({
             height: this.autoHeight
               ? `${(this._filteredData.length || 1) * 53 + 57}px`
-              : `calc(100% - ${this._header?.clientHeight}px)`,
+              : `calc(100% - ${this._headerHeight}px)`,
           })}
         >
-          <div class="mdc-data-table__header-row">
+          <div class="mdc-data-table__header-row" role="row">
             ${this.selectable
               ? html`
                   <div
@@ -230,8 +255,10 @@ export class HaDataTable extends LitElement {
                   </div>
                 `
               : ""}
-            ${Object.entries(this.columns).map((columnEntry) => {
-              const [key, column] = columnEntry;
+            ${Object.entries(this.columns).map(([key, column]) => {
+              if (column.hidden) {
+                return "";
+              }
               const sorted = key === this._sortColumn;
               const classes = {
                 "mdc-data-table__header-cell--numeric": Boolean(
@@ -278,31 +305,37 @@ export class HaDataTable extends LitElement {
           ${!this._filteredData.length
             ? html`
                 <div class="mdc-data-table__content">
-                  <div class="mdc-data-table__row">
-                    <div class="mdc-data-table__cell grows center">
+                  <div class="mdc-data-table__row" role="row">
+                    <div class="mdc-data-table__cell grows center" role="cell">
                       ${this.noDataText || "No data"}
                     </div>
                   </div>
                 </div>
               `
             : html`
-                <div class="mdc-data-table__content scroller">
+                <div
+                  class="mdc-data-table__content scroller"
+                  @scroll=${this._saveScrollPos}
+                >
                   ${scroll({
                     items: !this.hasFab
                       ? this._filteredData
                       : [...this._filteredData, ...[{ empty: true }]],
-                    renderItem: (row: DataTableRowData) => {
+                    renderItem: (row: DataTableRowData, index) => {
                       if (row.empty) {
                         return html` <div class="mdc-data-table__row"></div> `;
                       }
                       return html`
                         <div
-                          .rowId="${row[this.id]}"
+                          aria-rowindex=${index}
+                          role="row"
+                          .rowId=${row[this.id]}
                           @click=${this._handleRowClick}
                           class="mdc-data-table__row ${classMap({
                             "mdc-data-table__row--selected": this._checkedRows.includes(
                               String(row[this.id])
                             ),
+                            clickable: this.clickable,
                           })}"
                           aria-selected=${ifDefined(
                             this._checkedRows.includes(String(row[this.id]))
@@ -315,10 +348,12 @@ export class HaDataTable extends LitElement {
                             ? html`
                                 <div
                                   class="mdc-data-table__cell mdc-data-table__cell--checkbox"
+                                  role="cell"
                                 >
                                   <ha-checkbox
                                     class="mdc-data-table__row-checkbox"
                                     @change=${this._handleRowCheckboxClick}
+                                    .rowId=${row[this.id]}
                                     .disabled=${row.selectable === false}
                                     .checked=${this._checkedRows.includes(
                                       String(row[this.id])
@@ -328,39 +363,45 @@ export class HaDataTable extends LitElement {
                                 </div>
                               `
                             : ""}
-                          ${Object.entries(this.columns).map((columnEntry) => {
-                            const [key, column] = columnEntry;
-                            return html`
-                              <div
-                                class="mdc-data-table__cell ${classMap({
-                                  "mdc-data-table__cell--numeric": Boolean(
-                                    column.type === "numeric"
-                                  ),
-                                  "mdc-data-table__cell--icon": Boolean(
-                                    column.type === "icon"
-                                  ),
-                                  "mdc-data-table__cell--icon-button": Boolean(
-                                    column.type === "icon-button"
-                                  ),
-                                  grows: Boolean(column.grows),
-                                })}"
-                                style=${column.width
-                                  ? styleMap({
-                                      [column.grows
-                                        ? "minWidth"
-                                        : "width"]: column.width,
-                                      maxWidth: column.maxWidth
-                                        ? column.maxWidth
-                                        : "",
-                                    })
-                                  : ""}
-                              >
-                                ${column.template
-                                  ? column.template(row[key], row)
-                                  : row[key]}
-                              </div>
-                            `;
-                          })}
+                          ${Object.entries(this.columns).map(
+                            ([key, column]) => {
+                              if (column.hidden) {
+                                return "";
+                              }
+                              return html`
+                                <div
+                                  role="cell"
+                                  class="mdc-data-table__cell ${classMap({
+                                    "mdc-data-table__cell--numeric": Boolean(
+                                      column.type === "numeric"
+                                    ),
+                                    "mdc-data-table__cell--icon": Boolean(
+                                      column.type === "icon"
+                                    ),
+                                    "mdc-data-table__cell--icon-button": Boolean(
+                                      column.type === "icon-button"
+                                    ),
+                                    grows: Boolean(column.grows),
+                                    forceLTR: Boolean(column.forceLTR),
+                                  })}"
+                                  style=${column.width
+                                    ? styleMap({
+                                        [column.grows
+                                          ? "minWidth"
+                                          : "width"]: column.width,
+                                        maxWidth: column.maxWidth
+                                          ? column.maxWidth
+                                          : "",
+                                      })
+                                    : ""}
+                                >
+                                  ${column.template
+                                    ? column.template(row[key], row)
+                                    : row[key]}
+                                </div>
+                              `;
+                            }
+                          )}
                         </div>
                       `;
                     },
@@ -420,9 +461,7 @@ export class HaDataTable extends LitElement {
   );
 
   private _handleHeaderClick(ev: Event) {
-    const columnId = ((ev.target as HTMLElement).closest(
-      ".mdc-data-table__header-cell"
-    ) as any).columnId;
+    const columnId = (ev.currentTarget as any).columnId;
     if (!this.columns[columnId].sortable) {
       return;
     }
@@ -456,8 +495,8 @@ export class HaDataTable extends LitElement {
   }
 
   private _handleRowCheckboxClick(ev: Event) {
-    const checkbox = ev.target as HaCheckbox;
-    const rowId = (checkbox.closest(".mdc-data-table__row") as any).rowId;
+    const checkbox = ev.currentTarget as HaCheckbox;
+    const rowId = (checkbox as any).rowId;
 
     if (checkbox.checked) {
       if (this._checkedRows.includes(rowId)) {
@@ -475,7 +514,7 @@ export class HaDataTable extends LitElement {
     if (target.tagName === "HA-CHECKBOX") {
       return;
     }
-    const rowId = (target.closest(".mdc-data-table__row") as any).rowId;
+    const rowId = (ev.currentTarget as any).rowId;
     fireEvent(this, "row-click", { id: rowId }, { bubbles: false });
   }
 
@@ -496,7 +535,12 @@ export class HaDataTable extends LitElement {
       return;
     }
     await this.updateComplete;
-    this._table.style.height = `calc(100% - ${this._header.clientHeight}px)`;
+    this._headerHeight = this._header.clientHeight;
+  }
+
+  @eventOptions({ passive: true })
+  private _saveScrollPos(e: Event) {
+    this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
   }
 
   static get styles(): CSSResult {
@@ -522,7 +566,7 @@ export class HaDataTable extends LitElement {
         border-radius: 4px;
         border-width: 1px;
         border-style: solid;
-        border-color: rgba(var(--rgb-primary-text-color), 0.12);
+        border-color: var(--divider-color);
         display: inline-flex;
         flex-direction: column;
         box-sizing: border-box;
@@ -540,7 +584,7 @@ export class HaDataTable extends LitElement {
       }
 
       .mdc-data-table__row ~ .mdc-data-table__row {
-        border-top: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
+        border-top: 1px solid var(--divider-color);
       }
 
       .mdc-data-table__row:not(.mdc-data-table__row--selected):hover {
@@ -559,7 +603,7 @@ export class HaDataTable extends LitElement {
         height: 56px;
         display: flex;
         width: 100%;
-        border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
+        border-bottom: 1px solid var(--divider-color);
         overflow-x: auto;
       }
 
@@ -590,10 +634,8 @@ export class HaDataTable extends LitElement {
         padding-right: 0;
         width: 56px;
       }
-      [dir="rtl"] .mdc-data-table__header-cell--checkbox,
-      .mdc-data-table__header-cell--checkbox[dir="rtl"],
-      [dir="rtl"] .mdc-data-table__cell--checkbox,
-      .mdc-data-table__cell--checkbox[dir="rtl"] {
+      :host([dir="rtl"]) .mdc-data-table__header-cell--checkbox,
+      :host([dir="rtl"]) .mdc-data-table__cell--checkbox {
         /* @noflip */
         padding-left: 0;
         /* @noflip */
@@ -627,8 +669,7 @@ export class HaDataTable extends LitElement {
       .mdc-data-table__cell--numeric {
         text-align: right;
       }
-      [dir="rtl"] .mdc-data-table__cell--numeric,
-      .mdc-data-table__cell--numeric[dir="rtl"] {
+      :host([dir="rtl"]) .mdc-data-table__cell--numeric {
         /* @noflip */
         text-align: left;
       }
@@ -646,17 +687,32 @@ export class HaDataTable extends LitElement {
       .mdc-data-table__header-cell.mdc-data-table__header-cell--icon {
         text-align: center;
       }
+
       .mdc-data-table__header-cell.sortable.mdc-data-table__header-cell--icon:hover,
       .mdc-data-table__header-cell.sortable.mdc-data-table__header-cell--icon:not(.not-sorted) {
         text-align: left;
+      }
+      :host([dir="rtl"])
+        .mdc-data-table__header-cell.sortable.mdc-data-table__header-cell--icon:hover,
+      :host([dir="rtl"])
+        .mdc-data-table__header-cell.sortable.mdc-data-table__header-cell--icon:not(.not-sorted) {
+        text-align: right;
       }
 
       .mdc-data-table__cell--icon:first-child ha-icon {
         margin-left: 8px;
       }
+      :host([dir="rtl"]) .mdc-data-table__cell--icon:first-child ha-icon {
+        margin-left: auto;
+        margin-right: 8px;
+      }
 
       .mdc-data-table__cell--icon:first-child state-badge {
         margin-right: -8px;
+      }
+      :host([dir="rtl"]) .mdc-data-table__cell--icon:first-child state-badge {
+        margin-right: auto;
+        margin-left: -8px;
       }
 
       .mdc-data-table__header-cell--icon-button,
@@ -675,11 +731,21 @@ export class HaDataTable extends LitElement {
         width: 64px;
         padding-left: 16px;
       }
+      :host([dir="rtl"]) .mdc-data-table__header-cell--icon-button:first-child,
+      :host([dir="rtl"]) .mdc-data-table__cell--icon-button:first-child {
+        padding-left: auto;
+        padding-right: 16px;
+      }
 
       .mdc-data-table__header-cell--icon-button:last-child,
       .mdc-data-table__cell--icon-button:last-child {
         width: 64px;
         padding-right: 16px;
+      }
+      :host([dir="rtl"]) .mdc-data-table__header-cell--icon-button:last-child,
+      :host([dir="rtl"]) .mdc-data-table__cell--icon-button:last-child {
+        padding-right: auto;
+        padding-left: 16px;
       }
 
       .mdc-data-table__cell--icon-button a {
@@ -698,8 +764,7 @@ export class HaDataTable extends LitElement {
         text-transform: inherit;
         text-align: left;
       }
-      [dir="rtl"] .mdc-data-table__header-cell,
-      .mdc-data-table__header-cell[dir="rtl"] {
+      :host([dir="rtl"]) .mdc-data-table__header-cell {
         /* @noflip */
         text-align: right;
       }
@@ -711,10 +776,14 @@ export class HaDataTable extends LitElement {
       .mdc-data-table__header-cell--numeric.sortable:not(.not-sorted) {
         text-align: left;
       }
-      [dir="rtl"] .mdc-data-table__header-cell--numeric,
-      .mdc-data-table__header-cell--numeric[dir="rtl"] {
+      :host([dir="rtl"]) .mdc-data-table__header-cell--numeric {
         /* @noflip */
         text-align: left;
+      }
+      :host([dir="rtl"]) .mdc-data-table__header-cell--numeric.sortable:hover,
+      :host([dir="rtl"])
+        .mdc-data-table__header-cell--numeric.sortable:not(.not-sorted) {
+        text-align: right;
       }
 
       /* custom from here */
@@ -736,12 +805,19 @@ export class HaDataTable extends LitElement {
         position: relative;
         left: 0px;
       }
+      :host([dir="rtl"]) .mdc-data-table__header-cell span {
+        left: auto;
+        right: 0px;
+      }
 
       .mdc-data-table__header-cell.sortable {
         cursor: pointer;
       }
       .mdc-data-table__header-cell > * {
         transition: left 0.2s ease;
+      }
+      :host([dir="rtl"]) .mdc-data-table__header-cell > * {
+        transition: right 0.2s ease;
       }
       .mdc-data-table__header-cell ha-icon {
         top: -3px;
@@ -750,16 +826,37 @@ export class HaDataTable extends LitElement {
       .mdc-data-table__header-cell.not-sorted ha-icon {
         left: -20px;
       }
+      :host([dir="rtl"]) .mdc-data-table__header-cell.not-sorted ha-icon {
+        right: -20px;
+      }
       .mdc-data-table__header-cell.sortable:not(.not-sorted) span,
       .mdc-data-table__header-cell.sortable.not-sorted:hover span {
         left: 24px;
+      }
+      :host([dir="rtl"])
+        .mdc-data-table__header-cell.sortable:not(.not-sorted)
+        span,
+      :host([dir="rtl"])
+        .mdc-data-table__header-cell.sortable.not-sorted:hover
+        span {
+        left: auto;
+        right: 24px;
       }
       .mdc-data-table__header-cell.sortable:not(.not-sorted) ha-icon,
       .mdc-data-table__header-cell.sortable:hover.not-sorted ha-icon {
         left: 12px;
       }
+      :host([dir="rtl"])
+        .mdc-data-table__header-cell.sortable:not(.not-sorted)
+        ha-icon,
+      :host([dir="rtl"])
+        .mdc-data-table__header-cell.sortable:hover.not-sorted
+        ha-icon {
+        left: auto;
+        right: 12px;
+      }
       .table-header {
-        border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
+        border-bottom: 1px solid var(--divider-color);
         padding: 0 16px;
       }
       search-input {
@@ -787,6 +884,12 @@ export class HaDataTable extends LitElement {
       .grows {
         flex-grow: 1;
         flex-shrink: 1;
+      }
+      .forceLTR {
+        direction: ltr;
+      }
+      .clickable {
+        cursor: pointer;
       }
     `;
   }

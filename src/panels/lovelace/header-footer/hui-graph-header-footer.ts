@@ -1,15 +1,16 @@
-import "../../../components/ha-circular-progress";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import "../../../components/ha-circular-progress";
 import { fetchRecent } from "../../../data/history";
 import { HomeAssistant } from "../../../types";
 import { coordinates } from "../common/graph/coordinates";
@@ -24,15 +25,15 @@ const DAY = 86400000;
 @customElement("hui-graph-header-footer")
 export class HuiGraphHeaderFooter extends LitElement
   implements LovelaceHeaderFooter {
-  public static getStubConfig(): object {
+  public static getStubConfig(): Record<string, unknown> {
     return {};
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() protected _config?: GraphHeaderFooterConfig;
 
-  @property() private _coordinates?: number[][];
+  @internalProperty() private _coordinates?: number[][];
 
   private _date?: Date;
 
@@ -41,7 +42,7 @@ export class HuiGraphHeaderFooter extends LitElement
   private _fetching = false;
 
   public getCardSize(): number {
-    return 2;
+    return 3;
   }
 
   public setConfig(config: GraphHeaderFooterConfig): void {

@@ -1,14 +1,17 @@
 import "@material/mwc-icon-button/mwc-icon-button";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import {
   css,
   CSSResult,
+  internalProperty,
   LitElement,
   property,
   PropertyValues,
 } from "lit-element";
 import { html, TemplateResult } from "lit-html";
+import { atLeastVersion } from "../../../src/common/config/version";
 import "../../../src/common/search/search-input";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-svg-icon";
@@ -18,9 +21,11 @@ import {
   HassioAddonRepository,
   reloadHassioAddons,
 } from "../../../src/data/hassio/addon";
+import { extractApiErrorMessage } from "../../../src/data/hassio/common";
+import "../../../src/layouts/hass-loading-screen";
 import "../../../src/layouts/hass-tabs-subpage";
-import "../../../src/layouts/loading-screen";
 import { HomeAssistant, Route } from "../../../src/types";
+import { showRegistriesDialog } from "../dialogs/registries/show-dialog-registries";
 import { showRepositoriesDialog } from "../dialogs/repositories/show-dialog-repositories";
 import { supervisorTabs } from "../hassio-tabs";
 import "./hassio-addon-repository";
@@ -52,7 +57,7 @@ class HassioAddonStore extends LitElement {
 
   @property({ attribute: false }) private _repos?: HassioAddonRepository[];
 
-  @property() private _filter?: string;
+  @internalProperty() private _filter?: string;
 
   public async refreshData() {
     this._repos = undefined;
@@ -95,20 +100,30 @@ class HassioAddonStore extends LitElement {
         main-page
         .tabs=${supervisorTabs}
       >
-        <span slot="header">Add-on store</span>
-        <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
+        <span slot="header">Add-on Store</span>
+        <ha-button-menu
+          corner="BOTTOM_START"
+          slot="toolbar-icon"
+          @action=${this._handleAction}
+        >
           <mwc-icon-button slot="trigger" alt="menu">
-            <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+            <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
           </mwc-icon-button>
-          <mwc-list-item @tap=${this._manageRepositories}>
+          <mwc-list-item>
             Repositories
           </mwc-list-item>
-          <mwc-list-item @tap=${this.refreshData}>
+          <mwc-list-item>
             Reload
           </mwc-list-item>
+          ${this.hass.userData?.showAdvanced &&
+          atLeastVersion(this.hass.config.version, 0, 117)
+            ? html`<mwc-list-item>
+                Registries
+              </mwc-list-item>`
+            : ""}
         </ha-button-menu>
         ${repos.length === 0
-          ? html`<loading-screen></loading-screen>`
+          ? html`<hass-loading-screen no-toolbar></hass-loading-screen>`
           : html`
               <div class="search">
                 <search-input
@@ -142,6 +157,20 @@ class HassioAddonStore extends LitElement {
     this._loadData();
   }
 
+  private _handleAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        this._manageRepositories();
+        break;
+      case 1:
+        this.refreshData();
+        break;
+      case 2:
+        this._manageRegistries();
+        break;
+    }
+  }
+
   private apiCalled(ev) {
     if (ev.detail.success) {
       this._loadData();
@@ -155,6 +184,10 @@ class HassioAddonStore extends LitElement {
     });
   }
 
+  private async _manageRegistries() {
+    showRegistriesDialog(this);
+  }
+
   private async _loadData() {
     try {
       const addonsInfo = await fetchHassioAddonsInfo(this.hass);
@@ -162,7 +195,7 @@ class HassioAddonStore extends LitElement {
       this._repos.sort(sortRepos);
       this._addons = addonsInfo.addons;
     } catch (err) {
-      alert("Failed to fetch add-on info");
+      alert(extractApiErrorMessage(err));
     }
   }
 

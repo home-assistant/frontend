@@ -21,7 +21,7 @@ import { filterAndSort } from "../components/hassio-filter-addons";
 import { hassioStyle } from "../resources/hassio-style";
 
 class HassioAddonRepositoryEl extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public repo!: HassioAddonRepository;
 

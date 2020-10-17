@@ -3,7 +3,9 @@ import {
   css,
   CSSResult,
   customElement,
+  eventOptions,
   html,
+  internalProperty,
   LitElement,
   property,
   PropertyValues,
@@ -12,13 +14,15 @@ import {
 import { classMap } from "lit-html/directives/class-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
+import { restoreScroll } from "../common/decorators/restore-scroll";
 import { navigate } from "../common/navigate";
-import "../components/ha-menu-button";
-import "../components/ha-icon-button-arrow-prev";
-import { HomeAssistant, Route } from "../types";
-import "../components/ha-svg-icon";
+import { computeRTL } from "../common/util/compute_rtl";
 import "../components/ha-icon";
+import "../components/ha-icon-button-arrow-prev";
+import "../components/ha-menu-button";
+import "../components/ha-svg-icon";
 import "../components/ha-tab";
+import { HomeAssistant, Route } from "../types";
 
 export interface PageNavigation {
   path: string;
@@ -34,7 +38,7 @@ export interface PageNavigation {
 
 @customElement("hass-tabs-subpage")
 class HassTabsSubpage extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public hassio = false;
 
@@ -50,7 +54,15 @@ class HassTabsSubpage extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property() private _activeTab?: PageNavigation;
+  @property({ type: Boolean, reflect: true, attribute: "is-wide" })
+  public isWide = false;
+
+  @property({ type: Boolean, reflect: true }) public rtl = false;
+
+  @internalProperty() private _activeTab?: PageNavigation;
+
+  // @ts-ignore
+  @restoreScroll(".content") private _savedScrollPos?: number;
 
   private _getTabs = memoizeOne(
     (
@@ -101,6 +113,14 @@ class HassTabsSubpage extends LitElement {
         `${this.route.prefix}${this.route.path}`.includes(tab.path)
       );
     }
+    if (changedProperties.has("hass")) {
+      const oldHass = changedProperties.get("hass") as
+        | HomeAssistant
+        | undefined;
+      if (!oldHass || oldHass.language !== this.hass.language) {
+        this.rtl = computeRTL(this.hass);
+      }
+    }
   }
 
   protected render(): TemplateResult {
@@ -112,7 +132,7 @@ class HassTabsSubpage extends LitElement {
       this.hass.language,
       this.narrow
     );
-
+    const showTabs = tabs.length > 1 || !this.narrow;
     return html`
       <div class="toolbar">
         ${this.mainPage
@@ -132,7 +152,7 @@ class HassTabsSubpage extends LitElement {
         ${this.narrow
           ? html` <div class="main-title"><slot name="header"></slot></div> `
           : ""}
-        ${tabs.length > 1 || !this.narrow
+        ${showTabs
           ? html`
               <div id="tabbar" class=${classMap({ "bottom-bar": this.narrow })}>
                 ${tabs}
@@ -143,10 +163,21 @@ class HassTabsSubpage extends LitElement {
           <slot name="toolbar-icon"></slot>
         </div>
       </div>
-      <div class="content">
+      <div
+        class="content ${classMap({ tabs: showTabs })}"
+        @scroll=${this._saveScrollPos}
+      >
         <slot></slot>
       </div>
+      <div id="fab" class="${classMap({ tabs: showTabs })}">
+        <slot name="fab"></slot>
+      </div>
     `;
+  }
+
+  @eventOptions({ passive: true })
+  private _saveScrollPos(e: Event) {
+    this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
   }
 
   private _tabTapped(ev: Event): void {
@@ -171,6 +202,11 @@ class HassTabsSubpage extends LitElement {
         display: block;
         height: 100%;
         background-color: var(--primary-background-color);
+      }
+
+      :host([narrow]) {
+        width: 100%;
+        position: fixed;
       }
 
       ha-menu-button {
@@ -204,9 +240,10 @@ class HassTabsSubpage extends LitElement {
         background-color: var(--sidebar-background-color);
         border-top: 1px solid var(--divider-color);
         justify-content: space-between;
-        z-index: 1;
+        z-index: 2;
         font-size: 12px;
         width: 100%;
+        padding-bottom: env(safe-area-inset-bottom);
       }
 
       #tabbar:not(.bottom-bar) {
@@ -230,21 +267,50 @@ class HassTabsSubpage extends LitElement {
         flex: 1;
         overflow: hidden;
         text-overflow: ellipsis;
-        max-height: 40px;
+        max-height: 58px;
         line-height: 20px;
       }
 
       .content {
         position: relative;
-        width: 100%;
+        width: calc(
+          100% - env(safe-area-inset-left) - env(safe-area-inset-right)
+        );
+        margin-left: env(safe-area-inset-left);
+        margin-right: env(safe-area-inset-right);
         height: calc(100% - 65px);
+        height: calc(100% - 65px - env(safe-area-inset-bottom));
         overflow-y: auto;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
       }
 
-      :host([narrow]) .content {
+      :host([narrow]) .content.tabs {
         height: calc(100% - 128px);
+        height: calc(100% - 128px - env(safe-area-inset-bottom));
+      }
+
+      #fab {
+        position: fixed;
+        right: calc(16px + env(safe-area-inset-right));
+        bottom: calc(16px + env(safe-area-inset-bottom));
+        z-index: 1;
+      }
+      :host([narrow]) #fab.tabs {
+        bottom: calc(84px + env(safe-area-inset-bottom));
+      }
+      #fab[is-wide] {
+        bottom: 24px;
+        right: 24px;
+      }
+      :host([rtl]) #fab {
+        right: auto;
+        left: calc(16px + env(safe-area-inset-left));
+      }
+      :host([rtl][is-wide]) #fab {
+        bottom: 24px;
+        left: 24px;
+        right: auto;
       }
     `;
   }

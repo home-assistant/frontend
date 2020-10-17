@@ -2,8 +2,7 @@
 import "proxy-polyfill";
 import { expose } from "comlink";
 import marked from "marked";
-// @ts-ignore
-import filterXSS from "xss";
+import { filterXSS, getDefaultWhiteList } from "xss";
 
 interface WhiteList {
   [tag: string]: string[];
@@ -14,7 +13,7 @@ let whiteListSvg: WhiteList | undefined;
 
 const renderMarkdown = (
   content: string,
-  markedOptions: object,
+  markedOptions: marked.MarkedOptions,
   hassOptions: {
     // Do not allow SVG on untrusted content, it allows XSS.
     allowSvg?: boolean;
@@ -22,7 +21,7 @@ const renderMarkdown = (
 ): string => {
   if (!whiteListNormal) {
     whiteListNormal = {
-      ...filterXSS.whiteList,
+      ...(getDefaultWhiteList() as WhiteList),
       "ha-icon": ["icon"],
       "ha-svg-icon": ["path"],
     };

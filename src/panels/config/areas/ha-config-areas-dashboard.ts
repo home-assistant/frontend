@@ -1,3 +1,5 @@
+import "@material/mwc-fab";
+import { mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import {
@@ -16,7 +18,8 @@ import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
-import "@material/mwc-fab";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-svg-icon";
 import {
   AreaRegistryEntry,
   createAreaRegistryEntry,
@@ -26,8 +29,6 @@ import {
   devicesInArea,
 } from "../../../data/device_registry";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-svg-icon";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../types";
@@ -37,11 +38,10 @@ import {
   loadAreaRegistryDetailDialog,
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
-import { mdiPlus } from "@mdi/js";
 
 @customElement("ha-config-areas-dashboard")
 export class HaConfigAreasDashboard extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public isWide?: boolean;
 
@@ -105,6 +105,7 @@ export class HaConfigAreasDashboard extends LitElement {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
+        .isWide=${this.isWide}
         back-path="/config"
         .tabs=${configSections.integrations}
         .route=${this.route}
@@ -116,23 +117,23 @@ export class HaConfigAreasDashboard extends LitElement {
         )}
         id="area_id"
         hasFab
+        clickable
       >
         <ha-icon-button
           slot="toolbar-icon"
           icon="hass:help-circle"
           @click=${this._showHelp}
         ></ha-icon-button>
+        <mwc-fab
+          slot="fab"
+          title="${this.hass.localize(
+            "ui.panel.config.areas.picker.create_area"
+          )}"
+          @click=${this._createArea}
+        >
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+        </mwc-fab>
       </hass-tabs-subpage-data-table>
-      <mwc-fab
-        ?is-wide=${this.isWide}
-        ?narrow=${this.narrow}
-        title="${this.hass.localize(
-          "ui.panel.config.areas.picker.create_area"
-        )}"
-        @click=${this._createArea}
-      >
-        <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
-      </mwc-fab>
     `;
   }
 
@@ -180,29 +181,6 @@ export class HaConfigAreasDashboard extends LitElement {
       hass-loading-screen {
         --app-header-background-color: var(--sidebar-background-color);
         --app-header-text-color: var(--sidebar-text-color);
-      }
-      mwc-fab {
-        position: fixed;
-        bottom: 16px;
-        right: 16px;
-        z-index: 1;
-      }
-      mwc-fab[is-wide] {
-        bottom: 24px;
-        right: 24px;
-      }
-      mwc-fab[narrow] {
-        bottom: 84px;
-      }
-      mwc-fab.rtl {
-        right: auto;
-        left: 16px;
-      }
-
-      mwc-fab[is-wide].rtl {
-        bottom: 24px;
-        right: auto;
-        left: 24px;
       }
     `;
   }

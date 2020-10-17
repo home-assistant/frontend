@@ -3,6 +3,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -10,7 +11,7 @@ import "../../../components/ha-date-input";
 import type { HaDateInput } from "../../../components/ha-date-input";
 import "../../../components/paper-time-input";
 import type { PaperTimeInput } from "../../../components/paper-time-input";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { UNAVAILABLE_STATES, UNKNOWN } from "../../../data/entity";
 import { setInputDateTimeValue } from "../../../data/input_datetime";
 import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -20,9 +21,9 @@ import { createEntityNotFoundWarning } from "../components/hui-warning";
 
 @customElement("hui-input-datetime-entity-row")
 class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: EntityConfig;
+  @internalProperty() private _config?: EntityConfig;
 
   public setConfig(config: EntityConfig): void {
     if (!config) {
@@ -69,10 +70,10 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
           ? html`
               <paper-time-input
                 .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
-                .hour=${stateObj.state === "unknown"
+                .hour=${stateObj.state === UNKNOWN
                   ? ""
                   : ("0" + stateObj.attributes.hour).slice(-2)}
-                .min=${stateObj.state === "unknown"
+                .min=${stateObj.state === UNKNOWN
                   ? ""
                   : ("0" + stateObj.attributes.minute).slice(-2)}
                 .amPm=${false}

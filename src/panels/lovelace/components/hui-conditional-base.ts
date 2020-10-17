@@ -15,7 +15,7 @@ import { LovelaceCard } from "../types";
 
 @customElement("hui-conditional-base")
 export class HuiConditionalBase extends UpdatingElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public editMode?: boolean;
 

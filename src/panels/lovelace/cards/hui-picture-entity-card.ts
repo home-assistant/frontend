@@ -3,6 +3,7 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   PropertyValues,
@@ -58,9 +59,9 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     };
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: PictureEntityCardConfig;
+  @internalProperty() private _config?: PictureEntityCardConfig;
 
   public getCardSize(): number {
     return 3;
@@ -138,9 +139,9 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
         </div>
       `;
     } else if (this._config.show_name) {
-      footer = html` <div class="footer">${name}</div> `;
+      footer = html`<div class="footer">${name}</div>`;
     } else if (this._config.show_state) {
-      footer = html` <div class="footer state">${state}</div> `;
+      footer = html`<div class="footer state">${state}</div>`;
     }
 
     return html`
@@ -181,6 +182,8 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
         min-height: 75px;
         overflow: hidden;
         position: relative;
+        height: 100%;
+        box-sizing: border-box;
       }
 
       hui-image.clickable {

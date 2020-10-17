@@ -3,7 +3,12 @@ import {
   getAuth,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket";
-import { customElement, html, property, TemplateResult } from "lit-element";
+import {
+  customElement,
+  html,
+  internalProperty,
+  TemplateResult,
+} from "lit-element";
 import { CAST_NS } from "../../../../src/cast/const";
 import {
   ConnectMessage,
@@ -31,13 +36,13 @@ let resourcesLoaded = false;
 
 @customElement("hc-main")
 export class HcMain extends HassElement {
-  @property() private _showDemo = false;
+  @internalProperty() private _showDemo = false;
 
-  @property() private _lovelaceConfig?: LovelaceConfig;
+  @internalProperty() private _lovelaceConfig?: LovelaceConfig;
 
-  @property() private _lovelacePath: string | number | null = null;
+  @internalProperty() private _lovelacePath: string | number | null = null;
 
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
   private _unsubLovelace?: UnsubscribeFunc;
 
@@ -82,6 +87,7 @@ export class HcMain extends HassElement {
         .hass=${this.hass}
         .lovelaceConfig=${this._lovelaceConfig}
         .viewPath=${this._lovelacePath}
+        .urlPath=${this._urlPath}
         @config-refresh=${this._generateLovelaceConfig}
       ></hc-lovelace>
     `;
@@ -210,9 +216,7 @@ export class HcMain extends HassElement {
     }
     this._showDemo = false;
     this._lovelacePath = msg.viewPath;
-    if (castContext.getDeviceCapabilities().touch_input_supported) {
-      this._breakFree();
-    }
+
     this._sendStatus();
   }
 
@@ -235,9 +239,6 @@ export class HcMain extends HassElement {
       this._showDemo = true;
       this._lovelacePath = "overview";
       this._sendStatus();
-      if (castContext.getDeviceCapabilities().touch_input_supported) {
-        this._breakFree();
-      }
     });
   }
 
@@ -256,14 +257,6 @@ export class HcMain extends HassElement {
       default:
         return "Unknown Error";
     }
-  }
-
-  private _breakFree() {
-    const controls = document.body.querySelector("touch-controls");
-    if (controls) {
-      controls.remove();
-    }
-    document.body.setAttribute("style", "overflow-y: auto !important");
   }
 
   private sendMessage(senderId: string, response: any) {

@@ -1,31 +1,33 @@
-import "@polymer/app-layout/app-header-layout/app-header-layout";
+import { mdiRefresh } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "../../components/ha-icon-button";
-import "../../components/ha-circular-progress";
-import { computeRTL } from "../../common/util/compute_rtl";
-import "../../components/entity/ha-entity-picker";
-import "../../components/ha-menu-button";
-import "./ha-logbook";
 import {
-  LitElement,
-  property,
+  css,
   customElement,
   html,
-  css,
+  internalProperty,
+  LitElement,
+  property,
   PropertyValues,
 } from "lit-element";
-import { HomeAssistant } from "../../types";
-import { haStyle } from "../../resources/styles";
-import { fetchUsers } from "../../data/user";
+import { computeRTL } from "../../common/util/compute_rtl";
+import "../../components/entity/ha-entity-picker";
+import "../../components/ha-circular-progress";
+import "../../components/ha-date-range-picker";
+import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
+import "../../components/ha-icon-button";
+import "../../components/ha-menu-button";
 import {
   clearLogbookCache,
   getLogbookData,
   LogbookEntry,
 } from "../../data/logbook";
-import { mdiRefresh } from "@mdi/js";
-import "../../components/ha-date-range-picker";
-import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
+import { fetchPersons } from "../../data/person";
+import { fetchUsers } from "../../data/user";
+import "../../layouts/ha-app-layout";
+import { haStyle } from "../../resources/styles";
+import { HomeAssistant } from "../../types";
+import "./ha-logbook";
 
 @customElement("ha-panel-logbook")
 export class HaPanelLogbook extends LitElement {
@@ -48,7 +50,7 @@ export class HaPanelLogbook extends LitElement {
 
   @property({ reflect: true, type: Boolean }) rtl = false;
 
-  @property() private _ranges?: DateRangePickerRanges;
+  @internalProperty() private _ranges?: DateRangePickerRanges;
 
   private _fetchUserDone?: Promise<unknown>;
 
@@ -72,7 +74,7 @@ export class HaPanelLogbook extends LitElement {
 
   protected render() {
     return html`
-      <app-header-layout has-scrolling-region>
+      <ha-app-layout>
         <app-header slot="header" fixed>
           <app-toolbar>
             <ha-menu-button
@@ -84,7 +86,7 @@ export class HaPanelLogbook extends LitElement {
               @click=${this._refreshLogbook}
               .disabled=${this._isLoading}
             >
-              <ha-svg-icon path=${mdiRefresh}></ha-svg-icon>
+              <ha-svg-icon .path=${mdiRefresh}></ha-svg-icon>
             </mwc-icon-button>
           </app-toolbar>
         </app-header>
@@ -113,16 +115,23 @@ export class HaPanelLogbook extends LitElement {
         </div>
 
         ${this._isLoading
-          ? html`<ha-circular-progress
-              active
-              alt=${this.hass.localize("ui.common.loading")}
-            ></ha-circular-progress>`
-          : html`<ha-logbook
-              .hass=${this.hass}
-              .entries=${this._entries}
-              .userIdToName=${this._userIdToName}
-            ></ha-logbook>`}
-      </app-header-layout>
+          ? html`
+              <div class="progress-wrapper">
+                <ha-circular-progress
+                  active
+                  alt=${this.hass.localize("ui.common.loading")}
+                ></ha-circular-progress>
+              </div>
+            `
+          : html`
+              <ha-logbook
+                .hass=${this.hass}
+                .entries=${this._entries}
+                .userIdToName=${this._userIdToName}
+                virtualize
+              ></ha-logbook>
+            `}
+      </ha-app-layout>
     `;
   }
 
@@ -130,7 +139,7 @@ export class HaPanelLogbook extends LitElement {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
 
-    this._fetchUserDone = this._fetchUsers();
+    this._fetchUserDone = this._fetchUserNames();
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -149,7 +158,7 @@ export class HaPanelLogbook extends LitElement {
       todayCopy.setDate(today.getDate() - today.getDay())
     );
     const thisWeekEnd = new Date(
-      todayCopy.setDate(today.getDate() - today.getDay() + 7)
+      todayCopy.setDate(thisWeekStart.getDate() + 7)
     );
     thisWeekEnd.setMilliseconds(thisWeekEnd.getMilliseconds() - 1);
 
@@ -157,7 +166,7 @@ export class HaPanelLogbook extends LitElement {
       todayCopy.setDate(today.getDate() - today.getDay() - 7)
     );
     const lastWeekEnd = new Date(
-      todayCopy.setDate(today.getDate() - today.getDay())
+      todayCopy.setDate(lastWeekStart.getDate() + 7)
     );
     lastWeekEnd.setMilliseconds(lastWeekEnd.getMilliseconds() - 1);
 
@@ -195,13 +204,38 @@ export class HaPanelLogbook extends LitElement {
     }
   }
 
-  private async _fetchUsers() {
-    const users = await fetchUsers(this.hass);
-    const userid_to_name = {};
-    users.forEach((user) => {
-      userid_to_name[user.id] = user.name;
-    });
-    this._userIdToName = userid_to_name;
+  private async _fetchUserNames() {
+    const userIdToName = {};
+
+    // Start loading all the data
+    const personProm = fetchPersons(this.hass);
+    const userProm = this.hass.user!.is_admin && fetchUsers(this.hass);
+
+    // Process persons
+    const persons = await personProm;
+
+    for (const person of persons.storage) {
+      if (person.user_id) {
+        userIdToName[person.user_id] = person.name;
+      }
+    }
+    for (const person of persons.config) {
+      if (person.user_id) {
+        userIdToName[person.user_id] = person.name;
+      }
+    }
+
+    // Process users
+    if (userProm) {
+      const users = await userProm;
+      for (const user of users) {
+        if (!(user.id in userIdToName)) {
+          userIdToName[user.id] = user.name;
+        }
+      }
+    }
+
+    this._userIdToName = userIdToName;
   }
 
   private _dateRangeChanged(ev) {
@@ -238,6 +272,7 @@ export class HaPanelLogbook extends LitElement {
       ),
       this._fetchUserDone,
     ]);
+
     // Fixed in TS 3.9 but upgrade out of scope for this PR.
     // @ts-ignore
     this._entries = entries;
@@ -248,11 +283,13 @@ export class HaPanelLogbook extends LitElement {
     return [
       haStyle,
       css`
-        ha-logbook {
+        ha-logbook,
+        .progress-wrapper {
           height: calc(100vh - 136px);
         }
 
-        :host([narrow]) ha-logbook {
+        :host([narrow]) ha-logbook,
+        :host([narrow]) .progress-wrapper {
           height: calc(100vh - 198px);
         }
 
@@ -265,15 +302,15 @@ export class HaPanelLogbook extends LitElement {
           margin-right: 0;
         }
 
+        .progress-wrapper {
+          position: relative;
+        }
+
         ha-circular-progress {
           position: absolute;
           left: 50%;
           top: 50%;
           transform: translate(-50%, -50%);
-        }
-
-        .wrap {
-          margin-bottom: 24px;
         }
 
         .filters {

@@ -4,7 +4,7 @@ import {
   html,
   LitElement,
   property,
-  PropertyValues,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { domainToName } from "../../data/integration";
@@ -39,22 +39,18 @@ let resourcesLoaded = false;
 class LovelacePanel extends LitElement {
   @property() public panel?: PanelInfo<LovelacePanelConfig>;
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public narrow?: boolean;
 
   @property() public route?: Route;
 
-  @property() private _columns?: number;
-
   @property()
   private _state?: "loading" | "loaded" | "error" | "yaml-editor" = "loading";
 
-  @property() private _errorMsg?: string;
+  @internalProperty() private _errorMsg?: string;
 
-  @property() private lovelace?: Lovelace;
-
-  private mqls?: MediaQueryList[];
+  @internalProperty() private lovelace?: Lovelace;
 
   private _ignoreNextUpdateEvent = false;
 
@@ -104,7 +100,6 @@ class LovelacePanel extends LitElement {
           .hass=${this.hass}
           .lovelace=${this.lovelace}
           .route=${this.route}
-          .columns=${this._columns}
           .narrow=${this.narrow}
           @config-refresh=${this._forceFetchConfig}
         ></hui-root>
@@ -143,25 +138,6 @@ class LovelacePanel extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues): void {
-    super.updated(changedProps);
-
-    if (changedProps.has("narrow")) {
-      this._updateColumns();
-      return;
-    }
-
-    if (!changedProps.has("hass")) {
-      return;
-    }
-
-    const oldHass = changedProps.get("hass") as this["hass"];
-
-    if (oldHass && this.hass!.dockedSidebar !== oldHass.dockedSidebar) {
-      this._updateColumns();
-    }
-  }
-
   protected firstUpdated() {
     this._fetchConfig(false);
     if (!this._unsubUpdates) {
@@ -173,13 +149,6 @@ class LovelacePanel extends LitElement {
         this._fetchConfig(false);
       }
     });
-    this._updateColumns = this._updateColumns.bind(this);
-    this.mqls = [300, 600, 900, 1200].map((width) => {
-      const mql = matchMedia(`(min-width: ${width}px)`);
-      mql.addListener(this._updateColumns);
-      return mql;
-    });
-    this._updateColumns();
   }
 
   private async _regenerateConfig() {
@@ -198,19 +167,6 @@ class LovelacePanel extends LitElement {
 
   private _closeEditor() {
     this._state = "loaded";
-  }
-
-  private _updateColumns() {
-    const matchColumns = this.mqls!.reduce(
-      (cols, mql) => cols + Number(mql.matches),
-      0
-    );
-    // Do -1 column if the menu is docked and open
-    this._columns = Math.max(
-      1,
-      matchColumns -
-        Number(!this.narrow && this.hass!.dockedSidebar === "docked")
-    );
   }
 
   private _lovelaceChanged() {
@@ -326,6 +282,7 @@ class LovelacePanel extends LitElement {
     this.lovelace = {
       config,
       mode,
+      urlPath: this.urlPath,
       editMode: this.lovelace ? this.lovelace.editMode : false,
       language: this.hass!.language,
       enableFullEditMode: () => {

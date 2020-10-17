@@ -26,7 +26,7 @@ import { hasAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "./hui-warning";
 
 class HuiGenericEntityRow extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public config?: EntitiesCardEntityConfig;
 

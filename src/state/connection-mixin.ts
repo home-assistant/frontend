@@ -47,6 +47,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         translationMetadata,
         dockedSidebar: "docked",
         vibrate: true,
+        suspendWhenHidden: true,
         moreInfoEntityId: null,
         hassUrl: (path = "") => new URL(path, auth.data.hassUrl).toString(),
         callService: async (domain, service, serviceData = {}) => {
@@ -85,8 +86,10 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         },
         callApi: async (method, path, parameters) =>
           hassCallApi(auth, method, path, parameters),
-        fetchWithAuth: (path, init) =>
-          fetchWithAuth(auth, `${auth.data.hassUrl}${path}`, init),
+        fetchWithAuth: (
+          path: string,
+          init: Parameters<typeof fetchWithAuth>[2]
+        ) => fetchWithAuth(auth, `${auth.data.hassUrl}${path}`, init),
         // For messages that do not get a response
         sendWS: (msg) => {
           if (__DEV__) {

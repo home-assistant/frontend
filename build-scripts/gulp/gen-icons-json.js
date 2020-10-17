@@ -11,6 +11,7 @@ const META_PATH = path.resolve(ICON_PACKAGE_PATH, "meta.json");
 const PACKAGE_PATH = path.resolve(ICON_PACKAGE_PATH, "package.json");
 const ICON_PATH = path.resolve(ICON_PACKAGE_PATH, "svg");
 const OUTPUT_DIR = path.resolve(__dirname, "../../build/mdi");
+const REMOVED_ICONS_PATH = path.resolve(__dirname, "../removedIcons.json");
 
 const encoding = "utf8";
 
@@ -23,6 +24,13 @@ const getMeta = () => {
     });
     return { path: svg.match(/ d="([^"]+)"/)[1], name: icon.name };
   });
+};
+
+const addRemovedMeta = (meta) => {
+  const file = fs.readFileSync(REMOVED_ICONS_PATH, { encoding });
+  const removed = JSON.parse(file);
+  const combinedMeta = [...meta, ...removed];
+  return combinedMeta.sort((a, b) => a.name.localeCompare(b.name));
 };
 
 const splitBySize = (meta) => {
@@ -69,7 +77,7 @@ const findDifferentiator = (curString, prevString) => {
 };
 
 gulp.task("gen-icons-json", (done) => {
-  const meta = getMeta();
+  const meta = addRemovedMeta(getMeta());
   const split = splitBySize(meta);
 
   if (!fs.existsSync(OUTPUT_DIR)) {

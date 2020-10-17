@@ -5,6 +5,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -28,13 +29,13 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
 
   @property() public oauth2State?: string;
 
-  @property() private _state: State = "loading";
+  @internalProperty() private _state: State = "loading";
 
-  @property() private _stepData: any = {};
+  @internalProperty() private _stepData: any = {};
 
-  @property() private _step?: DataEntryFlowStep;
+  @internalProperty() private _step?: DataEntryFlowStep;
 
-  @property() private _errorMessage?: string;
+  @internalProperty() private _errorMessage?: string;
 
   protected render() {
     return html`
@@ -199,7 +200,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
 
   private _redirect(authCode: string) {
     // OAuth 2: 3.1.2 we need to retain query component of a redirect URI
-    let url = this.redirectUri!!;
+    let url = this.redirectUri!;
     if (!url.includes("?")) {
       url += "?";
     } else if (!url.endsWith("&")) {

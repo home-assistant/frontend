@@ -1,18 +1,30 @@
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultArray,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   TemplateResult,
 } from "lit-element";
+import {
+  array,
+  assert,
+  boolean,
+  number,
+  object,
+  optional,
+  string,
+} from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import "../../../../components/ha-formfield";
+import "../../../../components/ha-switch";
 import { PolymerChangedEvent } from "../../../../polymer-types";
 import { HomeAssistant } from "../../../../types";
 import { MapCardConfig } from "../../cards/types";
-import { struct } from "../../common/structs/struct";
 import "../../components/hui-entity-editor";
 import "../../components/hui-input-list-editor";
 import { EntityConfig } from "../../entity-rows/types";
@@ -23,31 +35,29 @@ import {
   entitiesConfigStruct,
   EntitiesEditorEvent,
 } from "../types";
-import "../../../../components/ha-switch";
-import "../../../../components/ha-formfield";
 import { configElementStyle } from "./config-elements-style";
 
-const cardConfigStruct = struct({
-  type: "string",
-  title: "string?",
-  aspect_ratio: "string?",
-  default_zoom: "number?",
-  dark_mode: "boolean?",
-  entities: [entitiesConfigStruct],
-  hours_to_show: "number?",
-  geo_location_sources: "array?",
+const cardConfigStruct = object({
+  type: string(),
+  title: optional(string()),
+  aspect_ratio: optional(string()),
+  default_zoom: optional(number()),
+  dark_mode: optional(boolean()),
+  entities: array(entitiesConfigStruct),
+  hours_to_show: optional(number()),
+  geo_location_sources: optional(array()),
 });
 
 @customElement("hui-map-card-editor")
 export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: MapCardConfig;
+  @internalProperty() private _config?: MapCardConfig;
 
-  @property() private _configEntities?: EntityConfig[];
+  @internalProperty() private _configEntities?: EntityConfig[];
 
   public setConfig(config: MapCardConfig): void {
-    config = cardConfigStruct(config);
+    assert(config, cardConfigStruct);
     this._config = config;
     this._configEntities = config.entities
       ? processEditorEntities(config.entities)
@@ -84,7 +94,6 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     }
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <paper-input
           .label="${this.hass.localize(
@@ -124,6 +133,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
             .label=${this.hass.localize(
               "ui.panel.lovelace.editor.card.map.dark_mode"
             )}
+            .dir=${computeRTLDirection(this.hass)}
           >
             <ha-switch
               .checked="${this._dark_mode}"
@@ -173,7 +183,8 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       return;
     }
     if (ev.detail && ev.detail.entities) {
-      this._config.entities = ev.detail.entities;
+      this._config = { ...this._config, entities: ev.detail.entities };
+
       this._configEntities = processEditorEntities(this._config.entities);
       fireEvent(this, "config-changed", { config: this._config });
     }
@@ -192,6 +203,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       value = Number(value);
     }
     if (target.value === "" || (target.type === "number" && isNaN(value))) {
+      this._config = { ...this._config };
       delete this._config[target.configValue!];
     } else if (target.configValue) {
       this._config = {
@@ -203,12 +215,15 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
-    return css`
-      .geo_location_sources {
-        padding-left: 20px;
-      }
-    `;
+  static get styles(): CSSResultArray {
+    return [
+      configElementStyle,
+      css`
+        .geo_location_sources {
+          padding-left: 20px;
+        }
+      `,
+    ];
   }
 }
 

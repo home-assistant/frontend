@@ -16,7 +16,7 @@ declare global {
 }
 
 export class HaPanelCustom extends UpdatingElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
 
@@ -24,7 +24,7 @@ export class HaPanelCustom extends UpdatingElement {
 
   @property() public panel!: CustomPanelInfo;
 
-  private _setProperties?: (props: {}) => void | undefined;
+  private _setProperties?: (props: Record<string, unknown>) => void | undefined;
 
   // Since navigate fires events on `window`, we need to expose this as a function
   // to allow custom panels to forward their location changes to the main window

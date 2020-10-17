@@ -8,7 +8,7 @@ import { createErrorCardConfig } from "../../create-element/create-element-base"
 import { property, PropertyValues, UpdatingElement } from "lit-element";
 
 export class HuiCardPreview extends UpdatingElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public config?: LovelaceCardConfig;
 

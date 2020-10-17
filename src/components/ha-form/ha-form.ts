@@ -15,8 +15,10 @@ import "./ha-form-multi_select";
 import "./ha-form-positive_time_period_dict";
 import "./ha-form-select";
 import "./ha-form-string";
+import "./ha-form-constant";
 
 export type HaFormSchema =
+  | HaFormConstantSchema
   | HaFormStringSchema
   | HaFormIntegerSchema
   | HaFormFloatSchema
@@ -31,6 +33,11 @@ export interface HaFormBaseSchema {
   required?: boolean;
   optional?: boolean;
   description?: { suffix?: string; suggested_value?: HaFormData };
+}
+
+export interface HaFormConstantSchema extends HaFormBaseSchema {
+  type: "constant";
+  value: string;
 }
 
 export interface HaFormIntegerSchema extends HaFormBaseSchema {
@@ -93,7 +100,7 @@ export interface HaFormTimeData {
 }
 
 export interface HaFormElement extends LitElement {
-  schema: HaFormSchema;
+  schema: HaFormSchema | HaFormSchema[];
   data?: HaFormDataContainer | HaFormData;
   label?: string;
   suffix?: string;
@@ -103,7 +110,7 @@ export interface HaFormElement extends LitElement {
 export class HaForm extends LitElement implements HaFormElement {
   @property() public data!: HaFormDataContainer | HaFormData;
 
-  @property() public schema!: HaFormSchema;
+  @property() public schema!: HaFormSchema | HaFormSchema[];
 
   @property() public error;
 
@@ -183,7 +190,7 @@ export class HaForm extends LitElement implements HaFormElement {
       : "";
   }
 
-  private _computeError(error, schema: HaFormSchema) {
+  private _computeError(error, schema: HaFormSchema | HaFormSchema[]) {
     return this.computeError ? this.computeError(error, schema) : error;
   }
 
@@ -196,7 +203,7 @@ export class HaForm extends LitElement implements HaFormElement {
 
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    const schema = (ev.target as HaFormElement).schema;
+    const schema = (ev.target as HaFormElement).schema as HaFormSchema;
     const data = this.data as HaFormDataContainer;
     data[schema.name] = ev.detail.value;
     fireEvent(this, "value-changed", {

@@ -1,5 +1,5 @@
 import { PolymerElement } from "@polymer/polymer";
-import { customElement, property } from "lit-element";
+import { customElement, property, internalProperty } from "lit-element";
 import { navigate } from "../../../common/navigate";
 import { CloudStatus } from "../../../data/cloud";
 import {
@@ -16,7 +16,7 @@ const NOT_LOGGED_IN_URLS = ["login", "register", "forgot-password"];
 
 @customElement("ha-config-cloud")
 class HaConfigCloud extends HassRouterPage {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public isWide!: boolean;
 
@@ -77,9 +77,9 @@ class HaConfigCloud extends HassRouterPage {
     },
   };
 
-  @property() private _flashMessage = "";
+  @internalProperty() private _flashMessage = "";
 
-  @property() private _loginEmail = "";
+  @internalProperty() private _loginEmail = "";
 
   private _resolveCloudStatusLoaded!: () => void;
 

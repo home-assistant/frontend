@@ -8,7 +8,7 @@ import { navigate } from "../../../../../common/navigate";
 
 @customElement("zha-config-dashboard-router")
 class ZHAConfigDashboardRouter extends HassRouterPage {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public isWide!: boolean;
 

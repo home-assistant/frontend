@@ -23,7 +23,7 @@ export const lovelaceTabs = [
 
 @customElement("ha-config-lovelace")
 class HaConfigLovelace extends HassRouterPage {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
 

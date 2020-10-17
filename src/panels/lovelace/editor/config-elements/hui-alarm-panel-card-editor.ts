@@ -3,30 +3,31 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultArray,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   TemplateResult,
 } from "lit-element";
+import { array, assert, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-icon";
 import { HomeAssistant } from "../../../../types";
 import { AlarmPanelCardConfig } from "../../cards/types";
-import { struct } from "../../common/structs/struct";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
-const cardConfigStruct = struct({
-  type: "string",
-  entity: "string?",
-  name: "string?",
-  states: "array?",
-  theme: "string?",
+const cardConfigStruct = object({
+  type: string(),
+  entity: optional(string()),
+  name: optional(string()),
+  states: optional(array()),
+  theme: optional(string()),
 });
 
 const includeDomains = ["alarm_control_panel"];
@@ -34,12 +35,12 @@ const includeDomains = ["alarm_control_panel"];
 @customElement("hui-alarm-panel-card-editor")
 export class HuiAlarmPanelCardEditor extends LitElement
   implements LovelaceCardEditor {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: AlarmPanelCardConfig;
+  @internalProperty() private _config?: AlarmPanelCardConfig;
 
   public setConfig(config: AlarmPanelCardConfig): void {
-    config = cardConfigStruct(config);
+    assert(config, cardConfigStruct);
     this._config = config;
   }
 
@@ -67,7 +68,6 @@ export class HuiAlarmPanelCardEditor extends LitElement
     const states = ["arm_home", "arm_away", "arm_night", "arm_custom_bypass"];
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <ha-entity-picker
           .label="${this.hass.localize(
@@ -127,22 +127,25 @@ export class HuiAlarmPanelCardEditor extends LitElement
     `;
   }
 
-  static get styles(): CSSResult {
-    return css`
-      .states {
-        display: flex;
-        flex-direction: row;
-      }
-      .deleteState {
-        visibility: hidden;
-      }
-      .states:hover > .deleteState {
-        visibility: visible;
-      }
-      ha-icon {
-        padding-top: 12px;
-      }
-    `;
+  static get styles(): CSSResultArray {
+    return [
+      configElementStyle,
+      css`
+        .states {
+          display: flex;
+          flex-direction: row;
+        }
+        .deleteState {
+          visibility: hidden;
+        }
+        .states:hover > .deleteState {
+          visibility: visible;
+        }
+        ha-icon {
+          padding-top: 12px;
+        }
+      `,
+    ];
   }
 
   private _stateRemoved(ev: EntitiesEditorEvent): void {
@@ -193,6 +196,7 @@ export class HuiAlarmPanelCardEditor extends LitElement
     }
     if (target.configValue) {
       if (target.value === "") {
+        this._config = { ...this._config };
         delete this._config[target.configValue!];
       } else {
         this._config = {

@@ -3,6 +3,7 @@ import {
   customElement,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   html,
   TemplateResult,
@@ -21,6 +22,16 @@ import {
   writeCache,
 } from "../data/iconsets";
 import { debounce } from "../common/util/debounce";
+import { fireEvent } from "../common/dom/fire_event";
+
+interface DeprecatedIcon {
+  [key: string]: {
+    removeIn: string;
+    newName?: string;
+  };
+}
+
+const mdiDeprecatedIcons: DeprecatedIcon = {};
 
 const chunks: Chunks = {};
 
@@ -34,11 +45,11 @@ const cachedIcons: { [key: string]: string } = {};
 export class HaIcon extends LitElement {
   @property() public icon?: string;
 
-  @property() private _path?: string;
+  @internalProperty() private _path?: string;
 
-  @property() private _viewBox?;
+  @internalProperty() private _viewBox?;
 
-  @property() private _legacy = false;
+  @internalProperty() private _legacy = false;
 
   protected updated(changedProps: PropertyValues) {
     if (changedProps.has("icon")) {
@@ -65,7 +76,9 @@ export class HaIcon extends LitElement {
     if (!this.icon) {
       return;
     }
-    const [iconPrefix, iconName] = this.icon.split(":", 2);
+    const [iconPrefix, origIconName] = this.icon.split(":", 2);
+
+    let iconName = origIconName;
 
     if (!iconPrefix || !iconName) {
       return;
@@ -84,6 +97,24 @@ export class HaIcon extends LitElement {
     }
 
     this._legacy = false;
+
+    if (iconName in mdiDeprecatedIcons) {
+      const deprecatedIcon = mdiDeprecatedIcons[iconName];
+      let message: string;
+
+      if (deprecatedIcon.newName) {
+        message = `Icon ${iconPrefix}:${iconName} was renamed to ${iconPrefix}:${deprecatedIcon.newName}, please change your config, it will be removed in version ${deprecatedIcon.removeIn}.`;
+        iconName = deprecatedIcon.newName!;
+      } else {
+        message = `Icon ${iconPrefix}:${iconName} was removed from MDI, please replace this icon with an other icon in your config, it will be removed in version ${deprecatedIcon.removeIn}.`;
+      }
+      // eslint-disable-next-line no-console
+      console.warn(message);
+      fireEvent(this, "write_log", {
+        level: "warning",
+        message,
+      });
+    }
 
     if (iconName in cachedIcons) {
       this._path = cachedIcons[iconName];
@@ -109,6 +140,7 @@ export class HaIcon extends LitElement {
       this._setPath(chunks[chunk], iconName);
       return;
     }
+
     const iconPromise = fetch(`/static/mdi/${chunk}.json`).then((response) =>
       response.json()
     );

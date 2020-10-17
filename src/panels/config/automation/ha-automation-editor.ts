@@ -1,28 +1,44 @@
+import "@material/mwc-fab";
+import {
+  mdiCheck,
+  mdiContentDuplicate,
+  mdiContentSave,
+  mdiDelete,
+  mdiDotsVertical,
+} from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-input/paper-textarea";
-import "../../../components/ha-icon-button";
+import "@material/mwc-list/mwc-list-item";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import { PaperListboxElement } from "@polymer/paper-listbox";
 import {
   css,
   CSSResult,
   html,
+  internalProperty,
   LitElement,
   property,
   PropertyValues,
   TemplateResult,
+  query,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { navigate } from "../../../common/navigate";
-import { computeRTL } from "../../../common/util/compute_rtl";
+import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
-import "@material/mwc-fab";
+import "../../../components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import {
   AutomationConfig,
   AutomationEntity,
   Condition,
   deleteAutomation,
   getAutomationEditorInitData,
+  showAutomationEditor,
   Trigger,
   triggerAutomation,
 } from "../../../data/automation";
@@ -33,8 +49,10 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/ha-app-layout";
 import "../../../layouts/hass-tabs-subpage";
+import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "./action/ha-automation-action";
@@ -42,10 +60,20 @@ import { HaDeviceAction } from "./action/types/ha-automation-action-device_id";
 import "./condition/ha-automation-condition";
 import "./trigger/ha-automation-trigger";
 import { HaDeviceTrigger } from "./trigger/types/ha-automation-trigger-device";
-import { mdiContentSave } from "@mdi/js";
 
-export class HaAutomationEditor extends LitElement {
-  @property() public hass!: HomeAssistant;
+const MODES = ["single", "restart", "queued", "parallel"];
+const MODES_MAX = ["queued", "parallel"];
+
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "ui-mode-not-available": Error;
+    duplicate: undefined;
+  }
+}
+
+export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public automationId!: string;
 
@@ -57,13 +85,17 @@ export class HaAutomationEditor extends LitElement {
 
   @property() public route!: Route;
 
-  @property() private _config?: AutomationConfig;
+  @internalProperty() private _config?: AutomationConfig;
 
-  @property() private _dirty?: boolean;
+  @internalProperty() private _dirty = false;
 
-  @property() private _errors?: string;
+  @internalProperty() private _errors?: string;
 
-  @property() private _entityId?: string;
+  @internalProperty() private _entityId?: string;
+
+  @internalProperty() private _mode: "gui" | "yaml" = "gui";
+
+  @query("ha-yaml-editor", true) private _editor?: HaYamlEditor;
 
   protected render(): TemplateResult {
     const stateObj = this._entityId
@@ -77,18 +109,82 @@ export class HaAutomationEditor extends LitElement {
         .backCallback=${() => this._backTapped()}
         .tabs=${configSections.automation}
       >
-        ${!this.automationId
-          ? ""
-          : html`
-              <ha-icon-button
-                slot="toolbar-icon"
-                title="${this.hass.localize(
-                  "ui.panel.config.automation.picker.delete_automation"
-                )}"
-                icon="hass:delete"
-                @click=${this._deleteConfirm}
-              ></ha-icon-button>
-            `}
+        <ha-button-menu
+          corner="BOTTOM_START"
+          slot="toolbar-icon"
+          @action=${this._handleMenuAction}
+          activatable
+        >
+          <mwc-icon-button
+            slot="trigger"
+            .title=${this.hass.localize("ui.common.menu")}
+            .label=${this.hass.localize("ui.common.overflow_menu")}
+            ><ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+          </mwc-icon-button>
+
+          <mwc-list-item
+            aria-label=${this.hass.localize(
+              "ui.panel.config.automation.editor.edit_ui"
+            )}
+            graphic="icon"
+            ?activated=${this._mode === "gui"}
+          >
+            ${this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
+            ${this._mode === "gui"
+              ? html`<ha-svg-icon
+                  slot="graphic"
+                  .path=${mdiCheck}
+                ></ha-svg-icon>`
+              : ``}
+          </mwc-list-item>
+          <mwc-list-item
+            aria-label=${this.hass.localize(
+              "ui.panel.config.automation.editor.edit_yaml"
+            )}
+            graphic="icon"
+            ?activated=${this._mode === "yaml"}
+          >
+            ${this.hass.localize("ui.panel.config.automation.editor.edit_yaml")}
+            ${this._mode === "yaml"
+              ? html`<ha-svg-icon
+                  slot="graphic"
+                  .path=${mdiCheck}
+                ></ha-svg-icon>`
+              : ``}
+          </mwc-list-item>
+
+          <li divider role="separator"></li>
+
+          <mwc-list-item
+            .disabled=${!this.automationId}
+            aria-label=${this.hass.localize(
+              "ui.panel.config.automation.picker.duplicate_automation"
+            )}
+            graphic="icon"
+          >
+            ${this.hass.localize(
+              "ui.panel.config.automation.picker.duplicate_automation"
+            )}
+            <ha-svg-icon
+              slot="graphic"
+              .path=${mdiContentDuplicate}
+            ></ha-svg-icon>
+          </mwc-list-item>
+
+          <mwc-list-item
+            .disabled=${!this.automationId}
+            aria-label=${this.hass.localize(
+              "ui.panel.config.automation.picker.delete_automation"
+            )}
+            class=${classMap({ warning: this.automationId })}
+            graphic="icon"
+          >
+            ${this.hass.localize(
+              "ui.panel.config.automation.picker.delete_automation"
+            )}
+            <ha-svg-icon slot="graphic" .path=${mdiDelete}></ha-svg-icon>
+          </mwc-list-item>
+        </ha-button-menu>
         ${this._config
           ? html`
               ${this.narrow
@@ -98,168 +194,280 @@ export class HaAutomationEditor extends LitElement {
                 ${this._errors
                   ? html` <div class="errors">${this._errors}</div> `
                   : ""}
-                <ha-config-section .isWide=${this.isWide}>
-                  ${!this.narrow
-                    ? html` <span slot="header">${this._config.alias}</span> `
-                    : ""}
-                  <span slot="introduction">
-                    ${this.hass.localize(
-                      "ui.panel.config.automation.editor.introduction"
-                    )}
-                  </span>
-                  <ha-card>
-                    <div class="card-content">
-                      <paper-input
-                        .label=${this.hass.localize(
-                          "ui.panel.config.automation.editor.alias"
-                        )}
-                        name="alias"
-                        .value=${this._config.alias}
-                        @value-changed=${this._valueChanged}
-                      >
-                      </paper-input>
-                      <paper-textarea
-                        .label=${this.hass.localize(
-                          "ui.panel.config.automation.editor.description.label"
-                        )}
-                        .placeholder=${this.hass.localize(
-                          "ui.panel.config.automation.editor.description.placeholder"
-                        )}
-                        name="description"
-                        .value=${this._config.description}
-                        @value-changed=${this._valueChanged}
-                      ></paper-textarea>
-                    </div>
-                    ${stateObj
-                      ? html`
-                          <div
-                            class="card-actions layout horizontal justified center"
-                          >
-                            <div class="layout horizontal center">
-                              <ha-entity-toggle
-                                .hass=${this.hass}
-                                .stateObj=${stateObj}
-                              ></ha-entity-toggle>
-                              ${this.hass.localize(
-                                "ui.panel.config.automation.editor.enable_disable"
+                ${this._mode === "gui"
+                  ? html`
+                      <ha-config-section .isWide=${this.isWide}>
+                        ${!this.narrow
+                          ? html`
+                              <span slot="header">${this._config.alias}</span>
+                            `
+                          : ""}
+                        <span slot="introduction">
+                          ${this.hass.localize(
+                            "ui.panel.config.automation.editor.introduction"
+                          )}
+                        </span>
+                        <ha-card>
+                          <div class="card-content">
+                            <paper-input
+                              .label=${this.hass.localize(
+                                "ui.panel.config.automation.editor.alias"
                               )}
-                            </div>
-                            <mwc-button
-                              @click=${this._excuteAutomation}
-                              .stateObj=${stateObj}
+                              name="alias"
+                              .value=${this._config.alias}
+                              @value-changed=${this._valueChanged}
                             >
+                            </paper-input>
+                            <paper-textarea
+                              .label=${this.hass.localize(
+                                "ui.panel.config.automation.editor.description.label"
+                              )}
+                              .placeholder=${this.hass.localize(
+                                "ui.panel.config.automation.editor.description.placeholder"
+                              )}
+                              name="description"
+                              .value=${this._config.description}
+                              @value-changed=${this._valueChanged}
+                            ></paper-textarea>
+                            <p>
                               ${this.hass.localize(
-                                "ui.card.automation.trigger"
+                                "ui.panel.config.automation.editor.modes.description",
+                                "documentation_link",
+                                html`<a
+                                  href="${documentationUrl(
+                                    this.hass,
+                                    "/integrations/automation/#automation-modes"
+                                  )}"
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  >${this.hass.localize(
+                                    "ui.panel.config.automation.editor.modes.documentation"
+                                  )}</a
+                                >`
+                              )}
+                            </p>
+                            <paper-dropdown-menu-light
+                              .label=${this.hass.localize(
+                                "ui.panel.config.automation.editor.modes.label"
+                              )}
+                              no-animations
+                            >
+                              <paper-listbox
+                                slot="dropdown-content"
+                                .selected=${this._config.mode
+                                  ? MODES.indexOf(this._config.mode)
+                                  : 0}
+                                @iron-select=${this._modeChanged}
+                              >
+                                ${MODES.map(
+                                  (mode) => html`
+                                    <paper-item .mode=${mode}>
+                                      ${this.hass.localize(
+                                        `ui.panel.config.automation.editor.modes.${mode}`
+                                      ) || mode}
+                                    </paper-item>
+                                  `
+                                )}
+                              </paper-listbox>
+                            </paper-dropdown-menu-light>
+                            ${this._config.mode &&
+                            MODES_MAX.includes(this._config.mode)
+                              ? html`<paper-input
+                                  .label=${this.hass.localize(
+                                    `ui.panel.config.automation.editor.max.${this._config.mode}`
+                                  )}
+                                  type="number"
+                                  name="max"
+                                  .value=${this._config.max || "10"}
+                                  @value-changed=${this._valueChanged}
+                                >
+                                </paper-input>`
+                              : html``}
+                          </div>
+                          ${stateObj
+                            ? html`
+                                <div
+                                  class="card-actions layout horizontal justified center"
+                                >
+                                  <div class="layout horizontal center">
+                                    <ha-entity-toggle
+                                      .hass=${this.hass}
+                                      .stateObj=${stateObj}
+                                    ></ha-entity-toggle>
+                                    ${this.hass.localize(
+                                      "ui.panel.config.automation.editor.enable_disable"
+                                    )}
+                                  </div>
+                                  <mwc-button
+                                    @click=${this._excuteAutomation}
+                                    .stateObj=${stateObj}
+                                  >
+                                    ${this.hass.localize(
+                                      "ui.card.automation.trigger"
+                                    )}
+                                  </mwc-button>
+                                </div>
+                              `
+                            : ""}
+                        </ha-card>
+                      </ha-config-section>
+
+                      <ha-config-section .isWide=${this.isWide}>
+                        <span slot="header">
+                          ${this.hass.localize(
+                            "ui.panel.config.automation.editor.triggers.header"
+                          )}
+                        </span>
+                        <span slot="introduction">
+                          <p>
+                            ${this.hass.localize(
+                              "ui.panel.config.automation.editor.triggers.introduction"
+                            )}
+                          </p>
+                          <a
+                            href="${documentationUrl(
+                              this.hass,
+                              "/docs/automation/trigger/"
+                            )}"
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            ${this.hass.localize(
+                              "ui.panel.config.automation.editor.triggers.learn_more"
+                            )}
+                          </a>
+                        </span>
+                        <ha-automation-trigger
+                          .triggers=${this._config.trigger}
+                          @value-changed=${this._triggerChanged}
+                          .hass=${this.hass}
+                        ></ha-automation-trigger>
+                      </ha-config-section>
+
+                      <ha-config-section .isWide=${this.isWide}>
+                        <span slot="header">
+                          ${this.hass.localize(
+                            "ui.panel.config.automation.editor.conditions.header"
+                          )}
+                        </span>
+                        <span slot="introduction">
+                          <p>
+                            ${this.hass.localize(
+                              "ui.panel.config.automation.editor.conditions.introduction"
+                            )}
+                          </p>
+                          <a
+                            href="${documentationUrl(
+                              this.hass,
+                              "/docs/scripts/conditions/"
+                            )}"
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            ${this.hass.localize(
+                              "ui.panel.config.automation.editor.conditions.learn_more"
+                            )}
+                          </a>
+                        </span>
+                        <ha-automation-condition
+                          .conditions=${this._config.condition || []}
+                          @value-changed=${this._conditionChanged}
+                          .hass=${this.hass}
+                        ></ha-automation-condition>
+                      </ha-config-section>
+
+                      <ha-config-section .isWide=${this.isWide}>
+                        <span slot="header">
+                          ${this.hass.localize(
+                            "ui.panel.config.automation.editor.actions.header"
+                          )}
+                        </span>
+                        <span slot="introduction">
+                          <p>
+                            ${this.hass.localize(
+                              "ui.panel.config.automation.editor.actions.introduction"
+                            )}
+                          </p>
+                          <a
+                            href="${documentationUrl(
+                              this.hass,
+                              "/docs/automation/action/"
+                            )}"
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            ${this.hass.localize(
+                              "ui.panel.config.automation.editor.actions.learn_more"
+                            )}
+                          </a>
+                        </span>
+                        <ha-automation-action
+                          .actions=${this._config.action}
+                          @value-changed=${this._actionChanged}
+                          .hass=${this.hass}
+                        ></ha-automation-action>
+                      </ha-config-section>
+                    `
+                  : this._mode === "yaml"
+                  ? html`
+                      <ha-config-section .isWide=${false}>
+                        ${!this.narrow
+                          ? html`
+                              <span slot="header">${this._config.alias}</span>
+                            `
+                          : ``}
+                        <ha-card>
+                          <div class="card-content">
+                            <ha-yaml-editor
+                              .defaultValue=${this._preprocessYaml()}
+                              @value-changed=${this._yamlChanged}
+                            ></ha-yaml-editor>
+                            <mwc-button @click=${this._copyYaml}>
+                              ${this.hass.localize(
+                                "ui.panel.config.automation.editor.copy_to_clipboard"
                               )}
                             </mwc-button>
                           </div>
-                        `
-                      : ""}
-                  </ha-card>
-                </ha-config-section>
-
-                <ha-config-section .isWide=${this.isWide}>
-                  <span slot="header">
-                    ${this.hass.localize(
-                      "ui.panel.config.automation.editor.triggers.header"
-                    )}
-                  </span>
-                  <span slot="introduction">
-                    <p>
-                      ${this.hass.localize(
-                        "ui.panel.config.automation.editor.triggers.introduction"
-                      )}
-                    </p>
-                    <a
-                      href="https://home-assistant.io/docs/automation/trigger/"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.automation.editor.triggers.learn_more"
-                      )}
-                    </a>
-                  </span>
-                  <ha-automation-trigger
-                    .triggers=${this._config.trigger}
-                    @value-changed=${this._triggerChanged}
-                    .hass=${this.hass}
-                  ></ha-automation-trigger>
-                </ha-config-section>
-
-                <ha-config-section .isWide=${this.isWide}>
-                  <span slot="header">
-                    ${this.hass.localize(
-                      "ui.panel.config.automation.editor.conditions.header"
-                    )}
-                  </span>
-                  <span slot="introduction">
-                    <p>
-                      ${this.hass.localize(
-                        "ui.panel.config.automation.editor.conditions.introduction"
-                      )}
-                    </p>
-                    <a
-                      href="https://home-assistant.io/docs/scripts/conditions/"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.automation.editor.conditions.learn_more"
-                      )}
-                    </a>
-                  </span>
-                  <ha-automation-condition
-                    .conditions=${this._config.condition || []}
-                    @value-changed=${this._conditionChanged}
-                    .hass=${this.hass}
-                  ></ha-automation-condition>
-                </ha-config-section>
-
-                <ha-config-section .isWide=${this.isWide}>
-                  <span slot="header">
-                    ${this.hass.localize(
-                      "ui.panel.config.automation.editor.actions.header"
-                    )}
-                  </span>
-                  <span slot="introduction">
-                    <p>
-                      ${this.hass.localize(
-                        "ui.panel.config.automation.editor.actions.introduction"
-                      )}
-                    </p>
-                    <a
-                      href="https://home-assistant.io/docs/automation/action/"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.automation.editor.actions.learn_more"
-                      )}
-                    </a>
-                  </span>
-                  <ha-automation-action
-                    .actions=${this._config.action}
-                    @value-changed=${this._actionChanged}
-                    .hass=${this.hass}
-                  ></ha-automation-action>
-                </ha-config-section>
+                          ${stateObj
+                            ? html`
+                                <div
+                                  class="card-actions layout horizontal justified center"
+                                >
+                                  <div class="layout horizontal center">
+                                    <ha-entity-toggle
+                                      .hass=${this.hass}
+                                      .stateObj=${stateObj}
+                                    ></ha-entity-toggle>
+                                    ${this.hass.localize(
+                                      "ui.panel.config.automation.editor.enable_disable"
+                                    )}
+                                  </div>
+                                  <mwc-button
+                                    @click=${this._excuteAutomation}
+                                    .stateObj=${stateObj}
+                                  >
+                                    ${this.hass.localize(
+                                      "ui.card.automation.trigger"
+                                    )}
+                                  </mwc-button>
+                                </div>
+                              `
+                            : ""}
+                        </ha-card>
+                        <ha-config-section> </ha-config-section
+                      ></ha-config-section>
+                    `
+                  : ``}
               </div>
             `
           : ""}
         <mwc-fab
-          ?is-wide="${this.isWide}"
-          ?narrow="${this.narrow}"
-          ?dirty="${this._dirty}"
-          .title="${this.hass.localize(
-            "ui.panel.config.automation.editor.save"
-          )}"
+          slot="fab"
+          class=${classMap({ dirty: this._dirty })}
+          .title=${this.hass.localize("ui.panel.config.automation.editor.save")}
           @click=${this._saveAutomation}
-          class="${classMap({
-            rtl: computeRTL(this.hass),
-          })}"
         >
-          <ha-svg-icon slot="icon" path=${mdiContentSave}></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
         </mwc-fab>
       </hass-tabs-subpage>
     `;
@@ -343,14 +551,32 @@ export class HaAutomationEditor extends LitElement {
     this._entityId = automation?.entity_id;
   }
 
+  private _modeChanged(ev: CustomEvent) {
+    const mode = ((ev.target as PaperListboxElement)?.selectedItem as any)
+      ?.mode;
+
+    if (mode === this._config!.mode) {
+      return;
+    }
+
+    this._config = { ...this._config!, mode };
+    if (!MODES_MAX.includes(mode)) {
+      delete this._config.max;
+    }
+    this._dirty = true;
+  }
+
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    const name = (ev.target as any)?.name;
+    const target = ev.target as any;
+    const name = target.name;
     if (!name) {
       return;
     }
-    const newVal = ev.detail.value;
-
+    let newVal = ev.detail.value;
+    if (target.type === "number") {
+      newVal = Number(newVal);
+    }
     if ((this._config![name] || "") === newVal) {
       return;
     }
@@ -383,6 +609,33 @@ export class HaAutomationEditor extends LitElement {
     triggerAutomation(this.hass, (ev.target as any).stateObj.entity_id);
   }
 
+  private _preprocessYaml() {
+    const cleanConfig = this._config;
+    if (!cleanConfig) {
+      return {};
+    }
+
+    delete cleanConfig.id;
+
+    return cleanConfig;
+  }
+
+  private async _copyYaml() {
+    if (this._editor?.yaml) {
+      navigator.clipboard.writeText(this._editor.yaml);
+    }
+  }
+
+  private _yamlChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    if (!ev.detail.isValid) {
+      return;
+    }
+    this._config = ev.detail.value;
+    this._errors = undefined;
+    this._dirty = true;
+  }
+
   private _backTapped(): void {
     if (this._dirty) {
       showConfirmationDialog(this, {
@@ -396,6 +649,31 @@ export class HaAutomationEditor extends LitElement {
     } else {
       history.back();
     }
+  }
+
+  private async _duplicate() {
+    if (this._dirty) {
+      if (
+        !(await showConfirmationDialog(this, {
+          text: this.hass!.localize(
+            "ui.panel.config.automation.editor.unsaved_confirm"
+          ),
+          confirmText: this.hass!.localize("ui.common.yes"),
+          dismissText: this.hass!.localize("ui.common.no"),
+        }))
+      ) {
+        return;
+      }
+      // Wait for dialog to complate closing
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    }
+    showAutomationEditor(this, {
+      ...this._config,
+      id: undefined,
+      alias: `${this._config?.alias} (${this.hass.localize(
+        "ui.panel.config.automation.picker.duplicate"
+      )})`,
+    });
   }
 
   private async _deleteConfirm() {
@@ -412,6 +690,23 @@ export class HaAutomationEditor extends LitElement {
   private async _delete() {
     await deleteAutomation(this.hass, this.automationId);
     history.back();
+  }
+
+  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        this._mode = "gui";
+        break;
+      case 1:
+        this._mode = "yaml";
+        break;
+      case 2:
+        this._duplicate();
+        break;
+      case 3:
+        this._deleteConfirm();
+        break;
+    }
   }
 
   private _saveAutomation(): void {
@@ -435,6 +730,10 @@ export class HaAutomationEditor extends LitElement {
     );
   }
 
+  protected handleKeyboardSave() {
+    this._saveAutomation();
+  }
+
   static get styles(): CSSResult[] {
     return [
       haStyle,
@@ -445,7 +744,7 @@ export class HaAutomationEditor extends LitElement {
         .errors {
           padding: 20px;
           font-weight: bold;
-          color: var(--google-red-500);
+          color: var(--error-color);
         }
         .content {
           padding-bottom: 20px;
@@ -453,39 +752,19 @@ export class HaAutomationEditor extends LitElement {
         span[slot="introduction"] a {
           color: var(--primary-color);
         }
+        p {
+          margin-bottom: 0;
+        }
         ha-entity-toggle {
           margin-right: 8px;
         }
         mwc-fab {
-          position: fixed;
-          bottom: 16px;
-          right: 16px;
-          z-index: 1;
-          margin-bottom: -80px;
-          transition: margin-bottom 0.3s;
+          position: relative;
+          bottom: calc(-80px - env(safe-area-inset-bottom));
+          transition: bottom 0.3s;
         }
-
-        mwc-fab[is-wide] {
-          bottom: 24px;
-          right: 24px;
-        }
-        mwc-fab[narrow] {
-          bottom: 84px;
-          margin-bottom: -140px;
-        }
-        mwc-fab[dirty] {
-          margin-bottom: 0;
-        }
-
-        mwc-fab.rtl {
-          right: auto;
-          left: 16px;
-        }
-
-        mwc-fab[is-wide].rtl {
-          bottom: 24px;
-          right: auto;
-          left: 24px;
+        mwc-fab.dirty {
+          bottom: 0;
         }
       `,
     ];

@@ -5,6 +5,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { until } from "lit-html/directives/until";
@@ -21,11 +22,11 @@ import {
 } from "../configs/demo-configs";
 
 export class HADemoCard extends LitElement implements LovelaceCard {
-  @property() public lovelace?: Lovelace;
+  @property({ attribute: false }) public lovelace?: Lovelace;
 
-  @property() public hass!: MockHomeAssistant;
+  @property({ attribute: false }) public hass!: MockHomeAssistant;
 
-  @property() private _switching?: boolean;
+  @internalProperty() private _switching?: boolean;
 
   private _hidden = localStorage.hide_demo_card;
 

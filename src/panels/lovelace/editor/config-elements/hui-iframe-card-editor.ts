@@ -1,35 +1,37 @@
 import "@polymer/paper-input/paper-input";
 import {
+  CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   TemplateResult,
 } from "lit-element";
+import { assert, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../types";
 import { IframeCardConfig } from "../../cards/types";
-import { struct } from "../../common/structs/struct";
 import { LovelaceCardEditor } from "../../types";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
-const cardConfigStruct = struct({
-  type: "string",
-  title: "string?",
-  url: "string?",
-  aspect_ratio: "string?",
+const cardConfigStruct = object({
+  type: string(),
+  title: optional(string()),
+  url: optional(string()),
+  aspect_ratio: optional(string()),
 });
 
 @customElement("hui-iframe-card-editor")
 export class HuiIframeCardEditor extends LitElement
   implements LovelaceCardEditor {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: IframeCardConfig;
+  @internalProperty() private _config?: IframeCardConfig;
 
   public setConfig(config: IframeCardConfig): void {
-    config = cardConfigStruct(config);
+    assert(config, cardConfigStruct);
     this._config = config;
   }
 
@@ -51,7 +53,6 @@ export class HuiIframeCardEditor extends LitElement
     }
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <paper-input
           .label="${this.hass.localize(
@@ -101,12 +102,17 @@ export class HuiIframeCardEditor extends LitElement
     }
     if (target.configValue) {
       if (value === "") {
+        this._config = { ...this._config };
         delete this._config[target.configValue!];
       } else {
         this._config = { ...this._config, [target.configValue!]: value };
       }
     }
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  static get styles(): CSSResult {
+    return configElementStyle;
   }
 }
 

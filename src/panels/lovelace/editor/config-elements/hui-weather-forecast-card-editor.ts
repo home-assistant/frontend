@@ -1,29 +1,33 @@
 import {
+  CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   TemplateResult,
 } from "lit-element";
+import { assert, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/entity/ha-entity-picker";
-import "../../../../components/ha-switch";
 import "../../../../components/ha-formfield";
+import "../../../../components/ha-switch";
+import "../../../../components/entity/ha-entity-attribute-picker";
 import { HomeAssistant } from "../../../../types";
 import { WeatherForecastCardConfig } from "../../cards/types";
-import { struct } from "../../common/structs/struct";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
-const cardConfigStruct = struct({
-  type: "string",
-  entity: "string?",
-  name: "string?",
-  theme: "string?",
-  show_forecast: "boolean?",
-  secondary_info_attribute: "string?",
+const cardConfigStruct = object({
+  type: string(),
+  entity: optional(string()),
+  name: optional(string()),
+  theme: optional(string()),
+  show_forecast: optional(boolean()),
+  secondary_info_attribute: optional(string()),
 });
 
 const includeDomains = ["weather"];
@@ -31,12 +35,12 @@ const includeDomains = ["weather"];
 @customElement("hui-weather-forecast-card-editor")
 export class HuiWeatherForecastCardEditor extends LitElement
   implements LovelaceCardEditor {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: WeatherForecastCardConfig;
+  @internalProperty() private _config?: WeatherForecastCardConfig;
 
   public setConfig(config: WeatherForecastCardConfig): void {
-    config = cardConfigStruct(config);
+    assert(config, cardConfigStruct);
     this._config = config;
   }
 
@@ -66,7 +70,6 @@ export class HuiWeatherForecastCardEditor extends LitElement
     }
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <ha-entity-picker
           .label="${this.hass.localize(
@@ -100,7 +103,9 @@ export class HuiWeatherForecastCardEditor extends LitElement
           ></hui-theme-select-editor>
         </div>
         <div class="side-by-side">
-          <paper-input
+          <ha-entity-attribute-picker
+            .hass=${this.hass}
+            .entityId=${this._entity}
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.secondary_info_attribute"
             )} (${this.hass.localize(
@@ -109,11 +114,12 @@ export class HuiWeatherForecastCardEditor extends LitElement
             .value=${this._secondary_info_attribute}
             .configValue=${"secondary_info_attribute"}
             @value-changed=${this._valueChanged}
-          ></paper-input>
+          ></ha-entity-attribute-picker>
           <ha-formfield
             .label=${this.hass.localize(
               "ui.panel.lovelace.editor.card.weather-forecast.show_forecast"
             )}
+            .dir=${computeRTLDirection(this.hass)}
           >
             <ha-switch
               .checked=${this._config!.show_forecast !== false}
@@ -136,6 +142,7 @@ export class HuiWeatherForecastCardEditor extends LitElement
     }
     if (target.configValue) {
       if (target.value === "") {
+        this._config = { ...this._config };
         delete this._config[target.configValue!];
       } else {
         this._config = {
@@ -146,6 +153,10 @@ export class HuiWeatherForecastCardEditor extends LitElement
       }
     }
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  static get styles(): CSSResult {
+    return configElementStyle;
   }
 }
 

@@ -8,6 +8,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -18,17 +19,17 @@ import { HomeAssistant } from "../../../../types";
 
 @customElement("ha-input_datetime-form")
 class HaInputDateTimeForm extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public new?: boolean;
 
   private _item?: InputDateTime;
 
-  @property() private _name!: string;
+  @internalProperty() private _name!: string;
 
-  @property() private _icon!: string;
+  @internalProperty() private _icon!: string;
 
-  @property() private _mode!: "date" | "time" | "datetime";
+  @internalProperty() private _mode!: "date" | "time" | "datetime";
 
   set item(item: InputDateTime) {
     this._item = item;

@@ -1,24 +1,27 @@
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import "@material/mwc-list/mwc-list-item";
+import { mdiDotsVertical } from "@mdi/js";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
-import "../../../../components/ha-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "@material/mwc-list/mwc-list-item";
-import "../../../../components/ha-button-menu";
-import { mdiDotsVertical } from "@mdi/js";
 import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
 } from "lit-element";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
+import "../../../../components/ha-icon-button";
 import type { Trigger } from "../../../../data/automation";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
+import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "./types/ha-automation-trigger-device";
 import "./types/ha-automation-trigger-event";
@@ -28,6 +31,7 @@ import "./types/ha-automation-trigger-mqtt";
 import "./types/ha-automation-trigger-numeric_state";
 import "./types/ha-automation-trigger-state";
 import "./types/ha-automation-trigger-sun";
+import "./types/ha-automation-trigger-tag";
 import "./types/ha-automation-trigger-template";
 import "./types/ha-automation-trigger-time";
 import "./types/ha-automation-trigger-time_pattern";
@@ -43,6 +47,7 @@ const OPTIONS = [
   "mqtt",
   "numeric_state",
   "sun",
+  "tag",
   "template",
   "time",
   "time_pattern",
@@ -78,11 +83,11 @@ export const handleChangeEvent = (element: TriggerElement, ev: CustomEvent) => {
 
 @customElement("ha-automation-trigger-row")
 export default class HaAutomationTriggerRow extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public trigger!: Trigger;
 
-  @property() private _yamlMode = false;
+  @internalProperty() private _yamlMode = false;
 
   protected render() {
     const selected = OPTIONS.indexOf(this.trigger.platform);
@@ -92,17 +97,14 @@ export default class HaAutomationTriggerRow extends LitElement {
       <ha-card>
         <div class="card-content">
           <div class="card-menu">
-            <ha-button-menu corner="BOTTOM_START">
+            <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
               <mwc-icon-button
                 slot="trigger"
                 .title=${this.hass.localize("ui.common.menu")}
                 .label=${this.hass.localize("ui.common.overflow_menu")}
-                ><ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon
+                ><ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon
               ></mwc-icon-button>
-              <mwc-list-item
-                @tap=${this._switchYamlMode}
-                .disabled=${selected === -1}
-              >
+              <mwc-list-item .disabled=${selected === -1}>
                 ${yamlMode
                   ? this.hass.localize(
                       "ui.panel.config.automation.editor.edit_ui"
@@ -111,12 +113,12 @@ export default class HaAutomationTriggerRow extends LitElement {
                       "ui.panel.config.automation.editor.edit_yaml"
                     )}
               </mwc-list-item>
-              <mwc-list-item disabled>
+              <mwc-list-item>
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.actions.duplicate"
                 )}
               </mwc-list-item>
-              <mwc-list-item @tap=${this._onDelete}>
+              <mwc-list-item class="warning">
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.actions.delete"
                 )}
@@ -125,21 +127,20 @@ export default class HaAutomationTriggerRow extends LitElement {
           </div>
           ${yamlMode
             ? html`
-                <div style="margin-right: 24px;">
-                  ${selected === -1
-                    ? html`
-                        ${this.hass.localize(
-                          "ui.panel.config.automation.editor.triggers.unsupported_platform",
-                          "platform",
-                          this.trigger.platform
-                        )}
-                      `
-                    : ""}
-                  <ha-yaml-editor
-                    .defaultValue=${this.trigger}
-                    @value-changed=${this._onYamlChange}
-                  ></ha-yaml-editor>
-                </div>
+                ${selected === -1
+                  ? html`
+                      ${this.hass.localize(
+                        "ui.panel.config.automation.editor.triggers.unsupported_platform",
+                        "platform",
+                        this.trigger.platform
+                      )}
+                    `
+                  : ""}
+                <h2>Edit in YAML</h2>
+                <ha-yaml-editor
+                  .defaultValue=${this.trigger}
+                  @value-changed=${this._onYamlChange}
+                ></ha-yaml-editor>
               `
             : html`
                 <paper-dropdown-menu-light
@@ -174,6 +175,20 @@ export default class HaAutomationTriggerRow extends LitElement {
         </div>
       </ha-card>
     `;
+  }
+
+  private _handleAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        this._switchYamlMode();
+        break;
+      case 1:
+        fireEvent(this, "duplicate");
+        break;
+      case 2:
+        this._onDelete();
+        break;
+    }
   }
 
   private _onDelete() {
@@ -221,26 +236,23 @@ export default class HaAutomationTriggerRow extends LitElement {
     this._yamlMode = !this._yamlMode;
   }
 
-  static get styles(): CSSResult {
-    return css`
-      .card-menu {
-        position: absolute;
-        top: 0;
-        right: 0;
-        z-index: 3;
-        --mdc-theme-text-primary-on-background: var(--primary-text-color);
-      }
-      .rtl .card-menu {
-        right: auto;
-        left: 0;
-      }
-      ha-button-menu {
-        margin: 8px;
-      }
-      mwc-list-item[disabled] {
-        --mdc-theme-text-primary-on-background: var(--disabled-text-color);
-      }
-    `;
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
+        .card-menu {
+          float: right;
+          z-index: 3;
+          --mdc-theme-text-primary-on-background: var(--primary-text-color);
+        }
+        .rtl .card-menu {
+          float: left;
+        }
+        mwc-list-item[disabled] {
+          --mdc-theme-text-primary-on-background: var(--disabled-text-color);
+        }
+      `,
+    ];
   }
 }
 

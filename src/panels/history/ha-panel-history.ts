@@ -1,10 +1,16 @@
-import "@polymer/app-layout/app-header-layout/app-header-layout";
+import "../../layouts/ha-app-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/ha-menu-button";
 import "../../components/state-history-charts";
-import { LitElement, css, property, PropertyValues } from "lit-element";
+import {
+  LitElement,
+  css,
+  property,
+  internalProperty,
+  PropertyValues,
+} from "lit-element";
 import { html } from "lit-html";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
@@ -30,7 +36,7 @@ class HaPanelHistory extends LitElement {
 
   @property({ reflect: true, type: Boolean }) rtl = false;
 
-  @property() private _ranges?: DateRangePickerRanges;
+  @internalProperty() private _ranges?: DateRangePickerRanges;
 
   public constructor() {
     super();
@@ -50,7 +56,7 @@ class HaPanelHistory extends LitElement {
 
   protected render() {
     return html`
-      <app-header-layout has-scrolling-region>
+      <ha-app-layout>
         <app-header slot="header" fixed>
           <app-toolbar>
             <ha-menu-button
@@ -73,10 +79,12 @@ class HaPanelHistory extends LitElement {
             ></ha-date-range-picker>
           </div>
           ${this._isLoading
-            ? html`<ha-circular-progress
-                active
-                alt=${this.hass.localize("ui.common.loading")}
-              ></ha-circular-progress>`
+            ? html`<div class="progress-wrapper">
+                <ha-circular-progress
+                  active
+                  alt=${this.hass.localize("ui.common.loading")}
+                ></ha-circular-progress>
+              </div>`
             : html`
                 <state-history-charts
                   .hass=${this.hass}
@@ -87,7 +95,7 @@ class HaPanelHistory extends LitElement {
                 </state-history-charts>
               `}
         </div>
-      </app-header-layout>
+      </ha-app-layout>
     `;
   }
 
@@ -111,7 +119,7 @@ class HaPanelHistory extends LitElement {
       todayCopy.setDate(today.getDate() - today.getDay())
     );
     const thisWeekEnd = new Date(
-      todayCopy.setDate(today.getDate() - today.getDay() + 7)
+      todayCopy.setDate(thisWeekStart.getDate() + 7)
     );
     thisWeekEnd.setMilliseconds(thisWeekEnd.getMilliseconds() - 1);
 
@@ -119,7 +127,7 @@ class HaPanelHistory extends LitElement {
       todayCopy.setDate(today.getDate() - today.getDay() - 7)
     );
     const lastWeekEnd = new Date(
-      todayCopy.setDate(today.getDate() - today.getDay())
+      todayCopy.setDate(lastWeekStart.getDate() + 7)
     );
     lastWeekEnd.setMilliseconds(lastWeekEnd.getMilliseconds() - 1);
 
@@ -190,6 +198,19 @@ class HaPanelHistory extends LitElement {
         .content {
           padding: 0 16px 16px;
         }
+
+        .progress-wrapper {
+          height: calc(100vh - 136px);
+        }
+
+        :host([narrow]) .progress-wrapper {
+          height: calc(100vh - 198px);
+        }
+
+        .progress-wrapper {
+          position: relative;
+        }
+
         ha-circular-progress {
           position: absolute;
           left: 50%;

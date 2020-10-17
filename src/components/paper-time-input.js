@@ -322,9 +322,9 @@ export class PaperTimeInput extends PolymerElement {
    * @return {boolean}
    */
   validate() {
-    var valid = true;
+    let valid = true;
     // Validate hour & min fields
-    if (!this.$.hour.validate() | !this.$.min.validate()) {
+    if (!this.$.hour.validate() || !this.$.min.validate()) {
       valid = false;
     }
     // Validate second field

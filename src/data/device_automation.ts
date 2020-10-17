@@ -1,5 +1,6 @@
 import { computeStateName } from "../common/entity/compute_state_name";
 import { HomeAssistant } from "../types";
+import { HaFormSchema } from "../components/ha-form/ha-form";
 
 export interface DeviceAutomation {
   device_id: string;
@@ -18,6 +19,10 @@ export interface DeviceCondition extends DeviceAutomation {
 
 export interface DeviceTrigger extends DeviceAutomation {
   platform: "device";
+}
+
+export interface DeviceCapabilities {
+  extra_fields: HaFormSchema[];
 }
 
 export const fetchDeviceActions = (hass: HomeAssistant, deviceId: string) =>
@@ -42,7 +47,7 @@ export const fetchDeviceActionCapabilities = (
   hass: HomeAssistant,
   action: DeviceAction
 ) =>
-  hass.callWS<DeviceAction[]>({
+  hass.callWS<DeviceCapabilities>({
     type: "device_automation/action/capabilities",
     action,
   });
@@ -51,7 +56,7 @@ export const fetchDeviceConditionCapabilities = (
   hass: HomeAssistant,
   condition: DeviceCondition
 ) =>
-  hass.callWS<DeviceCondition[]>({
+  hass.callWS<DeviceCapabilities>({
     type: "device_automation/condition/capabilities",
     condition,
   });
@@ -60,7 +65,7 @@ export const fetchDeviceTriggerCapabilities = (
   hass: HomeAssistant,
   trigger: DeviceTrigger
 ) =>
-  hass.callWS<DeviceTrigger[]>({
+  hass.callWS<DeviceCapabilities>({
     type: "device_automation/trigger/capabilities",
     trigger,
   });

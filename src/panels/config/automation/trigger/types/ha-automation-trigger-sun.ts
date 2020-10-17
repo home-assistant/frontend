@@ -13,7 +13,7 @@ import {
 
 @customElement("ha-automation-trigger-sun")
 export class HaSunTrigger extends LitElement implements TriggerElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public trigger!: SunTrigger;
 

@@ -4,6 +4,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
   PropertyValues,
 } from "lit-element";
@@ -30,15 +31,15 @@ import { sortZHADevices, sortZHAGroups } from "./functions";
 
 @customElement("dialog-zha-cluster")
 class DialogZHACluster extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _device?: ZHADevice;
+  @internalProperty() private _device?: ZHADevice;
 
-  @property() private _selectedCluster?: Cluster;
+  @internalProperty() private _selectedCluster?: Cluster;
 
-  @property() private _bindableDevices: ZHADevice[] = [];
+  @internalProperty() private _bindableDevices: ZHADevice[] = [];
 
-  @property() private _groups: ZHAGroup[] = [];
+  @internalProperty() private _groups: ZHAGroup[] = [];
 
   public async showDialog(
     params: ZHADeviceZigbeeInfoDialogParams

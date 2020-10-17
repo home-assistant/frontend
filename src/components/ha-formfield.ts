@@ -14,12 +14,12 @@ export class HaFormfield extends MwcFormfield {
     return [
       style,
       css`
-        ::slotted(ha-switch) {
+        :host(:not([alignEnd])) ::slotted(ha-switch) {
           margin-right: 10px;
         }
-        [dir="rtl"] ::slotted(ha-switch),
-        ::slotted(ha-switch)[dir="rtl"] {
+        :host([dir="rtl"]:not([alignEnd])) ::slotted(ha-switch) {
           margin-left: 10px;
+          margin-right: auto;
         }
       `,
     ];

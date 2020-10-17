@@ -1,21 +1,20 @@
+import "@material/mwc-icon-button/mwc-icon-button";
 import {
+  css,
+  CSSResult,
   customElement,
   html,
-  TemplateResult,
-  property,
   LitElement,
-  CSSResult,
-  css,
+  property,
+  TemplateResult,
 } from "lit-element";
-
-import "./ha-icon-button";
-
 import { fireEvent } from "../common/dom/fire_event";
 import type { ToggleButton } from "../types";
+import "./ha-svg-icon";
 
 @customElement("ha-button-toggle-group")
 export class HaButtonToggleGroup extends LitElement {
-  @property() public buttons!: ToggleButton[];
+  @property({ attribute: false }) public buttons!: ToggleButton[];
 
   @property() public active?: string;
 
@@ -23,21 +22,23 @@ export class HaButtonToggleGroup extends LitElement {
     return html`
       <div>
         ${this.buttons.map(
-          (button) => html` <ha-icon-button
-            .label=${button.label}
-            .icon=${button.icon}
-            .value=${button.value}
-            ?active=${this.active === button.value}
-            @click=${this._handleClick}
-          >
-          </ha-icon-button>`
+          (button) => html`
+            <mwc-icon-button
+              .label=${button.label}
+              .value=${button.value}
+              ?active=${this.active === button.value}
+              @click=${this._handleClick}
+            >
+              <ha-svg-icon .path=${button.iconPath}></ha-svg-icon>
+            </mwc-icon-button>
+          `
         )}
       </div>
     `;
   }
 
   private _handleClick(ev): void {
-    this.active = ev.target.value;
+    this.active = ev.currentTarget.value;
     fireEvent(this, "value-changed", { value: this.active });
   }
 
@@ -48,12 +49,13 @@ export class HaButtonToggleGroup extends LitElement {
         --mdc-icon-button-size: var(--button-toggle-size, 36px);
         --mdc-icon-size: var(--button-toggle-icon-size, 20px);
       }
-      ha-icon-button {
+      mwc-icon-button {
         border: 1px solid var(--primary-color);
         border-right-width: 0px;
         position: relative;
+        cursor: pointer;
       }
-      ha-icon-button::before {
+      mwc-icon-button::before {
         top: 0;
         left: 0;
         width: 100%;
@@ -65,14 +67,18 @@ export class HaButtonToggleGroup extends LitElement {
         content: "";
         transition: opacity 15ms linear, background-color 15ms linear;
       }
-      ha-icon-button[active]::before {
+      mwc-icon-button[active]::before {
         opacity: var(--mdc-icon-button-ripple-opacity, 0.12);
       }
-      ha-icon-button:first-child {
+      mwc-icon-button:first-child {
         border-radius: 4px 0 0 4px;
       }
-      ha-icon-button:last-child {
+      mwc-icon-button:last-child {
         border-radius: 0 4px 4px 0;
+        border-right-width: 1px;
+      }
+      mwc-icon-button:only-child {
+        border-radius: 4px;
         border-right-width: 1px;
       }
     `;
@@ -81,6 +87,6 @@ export class HaButtonToggleGroup extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-button-toggle-button": HaButtonToggleGroup;
+    "ha-button-toggle-group": HaButtonToggleGroup;
   }
 }

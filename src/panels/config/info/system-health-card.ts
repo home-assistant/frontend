@@ -5,6 +5,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../../components/ha-card";
@@ -32,9 +33,9 @@ const sortKeys = (a: string, b: string) => {
 };
 
 class SystemHealthCard extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _info?: SystemHealthInfo;
+  @internalProperty() private _info?: SystemHealthInfo;
 
   protected render(): TemplateResult {
     if (!this.hass) {

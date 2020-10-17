@@ -13,7 +13,7 @@ import {
 
 @customElement("ha-automation-condition-sun")
 export class HaSunCondition extends LitElement implements ConditionElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public condition!: SunCondition;
 

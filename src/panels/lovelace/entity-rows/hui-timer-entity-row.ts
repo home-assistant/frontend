@@ -2,6 +2,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import {
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   PropertyValues,
@@ -17,11 +18,11 @@ import { EntityConfig } from "./types";
 
 @customElement("hui-timer-entity-row")
 class HuiTimerEntityRow extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: EntityConfig;
+  @internalProperty() private _config?: EntityConfig;
 
-  @property() private _timeRemaining?: number;
+  @internalProperty() private _timeRemaining?: number;
 
   private _interval?: number;
 
@@ -124,7 +125,9 @@ class HuiTimerEntityRow extends LitElement {
     }
 
     if (stateObj.state === "idle" || this._timeRemaining === 0) {
-      return this.hass!.localize("state.timer." + stateObj.state);
+      return (
+        this.hass!.localize(`state.timer.${stateObj.state}`) || stateObj.state
+      );
     }
 
     let display = secondsToDuration(this._timeRemaining || 0);

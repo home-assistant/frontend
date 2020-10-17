@@ -5,6 +5,7 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   PropertyValues,
@@ -69,22 +70,22 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     };
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: AlarmPanelCardConfig;
+  @internalProperty() private _config?: AlarmPanelCardConfig;
 
   @query("#alarmCode") private _input?: PaperInputElement;
 
   public async getCardSize(): Promise<number> {
     if (!this._config || !this.hass) {
-      return 5;
+      return 9;
     }
 
     const stateObj = this.hass.states[this._config.entity];
 
     return !stateObj || stateObj.attributes.code_format !== FORMAT_NUMBER
-      ? 3
-      : 8;
+      ? 4
+      : 9;
   }
 
   public setConfig(config: AlarmPanelCardConfig): void {
@@ -190,7 +191,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
           : html`
               <paper-input
                 id="alarmCode"
-                label="Alarm Code"
+                .label=${this.hass.localize("ui.card.alarm_control_panel.code")}
                 type="password"
               ></paper-input>
             `}
@@ -269,6 +270,8 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       ha-card {
         padding-bottom: 16px;
         position: relative;
+        height: 100%;
+        box-sizing: border-box;
         --alarm-color-disarmed: var(--label-badge-green);
         --alarm-color-pending: var(--label-badge-yellow);
         --alarm-color-triggered: var(--label-badge-red);
@@ -280,7 +283,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       ha-label-badge {
         --ha-label-badge-color: var(--alarm-state-color);
         --label-badge-text-color: var(--alarm-state-color);
-        --label-badge-background-color: var(--paper-card-background-color);
+        --label-badge-background-color: var(--card-background-color);
         color: var(--alarm-state-color);
         position: absolute;
         right: 12px;
@@ -362,7 +365,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       }
 
       mwc-button#disarm {
-        color: var(--google-red-500);
+        color: var(--error-color);
       }
     `;
   }

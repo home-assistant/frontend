@@ -9,6 +9,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { createCloseHeading } from "../../../../components/ha-dialog";
@@ -24,17 +25,17 @@ import { LovelaceResourceDetailsDialogParams } from "./show-dialog-lovelace-reso
 
 @customElement("dialog-lovelace-resource-detail")
 export class DialogLovelaceResourceDetail extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _params?: LovelaceResourceDetailsDialogParams;
+  @internalProperty() private _params?: LovelaceResourceDetailsDialogParams;
 
-  @property() private _url!: LovelaceResource["url"];
+  @internalProperty() private _url!: LovelaceResource["url"];
 
-  @property() private _type!: LovelaceResource["type"];
+  @internalProperty() private _type!: LovelaceResource["type"];
 
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
-  @property() private _submitting = false;
+  @internalProperty() private _submitting = false;
 
   public async showDialog(
     params: LovelaceResourceDetailsDialogParams

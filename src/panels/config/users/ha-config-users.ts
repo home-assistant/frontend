@@ -1,5 +1,6 @@
+import "@material/mwc-fab";
+import { mdiPlus } from "@mdi/js";
 import {
-  css,
   customElement,
   LitElement,
   property,
@@ -8,12 +9,11 @@ import {
 import { html } from "lit-html";
 import memoizeOne from "memoize-one";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
-import { computeRTL } from "../../../common/util/compute_rtl";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
-import "@material/mwc-fab";
+import "../../../components/ha-svg-icon";
 import { deleteUser, fetchUsers, updateUser, User } from "../../../data/user";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
@@ -21,12 +21,10 @@ import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { showAddUserDialog } from "./show-dialog-add-user";
 import { showUserDetailDialog } from "./show-dialog-user-detail";
-import "../../../components/ha-svg-icon";
-import { mdiPlus } from "@mdi/js";
 
 @customElement("ha-config-users")
 export class HaConfigUsers extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public _users: User[] = [];
 
@@ -58,7 +56,7 @@ export class HaConfigUsers extends LitElement {
           ),
           sortable: true,
           filterable: true,
-          width: "25%",
+          width: "30%",
           template: (groupIds) => html`
             ${this.hass.localize(`groups.${groupIds[0]}`)}
           `,
@@ -68,6 +66,7 @@ export class HaConfigUsers extends LitElement {
             "ui.panel.config.users.picker.headers.system"
           ),
           type: "icon",
+          width: "80px",
           sortable: true,
           filterable: true,
           template: (generated) => html`
@@ -97,17 +96,16 @@ export class HaConfigUsers extends LitElement {
         .data=${this._users}
         @row-click=${this._editUser}
         hasFab
+        clickable
       >
+        <mwc-fab
+          slot="fab"
+          .title=${this.hass.localize("ui.panel.config.users.picker.add_user")}
+          @click=${this._addUser}
+        >
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+        </mwc-fab>
       </hass-tabs-subpage-data-table>
-      <mwc-fab
-        ?is-wide=${this.isWide}
-        ?narrow=${this.narrow}
-        .title=${this.hass.localize("ui.panel.config.users.picker.add_user")}
-        @click=${this._addUser}
-        ?rtl=${computeRTL(this.hass)}
-      >
-        <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
-      </mwc-fab>
     `;
   }
 
@@ -165,32 +163,5 @@ export class HaConfigUsers extends LitElement {
         }
       },
     });
-  }
-
-  static get styles() {
-    return css`
-      mwc-fab {
-        position: fixed;
-        bottom: 16px;
-        right: 16px;
-        z-index: 1;
-      }
-      mwc-fab[is-wide] {
-        bottom: 24px;
-        right: 24px;
-      }
-      mwc-fab[rtl] {
-        right: auto;
-        left: 16px;
-      }
-      mwc-fab[narrow] {
-        bottom: 84px;
-      }
-      mwc-fab[rtl][is-wide] {
-        bottom: 24px;
-        right: auto;
-        left: 24px;
-      }
-    `;
   }
 }

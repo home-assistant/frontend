@@ -7,9 +7,10 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { computeStateName } from "../../../../../common/entity/compute_state_name";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
+import LocalizeMixin from "../../../../../mixins/localize-mixin";
 import "../../../../../styles/polymer-ha-style";
 
-class ZwaveGroups extends PolymerElement {
+class ZwaveGroups extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
       <style include="iron-flex ha-style">

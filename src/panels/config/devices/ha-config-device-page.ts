@@ -4,6 +4,7 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   TemplateResult,
@@ -12,9 +13,9 @@ import { ifDefined } from "lit-html/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { createValidEntityId } from "../../../common/entity/valid_entity_id";
 import { compare } from "../../../common/string/compare";
-import "../../../components/entity/ha-state-icon";
+import { slugify } from "../../../common/string/slugify";
+import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-icon-next";
 import { AreaRegistryEntry } from "../../../data/area_registry";
 import { ConfigEntry } from "../../../data/config_entries";
@@ -25,6 +26,7 @@ import {
 } from "../../../data/device_registry";
 import {
   EntityRegistryEntry,
+  findBatteryChargingEntity,
   findBatteryEntity,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
@@ -34,6 +36,7 @@ import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
 } from "../../../dialogs/device-registry-detail/show-dialog-device-registry-detail";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-tabs-subpage";
 import { HomeAssistant, Route } from "../../../types";
@@ -49,7 +52,7 @@ export interface EntityRegistryStateEntry extends EntityRegistryEntry {
 
 @customElement("ha-config-device-page")
 export class HaConfigDevicePage extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public devices!: DeviceRegistryEntry[];
 
@@ -69,7 +72,7 @@ export class HaConfigDevicePage extends LitElement {
 
   @property() public route!: Route;
 
-  @property() private _related?: RelatedResult;
+  @internalProperty() private _related?: RelatedResult;
 
   private _device = memoizeOne(
     (
@@ -117,6 +120,11 @@ export class HaConfigDevicePage extends LitElement {
     | EntityRegistryEntry
     | undefined => findBatteryEntity(this.hass, entities));
 
+  private _batteryChargingEntity = memoizeOne(
+    (entities: EntityRegistryEntry[]): EntityRegistryEntry | undefined =>
+      findBatteryChargingEntity(this.hass, entities)
+  );
+
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     loadDeviceRegistryDetailDialog();
@@ -145,8 +153,12 @@ export class HaConfigDevicePage extends LitElement {
     const integrations = this._integrations(device, this.entries);
     const entities = this._entities(this.deviceId, this.entities);
     const batteryEntity = this._batteryEntity(entities);
+    const batteryChargingEntity = this._batteryChargingEntity(entities);
     const batteryState = batteryEntity
       ? this.hass.states[batteryEntity.entity_id]
+      : undefined;
+    const batteryChargingState = batteryChargingEntity
+      ? this.hass.states[batteryChargingEntity.entity_id]
       : undefined;
     const area = this._computeArea(this.areas, device);
 
@@ -169,7 +181,7 @@ export class HaConfigDevicePage extends LitElement {
 
         <ha-icon-button
           slot="toolbar-icon"
-          icon="hass:settings"
+          icon="hass:cog"
           @click=${this._showSettings}
         ></ha-icon-button>
 
@@ -201,10 +213,11 @@ export class HaConfigDevicePage extends LitElement {
                       ? html`
                           <div class="battery">
                             ${batteryState.state}%
-                            <ha-state-icon
+                            <ha-battery-icon
                               .hass=${this.hass!}
-                              .stateObj=${batteryState}
-                            ></ha-state-icon>
+                              .batteryStateObj=${batteryState}
+                              .batteryChargingStateObj=${batteryChargingState}
+                            ></ha-battery-icon>
                           </div>
                         `
                       : ""
@@ -283,8 +296,8 @@ export class HaConfigDevicePage extends LitElement {
                                     </a>
                                     ${!state.attributes.id
                                       ? html`
-                                          <paper-tooltip
-                                            >${this.hass.localize(
+                                          <paper-tooltip animation-delay="0">
+                                            ${this.hass.localize(
                                               "ui.panel.config.devices.cant_edit"
                                             )}
                                           </paper-tooltip>
@@ -295,11 +308,15 @@ export class HaConfigDevicePage extends LitElement {
                               : "";
                           })
                         : html`
-                            <paper-item class="no-link"
-                              >${this.hass.localize(
-                                "ui.panel.config.devices.automation.no_automations"
-                              )}</paper-item
-                            >
+                            <paper-item class="no-link">
+                              ${this.hass.localize(
+                                "ui.panel.config.devices.add_prompt",
+                                "name",
+                                this.hass.localize(
+                                  "ui.panel.config.devices.automation.automations"
+                                )
+                              )}
+                            </paper-item>
                           `}
                     </ha-card>
                   `
@@ -352,7 +369,9 @@ export class HaConfigDevicePage extends LitElement {
                                         ${!state.attributes.id
                                           ? html`
                                               <paper-tooltip
-                                                >${this.hass.localize(
+                                                animation-delay="0"
+                                              >
+                                                ${this.hass.localize(
                                                   "ui.panel.config.devices.cant_edit"
                                                 )}
                                               </paper-tooltip>
@@ -363,11 +382,15 @@ export class HaConfigDevicePage extends LitElement {
                                   : "";
                               })
                             : html`
-                                <paper-item class="no-link"
-                                  >${this.hass.localize(
-                                    "ui.panel.config.devices.scene.no_scenes"
-                                  )}</paper-item
-                                >
+                                <paper-item class="no-link">
+                                  ${this.hass.localize(
+                                    "ui.panel.config.devices.add_prompt",
+                                    "name",
+                                    this.hass.localize(
+                                      "ui.panel.config.devices.scene.scenes"
+                                    )
+                                  )}
+                                </paper-item>
                               `
                         }
                       </ha-card>
@@ -416,9 +439,13 @@ export class HaConfigDevicePage extends LitElement {
                           : html`
                               <paper-item class="no-link">
                                 ${this.hass.localize(
-                                  "ui.panel.config.devices.script.no_scripts"
-                                )}</paper-item
-                              >
+                                  "ui.panel.config.devices.add_prompt",
+                                  "name",
+                                  this.hass.localize(
+                                    "ui.panel.config.devices.script.scripts"
+                                  )
+                                )}
+                              </paper-item>
                             `}
                       </ha-card>
                     `
@@ -489,6 +516,22 @@ export class HaConfigDevicePage extends LitElement {
         </div>
       `);
     }
+    if (integrations.includes("ozw")) {
+      import("./device-detail/integration-elements/ozw/ha-device-actions-ozw");
+      import("./device-detail/integration-elements/ozw/ha-device-info-ozw");
+      templates.push(html`
+        <ha-device-info-ozw
+          .hass=${this.hass}
+          .device=${device}
+        ></ha-device-info-ozw>
+        <div class="card-actions" slot="actions">
+          <ha-device-actions-ozw
+            .hass=${this.hass}
+            .device=${device}
+          ></ha-device-actions-ozw>
+        </div>
+      `);
+    }
     if (integrations.includes("zha")) {
       import("./device-detail/integration-elements/zha/ha-device-actions-zha");
       import("./device-detail/integration-elements/zha/ha-device-info-zha");
@@ -528,11 +571,14 @@ export class HaConfigDevicePage extends LitElement {
 
         const renameEntityid =
           this.showAdvanced &&
-          confirm(
-            this.hass.localize(
+          (await showConfirmationDialog(this, {
+            title: this.hass.localize(
               "ui.panel.config.devices.confirm_rename_entity_ids"
-            )
-          );
+            ),
+            text: this.hass.localize(
+              "ui.panel.config.devices.confirm_rename_entity_ids_warning"
+            ),
+          }));
 
         const updateProms = entities.map((entity) => {
           const name = entity.name || entity.stateName;
@@ -544,11 +590,11 @@ export class HaConfigDevicePage extends LitElement {
           }
 
           if (renameEntityid) {
-            const oldSearch = createValidEntityId(oldDeviceName);
+            const oldSearch = slugify(oldDeviceName);
             if (entity.entity_id.includes(oldSearch)) {
               newEntityId = entity.entity_id.replace(
                 oldSearch,
-                createValidEntityId(newDeviceName)
+                slugify(newDeviceName)
               );
             }
           }
@@ -559,7 +605,6 @@ export class HaConfigDevicePage extends LitElement {
 
           return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
             name: newName || name,
-            disabled_by: entity.disabled_by,
             new_entity_id: newEntityId || entity.entity_id,
           });
         });
@@ -671,6 +716,7 @@ export class HaConfigDevicePage extends LitElement {
 
       paper-item {
         cursor: pointer;
+        font-size: var(--paper-font-body1_-_font-size);
       }
 
       paper-item.no-link {
@@ -680,6 +726,10 @@ export class HaConfigDevicePage extends LitElement {
       a {
         text-decoration: none;
         color: var(--primary-color);
+      }
+
+      ha-card {
+        padding-bottom: 8px;
       }
 
       ha-card a {

@@ -11,7 +11,7 @@ import {
 
 @customElement("ha-automation-trigger-event")
 export class HaEventTrigger extends LitElement implements TriggerElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public trigger!: EventTrigger;
 
@@ -19,7 +19,7 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
     return { event_type: "", event_data: {} };
   }
 
-  public render() {
+  protected render() {
     const { event_type, event_data } = this.trigger;
     return html`
       <paper-input

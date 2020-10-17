@@ -1,37 +1,35 @@
 import "@polymer/paper-input/paper-input";
 import {
+  CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   TemplateResult,
 } from "lit-element";
+import { assert, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stateIcon } from "../../../../common/entity/state_icon";
 import "../../../../components/ha-icon-input";
 import { ActionConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import { LightCardConfig } from "../../cards/types";
-import { struct } from "../../common/structs/struct";
 import "../../components/hui-action-editor";
 import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
-import {
-  actionConfigStruct,
-  EditorTarget,
-  EntitiesEditorEvent,
-} from "../types";
+import { actionConfigStruct, EditorTarget } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
-const cardConfigStruct = struct({
-  type: "string",
-  name: "string?",
-  entity: "string?",
-  theme: "string?",
-  icon: "string?",
-  hold_action: struct.optional(actionConfigStruct),
-  double_tap_action: struct.optional(actionConfigStruct),
+const cardConfigStruct = object({
+  type: string(),
+  name: optional(string()),
+  entity: optional(string()),
+  theme: optional(string()),
+  icon: optional(string()),
+  hold_action: optional(actionConfigStruct),
+  double_tap_action: optional(actionConfigStruct),
 });
 
 const includeDomains = ["light"];
@@ -39,12 +37,13 @@ const includeDomains = ["light"];
 @customElement("hui-light-card-editor")
 export class HuiLightCardEditor extends LitElement
   implements LovelaceCardEditor {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: LightCardConfig;
+  @internalProperty() private _config?: LightCardConfig;
 
   public setConfig(config: LightCardConfig): void {
-    this._config = cardConfigStruct(config);
+    assert(config, cardConfigStruct);
+    this._config = config;
   }
 
   get _name(): string {
@@ -64,11 +63,11 @@ export class HuiLightCardEditor extends LitElement
   }
 
   get _hold_action(): ActionConfig {
-    return this._config!.hold_action || { action: "none" };
+    return this._config!.hold_action || { action: "more-info" };
   }
 
-  get _double_tap_action(): ActionConfig {
-    return this._config!.double_tap_action || { action: "none" };
+  get _double_tap_action(): ActionConfig | undefined {
+    return this._config!.double_tap_action;
   }
 
   protected render(): TemplateResult {
@@ -86,7 +85,6 @@ export class HuiLightCardEditor extends LitElement
     ];
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <ha-entity-picker
           .label="${this.hass.localize(
@@ -98,7 +96,7 @@ export class HuiLightCardEditor extends LitElement
           .value=${this._entity}
           .configValue=${"entity"}
           .includeDomains=${includeDomains}
-          @change=${this._valueChanged}
+          @value-changed=${this._valueChanged}
           allow-custom-entity
         ></ha-entity-picker>
         <div class="side-by-side">
@@ -143,7 +141,7 @@ export class HuiLightCardEditor extends LitElement
           .config=${this._hold_action}
           .actions=${actions}
           .configValue=${"hold_action"}
-          @action-changed=${this._valueChanged}
+          @value-changed=${this._valueChanged}
         ></hui-action-editor>
 
         <hui-action-editor
@@ -156,35 +154,38 @@ export class HuiLightCardEditor extends LitElement
           .config=${this._double_tap_action}
           .actions=${actions}
           .configValue=${"double_tap_action"}
-          @action-changed=${this._valueChanged}
+          @value-changed=${this._valueChanged}
         ></hui-action-editor>
       </div>
     `;
   }
 
-  private _valueChanged(ev: EntitiesEditorEvent): void {
+  private _valueChanged(ev: CustomEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
     const target = ev.target! as EditorTarget;
+    const value = ev.detail.value;
 
-    if (
-      this[`_${target.configValue}`] === target.value ||
-      this[`_${target.configValue}`] === target.config
-    ) {
+    if (this[`_${target.configValue}`] === value) {
       return;
     }
     if (target.configValue) {
-      if (target.value === "") {
+      if (value !== false && !value) {
+        this._config = { ...this._config };
         delete this._config[target.configValue!];
       } else {
         this._config = {
           ...this._config,
-          [target.configValue!]: target.value ? target.value : target.config,
+          [target.configValue!]: value,
         };
       }
     }
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  static get styles(): CSSResult {
+    return configElementStyle;
   }
 }
 

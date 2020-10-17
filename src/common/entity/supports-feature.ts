@@ -4,6 +4,6 @@ export const supportsFeature = (
   stateObj: HassEntity,
   feature: number
 ): boolean => {
-  // eslint-disable-next-line:no-bitwise
+  // eslint-disable-next-line no-bitwise
   return (stateObj.attributes.supported_features! & feature) !== 0;
 };

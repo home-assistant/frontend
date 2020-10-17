@@ -7,6 +7,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../../../components/dialog/ha-paper-dialog";
@@ -20,9 +21,9 @@ import "./hui-lovelace-editor";
 
 @customElement("hui-dialog-edit-lovelace")
 export class HuiDialogEditLovelace extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _lovelace?: Lovelace;
+  @internalProperty() private _lovelace?: Lovelace;
 
   private _config?: LovelaceConfig;
 
@@ -75,10 +76,13 @@ export class HuiDialogEditLovelace extends LitElement {
             ?disabled="${!this._config || this._saving}"
             @click="${this._save}"
           >
-            <ha-circular-progress
-              ?active="${this._saving}"
-              alt="Saving"
-            ></ha-circular-progress>
+            ${this._saving
+              ? html`<ha-circular-progress
+                  active
+                  size="small"
+                  title="Saving"
+                ></ha-circular-progress>`
+              : ""}
             ${this.hass!.localize("ui.common.save")}</mwc-button
           >
         </div>
@@ -147,17 +151,6 @@ export class HuiDialogEditLovelace extends LitElement {
         }
         ha-paper-dialog {
           max-width: 650px;
-        }
-        mwc-button ha-circular-progress {
-          width: 14px;
-          height: 14px;
-          margin-right: 20px;
-        }
-        ha-circular-progress {
-          display: none;
-        }
-        ha-circular-progress[active] {
-          display: block;
         }
       `,
     ];

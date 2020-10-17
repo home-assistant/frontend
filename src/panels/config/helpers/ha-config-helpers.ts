@@ -1,3 +1,5 @@
+import "@material/mwc-fab";
+import { mdiPlus } from "@mdi/js";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-icon-item";
@@ -5,10 +7,9 @@ import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
-  css,
-  CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   PropertyValues,
@@ -22,8 +23,8 @@ import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
-import "@material/mwc-fab";
 import "../../../components/ha-icon";
+import "../../../components/ha-svg-icon";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../types";
@@ -31,12 +32,10 @@ import { showEntityEditorDialog } from "../entities/show-dialog-entity-editor";
 import { configSections } from "../ha-panel-config";
 import { HELPER_DOMAINS } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
-import "../../../components/ha-svg-icon";
-import { mdiPlus } from "@mdi/js";
 
 @customElement("ha-config-helpers")
 export class HaConfigHelpers extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public isWide!: boolean;
 
@@ -44,7 +43,7 @@ export class HaConfigHelpers extends LitElement {
 
   @property() public route!: Route;
 
-  @property() private _stateItems: HassEntity[] = [];
+  @internalProperty() private _stateItems: HassEntity[] = [];
 
   private _columns = memoize(
     (narrow, _language): DataTableColumnContainer => {
@@ -111,7 +110,7 @@ export class HaConfigHelpers extends LitElement {
                   style="display:inline-block; position: relative;"
                 >
                   <ha-icon icon="hass:pencil-off"></ha-icon>
-                  <paper-tooltip position="left">
+                  <paper-tooltip animation-delay="0" position="left">
                     ${this.hass.localize(
                       "ui.panel.config.entities.picker.status.readonly"
                     )}
@@ -154,18 +153,21 @@ export class HaConfigHelpers extends LitElement {
         .data=${this._getItems(this._stateItems)}
         @row-click=${this._openEditDialog}
         hasFab
+        clickable
+        .noDataText=${this.hass.localize(
+          "ui.panel.config.helpers.picker.no_helpers"
+        )}
       >
+        <mwc-fab
+          slot="fab"
+          title="${this.hass.localize(
+            "ui.panel.config.helpers.picker.add_helper"
+          )}"
+          @click=${this._createHelpler}
+        >
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+        </mwc-fab>
       </hass-tabs-subpage-data-table>
-      <mwc-fab
-        ?is-wide=${this.isWide}
-        ?narrow=${this.narrow}
-        title="${this.hass.localize(
-          "ui.panel.config.helpers.picker.add_helper"
-        )}"
-        @click=${this._createHelpler}
-      >
-        <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
-      </mwc-fab>
     `;
   }
 
@@ -208,23 +210,5 @@ export class HaConfigHelpers extends LitElement {
 
   private _createHelpler() {
     showHelperDetailDialog(this);
-  }
-
-  static get styles(): CSSResult {
-    return css`
-      mwc-fab {
-        position: fixed;
-        bottom: 16px;
-        right: 16px;
-        z-index: 1;
-      }
-      mwc-fab[is-wide] {
-        bottom: 24px;
-        right: 24px;
-      }
-      mwc-fab[narrow] {
-        bottom: 84px;
-      }
-    `;
   }
 }

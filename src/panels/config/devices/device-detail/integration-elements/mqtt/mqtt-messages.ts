@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
@@ -27,11 +28,11 @@ class MQTTMessages extends LitElement {
 
   @property() public summary!: string;
 
-  @property() private _open = false;
+  @internalProperty() private _open = false;
 
-  @property() private _payloadsJson = new WeakMap();
+  @internalProperty() private _payloadsJson = new WeakMap();
 
-  @property() private _showTopic = false;
+  @internalProperty() private _showTopic = false;
 
   protected firstUpdated(): void {
     this.messages.forEach((message) => {
@@ -173,6 +174,7 @@ class MQTTMessages extends LitElement {
         margin: 0;
         padding-left: 4px;
         padding-right: 4px;
+        font-family: var(--code-font-family, monospace);
       }
     `;
   }

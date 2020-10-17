@@ -21,6 +21,7 @@ import { DOMAINS_TOGGLE } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeActiveState } from "../../../common/entity/compute_active_state";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
@@ -62,17 +63,16 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
 
     return {
       type: "button",
-      tap_action: { action: "toggle" },
-      hold_action: { action: "more-info" },
-      show_icon: true,
-      show_name: true,
+      tap_action: {
+        action: "toggle",
+      },
       entity: foundEntities[0] || "",
     };
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: ButtonCardConfig;
+  @internalProperty() private _config?: ButtonCardConfig;
 
   @queryAsync("mwc-ripple") private _ripple!: Promise<Ripple | null>;
 
@@ -80,7 +80,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
 
   public getCardSize(): number {
     return (
-      (this._config?.show_icon ? 3 : 0) + (this._config?.show_name ? 1 : 0)
+      (this._config?.show_icon ? 4 : 0) + (this._config?.show_name ? 1 : 0)
     );
   }
 
@@ -90,29 +90,18 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     }
 
     this._config = {
+      tap_action: {
+        action:
+          config.entity && DOMAINS_TOGGLE.has(computeDomain(config.entity))
+            ? "toggle"
+            : "more-info",
+      },
       hold_action: { action: "more-info" },
-      double_tap_action: { action: "none" },
       show_icon: true,
       show_name: true,
       state_color: true,
       ...config,
     };
-
-    if (config.entity && DOMAINS_TOGGLE.has(computeDomain(config.entity))) {
-      this._config = {
-        tap_action: {
-          action: "toggle",
-        },
-        ...this._config,
-      };
-    } else {
-      this._config = {
-        tap_action: {
-          action: "more-info",
-        },
-        ...this._config,
-      };
-    }
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -203,6 +192,15 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
               </span>
             `
           : ""}
+        ${this._config.show_state && stateObj
+          ? html`<span class="state">
+              ${computeStateDisplay(
+                this.hass.localize,
+                stateObj,
+                this.hass.language
+              )}
+            </span>`
+          : ""}
         ${this._shouldRenderRipple ? html`<mwc-ripple></mwc-ripple>` : ""}
       </ha-card>
     `;
@@ -280,6 +278,11 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
       ha-icon,
       span {
         outline: none;
+      }
+
+      .state {
+        font-size: 0.9rem;
+        color: var(--secondary-text-color);
       }
 
       ${iconColorCSS}

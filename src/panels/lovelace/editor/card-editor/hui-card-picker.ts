@@ -1,38 +1,45 @@
+import "@material/mwc-tab-bar/mwc-tab-bar";
+import "@material/mwc-tab/mwc-tab";
 import Fuse from "fuse.js";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
+import { styleMap } from "lit-html/directives/style-map";
 import { until } from "lit-html/directives/until";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../common/search/search-input";
+import "../../../../components/ha-circular-progress";
 import { UNAVAILABLE_STATES } from "../../../../data/entity";
-import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
+import type {
+  LovelaceCardConfig,
+  LovelaceConfig,
+} from "../../../../data/lovelace";
 import {
   CustomCardEntry,
   customCards,
   CUSTOM_TYPE_PREFIX,
   getCustomCardEntry,
 } from "../../../../data/lovelace_custom_cards";
-import { HomeAssistant } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 import {
   calcUnusedEntities,
   computeUsedEntities,
 } from "../../common/compute-unused-entities";
 import { tryCreateCardElement } from "../../create-element/create-card-element";
-import { LovelaceCard } from "../../types";
+import type { LovelaceCard } from "../../types";
 import { getCardStubConfig } from "../get-card-stub-config";
-import { CardPickTarget, Card } from "../types";
 import { coreCards } from "../lovelace-cards";
-import { styleMap } from "lit-html/directives/style-map";
+import type { Card, CardPickTarget } from "../types";
 
 interface CardElement {
   card: Card;
@@ -41,43 +48,43 @@ interface CardElement {
 
 @customElement("hui-card-picker")
 export class HuiCardPicker extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _cards: CardElement[] = [];
+  @internalProperty() private _cards: CardElement[] = [];
 
   public lovelace?: LovelaceConfig;
 
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
 
-  private _filter?: string;
+  @internalProperty() private _filter = "";
+
+  @internalProperty() private _width?: number;
+
+  @internalProperty() private _height?: number;
 
   private _unusedEntities?: string[];
 
   private _usedEntities?: string[];
 
-  private _width?: number;
-
-  private _height?: number;
-
   private _filterCards = memoizeOne(
     (cardElements: CardElement[], filter?: string): CardElement[] => {
-      if (filter) {
-        let cards = cardElements.map(
-          (cardElement: CardElement) => cardElement.card
-        );
-        const options: Fuse.IFuseOptions<Card> = {
-          keys: ["type", "name", "description"],
-          isCaseSensitive: false,
-          minMatchCharLength: 2,
-          threshold: 0.2,
-        };
-        const fuse = new Fuse(cards, options);
-        cards = fuse.search(filter).map((result) => result.item);
-        cardElements = cardElements.filter((cardElement: CardElement) =>
-          cards.includes(cardElement.card)
-        );
+      if (!filter) {
+        return cardElements;
       }
-      return cardElements;
+      let cards = cardElements.map(
+        (cardElement: CardElement) => cardElement.card
+      );
+      const options: Fuse.IFuseOptions<Card> = {
+        keys: ["type", "name", "description"],
+        isCaseSensitive: false,
+        minMatchCharLength: 2,
+        threshold: 0.2,
+      };
+      const fuse = new Fuse(cards, options);
+      cards = fuse.search(filter).map((result) => result.item);
+      return cardElements.filter((cardElement: CardElement) =>
+        cards.includes(cardElement.card)
+      );
     }
   );
 
@@ -96,11 +103,15 @@ export class HuiCardPicker extends LitElement {
         .filter=${this._filter}
         no-label-float
         @value-changed=${this._handleSearchChange}
+        .label=${this.hass.localize(
+          "ui.panel.lovelace.editor.edit_card.search_cards"
+        )}
       ></search-input>
       <div
+        id="content"
         style=${styleMap({
-          width: `${this._width}px`,
-          height: `${this._height}px`,
+          width: this._width ? `${this._width}px` : "auto",
+          height: this._height ? `${this._height}px` : "auto",
         })}
       >
         <div class="cards-container">
@@ -114,14 +125,14 @@ export class HuiCardPicker extends LitElement {
             @click=${this._cardPicked}
             .config=${{ type: "" }}
           >
-            <div class="preview description">
-              ${this.hass!.localize(
-                `ui.panel.lovelace.editor.card.generic.manual_description`
-              )}
-            </div>
             <div class="card-header">
               ${this.hass!.localize(
                 `ui.panel.lovelace.editor.card.generic.manual`
+              )}
+            </div>
+            <div class="preview description">
+              ${this.hass!.localize(
+                `ui.panel.lovelace.editor.card.generic.manual_description`
               )}
             </div>
           </div>
@@ -165,24 +176,6 @@ export class HuiCardPicker extends LitElement {
     this._loadCards();
   }
 
-  protected updated(changedProps) {
-    super.updated(changedProps);
-    // Store the width and height so that when we search, box doesn't jump
-    const div = this.shadowRoot!.querySelector("div")!;
-    if (!this._width) {
-      const width = div.clientWidth;
-      if (width) {
-        this._width = width;
-      }
-    }
-    if (!this._height) {
-      const height = div.clientHeight;
-      if (height) {
-        this._height = height;
-      }
-    }
-  }
-
   private _loadCards() {
     let cards: Card[] = coreCards.map((card: Card) => ({
       name: this.hass!.localize(
@@ -218,86 +211,30 @@ export class HuiCardPicker extends LitElement {
   }
 
   private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value;
-    this.requestUpdate();
-  }
+    const value = ev.detail.value;
 
-  static get styles(): CSSResult[] {
-    return [
-      css`
-        .cards-container {
-          display: grid;
-          grid-gap: 8px 8px;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-          margin-top: 20px;
+    if (!value) {
+      // Reset when we no longer filter
+      this._width = undefined;
+      this._height = undefined;
+    } else if (!this._width || !this._height) {
+      // Save height and width so the dialog doesn't jump while searching
+      const div = this.shadowRoot!.getElementById("content");
+      if (div && !this._width) {
+        const width = div.clientWidth;
+        if (width) {
+          this._width = width;
         }
+      }
+      if (div && !this._height) {
+        const height = div.clientHeight;
+        if (height) {
+          this._height = height;
+        }
+      }
+    }
 
-        .card {
-          height: 100%;
-          max-width: 500px;
-          display: flex;
-          flex-direction: column;
-          border-radius: 4px;
-          border: 1px solid var(--divider-color);
-          background: var(--primary-background-color, #fafafa);
-          cursor: pointer;
-          box-sizing: border-box;
-          position: relative;
-        }
-
-        .card-header {
-          color: var(--ha-card-header-color, --primary-text-color);
-          font-family: var(--ha-card-header-font-family, inherit);
-          font-size: 16px;
-          letter-spacing: -0.012em;
-          line-height: 20px;
-          padding: 12px 16px;
-          display: block;
-          text-align: center;
-          background: var(
-            --ha-card-background,
-            var(--paper-card-background-color, white)
-          );
-          border-radius: 0 0 4px 4px;
-          border-top: 1px solid var(--divider-color);
-        }
-
-        .preview {
-          pointer-events: none;
-          margin: 20px;
-          flex-grow: 1;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .preview > :first-child {
-          zoom: 0.6;
-          display: block;
-          width: 100%;
-        }
-
-        .description {
-          text-align: center;
-        }
-
-        .spinner {
-          align-items: center;
-          justify-content: center;
-        }
-
-        .overlay {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          z-index: 1;
-        }
-
-        .manual {
-          max-width: none;
-        }
-      `,
-    ];
+    this._filter = value;
   }
 
   private _cardPicked(ev: Event): void {
@@ -371,6 +308,13 @@ export class HuiCardPicker extends LitElement {
           @click=${this._cardPicked}
           .config=${cardConfig}
         ></div>
+        <div class="card-header">
+          ${customCard
+            ? `${this.hass!.localize(
+                "ui.panel.lovelace.editor.cardpicker.custom_card"
+              )}: ${customCard.name || customCard.type}`
+            : name}
+        </div>
         <div
           class="preview ${classMap({
             description: !element || element.tagName === "HUI-ERROR-CARD",
@@ -385,15 +329,92 @@ export class HuiCardPicker extends LitElement {
               )
             : description}
         </div>
-        <div class="card-header">
-          ${customCard
-            ? `${this.hass!.localize(
-                "ui.panel.lovelace.editor.cardpicker.custom_card"
-              )}: ${customCard.name || customCard.type}`
-            : name}
-        </div>
       </div>
     `;
+  }
+
+  static get styles(): CSSResult[] {
+    return [
+      css`
+        search-input {
+          display: block;
+          margin: 0 -8px;
+        }
+
+        .cards-container {
+          display: grid;
+          grid-gap: 8px 8px;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          margin-top: 20px;
+        }
+
+        .card {
+          height: 100%;
+          max-width: 500px;
+          display: flex;
+          flex-direction: column;
+          border-radius: 4px;
+          border: 1px solid var(--divider-color);
+          background: var(--primary-background-color, #fafafa);
+          cursor: pointer;
+          box-sizing: border-box;
+          position: relative;
+        }
+
+        .card-header {
+          color: var(--ha-card-header-color, --primary-text-color);
+          font-family: var(--ha-card-header-font-family, inherit);
+          font-size: 16px;
+          font-weight: bold;
+          letter-spacing: -0.012em;
+          line-height: 20px;
+          padding: 12px 16px;
+          display: block;
+          text-align: center;
+          background: var(
+            --ha-card-background,
+            var(--card-background-color, white)
+          );
+          border-radius: 0 0 4px 4px;
+          border-bottom: 1px solid var(--divider-color);
+        }
+
+        .preview {
+          pointer-events: none;
+          margin: 20px;
+          flex-grow: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .preview > :first-child {
+          zoom: 0.6;
+          display: block;
+          width: 100%;
+        }
+
+        .description {
+          text-align: center;
+        }
+
+        .spinner {
+          align-items: center;
+          justify-content: center;
+        }
+
+        .overlay {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          z-index: 1;
+        }
+
+        .manual {
+          max-width: none;
+        }
+      `,
+    ];
   }
 }
 

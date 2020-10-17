@@ -1,5 +1,10 @@
 import "@polymer/app-route/app-location";
-import { html, property, PropertyValues, customElement } from "lit-element";
+import {
+  html,
+  internalProperty,
+  PropertyValues,
+  customElement,
+} from "lit-element";
 import { navigate } from "../common/navigate";
 import { getStorageDefaultPanelUrlPath } from "../data/panel";
 import "../resources/custom-card-support";
@@ -11,14 +16,16 @@ import {
 } from "../util/register-service-worker";
 import "./ha-init-page";
 import "./home-assistant-main";
+import { storeState } from "../util/ha-pref-storage";
+import QuickBarMixin from "../state/quick-bar-mixin";
 
 @customElement("home-assistant")
-export class HomeAssistantAppEl extends HassElement {
-  @property() private _route?: Route;
+export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
+  @internalProperty() private _route?: Route;
 
-  @property() private _error = false;
+  @internalProperty() private _error = false;
 
-  @property() private _panelUrl?: string;
+  @internalProperty() private _panelUrl?: string;
 
   private _haVersion?: string;
 
@@ -55,6 +62,10 @@ export class HomeAssistantAppEl extends HassElement {
     import(
       /* webpackChunkName: "polyfill-web-animations-next" */ "web-animations-js/web-animations-next-lite.min"
     );
+    this.addEventListener("hass-suspend-when-hidden", (ev) => {
+      this._updateHass({ suspendWhenHidden: ev.detail.suspend });
+      storeState(this.hass!);
+    });
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -78,9 +89,11 @@ export class HomeAssistantAppEl extends HassElement {
 
     document.addEventListener(
       "visibilitychange",
-      () => this._handleVisibilityChange(),
+      () => this._checkVisibility(),
       false
     );
+    document.addEventListener("freeze", () => this._suspendApp());
+    document.addEventListener("resume", () => this._checkVisibility());
   }
 
   protected hassReconnected() {
@@ -148,30 +161,55 @@ export class HomeAssistantAppEl extends HassElement {
         : route.path.substr(1, dividerPos - 1);
   }
 
-  protected _handleVisibilityChange() {
+  protected _checkVisibility() {
     if (document.hidden) {
       // If the document is hidden, we will prevent reconnects until we are visible again
-      this.hass!.connection.suspendReconnectUntil(
-        new Promise((resolve) => {
-          this._visiblePromiseResolve = resolve;
-        })
-      );
+      this._onHidden();
+    } else {
+      this._onVisible();
+    }
+  }
+
+  private _onHidden() {
+    if (this._visiblePromiseResolve) {
+      return;
+    }
+    this.hass!.connection.suspendReconnectUntil(
+      new Promise((resolve) => {
+        this._visiblePromiseResolve = resolve;
+      })
+    );
+    if (this.hass!.suspendWhenHidden !== false) {
       // We close the connection to Home Assistant after being hidden for 5 minutes
       this._hiddenTimeout = window.setTimeout(() => {
         this._hiddenTimeout = undefined;
-        this.hass!.connection.suspend();
+        // setTimeout can be delayed in the background and only fire
+        // when we switch to the tab or app again (Hey Android!)
+        if (!document.hidden) {
+          this._suspendApp();
+        }
       }, 300000);
-    } else {
-      // Clear timer to close the connection
-      if (this._hiddenTimeout) {
-        clearTimeout(this._hiddenTimeout);
-        this._hiddenTimeout = undefined;
-      }
-      // Unsuspend the reconnect
-      if (this._visiblePromiseResolve) {
-        this._visiblePromiseResolve();
-        this._visiblePromiseResolve = undefined;
-      }
+    }
+    window.addEventListener("focus", () => this._onVisible(), { once: true });
+  }
+
+  private _suspendApp() {
+    if (!this.hass!.connection.connected) {
+      return;
+    }
+    this.hass!.connection.suspend();
+  }
+
+  private _onVisible() {
+    // Clear timer to close the connection
+    if (this._hiddenTimeout) {
+      clearTimeout(this._hiddenTimeout);
+      this._hiddenTimeout = undefined;
+    }
+    // Unsuspend the reconnect
+    if (this._visiblePromiseResolve) {
+      this._visiblePromiseResolve();
+      this._visiblePromiseResolve = undefined;
     }
   }
 }

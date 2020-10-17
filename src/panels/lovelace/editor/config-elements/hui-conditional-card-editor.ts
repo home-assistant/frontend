@@ -2,58 +2,66 @@ import "@polymer/paper-tabs";
 import "@polymer/paper-tabs/paper-tab";
 import {
   css,
-  CSSResult,
+  CSSResultArray,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   query,
   TemplateResult,
 } from "lit-element";
+import { any, array, assert, object, optional, string } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
-import { LovelaceConfig } from "../../../../data/lovelace";
+import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import { ConditionalCardConfig } from "../../cards/types";
-import { struct } from "../../common/structs/struct";
 import { LovelaceCardEditor } from "../../types";
-import {
-  ConfigChangedEvent,
-  HuiCardEditor,
-} from "../card-editor/hui-card-editor";
 import "../card-editor/hui-card-picker";
+import "../hui-element-editor";
+import type {
+  ConfigChangedEvent,
+  HuiElementEditor,
+} from "../hui-element-editor";
 import { GUIModeChangedEvent } from "../types";
+import { configElementStyle } from "./config-elements-style";
 
-const conditionStruct = struct({
-  entity: "string",
-  state: "string?",
-  state_not: "string?",
+const conditionStruct = object({
+  entity: string(),
+  state: optional(string()),
+  state_not: optional(string()),
 });
-const cardConfigStruct = struct({
-  type: "string",
-  card: "any",
-  conditions: struct.optional([conditionStruct]),
+const cardConfigStruct = object({
+  type: string(),
+  card: any(),
+  conditions: optional(array(conditionStruct)),
 });
 
 @customElement("hui-conditional-card-editor")
 export class HuiConditionalCardEditor extends LitElement
   implements LovelaceCardEditor {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public lovelace?: LovelaceConfig;
+  @property({ attribute: false }) public lovelace?: LovelaceConfig;
 
-  @property() private _config?: ConditionalCardConfig;
+  @internalProperty() private _config?: ConditionalCardConfig;
 
-  @property() private _GUImode = true;
+  @internalProperty() private _GUImode = true;
 
-  @property() private _guiModeAvailable? = true;
+  @internalProperty() private _guiModeAvailable? = true;
 
-  @property() private _cardTab = false;
+  @internalProperty() private _cardTab = false;
 
-  @query("hui-card-editor") private _cardEditorEl?: HuiCardEditor;
+  @query("hui-element-editor") private _cardEditorEl?: HuiElementEditor;
 
   public setConfig(config: ConditionalCardConfig): void {
-    this._config = cardConfigStruct(config);
+    assert(config, cardConfigStruct);
+    this._config = config;
+  }
+
+  public refreshYamlEditor(focus) {
+    this._cardEditorEl?.refreshYamlEditor(focus);
   }
 
   protected render(): TemplateResult {
@@ -100,13 +108,13 @@ export class HuiConditionalCardEditor extends LitElement
                         )}</mwc-button
                       >
                     </div>
-                    <hui-card-editor
+                    <hui-element-editor
                       .hass=${this.hass}
                       .value=${this._config.card}
                       .lovelace=${this.lovelace}
                       @config-changed=${this._handleCardChanged}
                       @GUImode-changed=${this._handleGUIModeChanged}
-                    ></hui-card-editor>
+                    ></hui-element-editor>
                   `
                 : html`
                     <hui-card-picker
@@ -195,7 +203,7 @@ export class HuiConditionalCardEditor extends LitElement
   private _setMode(value: boolean): void {
     this._GUImode = value;
     if (this._cardEditorEl) {
-      this._cardEditorEl!.GUImode = value;
+      this._cardEditorEl.GUImode = value;
     }
   }
 
@@ -212,7 +220,7 @@ export class HuiConditionalCardEditor extends LitElement
     }
     this._setMode(true);
     this._guiModeAvailable = true;
-    this._config.card = ev.detail.config;
+    this._config = { ...this._config, card: ev.detail.config };
     fireEvent(this, "config-changed", { config: this._config });
   }
 
@@ -221,7 +229,10 @@ export class HuiConditionalCardEditor extends LitElement
     if (!this._config) {
       return;
     }
-    this._config.card = ev.detail.config;
+    this._config = {
+      ...this._config,
+      card: ev.detail.config as LovelaceCardConfig,
+    };
     this._guiModeAvailable = ev.detail.guiModeAvailable;
     fireEvent(this, "config-changed", { config: this._config });
   }
@@ -231,7 +242,8 @@ export class HuiConditionalCardEditor extends LitElement
       return;
     }
     // @ts-ignore
-    this._config.card = {};
+    this._config = { ...this._config, card: {} };
+    // @ts-ignore
     fireEvent(this, "config-changed", { config: this._config });
   }
 
@@ -240,10 +252,12 @@ export class HuiConditionalCardEditor extends LitElement
     if (target.value === "" || !this._config) {
       return;
     }
-    this._config.conditions.push({
+    const conditions = [...this._config.conditions];
+    conditions.push({
       entity: target.value,
       state: "",
     });
+    this._config = { ...this._config, conditions };
     target.value = "";
     fireEvent(this, "config-changed", { config: this._config });
   }
@@ -253,10 +267,11 @@ export class HuiConditionalCardEditor extends LitElement
     if (!this._config || !target) {
       return;
     }
+    const conditions = [...this._config.conditions];
     if (target.configValue === "entity" && target.value === "") {
-      this._config.conditions.splice(target.index, 1);
+      conditions.splice(target.index, 1);
     } else {
-      const condition = this._config.conditions[target.index];
+      const condition = { ...conditions[target.index] };
       if (target.configValue === "entity") {
         condition.entity = target.value;
       } else if (target.configValue === "state") {
@@ -276,57 +291,61 @@ export class HuiConditionalCardEditor extends LitElement
           delete condition.state_not;
         }
       }
-      this._config.conditions[target.index] = condition;
+      conditions[target.index] = condition;
     }
+    this._config = { ...this._config, conditions };
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
-    return css`
-      paper-tabs {
-        --paper-tabs-selection-bar-color: var(--primary-color);
-        --paper-tab-ink: var(--primary-color);
-        border-bottom: 1px solid var(--divider-color);
-      }
-      .conditions {
-        margin-top: 8px;
-      }
-      .condition {
-        margin-top: 8px;
-        border: 1px solid var(--divider-color);
-        padding: 12px;
-      }
-      .condition .state {
-        display: flex;
-        align-items: flex-end;
-      }
-      .condition .state paper-dropdown-menu {
-        margin-right: 16px;
-      }
-      .condition .state paper-input {
-        flex-grow: 1;
-      }
-
-      .card {
-        margin-top: 8px;
-        border: 1px solid var(--divider-color);
-        padding: 12px;
-      }
-      @media (max-width: 450px) {
-        .card,
-        .condition {
-          margin: 8px -12px 0;
+  static get styles(): CSSResultArray {
+    return [
+      configElementStyle,
+      css`
+        paper-tabs {
+          --paper-tabs-selection-bar-color: var(--primary-color);
+          --paper-tab-ink: var(--primary-color);
+          border-bottom: 1px solid var(--divider-color);
         }
-      }
-      .card .card-options {
-        display: flex;
-        justify-content: flex-end;
-        width: 100%;
-      }
-      .gui-mode-button {
-        margin-right: auto;
-      }
-    `;
+        .conditions {
+          margin-top: 8px;
+        }
+        .condition {
+          margin-top: 8px;
+          border: 1px solid var(--divider-color);
+          padding: 12px;
+        }
+        .condition .state {
+          display: flex;
+          align-items: flex-end;
+        }
+        .condition .state paper-dropdown-menu {
+          margin-right: 16px;
+        }
+        .condition .state paper-input {
+          flex-grow: 1;
+        }
+
+        .card {
+          margin-top: 8px;
+          border: 1px solid var(--divider-color);
+          padding: 12px;
+        }
+        @media (max-width: 450px) {
+          .card,
+          .condition {
+            margin: 8px -12px 0;
+          }
+        }
+        .card .card-options {
+          display: flex;
+          justify-content: flex-end;
+          width: 100%;
+        }
+        .gui-mode-button {
+          margin-right: auto;
+        }
+      `,
+    ];
   }
 }
 

@@ -1,6 +1,7 @@
 import {
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   TemplateResult,
@@ -15,21 +16,26 @@ import { ButtonsHeaderFooterConfig } from "./types";
 @customElement("hui-buttons-header-footer")
 export class HuiButtonsHeaderFooter extends LitElement
   implements LovelaceHeaderFooter {
-  public static getStubConfig(): object {
+  public static getStubConfig(): Record<string, unknown> {
     return { entities: [] };
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  private _configEntities?: EntityConfig[];
+  @internalProperty() private _configEntities?: EntityConfig[];
 
   public getCardSize(): number {
-    return 1;
+    return 3;
   }
 
   public setConfig(config: ButtonsHeaderFooterConfig): void {
-    this._configEntities = processConfigEntities(config.entities);
-    this.requestUpdate();
+    this._configEntities = processConfigEntities(config.entities).map(
+      (entityConfig) => ({
+        tap_action: { action: "toggle" },
+        hold_action: { action: "more-info" },
+        ...entityConfig,
+      })
+    );
   }
 
   protected render(): TemplateResult | void {

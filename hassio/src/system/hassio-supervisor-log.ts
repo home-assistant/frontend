@@ -7,13 +7,16 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   TemplateResult,
 } from "lit-element";
+import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-card";
+import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import { fetchHassioLogs } from "../../../src/data/hassio/supervisor";
-import "../../../src/layouts/loading-screen";
+import "../../../src/layouts/hass-loading-screen";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import "../components/hassio-ansi-to-html";
@@ -55,25 +58,25 @@ const logProviders: LogProvider[] = [
 class HassioSupervisorLog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
-  @property() private _selectedLogProvider = "supervisor";
+  @internalProperty() private _selectedLogProvider = "supervisor";
 
-  @property() private _content?: string;
+  @internalProperty() private _content?: string;
 
   public async connectedCallback(): Promise<void> {
     super.connectedCallback();
     await this._loadData();
   }
 
-  public render(): TemplateResult | void {
+  protected render(): TemplateResult | void {
     return html`
       <ha-card>
         ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
         ${this.hass.userData?.showAdvanced
           ? html`
               <paper-dropdown-menu
-                label="Log provider"
+                label="Log Provider"
                 @iron-select=${this._setLogProvider}
               >
                 <paper-listbox
@@ -98,13 +101,43 @@ class HassioSupervisorLog extends LitElement {
             ? html`<hassio-ansi-to-html
                 .content=${this._content}
               ></hassio-ansi-to-html>`
-            : html`<loading-screen></loading-screen>`}
+            : html`<hass-loading-screen no-toolbar></hass-loading-screen>`}
         </div>
         <div class="card-actions">
-          <mwc-button @click=${this._refresh}>Refresh</mwc-button>
+          <ha-progress-button @click=${this._refresh}>
+            Refresh
+          </ha-progress-button>
         </div>
       </ha-card>
     `;
+  }
+
+  private async _setLogProvider(ev): Promise<void> {
+    const provider = ev.detail.item.getAttribute("provider");
+    this._selectedLogProvider = provider;
+    this._loadData();
+  }
+
+  private async _refresh(ev: CustomEvent): Promise<void> {
+    const button = ev.currentTarget as any;
+    button.progress = true;
+    await this._loadData();
+    button.progress = false;
+  }
+
+  private async _loadData(): Promise<void> {
+    this._error = undefined;
+
+    try {
+      this._content = await fetchHassioLogs(
+        this.hass,
+        this._selectedLogProvider
+      );
+    } catch (err) {
+      this._error = `Failed to get supervisor logs, ${extractApiErrorMessage(
+        err
+      )}`;
+    }
   }
 
   static get styles(): CSSResult[] {
@@ -113,6 +146,7 @@ class HassioSupervisorLog extends LitElement {
       hassioStyle,
       css`
         ha-card {
+          margin-top: 8px;
           width: 100%;
         }
         pre {
@@ -123,40 +157,11 @@ class HassioSupervisorLog extends LitElement {
           width: 96%;
         }
         .errors {
-          color: var(--google-red-500);
+          color: var(--error-color);
           margin-bottom: 16px;
-        }
-        .card-content {
-          padding-top: 0px;
         }
       `,
     ];
-  }
-
-  private async _setLogProvider(ev): Promise<void> {
-    const provider = ev.detail.item.getAttribute("provider");
-    this._selectedLogProvider = provider;
-    await this._loadData();
-  }
-
-  private async _loadData(): Promise<void> {
-    this._error = undefined;
-    this._content = undefined;
-
-    try {
-      this._content = await fetchHassioLogs(
-        this.hass,
-        this._selectedLogProvider
-      );
-    } catch (err) {
-      this._error = `Failed to get supervisor logs, ${
-        err.body?.message || err
-      }`;
-    }
-  }
-
-  private async _refresh(): Promise<void> {
-    await this._loadData();
   }
 }
 

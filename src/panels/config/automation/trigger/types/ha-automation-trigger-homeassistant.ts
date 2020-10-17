@@ -8,7 +8,7 @@ import type { HomeAssistant } from "../../../../../types";
 
 @customElement("ha-automation-trigger-homeassistant")
 export default class HaHassTrigger extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public trigger!: HassTrigger;
 
@@ -18,7 +18,7 @@ export default class HaHassTrigger extends LitElement {
     };
   }
 
-  public render() {
+  protected render() {
     const { event } = this.trigger;
     return html`
       <label id="eventlabel">

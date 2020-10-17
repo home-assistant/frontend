@@ -43,9 +43,24 @@ declare global {
     };
     change: undefined;
   }
+
+  // For loading workers in webpack
+  interface ImportMeta {
+    url: string;
+  }
 }
 
-export type Constructor<T = {}> = new (...args: any[]) => T;
+export type Constructor<T = any> = new (...args: any[]) => T;
+
+export interface ClassElement {
+  kind: "field" | "method";
+  key: PropertyKey;
+  placement: "static" | "prototype" | "own";
+  initializer?: (...args) => unknown;
+  extras?: ClassElement[];
+  finisher?: <T>(cls: Constructor<T>) => undefined | Constructor<T>;
+  descriptor?: PropertyDescriptor;
+}
 
 export interface WebhookError {
   code: number;
@@ -77,14 +92,24 @@ export interface Theme {
   "primary-color": string;
   "text-primary-color": string;
   "accent-color": string;
+  [key: string]: string;
 }
 
 export interface Themes {
   default_theme: string;
+  default_dark_theme: string | null;
   themes: { [key: string]: Theme };
+  darkMode: boolean;
 }
 
-export interface PanelInfo<T = {} | null> {
+export interface ThemeSettings {
+  theme: string;
+  dark?: boolean;
+  primaryColor?: string;
+  accentColor?: string;
+}
+
+export interface PanelInfo<T = Record<string, any> | null> {
   component_name: string;
   config: T;
   icon: string | null;
@@ -98,8 +123,8 @@ export interface Panels {
 
 export interface Calendar {
   entity_id: string;
-  name: string;
-  backgroundColor: string;
+  name?: string;
+  backgroundColor?: string;
 }
 
 export interface SelectedCalendar {
@@ -124,9 +149,15 @@ export interface CalendarViewChanged {
   view: string;
 }
 
+export type FullCalendarView =
+  | "dayGridMonth"
+  | "dayGridWeek"
+  | "dayGridDay"
+  | "listWeek";
+
 export interface ToggleButton {
-  label?: string;
-  icon: string;
+  label: string;
+  iconPath: string;
   value: string;
 }
 
@@ -167,12 +198,18 @@ export interface Resources {
 
 export interface Context {
   id: string;
-  parrent_id?: string;
+  parent_id?: string;
   user_id?: string;
 }
 
 export interface ServiceCallResponse {
   context: Context;
+}
+
+export interface ServiceCallRequest {
+  domain: string;
+  service: string;
+  serviceData?: { [key: string]: any };
 }
 
 export interface HomeAssistant {
@@ -183,7 +220,7 @@ export interface HomeAssistant {
   services: HassServices;
   config: HassConfig;
   themes: Themes;
-  selectedTheme?: string | null;
+  selectedTheme?: ThemeSettings | null;
   panels: Panels;
   panelUrl: string;
 
@@ -199,7 +236,7 @@ export interface HomeAssistant {
   resources: Resources;
   localize: LocalizeFunc;
   translationMetadata: TranslationMetadata;
-
+  suspendWhenHidden: boolean;
   vibrate: boolean;
   dockedSidebar: "docked" | "always_hidden" | "auto";
   defaultPanel: string;
@@ -208,9 +245,9 @@ export interface HomeAssistant {
   userData?: CoreFrontendUserData | null;
   hassUrl(path?): string;
   callService(
-    domain: string,
-    service: string,
-    serviceData?: { [key: string]: any }
+    domain: ServiceCallRequest["domain"],
+    service: ServiceCallRequest["service"],
+    serviceData?: ServiceCallRequest["serviceData"]
   ): Promise<ServiceCallResponse>;
   callApi<T>(
     method: "GET" | "POST" | "PUT" | "DELETE",
@@ -234,6 +271,10 @@ export type LightEntity = HassEntityBase & {
     friendly_name: string;
     brightness: number;
     hs_color: number[];
+    color_temp: number;
+    white_value: number;
+    effect?: string;
+    effect_list: string[] | null;
   };
 };
 
@@ -263,6 +304,12 @@ export type MediaEntity = HassEntityBase & {
     media_title: string;
     icon?: string;
     entity_picture_local?: string;
+    is_volume_muted?: boolean;
+    volume_level?: number;
+    source?: string;
+    source_list?: string[];
+    sound_mode?: string;
+    sound_mode_list?: string[];
   };
   state:
     | "playing"
@@ -305,6 +352,7 @@ interface ForecastAttribute {
   precipitation_probability?: number;
   humidity?: number;
   condition?: string;
+  daytime?: boolean;
 }
 
 export type WeatherEntity = HassEntityBase & {
@@ -312,5 +360,7 @@ export type WeatherEntity = HassEntityBase & {
     temperature: number;
     humidity?: number;
     forecast?: ForecastAttribute[];
+    wind_speed: string;
+    wind_bearing: string;
   };
 };

@@ -3,8 +3,8 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
-  property,
   TemplateResult,
 } from "lit-element";
 import "../../../components/ha-icon";
@@ -15,7 +15,7 @@ import { LovelaceRow, SectionConfig } from "../entity-rows/types";
 class HuiSectionRow extends LitElement implements LovelaceRow {
   public hass?: HomeAssistant;
 
-  @property() private _config?: SectionConfig;
+  @internalProperty() private _config?: SectionConfig;
 
   public setConfig(config: SectionConfig): void {
     if (!config) {
@@ -48,8 +48,7 @@ class HuiSectionRow extends LitElement implements LovelaceRow {
       }
       .divider {
         height: 1px;
-        background-color: var(--secondary-text-color);
-        opacity: 0.25;
+        background-color: var(--entities-divider-color, var(--divider-color));
         margin-left: -16px;
         margin-right: -16px;
         margin-top: 8px;

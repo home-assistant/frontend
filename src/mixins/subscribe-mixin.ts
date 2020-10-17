@@ -10,7 +10,7 @@ export const SubscribeMixin = <T extends Constructor<UpdatingElement>>(
   superClass: T
 ) => {
   class SubscribeClass extends superClass {
-    @property() public hass?: HomeAssistant;
+    @property({ attribute: false }) public hass?: HomeAssistant;
 
     private __unsubs?: Array<UnsubscribeFunc | Promise<UnsubscribeFunc>>;
 

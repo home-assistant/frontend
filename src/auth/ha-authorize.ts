@@ -4,6 +4,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
 } from "lit-element";
 import {
@@ -15,6 +16,7 @@ import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import { registerServiceWorker } from "../util/register-service-worker";
 import "./ha-auth-flow";
 import { extractSearchParamsObject } from "../common/url/search-params";
+import punycode from "punycode";
 
 import(/* webpackChunkName: "pick-auth-provider" */ "./ha-pick-auth-provider");
 
@@ -25,9 +27,9 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
 
   @property() public oauth2State?: string;
 
-  @property() private _authProvider?: AuthProvider;
+  @internalProperty() private _authProvider?: AuthProvider;
 
-  @property() private _authProviders?: AuthProvider[];
+  @internalProperty() private _authProviders?: AuthProvider[];
 
   constructor() {
     super();
@@ -74,7 +76,7 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
         ${this.localize(
           "ui.panel.page-authorize.authorizing_client",
           "clientId",
-          this.clientId
+          this.clientId ? punycode.toASCII(this.clientId) : this.clientId
         )}
       </p>
       ${loggingInWith}

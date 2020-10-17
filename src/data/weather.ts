@@ -1,7 +1,16 @@
-import { SVGTemplateResult, svg, html, TemplateResult, css } from "lit-element";
+import {
+  mdiGauge,
+  mdiWaterPercent,
+  mdiWeatherFog,
+  mdiWeatherRainy,
+  mdiWeatherWindy,
+} from "@mdi/js";
+import { css, html, svg, SVGTemplateResult, TemplateResult } from "lit-element";
 import { styleMap } from "lit-html/directives/style-map";
-
+import "../components/ha-icon";
+import "../components/ha-svg-icon";
 import type { HomeAssistant, WeatherEntity } from "../types";
+import { roundWithOneDecimal } from "../util/calculate";
 
 export const weatherSVGs = new Set<string>([
   "clear-night",
@@ -22,6 +31,15 @@ export const weatherSVGs = new Set<string>([
 
 export const weatherIcons = {
   exceptional: "hass:alert-circle-outline",
+};
+
+export const weatherAttrIcons = {
+  humidity: mdiWaterPercent,
+  wind_bearing: mdiWeatherWindy,
+  wind_speed: mdiWeatherWindy,
+  pressure: mdiGauge,
+  visibility: mdiWeatherFog,
+  precipitation: mdiWeatherRainy,
 };
 
 const cloudyStates = new Set<string>([
@@ -47,7 +65,7 @@ const snowyStates = new Set<string>(["snowy", "snowy-rainy"]);
 
 const lightningStates = new Set<string>(["lightning", "lightning-rainy"]);
 
-export const cardinalDirections = [
+const cardinalDirections = [
   "N",
   "NNE",
   "NE",
@@ -76,11 +94,27 @@ const getWindBearingText = (degree: string): string => {
   return degree;
 };
 
-export const getWindBearing = (bearing: string): string => {
+const getWindBearing = (bearing: string): string => {
   if (bearing != null) {
     return getWindBearingText(bearing);
   }
   return "";
+};
+
+export const getWind = (
+  hass: HomeAssistant,
+  speed: string,
+  bearing: string
+): string => {
+  if (bearing !== null) {
+    const cardinalDirection = getWindBearing(bearing);
+    return `${speed} ${getWeatherUnit(hass!, "wind_speed")} (${
+      hass.localize(
+        `ui.card.weather.cardinal_direction.${cardinalDirection.toLowerCase()}`
+      ) || cardinalDirection
+    })`;
+  }
+  return `${speed} ${getWeatherUnit(hass!, "wind_speed")}`;
 };
 
 export const getWeatherUnit = (
@@ -93,6 +127,7 @@ export const getWeatherUnit = (
       return lengthUnit === "km" ? "hPa" : "inHg";
     case "wind_speed":
       return `${lengthUnit}/h`;
+    case "visibility":
     case "length":
       return lengthUnit;
     case "precipitation":
@@ -108,7 +143,7 @@ export const getWeatherUnit = (
 export const getSecondaryWeatherAttribute = (
   hass: HomeAssistant,
   stateObj: WeatherEntity
-): string | undefined => {
+): TemplateResult | undefined => {
   const extrema = getWeatherExtrema(hass, stateObj);
 
   if (extrema) {
@@ -132,17 +167,22 @@ export const getSecondaryWeatherAttribute = (
     return undefined;
   }
 
-  return `
-    ${hass!.localize(
-      `ui.card.weather.attributes.${attribute}`
-    )} ${value} ${getWeatherUnit(hass!, attribute)}
+  const weatherAttrIcon = weatherAttrIcons[attribute];
+
+  return html`
+    ${weatherAttrIcon
+      ? html`
+          <ha-svg-icon class="attr-icon" .path=${weatherAttrIcon}></ha-svg-icon>
+        `
+      : hass!.localize(`ui.card.weather.attributes.${attribute}`)}
+    ${roundWithOneDecimal(value)} ${getWeatherUnit(hass!, attribute)}
   `;
 };
 
 const getWeatherExtrema = (
   hass: HomeAssistant,
   stateObj: WeatherEntity
-): string | undefined => {
+): TemplateResult | undefined => {
   if (!stateObj.attributes.forecast?.length) {
     return undefined;
   }
@@ -172,22 +212,18 @@ const getWeatherExtrema = (
 
   const unit = getWeatherUnit(hass!, "temperature");
 
-  return `
-    ${
-      tempHigh
-        ? `
+  return html`
+    ${tempHigh
+      ? `
             ${tempHigh} ${unit}
           `
-        : ""
-    }
+      : ""}
     ${tempLow && tempHigh ? " / " : ""}
-    ${
-      tempLow
-        ? `
+    ${tempLow
+      ? `
           ${tempLow} ${unit}
         `
-        : ""
-    }
+      : ""}
   `;
 };
 
@@ -199,7 +235,7 @@ export const weatherSVGStyles = css`
     fill: var(--weather-icon-sun-color, #fdd93c);
   }
   .moon {
-    fill: var(--weather-icon-moon-color, #fdf9cc);
+    fill: var(--weather-icon-moon-color, #fcf497);
   }
   .cloud-back {
     fill: var(--weather-icon-cloud-back-color, #d4d4d4);
@@ -209,7 +245,10 @@ export const weatherSVGStyles = css`
   }
 `;
 
-export const getWeatherStateSVG = (state: string): SVGTemplateResult => {
+const getWeatherStateSVG = (
+  state: string,
+  nightTime?: boolean
+): SVGTemplateResult => {
   return svg`
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -236,7 +275,14 @@ export const getWeatherStateSVG = (state: string): SVGTemplateResult => {
       : ""
   }
   ${
-    state === "partlycloudy"
+    state === "partlycloudy" && nightTime
+      ? svg`
+          <path
+            class="moon"
+            d="m14.981 4.2112c0 1.9244-1.56 3.4844-3.484 3.4844-1.9244 0-3.4844-1.56-3.4844-3.4844s1.56-3.484 3.4844-3.484c1.924 0 3.484 1.5596 3.484 3.484"
+          />
+        `
+      : state === "partlycloudy"
       ? svg`
           <path
             class="sun"
@@ -342,7 +388,8 @@ export const getWeatherStateSVG = (state: string): SVGTemplateResult => {
 
 export const getWeatherStateIcon = (
   state: string,
-  element: HTMLElement
+  element: HTMLElement,
+  nightTime?: boolean
 ): TemplateResult | undefined => {
   const userDefinedIcon = getComputedStyle(element).getPropertyValue(
     `--weather-icon-${state}`
@@ -359,7 +406,7 @@ export const getWeatherStateIcon = (
   }
 
   if (weatherSVGs.has(state)) {
-    return html`${getWeatherStateSVG(state)}`;
+    return html`${getWeatherStateSVG(state, nightTime)}`;
   }
 
   if (state in weatherIcons) {

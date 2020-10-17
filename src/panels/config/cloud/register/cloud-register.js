@@ -8,6 +8,7 @@ import "../../../../layouts/hass-subpage";
 import { EventsMixin } from "../../../../mixins/events-mixin";
 import LocalizeMixin from "../../../../mixins/localize-mixin";
 import "../../../../styles/polymer-ha-style";
+import { documentationUrl } from "../../../../util/documentation-url";
 import "../../ha-config-section";
 
 /*
@@ -18,10 +19,6 @@ class CloudRegister extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="iron-flex ha-style">
-      .content {
-        direction: ltr;
-      }
-
       [slot=introduction] {
         margin: -1em 0;
       }
@@ -39,7 +36,7 @@ class CloudRegister extends LocalizeMixin(EventsMixin(PolymerElement)) {
         margin: 0;
       }
       .error {
-        color: var(--google-red-500);
+        color: var(--error-color);
       }
       .card-actions {
         display: flex;
@@ -74,8 +71,8 @@ class CloudRegister extends LocalizeMixin(EventsMixin(PolymerElement)) {
             <p>
               [[localize('ui.panel.config.cloud.register.information4')]]
               </p><ul>
-                <li><a href="https://home-assistant.io/tos/" target="_blank" rel="noreferrer">[[localize('ui.panel.config.cloud.register.link_terms_conditions')]]</a></li>
-                <li><a href="https://home-assistant.io/privacy/" target="_blank" rel="noreferrer">[[localize('ui.panel.config.cloud.register.link_privacy_policy')]]</a></li>
+                <li><a href="[[_computeDocumentationUrlTos(hass)]]" target="_blank" rel="noreferrer">[[localize('ui.panel.config.cloud.register.link_terms_conditions')]]</a></li>
+                <li><a href="[[_computeDocumentationUrlPrivacy(hass)]]" target="_blank" rel="noreferrer">[[localize('ui.panel.config.cloud.register.link_privacy_policy')]]</a></li>
               </ul>
             </p>
           </div>
@@ -139,6 +136,14 @@ class CloudRegister extends LocalizeMixin(EventsMixin(PolymerElement)) {
       this._handleRegister();
       ev.preventDefault();
     }
+  }
+
+  _computeDocumentationUrlTos(hass) {
+    return documentationUrl(hass, "/tos/");
+  }
+
+  _computeDocumentationUrlPrivacy(hass) {
+    return documentationUrl(hass, "/privacy/");
   }
 
   _handleRegister() {

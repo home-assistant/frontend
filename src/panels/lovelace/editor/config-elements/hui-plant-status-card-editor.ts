@@ -1,27 +1,29 @@
 import "@polymer/paper-input/paper-input";
 import {
+  CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   TemplateResult,
 } from "lit-element";
+import { assert, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-icon";
 import { HomeAssistant } from "../../../../types";
 import { PlantStatusCardConfig } from "../../cards/types";
-import { struct } from "../../common/structs/struct";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
-const cardConfigStruct = struct({
-  type: "string",
-  entity: "string",
-  name: "string?",
-  theme: "string?",
+const cardConfigStruct = object({
+  type: string(),
+  entity: string(),
+  name: optional(string()),
+  theme: optional(string()),
 });
 
 const includeDomains = ["plant"];
@@ -29,12 +31,12 @@ const includeDomains = ["plant"];
 @customElement("hui-plant-status-card-editor")
 export class HuiPlantStatusCardEditor extends LitElement
   implements LovelaceCardEditor {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: PlantStatusCardConfig;
+  @internalProperty() private _config?: PlantStatusCardConfig;
 
   public setConfig(config: PlantStatusCardConfig): void {
-    config = cardConfigStruct(config);
+    assert(config, cardConfigStruct);
     this._config = config;
   }
 
@@ -56,7 +58,6 @@ export class HuiPlantStatusCardEditor extends LitElement
     }
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <ha-entity-picker
           .label="${this.hass.localize(
@@ -101,6 +102,7 @@ export class HuiPlantStatusCardEditor extends LitElement
     }
     if (target.configValue) {
       if (target.value === "") {
+        this._config = { ...this._config };
         delete this._config[target.configValue!];
       } else {
         this._config = {
@@ -110,6 +112,10 @@ export class HuiPlantStatusCardEditor extends LitElement
       }
     }
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  static get styles(): CSSResult {
+    return configElementStyle;
   }
 }
 

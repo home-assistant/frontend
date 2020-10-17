@@ -10,6 +10,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   query,
   TemplateResult,
 } from "lit-element";
@@ -37,19 +38,19 @@ export interface PlaceholderContainer {
 
 @customElement("ha-dialog-thinktalk")
 class DialogThingtalk extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
-  @property() private _params?: ThingtalkDialogParams;
+  @internalProperty() private _params?: ThingtalkDialogParams;
 
-  @property() private _submitting = false;
+  @internalProperty() private _submitting = false;
 
-  @property() private _opened = false;
+  @internalProperty() private _opened = false;
 
-  @property() private _placeholders?: PlaceholderContainer;
+  @internalProperty() private _placeholders?: PlaceholderContainer;
 
-  @query("#input") private _input?: PaperInputElement;
+  @query("#input", true) private _input?: PaperInputElement;
 
   private _value!: string;
 
@@ -132,10 +133,13 @@ class DialogThingtalk extends LitElement {
             Skip
           </mwc-button>
           <mwc-button @click="${this._generate}" .disabled=${this._submitting}>
-            <ha-circular-progress
-              ?active="${this._submitting}"
-              alt="Creating your automation..."
-            ></ha-circular-progress>
+            ${this._submitting
+              ? html`<ha-circular-progress
+                  active
+                  size="small"
+                  title="Creating your automation..."
+                ></ha-circular-progress>`
+              : ""}
             Create automation
           </mwc-button>
         </div>
@@ -245,19 +249,8 @@ class DialogThingtalk extends LitElement {
         mwc-button.left {
           margin-right: auto;
         }
-        mwc-button ha-circular-progress {
-          width: 14px;
-          height: 14px;
-          margin-right: 20px;
-        }
-        ha-circular-progress {
-          display: none;
-        }
-        ha-circular-progress[active] {
-          display: block;
-        }
         .error {
-          color: var(--google-red-500);
+          color: var(--error-color);
         }
         .attribution {
           color: var(--secondary-text-color);

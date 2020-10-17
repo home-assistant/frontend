@@ -38,12 +38,12 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
     };
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() protected _config?: PictureCardConfig;
 
   public getCardSize(): number {
-    return 3;
+    return 5;
   }
 
   public setConfig(config: PictureCardConfig): void {
@@ -113,6 +113,7 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
     return css`
       ha-card {
         overflow: hidden;
+        height: 100%;
       }
 
       ha-card.clickable {

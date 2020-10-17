@@ -5,11 +5,13 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
+import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-dialog";
 import "../../components/ha-switch";
 import { PolymerChangedEvent } from "../../polymer-types";
@@ -19,17 +21,28 @@ import { DialogParams } from "./show-dialog-box";
 
 @customElement("dialog-box")
 class DialogBox extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _params?: DialogParams;
+  @internalProperty() private _params?: DialogParams;
 
-  @property() private _value?: string;
+  @internalProperty() private _value?: string;
 
   public async showDialog(params: DialogParams): Promise<void> {
     this._params = params;
     if (params.prompt) {
       this._value = params.defaultValue;
     }
+  }
+
+  public closeDialog(): boolean {
+    if (this._params?.confirmation || this._params?.prompt) {
+      this._dismiss();
+      return true;
+    }
+    if (this._params) {
+      return false;
+    }
+    return true;
   }
 
   protected render(): TemplateResult {
@@ -42,9 +55,10 @@ class DialogBox extends LitElement {
     return html`
       <ha-dialog
         open
-        scrimClickAction
-        escapeKeyAction
-        @close=${this._close}
+        ?scrimClickAction=${this._params.prompt}
+        ?escapeKeyAction=${this._params.prompt}
+        @closed=${this._dialogClosed}
+        defaultAction="ignore"
         .heading=${this._params.title
           ? this._params.title
           : this._params.confirmation &&
@@ -65,10 +79,10 @@ class DialogBox extends LitElement {
           ${this._params.prompt
             ? html`
                 <paper-input
-                  autofocus
+                  dialogInitialFocus
                   .value=${this._value}
-                  @value-changed=${this._valueChanged}
                   @keyup=${this._handleKeyUp}
+                  @value-changed=${this._valueChanged}
                   .label=${this._params.inputLabel
                     ? this._params.inputLabel
                     : ""}
@@ -87,7 +101,11 @@ class DialogBox extends LitElement {
               : this.hass.localize("ui.dialogs.generic.cancel")}
           </mwc-button>
         `}
-        <mwc-button @click=${this._confirm} slot="primaryAction">
+        <mwc-button
+          @click=${this._confirm}
+          ?dialogInitialFocus=${!this._params.prompt}
+          slot="primaryAction"
+        >
           ${this._params.confirmText
             ? this._params.confirmText
             : this.hass.localize("ui.dialogs.generic.ok")}
@@ -100,11 +118,11 @@ class DialogBox extends LitElement {
     this._value = ev.detail.value;
   }
 
-  private async _dismiss(): Promise<void> {
-    if (this._params!.cancel) {
-      this._params!.cancel();
+  private _dismiss(): void {
+    if (this._params?.cancel) {
+      this._params.cancel();
     }
-    this._params = undefined;
+    this._close();
   }
 
   private _handleKeyUp(ev: KeyboardEvent) {
@@ -113,15 +131,26 @@ class DialogBox extends LitElement {
     }
   }
 
-  private async _confirm(): Promise<void> {
+  private _confirm(): void {
     if (this._params!.confirm) {
       this._params!.confirm(this._value);
     }
-    this._dismiss();
+    this._close();
+  }
+
+  private _dialogClosed(ev) {
+    if (ev.detail.action === "ignore") {
+      return;
+    }
+    this.closeDialog();
   }
 
   private _close(): void {
+    if (!this._params) {
+      return;
+    }
     this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   static get styles(): CSSResult[] {

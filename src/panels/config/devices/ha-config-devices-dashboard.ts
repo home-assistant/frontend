@@ -1,6 +1,7 @@
 import {
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   TemplateResult,
@@ -14,7 +15,7 @@ import {
   DataTableRowData,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
-import "../../../components/entity/ha-state-icon";
+import "../../../components/entity/ha-battery-icon";
 import { AreaRegistryEntry } from "../../../data/area_registry";
 import { ConfigEntry } from "../../../data/config_entries";
 import {
@@ -24,6 +25,7 @@ import {
 } from "../../../data/device_registry";
 import {
   EntityRegistryEntry,
+  findBatteryChargingEntity,
   findBatteryEntity,
 } from "../../../data/entity_registry";
 import { domainToName } from "../../../data/integration";
@@ -35,12 +37,12 @@ interface DeviceRowData extends DeviceRegistryEntry {
   device?: DeviceRowData;
   area?: string;
   integration?: string;
-  battery_entity?: string;
+  battery_entity?: [string | undefined, string | undefined];
 }
 
 @customElement("ha-config-devices-dashboard")
 export class HaConfigDeviceDashboard extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow = false;
 
@@ -56,7 +58,7 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   @property() public route!: Route;
 
-  @property() private _searchParms = new URLSearchParams(
+  @internalProperty() private _searchParms = new URLSearchParams(
     window.location.search
   );
 
@@ -80,11 +82,11 @@ export class HaConfigDeviceDashboard extends LitElement {
             filterTexts.push(
               `${this.hass.localize(
                 "ui.panel.config.integrations.integration"
-              )} ${integrationName}${
+              )} "${integrationName}${
                 integrationName !== configEntry.title
                   ? `: ${configEntry.title}`
                   : ""
-              }`
+              }"`
             );
             break;
           }
@@ -167,7 +169,10 @@ export class HaConfigDeviceDashboard extends LitElement {
                 )
                 .join(", ")
             : "No integration",
-          battery_entity: this._batteryEntity(device.id, deviceEntityLookup),
+          battery_entity: [
+            this._batteryEntity(device.id, deviceEntityLookup),
+            this._batteryChargingEntity(device.id, deviceEntityLookup),
+          ],
         };
       });
 
@@ -176,8 +181,8 @@ export class HaConfigDeviceDashboard extends LitElement {
   );
 
   private _columns = memoizeOne(
-    (narrow: boolean): DataTableColumnContainer =>
-      narrow
+    (narrow: boolean): DataTableColumnContainer => {
+      const columns: DataTableColumnContainer = narrow
         ? {
             name: {
               title: "Device",
@@ -194,28 +199,6 @@ export class HaConfigDeviceDashboard extends LitElement {
                 `;
               },
             },
-            battery_entity: {
-              title: this.hass.localize(
-                "ui.panel.config.devices.data_table.battery"
-              ),
-              sortable: true,
-              type: "numeric",
-              width: "90px",
-              template: (batteryEntity: string) => {
-                const battery = batteryEntity
-                  ? this.hass.states[batteryEntity]
-                  : undefined;
-                return battery
-                  ? html`
-                      ${isNaN(battery.state as any) ? "-" : battery.state}%
-                      <ha-state-icon
-                        .hass=${this.hass!}
-                        .stateObj=${battery}
-                      ></ha-state-icon>
-                    `
-                  : html` - `;
-              },
-            },
           }
         : {
             name: {
@@ -227,62 +210,69 @@ export class HaConfigDeviceDashboard extends LitElement {
               grows: true,
               direction: "asc",
             },
-            manufacturer: {
-              title: this.hass.localize(
-                "ui.panel.config.devices.data_table.manufacturer"
-              ),
-              sortable: true,
-              filterable: true,
-              width: "15%",
-            },
-            model: {
-              title: this.hass.localize(
-                "ui.panel.config.devices.data_table.model"
-              ),
-              sortable: true,
-              filterable: true,
-              width: "15%",
-            },
-            area: {
-              title: this.hass.localize(
-                "ui.panel.config.devices.data_table.area"
-              ),
-              sortable: true,
-              filterable: true,
-              width: "15%",
-            },
-            integration: {
-              title: this.hass.localize(
-                "ui.panel.config.devices.data_table.integration"
-              ),
-              sortable: true,
-              filterable: true,
-              width: "15%",
-            },
-            battery_entity: {
-              title: this.hass.localize(
-                "ui.panel.config.devices.data_table.battery"
-              ),
-              sortable: true,
-              type: "numeric",
-              width: "15%",
-              maxWidth: "90px",
-              template: (batteryEntity: string) => {
-                const battery = batteryEntity
-                  ? this.hass.states[batteryEntity]
-                  : undefined;
-                return battery && !isNaN(battery.state as any)
-                  ? html`
-                      ${battery.state}%
-                      <ha-state-icon
-                        .hass=${this.hass!}
-                        .stateObj=${battery}
-                      ></ha-state-icon>
-                    `
-                  : html` - `;
-              },
-            },
-          }
+          };
+
+      columns.manufacturer = {
+        title: this.hass.localize(
+          "ui.panel.config.devices.data_table.manufacturer"
+        ),
+        sortable: true,
+        hidden: narrow,
+        filterable: true,
+        width: "15%",
+      };
+      columns.model = {
+        title: this.hass.localize("ui.panel.config.devices.data_table.model"),
+        sortable: true,
+        hidden: narrow,
+        filterable: true,
+        width: "15%",
+      };
+      columns.area = {
+        title: this.hass.localize("ui.panel.config.devices.data_table.area"),
+        sortable: true,
+        hidden: narrow,
+        filterable: true,
+        width: "15%",
+      };
+      columns.integration = {
+        title: this.hass.localize(
+          "ui.panel.config.devices.data_table.integration"
+        ),
+        sortable: true,
+        hidden: narrow,
+        filterable: true,
+        width: "15%",
+      };
+      columns.battery_entity = {
+        title: this.hass.localize("ui.panel.config.devices.data_table.battery"),
+        sortable: true,
+        type: "numeric",
+        width: narrow ? "90px" : "15%",
+        maxWidth: "90px",
+        template: (batteryEntityPair: DeviceRowData["battery_entity"]) => {
+          const battery =
+            batteryEntityPair && batteryEntityPair[0]
+              ? this.hass.states[batteryEntityPair[0]]
+              : undefined;
+          const batteryCharging =
+            batteryEntityPair && batteryEntityPair[1]
+              ? this.hass.states[batteryEntityPair[1]]
+              : undefined;
+          return battery && !isNaN(battery.state as any)
+            ? html`
+                ${battery.state}%
+                <ha-battery-icon
+                  .hass=${this.hass!}
+                  .batteryStateObj=${battery}
+                  .batteryChargingStateObj=${batteryCharging}
+                ></ha-battery-icon>
+              `
+            : html` - `;
+        },
+      };
+      return columns;
+    }
   );
 
   public constructor() {
@@ -320,6 +310,7 @@ export class HaConfigDeviceDashboard extends LitElement {
           this.hass.localize
         )}
         @row-click=${this._handleRowClicked}
+        clickable
       >
       </hass-tabs-subpage-data-table>
     `;
@@ -334,6 +325,17 @@ export class HaConfigDeviceDashboard extends LitElement {
       deviceEntityLookup[deviceId] || []
     );
     return batteryEntity ? batteryEntity.entity_id : undefined;
+  }
+
+  private _batteryChargingEntity(
+    deviceId: string,
+    deviceEntityLookup: DeviceEntityLookup
+  ): string | undefined {
+    const batteryChargingEntity = findBatteryChargingEntity(
+      this.hass,
+      deviceEntityLookup[deviceId] || []
+    );
+    return batteryChargingEntity ? batteryChargingEntity.entity_id : undefined;
   }
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {

@@ -1,61 +1,103 @@
 import {
   css,
-  CSSResult,
+  CSSResultArray,
+  customElement,
+  eventOptions,
   html,
   LitElement,
   property,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import { scroll } from "lit-virtualizer";
 import { formatDate } from "../../common/datetime/format_date";
 import { formatTimeWithSeconds } from "../../common/datetime/format_time";
+import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeDomain } from "../../common/entity/compute_domain";
 import { domainIcon } from "../../common/entity/domain_icon";
-import { stateIcon } from "../../common/entity/state_icon";
-import { computeRTL } from "../../common/util/compute_rtl";
+import { computeRTL, emitRTLDirection } from "../../common/util/compute_rtl";
+import "../../components/ha-circular-progress";
 import "../../components/ha-icon";
+import "../../components/ha-relative-time";
 import { LogbookEntry } from "../../data/logbook";
+import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 
+@customElement("ha-logbook")
 class HaLogbook extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public userIdToName = {};
+  @property({ attribute: false }) public userIdToName = {};
 
-  @property() public entries: LogbookEntry[] = [];
+  @property({ attribute: false }) public entries: LogbookEntry[] = [];
 
-  @property({ attribute: "rtl", type: Boolean, reflect: true })
-  // @ts-ignore
+  @property({ type: Boolean, attribute: "narrow" })
+  public narrow = false;
+
+  @property({ attribute: "rtl", type: Boolean })
   private _rtl = false;
+
+  @property({ type: Boolean, attribute: "virtualize", reflect: true })
+  public virtualize = false;
+
+  @property({ type: Boolean, attribute: "no-icon" })
+  public noIcon = false;
+
+  @property({ type: Boolean, attribute: "no-name" })
+  public noName = false;
+
+  @property({ type: Boolean, attribute: "relative-time" })
+  public relativeTime = false;
+
+  // @ts-ignore
+  @restoreScroll(".container") private _savedScrollPos?: number;
 
   protected shouldUpdate(changedProps: PropertyValues) {
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const languageChanged =
       oldHass === undefined || oldHass.language !== this.hass.language;
+
     return changedProps.has("entries") || languageChanged;
   }
 
   protected updated(_changedProps: PropertyValues) {
-    this._rtl = computeRTL(this.hass);
+    const oldHass = _changedProps.get("hass") as HomeAssistant | undefined;
+
+    if (oldHass === undefined || oldHass.language !== this.hass.language) {
+      this._rtl = computeRTL(this.hass);
+    }
   }
 
   protected render(): TemplateResult {
     if (!this.entries?.length) {
       return html`
-        <div class="container">
-          ${this.hass.localize("ui.panel.logbook.entries_not_found")}
+        <div class="container no-entries" .dir=${emitRTLDirection(this._rtl)}>
+          ${this.hass.localize("ui.components.logbook.entries_not_found")}
         </div>
       `;
     }
 
     return html`
-      <div class="container">
-        ${scroll({
-          items: this.entries,
-          renderItem: (item: LogbookEntry, index?: number) =>
-            this._renderLogbookItem(item, index),
-        })}
+      <div
+        class="container ${classMap({
+          narrow: this.narrow,
+          rtl: this._rtl,
+          "no-name": this.noName,
+          "no-icon": this.noIcon,
+        })}"
+        @scroll=${this._saveScrollPos}
+      >
+        ${this.virtualize
+          ? scroll({
+              items: this.entries,
+              renderItem: (item: LogbookEntry, index?: number) =>
+                this._renderLogbookItem(item, index),
+            })
+          : this.entries.map((item, index) =>
+              this._renderLogbookItem(item, index)
+            )}
       </div>
     `;
   }
@@ -67,12 +109,14 @@ class HaLogbook extends LitElement {
     if (index === undefined) {
       return html``;
     }
+
     const previous = this.entries[index - 1];
     const state = item.entity_id ? this.hass.states[item.entity_id] : undefined;
     const item_username =
       item.context_user_id && this.userIdToName[item.context_user_id];
+
     return html`
-      <div>
+      <div class="entry-container">
         ${index === 0 ||
         (item?.when &&
           previous?.when &&
@@ -85,102 +129,216 @@ class HaLogbook extends LitElement {
             `
           : html``}
 
-        <div class="entry">
-          <div class="time">
-            ${formatTimeWithSeconds(new Date(item.when), this.hass.language)}
-          </div>
-          <ha-icon
-            .icon=${state ? stateIcon(state) : domainIcon(item.domain)}
-          ></ha-icon>
-          <div class="message">
-            ${!item.entity_id
-              ? html` <span class="name">${item.name}</span> `
-              : html`
-                  <a
-                    href="#"
-                    @click=${this._entityClicked}
-                    .entityId=${item.entity_id}
-                    class="name"
-                  >
-                    ${item.name}
-                  </a>
-                `}
-            <span
-              >${item.message}${item_username
-                ? ` (${item_username})`
-                : ``}</span
-            >
+        <div class="entry ${classMap({ "no-entity": !item.entity_id })}">
+          <div class="icon-message">
+            ${!this.noIcon
+              ? html`
+                  <ha-icon
+                    .icon=${item.icon ??
+                    domainIcon(
+                      item.entity_id
+                        ? computeDomain(item.entity_id)
+                        : item.domain,
+                      state,
+                      item.state
+                    )}
+                  ></ha-icon>
+                `
+              : ""}
+            <div class="message-relative_time">
+              <div class="message">
+                ${!this.noName
+                  ? html`<a
+                      href="#"
+                      @click=${this._entityClicked}
+                      .entityId=${item.entity_id}
+                      ><span class="name">${item.name}</span></a
+                    >`
+                  : ""}
+                ${item.message}
+                ${item_username
+                  ? ` ${this.hass.localize(
+                      "ui.components.logbook.by"
+                    )} ${item_username}`
+                  : !item.context_event_type
+                  ? ""
+                  : item.context_event_type === "call_service"
+                  ? // Service Call
+                    ` ${this.hass.localize("ui.components.logbook.by_service")}
+                  ${item.context_domain}.${item.context_service}`
+                  : item.context_entity_id === item.entity_id
+                  ? // HomeKit or something that self references
+                    ` ${this.hass.localize("ui.components.logbook.by")}
+                  ${
+                    item.context_name
+                      ? item.context_name
+                      : item.context_event_type
+                  }`
+                  : // Another entity such as an automation or script
+                    html` ${this.hass.localize("ui.components.logbook.by")}
+                      <a
+                        href="#"
+                        @click=${this._entityClicked}
+                        .entityId=${item.context_entity_id}
+                        class="name"
+                        >${item.context_entity_id_name}</a
+                      >`}
+              </div>
+              <div class="secondary">
+                <span
+                  >${formatTimeWithSeconds(
+                    new Date(item.when),
+                    this.hass.language
+                  )}</span
+                >
+                -
+                <ha-relative-time
+                  .hass=${this.hass}
+                  .datetime=${item.when}
+                ></ha-relative-time>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     `;
   }
 
+  @eventOptions({ passive: true })
+  private _saveScrollPos(e: Event) {
+    this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
+  }
+
   private _entityClicked(ev: Event) {
+    const entityId = (ev.currentTarget as any).entityId;
+    if (!entityId) {
+      return;
+    }
+
     ev.preventDefault();
+    ev.stopPropagation();
     fireEvent(this, "hass-more-info", {
-      entityId: (ev.target as any).entityId,
+      entityId: entityId,
     });
   }
 
-  static get styles(): CSSResult {
-    return css`
-      :host {
-        display: block;
-        height: 100%;
-      }
+  static get styles(): CSSResultArray {
+    return [
+      haStyle,
+      css`
+        :host {
+          display: block;
+          height: 100%;
+        }
 
-      :host([rtl]) {
-        direction: ltr;
-      }
+        .rtl {
+          direction: ltr;
+        }
 
-      .entry {
-        display: flex;
-        line-height: 2em;
-      }
+        .entry-container {
+          width: 100%;
+        }
 
-      .time {
-        width: 65px;
-        flex-shrink: 0;
-        font-size: 0.8em;
-        color: var(--secondary-text-color);
-      }
+        .entry {
+          display: flex;
+          width: 100%;
+          line-height: 2em;
+          padding: 8px 16px;
+          box-sizing: border-box;
+          border-top: 1px solid var(--divider-color);
+        }
 
-      :host([rtl]) .date {
-        direction: rtl;
-      }
+        .entry.no-entity,
+        .no-name .entry {
+          cursor: default;
+        }
 
-      ha-icon {
-        margin: 0 8px 0 16px;
-        flex-shrink: 0;
-        color: var(--primary-text-color);
-      }
+        .entry:hover {
+          background-color: rgba(var(--rgb-primary-text-color), 0.04);
+        }
 
-      .message {
-        color: var(--primary-text-color);
-      }
+        .narrow:not(.no-icon) .time {
+          margin-left: 32px;
+        }
 
-      a {
-        color: var(--primary-color);
-      }
+        .message-relative_time {
+          display: flex;
+          flex-direction: column;
+        }
 
-      .container {
-        padding: 0 16px;
-      }
+        .secondary {
+          font-size: 12px;
+          line-height: 1.7;
+        }
 
-      .uni-virtualizer-host {
-        display: block;
-        position: relative;
-        contain: strict;
-        height: 100%;
-        overflow: auto;
-      }
+        .date {
+          margin: 8px 0;
+          padding: 0 16px;
+        }
 
-      .uni-virtualizer-host > * {
-        box-sizing: border-box;
-      }
-    `;
+        .narrow .date {
+          padding: 0 8px;
+        }
+
+        .rtl .date {
+          direction: rtl;
+        }
+
+        .icon-message {
+          display: flex;
+          align-items: center;
+        }
+
+        .no-entries {
+          text-align: center;
+          color: var(--secondary-text-color);
+        }
+
+        ha-icon {
+          margin-right: 16px;
+          flex-shrink: 0;
+          color: var(--state-icon-color);
+        }
+
+        .message {
+          color: var(--primary-text-color);
+        }
+
+        .no-name .message:first-letter {
+          text-transform: capitalize;
+        }
+
+        a {
+          color: var(--primary-color);
+        }
+
+        .uni-virtualizer-host {
+          display: block;
+          position: relative;
+          contain: strict;
+          height: 100%;
+          overflow: auto;
+        }
+
+        .uni-virtualizer-host > * {
+          box-sizing: border-box;
+        }
+
+        .narrow .entry {
+          line-height: 1.5;
+          padding: 8px;
+        }
+
+        .narrow .icon-message ha-icon {
+          margin-left: 0;
+        }
+      `,
+    ];
   }
 }
 
-customElements.define("ha-logbook", HaLogbook);
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-logbook": HaLogbook;
+  }
+}

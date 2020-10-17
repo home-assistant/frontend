@@ -12,6 +12,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
@@ -61,7 +62,7 @@ const rowRenderer = (
 
 @customElement("ha-area-picker")
 export class HaAreaPicker extends SubscribeMixin(LitElement) {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public label?: string;
 
@@ -72,7 +73,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
   @property({ type: Boolean, attribute: "no-add" })
   public noAdd?: boolean;
 
-  @property() private _opened?: boolean;
+  @internalProperty() private _opened?: boolean;
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [

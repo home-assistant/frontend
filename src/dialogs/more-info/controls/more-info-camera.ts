@@ -4,6 +4,7 @@ import {
   css,
   CSSResult,
   html,
+  internalProperty,
   LitElement,
   property,
   PropertyValues,
@@ -20,13 +21,13 @@ import {
 import type { CameraEntity, HomeAssistant } from "../../../types";
 
 class MoreInfoCamera extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public stateObj?: CameraEntity;
 
-  @property() private _cameraPrefs?: CameraPreferences;
+  @internalProperty() private _cameraPrefs?: CameraPreferences;
 
-  @property() private _attached = false;
+  @internalProperty() private _attached = false;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -46,8 +47,9 @@ class MoreInfoCamera extends LitElement {
     return html`
       <ha-camera-stream
         .hass=${this.hass}
-        .stateObj="${this.stateObj}"
-        showcontrols
+        .stateObj=${this.stateObj}
+        allow-exoplayer
+        controls
       ></ha-camera-stream>
       ${this._cameraPrefs
         ? html`

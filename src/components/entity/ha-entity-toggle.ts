@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -28,7 +29,7 @@ export class HaEntityToggle extends LitElement {
 
   @property() public stateObj?: HassEntity;
 
-  @property() private _isOn = false;
+  @internalProperty() private _isOn = false;
 
   protected render(): TemplateResult {
     if (!this.stateObj) {

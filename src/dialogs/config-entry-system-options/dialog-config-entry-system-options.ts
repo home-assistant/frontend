@@ -7,6 +7,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../components/dialog/ha-paper-dialog";
@@ -22,20 +23,21 @@ import type { PolymerChangedEvent } from "../../polymer-types";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { ConfigEntrySystemOptionsDialogParams } from "./show-dialog-config-entry-system-options";
+import { computeRTLDirection } from "../../common/util/compute_rtl";
 
 @customElement("dialog-config-entry-system-options")
 class DialogConfigEntrySystemOptions extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _disableNewEntities!: boolean;
+  @internalProperty() private _disableNewEntities!: boolean;
 
-  @property() private _error?: string;
+  @internalProperty() private _error?: string;
 
-  @property() private _params?: ConfigEntrySystemOptionsDialogParams;
+  @internalProperty() private _params?: ConfigEntrySystemOptionsDialogParams;
 
-  @property() private _loading?: boolean;
+  @internalProperty() private _loading?: boolean;
 
-  @property() private _submitting?: boolean;
+  @internalProperty() private _submitting?: boolean;
 
   public async showDialog(
     params: ConfigEntrySystemOptionsDialogParams
@@ -99,6 +101,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
                           ) || this._params.entry.domain
                         )}
                       </p>`}
+                    .dir=${computeRTLDirection(this.hass)}
                   >
                     <ha-switch
                       .checked=${!this._disableNewEntities}
@@ -162,7 +165,6 @@ class DialogConfigEntrySystemOptions extends LitElement {
       haStyleDialog,
       css`
         ha-paper-dialog {
-          min-width: 400px;
           max-width: 500px;
         }
         .init-spinner {
@@ -180,7 +182,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
         }
 
         .error {
-          color: var(--google-red-500);
+          color: var(--error-color);
         }
       `,
     ];

@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -28,15 +29,17 @@ import { HomeAssistant } from "../types";
 import "./action-badge";
 import "./integration-badge";
 
+const HIDDEN_DOMAINS = new Set(["met", "rpi_power"]);
+
 @customElement("onboarding-integrations")
 class OnboardingIntegrations extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public onboardingLocalize!: LocalizeFunc;
 
-  @property() private _entries?: ConfigEntry[];
+  @internalProperty() private _entries?: ConfigEntry[];
 
-  @property() private _discovered?: DataEntryFlowProgress[];
+  @internalProperty() private _discovered?: DataEntryFlowProgress[];
 
   private _unsubEvents?: () => void;
 
@@ -160,10 +163,12 @@ class OnboardingIntegrations extends LitElement {
 
   private async _loadConfigEntries() {
     const entries = await getConfigEntries(this.hass!);
-    // We filter out the config entry for the local weather.
+    // We filter out the config entry for the local weather and rpi_power.
     // It is one that we create automatically and it will confuse the user
     // if it starts showing up during onboarding.
-    this._entries = entries.filter((entry) => entry.domain !== "met");
+    this._entries = entries.filter(
+      (entry) => !HIDDEN_DOMAINS.has(entry.domain)
+    );
   }
 
   private async _finish() {

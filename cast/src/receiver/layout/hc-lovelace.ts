@@ -9,18 +9,19 @@ import {
 } from "lit-element";
 import { LovelaceConfig } from "../../../../src/data/lovelace";
 import { Lovelace } from "../../../../src/panels/lovelace/types";
-import "../../../../src/panels/lovelace/views/hui-panel-view";
 import "../../../../src/panels/lovelace/views/hui-view";
 import { HomeAssistant } from "../../../../src/types";
 import "./hc-launch-screen";
 
 @customElement("hc-lovelace")
 class HcLovelace extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public lovelaceConfig!: LovelaceConfig;
+  @property({ attribute: false }) public lovelaceConfig!: LovelaceConfig;
 
   @property() public viewPath?: string | number;
+
+  public urlPath?: string | null;
 
   protected render(): TemplateResult {
     const index = this._viewIndex;
@@ -35,6 +36,7 @@ class HcLovelace extends LitElement {
     const lovelace: Lovelace = {
       config: this.lovelaceConfig,
       editMode: false,
+      urlPath: this.urlPath!,
       enableFullEditMode: () => undefined,
       mode: "storage",
       language: "en",
@@ -42,22 +44,13 @@ class HcLovelace extends LitElement {
       deleteConfig: async () => undefined,
       setEditMode: () => undefined,
     };
-    return this.lovelaceConfig.views[index].panel
-      ? html`
-          <hui-panel-view
-            .hass=${this.hass}
-            .lovelace=${lovelace}
-            .config=${this.lovelaceConfig.views[index]}
-          ></hui-panel-view>
-        `
-      : html`
-          <hui-view
-            .hass=${this.hass}
-            .lovelace=${lovelace}
-            .index=${index}
-            columns="2"
-          ></hui-view>
-        `;
+    return html`
+      <hui-view
+        .hass=${this.hass}
+        .lovelace=${lovelace}
+        .index=${index}
+      ></hui-view>
+    `;
   }
 
   protected updated(changedProps) {
@@ -73,7 +66,7 @@ class HcLovelace extends LitElement {
 
         if (configBackground) {
           (this.shadowRoot!.querySelector(
-            "hui-view, hui-panel-view"
+            "hui-view"
           ) as HTMLElement)!.style.setProperty(
             "--lovelace-background",
             configBackground

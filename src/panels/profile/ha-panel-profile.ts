@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-item/paper-item";
@@ -9,6 +8,7 @@ import {
   css,
   CSSResultArray,
   html,
+  internalProperty,
   LitElement,
   property,
   TemplateResult,
@@ -21,7 +21,9 @@ import {
   CoreFrontendUserData,
   getOptimisticFrontendUserDataCollection,
 } from "../../data/frontend";
+import { RefreshToken } from "../../data/refresh_token";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
+import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import "./ha-advanced-mode-row";
@@ -34,16 +36,17 @@ import "./ha-pick-language-row";
 import "./ha-pick-theme-row";
 import "./ha-push-notifications-row";
 import "./ha-refresh-tokens-card";
+import "./ha-set-suspend-row";
 import "./ha-set-vibrate-row";
 
 class HaPanelProfile extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow!: boolean;
 
-  @property() private _refreshTokens?: unknown[];
+  @internalProperty() private _refreshTokens?: RefreshToken[];
 
-  @property() private _coreUserData?: CoreFrontendUserData | null;
+  @internalProperty() private _coreUserData?: CoreFrontendUserData | null;
 
   private _unsubCoreData?: UnsubscribeFunc;
 
@@ -68,7 +71,7 @@ class HaPanelProfile extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <app-header-layout has-scrolling-region>
+      <ha-app-layout>
         <app-header slot="header" fixed>
           <app-toolbar>
             <ha-menu-button
@@ -104,6 +107,23 @@ class HaPanelProfile extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-dashboard-row>
+            <ha-settings-row .narrow=${this.narrow}>
+              <span slot="heading">
+                ${this.hass.localize(
+                  "ui.panel.profile.customize_sidebar.header"
+                )}
+              </span>
+              <span slot="description">
+                ${this.hass.localize(
+                  "ui.panel.profile.customize_sidebar.description"
+                )}
+              </span>
+              <mwc-button @click=${this._customizeSidebar}>
+                ${this.hass.localize(
+                  "ui.panel.profile.customize_sidebar.button"
+                )}
+              </mwc-button>
+            </ha-settings-row>
             ${this.hass.dockedSidebar !== "auto" || !this.narrow
               ? html`
                   <ha-force-narrow-row
@@ -112,7 +132,7 @@ class HaPanelProfile extends LitElement {
                   ></ha-force-narrow-row>
                 `
               : ""}
-            ${navigator.vibrate
+            ${"vibrate" in navigator
               ? html`
                   <ha-set-vibrate-row
                     .narrow=${this.narrow}
@@ -137,6 +157,10 @@ class HaPanelProfile extends LitElement {
                   ></ha-advanced-mode-row>
                 `
               : ""}
+            <ha-set-suspend-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-set-suspend-row>
 
             <div class="card-actions">
               <mwc-button class="warning" @click=${this._handleLogOut}>
@@ -172,8 +196,12 @@ class HaPanelProfile extends LitElement {
             @hass-refresh-tokens=${this._refreshRefreshTokens}
           ></ha-long-lived-access-tokens-card>
         </div>
-      </app-header-layout>
+      </ha-app-layout>
     `;
+  }
+
+  private _customizeSidebar() {
+    fireEvent(this, "hass-edit-sidebar", { editMode: true });
   }
 
   private async _refreshRefreshTokens() {
@@ -205,6 +233,7 @@ class HaPanelProfile extends LitElement {
           display: block;
           max-width: 600px;
           margin: 0 auto;
+          padding-bottom: env(safe-area-inset-bottom);
         }
 
         .content > * {

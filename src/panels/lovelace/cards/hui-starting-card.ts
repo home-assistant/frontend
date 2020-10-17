@@ -19,7 +19,7 @@ import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
 
 @customElement("hui-starting-card")
 export class HuiStartingCard extends LitElement implements LovelaceCard {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   public getCardSize(): number {
     return 2;

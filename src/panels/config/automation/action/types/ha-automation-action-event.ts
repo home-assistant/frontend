@@ -17,11 +17,11 @@ import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-event")
 export class HaEventAction extends LitElement implements ActionElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public action!: EventAction;
 
-  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+  @query("ha-yaml-editor", true) private _yamlEditor?: HaYamlEditor;
 
   private _actionData?: EventAction["event_data"];
 

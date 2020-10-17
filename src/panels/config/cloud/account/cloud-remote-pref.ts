@@ -24,7 +24,7 @@ import { showCloudCertificateDialog } from "../dialog-cloud-certificate/show-dia
 
 @customElement("cloud-remote-pref")
 export class CloudRemotePref extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public cloudStatus?: CloudStatusLoggedIn;
 
@@ -149,6 +149,10 @@ export class CloudRemotePref extends LitElement {
         position: absolute;
         right: 24px;
         top: 32px;
+      }
+      :host([dir="rtl"]) .switch {
+        right: auto;
+        left: 24px;
       }
       .card-actions {
         display: flex;

@@ -19,6 +19,7 @@ import { mdiNetwork, mdiFolderMultipleOutline, mdiPlus } from "@mdi/js";
 import "../../../../../layouts/hass-tabs-subpage";
 import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 import { computeRTL } from "../../../../../common/util/compute_rtl";
+import "@material/mwc-button/mwc-button";
 
 export const zhaTabs: PageNavigation[] = [
   {
@@ -81,14 +82,12 @@ class ZHAConfigDashboard extends LitElement {
               </div>`
             : ""}
         </ha-card>
-        <a href="/config/zha/add">
+        <a href="/config/zha/add" slot="fab">
           <mwc-fab
-            ?is-wide=${this.isWide}
-            ?narrow=${this.narrow}
             title=${this.hass.localize("ui.panel.config.zha.add_device")}
             ?rtl=${computeRTL(this.hass)}
           >
-            <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+            <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
           </mwc-fab>
         </a>
       </hass-tabs-subpage>
@@ -103,30 +102,6 @@ class ZHAConfigDashboard extends LitElement {
           margin: auto;
           margin-top: 16px;
           max-width: 500px;
-        }
-        mwc-fab {
-          position: fixed;
-          bottom: 16px;
-          right: 16px;
-          z-index: 1;
-        }
-
-        mwc-fab[is-wide] {
-          bottom: 24px;
-          right: 24px;
-        }
-        mwc-fab[narrow] {
-          bottom: 84px;
-        }
-        mwc-fab[rtl] {
-          right: auto;
-          left: 16px;
-        }
-
-        mwc-fab[rtl][is-wide] {
-          bottom: 24px;
-          right: auto;
-          left: 24px;
         }
       `,
     ];

@@ -9,6 +9,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -25,7 +26,7 @@ import { HomeAssistant } from "../../../../../types";
 
 @customElement("zwave-node-config")
 export class ZwaveNodeConfig extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public nodes: ZWaveNode[] = [];
 
@@ -33,13 +34,13 @@ export class ZwaveNodeConfig extends LitElement {
 
   @property() public selectedNode = -1;
 
-  @property() private _configItem?: ZWaveConfigItem;
+  @internalProperty() private _configItem?: ZWaveConfigItem;
 
-  @property() private _wakeupInput = -1;
+  @internalProperty() private _wakeupInput = -1;
 
-  @property() private _selectedConfigParameter = -1;
+  @internalProperty() private _selectedConfigParameter = -1;
 
-  @property() private _selectedConfigValue: number | string = -1;
+  @internalProperty() private _selectedConfigValue: number | string = -1;
 
   protected render(): TemplateResult {
     return html`

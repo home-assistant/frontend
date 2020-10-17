@@ -1,13 +1,21 @@
+import "@material/mwc-icon-button/mwc-icon-button";
+import { mdiContentCopy } from "@mdi/js";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import "@polymer/paper-tooltip/paper-tooltip";
+import type { PaperTooltipElement } from "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
   CSSResult,
   html,
+  internalProperty,
   LitElement,
   property,
+  query,
   TemplateResult,
 } from "lit-element";
+import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/dialog/ha-paper-dialog";
+import "../../../components/ha-svg-icon";
 import {
   domainToName,
   fetchIntegrationManifest,
@@ -15,23 +23,30 @@ import {
   IntegrationManifest,
 } from "../../../data/integration";
 import { getLoggedErrorIntegration } from "../../../data/system_log";
-import { PolymerChangedEvent } from "../../../polymer-types";
+import type { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
-import { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
+import type { HomeAssistant } from "../../../types";
+import type { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
 import { formatSystemLogTime } from "./util";
 
 class DialogSystemLogDetail extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _params?: SystemLogDetailDialogParams;
+  @internalProperty() private _params?: SystemLogDetailDialogParams;
 
-  @property() private _manifest?: IntegrationManifest;
+  @internalProperty() private _manifest?: IntegrationManifest;
+
+  @query("paper-tooltip", true) private _toolTip?: PaperTooltipElement;
 
   public async showDialog(params: SystemLogDetailDialogParams): Promise<void> {
     this._params = params;
     this._manifest = undefined;
     await this.updateComplete;
+  }
+
+  public closeDialog() {
+    this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected updated(changedProps) {
@@ -59,13 +74,26 @@ class DialogSystemLogDetail extends LitElement {
         opened
         @opened-changed="${this._openedChanged}"
       >
-        <h2>
-          ${this.hass.localize(
-            "ui.panel.config.logs.details",
-            "level",
-            item.level
-          )}
-        </h2>
+        <div class="heading">
+          <h2>
+            ${this.hass.localize(
+              "ui.panel.config.logs.details",
+              "level",
+              item.level
+            )}
+          </h2>
+          <mwc-icon-button id="copy" @click=${this._copyLog}>
+            <ha-svg-icon .path=${mdiContentCopy}></ha-svg-icon>
+          </mwc-icon-button>
+          <paper-tooltip
+            manual-mode
+            for="copy"
+            position="left"
+            animation-delay="0"
+            offset="4"
+            >${this.hass.localize("ui.common.copied")}</paper-tooltip
+          >
+        </div>
         <paper-dialog-scrollable>
           <p>
             Logger: ${item.name}<br />
@@ -137,8 +165,27 @@ class DialogSystemLogDetail extends LitElement {
 
   private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
     if (!(ev.detail as any).value) {
-      this._params = undefined;
+      this.closeDialog();
     }
+  }
+
+  private _copyLog(): void {
+    const copyElement = this.shadowRoot?.querySelector(
+      "paper-dialog-scrollable"
+    ) as HTMLElement;
+
+    const selection = window.getSelection()!;
+    const range = document.createRange();
+
+    range.selectNodeContents(copyElement);
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    document.execCommand("copy");
+    window.getSelection()!.removeAllRanges();
+
+    this._toolTip!.show();
+    setTimeout(() => this._toolTip?.hide(), 3000);
   }
 
   static get styles(): CSSResult[] {
@@ -156,6 +203,16 @@ class DialogSystemLogDetail extends LitElement {
         }
         pre {
           margin-bottom: 0;
+          font-family: var(--code-font-family, monospace);
+        }
+        .heading {
+          display: flex;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .heading ha-svg-icon {
+          cursor: pointer;
         }
       `,
     ];

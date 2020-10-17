@@ -10,7 +10,7 @@ const includeDomains = ["scene"];
 
 @customElement("ha-automation-action-scene")
 export class HaSceneAction extends LitElement implements ActionElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public action!: SceneAction;
 

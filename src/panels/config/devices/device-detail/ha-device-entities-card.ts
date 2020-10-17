@@ -8,6 +8,7 @@ import {
   html,
   LitElement,
   property,
+  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -26,11 +27,11 @@ import { HuiErrorCard } from "../../../lovelace/cards/hui-error-card";
 
 @customElement("ha-device-entities-card")
 export class HaDeviceEntitiesCard extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public entities!: EntityRegistryStateEntry[];
 
-  @property() private _showDisabled = false;
+  @internalProperty() private _showDisabled = false;
 
   private _entityRows: Array<LovelaceRow | HuiErrorCard> = [];
 
