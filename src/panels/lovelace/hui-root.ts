@@ -736,15 +736,17 @@ class HUIRoot extends LitElement {
         ha-app-layout {
           min-height: 100%;
         }
-        ha-tabs {
-          margin-left: max(env(safe-area-inset-left), 24px);
-          margin-right: max(env(safe-area-inset-right), 24px);
-          --paper-tabs-selection-bar-color: var(--text-primary-color, #fff);
-          text-transform: uppercase;
+        app-toolbar {
+          padding: 0 8px;
+        }
+        app-toolbar ha-menu-button {
+          margin-left: -12px;
         }
         app-toolbar ha-tabs {
           width: 100%;
-          margin: 0 8px;
+          margin: 0 0 0 4px;
+          --paper-tabs-selection-bar-color: var(--text-primary-color, #fff);
+          text-transform: uppercase;
         }
         .edit-mode {
           background-color: var(--dark-color, #455a64);
