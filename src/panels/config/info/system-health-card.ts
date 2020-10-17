@@ -133,19 +133,9 @@ class SystemHealthCard extends LitElement {
     const selection = window.getSelection()!;
     selection.removeAllRanges();
 
-    let copyElement = this.shadowRoot?.querySelector(
-      ".card-header-text"
-    ) as HTMLElement;
+    let copyElement = this.shadowRoot?.querySelector("ha-card") as HTMLElement;
 
     let range = document.createRange();
-    range.selectNodeContents(copyElement);
-    selection.addRange(range);
-
-    copyElement = this.shadowRoot?.querySelector(
-      ".card-content"
-    ) as HTMLElement;
-
-    range = document.createRange();
     range.selectNodeContents(copyElement);
     selection.addRange(range);
 
