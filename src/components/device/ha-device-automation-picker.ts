@@ -33,9 +33,17 @@ export abstract class HaDeviceAutomationPicker<
 
   @property() public value?: T;
 
-  protected NO_AUTOMATION_TEXT = "No automations";
+  get NO_AUTOMATION_TEXT() {
+    return this.hass.localize(
+      "ui.panel.config.devices.automation.actions.no_actions"
+    );
+  }
 
-  protected UNKNOWN_AUTOMATION_TEXT = "Unknown automation";
+  get UNKNOWN_AUTOMATION_TEXT() {
+    return this.hass.localize(
+      "ui.panel.config.devices.automation.actions.unknown_action"
+    );
+  }
 
   @internalProperty() private _automations: T[] = [];
 
