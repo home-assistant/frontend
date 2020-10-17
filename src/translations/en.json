@@ -1952,7 +1952,11 @@
           "navigation": {
             "select_instance": "Select Instance",
             "network": "Network",
-            "nodes": "Nodes"
+            "nodes": "Nodes",
+            "node": {
+              "dashboard": "Dashboard",
+              "config": "Config"
+            }
           },
           "select_instance": {
             "header": "Select an OpenZWave Instance",
@@ -1975,6 +1979,11 @@
           "node": {
             "button": "Node Details",
             "not_found": "Node not found"
+          },
+          "node_config": {
+            "header": "Node Configuration",
+            "introduction": "Manage the different configuration parameters for a Z-Wave node.",
+            "help_source": "Config parameter descriptions and help text are provided by the OpenZWave project."
           },
           "services": {
             "add_node": "Add Node",

@@ -1,5 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-fab";
+import "@polymer/paper-input/paper-input";
 import {
   css,
   CSSResultArray,
@@ -28,7 +29,7 @@ import {
 } from "../../../../../data/ozw";
 import { ERR_NOT_FOUND } from "../../../../../data/websocket_api";
 import { showOZWRefreshNodeDialog } from "./show-dialog-ozw-refresh-node";
-import { ozwNetworkTabs } from "./ozw-network-router";
+import { ozwNodeTabs } from "./ozw-node-router";
 
 @customElement("ozw-node-config")
 class OZWNodeConfig extends LitElement {
@@ -78,15 +79,28 @@ class OZWNodeConfig extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .tabs=${ozwNetworkTabs(this.ozwInstance)}
+        .tabs=${ozwNodeTabs(this.ozwInstance, this.nodeId)}
       >
         <ha-config-section .narrow=${this.narrow} .isWide=${this.isWide}>
           <div slot="header">
-            Node Configuration
+            ${this.hass.localize("ui.panel.config.ozw.node_config.header")}
           </div>
 
           <div slot="introduction">
-            View the status of a node and manage its configuration.
+            ${this.hass.localize(
+              "ui.panel.config.ozw.node_config.introduction"
+            )}
+            <p>
+              <em
+                >${this.hass.localize(
+                  "ui.panel.config.ozw.node_config.help_source"
+                )}</em
+              >
+            </p>
+            <p>
+              Note: This panel is currently read-only. The ability to change
+              values will come in a later update.
+            </p>
           </div>
           ${this._node
             ? html`
@@ -175,7 +189,6 @@ class OZWNodeConfig extends LitElement {
         this.ozwInstance,
         this.nodeId
       );
-      console.log(this._config);
     } catch (err) {
       if (err.code === ERR_NOT_FOUND) {
         this._not_found = true;
