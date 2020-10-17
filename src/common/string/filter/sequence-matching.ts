@@ -57,7 +57,7 @@ export const isPatternInWords = (filter: string, ...words: string[]) => {
 
     const patternFound = isPatternInWord(filter, word);
     if (patternFound) {
-      return isPatternInWord(filter, word);
+      return patternFound;
     }
   }
 
