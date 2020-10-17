@@ -6,7 +6,6 @@ const STORED_STATE = [
   "selectedLanguage",
   "vibrate",
   "suspendWhenHidden",
-  "compactHeader",
   "defaultPanel",
 ];
 const STORAGE = window.localStorage || {};
