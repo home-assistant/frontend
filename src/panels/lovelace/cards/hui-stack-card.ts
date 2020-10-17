@@ -75,7 +75,7 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
 
     return html`
       ${this._config.title
-        ? html` <h1 class="card-header">${this._config.title}</h1> `
+        ? html`<h1 class="card-header">${this._config.title}</h1>`
         : ""}
       <div id="root">${this._cards}</div>
     `;
