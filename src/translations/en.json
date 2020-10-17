@@ -608,7 +608,7 @@
           "initial": "Initial value",
           "restore": "Restore the last known value when Home Assistant starts",
           "step": "Step size"
-        }
+        },
         "timer": {
           "duration": "Duration"
         }
