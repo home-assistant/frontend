@@ -101,7 +101,7 @@ export function isPatternInWord(pattern: string, word: string): boolean {
   );
 }
 
-export function _isPatternInWord(
+function _isPatternInWord(
   patternLow: string,
   patternPos: number,
   patternLen: number,

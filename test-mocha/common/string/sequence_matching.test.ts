@@ -2,7 +2,7 @@ import { assert } from "chai";
 
 import { fuzzySequentialMatch } from "../../../src/common/string/filter/sequence-matching";
 
-describe("fuzzySequentialMatchBasic", () => {
+describe("fuzzySequentialMatch", () => {
   const entity = { entity_id: "automation.ticker", friendly_name: "Stocks" };
 
   const createExpectation: (
