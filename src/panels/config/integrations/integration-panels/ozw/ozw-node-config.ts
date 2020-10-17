@@ -52,23 +52,25 @@ class OZWNodeConfig extends LitElement {
 
   @internalProperty() private _config?: OZWDeviceConfig[];
 
-  @internalProperty() private _not_found = false;
+  @internalProperty() private _error?: string;
 
   protected firstUpdated() {
     if (!this.ozwInstance) {
       navigate(this, "/config/ozw/dashboard", true);
     } else if (!this.nodeId) {
       navigate(this, `/config/ozw/network/${this.ozwInstance}/nodes`, true);
-    } else if (this.hass) {
+    } else {
       this._fetchData();
     }
   }
 
   protected render(): TemplateResult {
-    if (this._not_found) {
+    if (this._error) {
       return html`
         <hass-error-screen
-          .error="${this.hass.localize("ui.panel.config.ozw.node.not_found")}"
+          .error="${this.hass.localize(
+            "ui.panel.config.ozw.node." + this._error
+          )}"
         ></hass-error-screen>
       `;
     }
@@ -170,24 +172,29 @@ class OZWNodeConfig extends LitElement {
     }
 
     try {
-      this._node = await fetchOZWNodeStatus(
+      const nodeProm = fetchOZWNodeStatus(
         this.hass!,
         this.ozwInstance,
         this.nodeId
       );
-      this._metadata = await fetchOZWNodeMetadata(
+      const metadataProm = fetchOZWNodeMetadata(
         this.hass!,
         this.ozwInstance,
         this.nodeId
       );
-      this._config = await fetchOZWNodeConfig(
+      const configProm = fetchOZWNodeConfig(
         this.hass!,
         this.ozwInstance,
         this.nodeId
       );
+      [this._node, this._metadata, this._config] = await Promise.all([
+        nodeProm,
+        metadataProm,
+        configProm,
+      ]);
     } catch (err) {
       if (err.code === ERR_NOT_FOUND) {
-        this._not_found = true;
+        this._error = ERR_NOT_FOUND;
         return;
       }
       throw err;
