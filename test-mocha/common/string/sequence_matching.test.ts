@@ -1,31 +1,42 @@
 import { assert } from "chai";
 
-import { fuzzySequentialMatchBasic } from "../../../src/common/string/filter/sequence-matching";
+import { fuzzySequentialMatch } from "../../../src/common/string/filter/sequence-matching";
 
 describe("fuzzySequentialMatchBasic", () => {
   const entity = { entity_id: "automation.ticker", friendly_name: "Stocks" };
 
+  const createExpectation: (
+    pattern,
+    expected
+  ) => {
+    pattern: string;
+    expected: string | number | undefined;
+  } = (pattern, expected) => ({
+    pattern,
+    expected,
+  });
+
   const shouldMatchEntity = [
-    "",
-    "automation.ticker",
-    "automation.ticke",
-    "automation.",
-    "au",
-    "automationticker",
-    "tion.tick",
-    "ticker",
-    "automation.r",
-    "tick",
-    "aumatick",
-    "aion.tck",
-    "ioticker",
-    "atmto.ikr",
-    "uoaintce",
-    "au.tce",
-    "tomaontkr",
-    "s",
-    "stocks",
-    "sks",
+    createExpectation("", "automation.ticker"),
+    createExpectation("automation.ticker", 138),
+    createExpectation("automation.ticke", 129),
+    createExpectation("automation.", 89),
+    createExpectation("au", 17),
+    createExpectation("automationticker", 107),
+    createExpectation("tion.tick", 18),
+    createExpectation("ticker", 1),
+    createExpectation("automation.r", 89),
+    createExpectation("tick", 1),
+    createExpectation("aumatick", 15),
+    createExpectation("aion.tck", 14),
+    createExpectation("ioticker", 19),
+    createExpectation("atmto.ikr", 1),
+    createExpectation("uoaintce", 1),
+    createExpectation("au.tce", 17),
+    createExpectation("tomaontkr", 9),
+    createExpectation("s", 7),
+    createExpectation("stocks", 48),
+    createExpectation("sks", 7),
   ];
 
   const shouldNotMatchEntity = [
@@ -40,23 +51,23 @@ describe("fuzzySequentialMatchBasic", () => {
   ];
 
   describe(`Entity '${entity.entity_id}'`, () => {
-    for (const goodFilter of shouldMatchEntity) {
-      it(`matches with '${goodFilter}'`, () => {
-        const res = fuzzySequentialMatchBasic(goodFilter, [
+    for (const expectation of shouldMatchEntity) {
+      it(`matches '${expectation.pattern}' with return of '${expectation.expected}'`, () => {
+        const res = fuzzySequentialMatch(expectation.pattern, [
           entity.entity_id,
-          entity.friendly_name.toLowerCase(),
+          entity.friendly_name,
         ]);
-        assert.equal(res, true);
+        assert.equal(res, expectation.expected);
       });
     }
 
     for (const badFilter of shouldNotMatchEntity) {
       it(`fails to match with '${badFilter}'`, () => {
-        const res = fuzzySequentialMatchBasic(badFilter, [
+        const res = fuzzySequentialMatch(badFilter, [
           entity.entity_id,
           entity.friendly_name,
         ]);
-        assert.equal(res, false);
+        assert.equal(res, undefined);
       });
     }
   });

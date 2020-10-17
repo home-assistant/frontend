@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 // MIT License
 
 // Copyright (c) 2015 - present Microsoft Corporation
@@ -21,6 +22,8 @@
 // SOFTWARE.
 
 import { CharCode } from "./char-code";
+
+const _debug = false;
 
 export interface Match {
   start: number;
@@ -281,6 +284,10 @@ export function fuzzyScore(
     }
   }
 
+  if (_debug) {
+    printTables(pattern, patternStart, word, wordStart);
+  }
+
   if (!hasStrongFirstMatch && !firstMatchCanBeWeak) {
     return undefined;
   }
@@ -355,6 +362,52 @@ function _doScore(
     return 5;
   }
   return 1;
+}
+
+function printTable(
+  table: number[][],
+  pattern: string,
+  patternLen: number,
+  word: string,
+  wordLen: number
+): string {
+  function pad(s: string, n: number, _pad = " ") {
+    while (s.length < n) {
+      s = _pad + s;
+    }
+    return s;
+  }
+  let ret = ` |   |${word
+    .split("")
+    .map((c) => pad(c, 3))
+    .join("|")}\n`;
+
+  for (let i = 0; i <= patternLen; i++) {
+    if (i === 0) {
+      ret += " |";
+    } else {
+      ret += `${pattern[i - 1]}|`;
+    }
+    ret +=
+      table[i]
+        .slice(0, wordLen + 1)
+        .map((n) => pad(n.toString(), 3))
+        .join("|") + "\n";
+  }
+  return ret;
+}
+
+function printTables(
+  pattern: string,
+  patternStart: number,
+  word: string,
+  wordStart: number
+): void {
+  pattern = pattern.substr(patternStart);
+  word = word.substr(wordStart);
+  console.log(printTable(_table, pattern, pattern.length, word, word.length));
+  console.log(printTable(_arrows, pattern, pattern.length, word, word.length));
+  console.log(printTable(_scores, pattern, pattern.length, word, word.length));
 }
 
 let _matchesCount = 0;
