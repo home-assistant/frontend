@@ -737,7 +737,7 @@ class HUIRoot extends LitElement {
           min-height: 100%;
         }
         app-toolbar {
-          padding: 0 16px 0 8px;
+          padding: 0 18px 0 8px;
         }
         app-toolbar ha-button-menu,
         app-toolbar mwc-icon-button {

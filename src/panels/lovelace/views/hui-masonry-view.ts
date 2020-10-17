@@ -262,7 +262,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
         display: block;
         background: var(--lovelace-background);
         padding-top: 100px;
-        height: calc(100% + 96px);
+        height: calc(100% + 160px);
         box-sizing: border-box;
         margin-top: -96px;
       }

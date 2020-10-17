@@ -132,7 +132,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
       :host {
         display: block;
         background: var(--lovelace-background);
-        height: calc(100% + 100px);
+        height: calc(100% + 164px);
         margin-top: -100px;
         box-sizing: border-box;
         padding-top: 100px;
