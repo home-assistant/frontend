@@ -758,6 +758,7 @@
         "tags": {
           "caption": "Tags",
           "description": "Manage tags",
+          "learn_more": "Learn more about tags",
           "no_tags": "No tags",
           "add_tag": "Add tag",
           "write": "Write",
