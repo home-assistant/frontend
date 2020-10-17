@@ -111,26 +111,41 @@ class OZWNodeConfig extends LitElement {
                       ${this._node.node_manufacturer_name}
                       ${this._node.node_product_name} </b
                     ><br />
-                    Node ID: ${this._node.node_id}<br />
-                    Query Stage: ${this._node.node_query_stage}
+                    ${this.hass.localize("ui.panel.config.ozw.common.node_id")}:
+                    ${this._node.node_id}<br />
+                    ${this.hass.localize(
+                      "ui.panel.config.ozw.common.query_stage"
+                    )}:
+                    ${this._node.node_query_stage}
                     ${this._metadata?.metadata.ProductManualURL
                       ? html` <a
                           href="${this._metadata.metadata.ProductManualURL}"
                         >
-                          <p>Product Manual</p>
+                          <p>
+                            ${this.hass.localize(
+                              "ui.panel.config.ozw.node_metadata.product_manual"
+                            )}
+                          </p>
                         </a>`
                       : ``}
                   </div>
                   <div class="card-actions">
                     <mwc-button @click=${this._refreshNodeClicked}>
-                      Refresh Node
+                      ${this.hass.localize(
+                        "ui.panel.config.ozw.refresh_node.button"
+                      )}
                     </mwc-button>
                   </div>
                 </ha-card>
 
                 ${this._metadata?.metadata.WakeupHelp
                   ? html`
-                      <ha-card class="content" header="Wake-up Instructions">
+                      <ha-card
+                        class="content"
+                        header="${this.hass.localize(
+                          "ui.panel.config.ozw.common.wakeup_instructions"
+                        )}"
+                      >
                         <div class="card-content">
                           <span class="secondary">
                             ${this.hass.localize(
