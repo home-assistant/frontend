@@ -931,6 +931,7 @@
         "notification_drawer": {
             "click_to_configure": "Prem el botó per configurar {entity}",
             "close": "Tanca",
+            "dismiss_all": "Descartar-ho tot",
             "empty": "No hi ha notificacions",
             "title": "Notificacions"
         },

@@ -931,6 +931,7 @@
         "notification_drawer": {
             "click_to_configure": "點擊按鈕以設定{entity}",
             "close": "關閉",
+            "dismiss_all": "全部關閉",
             "empty": "沒有通知",
             "title": "通知提示"
         },
@@ -1711,7 +1712,7 @@
                         "aborted": "已中止",
                         "close": "關閉",
                         "created_config": "新增 {name} 設定。",
-                        "dismiss": "忽略對話",
+                        "dismiss": "關閉對話",
                         "error_saving_area": "儲存分區錯誤：{error}",
                         "external_step": {
                             "description": "此步驟將需要開啟外部網站方能完成。",

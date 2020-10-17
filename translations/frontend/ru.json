@@ -931,6 +931,7 @@
         "notification_drawer": {
             "click_to_configure": "Нажмите кнопку, чтобы настроить {entity}",
             "close": "Закрыть",
+            "dismiss_all": "Очистить уведомления",
             "empty": "Нет уведомлений",
             "title": "Уведомления"
         },

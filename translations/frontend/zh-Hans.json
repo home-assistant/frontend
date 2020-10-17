@@ -931,6 +931,7 @@
         "notification_drawer": {
             "click_to_configure": "单击按钮可以配置 {entity}",
             "close": "关闭",
+            "dismiss_all": "全部关闭",
             "empty": "没有任何通知",
             "title": "通知"
         },
