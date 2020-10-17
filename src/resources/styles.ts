@@ -111,7 +111,7 @@ export const haStyle = css`
   }
 
   app-toolbar,
-  div[sticky] {
+  app-header div[sticky] {
     height: 48px;
   }
 
