@@ -42,6 +42,9 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
         .entities th {
           text-align: left;
+          font-size: var(
+            --paper-input-container-shared-input-style_-_font-size
+          );
         }
 
         :host([rtl]) .entities th {
@@ -77,6 +80,10 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
         .entities a {
           color: var(--primary-color);
+        }
+
+        .secondary {
+          color: var(--secondary-text-color);
         }
       </style>
 
@@ -169,9 +176,13 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               <a href="#" on-click="entitySelected">[[entity.entity_id]]</a>
             </td>
             <td>
-              [[entity.state]]<br />
-              last_changed: [[lastChangedString(entity)]]<br />
-              last_updated: [[lastUpdatedString(entity)]]
+              [[entity.state]]<br /><br />
+              <span class="secondary"
+                >last_changed: [[lastChangedString(entity)]]</span
+              ><br />
+              <span class="secondary"
+                >last_updated: [[lastUpdatedString(entity)]]</span
+              >
             </td>
             <template
               is="dom-if"
