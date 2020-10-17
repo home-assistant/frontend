@@ -50,9 +50,12 @@ export class HaCard extends LitElement {
         font-family: var(--ha-card-header-font-family, inherit);
         font-size: var(--ha-card-header-font-size, 24px);
         letter-spacing: -0.012em;
-        line-height: 32px;
-        padding: 24px 16px 16px;
+        line-height: 48px;
+        padding: 12px 16px 16px;
         display: block;
+        margin-block-start: 0px;
+        margin-block-end: 0px;
+        font-weight: normal;
       }
 
       :host ::slotted(.card-content:not(:first-child)),
@@ -75,7 +78,7 @@ export class HaCard extends LitElement {
   protected render(): TemplateResult {
     return html`
       ${this.header
-        ? html` <div class="card-header">${this.header}</div> `
+        ? html`<h1 class="card-header">${this.header}</h1>`
         : html``}
       <slot></slot>
     `;
