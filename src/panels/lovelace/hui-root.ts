@@ -737,14 +737,15 @@ class HUIRoot extends LitElement {
           min-height: 100%;
         }
         app-toolbar {
-          padding: 0 8px;
+          padding: 0 16px 0 8px;
         }
-        app-toolbar ha-menu-button {
-          margin-left: -12px;
+        app-toolbar ha-button-menu,
+        app-toolbar mwc-icon-button {
+          --mdc-icon-button-size: 36px;
         }
-        app-toolbar ha-tabs {
+        ha-tabs {
           width: 100%;
-          margin: 0 0 0 4px;
+          margin: 0 4px;
           --paper-tabs-selection-bar-color: var(--text-primary-color, #fff);
           text-transform: uppercase;
         }
