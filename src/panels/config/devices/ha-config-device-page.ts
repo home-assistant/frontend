@@ -420,11 +420,7 @@ export class HaConfigDevicePage extends LitElement {
                               return state
                                 ? html`
                                     <a
-                                      href=${ifDefined(
-                                        state.entity_id
-                                          ? `/config/script/edit/${state.entity_id}`
-                                          : undefined
-                                      )}
+                                      href=${`/config/script/edit/${state.entity_id}`}
                                     >
                                       <paper-item .script=${script}>
                                         <paper-item-body>
