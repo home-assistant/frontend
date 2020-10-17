@@ -40,7 +40,7 @@ class HaSetCompactHeaderRow extends LitElement {
       return;
     }
     fireEvent(this, "hass-compact-header", {
-      compactHeader: compact,
+      compact,
     });
   }
 }
