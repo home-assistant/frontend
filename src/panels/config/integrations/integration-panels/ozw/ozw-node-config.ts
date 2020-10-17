@@ -1,6 +1,5 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-fab";
-import "@polymer/paper-input/paper-input";
 import {
   css,
   CSSResultArray,
