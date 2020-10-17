@@ -931,6 +931,7 @@
         "notification_drawer": {
             "click_to_configure": "Klikk på knappen for å konfigurere {entity}",
             "close": "Lukk",
+            "dismiss_all": "Avvis alle",
             "empty": "Ingen varsler",
             "title": "Varsler"
         },

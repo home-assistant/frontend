@@ -551,8 +551,8 @@
         "no_unique_id": "This entity does not have a unique ID, therefore its settings cannot be managed from the UI. See the {faq_link} for more detail.",
         "faq": "documentation",
         "editor": {
-          "name": "Name Override",
-          "icon": "Icon Override",
+          "name": "Name",
+          "icon": "Icon",
           "icon_error": "Icons should be in the format 'prefix:iconname', e.g. 'mdi:home'",
           "entity_id": "Entity ID",
           "unavailable": "This entity is not currently available.",
@@ -602,6 +602,13 @@
           "no_options": "There are no options yet.",
           "add": "Add"
         },
+        "counter": {
+          "minimum": "Minimum value",
+          "maximum": "Maximum value",
+          "initial": "Initial value",
+          "restore": "Restore the last known value when Home Assistant starts",
+          "step": "Step size"
+        }
         "timer": {
           "duration": "Duration"
         }
@@ -754,6 +761,7 @@
         "tags": {
           "caption": "Tags",
           "description": "Manage tags",
+          "learn_more": "Learn more about tags",
           "no_tags": "No tags",
           "add_tag": "Add tag",
           "write": "Write",
@@ -788,6 +796,7 @@
             "input_select": "Dropdown",
             "input_boolean": "Toggle",
             "input_datetime": "Date and/or time",
+            "counter": "Counter",
             "timer": "Timer"
           },
           "picker": {

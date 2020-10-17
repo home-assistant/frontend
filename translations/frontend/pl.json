@@ -931,6 +931,7 @@
         "notification_drawer": {
             "click_to_configure": "Kliknij przycisk, aby skonfigurować {entity}",
             "close": "Zamknij",
+            "dismiss_all": "Odrzuć wszystkie",
             "empty": "Brak powiadomień",
             "title": "Powiadomienia"
         },

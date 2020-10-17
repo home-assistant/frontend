@@ -43,6 +43,11 @@ import {
   updateInputText,
 } from "../../../../../data/input_text";
 import {
+  deleteCounter,
+  fetchCounter,
+  updateCounter,
+} from "../../../../../data/counter";
+import {
   deleteTimer,
   fetchTimer,
   updateTimer,
@@ -55,6 +60,7 @@ import "../../../helpers/forms/ha-input_datetime-form";
 import "../../../helpers/forms/ha-input_number-form";
 import "../../../helpers/forms/ha-input_select-form";
 import "../../../helpers/forms/ha-input_text-form";
+import "../../../helpers/forms/ha-counter-form";
 import "../../../helpers/forms/ha-timer-form";
 import "../../entity-registry-basic-editor";
 import type { HaEntityRegistryBasicEditor } from "../../entity-registry-basic-editor";
@@ -85,6 +91,11 @@ const HELPERS = {
     fetch: fetchInputSelect,
     update: updateInputSelect,
     delete: deleteInputSelect,
+  },
+  counter: {
+    fetch: fetchCounter,
+    update: updateCounter,
+    delete: deleteCounter,
   },
   timer: {
     fetch: fetchTimer,

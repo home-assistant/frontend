@@ -931,6 +931,7 @@
         "notification_drawer": {
             "click_to_configure": "{entity} seadistamiseks klõpsa nuppu",
             "close": "Sulge",
+            "dismiss_all": "Kustuta teavitused",
             "empty": "Teavitusi pole",
             "title": "Teavitused"
         },

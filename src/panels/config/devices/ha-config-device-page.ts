@@ -716,6 +716,7 @@ export class HaConfigDevicePage extends LitElement {
 
       paper-item {
         cursor: pointer;
+        font-size: var(--paper-font-body1_-_font-size);
       }
 
       paper-item.no-link {

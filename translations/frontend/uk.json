@@ -577,16 +577,16 @@
                     "was_at_home": "був вдома",
                     "was_at_state": "був у {state}",
                     "was_away": "був відсутній",
-                    "was_closed": "було закрито",
+                    "was_closed": "був закритий",
                     "was_connected": "був підключений",
                     "was_disconnected": "був відключений",
-                    "was_locked": "було заблоковано",
+                    "was_locked": "був заблокований",
                     "was_low": "був низьким",
-                    "was_normal": "було нормальним",
-                    "was_opened": "було відкрито",
+                    "was_normal": "був нормальним",
+                    "was_opened": "був відкритий",
                     "was_plugged_in": "був підключений",
                     "was_safe": "було безпечно",
-                    "was_unlocked": "було розблоковано",
+                    "was_unlocked": "був розблокований",
                     "was_unplugged": "був відключений",
                     "was_unsafe": "було небезпечно"
                 }
@@ -830,6 +830,7 @@
         "notification_drawer": {
             "click_to_configure": "Натисніть кнопку, щоб налаштувати {entity}",
             "close": "Закрити",
+            "dismiss_all": "Відхилити всі",
             "empty": "Немає сповіщень",
             "title": "Сповіщення"
         },

@@ -930,6 +930,7 @@
         "notification_drawer": {
             "click_to_configure": "Klepnutím na tlačítko nastavíte {entity}",
             "close": "Zavřít",
+            "dismiss_all": "Zavřít vše",
             "empty": "Žádné oznámení",
             "title": "Oznámení"
         },
