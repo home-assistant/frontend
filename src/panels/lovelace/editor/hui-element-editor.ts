@@ -8,6 +8,7 @@ import {
   internalProperty,
   LitElement,
   property,
+  PropertyValues,
   query,
   TemplateResult,
 } from "lit-element";
@@ -109,7 +110,7 @@ export class HuiElementEditor extends LitElement {
     this._setConfig();
   }
 
-  private _setConfig() {
+  private _setConfig(): void {
     if (!this._error) {
       try {
         this._updateConfigElement();
@@ -226,7 +227,7 @@ export class HuiElementEditor extends LitElement {
     `;
   }
 
-  protected updated(changedProperties) {
+  protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
 
     if (this._configElement && changedProperties.has("hass")) {
@@ -247,7 +248,7 @@ export class HuiElementEditor extends LitElement {
     this.value = config;
   }
 
-  private _handleYAMLChanged(ev) {
+  private _handleYAMLChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const newYaml = ev.detail.value;
     if (newYaml !== this.yaml) {
