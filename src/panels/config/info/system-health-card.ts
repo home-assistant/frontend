@@ -85,7 +85,7 @@ class SystemHealthCard extends LitElement {
 
     return html`
       <ha-card>
-        <div class="card-header">
+        <h1 class="card-header">
           <div class="card-header-text">
             ${domainToName(this.hass.localize, "system_health")}
           </div>
@@ -101,7 +101,7 @@ class SystemHealthCard extends LitElement {
           >
             ${this.hass.localize("ui.common.copied")}
           </paper-tooltip>
-        </div>
+        </h1>
         <div class="card-content">${sections}</div>
       </ha-card>
     `;
@@ -133,9 +133,11 @@ class SystemHealthCard extends LitElement {
     const selection = window.getSelection()!;
     selection.removeAllRanges();
 
-    let copyElement = this.shadowRoot?.querySelector("ha-card") as HTMLElement;
+    const copyElement = this.shadowRoot?.querySelector(
+      "ha-card"
+    ) as HTMLElement;
 
-    let range = document.createRange();
+    const range = document.createRange();
     range.selectNodeContents(copyElement);
     selection.addRange(range);
 
