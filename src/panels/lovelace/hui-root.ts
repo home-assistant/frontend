@@ -809,7 +809,7 @@ class HUIRoot extends LitElement {
           max-width: 100%;
         }
         #view.tabs-hidden {
-          min-height: calc(100vh - 64px);
+          min-height: calc(100vh - 48px);
         }
         .hide-tab {
           display: none;
