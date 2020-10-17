@@ -31,6 +31,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
+import { showToast } from "../../../util/toast";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import {
   AutomationConfig,
@@ -89,8 +90,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   @internalProperty() private _dirty = false;
 
-  @internalProperty() private _errors?: string;
-
   @internalProperty() private _entityId?: string;
 
   @internalProperty() private _mode: "gui" | "yaml" = "gui";
@@ -131,7 +130,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
           >
             ${this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
             ${this._mode === "gui"
-              ? html`<ha-svg-icon
+              ? html` <ha-svg-icon
+                  class="selected_menu_item"
                   slot="graphic"
                   .path=${mdiCheck}
                 ></ha-svg-icon>`
@@ -146,7 +146,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
           >
             ${this.hass.localize("ui.panel.config.automation.editor.edit_yaml")}
             ${this._mode === "yaml"
-              ? html`<ha-svg-icon
+              ? html` <ha-svg-icon
+                  class="selected_menu_item"
                   slot="graphic"
                   .path=${mdiCheck}
                 ></ha-svg-icon>`
@@ -168,6 +169,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
             <ha-svg-icon
               slot="graphic"
               .path=${mdiContentDuplicate}
+              class=${classMap({ enabled_icon: this.automationId })}
             ></ha-svg-icon>
           </mwc-list-item>
 
@@ -182,7 +184,12 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
             ${this.hass.localize(
               "ui.panel.config.automation.picker.delete_automation"
             )}
-            <ha-svg-icon slot="graphic" .path=${mdiDelete}></ha-svg-icon>
+            <ha-svg-icon
+              class=${classMap({ warning: this.automationId })}
+              slot="graphic"
+              .path=${mdiDelete}
+            >
+            </ha-svg-icon>
           </mwc-list-item>
         </ha-button-menu>
         ${this._config
@@ -191,9 +198,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                 ? html` <span slot="header">${this._config?.alias}</span> `
                 : ""}
               <div class="content">
-                ${this._errors
-                  ? html` <div class="errors">${this._errors}</div> `
-                  : ""}
                 ${this._mode === "gui"
                   ? html`
                       <ha-config-section .isWide=${this.isWide}>
@@ -586,7 +590,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   private _triggerChanged(ev: CustomEvent): void {
     this._config = { ...this._config!, trigger: ev.detail.value as Trigger[] };
-    this._errors = undefined;
     this._dirty = true;
   }
 
@@ -595,13 +598,11 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       ...this._config!,
       condition: ev.detail.value as Condition[],
     };
-    this._errors = undefined;
     this._dirty = true;
   }
 
   private _actionChanged(ev: CustomEvent): void {
     this._config = { ...this._config!, action: ev.detail.value as Action[] };
-    this._errors = undefined;
     this._dirty = true;
   }
 
@@ -632,7 +633,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       return;
     }
     this._config = ev.detail.value;
-    this._errors = undefined;
     this._dirty = true;
   }
 
@@ -724,7 +724,15 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         }
       },
       (errors) => {
-        this._errors = errors.body.message;
+        showToast(this, {
+          message: errors.body.message,
+          dismissable: false,
+          duration: 0,
+          action: {
+            action: () => {},
+            text: this.hass.localize("ui.dialogs.generic.ok"),
+          },
+        });
         throw errors;
       }
     );
@@ -765,6 +773,15 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         }
         mwc-fab.dirty {
           bottom: 0;
+        }
+        .enabled_icon {
+          color: var(--primary-text-color);
+        }
+        .selected_menu_item {
+          color: var(--primary-color);
+        }
+        li[role="separator"] {
+          border-bottom-color: var(--divider-color);
         }
       `,
     ];

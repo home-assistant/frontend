@@ -57,6 +57,7 @@ import { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "../../../components/ha-svg-icon";
+import { showToast } from "../../../util/toast";
 import { mdiContentSave } from "@mdi/js";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 
@@ -89,8 +90,6 @@ export class HaSceneEditor extends SubscribeMixin(
   @property() public showAdvanced!: boolean;
 
   @internalProperty() private _dirty = false;
-
-  @internalProperty() private _errors?: string;
 
   @internalProperty() private _config?: SceneConfig;
 
@@ -210,7 +209,6 @@ export class HaSceneEditor extends SubscribeMixin(
                 @click=${this._deleteTapped}
               ></ha-icon-button>
             `}
-        ${this._errors ? html` <div class="errors">${this._errors}</div> ` : ""}
         ${this.narrow ? html` <span slot="header">${name}</span> ` : ""}
         <div
           id="root"
@@ -714,7 +712,15 @@ export class HaSceneEditor extends SubscribeMixin(
         navigate(this, `/config/scene/edit/${id}`, true);
       }
     } catch (err) {
-      this._errors = err.body.message || err.message;
+      showToast(this, {
+        message: err.body.message || err.message,
+        dismissable: false,
+        duration: 0,
+        action: {
+          action: () => {},
+          text: this.hass.localize("ui.dialogs.generic.ok"),
+        },
+      });
       throw err;
     }
   }
