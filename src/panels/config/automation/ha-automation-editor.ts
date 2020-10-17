@@ -130,7 +130,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
           >
             ${this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
             ${this._mode === "gui"
-              ? html` <ha-svg-icon
+              ? html`<ha-svg-icon
                   class="selected_menu_item"
                   slot="graphic"
                   .path=${mdiCheck}
@@ -146,7 +146,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
           >
             ${this.hass.localize("ui.panel.config.automation.editor.edit_yaml")}
             ${this._mode === "yaml"
-              ? html` <ha-svg-icon
+              ? html`<ha-svg-icon
                   class="selected_menu_item"
                   slot="graphic"
                   .path=${mdiCheck}
