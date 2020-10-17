@@ -316,7 +316,7 @@ class HUIRoot extends LitElement {
                   </ha-button-menu>
                 </app-toolbar>
               `}
-          ${this.lovelace!.config.views.length > 1 || this._editMode
+          ${this._editMode
             ? html`
                 <div sticky>
                   <ha-tabs
