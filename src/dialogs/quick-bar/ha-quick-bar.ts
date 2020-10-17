@@ -15,29 +15,43 @@ import {
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-dialog";
 import { haStyleDialog } from "../../resources/styles";
-import { HomeAssistant, ServiceCallRequest } from "../../types";
+import { HomeAssistant } from "../../types";
 import { PolymerChangedEvent } from "../../polymer-types";
-import { fuzzySequentialMatch } from "../../common/string/sequence_matching";
+import {
+  fuzzySequentialMatch,
+  isPatternInWords,
+} from "../../common/string/filter/sequence-matching";
 import { componentsWithService } from "../../common/config/components_with_service";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { domainToName } from "../../data/integration";
 import { QuickBarParams } from "./show-dialog-quick-bar";
-import { HassEntity } from "home-assistant-js-websocket";
 import { compare } from "../../common/string/compare";
 import { SingleSelectedEvent } from "@material/mwc-list/mwc-list-foundation";
+import { computeStateName } from "../../common/entity/compute_state_name";
 
-interface CommandItem extends ServiceCallRequest {
+export interface QuickBarItem {
   text: string;
+  altText?: string;
+  icon: string;
+  action(data?: any): Promise<any>;
+  score?: number;
+}
+
+export interface ScoredItem {
+  item: QuickBarItem;
+  score: ReturnType<typeof fuzzySequentialMatch>;
 }
 
 @customElement("ha-quick-bar")
 export class QuickBar extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _commandItems: CommandItem[] = [];
+  @internalProperty() private _commandItems: QuickBarItem[] = [];
 
-  @internalProperty() private _entities: HassEntity[] = [];
+  @internalProperty() private _entityItems: QuickBarItem[] = [];
+
+  @internalProperty() private _items: QuickBarItem[] = [];
 
   @internalProperty() private _itemFilter = "";
 
@@ -57,9 +71,7 @@ export class QuickBar extends LitElement {
     this._commandMode = params.commandMode || false;
     this._opened = true;
     this._commandItems = this._generateCommandItems();
-    this._entities = Object.keys(this.hass.states).map<HassEntity>(
-      (entity_id) => this.hass.states[entity_id]
-    );
+    this._entityItems = this._generateEntityItems();
   }
 
   public closeDialog() {
@@ -91,84 +103,43 @@ export class QuickBar extends LitElement {
           @keydown=${this._handleInputKeyDown}
           @focus=${this._resetActivatedIndex}
         ></paper-input>
-        ${this._commandMode
-          ? this.renderCommandsList()
-          : this.renderEntityList()}
+        <mwc-list activatable @selected=${this.processItemAndCloseDialog}>
+          ${this._items.map(
+            (item, index) => html`
+              <mwc-list-item
+                .twoline=${Boolean(item.altText)}
+                .activated=${index === this._activatedIndex}
+                .item=${item}
+                .index=${index}
+                @keydown=${this._handleListItemKeyDown}
+                hasMeta
+                graphic=${item.altText ? "avatar" : "icon"}
+              >
+                <ha-icon .icon=${item.icon} slot="graphic"></ha-icon>
+                <span>${item.text}</span>
+                ${item.altText
+                  ? html` <span slot="secondary">${item.altText}</span> `
+                  : null}
+                ${this._commandTriggered === index
+                  ? html`<ha-circular-progress
+                      size="small"
+                      active
+                      slot="meta"
+                    ></ha-circular-progress>`
+                  : null}
+              </mwc-list-item>
+            `
+          )}
+        </mwc-list>
       </ha-dialog>
     `;
   }
 
-  protected renderCommandsList() {
-    const items = this._filterCommandItems(
-      this._commandItems,
-      this._itemFilter
-    );
-
-    return html`
-      <mwc-list activatable @selected=${this._processCommand}>
-        ${items.map(
-          (item, index) => html`
-            <mwc-list-item
-              .activated=${index === this._activatedIndex}
-              .item=${item}
-              .index=${index}
-              @keydown=${this._handleListItemKeyDown}
-              hasMeta
-              graphic="icon"
-            >
-              <ha-icon
-                .icon=${domainIcon(item.domain)}
-                slot="graphic"
-              ></ha-icon>
-              ${item.text}
-              ${this._commandTriggered === index
-                ? html`<ha-circular-progress
-                    size="small"
-                    active
-                    slot="meta"
-                  ></ha-circular-progress>`
-                : null}
-            </mwc-list-item>
-          `
-        )}
-      </mwc-list>
-    `;
-  }
-
-  protected renderEntityList() {
-    const entities = this._filterEntityItems(this._itemFilter);
-
-    return html`
-      <mwc-list activatable @selected=${this._entityMoreInfo}>
-        ${entities.map((entity, index) => {
-          const domain = computeDomain(entity.entity_id);
-          return html`
-            <mwc-list-item
-              twoline
-              .entityId=${entity.entity_id}
-              graphic="avatar"
-              .activated=${index === this._activatedIndex}
-              .index=${index}
-              @keydown=${this._handleListItemKeyDown}
-            >
-              <ha-icon .icon=${domainIcon(domain)} slot="graphic"></ha-icon>
-              ${entity.attributes?.friendly_name
-                ? html`
-                    <span>
-                      ${entity.attributes?.friendly_name}
-                    </span>
-                    <span slot="secondary">${entity.entity_id}</span>
-                  `
-                : html`
-                    <span>
-                      ${entity.entity_id}
-                    </span>
-                  `}
-            </mwc-list-item>
-          `;
-        })}
-      </mwc-list>
-    `;
+  private async processItemAndCloseDialog(ev: SingleSelectedEvent) {
+    const index = ev.detail.index;
+    const item = (ev.target as any).items[index].item;
+    await item.action();
+    this.closeDialog();
   }
 
   private _resetActivatedIndex() {
@@ -213,9 +184,28 @@ export class QuickBar extends LitElement {
       this._commandMode = false;
       this._itemFilter = newFilter;
     }
+
+    this._items = (this._commandMode ? this._commandItems : this._entityItems)
+      .filter(({ text, altText }) =>
+        altText
+          ? isPatternInWords(this._itemFilter, text, altText)
+          : isPatternInWords(this._itemFilter, text)
+      )
+      .map<ScoredItem>((item) => ({
+        item,
+        score: item.altText
+          ? fuzzySequentialMatch(this._itemFilter, item.text, item.altText)
+          : fuzzySequentialMatch(this._itemFilter, item.text),
+      }))
+      .sort(this.compareFuzzyMatches)
+      .map((scoredItem) => scoredItem.item);
   }
 
-  private _generateCommandItems(): CommandItem[] {
+  private _generateCommandItems(): QuickBarItem[] {
+    return [...this._generateReloadCommands()];
+  }
+
+  private _generateReloadCommands(): QuickBarItem[] {
     const reloadableDomains = componentsWithService(this.hass, "reload").sort();
 
     return reloadableDomains.map((domain) => ({
@@ -226,70 +216,37 @@ export class QuickBar extends LitElement {
           "domain",
           domainToName(this.hass.localize, domain)
         ),
-      domain,
-      service: "reload",
+      icon: domainIcon(domain),
+      action: () => this.hass.callService(domain, "reload"),
     }));
   }
 
-  private _filterCommandItems(
-    items: CommandItem[],
-    filter: string
-  ): CommandItem[] {
-    return items
-      .filter(({ text }) =>
-        fuzzySequentialMatch(filter.toLowerCase(), [text.toLowerCase()])
-      )
-      .sort((itemA, itemB) => compare(itemA.text, itemB.text));
+  private _generateEntityItems(): QuickBarItem[] {
+    return Object.keys(this.hass.states).map((entityId) => ({
+      text: computeStateName(this.hass.states[entityId]),
+      altText: entityId,
+      icon: domainIcon(computeDomain(entityId)),
+      action: async () => {
+        fireEvent(this, "hass-more-info", { entityId });
+      },
+    }));
   }
 
-  private _filterEntityItems(filter: string): HassEntity[] {
-    return this._entities
-      .filter(({ entity_id, attributes: { friendly_name } }) => {
-        const values = [entity_id];
-        if (friendly_name) {
-          values.push(friendly_name);
-        }
-        return fuzzySequentialMatch(filter.toLowerCase(), values);
-      })
-      .sort((entityA, entityB) =>
-        compare(entityA.entity_id, entityB.entity_id)
-      );
-  }
+  private compareFuzzyMatches = (a: ScoredItem, b: ScoredItem) => {
+    const scoreA = a.score;
+    const scoreB = b.score;
 
-  private async _processCommand(ev: SingleSelectedEvent) {
-    const index = ev.detail.index;
-    const item = (ev.target as any).items[index].item;
-
-    this._commandTriggered = index;
-
-    this._runCommandAndCloseDialog({
-      domain: item.domain,
-      service: item.service,
-      serviceData: item.serviceData,
-    });
-  }
-
-  private async _runCommandAndCloseDialog(request?: ServiceCallRequest) {
-    if (!request) {
-      return;
+    if (!scoreA || !scoreB) {
+      return 0;
     }
 
-    this.hass
-      .callService(request.domain, request.service, request.serviceData)
-      .then(() => this.closeDialog());
-  }
+    const isNumber = !isNaN(Number(scoreA));
+    if (isNumber) {
+      return scoreA > scoreB ? -1 : 1;
+    }
 
-  private _entityMoreInfo(ev: SingleSelectedEvent) {
-    const index = ev.detail.index;
-    const entityId = (ev.target as any).items[index].entityId;
-
-    this._launchMoreInfoDialog(entityId);
-  }
-
-  private _launchMoreInfoDialog(entityId) {
-    fireEvent(this, "hass-more-info", { entityId });
-    this.closeDialog();
-  }
+    return compare(a.item.text, b.item.text);
+  };
 
   static get styles() {
     return [
