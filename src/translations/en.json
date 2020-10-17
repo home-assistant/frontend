@@ -507,6 +507,7 @@
         "edit": "Edit entity",
         "details": "Details",
         "history": "History",
+        "last_changed": "Last changed",
         "last_updated": "Last updated",
         "script": {
           "last_action": "Last Action",

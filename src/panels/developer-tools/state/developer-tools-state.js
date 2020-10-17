@@ -62,7 +62,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         }
         .entities td {
           padding: 4px;
-          min-width: 200px;
+          min-width: 220px;
           word-break: break-word;
         }
         .entities ha-svg-icon {
@@ -168,7 +168,11 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               ></ha-svg-icon>
               <a href="#" on-click="entitySelected">[[entity.entity_id]]</a>
             </td>
-            <td>[[entity.state]]</td>
+            <td>
+              [[entity.state]]<br />
+              last_changed: [[lastChangedString(entity)]]<br />
+              last_updated: [[lastUpdatedString(entity)]]
+            </td>
             <template
               is="dom-if"
               if="[[computeShowAttributes(narrow, _showAttributes)]]"
@@ -378,6 +382,14 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
       output += `${key}: ${value}\n`;
     }
     return output;
+  }
+
+  lastChangedString(entity) {
+    return new Date(entity.last_changed).toISOString();
+  }
+
+  lastUpdatedString(entity) {
+    return new Date(entity.last_updated).toISOString();
   }
 
   formatAttributeValue(value) {
