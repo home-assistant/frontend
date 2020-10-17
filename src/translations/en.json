@@ -601,6 +601,13 @@
           "add_option": "Add option",
           "no_options": "There are no options yet.",
           "add": "Add"
+        },
+        "counter": {
+          "minimum": "Minimum value",
+          "maximum": "Maximum value",
+          "initial": "Initial value",
+          "restore": "Restore the last known value when Home Assistant starts",
+          "step": "Step size"
         }
       },
       "options_flow": {
@@ -784,7 +791,8 @@
             "input_number": "Number",
             "input_select": "Dropdown",
             "input_boolean": "Toggle",
-            "input_datetime": "Date and/or time"
+            "input_datetime": "Date and/or time",
+            "counter": "Counter"
           },
           "picker": {
             "headers": {
