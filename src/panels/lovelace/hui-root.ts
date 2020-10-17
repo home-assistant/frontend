@@ -187,8 +187,7 @@ class HUIRoot extends LitElement {
                     .hass=${this.hass}
                     .narrow=${this.narrow}
                   ></ha-menu-button>
-                  ${this.hass.compactHeader &&
-                  this.lovelace!.config.views.length > 1
+                  ${this.lovelace!.config.views.length > 1
                     ? html`
                         <ha-tabs
                           scrollable
@@ -317,9 +316,7 @@ class HUIRoot extends LitElement {
                   </ha-button-menu>
                 </app-toolbar>
               `}
-          ${(this.lovelace!.config.views.length > 1 &&
-            !this.hass.compactHeader) ||
-          this._editMode
+          ${this.lovelace!.config.views.length > 1 || this._editMode
             ? html`
                 <div sticky>
                   <ha-tabs
@@ -411,9 +408,7 @@ class HUIRoot extends LitElement {
           id="view"
           class="${classMap({
             "tabs-hidden":
-              !this._editMode &&
-              (this.lovelace!.config.views.length < 2 ||
-                this.hass.compactHeader),
+              !this._editMode && this.lovelace!.config.views.length < 2,
           })}"
           @ll-rebuild="${this._debouncedConfigChanged}"
         ></div>

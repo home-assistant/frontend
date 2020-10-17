@@ -239,7 +239,6 @@ export interface HomeAssistant {
   suspendWhenHidden: boolean;
   vibrate: boolean;
   dockedSidebar: "docked" | "always_hidden" | "auto";
-  compactHeader: boolean;
   defaultPanel: string;
   moreInfoEntityId: string | null;
   user?: CurrentUser;

@@ -2615,10 +2615,6 @@
           "description": "You can also press and hold the header of the sidebar to activate edit mode.",
           "button": "Edit"
         },
-        "compact_header": {
-          "header": "Compact the Lovelace header",
-          "description": "Removes header title and compresses the Lovelace header."
-        },
         "vibrate": {
           "header": "Vibrate",
           "description": "Enable or disable vibration on this device when controlling devices."
