@@ -53,20 +53,22 @@ describe("fuzzySequentialMatchBasic", () => {
   describe(`Entity '${entity.entity_id}'`, () => {
     for (const expectation of shouldMatchEntity) {
       it(`matches '${expectation.pattern}' with return of '${expectation.expected}'`, () => {
-        const res = fuzzySequentialMatch(expectation.pattern, [
+        const res = fuzzySequentialMatch(
+          expectation.pattern,
           entity.entity_id,
-          entity.friendly_name,
-        ]);
+          entity.friendly_name
+        );
         assert.equal(res, expectation.expected);
       });
     }
 
     for (const badFilter of shouldNotMatchEntity) {
       it(`fails to match with '${badFilter}'`, () => {
-        const res = fuzzySequentialMatch(badFilter, [
+        const res = fuzzySequentialMatch(
+          badFilter,
           entity.entity_id,
-          entity.friendly_name,
-        ]);
+          entity.friendly_name
+        );
         assert.equal(res, undefined);
       });
     }

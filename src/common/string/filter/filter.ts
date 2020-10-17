@@ -30,59 +30,6 @@ export interface Match {
   end: number;
 }
 
-export function matchesSubString(
-  word: string,
-  wordToMatchAgainst: string
-): Match[] | null {
-  return _matchesSubString(
-    word.toLowerCase(),
-    wordToMatchAgainst.toLowerCase(),
-    0,
-    0
-  );
-}
-
-function _matchesSubString(
-  word: string,
-  wordToMatchAgainst: string,
-  i: number,
-  j: number
-): Match[] | null {
-  if (i === word.length) {
-    return [];
-  }
-
-  if (j === wordToMatchAgainst.length) {
-    return null;
-  }
-
-  if (word[i] === wordToMatchAgainst[j]) {
-    const result: Match[] | null = _matchesSubString(
-      word,
-      wordToMatchAgainst,
-      i + 1,
-      j + 1
-    );
-    if (result) {
-      return join({ start: j, end: j + 1 }, result);
-    }
-    return null;
-  }
-
-  return _matchesSubString(word, wordToMatchAgainst, i, j + 1);
-}
-
-function join(head: Match, tail: Match[]): Match[] {
-  if (tail.length === 0) {
-    tail = [head];
-  } else if (head.end === tail[0].start) {
-    tail[0].start = head.start;
-  } else {
-    tail.unshift(head);
-  }
-  return tail;
-}
-
 const _maxLen = 128;
 
 function initTable() {
