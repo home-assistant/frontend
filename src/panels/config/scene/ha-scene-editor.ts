@@ -268,7 +268,7 @@ export class HaSceneEditor extends SubscribeMixin(
                     (device) =>
                       html`
                         <ha-card>
-                          <div class="card-header">
+                          <h1 class="card-header">
                             ${device.name}
                             <ha-icon-button
                               icon="hass:delete"
@@ -278,7 +278,7 @@ export class HaSceneEditor extends SubscribeMixin(
                               .device=${device.id}
                               @click=${this._deleteDevice}
                             ></ha-icon-button>
-                          </div>
+                          </h1>
                           ${device.entities.map((entityId) => {
                             const entityStateObj = this.hass.states[entityId];
                             if (!entityStateObj) {
