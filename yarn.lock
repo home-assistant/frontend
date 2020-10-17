@@ -2134,6 +2134,18 @@
     "@material/typography" "8.0.0-canary.774dcfc8e.0"
     tslib "^1.9.3"
 
+"@material/linear-progress@=8.0.0-canary.774dcfc8e.0":
+  version "8.0.0-canary.774dcfc8e.0"
+  resolved "https://registry.npmjs.org/@material/linear-progress/-/linear-progress-8.0.0-canary.774dcfc8e.0.tgz#58a5676b4266b13740486247792611518e1dd9be"
+  integrity sha512-O9fvPhwigyt9FPGYImZuOXgA0Mp4vvVZn9cJpUsA+xCycy7hjFC/XjpiDaSfDGWO86n7piCT3R4e4T4a6KX6wQ==
+  dependencies:
+    "@material/animation" "8.0.0-canary.774dcfc8e.0"
+    "@material/base" "8.0.0-canary.774dcfc8e.0"
+    "@material/feature-targeting" "8.0.0-canary.774dcfc8e.0"
+    "@material/progress-indicator" "8.0.0-canary.774dcfc8e.0"
+    "@material/theme" "8.0.0-canary.774dcfc8e.0"
+    tslib "^1.9.3"
+
 "@material/list@8.0.0-canary.774dcfc8e.0", "@material/list@=8.0.0-canary.774dcfc8e.0":
   version "8.0.0-canary.774dcfc8e.0"
   resolved "https://registry.yarnpkg.com/@material/list/-/list-8.0.0-canary.774dcfc8e.0.tgz#4f3549d2262587754301565457ae57fbbca8e57f"
@@ -2275,6 +2287,18 @@
   integrity sha512-9Zz7QsstIVjVsO1gpNP6eOMoXU54AUEdcE98poK6HQTz0WvYO+UXGgUGWsAZAABYP6/Ue7f8yRcQmnmH4DH1TQ==
   dependencies:
     lit-element "^2.3.0"
+    tslib "^1.10.0"
+
+"@material/mwc-linear-progress@^0.19.1":
+  version "0.19.1"
+  resolved "https://registry.npmjs.org/@material/mwc-linear-progress/-/mwc-linear-progress-0.19.1.tgz#59f796804e9ebe047048ea5eb7ca6ab63eb2e1e5"
+  integrity sha512-ewUwEVJTTZFC0/9RbETxtvb+G+v4XLKwgpVz2hKIzZjJU+Mx304WV/Tw1y4v+qz3Wedc5ETJ21s4J9JDvmo0YQ==
+  dependencies:
+    "@material/linear-progress" "=8.0.0-canary.774dcfc8e.0"
+    "@material/theme" "=8.0.0-canary.774dcfc8e.0"
+    "@types/resize-observer-browser" "^0.1.3"
+    lit-element "^2.3.0"
+    lit-html "^1.1.2"
     tslib "^1.10.0"
 
 "@material/mwc-list@^0.19.0":

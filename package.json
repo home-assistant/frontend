@@ -37,6 +37,7 @@
     "@material/mwc-fab": "^0.19.0",
     "@material/mwc-formfield": "^0.19.0",
     "@material/mwc-icon-button": "^0.19.0",
+    "@material/mwc-linear-progress": "^0.19.1",
     "@material/mwc-list": "^0.19.0",
     "@material/mwc-menu": "^0.19.0",
     "@material/mwc-radio": "^0.19.0",
