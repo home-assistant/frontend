@@ -186,7 +186,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
         ${!this._config.title && !this._showHeaderToggle && !this._config.icon
           ? ""
           : html`
-              <div class="card-header">
+              <h1 class="card-header">
                 <div class="name">
                   ${this._config.icon
                     ? html`
@@ -208,7 +208,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
                         ) as EntityConfig[]).map((conf) => conf.entity)}
                       ></hui-entities-toggle>
                     `}
-              </div>
+              </h1>
             `}
         <div id="states" class="card-content">
           ${this._configEntities!.map((entityConf) =>
