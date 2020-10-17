@@ -90,11 +90,11 @@ class OZWNodeConfig extends LitElement {
               "ui.panel.config.ozw.node_config.introduction"
             )}
             <p>
-              <em
-                >${this.hass.localize(
+              <em>
+                ${this.hass.localize(
                   "ui.panel.config.ozw.node_config.help_source"
-                )}</em
-              >
+                )}
+              </em>
             </p>
             <p>
               Note: This panel is currently read-only. The ability to change
@@ -105,9 +105,9 @@ class OZWNodeConfig extends LitElement {
             ? html`
                 <ha-card class="content">
                   <div class="card-content">
-                    <b
-                      >${this._node.node_manufacturer_name}
-                      ${this._node.node_product_name}</b
+                    <b>
+                      ${this._node.node_manufacturer_name}
+                      ${this._node.node_product_name} </b
                     ><br />
                     Node ID: ${this._node.node_id}<br />
                     Query Stage: ${this._node.node_query_stage}
@@ -131,12 +131,9 @@ class OZWNodeConfig extends LitElement {
                       <ha-card class="content" header="Wake-up Instructions">
                         <div class="card-content">
                           <span class="secondary">
-                            Battery powered nodes must be awake to change their
-                            configuration. If the node is not awake, OpenZWave
-                            will attempt to update the node's configuration the
-                            next time it wakes up, which could be multiple hours
-                            (or days) later. Follow these steps to wake up your
-                            device:
+                            ${this.hass.localize(
+                              "ui.panel.config.ozw.node_config.wakeup_help"
+                            )}
                           </span>
                           <p>
                             ${this._metadata.metadata.WakeupHelp}
