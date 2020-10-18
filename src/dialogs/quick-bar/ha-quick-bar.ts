@@ -41,6 +41,8 @@ import {
   showConfirmationDialog,
 } from "../generic/show-dialog-box";
 import { QuickBarParams } from "./show-dialog-quick-bar";
+import { navigate } from "../../common/navigate";
+import { configSections } from "../../panels/config/ha-panel-config";
 
 interface QuickBarItem extends ScorableTextItem {
   icon: string;
@@ -283,7 +285,8 @@ export class QuickBar extends LitElement {
   private _generateCommandItems(): QuickBarItem[] {
     return [
       ...this._generateReloadCommands(),
-      ...this._generateServerControlCommands(),
+      ...this._generateServerControlCommandItems(),
+      ...this._generateNavigationCommandItems(),
     ].sort((a, b) => compare(a.text.toLowerCase(), b.text.toLowerCase()));
   }
 
@@ -303,11 +306,11 @@ export class QuickBar extends LitElement {
     }));
   }
 
-  private _generateServerControlCommands(): QuickBarItem[] {
+  private _generateServerControlCommandItems(): QuickBarItem[] {
     const serverActions = ["restart", "stop"];
 
     return serverActions.map((action) =>
-      this._generateConfirmationCommand(
+      this._generateConfirmationCommandItem(
         {
           text: this.hass.localize(
             "ui.dialogs.quick-bar.commands.server_control.perform_action",
@@ -324,7 +327,7 @@ export class QuickBar extends LitElement {
     );
   }
 
-  private _generateConfirmationCommand(
+  private _generateConfirmationCommandItem(
     item: QuickBarItem,
     confirmText: ConfirmationDialogParams["confirmText"]
   ): QuickBarItem {
@@ -336,6 +339,61 @@ export class QuickBar extends LitElement {
           confirm: item.action,
         }),
     };
+  }
+
+  private getNavigationInfo(sectionKey: string, component: string) {
+    const panel = configSections[sectionKey].find(
+      (section) => section.component === component
+    );
+
+    if (!panel || !panel.translationKey) {
+      throw Error("Navigation section or its translation not found");
+    }
+
+    const text = this.hass.localize(
+      "ui.dialogs.quick-bar.commands.navigation.navigate_to",
+      "panel",
+      this.hass.localize(
+        `ui.dialogs.quick-bar.commands.navigation.${component}`
+      )
+    );
+
+    return { ...panel, text };
+  }
+
+  private _generateNavigationCommandItems(): QuickBarItem[] {
+    const sections = [
+      this.getNavigationInfo("general", "logs"),
+      this.getNavigationInfo("automation", "automation"),
+      this.getNavigationInfo("automation", "script"),
+      this.getNavigationInfo("general", "server_control"),
+      {
+        text: this.hass.localize(
+          "ui.dialogs.quick-bar.commands.navigation.navigate_to",
+          "panel",
+          this.hass.localize("panel.developer_tools")
+        ),
+        icon: "mdi:view-dashboard",
+        path: "/developer-tools/state",
+      },
+      {
+        text: this.hass.localize(
+          "ui.dialogs.quick-bar.commands.navigation.navigate_to",
+          "panel",
+          this.hass.localize("panel.states")
+        ),
+        icon: "mdi:view-dashboard",
+        path: "/lovelace/default_view",
+      },
+    ];
+
+    return sections.map(({ text, icon, path }) => {
+      return {
+        text,
+        icon: icon || "hass:robot",
+        action: async () => navigate(this, path),
+      };
+    });
   }
 
   private _generateEntityItems(): QuickBarItem[] {

@@ -499,6 +499,13 @@
             "perform_action": "{action} Server",
             "restart": "[%key:ui::panel::config::server_control::section::server_management::restart%]",
             "stop": "[%key:ui::panel::config::server_control::section::server_management::stop%]"
+          },
+          "navigation": {
+            "navigate_to": "Navigate to {panel}",
+            "logs": "[%key:ui::panel::config::logs::caption%]",
+            "automation": "[%key:ui::panel::config::automation::caption%]",
+            "script": "[%key:ui::panel::config::script::caption%]",
+            "server_control": "[%key:ui::panel::config::server_control::caption%]"
           }
         },
         "filter_placeholder": "Entity Filter"
