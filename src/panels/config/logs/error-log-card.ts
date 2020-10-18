@@ -19,21 +19,34 @@ class ErrorLogCard extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <p class="error-log-intro">
+      <div class="error-log-intro">
         ${this._errorLog
           ? html`
-              <ha-icon-button
-                icon="hass:refresh"
-                @click=${this._refreshErrorLog}
-              ></ha-icon-button>
+              <ha-card>
+                <ha-icon-button
+                  icon="hass:refresh"
+                  @click=${this._refreshErrorLog}
+                ></ha-icon-button>
+                <div class="card-content error-log">
+                  ${this._errorLog.split("\n").map((entry) => {
+                    if (entry.includes("ERROR"))
+                      return html`<div class="error">${entry}</div>`;
+
+                    if (entry.includes("WARNING"))
+                      return html`<div class="warning">${entry}</div>`;
+
+                    return html`<div class="info"></div>
+                      ${entry}`;
+                  })}
+                </div>
+              </ha-card>
             `
           : html`
               <mwc-button raised @click=${this._refreshErrorLog}>
                 ${this.hass.localize("ui.panel.config.logs.load_full_log")}
               </mwc-button>
             `}
-      </p>
-      <div class="error-log">${this._errorLog}</div>
+      </div>
     `;
   }
 
@@ -59,8 +72,16 @@ class ErrorLogCard extends LitElement {
       .error-log {
         @apply --paper-font-code)
           clear: both;
-        white-space: pre-wrap;
-        margin: 16px;
+        text-align: left;
+        padding-top: 12px;
+      }
+
+      .error {
+        color: var(--error-color);
+      }
+
+      .warning {
+        color: var(--warning-color);
       }
     `;
   }
