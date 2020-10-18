@@ -12,7 +12,6 @@ export const darkStyles = {
   "switch-unchecked-button-color": "#999999",
   "switch-unchecked-track-color": "#9b9b9b",
   "divider-color": "rgba(225, 225, 225, .12)",
-  "code-editor-background-color": "#202020",
   "codemirror-keyword": "#C792EA",
   "codemirror-operator": "#89DDFF",
   "codemirror-variable": "#f07178",
