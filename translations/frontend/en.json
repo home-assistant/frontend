@@ -718,9 +718,9 @@
                     "enabled_description": "Disabled entities will not be added to Home Assistant.",
                     "enabled_label": "Enable entity",
                     "entity_id": "Entity ID",
-                    "icon": "Icon Override",
+                    "icon": "Icon",
                     "icon_error": "Icons should be in the format 'prefix:iconname', e.g. 'mdi:home'",
-                    "name": "Name Override",
+                    "name": "Name",
                     "note": "Note: This might not work yet with all integrations.",
                     "unavailable": "This entity is not currently available.",
                     "update": "Update"
@@ -737,6 +737,13 @@
                 "ok": "OK"
             },
             "helper_settings": {
+                "counter": {
+                    "initial": "Initial value",
+                    "maximum": "Maximum value",
+                    "minimum": "Minimum value",
+                    "restore": "Restore the last known value when Home Assistant starts",
+                    "step": "Step size"
+                },
                 "generic": {
                     "icon": "Icon",
                     "name": "Name"
@@ -1644,6 +1651,7 @@
                         "no_helpers": "Looks like you don't have any helpers yet!"
                     },
                     "types": {
+                        "counter": "Counter",
                         "input_boolean": "Toggle",
                         "input_datetime": "Date and/or time",
                         "input_number": "Number",
@@ -2163,6 +2171,7 @@
                         "last_scanned": "Last scanned",
                         "name": "Name"
                     },
+                    "learn_more": "Learn more about tags",
                     "never_scanned": "Never scanned",
                     "no_tags": "No tags",
                     "write": "Write"
