@@ -571,6 +571,7 @@
                 "no_history_found": "Historie stavu chybí."
             },
             "logbook": {
+                "by": "přes",
                 "by_service": "službou",
                 "entries_not_found": "Nenalezeny žádné záznamy.",
                 "messages": {
@@ -2445,7 +2446,7 @@
                         "data": "Data události (YAML, volitelné)",
                         "description": "Spustit událost na sběrnici událostí.",
                         "documentation": "Dokumentace událostí.",
-                        "event_fired": "Událost {type} spuštěna!",
+                        "event_fired": "Událost {name} spuštěna!",
                         "fire_event": "Spustit událost",
                         "listen_to_events": "Naslouchat událostem",
                         "listening_to": "Naslouchám",

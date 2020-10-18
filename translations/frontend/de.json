@@ -423,6 +423,8 @@
                 "browse_media": "Medien durchsuchen",
                 "media_next_track": "Weiter",
                 "media_play": "Abspielen",
+                "media_play_pause": "Spielen/Pause",
+                "media_previous_track": "Vorheriger Titel",
                 "sound_mode": "Sound-Modus",
                 "source": "Quelle",
                 "text_to_speak": "Text zum Sprechen",
@@ -576,6 +578,7 @@
                     "became_unavailable": "nicht mehr verfügbar",
                     "changed_to_state": "wechselte zu {state}",
                     "detected_device_class": "erkannt {device_class}",
+                    "rose": "gestiegen",
                     "set": "einstellen",
                     "turned_off": "ausgeschaltet",
                     "turned_on": "eingeschaltet",
@@ -635,10 +638,14 @@
                 "media_browsing_error": "Fehler beim Durchsuchen der Medien",
                 "media_not_supported": "Der Browser Media Player unterstützt diese Art von Medien nicht",
                 "media_player": "Media Player",
+                "media-player-browser": "Medien-Browser",
                 "no_items": "Keine Einträge",
                 "no_local_media_found": "Keine lokalen Medien gefunden",
                 "no_media_folder": "Es sieht so aus, als hätten Sie noch kein Medienverzeichnis erstellt.",
+                "pick": "Auswählen",
+                "pick-media": "Medien auswählen",
                 "play": "Abspielen",
+                "play-media": "Medien abspielen",
                 "setup_local_help": "Lese die {documentation} über die Einrichtung lokaler Medien.",
                 "video_not_supported": "Ihr Browser unterstützt das Videoelement nicht.",
                 "web-browser": "Webbrowser"
@@ -667,9 +674,23 @@
                     "week": "{count} {count, plural,\none {Woche}\nother {Wochen}\n}"
                 },
                 "future": "In {time}",
+                "future_duration": {
+                    "day": "In {count} {count, plural,\n  one {Tag}\n  other {Tagen}\n}",
+                    "hour": "In {count} {count, plural,\n  one {Stunde}\n  other {Stunden}\n}",
+                    "minute": "In {count} {count, plural,\n  one {Minute}\n  other {Minuten}\n}",
+                    "second": "In {count} {count, plural,\n  one {Sekunde}\n  other {Sekunden}\n}",
+                    "week": "In {count} {count, plural,\n  one {Woche}\n  other {Wochen}\n}"
+                },
                 "just_now": "Gerade jetzt",
                 "never": "Noch nie",
-                "past": "Vor {time}"
+                "past": "Vor {time}",
+                "past_duration": {
+                    "day": "vor {count} {count, plural,\n  one {Tag}\n  other {Tagen}\n}",
+                    "hour": "vor {count} {count, plural,\n  one {Stunde}\n  other {Stunden}\n}",
+                    "minute": "vor {count} {count, plural,\n  one {Minute}\n  other {Minuten}\n}",
+                    "second": "vor {count} {count, plural,\n  one {Sekunde}\n  other {Sekunden}\n}",
+                    "week": "vor {count} {count, plural,\n  one {Woche}\n  other {Wochen}\n}"
+                }
             },
             "service-picker": {
                 "service": "Dienst"
@@ -823,6 +844,7 @@
                         "automation": "Automationen neu laden",
                         "filesize": "Dateigröße-Entitäten neu laden",
                         "filter": "Filter-Entitäten neu laden",
+                        "homekit": "HomeKit neu laden",
                         "input_boolean": "Input-Booleans neu laden",
                         "input_datetime": "Input-Datum/Zeit neu laden",
                         "input_number": "Input-Numern neu laden",
@@ -833,6 +855,8 @@
                         "reload": "{domain} neu laden",
                         "scene": "Szenen neu laden",
                         "script": "Skripte neu laden",
+                        "smtp": "SMTP-Benachrichtigungsdienst neu laden",
+                        "telegram": "Telegram-Benachrichtigungsdienst neu laden",
                         "template": "Templates neu laden",
                         "zone": "Zonen neu laden"
                     }
@@ -893,6 +917,7 @@
         "notification_drawer": {
             "click_to_configure": "Klicke auf die Schaltfläche, um {entity} zu konfigurieren",
             "close": "Schließen",
+            "dismiss_all": "Alle schließen",
             "empty": "Keine Benachrichtigungen",
             "title": "Benachrichtigungen"
         },
@@ -1012,7 +1037,9 @@
                                     "service_data": "Dienstdaten"
                                 },
                                 "wait_for_trigger": {
-                                    "label": "Auf Auslöser warten"
+                                    "continue_timeout": "Bei Zeitüberschreitung fortfahren",
+                                    "label": "Auf Auslöser warten",
+                                    "timeout": "Zeitüberschreitung (optional)"
                                 },
                                 "wait_template": {
                                     "continue_timeout": "Bei Timeout fortsetzen",
@@ -1542,6 +1569,7 @@
                         },
                         "filter": {
                             "filter": "Filter",
+                            "hidden_entities": "{number} versteckte {number, plural,\n  one {Entität}\n  other {Entitäten}\n}",
                             "show_all": "Alle anzeigen",
                             "show_disabled": "Anzeigen deaktivierter Entitäten",
                             "show_readonly": "Anzeigen schreibgeschützter Entitäten",
@@ -1656,6 +1684,7 @@
                         "reload_restart_confirm": "Home Assistant neustarten, um das Neuladen dieser Integration abzuschließen",
                         "rename": "Umbenennen",
                         "restart_confirm": "Starte Home Assistant neu, um das Entfernen dieser Integration abzuschließen",
+                        "services": "{count} {count, plural,\n  one {Dienst}\n  other {Dienste}\n}",
                         "settings_button": "Einstellungen für {integration} bearbeiten",
                         "system_options": "Systemoptionen",
                         "system_options_button": "Systemoptionen für {integration}",
@@ -2592,6 +2621,7 @@
                             "show_name": "Namen anzeigen?",
                             "show_state": "Status anzeigen?",
                             "state": "Zustand",
+                            "state_color": "Symbole basierend auf dem Status einfärben?",
                             "tap_action": "Tipp-Aktion",
                             "theme": "Aussehen",
                             "title": "Titel",
@@ -2781,6 +2811,7 @@
                         "yaml_mode": "Du verwendest den YAML-Modus für dieses Dashboard. Dies bedeutet, dass Du Deine Lovelace-Konfiguration nicht über die Benutzeroberfläche ändern kannst. Wenn du dieses Dashboard über die Benutzeroberfläche verwalten möchtest, entferne \"mode: yaml\" aus Deiner Lovelace-Konfiguration in \"configuration.yaml\"."
                     },
                     "select_view": {
+                        "dashboard_label": "Dashboard",
                         "header": "Wähle eine Ansicht"
                     },
                     "suggest_card": {
