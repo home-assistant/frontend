@@ -23,16 +23,18 @@ import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceResourceDetailsDialogParams } from "./show-dialog-lovelace-resource-detail";
 
-const styleSheetExt = ["css", "scss", "sass"];
-
 const detectResourceType = (url: string) => {
   const ext = url.split(".").pop() || "";
 
-  if (styleSheetExt.includes(ext)) {
+  if (ext === "css") {
     return "css";
   }
 
-  return "module";
+  if (ext === "js") {
+    return "module";
+  }
+
+  return undefined;
 };
 
 @customElement("dialog-lovelace-resource-detail")
@@ -43,7 +45,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
 
   @internalProperty() private _url!: LovelaceResource["url"];
 
-  @internalProperty() private _type!: LovelaceResource["type"];
+  @internalProperty() private _type: LovelaceResource["type"] = undefined;
 
   @internalProperty() private _error?: string;
 
@@ -56,10 +58,10 @@ export class DialogLovelaceResourceDetail extends LitElement {
     this._error = undefined;
     if (this._params.resource) {
       this._url = this._params.resource.url || "";
-      this._type = this._params.resource.type || "module";
+      this._type = this._params.resource.type || undefined;
     } else {
       this._url = "";
-      this._type = "module";
+      this._type = undefined;
     }
     await this.updateComplete;
   }
@@ -118,6 +120,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
                 .selected=${this._type}
                 @iron-select=${this._typeChanged}
                 attr-for-selected="type"
+                .invalid=${!this._type}
               >
                 <paper-item type="module">
                   ${this.hass!.localize(
@@ -168,7 +171,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
         <mwc-button
           slot="primaryAction"
           @click="${this._updateResource}"
-          .disabled=${urlInvalid || this._submitting}
+          .disabled=${urlInvalid || !this._type || this._submitting}
         >
           ${this._params.resource
             ? this.hass!.localize(
@@ -185,7 +188,9 @@ export class DialogLovelaceResourceDetail extends LitElement {
   private _urlChanged(ev: PolymerChangedEvent<string>) {
     this._error = undefined;
     this._url = ev.detail.value;
-    this._type = detectResourceType(this._url);
+    if (this._type === undefined) {
+      this._type = detectResourceType(this._url);
+    }
   }
 
   private _typeChanged(ev: CustomEvent) {
