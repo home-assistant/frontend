@@ -718,12 +718,6 @@ export class HaSceneEditor extends SubscribeMixin(
       this._errors = err.body.message || err.message;
       showToast(this, {
         message: err.body.message || err.message,
-        dismissable: false,
-        duration: 0,
-        action: {
-          action: () => {},
-          text: this.hass.localize("ui.dialogs.generic.ok"),
-        },
       });
       throw err;
     }

@@ -736,12 +736,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         this._errors = errors.body.message;
         showToast(this, {
           message: errors.body.message,
-          dismissable: false,
-          duration: 0,
-          action: {
-            action: () => {},
-            text: this.hass.localize("ui.dialogs.generic.ok"),
-          },
         });
         throw errors;
       }
