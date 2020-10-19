@@ -4,8 +4,8 @@ import { fuzzyScore, isPatternInWord } from "./filter";
  * Determine whether a sequence of letters exists in another string,
  *   in that order, allowing for skipping. Ex: "chdr" exists in "chandelier")
  *
- * filter => sequence of letters
- * word => Word to check for sequence
+ * @param {string} filter - Sequence of letters to check for
+ * @param {string} word - Word to check for sequence
  *
  * returns either:
  *    number => if word contains sequence, return a score
