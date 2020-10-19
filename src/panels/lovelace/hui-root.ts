@@ -713,7 +713,10 @@ class HUIRoot extends LitElement {
     const configBackground = viewConfig.background || this.config.background;
 
     if (configBackground) {
-      view.style.setProperty("--lovelace-background", configBackground);
+      root.parentElement!.style.setProperty(
+        "--lovelace-background",
+        configBackground
+      );
     }
 
     root.appendChild(view);
@@ -735,6 +738,7 @@ class HUIRoot extends LitElement {
 
         ha-app-layout {
           min-height: 100%;
+          background: var(--lovelace-background);
         }
         app-toolbar {
           padding: 0 18px 0 8px;
