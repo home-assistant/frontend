@@ -55,7 +55,7 @@ export interface LovelaceHeaderFooterConstructor
     hass: HomeAssistant,
     entities: string[],
     entitiesFallback: string[]
-  ) => LovelaceCardConfig;
+  ) => LovelaceHeaderFooterConfig;
   getConfigElement?: () => LovelaceHeaderFooterEditor;
 }
 
@@ -69,15 +69,22 @@ export interface LovelaceHeaderFooter extends HTMLElement {
   setConfig(config: LovelaceHeaderFooterConfig): void;
 }
 
-export type LovelaceCardEditor = LovelaceGenericElementEditor;
+export interface LovelaceCardEditor extends LovelaceGenericElementEditor {
+  setConfig(config: LovelaceCardConfig): void;
+}
 
-export type LovelaceHeaderFooterEditor = LovelaceGenericElementEditor;
+export interface LovelaceHeaderFooterEditor
+  extends LovelaceGenericElementEditor {
+  setConfig(config: LovelaceHeaderFooterConfig): void;
+}
 
-export type LovelaceRowEditor = LovelaceGenericElementEditor;
+export interface LovelaceRowEditor extends LovelaceGenericElementEditor {
+  setConfig(config: LovelaceRowConfig): void;
+}
 
 export interface LovelaceGenericElementEditor extends HTMLElement {
   hass?: HomeAssistant;
   lovelace?: LovelaceConfig;
-  setConfig(config: LovelaceRowConfig): void;
+  setConfig(config: any): void;
   refreshYamlEditor?: (focus: boolean) => void;
 }
