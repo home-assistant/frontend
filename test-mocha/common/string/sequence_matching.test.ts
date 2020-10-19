@@ -1,6 +1,9 @@
 import { assert } from "chai";
 
-import { fuzzySequentialMatch } from "../../../src/common/string/filter/sequence-matching";
+import {
+  fuzzyFilterSort,
+  fuzzySequentialMatch,
+} from "../../../src/common/string/filter/sequence-matching";
 
 describe("fuzzySequentialMatch", () => {
   const entity = { entity_id: "automation.ticker", friendly_name: "Stocks" };
@@ -17,7 +20,6 @@ describe("fuzzySequentialMatch", () => {
   });
 
   const shouldMatchEntity = [
-    createExpectation("", "automation.ticker"),
     createExpectation("automation.ticker", 138),
     createExpectation("automation.ticke", 129),
     createExpectation("automation.", 89),
@@ -40,6 +42,7 @@ describe("fuzzySequentialMatch", () => {
   ];
 
   const shouldNotMatchEntity = [
+    "",
     " ",
     "abcdefghijklmnopqrstuvwxyz",
     "automation.tickerz",
@@ -69,8 +72,32 @@ describe("fuzzySequentialMatch", () => {
           entity.entity_id,
           entity.friendly_name
         );
-        assert.equal(res, undefined);
+        assert.equal(res, 0);
       });
     }
+  });
+});
+
+describe("fuzzyFilterSort", () => {
+  const filter = "ticker";
+  const item1 = { text: "automation.ticker", altText: "Stocks", score: 0 };
+  const item2 = { text: "sensor.ticker", altText: "Stocks up", score: 0 };
+  const item3 = {
+    text: "automation.check_router",
+    altText: "Timer Check Router",
+    score: 0,
+  };
+  const itemsBeforeFilter = [item1, item2, item3];
+
+  it(`sorts correctly`, () => {
+    const expectedItemsAfterFilter = [
+      { ...item2, score: 23 },
+      { ...item3, score: 12 },
+      { ...item1, score: 1 },
+    ];
+
+    const res = fuzzyFilterSort(filter, itemsBeforeFilter);
+
+    assert.deepEqual(res, expectedItemsAfterFilter);
   });
 });

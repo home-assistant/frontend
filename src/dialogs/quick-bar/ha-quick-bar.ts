@@ -17,7 +17,10 @@ import "../../components/ha-dialog";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { PolymerChangedEvent } from "../../polymer-types";
-import { fuzzySequentialMatch } from "../../common/string/filter/sequence-matching";
+import {
+  fuzzyFilterSort,
+  ScorableTextItem,
+} from "../../common/string/filter/sequence-matching";
 import { componentsWithService } from "../../common/config/components_with_service";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -27,9 +30,7 @@ import { compare } from "../../common/string/compare";
 import { SingleSelectedEvent } from "@material/mwc-list/mwc-list-foundation";
 import { computeStateName } from "../../common/entity/compute_state_name";
 
-interface QuickBarItem {
-  text: string;
-  altText?: string;
+interface QuickBarItem extends ScorableTextItem {
   icon: string;
   action(data?: any): void;
 }
@@ -184,22 +185,18 @@ export class QuickBar extends LitElement {
     }
 
     this._items = this._commandMode ? this._commandItems : this._entityItems;
-    this._items.sort();
 
     if (this._itemFilter !== "") {
-      this._items = (this._commandMode ? this._commandItems : this._entityItems)
-        .filter((item) =>
-          item.altText
-            ? fuzzySequentialMatch(this._itemFilter, item.text, item.altText)
-            : fuzzySequentialMatch(this._itemFilter, item.text)
-        )
-        .sort();
+      this._items = fuzzyFilterSort<QuickBarItem>(
+        this._itemFilter.trimLeft(),
+        this._commandMode ? this._commandItems : this._entityItems
+      );
     }
   }
 
   private _generateCommandItems(): QuickBarItem[] {
     return [...this._generateReloadCommands()].sort((a, b) =>
-      compare(a.text, b.text)
+      compare(a.text.toLowerCase(), b.text.toLowerCase())
     );
   }
 
@@ -215,6 +212,7 @@ export class QuickBar extends LitElement {
           domainToName(this.hass.localize, domain)
         ),
       icon: domainIcon(domain),
+      score: 0,
       action: () => this.hass.callService(domain, "reload"),
     }));
   }
@@ -225,9 +223,10 @@ export class QuickBar extends LitElement {
         text: computeStateName(this.hass.states[entityId]),
         altText: entityId,
         icon: domainIcon(computeDomain(entityId), this.hass.states[entityId]),
+        score: 0,
         action: () => fireEvent(this, "hass-more-info", { entityId }),
       }))
-      .sort((a, b) => compare(a.text, b.text));
+      .sort((a, b) => compare(a.text.toLowerCase(), b.text.toLowerCase()));
   }
 
   static get styles() {

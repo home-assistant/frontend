@@ -36,11 +36,33 @@ export const fuzzySequentialMatch = (filter: string, ...words: string[]) => {
     // By shifting all scores up by 1, we allow "0" matches, while retaining score precedence
     const score = scores[0] + 1;
 
-    const isBestScore = !topScore || score > topScore;
-
-    if (isBestScore) {
+    if (score > topScore) {
       topScore = score;
     }
   }
   return topScore;
+};
+
+export interface ScorableTextItem {
+  score: number;
+  text: string;
+  altText?: string;
+}
+
+type FuzzyFilterSort = <T extends ScorableTextItem>(
+  filter: string,
+  items: T[]
+) => T[];
+
+export const fuzzyFilterSort: FuzzyFilterSort = (filter, items) => {
+  return items
+    .map((item) => {
+      item.score = item.altText
+        ? fuzzySequentialMatch(filter, item.text, item.altText)
+        : fuzzySequentialMatch(filter, item.text);
+      return item;
+    })
+    .sort(({ score: scoreA }, { score: scoreB }) =>
+      scoreA > scoreB ? -1 : scoreA < scoreB ? 1 : 0
+    );
 };

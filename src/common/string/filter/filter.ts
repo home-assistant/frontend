@@ -46,10 +46,6 @@ function initTable() {
   return table;
 }
 
-const _table = initTable();
-const _scores = initTable();
-const _arrows = <Arrow[][]>initTable();
-
 function isSeparatorAtPos(value: string, index: number): boolean {
   if (index < 0 || index >= value.length) {
     return false;
@@ -121,6 +117,30 @@ enum Arrow {
  */
 export type FuzzyScore = [number, number, number];
 
+interface FilterGlobals {
+  _matchesCount: number;
+  _topMatch2: number;
+  _topScore: number;
+  _wordStart: number;
+  _firstMatchCanBeWeak: boolean;
+  _table: number[][];
+  _scores: number[][];
+  _arrows: Arrow[][];
+}
+
+function initGlobals(): FilterGlobals {
+  return {
+    _matchesCount: 0,
+    _topMatch2: 0,
+    _topScore: 0,
+    _wordStart: 0,
+    _firstMatchCanBeWeak: false,
+    _table: initTable(),
+    _scores: initTable(),
+    _arrows: <Arrow[][]>initTable(),
+  };
+}
+
 export function fuzzyScore(
   pattern: string,
   patternLow: string,
@@ -130,6 +150,7 @@ export function fuzzyScore(
   wordStart: number,
   firstMatchCanBeWeak: boolean
 ): FuzzyScore | undefined {
+  const globals = initGlobals();
   const patternLen = pattern.length > _maxLen ? _maxLen : pattern.length;
   const wordLen = word.length > _maxLen ? _maxLen : word.length;
 
@@ -189,62 +210,64 @@ export function fuzzyScore(
         hasStrongFirstMatch = true;
       }
 
-      _scores[row][column] = score;
+      globals._scores[row][column] = score;
 
-      const diag = _table[row - 1][column - 1] + (score > 1 ? 1 : score);
-      const top = _table[row - 1][column] + -1;
-      const left = _table[row][column - 1] + -1;
+      const diag =
+        globals._table[row - 1][column - 1] + (score > 1 ? 1 : score);
+      const top = globals._table[row - 1][column] + -1;
+      const left = globals._table[row][column - 1] + -1;
 
       if (left >= top) {
         // left or diag
         if (left > diag) {
-          _table[row][column] = left;
-          _arrows[row][column] = Arrow.Left;
+          globals._table[row][column] = left;
+          globals._arrows[row][column] = Arrow.Left;
         } else if (left === diag) {
-          _table[row][column] = left;
-          _arrows[row][column] = Arrow.Left || Arrow.Diag;
+          globals._table[row][column] = left;
+          globals._arrows[row][column] = Arrow.Left || Arrow.Diag;
         } else {
-          _table[row][column] = diag;
-          _arrows[row][column] = Arrow.Diag;
+          globals._table[row][column] = diag;
+          globals._arrows[row][column] = Arrow.Diag;
         }
       } else if (top > diag) {
-        _table[row][column] = top;
-        _arrows[row][column] = Arrow.Top;
+        globals._table[row][column] = top;
+        globals._arrows[row][column] = Arrow.Top;
       } else if (top === diag) {
-        _table[row][column] = top;
-        _arrows[row][column] = Arrow.Top || Arrow.Diag;
+        globals._table[row][column] = top;
+        globals._arrows[row][column] = Arrow.Top || Arrow.Diag;
       } else {
-        _table[row][column] = diag;
-        _arrows[row][column] = Arrow.Diag;
+        globals._table[row][column] = diag;
+        globals._arrows[row][column] = Arrow.Diag;
       }
     }
   }
 
   if (_debug) {
-    printTables(pattern, patternStart, word, wordStart);
+    printTables(pattern, patternStart, word, wordStart, globals);
   }
 
   if (!hasStrongFirstMatch && !firstMatchCanBeWeak) {
     return undefined;
   }
 
-  _matchesCount = 0;
-  _topScore = -100;
-  _wordStart = wordStart;
-  _firstMatchCanBeWeak = firstMatchCanBeWeak;
+  globals._matchesCount = 0;
+  globals._topScore = -100;
+  globals._wordStart = wordStart;
+  globals._firstMatchCanBeWeak = firstMatchCanBeWeak;
 
   _findAllMatches2(
     row - 1,
     column - 1,
     patternLen === wordLen ? 1 : 0,
     0,
-    false
+    false,
+    globals
   );
-  if (_matchesCount === 0) {
+  if (globals._matchesCount === 0) {
     return undefined;
   }
 
-  return [_topScore, _topMatch2, wordStart];
+  return [globals._topScore, globals._topMatch2, wordStart];
 }
 
 function _doScore(
@@ -337,29 +360,31 @@ function printTables(
   pattern: string,
   patternStart: number,
   word: string,
-  wordStart: number
+  wordStart: number,
+  globals: FilterGlobals
 ): void {
   pattern = pattern.substr(patternStart);
   word = word.substr(wordStart);
-  console.log(printTable(_table, pattern, pattern.length, word, word.length));
-  console.log(printTable(_arrows, pattern, pattern.length, word, word.length));
-  console.log(printTable(_scores, pattern, pattern.length, word, word.length));
+  console.log(
+    printTable(globals._table, pattern, pattern.length, word, word.length)
+  );
+  console.log(
+    printTable(globals._arrows, pattern, pattern.length, word, word.length)
+  );
+  console.log(
+    printTable(globals._scores, pattern, pattern.length, word, word.length)
+  );
 }
-
-let _matchesCount = 0;
-let _topMatch2 = 0;
-let _topScore = 0;
-let _wordStart = 0;
-let _firstMatchCanBeWeak = false;
 
 function _findAllMatches2(
   row: number,
   column: number,
   total: number,
   matches: number,
-  lastMatched: boolean
+  lastMatched: boolean,
+  globals: FilterGlobals
 ): void {
-  if (_matchesCount >= 10 || total < -25) {
+  if (globals._matchesCount >= 10 || total < -25) {
     // stop when having already 10 results, or
     // when a potential alignment as already 5 gaps
     return;
@@ -368,8 +393,8 @@ function _findAllMatches2(
   let simpleMatchCount = 0;
 
   while (row > 0 && column > 0) {
-    const score = _scores[row][column];
-    const arrow = _arrows[row][column];
+    const score = globals._scores[row][column];
+    const arrow = globals._arrows[row][column];
 
     if (arrow === Arrow.Left) {
       // left -> no match, skip a word character
@@ -389,7 +414,8 @@ function _findAllMatches2(
           column - 1,
           matches !== 0 ? total - 1 : total, // gap penalty after first match
           matches,
-          lastMatched
+          lastMatched,
+          globals
         );
       }
 
@@ -400,7 +426,7 @@ function _findAllMatches2(
       lastMatched = true;
 
       // match -> set a 1 at the word pos
-      matches += 2 ** (column + _wordStart);
+      matches += 2 ** (column + globals._wordStart);
 
       // count simple matches and boost a row of
       // simple matches when they yield in a
@@ -408,7 +434,7 @@ function _findAllMatches2(
       if (score === 1) {
         simpleMatchCount += 1;
 
-        if (row === 0 && !_firstMatchCanBeWeak) {
+        if (row === 0 && !globals._firstMatchCanBeWeak) {
           // when the first match is a weak
           // match we discard it
           return;
@@ -427,10 +453,10 @@ function _findAllMatches2(
 
   // dynamically keep track of the current top score
   // and insert the current best score at head, the rest at tail
-  _matchesCount += 1;
-  if (total > _topScore) {
-    _topScore = total;
-    _topMatch2 = matches;
+  globals._matchesCount += 1;
+  if (total > globals._topScore) {
+    globals._topScore = total;
+    globals._topMatch2 = matches;
   }
 }
 
