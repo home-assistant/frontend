@@ -39,13 +39,11 @@ class HassioAddonConfig extends LitElement {
 
   @property({ type: Boolean }) private _configHasChanged = false;
 
-  @query("ha-yaml-editor") private _editor!: HaYamlEditor;
+  @property({ type: Boolean }) private _valid = true;
+
+  @query("ha-yaml-editor", true) private _editor!: HaYamlEditor;
 
   protected render(): TemplateResult {
-    const editor = this._editor;
-    // If editor not rendered, don't show the error.
-    const valid = editor ? editor.isValid : true;
-
     return html`
       <h1>${this.addon.name}</h1>
       <ha-card header="Configuration">
@@ -54,7 +52,7 @@ class HassioAddonConfig extends LitElement {
             @value-changed=${this._configChanged}
           ></ha-yaml-editor>
           ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
-          ${valid ? "" : html` <div class="errors">Invalid YAML</div> `}
+          ${this._valid ? "" : html` <div class="errors">Invalid YAML</div> `}
         </div>
         <div class="card-actions">
           <ha-progress-button class="warning" @click=${this._resetTapped}>
@@ -62,7 +60,7 @@ class HassioAddonConfig extends LitElement {
           </ha-progress-button>
           <ha-progress-button
             @click=${this._saveTapped}
-            .disabled=${!this._configHasChanged || !valid}
+            .disabled=${!this._configHasChanged || !this._valid}
           >
             Save
           </ha-progress-button>
@@ -78,9 +76,9 @@ class HassioAddonConfig extends LitElement {
     }
   }
 
-  private _configChanged(): void {
+  private _configChanged(ev): void {
     this._configHasChanged = true;
-    this.requestUpdate();
+    this._valid = ev.detail.isValid;
   }
 
   private async _resetTapped(ev: CustomEvent): Promise<void> {
