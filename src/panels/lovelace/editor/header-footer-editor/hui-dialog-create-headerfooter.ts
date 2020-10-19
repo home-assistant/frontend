@@ -28,10 +28,6 @@ export class HuiCreateDialogHeaderFooter extends LitElement
 
   @internalProperty() private _params?: CreateHeaderFooterDialogParams;
 
-  private _unusedEntities?: string[];
-
-  private _usedEntities?: string[];
-
   public async showDialog(
     params: CreateHeaderFooterDialogParams
   ): Promise<void> {
