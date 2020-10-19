@@ -91,6 +91,8 @@ export class HaSceneEditor extends SubscribeMixin(
 
   @internalProperty() private _dirty = false;
 
+  @internalProperty() private _errors?: string;
+
   @internalProperty() private _config?: SceneConfig;
 
   @internalProperty() private _entities: string[] = [];
@@ -209,6 +211,7 @@ export class HaSceneEditor extends SubscribeMixin(
                 @click=${this._deleteTapped}
               ></ha-icon-button>
             `}
+        ${this._errors ? html` <div class="errors">${this._errors}</div> ` : ""}
         ${this.narrow ? html` <span slot="header">${name}</span> ` : ""}
         <div
           id="root"
@@ -712,6 +715,7 @@ export class HaSceneEditor extends SubscribeMixin(
         navigate(this, `/config/scene/edit/${id}`, true);
       }
     } catch (err) {
+      this._errors = err.body.message || err.message;
       showToast(this, {
         message: err.body.message || err.message,
         dismissable: false,

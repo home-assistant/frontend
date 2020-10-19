@@ -69,6 +69,8 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   @internalProperty() private _dirty = false;
 
+  @internalProperty() private _errors?: string;
+
   @internalProperty() private _mode: "gui" | "yaml" = "gui";
 
   @query("ha-yaml-editor", true) private _editor?: HaYamlEditor;
@@ -151,6 +153,9 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           ? html` <span slot="header">${this._config?.alias}</span> `
           : ""}
         <div class="content">
+          ${this._errors
+            ? html` <div class="errors">${this._errors}</div> `
+            : ""}
           ${this._mode === "gui"
             ? html`
                 <div
@@ -506,6 +511,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   private _sequenceChanged(ev: CustomEvent): void {
     this._config = { ...this._config!, sequence: ev.detail.value as Action[] };
+    this._errors = undefined;
     this._dirty = true;
   }
 
@@ -525,6 +531,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       return;
     }
     this._config = ev.detail.value;
+    this._errors = undefined;
     this._dirty = true;
   }
 
@@ -598,6 +605,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         }
       },
       (errors) => {
+        this._errors = errors.body.message;
         showToast(this, {
           message: errors.body.message,
           dismissable: false,

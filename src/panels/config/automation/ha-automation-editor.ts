@@ -90,6 +90,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   @internalProperty() private _dirty = false;
 
+  @internalProperty() private _errors?: string;
+
   @internalProperty() private _entityId?: string;
 
   @internalProperty() private _mode: "gui" | "yaml" = "gui";
@@ -198,6 +200,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                 ? html` <span slot="header">${this._config?.alias}</span> `
                 : ""}
               <div class="content">
+                ${this._errors
+                  ? html` <div class="errors">${this._errors}</div> `
+                  : ""}
                 ${this._mode === "gui"
                   ? html`
                       <ha-config-section .isWide=${this.isWide}>
@@ -590,6 +595,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   private _triggerChanged(ev: CustomEvent): void {
     this._config = { ...this._config!, trigger: ev.detail.value as Trigger[] };
+    this._errors = undefined;
     this._dirty = true;
   }
 
@@ -598,11 +604,13 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       ...this._config!,
       condition: ev.detail.value as Condition[],
     };
+    this._errors = undefined;
     this._dirty = true;
   }
 
   private _actionChanged(ev: CustomEvent): void {
     this._config = { ...this._config!, action: ev.detail.value as Action[] };
+    this._errors = undefined;
     this._dirty = true;
   }
 
@@ -633,6 +641,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       return;
     }
     this._config = ev.detail.value;
+    this._errors = undefined;
     this._dirty = true;
   }
 
@@ -724,6 +733,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         }
       },
       (errors) => {
+        this._errors = errors.body.message;
         showToast(this, {
           message: errors.body.message,
           dismissable: false,
