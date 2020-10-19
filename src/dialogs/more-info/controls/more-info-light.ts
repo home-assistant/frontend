@@ -172,7 +172,9 @@ class MoreInfoLight extends LitElement {
             s: stateObj.attributes.hs_color[1] / 100,
           };
         }
-      } else this._brightnessSliderValue = 0;
+      } else {
+        this._brightnessSliderValue = 0;
+      }
     }
   }
 

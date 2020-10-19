@@ -14,6 +14,7 @@ class HaLabeledSlider extends PolymerElement {
         }
 
         .title {
+          margin-bottom: 8px;
           color: var(--primary-text-color);
         }
 
