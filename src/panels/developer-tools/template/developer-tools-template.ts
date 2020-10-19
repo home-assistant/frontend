@@ -151,6 +151,15 @@ class HaPanelDevTemplate extends LitElement {
             class="rendered ${classMap({ error: Boolean(this._error) })}"
           ><!-- display: block -->${this._error}${this._templateResult
             ?.result}</pre>
+          ${this._templateResult?.listeners.time
+            ? html`
+                <h3>
+                  ${this.hass.localize(
+                    "ui.panel.developer-tools.tabs.templates.time"
+                  )}
+                </h3>
+              `
+            : ""}
           ${!this._templateResult?.listeners
             ? ""
             : this._templateResult.listeners.all
