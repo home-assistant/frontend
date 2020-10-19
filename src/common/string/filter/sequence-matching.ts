@@ -1,4 +1,4 @@
-import { fuzzyScore, isPatternInWord } from "./filter";
+import { fuzzyScore } from "./filter";
 
 /**
  * Determine whether a sequence of letters exists in another string,
@@ -14,13 +14,9 @@ import { fuzzyScore, isPatternInWord } from "./filter";
  */
 
 export const fuzzySequentialMatch = (filter: string, ...words: string[]) => {
-  let topScore: string | number | undefined;
+  let topScore = 0;
 
   for (const word of words) {
-    if (filter === "") {
-      return word;
-    }
-
     const scores = fuzzyScore(
       filter,
       filter.toLowerCase(),
@@ -47,19 +43,4 @@ export const fuzzySequentialMatch = (filter: string, ...words: string[]) => {
     }
   }
   return topScore;
-};
-
-export const isPatternInWords = (filter: string, ...words: string[]) => {
-  for (const word of words) {
-    if (filter === "") {
-      return true;
-    }
-
-    const patternFound = isPatternInWord(filter, word);
-    if (patternFound) {
-      return true;
-    }
-  }
-
-  return false;
 };

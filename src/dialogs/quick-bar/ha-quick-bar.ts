@@ -17,10 +17,7 @@ import "../../components/ha-dialog";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { PolymerChangedEvent } from "../../polymer-types";
-import {
-  fuzzySequentialMatch,
-  isPatternInWords,
-} from "../../common/string/filter/sequence-matching";
+import { fuzzySequentialMatch } from "../../common/string/filter/sequence-matching";
 import { componentsWithService } from "../../common/config/components_with_service";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -35,11 +32,6 @@ interface QuickBarItem {
   altText?: string;
   icon: string;
   action(data?: any): void;
-}
-
-export interface ScoredItem {
-  item: QuickBarItem;
-  score: ReturnType<typeof fuzzySequentialMatch>;
 }
 
 @customElement("ha-quick-bar")
@@ -191,40 +183,24 @@ export class QuickBar extends LitElement {
       this._itemFilter = newFilter;
     }
 
-    this._items = (this._commandMode ? this._commandItems : this._entityItems)
-      .filter(({ text, altText }) =>
-        altText
-          ? isPatternInWords(this._itemFilter, text, altText)
-          : isPatternInWords(this._itemFilter, text)
-      )
-      .map<ScoredItem>((item) => ({
-        item,
-        score: item.altText
-          ? fuzzySequentialMatch(this._itemFilter, item.text, item.altText)
-          : fuzzySequentialMatch(this._itemFilter, item.text),
-      }))
-      .sort(this.compareFuzzyMatches)
-      .map((scoredItem) => scoredItem.item);
+    this._items = this._commandMode ? this._commandItems : this._entityItems;
+    this._items.sort();
+
+    if (this._itemFilter !== "") {
+      this._items = (this._commandMode ? this._commandItems : this._entityItems)
+        .filter((item) =>
+          item.altText
+            ? fuzzySequentialMatch(this._itemFilter, item.text, item.altText)
+            : fuzzySequentialMatch(this._itemFilter, item.text)
+        )
+        .sort();
+    }
   }
 
-  private compareFuzzyMatches = (a: ScoredItem, b: ScoredItem) => {
-    const scoreA = a.score;
-    const scoreB = b.score;
-
-    if (!scoreA || !scoreB) {
-      return 0;
-    }
-
-    const isNumber = !isNaN(Number(scoreA));
-    if (isNumber) {
-      return scoreA > scoreB ? -1 : 1;
-    }
-
-    return compare(a.item.text, b.item.text);
-  };
-
   private _generateCommandItems(): QuickBarItem[] {
-    return [...this._generateReloadCommands()];
+    return [...this._generateReloadCommands()].sort((a, b) =>
+      compare(a.text, b.text)
+    );
   }
 
   private _generateReloadCommands(): QuickBarItem[] {
@@ -244,12 +220,14 @@ export class QuickBar extends LitElement {
   }
 
   private _generateEntityItems(): QuickBarItem[] {
-    return Object.keys(this.hass.states).map((entityId) => ({
-      text: computeStateName(this.hass.states[entityId]),
-      altText: entityId,
-      icon: domainIcon(computeDomain(entityId), this.hass.states[entityId]),
-      action: () => fireEvent(this, "hass-more-info", { entityId }),
-    }));
+    return Object.keys(this.hass.states)
+      .map((entityId) => ({
+        text: computeStateName(this.hass.states[entityId]),
+        altText: entityId,
+        icon: domainIcon(computeDomain(entityId), this.hass.states[entityId]),
+        action: () => fireEvent(this, "hass-more-info", { entityId }),
+      }))
+      .sort((a, b) => compare(a.text, b.text));
   }
 
   static get styles() {

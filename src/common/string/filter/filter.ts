@@ -90,18 +90,7 @@ function isUpperCaseAtPos(pos: number, word: string, wordLow: string): boolean {
   return word[pos] !== wordLow[pos];
 }
 
-export function isPatternInWord(pattern: string, word: string): boolean {
-  return _isPatternInWord(
-    pattern.toLowerCase(),
-    0,
-    pattern.length,
-    word.toLowerCase(),
-    0,
-    word.length
-  );
-}
-
-function _isPatternInWord(
+function isPatternInWord(
   patternLow: string,
   patternPos: number,
   patternLen: number,
@@ -156,7 +145,7 @@ export function fuzzyScore(
   // (in order) at all in word. If that isn't the case we
   // stop because no match will be possible
   if (
-    !_isPatternInWord(
+    !isPatternInWord(
       patternLow,
       patternStart,
       patternLen,
