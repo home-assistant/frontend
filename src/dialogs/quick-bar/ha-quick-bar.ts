@@ -32,6 +32,7 @@ interface QuickBarItem {
   altText?: string;
   icon: string;
   action(data?: any): void;
+  score?: number;
 }
 
 @customElement("ha-quick-bar")
@@ -58,10 +59,7 @@ export class QuickBar extends LitElement {
 
   @query("mwc-list-item", false) private _firstListItem?: HTMLElement;
 
-  @internalProperty() private _isAdmin = false;
-
   public async showDialog(params: QuickBarParams) {
-    this._isAdmin = this.hass.user?.is_admin || false;
     this._commandMode = params.commandMode || false;
     this._opened = true;
     this._commandItems = this._generateCommandItems();
@@ -198,24 +196,7 @@ export class QuickBar extends LitElement {
   }
 
   private _generateCommandItems(): QuickBarItem[] {
-    if (!this._isAdmin) {
-      return this._generateNonAdminPlaceholder();
-    }
-
     return [...this._generateReloadCommands()];
-  }
-
-  private _generateNonAdminPlaceholder() {
-    return [
-      {
-        text: this.hass.localize("ui.dialogs.quick-bar.restricted_label"),
-        altText: this.hass.localize(
-          "ui.dialogs.quick-bar.restricted_more_info"
-        ),
-        icon: "hass:information-outline",
-        action: () => {},
-      },
-    ];
   }
 
   private _generateReloadCommands(): QuickBarItem[] {
@@ -235,10 +216,6 @@ export class QuickBar extends LitElement {
   }
 
   private _generateEntityItems(): QuickBarItem[] {
-    if (!this._isAdmin) {
-      return this._generateNonAdminPlaceholder();
-    }
-
     return Object.keys(this.hass.states).map((entityId) => ({
       text: computeStateName(this.hass.states[entityId]),
       altText: entityId,
