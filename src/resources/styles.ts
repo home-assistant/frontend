@@ -3,7 +3,7 @@ import { css } from "lit-element";
 export const darkStyles = {
   "primary-background-color": "#111111",
   "card-background-color": "#1c1c1c",
-  "secondary-background-color": "#1e1e1e",
+  "secondary-background-color": "#202020",
   "primary-text-color": "#e1e1e1",
   "secondary-text-color": "#9b9b9b",
   "disabled-text-color": "#6f6f6f",
