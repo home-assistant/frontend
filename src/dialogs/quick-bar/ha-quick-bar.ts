@@ -110,7 +110,11 @@ export class QuickBar extends LitElement {
                 <ha-icon .icon=${item.icon} slot="graphic"></ha-icon>
                 <span>${item.text}</span>
                 ${item.altText
-                  ? html` <span slot="secondary">${item.altText}</span> `
+                  ? html`
+                      <span slot="secondary" class="secondary"
+                        >${item.altText}</span
+                      >
+                    `
                   : null}
                 ${this._commandTriggered === index
                   ? html`<ha-circular-progress
@@ -186,7 +190,7 @@ export class QuickBar extends LitElement {
         if (altText) {
           values.push(altText);
         }
-        return fuzzySequentialMatch(this._itemFilter, values);
+        return fuzzySequentialMatch(this._itemFilter.trimLeft(), values);
       })
       .sort((itemA, itemB) => compare(itemA.text, itemB.text));
   }
@@ -226,6 +230,11 @@ export class QuickBar extends LitElement {
       css`
         .heading {
           padding: 20px 20px 0px;
+        }
+
+        mwc-list-item span[slot="secondary"],
+        ha-icon[slot="graphic"] {
+          color: var(--secondary-text-color);
         }
 
         ha-dialog {
