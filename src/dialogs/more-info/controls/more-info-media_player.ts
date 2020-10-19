@@ -280,7 +280,7 @@ class MoreInfoMediaPlayer extends LitElement {
 
     const buttons: ControlButton[] = [];
 
-    if (state === "idle") {
+    if (state === "on" || state === "idle") {
       if (supportsFeature(stateObj, SUPPORT_TURN_OFF)) {
         buttons.push({
           icon: "hass:power",
@@ -288,11 +288,13 @@ class MoreInfoMediaPlayer extends LitElement {
         });
       }
 
-      if (supportsFeature(stateObj, SUPPORTS_PLAY)) {
-        buttons.push({
-          icon: "hass:play",
-          action: "media_play",
-        });
+      if (state === "idle") {
+        if (supportsFeature(stateObj, SUPPORTS_PLAY)) {
+          buttons.push({
+            icon: "hass:play",
+            action: "media_play",
+          });
+        }
       }
 
       return buttons.length > 0 ? buttons : undefined;

@@ -542,29 +542,26 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         : undefined;
     }
 
-    if (state === "on") {
-      return supportsFeature(stateObj, SUPPORT_TURN_OFF)
-        ? [
-            {
-              icon: "hass:power",
-              action: "turn_off",
-            },
-          ]
-        : undefined;
-    }
-
-    if (state === "idle") {
-      return supportsFeature(stateObj, SUPPORTS_PLAY)
-        ? [
-            {
-              icon: "hass:play",
-              action: "media_play",
-            },
-          ]
-        : undefined;
-    }
-
     const buttons: ControlButton[] = [];
+
+    if (state === "on" || state === "idle") {
+      if (supportsFeature(stateObj, SUPPORT_TURN_OFF))
+        buttons.push({
+          icon: "hass:power",
+          action: "turn_off",
+        });
+
+      if (state === "idle") {
+        if (supportsFeature(stateObj, SUPPORTS_PLAY)) {
+          buttons.push({
+            icon: "hass:play",
+            action: "media_play",
+          });
+        }
+      }
+
+      return buttons.length > 0 ? buttons : undefined;
+    }
 
     if (supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)) {
       buttons.push({
