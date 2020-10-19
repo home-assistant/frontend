@@ -15,12 +15,12 @@ import { HomeAssistant } from "../../../types";
 class ErrorLogCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _errorLog?: string;
+  @internalProperty() private _errorHTML!: TemplateResult[];
 
   protected render(): TemplateResult {
     return html`
       <div class="error-log-intro">
-        ${this._errorLog
+        ${this._errorHTML
           ? html`
               <ha-card>
                 <ha-icon-button
@@ -28,16 +28,7 @@ class ErrorLogCard extends LitElement {
                   @click=${this._refreshErrorLog}
                 ></ha-icon-button>
                 <div class="card-content error-log">
-                  ${this._errorLog.split("\n").map((entry) => {
-                    if (entry.includes("ERROR"))
-                      return html`<div class="error">${entry}</div>`;
-
-                    if (entry.includes("WARNING"))
-                      return html`<div class="warning">${entry}</div>`;
-
-                    return html`<div class="info"></div>
-                      ${entry}`;
-                  })}
+                  ${this._errorHTML}
                 </div>
               </ha-card>
             `
@@ -87,10 +78,30 @@ class ErrorLogCard extends LitElement {
   }
 
   private async _refreshErrorLog(): Promise<void> {
-    this._errorLog = this.hass.localize("ui.panel.config.logs.loading_log");
+    this._errorHTML = [
+      html`${this.hass.localize("ui.panel.config.logs.loading_log")}`,
+    ];
     const log = await fetchErrorLog(this.hass!);
-    this._errorLog =
-      log || this.hass.localize("ui.panel.config.logs.no_errors");
+
+    this._errorHTML = log.split("\n").map((entry) => {
+      if (
+        entry.includes("ERROR") ||
+        entry.includes("FATAL") ||
+        entry.includes("CRITICAL")
+      )
+        return html`<div class="error">${entry}</div>`;
+
+      if (entry.includes("WARNING"))
+        return html`<div class="warning">${entry}</div>`;
+
+      return html`<div class="info">${entry}</div>`;
+    });
+
+    if (!this._errorHTML) {
+      this._errorHTML = [
+        html`${this.hass.localize("ui.panel.config.logs.no_errors")}`,
+      ];
+    }
   }
 }
 
