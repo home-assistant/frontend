@@ -23,7 +23,7 @@ export const extractApiErrorMessage = (error: any): string => {
   return typeof error === "object"
     ? typeof error.body === "object"
       ? error.body.message || "Unknown error, see supervisor logs"
-      : error.body || "Unknown error, see supervisor logs"
+      : error.body || error.message || "Unknown error, see supervisor logs"
     : error;
 };
 
