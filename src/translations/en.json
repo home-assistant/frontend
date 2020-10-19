@@ -495,8 +495,6 @@
       "generic": {
         "cancel": "Cancel",
         "ok": "OK",
-        "yes": "Yes",
-        "no": "No",
         "default_confirmation_title": "Are you sure?",
         "close": "close"
       },
