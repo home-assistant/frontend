@@ -117,6 +117,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
             <div id="slider">
               <round-slider
                 min="0"
+                max="100"
                 .value=${brightness}
                 .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
                 @value-changing=${this._dragEvent}
