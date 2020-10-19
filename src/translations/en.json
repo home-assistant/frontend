@@ -1899,7 +1899,9 @@
             "ozw_instance": "OpenZWave Instance",
             "instance": "Instance",
             "controller": "Controller",
-            "network": "Network"
+            "network": "Network",
+            "wakeup_instructions": "Wake-up Instructions",
+            "query_stage": "Query Stage"
           },
           "device_info": {
             "zwave_info": "Z-Wave Info",
@@ -1961,7 +1963,11 @@
           "navigation": {
             "select_instance": "Select Instance",
             "network": "Network",
-            "nodes": "Nodes"
+            "nodes": "Nodes",
+            "node": {
+              "dashboard": "Dashboard",
+              "config": "Config"
+            }
           },
           "select_instance": {
             "header": "Select an OpenZWave Instance",
@@ -1984,6 +1990,15 @@
           "node": {
             "button": "Node Details",
             "not_found": "Node not found"
+          },
+          "node_config": {
+            "header": "Node Configuration",
+            "introduction": "Manage the different configuration parameters for a Z-Wave node.",
+            "help_source": "Config parameter descriptions and help text are provided by the OpenZWave project.",
+            "wakeup_help": "Battery powered nodes must be awake to change their configuration. If the node is not awake, OpenZWave will attempt to update the node's configuration the next time it wakes up, which could be multiple hours (or days) later. Follow these steps to wake up your device:"
+          },
+          "node_metadata": {
+            "product_manual": "Product Manual"
           },
           "services": {
             "add_node": "Add Node",

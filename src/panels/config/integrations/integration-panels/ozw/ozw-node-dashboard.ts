@@ -26,7 +26,7 @@ import {
 } from "../../../../../data/ozw";
 import { ERR_NOT_FOUND } from "../../../../../data/websocket_api";
 import { showOZWRefreshNodeDialog } from "./show-dialog-ozw-refresh-node";
-import { ozwNetworkTabs } from "./ozw-network-router";
+import { ozwNodeTabs } from "./ozw-node-router";
 
 @customElement("ozw-node-dashboard")
 class OZWNodeDashboard extends LitElement {
@@ -74,7 +74,7 @@ class OZWNodeDashboard extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .tabs=${ozwNetworkTabs(this.ozwInstance)}
+        .tabs=${ozwNodeTabs(this.ozwInstance, this.nodeId)}
       >
         <ha-config-section .narrow=${this.narrow} .isWide=${this.isWide}>
           <div slot="header">
