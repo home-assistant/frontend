@@ -87,7 +87,8 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
         (entry) =>
           !entry.includes("/supervisor/logs") &&
           !entry.includes("/supervisor/ping") &&
-          !entry.includes("DEBUG")
+          !entry.includes("DEBUG") &&
+          !entry.includes("TypeError: Failed to fetch")
       )
       .join("\n")
       .replace(/\s[A-Z]+\s\(\w+\)\s\[[\w.]+\]/gi, "")
@@ -129,7 +130,7 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
         }
       } catch (err) {
         if (err.status_code && !ignoredStatusCodes.has(err.status_code)) {
-          this._log = extractApiErrorMessage(err);
+          this._log += extractApiErrorMessage(err);
         }
       }
     }
