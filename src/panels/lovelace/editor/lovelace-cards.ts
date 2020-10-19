@@ -98,6 +98,9 @@ export const coreCards: Card[] = [
     type: "iframe",
   },
   {
+    type: "logbook",
+  },
+  {
     type: "vertical-stack",
   },
   {
