@@ -1604,15 +1604,22 @@
           "automation": {
             "automations": "Automations",
             "no_automations": "No automations",
+            "unknown_automation": "Unknown automation",
             "create": "Create automation with device",
             "triggers": {
-              "caption": "Do something when..."
+              "caption": "Do something when...",
+              "no_triggers": "No triggers",
+              "unknown_trigger": "Unknown trigger"
             },
             "conditions": {
-              "caption": "Only do something if..."
+              "caption": "Only do something if...",
+              "no_conditions": "No conditions",
+              "unknown_condition": "Unknown condition"
             },
             "actions": {
-              "caption": "When something is triggered..."
+              "caption": "When something is triggered...",
+              "no_actions": "No actions",
+              "unknown_action": "Unknown action"
             },
             "no_device_automations": "There are no automations available for this device."
           },
