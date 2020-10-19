@@ -362,7 +362,7 @@ export class QuickBar extends LitElement {
   }
 
   private _generateNavigationCommandItems(): QuickBarItem[] {
-    const sections = [
+    const panels = [
       this.getNavigationInfo("general", "logs"),
       this.getNavigationInfo("automation", "automation"),
       this.getNavigationInfo("automation", "script"),
@@ -387,11 +387,15 @@ export class QuickBar extends LitElement {
       },
     ];
 
-    return sections.map(({ text, icon, path }) => {
+    return this._generateNavigationItems(panels);
+  }
+
+  private _generateNavigationItems(panels) {
+    return panels.map(({ text, icon, path }) => {
       return {
         text,
         icon: icon || "hass:robot",
-        action: async () => navigate(this, path),
+        action: () => navigate(this, path),
       };
     });
   }
