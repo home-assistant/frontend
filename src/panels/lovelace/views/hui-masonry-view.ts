@@ -295,7 +295,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
       .column > * {
         display: block;
-        margin: 4px 4px 8px;
+        margin: var(--ha-card-margin, 4px 4px 8px);
       }
 
       mwc-fab {
