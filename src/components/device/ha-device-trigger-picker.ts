@@ -9,13 +9,13 @@ import { HaDeviceAutomationPicker } from "./ha-device-automation-picker";
 
 @customElement("ha-device-trigger-picker")
 class HaDeviceTriggerPicker extends HaDeviceAutomationPicker<DeviceTrigger> {
-  get NO_AUTOMATION_TEXT() {
+  protected get NO_AUTOMATION_TEXT() {
     return this.hass.localize(
       "ui.panel.config.devices.automation.triggers.no_triggers"
     );
   }
 
-  get UNKNOWN_AUTOMATION_TEXT() {
+  protected get UNKNOWN_AUTOMATION_TEXT() {
     return this.hass.localize(
       "ui.panel.config.devices.automation.triggers.unknown_trigger"
     );
