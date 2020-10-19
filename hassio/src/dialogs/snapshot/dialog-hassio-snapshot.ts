@@ -1,6 +1,7 @@
 import "@material/mwc-button";
 import { mdiClose, mdiDelete, mdiDownload, mdiHistory } from "@mdi/js";
-import { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
+import "@polymer/paper-checkbox/paper-checkbox";
+import type { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
 import {
   css,
