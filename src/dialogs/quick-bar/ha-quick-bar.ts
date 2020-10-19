@@ -59,7 +59,10 @@ export class QuickBar extends LitElement {
 
   @query("mwc-list-item", false) private _firstListItem?: HTMLElement;
 
+  @internalProperty() private _isAdmin = false;
+
   public async showDialog(params: QuickBarParams) {
+    this._isAdmin = this.hass.user?.is_admin || false;
     this._commandMode = params.commandMode || false;
     this._opened = true;
     this._commandItems = this._generateCommandItems();
