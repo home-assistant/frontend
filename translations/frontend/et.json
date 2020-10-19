@@ -737,6 +737,13 @@
                 "ok": "OK"
             },
             "helper_settings": {
+                "counter": {
+                    "initial": "Algne väärtus",
+                    "maximum": "Maksimaalne väärtus",
+                    "minimum": "Minimaalne väärtus",
+                    "restore": "Taasta viimane teadaolev väärtus kui Home Assistant käivitub",
+                    "step": "Loenduri samm"
+                },
                 "generic": {
                     "icon": "Ikoon",
                     "name": "Nimi"
@@ -1644,6 +1651,7 @@
                         "no_helpers": "Tundub, et teil pole veel ühtegi abistajat!"
                     },
                     "types": {
+                        "counter": "Loendur",
                         "input_boolean": "Lülita",
                         "input_datetime": "Kuupäev ja / või kellaaeg",
                         "input_number": "Arvväärtus",
@@ -2163,6 +2171,7 @@
                         "last_scanned": "Viimati skaneeritud",
                         "name": "Nimi"
                     },
+                    "learn_more": "Lisateave märgiste kohta",
                     "never_scanned": "TAGe pole skaneeritud",
                     "no_tags": "TAGe pole",
                     "write": "Salvesta TAG"

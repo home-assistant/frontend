@@ -718,9 +718,9 @@
                     "enabled_description": "Zakázané entity nebudou přidány do Home Assistant.",
                     "enabled_label": "Povolit entitu",
                     "entity_id": "Entity ID",
-                    "icon": "Nahrazení ikony",
+                    "icon": "Ikona",
                     "icon_error": "Ikony by měly být ve formátu 'prefix:nazevikony', např. 'mdi:home'",
-                    "name": "Přepsání názvu",
+                    "name": "Jméno",
                     "note": "Poznámka: U všech integrací to ještě nemusí fungovat.",
                     "unavailable": "Tato entita není momentálně k dispozici.",
                     "update": "Aktualizovat"
@@ -737,6 +737,13 @@
                 "ok": "OK"
             },
             "helper_settings": {
+                "counter": {
+                    "initial": "Počáteční hodnota",
+                    "maximum": "Maximální hodnota",
+                    "minimum": "Minimální hodnota",
+                    "restore": "Obnovit poslední známou hodnotu při spuštění Home Assistant",
+                    "step": "Velikost kroku"
+                },
                 "generic": {
                     "icon": "Ikona",
                     "name": "Název"
@@ -1644,6 +1651,7 @@
                         "no_helpers": "Vypadá to, že ještě nemáte žádné pomocníky!"
                     },
                     "types": {
+                        "counter": "Počítadlo",
                         "input_boolean": "Přepínač",
                         "input_datetime": "Datum a/nebo čas",
                         "input_number": "Číslo",
@@ -2163,6 +2171,7 @@
                         "last_scanned": "Naposledy naskenováno",
                         "name": "Název"
                     },
+                    "learn_more": "Další informace o značkách",
                     "never_scanned": "Nikdy naskenováno",
                     "no_tags": "Žádné značky",
                     "write": "Zapsat"

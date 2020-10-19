@@ -723,6 +723,13 @@
                 "ok": "OK"
             },
             "helper_settings": {
+                "counter": {
+                    "initial": "初期値",
+                    "maximum": "最大値",
+                    "minimum": "最小値",
+                    "restore": "ホーム アシスタントの起動時に、最後の値を復元します",
+                    "step": "ステップサイズ"
+                },
                 "generic": {
                     "icon": "アイコン",
                     "name": "名前"
@@ -917,6 +924,7 @@
         "notification_drawer": {
             "click_to_configure": "ボタンをクリックして{entity}を設定します",
             "close": "閉じる",
+            "dismiss_all": "すべて却下する",
             "empty": "通知はありません",
             "title": "通知"
         },
@@ -1629,6 +1637,7 @@
                         "no_helpers": "まだヘルパーがいないようです！"
                     },
                     "types": {
+                        "counter": "カウンター",
                         "input_boolean": "切り替え",
                         "input_datetime": "日付・時刻",
                         "input_number": "数",
@@ -2148,6 +2157,7 @@
                         "last_scanned": "最後にスキャンされた",
                         "name": "名前"
                     },
+                    "learn_more": "タグの詳細",
                     "never_scanned": "最後にスキャンされた",
                     "no_tags": "タグなし",
                     "write": "書き込み"
