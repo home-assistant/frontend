@@ -144,7 +144,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     } catch (_err) {
       this._templateResult = {
         result: this._config!.content,
-        listeners: { all: false, domains: [], entities: [] },
+        listeners: { all: false, domains: [], entities: [], time: false },
       };
       this._unsubRenderTemplate = undefined;
     }
