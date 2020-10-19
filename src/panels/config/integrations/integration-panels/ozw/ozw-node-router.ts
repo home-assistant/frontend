@@ -1,10 +1,30 @@
+import { mdiNetwork, mdiWrench } from "@mdi/js";
 import { customElement, property } from "lit-element";
 import { navigate } from "../../../../../common/navigate";
 import {
   HassRouterPage,
   RouterOptions,
 } from "../../../../../layouts/hass-router-page";
+import { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 import { HomeAssistant } from "../../../../../types";
+
+export const ozwNodeTabs = (
+  instance: number,
+  node: number
+): PageNavigation[] => {
+  return [
+    {
+      translationKey: "ui.panel.config.ozw.navigation.node.dashboard",
+      path: `/config/ozw/network/${instance}/node/${node}/dashboard`,
+      iconPath: mdiNetwork,
+    },
+    {
+      translationKey: "ui.panel.config.ozw.navigation.node.config",
+      path: `/config/ozw/network/${instance}/node/${node}/config`,
+      iconPath: mdiWrench,
+    },
+  ];
+};
 
 @customElement("ozw-node-router")
 class OZWNodeRouter extends HassRouterPage {
@@ -32,6 +52,11 @@ class OZWNodeRouter extends HassRouterPage {
           import(
             /* webpackChunkName: "ozw-node-dashboard" */ "./ozw-node-dashboard"
           ),
+      },
+      config: {
+        tag: "ozw-node-config",
+        load: () =>
+          import(/* webpackChunkName: "ozw-node-config" */ "./ozw-node-config"),
       },
     },
   };
