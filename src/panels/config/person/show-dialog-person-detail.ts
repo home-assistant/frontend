@@ -5,6 +5,7 @@ import { User } from "../../../data/user";
 export interface PersonDetailDialogParams {
   entry?: Person;
   users: User[];
+  refreshUsers: () => void;
   createEntry: (values: PersonMutableParams) => Promise<unknown>;
   updateEntry: (updates: Partial<PersonMutableParams>) => Promise<unknown>;
   removeEntry: () => Promise<boolean>;

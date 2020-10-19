@@ -1,5 +1,6 @@
 import "@material/mwc-fab";
-import { mdiPlus } from "@mdi/js";
+import "@material/mwc-icon-button";
+import { mdiPlus, mdiHelpCircle } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
@@ -25,6 +26,7 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
 
@@ -146,18 +148,16 @@ class HaSceneDashboard extends LitElement {
         )}
         hasFab
       >
-        <ha-icon-button
-          slot="toolbar-icon"
-          icon="hass:help-circle"
-          @click=${this._showHelp}
-        ></ha-icon-button>
+        <mwc-icon-button slot="toolbar-icon" @click=${this._showHelp}>
+          <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
+        </mwc-icon-button>
         <a href="/config/scene/edit/new" slot="fab">
           <mwc-fab
             title=${this.hass.localize(
               "ui.panel.config.scene.picker.add_scene"
             )}
           >
-            <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+            <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
           </mwc-fab>
         </a>
       </hass-tabs-subpage-data-table>
@@ -191,7 +191,7 @@ class HaSceneDashboard extends LitElement {
         ${this.hass.localize("ui.panel.config.scene.picker.introduction")}
         <p>
           <a
-            href="https://home-assistant.io/docs/scene/editor/"
+            href="${documentationUrl(this.hass, "/docs/scene/editor/")}"
             target="_blank"
             rel="noreferrer"
           >

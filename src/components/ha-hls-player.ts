@@ -35,6 +35,10 @@ class HaHLSPlayer extends LitElement {
   @property({ type: Boolean, attribute: "playsinline" })
   public playsInline = false;
 
+  @property({ type: Boolean, attribute: "allow-exoplayer" })
+  public allowExoPlayer = false;
+
+  // don't cache this, as we remove it on disconnects
   @query("video") private _videoEl!: HTMLVideoElement;
 
   @internalProperty() private _attached = false;
@@ -61,7 +65,7 @@ class HaHLSPlayer extends LitElement {
     return html`
       <video
         ?autoplay=${this.autoPlay}
-        ?muted=${this.muted}
+        .muted=${this.muted}
         ?playsinline=${this.playsInline}
         ?controls=${this.controls}
         @loadeddata=${this._elementResized}
@@ -91,7 +95,7 @@ class HaHLSPlayer extends LitElement {
   }
 
   private async _getUseExoPlayer(): Promise<boolean> {
-    if (!this.hass!.auth.external) {
+    if (!this.hass!.auth.external || !this.allowExoPlayer) {
       return false;
     }
     const externalConfig = await getExternalConfig(this.hass!.auth.external);
@@ -99,35 +103,41 @@ class HaHLSPlayer extends LitElement {
   }
 
   private async _startHls(): Promise<void> {
-    let hls: any;
     const videoEl = this._videoEl;
-    this._useExoPlayer = await this._getUseExoPlayer();
-    if (!this._useExoPlayer) {
-      hls = ((await import(/* webpackChunkName: "hls.js" */ "hls.js")) as any)
-        .default as HLSModule;
-      let hlsSupported = hls.isSupported();
+    const playlist_url = this.url.replace("master_playlist", "playlist");
+    const useExoPlayerPromise = this._getUseExoPlayer();
+    const masterPlaylistPromise = fetch(this.url);
 
-      if (!hlsSupported) {
-        hlsSupported =
-          videoEl.canPlayType("application/vnd.apple.mpegurl") !== "";
-      }
+    const hls = ((await import(
+      /* webpackChunkName: "hls.js" */ "hls.js"
+    )) as any).default as HLSModule;
+    let hlsSupported = hls.isSupported();
 
-      if (!hlsSupported) {
-        this._videoEl.innerHTML = this.hass.localize(
-          "ui.components.media-browser.video_not_supported"
-        );
-        return;
-      }
+    if (!hlsSupported) {
+      hlsSupported =
+        videoEl.canPlayType("application/vnd.apple.mpegurl") !== "";
     }
 
-    const url = this.url;
+    if (!hlsSupported) {
+      this._videoEl.innerHTML = this.hass.localize(
+        "ui.components.media-browser.video_not_supported"
+      );
+      return;
+    }
 
+    this._useExoPlayer = await useExoPlayerPromise;
+    let hevcRegexp: RegExp;
+    let masterPlaylist: string;
     if (this._useExoPlayer) {
-      this._renderHLSExoPlayer(url);
+      hevcRegexp = /CODECS=".*?((hev1)|(hvc1))\..*?"/;
+      masterPlaylist = await (await masterPlaylistPromise).text();
+    }
+    if (this._useExoPlayer && hevcRegexp!.test(masterPlaylist!)) {
+      this._renderHLSExoPlayer(playlist_url);
     } else if (hls.isSupported()) {
-      this._renderHLSPolyfill(videoEl, hls, url);
+      this._renderHLSPolyfill(videoEl, hls, playlist_url);
     } else {
-      this._renderHLSNative(videoEl, url);
+      this._renderHLSNative(videoEl, playlist_url);
     }
   }
 
@@ -137,11 +147,17 @@ class HaHLSPlayer extends LitElement {
     this._videoEl.style.visibility = "hidden";
     await this.hass!.auth.external!.sendMessage({
       type: "exoplayer/play_hls",
-      payload: new URL(url, window.location.href).toString(),
+      payload: {
+        url: new URL(url, window.location.href).toString(),
+        muted: this.muted,
+      },
     });
   }
 
   private _resizeExoPlayer = () => {
+    if (!this._videoEl) {
+      return;
+    }
     const rect = this._videoEl.getBoundingClientRect();
     this.hass!.auth.external!.fireMessage({
       type: "exoplayer/resize",

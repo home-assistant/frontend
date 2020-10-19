@@ -1,23 +1,25 @@
 import {
+  CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
+import { assert, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/entity/ha-entity-picker";
-import "../../../../components/ha-switch";
 import "../../../../components/ha-formfield";
+import "../../../../components/ha-switch";
+import "../../../../components/entity/ha-entity-attribute-picker";
 import { HomeAssistant } from "../../../../types";
 import { WeatherForecastCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
-import { object, string, optional, boolean, assert } from "superstruct";
 
 const cardConfigStruct = object({
   type: string(),
@@ -68,7 +70,6 @@ export class HuiWeatherForecastCardEditor extends LitElement
     }
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <ha-entity-picker
           .label="${this.hass.localize(
@@ -102,7 +103,9 @@ export class HuiWeatherForecastCardEditor extends LitElement
           ></hui-theme-select-editor>
         </div>
         <div class="side-by-side">
-          <paper-input
+          <ha-entity-attribute-picker
+            .hass=${this.hass}
+            .entityId=${this._entity}
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.secondary_info_attribute"
             )} (${this.hass.localize(
@@ -111,7 +114,7 @@ export class HuiWeatherForecastCardEditor extends LitElement
             .value=${this._secondary_info_attribute}
             .configValue=${"secondary_info_attribute"}
             @value-changed=${this._valueChanged}
-          ></paper-input>
+          ></ha-entity-attribute-picker>
           <ha-formfield
             .label=${this.hass.localize(
               "ui.panel.lovelace.editor.card.weather-forecast.show_forecast"
@@ -150,6 +153,10 @@ export class HuiWeatherForecastCardEditor extends LitElement
       }
     }
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  static get styles(): CSSResult {
+    return configElementStyle;
   }
 }
 

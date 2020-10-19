@@ -21,51 +21,34 @@ import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import { stateMoreInfoType } from "../../common/entity/state_more_info_type";
+import {
+  stateMoreInfoType,
+  importMoreInfoControl,
+} from "./state_more_info_control";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-dialog";
 import "../../components/ha-header-bar";
 import "../../components/ha-svg-icon";
-import "../../components/state-history-charts";
 import { removeEntityRegistryEntry } from "../../data/entity_registry";
 import { showEntityEditorDialog } from "../../panels/config/entities/show-dialog-entity-editor";
-import "../../panels/logbook/ha-logbook";
 import { haStyleDialog } from "../../resources/styles";
 import "../../state-summary/state-card-content";
 import { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import "./ha-more-info-history";
 import "./ha-more-info-logbook";
+import "./controls/more-info-default";
 
 const DOMAINS_NO_INFO = ["camera", "configurator"];
+/**
+ * Entity domains that should be editable *if* they have an id present;
+ * {@see shouldShowEditIcon}.
+ * */
 const EDITABLE_DOMAINS_WITH_ID = ["scene", "automation"];
+/**
+ * Entity Domains that should always be editable; {@see shouldShowEditIcon}.
+ * */
 const EDITABLE_DOMAINS = ["script"];
-
-const MORE_INFO_CONTROL_IMPORT = {
-  alarm_control_panel: () => import("./controls/more-info-alarm_control_panel"),
-  automation: () => import("./controls/more-info-automation"),
-  camera: () => import("./controls/more-info-camera"),
-  climate: () => import("./controls/more-info-climate"),
-  configurator: () => import("./controls/more-info-configurator"),
-  counter: () => import("./controls/more-info-counter"),
-  cover: () => import("./controls/more-info-cover"),
-  fan: () => import("./controls/more-info-fan"),
-  group: () => import("./controls/more-info-group"),
-  humidifier: () => import("./controls/more-info-humidifier"),
-  input_datetime: () => import("./controls/more-info-input_datetime"),
-  light: () => import("./controls/more-info-light"),
-  lock: () => import("./controls/more-info-lock"),
-  media_player: () => import("./controls/more-info-media_player"),
-  person: () => import("./controls/more-info-person"),
-  script: () => import("./controls/more-info-script"),
-  sun: () => import("./controls/more-info-sun"),
-  timer: () => import("./controls/more-info-timer"),
-  vacuum: () => import("./controls/more-info-vacuum"),
-  water_heater: () => import("./controls/more-info-water_heater"),
-  weather: () => import("./controls/more-info-weather"),
-  hidden: () => {},
-  default: () => import("./controls/more-info-default"),
-};
 
 export interface MoreInfoDialogParams {
   entityId: string | null;
@@ -87,20 +70,10 @@ export class MoreInfoDialog extends LitElement {
     this._entityId = params.entityId;
     if (!this._entityId) {
       this.closeDialog();
-    }
-    this.large = false;
-  }
-
-  public closeDialog() {
-    this._entityId = undefined;
-    this._currTabIndex = 0;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
-  }
-
-  protected updated(changedProperties) {
-    if (!this.hass || !this._entityId || !changedProperties.has("_entityId")) {
       return;
     }
+    this.large = false;
+
     const stateObj = this.hass.states[this._entityId];
     if (!stateObj) {
       return;
@@ -109,9 +82,29 @@ export class MoreInfoDialog extends LitElement {
       this._moreInfoType = stateObj.attributes.custom_ui_more_info;
     } else {
       const type = stateMoreInfoType(stateObj);
-      this._moreInfoType = `more-info-${type}`;
-      MORE_INFO_CONTROL_IMPORT[type]();
+      importMoreInfoControl(type);
+      this._moreInfoType = type === "hidden" ? undefined : `more-info-${type}`;
     }
+  }
+
+  public closeDialog() {
+    this._entityId = undefined;
+    this._currTabIndex = 0;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  protected shouldShowEditIcon(domain, stateObj): boolean {
+    if (EDITABLE_DOMAINS_WITH_ID.includes(domain) && stateObj.attributes.id) {
+      return true;
+    }
+    if (EDITABLE_DOMAINS.includes(domain)) {
+      return true;
+    }
+    if (domain === "person" && stateObj.attributes.editable !== "false") {
+      return true;
+    }
+
+    return false;
   }
 
   protected render() {
@@ -161,10 +154,7 @@ export class MoreInfoDialog extends LitElement {
                   </mwc-icon-button>
                 `
               : ""}
-            ${this.hass.user!.is_admin &&
-            ((EDITABLE_DOMAINS_WITH_ID.includes(domain) &&
-              stateObj.attributes.id) ||
-              EDITABLE_DOMAINS.includes(domain))
+            ${this.shouldShowEditIcon(domain, stateObj)
               ? html`
                   <mwc-icon-button
                     slot="actionItems"
@@ -307,14 +297,12 @@ export class MoreInfoDialog extends LitElement {
   private _gotoEdit() {
     const stateObj = this.hass.states[this._entityId!];
     const domain = computeDomain(this._entityId!);
-    navigate(
-      this,
-      `/config/${domain}/edit/${
-        EDITABLE_DOMAINS_WITH_ID.includes(domain)
-          ? stateObj.attributes.id
-          : stateObj.entity_id
-      }`
-    );
+    let idToPassThroughUrl = stateObj.entity_id;
+    if (EDITABLE_DOMAINS_WITH_ID.includes(domain) || domain === "person") {
+      idToPassThroughUrl = stateObj.attributes.id;
+    }
+
+    navigate(this, `/config/${domain}/edit/${idToPassThroughUrl}`);
     this.closeDialog();
   }
 
@@ -394,7 +382,9 @@ export class MoreInfoDialog extends LitElement {
           --dialog-content-padding: 0;
         }
 
-        state-card-content {
+        state-card-content,
+        ha-more-info-history,
+        ha-more-info-logbook:not(:last-child) {
           display: block;
           margin-bottom: 16px;
         }

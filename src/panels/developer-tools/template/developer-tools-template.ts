@@ -19,6 +19,7 @@ import {
 } from "../../../data/ws-templates";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
 
 const DEMO_TEMPLATE = `{## Imitate available variables: ##}
 {% set my_test_json = {
@@ -107,7 +108,10 @@ class HaPanelDevTemplate extends LitElement {
             </li>
             <li>
               <a
-                href="https://home-assistant.io/docs/configuration/templating/"
+                href="${documentationUrl(
+                  this.hass,
+                  "/docs/configuration/templating/"
+                )}"
                 target="_blank"
                 rel="noreferrer"
               >
@@ -147,24 +151,33 @@ class HaPanelDevTemplate extends LitElement {
             class="rendered ${classMap({ error: Boolean(this._error) })}"
           ><!-- display: block -->${this._error}${this._templateResult
             ?.result}</pre>
+          ${this._templateResult?.listeners.time
+            ? html`
+                <p>
+                  ${this.hass.localize(
+                    "ui.panel.developer-tools.tabs.templates.time"
+                  )}
+                </p>
+              `
+            : ""}
           ${!this._templateResult?.listeners
             ? ""
             : this._templateResult.listeners.all
             ? html`
-                <h3 class="all_listeners">
+                <p class="all_listeners">
                   ${this.hass.localize(
                     "ui.panel.developer-tools.tabs.templates.all_listeners"
                   )}
-                </h3>
+                </p>
               `
             : this._templateResult.listeners.domains.length ||
               this._templateResult.listeners.entities.length
             ? html`
-                <h3>
+                <p>
                   ${this.hass.localize(
                     "ui.panel.developer-tools.tabs.templates.listeners"
                   )}
-                </h3>
+                </p>
                 <ul>
                   ${this._templateResult.listeners.domains
                     .sort()
@@ -292,6 +305,7 @@ class HaPanelDevTemplate extends LitElement {
         },
         {
           template: this._template,
+          timeout: 3,
         }
       );
       await this._unsubRenderTemplate;

@@ -496,9 +496,11 @@
                     "wnw": "WNW",
                     "wsw": "WSW"
                 },
+                "day": "Day",
                 "forecast": "Forecast",
                 "high": "High",
-                "low": "Low"
+                "low": "Low",
+                "night": "Night"
             }
         },
         "common": {
@@ -507,6 +509,7 @@
             "cancel": "Cancel",
             "close": "Close",
             "continue": "Continue",
+            "copied": "Copied",
             "delete": "Delete",
             "error_required": "Required",
             "loading": "Loading",
@@ -568,12 +571,61 @@
                 "no_history_found": "No state history found."
             },
             "logbook": {
-                "entries_not_found": "No logbook entries found."
+                "by": "by",
+                "by_service": "by service",
+                "entries_not_found": "No logbook entries found.",
+                "messages": {
+                    "became_unavailable": "became unavailable",
+                    "changed_to_state": "changed to {state}",
+                    "cleared_device_class": "cleared (no {device_class} detected)",
+                    "detected_device_class": "detected {device_class}",
+                    "rose": "rose",
+                    "set": "set",
+                    "turned_off": "turned off",
+                    "turned_on": "turned on",
+                    "was_at_home": "was at home",
+                    "was_at_state": "was at {state}",
+                    "was_away": "was away",
+                    "was_closed": "was closed",
+                    "was_connected": "was connected",
+                    "was_disconnected": "was disconnected",
+                    "was_locked": "was locked",
+                    "was_low": "was low",
+                    "was_normal": "was normal",
+                    "was_opened": "was opened",
+                    "was_plugged_in": "was plugged in",
+                    "was_safe": "was safe",
+                    "was_unlocked": "was unlocked",
+                    "was_unplugged": "was unplugged",
+                    "was_unsafe": "was unsafe"
+                }
             },
             "media-browser": {
                 "audio_not_supported": "Your browser does not support the audio element.",
                 "choose_player": "Choose Player",
                 "choose-source": "Choose Source",
+                "class": {
+                    "album": "Album",
+                    "app": "App",
+                    "artist": "Artist",
+                    "channel": "Channel",
+                    "composer": "Composer",
+                    "contributing_artist": "Contributing Artist",
+                    "directory": "Library",
+                    "episode": "Episode",
+                    "game": "Game",
+                    "genre": "Genre",
+                    "image": "Image",
+                    "movie": "Movie",
+                    "music": "Music",
+                    "playlist": "Playlist",
+                    "podcast": "Podcast",
+                    "season": "Season",
+                    "track": "Track",
+                    "tv_show": "TV Show",
+                    "url": "Url",
+                    "video": "Video"
+                },
                 "content-type": {
                     "album": "Album",
                     "artist": "Artist",
@@ -581,15 +633,21 @@
                     "playlist": "Playlist",
                     "server": "Server"
                 },
+                "documentation": "documentation",
+                "learn_adding_local_media": "Learn more about adding media in the {documentation}.",
+                "local_media_files": "Place your video, audio and image files in the media directory to be able to browse and play them in the browser or on supported media players.",
                 "media_browsing_error": "Media Browsing Error",
                 "media_not_supported": "The Browser Media Player does not support this type of media",
                 "media_player": "Media Player",
                 "media-player-browser": "Media Player Browser",
                 "no_items": "No items",
+                "no_local_media_found": "No local media found",
+                "no_media_folder": "It looks like you have not yet created a media directory.",
                 "pick": "Pick",
                 "pick-media": "Pick Media",
                 "play": "Play",
                 "play-media": "Play Media",
+                "setup_local_help": "Check the {documentation} on how to setup local media.",
                 "video_not_supported": "Your browser does not support the video element.",
                 "web-browser": "Web Browser"
             },
@@ -617,9 +675,23 @@
                     "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
                 },
                 "future": "In {time}",
+                "future_duration": {
+                    "day": "In {count} {count, plural,\n  one {day}\n  other {days}\n}",
+                    "hour": "In {count} {count, plural,\n  one {hour}\n  other {hours}\n}",
+                    "minute": "In {count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
+                    "second": "In {count} {count, plural,\n  one {second}\n  other {seconds}\n}",
+                    "week": "In {count} {count, plural,\n  one {week}\n  other {weeks}\n}"
+                },
                 "just_now": "Just now",
                 "never": "Never",
-                "past": "{time} ago"
+                "past": "{time} ago",
+                "past_duration": {
+                    "day": "{count} {count, plural,\n  one {day}\n  other {days}\n} ago",
+                    "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n} ago",
+                    "minute": "{count} {count, plural,\n  one {minute}\n  other {minutes}\n} ago",
+                    "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n} ago",
+                    "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n} ago"
+                }
             },
             "service-picker": {
                 "service": "Service"
@@ -646,14 +718,15 @@
                     "enabled_description": "Disabled entities will not be added to Home Assistant.",
                     "enabled_label": "Enable entity",
                     "entity_id": "Entity ID",
-                    "icon": "Icon Override",
+                    "icon": "Icon",
                     "icon_error": "Icons should be in the format 'prefix:iconname', e.g. 'mdi:home'",
-                    "name": "Name Override",
+                    "name": "Name",
                     "note": "Note: This might not work yet with all integrations.",
                     "unavailable": "This entity is not currently available.",
                     "update": "Update"
                 },
-                "no_unique_id": "This entity does not have a unique ID, therefore its settings cannot be managed from the UI.",
+                "faq": "documentation",
+                "no_unique_id": "This entity does not have a unique ID, therefore its settings cannot be managed from the UI. See the {faq_link} for more detail.",
                 "related": "Related",
                 "settings": "Settings"
             },
@@ -664,6 +737,13 @@
                 "ok": "OK"
             },
             "helper_settings": {
+                "counter": {
+                    "initial": "Initial value",
+                    "maximum": "Maximum value",
+                    "minimum": "Minimum value",
+                    "restore": "Restore the last known value when Home Assistant starts",
+                    "step": "Step size"
+                },
                 "generic": {
                     "icon": "Icon",
                     "name": "Name"
@@ -710,6 +790,7 @@
                 "dismiss": "Dismiss dialog",
                 "edit": "Edit entity",
                 "history": "History",
+                "last_updated": "Last updated",
                 "person": {
                     "create_zone": "Create zone from current location"
                 },
@@ -765,6 +846,44 @@
                     "description": "Options successfully saved."
                 }
             },
+            "quick-bar": {
+                "commands": {
+                    "reload": {
+                        "automation": "Reload automations",
+                        "command_line": "Reload command line entities",
+                        "core": "Reload location & customizations",
+                        "filesize": "Reload file size entities",
+                        "filter": "Reload filter entities",
+                        "generic": "Reload generic IP camera entities",
+                        "generic_thermostat": "Reload generic thermostat entities",
+                        "group": "Reload groups, group entities, and notify services",
+                        "history_stats": "Reload history stats entities",
+                        "homekit": "Reload HomeKit",
+                        "input_boolean": "Reload input booleans",
+                        "input_datetime": "Reload input date times",
+                        "input_number": "Reload input numbers",
+                        "input_select": "Reload input selects",
+                        "input_text": "Reload input texts",
+                        "min_max": "Reload min/max entities",
+                        "mqtt": "Reload mqtt entities",
+                        "person": "Reload people",
+                        "ping": "Reload ping binary sensor entities",
+                        "reload": "Reload {domain}",
+                        "rest": "Reload rest entities and notify services",
+                        "rpi_gpio": "Reload Raspberry Pi GPIO entities",
+                        "scene": "Reload scenes",
+                        "script": "Reload scripts",
+                        "smtp": "Reload smtp notify services",
+                        "statistics": "Reload statistics entities",
+                        "telegram": "Reload telegram notify services",
+                        "template": "Reload template entities",
+                        "trend": "Reload trend entities",
+                        "universal": "Reload universal media player entities",
+                        "zone": "Reload zones"
+                    }
+                },
+                "filter_placeholder": "Entity Filter"
+            },
             "voice_command": {
                 "did_not_hear": "Home Assistant did not hear anything",
                 "error": "Oops, an error has occurred",
@@ -819,6 +938,7 @@
         "notification_drawer": {
             "click_to_configure": "Click button to configure {entity}",
             "close": "Close",
+            "dismiss_all": "Dismiss all",
             "empty": "No Notifications",
             "title": "Notifications"
         },
@@ -1009,7 +1129,16 @@
                                     "before": "Before",
                                     "label": "Time",
                                     "type_input": "Value of a date/time helper",
-                                    "type_value": "Fixed time"
+                                    "type_value": "Fixed time",
+                                    "weekdays": {
+                                        "fri": "Friday",
+                                        "mon": "Monday",
+                                        "sat": "Saturday",
+                                        "sun": "Sunday",
+                                        "thu": "Thursday",
+                                        "tue": "Tuesday",
+                                        "wed": "Wednesday"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Entity with location",
@@ -1019,6 +1148,7 @@
                             },
                             "unsupported_condition": "No UI support for condition: {condition}"
                         },
+                        "copy_to_clipboard": "Copy to Clipboard",
                         "default_name": "New Automation",
                         "description": {
                             "label": "Description",
@@ -1376,6 +1506,7 @@
                     "different_include": "Possibly via a domain, a glob or a different include.",
                     "pick_attribute": "Pick an attribute to override",
                     "picker": {
+                        "documentation": "Customization documentation",
                         "entity": "Entity",
                         "header": "Customizations",
                         "introduction": "Tweak per-entity attributes. Added/edited customizations will take effect immediately. Removed customizations will take effect when the entity is updated."
@@ -1463,6 +1594,8 @@
                         },
                         "filter": {
                             "filter": "Filter",
+                            "hidden_entities": "{number} hidden {number, plural,\n  one {entity}\n  other {entities}\n}",
+                            "show_all": "Show all",
                             "show_disabled": "Show disabled entities",
                             "show_readonly": "Show read-only entities",
                             "show_unavailable": "Show unavailable entities"
@@ -1518,6 +1651,7 @@
                         "no_helpers": "Looks like you don't have any helpers yet!"
                     },
                     "types": {
+                        "counter": "Counter",
                         "input_boolean": "Toggle",
                         "input_datetime": "Date and/or time",
                         "input_number": "Number",
@@ -1824,7 +1958,8 @@
                     },
                     "select_instance": {
                         "header": "Select an OpenZWave Instance",
-                        "introduction": "You have more than one OpenZWave instance running. Which instance would you like to manage?"
+                        "introduction": "You have more than one OpenZWave instance running. Which instance would you like to manage?",
+                        "none_found": "We couldn't find an OpenZWave instance. If you believe this is incorrect, check your OpenZWave and MQTT setups and ensure that Home Assistant can communicate with your MQTT broker."
                     },
                     "services": {
                         "add_node": "Add Node",
@@ -1833,12 +1968,15 @@
                 },
                 "person": {
                     "add_person": "Add Person",
-                    "caption": "Persons",
+                    "caption": "People",
                     "confirm_delete": "Are you sure you want to delete this person?",
                     "confirm_delete2": "All devices belonging to this person will become unassigned.",
                     "create_person": "Create Person",
-                    "description": "Manage the persons that Home Assistant tracks",
+                    "description": "Manage the people that Home Assistant tracks",
                     "detail": {
+                        "admin": "Administrator",
+                        "allow_login": "Allow person to login",
+                        "confirm_delete_user": "Are you sure you want to delete the user account for {name}? You can still track the user, but the person will no longer be able to login.",
                         "create": "Create",
                         "delete": "Delete",
                         "device_tracker_intro": "Select the devices that belong to this person.",
@@ -1854,8 +1992,11 @@
                         "update": "Update"
                     },
                     "introduction": "Here you can define each person of interest in Home Assistant.",
-                    "no_persons_created_yet": "Looks like you have not created any persons yet.",
-                    "note_about_persons_configured_in_yaml": "Note: persons configured via configuration.yaml cannot be edited via the UI."
+                    "learn_more": "Learn more about people",
+                    "no_persons_created_yet": "Looks like you have not created any people yet.",
+                    "note_about_persons_configured_in_yaml": "Note: people configured via configuration.yaml cannot be edited via the UI.",
+                    "person_not_found": "We couldn't find the person you were trying to edit.",
+                    "person_not_found_title": "Person Not Found"
                 },
                 "scene": {
                     "activated": "Activated scene {name}.",
@@ -1931,11 +2072,12 @@
                             "restart": "Restart",
                             "single": "Single (default)"
                         },
+                        "save_script": "Save script",
                         "sequence": "Sequence",
                         "sequence_sentence": "The sequence of actions of this script."
                     },
                     "picker": {
-                        "add_script": "Add script",
+                        "add_script": "Create new script",
                         "edit_script": "Edit script",
                         "header": "Script Editor",
                         "headers": {
@@ -1944,6 +2086,7 @@
                         "introduction": "The script editor allows you to create and edit scripts. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
                         "learn_more": "Learn more about scripts",
                         "no_scripts": "We couldn’t find any editable scripts",
+                        "run_script": "Run script",
                         "show_info": "Show info about script",
                         "trigger_script": "Trigger script"
                     }
@@ -1972,7 +2115,7 @@
                             "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current YAML configuration and load the new one.",
                             "min_max": "Reload min/max entities",
                             "mqtt": "Reload mqtt entities",
-                            "person": "Reload persons",
+                            "person": "Reload people",
                             "ping": "Reload ping binary sensor entities",
                             "reload": "Reload {domain}",
                             "rest": "Reload rest entities and notify services",
@@ -2011,6 +2154,7 @@
                     "create_automation": "Create automation with tag",
                     "description": "Manage tags",
                     "detail": {
+                        "companion_apps": "companion apps",
                         "create": "Create",
                         "create_and_write": "Create and Write",
                         "delete": "Delete",
@@ -2019,13 +2163,15 @@
                         "new_tag": "New tag",
                         "tag_id": "Tag id",
                         "tag_id_placeholder": "Autogenerated when left empty",
-                        "update": "Update"
+                        "update": "Update",
+                        "usage": "A tag can trigger an automation when scanned, you can use NFC tags, QR codes or any other kind of tag. Use our {companion_link} to write this tag to a programmable NFC tag or create a QR code below."
                     },
                     "edit": "Edit",
                     "headers": {
                         "last_scanned": "Last scanned",
                         "name": "Name"
                     },
+                    "learn_more": "Learn more about tags",
                     "never_scanned": "Never scanned",
                     "no_tags": "No tags",
                     "write": "Write"
@@ -2056,7 +2202,7 @@
                         "name": "Name",
                         "new_password": "New Password",
                         "owner": "Owner",
-                        "password_changed": "The password is changed!",
+                        "password_changed": "Password was changed successfully",
                         "system_generated": "System generated",
                         "system_generated_users_not_editable": "Unable to update system generated users.",
                         "system_generated_users_not_removable": "Unable to remove system generated users.",
@@ -2183,12 +2329,12 @@
                     "configured_in_yaml": "Zones configured via configuration.yaml cannot be edited via the UI.",
                     "confirm_delete": "Are you sure you want to delete this zone?",
                     "create_zone": "Create Zone",
-                    "description": "Manage the zones you want to track persons in",
+                    "description": "Manage the zones you want to track people in",
                     "detail": {
                         "create": "Create",
                         "delete": "Delete",
                         "icon": "Icon",
-                        "icon_error_msg": "Icon should be in the format prefix:iconname, for example: mdi:home",
+                        "icon_error_msg": "Icon should be in the format ''prefix:iconname'', for example: ''mdi:home''",
                         "latitude": "Latitude",
                         "longitude": "Longitude",
                         "name": "Name",
@@ -2432,6 +2578,20 @@
                     "refresh": "Refresh"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "Call Service",
+                            "default_action": "Default Action",
+                            "more-info": "More Info",
+                            "navigate": "Navigate",
+                            "none": "No Action",
+                            "toggle": "Toggle",
+                            "url": "Url"
+                        },
+                        "editor_service_data": "Service data can only be entered in the code editor",
+                        "navigation_path": "Navigation Path",
+                        "url_path": "Url Path"
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "Available States",
@@ -2439,12 +2599,20 @@
                             "name": "Alarm Panel"
                         },
                         "button": {
+                            "default_action_help": "The default action depends on the entity's capabilities, it will either be toggled or the more info will be shown.",
                             "description": "The Button card allows you to add buttons to perform tasks.",
                             "name": "Button"
                         },
                         "calendar": {
+                            "calendar_entities": "Calendar Entities",
                             "description": "The Calendar card displays a calendar including day, week and list views",
-                            "name": "Calendar"
+                            "inital_view": "Initial View",
+                            "name": "Calendar",
+                            "views": {
+                                "dayGridDay": "Day",
+                                "dayGridMonth": "Month",
+                                "listWeek": "List"
+                            }
                         },
                         "conditional": {
                             "card": "Card",
@@ -2463,8 +2631,31 @@
                         },
                         "entities": {
                             "description": "The Entities card is the most common type of card. It groups items together into lists.",
+                            "edit_special_row": "View the details of this row by clicking the edit button",
+                            "entity_row_editor": "Entity Row Editor",
+                            "entity_row": {
+                                "attribute": "Attribute",
+                                "button": "Button",
+                                "buttons": "Buttons",
+                                "call-service": "Call Service",
+                                "cast": "Cast",
+                                "conditional": "Conditional",
+                                "divider": "Divider",
+                                "section": "Section",
+                                "weblink": "Web Link"
+                            },
                             "name": "Entities",
+                            "secondary_info_values": {
+                                "brightness": "Brightness",
+                                "entity-id": "Entity ID",
+                                "last-changed": "Last Changed",
+                                "last-triggered": "Last Triggered",
+                                "none": "No Secondary Info",
+                                "position": "Position",
+                                "tilt-position": "Tilt Position"
+                            },
                             "show_header_toggle": "Show Header Toggle?",
+                            "special_row": "special row",
                             "toggle": "Toggle entities."
                         },
                         "entity-filter": {
@@ -2585,7 +2776,8 @@
                             "description": "The Sensor card gives you a quick overview of your sensors state with an optional graph to visualize change over time.",
                             "graph_detail": "Graph Detail",
                             "graph_type": "Graph Type",
-                            "name": "Sensor"
+                            "name": "Sensor",
+                            "show_more_detail": "Show more detail"
                         },
                         "shopping-list": {
                             "description": "The Shopping List card allows you to add, edit, check-off, and clear items from your shopping list.",
@@ -2614,14 +2806,19 @@
                         "entity": "Entity",
                         "no_description": "No description available."
                     },
+                    "edit_badges": {
+                        "panel_mode": "These badges will not be displayed because this view is in \"Panel Mode\"."
+                    },
                     "edit_card": {
                         "add": "Add Card",
                         "confirm_cancel": "Are you sure you want to cancel?",
-                        "delete": "Delete Card",
-                        "duplicate": "Duplicate Card",
+                        "delete": "Delete card",
+                        "duplicate": "Duplicate card",
                         "edit": "Edit",
                         "header": "Card Configuration",
                         "move": "Move to View",
+                        "move_after": "Move card after",
+                        "move_before": "Move card before",
                         "options": "More options",
                         "pick_card": "Which card would you like to add?",
                         "pick_card_view_title": "Which card would you like to add to your {name} view?",
@@ -2669,7 +2866,7 @@
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "We will automatically generate your Lovelace UI views with your areas and devices if you remove your Lovelace UI configuration.",
-                        "confirm_remove_config_title": "Are you sure you want to remove your Lovelace UI configuration? We will automatically generate your Lovelace UI views with your areas and devices.",
+                        "confirm_remove_config_title": "Are you sure you want to remove your Lovelace UI configuration?",
                         "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
                         "confirm_unsaved_comments": "Your configuration contains comment(s), these will not be saved. Do you want to continue?",
                         "error_invalid_config": "Your configuration is not valid: {error}",
@@ -2705,7 +2902,7 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "This renders the first card at full width; other cards in this view will not be rendered.",
+                            "description": "This renders the first card at full width. Other cards in this view as well as badges will not be rendered.",
                             "title": "Panel Mode?",
                             "warning_multiple_cards": "This view contains more than one card, but a panel view can only show 1 card."
                         }
@@ -2915,6 +3112,12 @@
                     "more_integrations": "More"
                 },
                 "intro": "Are you ready to awaken your home, reclaim your privacy and join a worldwide community of tinkerers?",
+                "restore": {
+                    "description": "Alternatively you can restore from a previous snapshot.",
+                    "hide_log": "Hide full log",
+                    "in_progress": "Restore in progress",
+                    "show_log": "Show full log"
+                },
                 "user": {
                     "create_account": "Create Account",
                     "data": {

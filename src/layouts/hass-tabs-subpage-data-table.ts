@@ -49,6 +49,12 @@ export class HaTabsSubpageDataTable extends LitElement {
   @property({ type: Boolean }) public selectable = false;
 
   /**
+   * Should rows be clickable.
+   * @type {Boolean}
+   */
+  @property({ type: Boolean }) public clickable = false;
+
+  /**
    * Do we need to add padding for a fab.
    * @type {Boolean}
    */
@@ -99,7 +105,7 @@ export class HaTabsSubpageDataTable extends LitElement {
    */
   @property() public tabs!: PageNavigation[];
 
-  @query("ha-data-table") private _dataTable!: HaDataTable;
+  @query("ha-data-table", true) private _dataTable!: HaDataTable;
 
   public clearSelection() {
     this._dataTable.clearSelection();
@@ -164,6 +170,7 @@ export class HaTabsSubpageDataTable extends LitElement {
           .id=${this.id}
           .noDataText=${this.noDataText}
           .dir=${computeRTLDirection(this.hass)}
+          .clickable=${this.clickable}
         >
           ${!this.narrow
             ? html`

@@ -259,7 +259,7 @@ export class HaConfigDevicePage extends LitElement {
               isComponentLoaded(this.hass, "automation")
                 ? html`
                     <ha-card>
-                      <div class="card-header">
+                      <h1 class="card-header">
                         ${this.hass.localize(
                           "ui.panel.config.devices.automation.automations"
                         )}
@@ -270,7 +270,7 @@ export class HaConfigDevicePage extends LitElement {
                           )}
                           icon="hass:plus-circle"
                         ></ha-icon-button>
-                      </div>
+                      </h1>
                       ${this._related?.automation?.length
                         ? this._related.automation.map((automation) => {
                             const state = this.hass.states[automation];
@@ -328,7 +328,7 @@ export class HaConfigDevicePage extends LitElement {
               isComponentLoaded(this.hass, "scene") && entities.length
                 ? html`
                     <ha-card>
-                        <div class="card-header">
+                        <h1 class="card-header">
                           ${this.hass.localize(
                             "ui.panel.config.devices.scene.scenes"
                           )}
@@ -340,7 +340,7 @@ export class HaConfigDevicePage extends LitElement {
                                     )}
                                     icon="hass:plus-circle"
                                   ></ha-icon-button>
-                        </div>
+                        </h1>
 
                         ${
                           this._related?.scene?.length
@@ -402,7 +402,7 @@ export class HaConfigDevicePage extends LitElement {
                 isComponentLoaded(this.hass, "script")
                   ? html`
                       <ha-card>
-                        <div class="card-header">
+                        <h1 class="card-header">
                           ${this.hass.localize(
                             "ui.panel.config.devices.script.scripts"
                           )}
@@ -413,18 +413,14 @@ export class HaConfigDevicePage extends LitElement {
                             )}
                             icon="hass:plus-circle"
                           ></ha-icon-button>
-                        </div>
+                        </h1>
                         ${this._related?.script?.length
                           ? this._related.script.map((script) => {
                               const state = this.hass.states[script];
                               return state
                                 ? html`
                                     <a
-                                      href=${ifDefined(
-                                        state.attributes.id
-                                          ? `/config/script/edit/${state.attributes.id}`
-                                          : undefined
-                                      )}
+                                      href=${`/config/script/edit/${state.entity_id}`}
                                     >
                                       <paper-item .script=${script}>
                                         <paper-item-body>
@@ -578,6 +574,9 @@ export class HaConfigDevicePage extends LitElement {
             text: this.hass.localize(
               "ui.panel.config.devices.confirm_rename_entity_ids_warning"
             ),
+            confirmText: this.hass.localize("ui.common.yes"),
+            dismissText: this.hass.localize("ui.common.no"),
+            warning: true,
           }));
 
         const updateProms = entities.map((entity) => {
@@ -716,6 +715,7 @@ export class HaConfigDevicePage extends LitElement {
 
       paper-item {
         cursor: pointer;
+        font-size: var(--paper-font-body1_-_font-size);
       }
 
       paper-item.no-link {

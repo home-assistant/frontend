@@ -2,45 +2,59 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
+  css,
+  CSSResultArray,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
+  query,
   TemplateResult,
 } from "lit-element";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import {
+  array,
+  assert,
+  boolean,
+  object,
+  optional,
+  string,
+  union,
+} from "superstruct";
+import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/entity/state-badge";
 import "../../../../components/ha-card";
+import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-switch";
-import "../../../../components/ha-formfield";
 import { HomeAssistant } from "../../../../types";
-import {
-  EntitiesCardConfig,
-  EntitiesCardEntityConfig,
-} from "../../cards/types";
-import "../../components/hui-entity-editor";
+import { EntitiesCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
+import { LovelaceRowConfig } from "../../entity-rows/types";
 import { headerFooterConfigStructs } from "../../header-footer/types";
 import { LovelaceCardEditor } from "../../types";
+import "../hui-detail-editor-base";
+import { HuiElementEditor } from "../hui-element-editor";
+import "../hui-entities-card-row-editor";
 import { processEditorEntities } from "../process-editor-entities";
 import {
   EditorTarget,
   entitiesConfigStruct,
   EntitiesEditorEvent,
+  GUIModeChangedEvent,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
-import {
-  string,
-  optional,
-  object,
-  boolean,
-  array,
-  union,
-  assert,
-} from "superstruct";
+
+interface EditRowEvent {
+  index: number;
+}
+
+declare global {
+  interface HASSDomEvents {
+    "edit-row": EditRowEvent;
+  }
+}
 
 const cardConfigStruct = object({
   type: string(),
@@ -60,7 +74,17 @@ export class HuiEntitiesCardEditor extends LitElement
 
   @internalProperty() private _config?: EntitiesCardConfig;
 
-  @internalProperty() private _configEntities?: EntitiesCardEntityConfig[];
+  @internalProperty() private _configEntities?: LovelaceRowConfig[];
+
+  @internalProperty() private _editRowConfig?: LovelaceRowConfig;
+
+  @internalProperty() private _editRowIndex?: number;
+
+  @internalProperty() private _editRowGuiModeAvailable? = true;
+
+  @internalProperty() private _editRowGuiMode? = true;
+
+  @query("hui-element-editor") private _cardEditorEl?: HuiElementEditor;
 
   public setConfig(config: EntitiesCardConfig): void {
     assert(config, cardConfigStruct);
@@ -81,8 +105,32 @@ export class HuiEntitiesCardEditor extends LitElement
       return html``;
     }
 
+    if (this._editRowConfig) {
+      return html`
+        <hui-detail-editor-base
+          .hass=${this.hass}
+          .guiModeAvailable=${this._editRowGuiModeAvailable}
+          .guiMode=${this._editRowGuiMode}
+          @toggle-gui-mode=${this._toggleMode}
+          @go-back=${this._goBack}
+        >
+          <span slot="title"
+            >${this.hass.localize(
+              "ui.panel.lovelace.editor.card.entities.entity_row_editor"
+            )}</span
+          >
+          <hui-element-editor
+            .hass=${this.hass}
+            .value=${this._editRowConfig}
+            elementType="row"
+            @config-changed=${this._handleEntityRowConfigChanged}
+            @GUImode-changed=${this._handleGUIModeChanged}
+          ></hui-element-editor>
+        </hui-detail-editor-base>
+      `;
+    }
+
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <paper-input
           .label="${this.hass.localize(
@@ -127,11 +175,12 @@ export class HuiEntitiesCardEditor extends LitElement
           </ha-formfield>
         </div>
       </div>
-      <hui-entity-editor
+      <hui-entities-card-row-editor
         .hass=${this.hass}
         .entities=${this._configEntities}
         @entities-changed=${this._valueChanged}
-      ></hui-entity-editor>
+        @edit-row=${this._editRow}
+      ></hui-entities-card-row-editor>
     `;
   }
 
@@ -167,6 +216,65 @@ export class HuiEntitiesCardEditor extends LitElement
     }
 
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  private _editRow(ev: HASSDomEvent<EditRowEvent>): void {
+    this._editRowIndex = ev.detail.index;
+    this._editRowConfig = this._configEntities![this._editRowIndex];
+  }
+
+  private _goBack(): void {
+    this._editRowIndex = undefined;
+    this._editRowConfig = undefined;
+    this._editRowGuiModeAvailable = true;
+    this._editRowGuiMode = true;
+  }
+
+  private _toggleMode(): void {
+    this._cardEditorEl?.toggleMode();
+  }
+
+  private _handleEntityRowConfigChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const value = ev.detail.config as LovelaceRowConfig;
+    this._editRowGuiModeAvailable = ev.detail.guiModeAvailable;
+
+    const newConfigEntities = this._configEntities!.concat();
+
+    if (!value) {
+      newConfigEntities.splice(this._editRowIndex!, 1);
+      this._goBack();
+    } else {
+      newConfigEntities[this._editRowIndex!] = value;
+    }
+
+    this._editRowConfig = value;
+
+    this._config = { ...this._config!, entities: newConfigEntities };
+
+    this._configEntities = processEditorEntities(this._config!.entities);
+
+    fireEvent(this, "config-changed", { config: this._config! });
+  }
+
+  private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {
+    ev.stopPropagation();
+    this._editRowGuiMode = ev.detail.guiMode;
+    this._editRowGuiModeAvailable = ev.detail.guiModeAvailable;
+  }
+
+  static get styles(): CSSResultArray {
+    return [
+      configElementStyle,
+      css`
+        .edit-entity-row-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-size: 18px;
+        }
+      `,
+    ];
   }
 }
 

@@ -13,7 +13,6 @@ import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-scroll-effects/effects/waterfall";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-tabs/paper-tab";
-import "@polymer/paper-tabs/paper-tabs";
 import {
   css,
   CSSResult,
@@ -40,6 +39,7 @@ import "../../components/ha-icon-button-arrow-next";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
 import "../../components/ha-svg-icon";
+import "../../components/ha-tabs";
 import type {
   LovelaceConfig,
   LovelacePanelConfig,
@@ -53,20 +53,18 @@ import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
+import { documentationUrl } from "../../util/documentation-url";
 import { swapView } from "./editor/config-util";
 import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovelace-dialog";
 import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import type { Lovelace } from "./types";
-import "./views/hui-panel-view";
-import type { HUIPanelView } from "./views/hui-panel-view";
-import { HUIView } from "./views/hui-view";
+import "./views/hui-view";
+import type { HUIView } from "./views/hui-view";
 
 class HUIRoot extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public lovelace?: Lovelace;
-
-  @property() public columns?: number;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -117,7 +115,7 @@ class HUIRoot extends LitElement {
                     )}"
                     @click="${this._editModeDisable}"
                   >
-                    <ha-svg-icon path=${mdiClose}></ha-svg-icon>
+                    <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
                   </mwc-icon-button>
                   <div main-title>
                     ${this.config.title ||
@@ -132,11 +130,11 @@ class HUIRoot extends LitElement {
                       class="edit-icon"
                       @click="${this._editLovelace}"
                     >
-                      <ha-svg-icon path=${mdiPencil}></ha-svg-icon>
+                      <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
                     </mwc-icon-button>
                   </div>
                   <a
-                    href="https://www.home-assistant.io/lovelace/"
+                    href="${documentationUrl(this.hass, "/lovelace/")}"
                     rel="noreferrer"
                     class="menu-link"
                     target="_blank"
@@ -146,7 +144,7 @@ class HUIRoot extends LitElement {
                         "ui.panel.lovelace.menu.help"
                       )}"
                     >
-                      <ha-svg-icon path=${mdiHelpCircle}></ha-svg-icon>
+                      <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
                     </mwc-icon-button>
                   </a>
                   <ha-button-menu corner="BOTTOM_START">
@@ -159,7 +157,7 @@ class HUIRoot extends LitElement {
                         "ui.panel.lovelace.editor.menu.open"
                       )}
                     >
-                      <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+                      <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
                     </mwc-icon-button>
                     ${__DEMO__ /* No unused entities available in the demo */
                       ? ""
@@ -196,7 +194,7 @@ class HUIRoot extends LitElement {
                           label="Start conversation"
                           @click=${this._showVoiceCommandDialog}
                         >
-                          <ha-svg-icon path=${mdiMicrophone}></ha-svg-icon>
+                          <ha-svg-icon .path=${mdiMicrophone}></ha-svg-icon>
                         </mwc-icon-button>
                       `
                     : ""}
@@ -210,7 +208,7 @@ class HUIRoot extends LitElement {
                         "ui.panel.lovelace.editor.menu.open"
                       )}"
                     >
-                      <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+                      <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
                     </mwc-icon-button>
                     ${this._yamlMode
                       ? html`
@@ -266,7 +264,7 @@ class HUIRoot extends LitElement {
                         `
                       : ""}
                     <a
-                      href="https://www.home-assistant.io/lovelace/"
+                      href="${documentationUrl(this.hass, "/lovelace/")}"
                       rel="noreferrer"
                       class="menu-link"
                       target="_blank"
@@ -285,7 +283,7 @@ class HUIRoot extends LitElement {
           ${this.lovelace!.config.views.length > 1 || this._editMode
             ? html`
                 <div sticky>
-                  <paper-tabs
+                  <ha-tabs
                     scrollable
                     .selected="${this._curView}"
                     @iron-activate="${this._handleViewSelected}"
@@ -334,7 +332,7 @@ class HUIRoot extends LitElement {
                                     "ui.panel.lovelace.editor.edit_view.edit"
                                   )}"
                                   class="edit-icon view"
-                                  path=${mdiPencil}
+                                  .path=${mdiPencil}
                                   @click="${this._editView}"
                                 ></ha-svg-icon>
                                 <ha-icon-button-arrow-next
@@ -361,11 +359,11 @@ class HUIRoot extends LitElement {
                               "ui.panel.lovelace.editor.edit_view.add"
                             )}"
                           >
-                            <ha-svg-icon path=${mdiPlus}></ha-svg-icon>
+                            <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
                           </mwc-icon-button>
                         `
                       : ""}
-                  </paper-tabs>
+                  </ha-tabs>
                 </div>
               `
             : ""}
@@ -395,15 +393,7 @@ class HUIRoot extends LitElement {
     super.updated(changedProperties);
 
     const view = this._viewRoot;
-    const huiView = view.lastChild as HUIView | HUIPanelView;
-
-    if (
-      changedProperties.has("columns") &&
-      huiView &&
-      huiView instanceof HUIView
-    ) {
-      huiView.columns = this.columns;
-    }
+    const huiView = view.lastChild as HUIView;
 
     if (changedProperties.has("hass") && huiView) {
       huiView.hass = this.hass;
@@ -674,15 +664,8 @@ class HUIRoot extends LitElement {
     if (!force && this._viewCache![viewIndex]) {
       view = this._viewCache![viewIndex];
     } else {
-      if (viewConfig.panel && viewConfig.cards && viewConfig.cards.length > 0) {
-        view = document.createElement("hui-panel-view");
-        view.config = viewConfig;
-        view.index = viewIndex;
-      } else {
-        view = document.createElement("hui-view");
-        view.columns = this.columns;
-        view.index = viewIndex;
-      }
+      view = document.createElement("hui-view");
+      view.index = viewIndex;
       this._viewCache![viewIndex] = view;
     }
 
@@ -715,9 +698,9 @@ class HUIRoot extends LitElement {
         ha-app-layout {
           min-height: 100%;
         }
-        paper-tabs {
-          margin-left: max(env(safe-area-inset-left), 12px);
-          margin-right: env(safe-area-inset-right);
+        ha-tabs {
+          margin-left: max(env(safe-area-inset-left), 24px);
+          margin-right: max(env(safe-area-inset-right), 24px);
           --paper-tabs-selection-bar-color: var(--text-primary-color, #fff);
           text-transform: uppercase;
         }

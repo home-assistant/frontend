@@ -94,19 +94,22 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
               </div>
             `
           : html`
-              <paper-input
-                no-label-float
-                auto-validate
-                .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
-                pattern="[0-9]+([\\.][0-9]+)?"
-                .step="${Number(stateObj.attributes.step)}"
-                .min="${Number(stateObj.attributes.min)}"
-                .max="${Number(stateObj.attributes.max)}"
-                .value="${Number(stateObj.state)}"
-                type="number"
-                @change="${this._selectedValueChanged}"
-                id="input"
-              ></paper-input>
+              <div class="flex state">
+                <paper-input
+                  no-label-float
+                  auto-validate
+                  .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
+                  pattern="[0-9]+([\\.][0-9]+)?"
+                  .step="${Number(stateObj.attributes.step)}"
+                  .min="${Number(stateObj.attributes.min)}"
+                  .max="${Number(stateObj.attributes.max)}"
+                  .value="${Number(stateObj.state)}"
+                  type="number"
+                  @change="${this._selectedValueChanged}"
+                  id="input"
+                ></paper-input>
+                ${stateObj.attributes.unit_of_measurement}
+              </div>
             `}
       </hui-generic-entity-row>
     `;

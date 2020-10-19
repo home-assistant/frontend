@@ -33,8 +33,8 @@ export const getHassTranslations = async (
   category: TranslationCategory,
   integration?: string,
   config_flow?: boolean
-): Promise<{}> => {
-  const result = await hass.callWS<{ resources: {} }>({
+): Promise<Record<string, unknown>> => {
+  const result = await hass.callWS<{ resources: Record<string, unknown> }>({
     type: "frontend/get_translations",
     language,
     category,
@@ -47,8 +47,8 @@ export const getHassTranslations = async (
 export const getHassTranslationsPre109 = async (
   hass: HomeAssistant,
   language: string
-): Promise<{}> => {
-  const result = await hass.callWS<{ resources: {} }>({
+): Promise<Record<string, unknown>> => {
+  const result = await hass.callWS<{ resources: Record<string, unknown> }>({
     type: "frontend/get_translations",
     language,
   });

@@ -33,7 +33,7 @@ class NotificationManager extends LitElement {
 
   @internalProperty() private _noCancelOnOutsideClick = false;
 
-  @query("ha-toast") private _toast!: HaToast;
+  @query("ha-toast", true) private _toast!: HaToast;
 
   public async showDialog({
     message,
@@ -86,10 +86,12 @@ class NotificationManager extends LitElement {
         display: flex;
         align-items: center;
         justify-content: space-between;
+        padding: 8px 12px;
       }
       mwc-button {
         color: var(--primary-color);
         font-weight: bold;
+        margin-left: 8px;
       }
     `;
   }

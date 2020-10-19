@@ -9,7 +9,6 @@ import {
 } from "lit-element";
 import { LovelaceConfig } from "../../../../src/data/lovelace";
 import { Lovelace } from "../../../../src/panels/lovelace/types";
-import "../../../../src/panels/lovelace/views/hui-panel-view";
 import "../../../../src/panels/lovelace/views/hui-view";
 import { HomeAssistant } from "../../../../src/types";
 import "./hc-launch-screen";
@@ -45,22 +44,13 @@ class HcLovelace extends LitElement {
       deleteConfig: async () => undefined,
       setEditMode: () => undefined,
     };
-    return this.lovelaceConfig.views[index].panel
-      ? html`
-          <hui-panel-view
-            .hass=${this.hass}
-            .lovelace=${lovelace}
-            .config=${this.lovelaceConfig.views[index]}
-          ></hui-panel-view>
-        `
-      : html`
-          <hui-view
-            .hass=${this.hass}
-            .lovelace=${lovelace}
-            .index=${index}
-            columns="2"
-          ></hui-view>
-        `;
+    return html`
+      <hui-view
+        .hass=${this.hass}
+        .lovelace=${lovelace}
+        .index=${index}
+      ></hui-view>
+    `;
   }
 
   protected updated(changedProps) {
@@ -76,7 +66,7 @@ class HcLovelace extends LitElement {
 
         if (configBackground) {
           (this.shadowRoot!.querySelector(
-            "hui-view, hui-panel-view"
+            "hui-view"
           ) as HTMLElement)!.style.setProperty(
             "--lovelace-background",
             configBackground

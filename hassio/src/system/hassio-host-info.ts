@@ -14,7 +14,6 @@ import {
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
-import { atLeastVersion } from "../../../src/common/config/version";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
@@ -85,11 +84,10 @@ class HassioHostInfo extends LitElement {
                 </mwc-button>
               </ha-settings-row>`
             : ""}
-          ${this.hostInfo.features.includes("network") &&
-          atLeastVersion(this.hass.config.version, 0, 115)
+          ${this.hostInfo.features.includes("network")
             ? html` <ha-settings-row>
                 <span slot="heading">
-                  IP address
+                  IP Address
                 </span>
                 <span slot="description">
                   ${primaryIpAddress}
@@ -105,7 +103,7 @@ class HassioHostInfo extends LitElement {
 
           <ha-settings-row>
             <span slot="heading">
-              Operating system
+              Operating System
             </span>
             <span slot="description">
               ${this.hostInfo.operating_system}
@@ -223,7 +221,7 @@ class HassioHostInfo extends LitElement {
       });
     } catch (err) {
       showAlertDialog(this, {
-        title: "Failed to get Hardware list",
+        title: "Failed to get hardware list",
         text: extractApiErrorMessage(err),
       });
     }
@@ -326,7 +324,7 @@ class HassioHostInfo extends LitElement {
   private async _changeHostnameClicked(): Promise<void> {
     const curHostname: string = this.hostInfo.hostname;
     const hostname = await showPromptDialog(this, {
-      title: "Change hostname",
+      title: "Change Hostname",
       inputLabel: "Please enter a new hostname:",
       inputType: "string",
       defaultValue: curHostname,

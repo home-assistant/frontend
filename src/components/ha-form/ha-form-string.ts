@@ -55,6 +55,7 @@ export class HaFormString extends LitElement implements HaFormElement {
               id="iconButton"
               title="Click to toggle between masked and clear password"
               @click=${this._toggleUnmaskedPassword}
+              tabindex="-1"
             >
             </ha-icon-button>
           </paper-input>

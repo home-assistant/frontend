@@ -216,9 +216,7 @@ export class HcMain extends HassElement {
     }
     this._showDemo = false;
     this._lovelacePath = msg.viewPath;
-    if (castContext.getDeviceCapabilities().touch_input_supported) {
-      this._breakFree();
-    }
+
     this._sendStatus();
   }
 
@@ -241,9 +239,6 @@ export class HcMain extends HassElement {
       this._showDemo = true;
       this._lovelacePath = "overview";
       this._sendStatus();
-      if (castContext.getDeviceCapabilities().touch_input_supported) {
-        this._breakFree();
-      }
     });
   }
 
@@ -262,14 +257,6 @@ export class HcMain extends HassElement {
       default:
         return "Unknown Error";
     }
-  }
-
-  private _breakFree() {
-    const controls = document.body.querySelector("touch-controls");
-    if (controls) {
-      controls.remove();
-    }
-    document.body.setAttribute("style", "overflow-y: auto !important");
   }
 
   private sendMessage(senderId: string, response: any) {

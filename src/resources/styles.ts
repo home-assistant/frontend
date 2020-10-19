@@ -3,7 +3,7 @@ import { css } from "lit-element";
 export const darkStyles = {
   "primary-background-color": "#111111",
   "card-background-color": "#1c1c1c",
-  "secondary-background-color": "#1e1e1e",
+  "secondary-background-color": "#202020",
   "primary-text-color": "#e1e1e1",
   "secondary-text-color": "#9b9b9b",
   "disabled-text-color": "#6f6f6f",
@@ -86,6 +86,7 @@ export const derivedStyles = {
   "mdc-radio-disabled-color": "var(--disabled-text-color)",
   "mdc-tab-text-label-color-default": "var(--primary-text-color)",
   "mdc-button-disabled-ink-color": "var(--disabled-text-color)",
+  "mdc-dialog-scroll-divider-color": "var(--divider-color)",
 };
 
 export const haStyle = css`
@@ -109,10 +110,12 @@ export const haStyle = css`
     color: var(--app-header-text-color, white);
   }
 
-  app-toolbar ha-menu-button + [main-title],
-  app-toolbar ha-icon-button-arrow-prev + [main-title],
-  app-toolbar ha-icon-button + [main-title] {
-    margin-left: 24px;
+  app-toolbar [main-title] {
+    margin-left: 20px;
+  }
+
+  ha-menu-button {
+    margin-left: 4px;
   }
 
   h1 {
@@ -296,6 +299,10 @@ export const haStyleDialog = css`
   ha-dialog .form {
     padding-bottom: 24px;
     color: var(--primary-text-color);
+  }
+
+  a {
+    color: var(--primary-color);
   }
 
   /* make dialog fullscreen on small screens */

@@ -52,7 +52,14 @@ module.exports.terserOptions = (latestBuild) => ({
 module.exports.babelOptions = ({ latestBuild }) => ({
   babelrc: false,
   presets: [
-    !latestBuild && [require("@babel/preset-env").default, { modules: false }],
+    !latestBuild && [
+      require("@babel/preset-env").default,
+      {
+        modules: false,
+        useBuiltIns: "entry",
+        corejs: "3.6",
+      },
+    ],
     require("@babel/preset-typescript").default,
   ].filter(Boolean),
   plugins: [
@@ -62,7 +69,9 @@ module.exports.babelOptions = ({ latestBuild }) => ({
       { loose: true, useBuiltIns: true },
     ],
     // Only support the syntax, Webpack will handle it.
-    "@babel/syntax-dynamic-import",
+    "@babel/plugin-syntax-import-meta",
+    "@babel/plugin-syntax-dynamic-import",
+    "@babel/plugin-syntax-top-level-await",
     "@babel/plugin-proposal-optional-chaining",
     "@babel/plugin-proposal-nullish-coalescing-operator",
     [

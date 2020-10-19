@@ -132,7 +132,7 @@ class HaPanelProfile extends LitElement {
                   ></ha-force-narrow-row>
                 `
               : ""}
-            ${navigator.vibrate
+            ${"vibrate" in navigator
               ? html`
                   <ha-set-vibrate-row
                     .narrow=${this.narrow}
@@ -201,7 +201,7 @@ class HaPanelProfile extends LitElement {
   }
 
   private _customizeSidebar() {
-    fireEvent(this, "hass-edit-sidebar");
+    fireEvent(this, "hass-edit-sidebar", { editMode: true });
   }
 
   private async _refreshRefreshTokens() {

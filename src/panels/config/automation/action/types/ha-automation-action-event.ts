@@ -21,7 +21,7 @@ export class HaEventAction extends LitElement implements ActionElement {
 
   @property() public action!: EventAction;
 
-  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+  @query("ha-yaml-editor", true) private _yamlEditor?: HaYamlEditor;
 
   private _actionData?: EventAction["event_data"];
 

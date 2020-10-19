@@ -35,7 +35,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
 
   @internalProperty() private _init = false;
 
-  @query("paper-menu-button") private _input?: HTMLElement;
+  @query("paper-menu-button", true) private _input?: HTMLElement;
 
   public focus(): void {
     if (this._input) {

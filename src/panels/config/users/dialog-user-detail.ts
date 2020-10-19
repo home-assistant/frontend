@@ -47,7 +47,7 @@ class DialogUserDetail extends LitElement {
     this._params = params;
     this._error = undefined;
     this._name = params.entry.name || "";
-    this._isAdmin = params.entry.group_ids[0] === SYSTEM_GROUP_ID_ADMIN;
+    this._isAdmin = params.entry.group_ids.includes(SYSTEM_GROUP_ID_ADMIN);
     await this.updateComplete;
   }
 
@@ -112,7 +112,7 @@ class DialogUserDetail extends LitElement {
               .dir=${computeRTLDirection(this.hass)}
             >
               <ha-switch
-                .disabled=${user.system_generated}
+                .disabled=${user.system_generated || user.is_owner}
                 .checked=${this._isAdmin}
                 @change=${this._adminChanged}
               >
@@ -133,7 +133,9 @@ class DialogUserDetail extends LitElement {
           <mwc-button
             class="warning"
             @click=${this._deleteEntry}
-            .disabled=${this._submitting || user.system_generated}
+            .disabled=${this._submitting ||
+            user.system_generated ||
+            user.is_owner}
           >
             ${this.hass!.localize("ui.panel.config.users.editor.delete_user")}
           </mwc-button>
@@ -256,7 +258,7 @@ class DialogUserDetail extends LitElement {
     await adminChangePassword(this.hass, this._params!.entry.id, newPassword);
     showAlertDialog(this, {
       title: this.hass.localize(
-        "ui.panel.config.users.add_user.password_changed"
+        "ui.panel.config.users.editor.password_changed"
       ),
     });
   }

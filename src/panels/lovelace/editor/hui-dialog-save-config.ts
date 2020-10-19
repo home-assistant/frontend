@@ -1,32 +1,31 @@
 import "@material/mwc-button";
 import "@material/mwc-icon-button/mwc-icon-button";
+import { mdiHelpCircle } from "@mdi/js";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
-import { mdiHelpCircle } from "@mdi/js";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
+import "../../../components/ha-circular-progress";
+import "../../../components/ha-dialog";
+import "../../../components/ha-formfield";
+import "../../../components/ha-svg-icon";
+import "../../../components/ha-switch";
+import "../../../components/ha-yaml-editor";
+import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
 import type { SaveDialogParams } from "./show-save-config-dialog";
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
-import type { HassDialog } from "../../../dialogs/make-dialog-manager";
-import "../../../components/ha-switch";
-import "../../../components/ha-formfield";
-import "../../../components/ha-yaml-editor";
-import "../../../components/ha-svg-icon";
-import "../../../components/ha-dialog";
-import "../../../components/ha-circular-progress";
 
 const EMPTY_CONFIG = { views: [] };
-
-const coreDocumentationURLBase = "https://www.home-assistant.io/lovelace/";
 
 @customElement("hui-dialog-save-config")
 export class HuiSaveConfig extends LitElement implements HassDialog {
@@ -68,14 +67,14 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
             "ui.panel.lovelace.editor.save_config.header"
           )}<a
             class="header_button"
-            href=${coreDocumentationURLBase}
+            href=${documentationUrl(this.hass!, "/lovelace/")}
             title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
             target="_blank"
             rel="noreferrer"
             dir=${computeRTLDirection(this.hass!)}
           >
             <mwc-icon-button>
-              <ha-svg-icon path=${mdiHelpCircle}></ha-svg-icon>
+              <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
             </mwc-icon-button>
           </a>`}
       >
@@ -136,10 +135,13 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
                 ?disabled=${this._saving}
                 @click=${this._saveConfig}
               >
-                <ha-circular-progress
-                  ?active=${this._saving}
-                  alt="Saving"
-                ></ha-circular-progress>
+                ${this._saving
+                  ? html`<ha-circular-progress
+                      active
+                      size="small"
+                      title="Saving"
+                    ></ha-circular-progress>`
+                  : ""}
                 ${this.hass!.localize(
                   "ui.panel.lovelace.editor.save_config.save"
                 )}
@@ -204,17 +206,6 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
         }
         ha-paper-dialog {
           max-width: 650px;
-        }
-        ha-circular-progress {
-          display: none;
-        }
-        ha-circular-progress[active] {
-          display: block;
-        }
-        mwc-button ha-circular-progress {
-          width: 14px;
-          height: 14px;
-          margin-right: 20px;
         }
         ha-switch {
           padding-bottom: 16px;

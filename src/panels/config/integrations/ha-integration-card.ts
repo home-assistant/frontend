@@ -249,7 +249,7 @@ export class HaIntegrationCard extends LitElement {
               .label=${this.hass.localize("ui.common.overflow_menu")}
               slot="trigger"
             >
-              <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+              <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
             </mwc-icon-button>
             <mwc-list-item @request-selected="${this._handleSystemOptions}">
               ${this.hass.localize(
@@ -495,7 +495,6 @@ export class HaIntegrationCard extends LitElement {
           max-height: 100%;
           max-width: 90%;
         }
-
         .none-found {
           margin: auto;
           text-align: center;
@@ -509,6 +508,14 @@ export class HaIntegrationCard extends LitElement {
         h2 {
           margin-top: 0;
           min-height: 24px;
+        }
+        h3 {
+          word-wrap: break-word;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 3;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
         ha-button-menu {
           color: var(--secondary-text-color);

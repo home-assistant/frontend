@@ -17,7 +17,7 @@ import { supportsFeature } from "../../common/entity/supports-feature";
 import "../../components/ha-menu-button";
 import "../../components/media-player/ha-media-player-browse";
 import {
-  BROWSER_SOURCE,
+  BROWSER_PLAYER,
   MediaPickedEvent,
   SUPPORT_BROWSE_MEDIA,
 } from "../../data/media-player";
@@ -36,7 +36,7 @@ class PanelMediaBrowser extends LitElement {
 
   // @ts-ignore
   @LocalStorage("mediaBrowseEntityId", true)
-  private _entityId = BROWSER_SOURCE;
+  private _entityId = BROWSER_PLAYER;
 
   protected render(): TemplateResult {
     const stateObj = this._entityId
@@ -44,7 +44,7 @@ class PanelMediaBrowser extends LitElement {
       : undefined;
 
     const title =
-      this._entityId === BROWSER_SOURCE
+      this._entityId === BROWSER_PLAYER
         ? `${this.hass.localize("ui.components.media-browser.web-browser")}`
         : stateObj?.attributes.friendly_name
         ? `${stateObj?.attributes.friendly_name}`
@@ -64,7 +64,7 @@ class PanelMediaBrowser extends LitElement {
                   "ui.components.media-browser.media-player-browser"
                 )}
               </div>
-              <div class="secondary">${title || ""}</div>
+              <div class="secondary-text">${title || ""}</div>
             </div>
             <mwc-button @click=${this._showSelectMediaPlayerDialog}>
               ${this.hass.localize("ui.components.media-browser.choose_player")}
@@ -95,7 +95,7 @@ class PanelMediaBrowser extends LitElement {
     ev: HASSDomEvent<MediaPickedEvent>
   ): Promise<void> {
     const item = ev.detail.item;
-    if (this._entityId === BROWSER_SOURCE) {
+    if (this._entityId === BROWSER_PLAYER) {
       const resolvedUrl: any = await this.hass.callWS({
         type: "media_source/resolve_media",
         media_content_id: item.media_content_id,
@@ -137,7 +137,7 @@ class PanelMediaBrowser extends LitElement {
           --mdc-theme-primary: var(--app-header-text-color);
         }
         ha-media-player-browse {
-          height: calc(100vh - 84px);
+          height: calc(100vh - 64px);
         }
         :host([narrow]) app-toolbar mwc-button {
           width: 65px;
@@ -146,8 +146,7 @@ class PanelMediaBrowser extends LitElement {
           overflow: hidden;
           white-space: nowrap;
         }
-        .heading .secondary {
-          color: var(--secondary-text-color);
+        .heading .secondary-text {
           font-size: 14px;
           overflow: hidden;
           text-overflow: ellipsis;

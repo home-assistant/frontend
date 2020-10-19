@@ -17,7 +17,7 @@ export const createCloseHeading = (hass: HomeAssistant, title: string) => html`
     class="header_button"
     dir=${computeRTLDirection(hass)}
   >
-    <ha-svg-icon path=${mdiClose}></ha-svg-icon>
+    <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
   </mwc-icon-button>
 `;
 

@@ -2740,6 +2740,11 @@
                     "header": "Kapcsolat automatikus bontása"
                 },
                 "themes": {
+                    "dark_mode": {
+                        "auto": "Automatikus",
+                        "dark": "Sötét",
+                        "light": "Világos"
+                    },
                     "dropdown_label": "Téma",
                     "error_no_theme": "Nincsenek elérhető témák.",
                     "header": "Téma",
