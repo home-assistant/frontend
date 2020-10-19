@@ -15,6 +15,7 @@ import { showSnapshotUploadDialog } from "../../hassio/src/dialogs/snapshot/show
 import { navigate } from "../common/navigate";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-card";
+import { ignoredStatusCodes } from "../data/hassio/common";
 import { makeDialogManager } from "../dialogs/make-dialog-manager";
 import { ProvideHassLitMixin } from "../mixins/provide-hass-lit-mixin";
 import { haStyle } from "../resources/styles";
@@ -124,7 +125,9 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
           location.reload();
         }
       } catch (err) {
-        this._log = err.toString();
+        if (err.status_code && !ignoredStatusCodes.has(err.status_code)) {
+          this._log = err.toString();
+        }
       }
     }
   }
