@@ -38,9 +38,6 @@ export interface ConfigChangedEvent {
 
 declare global {
   interface HASSDomEvents {
-    "entities-changed": {
-      entities: LovelaceRowConfig[];
-    };
     "config-changed": ConfigChangedEvent;
     "GUImode-changed": GUIModeChangedEvent;
   }
@@ -113,6 +110,8 @@ export class HuiElementEditor extends LitElement {
   private _setConfig(): void {
     if (!this._error) {
       try {
+        console.log("update config");
+
         this._updateConfigElement();
         this._error = undefined;
       } catch (err) {
@@ -245,6 +244,7 @@ export class HuiElementEditor extends LitElement {
   private _handleUIConfigChanged(ev: UIConfigChangedEvent) {
     ev.stopPropagation();
     const config = ev.detail.config;
+    console.log("Config Changed in Element", config);
     this.value = config;
   }
 
@@ -299,7 +299,7 @@ export class HuiElementEditor extends LitElement {
       // Setup GUI editor and check that it can handle the current config
       try {
         // @ts-ignore
-        configElement!.setConfig(this.value);
+        this._configElement!.setConfig(this.value);
       } catch (err) {
         throw new GUISupportError(
           "Config is not supported",

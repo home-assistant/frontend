@@ -1,10 +1,5 @@
 import "@material/mwc-icon-button/mwc-icon-button";
-import {
-  mdiClose,
-  mdiPageLayoutFooter,
-  mdiPageLayoutHeader,
-  mdiPencil,
-} from "@mdi/js";
+import { mdiClose, mdiPencil, mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
@@ -19,12 +14,16 @@ import {
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-paper-dropdown-menu";
 import "../../../../components/ha-svg-icon";
+import { LovelaceConfig } from "../../../../data/lovelace";
 import type { HomeAssistant } from "../../../../types";
 import { LovelaceHeaderFooterConfig } from "../../header-footer/types";
+import { showCreateHeaderFooterDialog } from "./show-create-headerfooter-dialog";
 
 @customElement("hui-header-footer-editor")
 export class HuiHeaderFooterEditor extends LitElement {
   public hass!: HomeAssistant;
+
+  public lovelaceConfig!: LovelaceConfig;
 
   @property({ attribute: false }) public config?: LovelaceHeaderFooterConfig;
 
@@ -33,40 +32,50 @@ export class HuiHeaderFooterEditor extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div>
-        <ha-svg-icon
-          class="header-footer-icon"
-          .path=${this.configValue === "header"
-            ? mdiPageLayoutHeader
-            : mdiPageLayoutFooter}
-        ></ha-svg-icon>
         <span>
           ${this.hass.localize(
             `ui.panel.lovelace.editor.header-footer.${this.configValue}`
           )}:
-          ${this.hass!.localize(
-            `ui.panel.lovelace.editor.header-footer.types.${this.config?.type}.name`
-          ) || "None"}
+          ${!this.config?.type
+            ? "None"
+            : this.hass!.localize(
+                `ui.panel.lovelace.editor.header-footer.types.${this.config?.type}.name`
+              )}
         </span>
       </div>
       <div>
-        <mwc-icon-button
-          aria-label=${this.hass!.localize(
-            "ui.components.entity.entity-picker.clear"
-          )}
-          class="remove-icon"
-          @click=${this._delete}
-        >
-          <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-        </mwc-icon-button>
-        <mwc-icon-button
-          aria-label=${this.hass!.localize(
-            "ui.components.entity.entity-picker.edit"
-          )}
-          class="edit-icon"
-          @click=${this._edit}
-        >
-          <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-        </mwc-icon-button>
+        ${!this.config?.type
+          ? html`
+              <mwc-icon-button
+                aria-label=${this.hass!.localize(
+                  "ui.panel.lovelace.editor.common.add"
+                )}
+                class="add-icon"
+                @click=${this._add}
+              >
+                <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
+              </mwc-icon-button>
+            `
+          : html`
+              <mwc-icon-button
+                aria-label=${this.hass!.localize(
+                  "ui.panel.lovelace.editor.common.clear"
+                )}
+                class="remove-icon"
+                @click=${this._delete}
+              >
+                <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+              </mwc-icon-button>
+              <mwc-icon-button
+                aria-label=${this.hass!.localize(
+                  "ui.panel.lovelace.editor.common.edit"
+                )}
+                class="edit-icon"
+                @click=${this._edit}
+              >
+                <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
+              </mwc-icon-button>
+            `}
       </div>
     `;
   }
@@ -75,6 +84,22 @@ export class HuiHeaderFooterEditor extends LitElement {
     fireEvent(this, "edit-detail-element", {
       subElementConfig: {
         elementConfig: this.config,
+        type: this.configValue,
+      },
+    });
+  }
+
+  private _add(): void {
+    showCreateHeaderFooterDialog(this, {
+      pickHeaderFooter: (config) => this._elementPicked(config),
+    });
+  }
+
+  private _elementPicked(config: LovelaceHeaderFooterConfig): void {
+    fireEvent(this, "value-changed", { value: config });
+    fireEvent(this, "edit-detail-element", {
+      subElementConfig: {
+        elementConfig: config,
         type: this.configValue,
       },
     });

@@ -73,6 +73,11 @@ export interface Card {
   isCustom?: boolean;
 }
 
+export interface HeaderFooter {
+  type: string;
+  icon?: string;
+}
+
 export interface CardPickTarget extends EventTarget {
   config: LovelaceCardConfig;
 }

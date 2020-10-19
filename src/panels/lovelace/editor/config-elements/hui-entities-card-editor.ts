@@ -41,7 +41,6 @@ import { processEditorEntities } from "../process-editor-entities";
 import {
   EditorTarget,
   entitiesConfigStruct,
-  EntitiesEditorEvent,
   SubElementEditorConfig,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
@@ -103,7 +102,7 @@ export class HuiEntitiesCardEditor extends LitElement
           .hass=${this.hass}
           .config=${this._subElementEditorConfig}
           @go-back=${this._goBack}
-          @config-changed=${this._handleEntityRowConfigChanged}
+          @config-changed=${this._valueChanged}
         >
         </hui-sub-element-editor>
       `;
@@ -158,12 +157,14 @@ export class HuiEntitiesCardEditor extends LitElement
             .hass=${this.hass}
             .configValue=${"header"}
             .config=${this._config.header}
+            @value-changed=${this._headerFooterChanged}
             @edit-detail-element=${this._editDetailElement}
           ></hui-header-footer-editor>
           <hui-header-footer-editor
             .hass=${this.hass}
             .configValue=${"footer"}
             .config=${this._config.footer}
+            @value-changed=${this._headerFooterChanged}
             @edit-detail-element=${this._editDetailElement}
           ></hui-header-footer-editor>
         </div>
@@ -177,35 +178,77 @@ export class HuiEntitiesCardEditor extends LitElement
     `;
   }
 
-  private _valueChanged(ev: EntitiesEditorEvent): void {
+  private _valueChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    if (!this._config || !this.hass) {
+      return;
+    }
+
+    const target = ev.target! as EditorTarget;
+    const configValue =
+      target.configValue || this._subElementEditorConfig?.type;
+    const value =
+      target.checked !== undefined
+        ? target.checked
+        : target.value || ev.detail.config;
+
+    if (
+      (configValue! === "title" && target.value === this._title) ||
+      (configValue! === "theme" && target.value === this._theme)
+    ) {
+      return;
+    }
+
+    if (configValue === "row" || (ev.detail && ev.detail.entities)) {
+      const newConfigEntities =
+        ev.detail.entities || this._configEntities!.concat();
+      if (configValue === "row") {
+        if (!value) {
+          newConfigEntities.splice(this._subElementEditorConfig!.index!, 1);
+          this._goBack();
+        } else {
+          newConfigEntities[this._subElementEditorConfig!.index!] = value;
+        }
+
+        this._subElementEditorConfig!.elementConfig = value;
+      }
+
+      this._config = { ...this._config!, entities: newConfigEntities };
+      this._configEntities = processEditorEntities(this._config!.entities);
+    } else if (configValue) {
+      if (value === "") {
+        this._config = { ...this._config };
+        delete this._config[configValue!];
+      } else {
+        this._config = {
+          ...this._config,
+          [configValue]: value,
+        };
+      }
+    }
+
+    fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  private _headerFooterChanged(ev: CustomEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
 
     const target = ev.target! as EditorTarget;
 
-    if (
-      (target.configValue! === "title" && target.value === this._title) ||
-      (target.configValue! === "theme" && target.value === this._theme)
-    ) {
+    if (!target.configValue) {
       return;
     }
 
-    if (ev.detail && ev.detail.entities) {
-      this._config = { ...this._config, entities: ev.detail.entities };
-
-      this._configEntities = processEditorEntities(this._config.entities);
-    } else if (target.configValue) {
-      if (target.value === "") {
-        this._config = { ...this._config };
-        delete this._config[target.configValue!];
-      } else {
-        this._config = {
-          ...this._config,
-          [target.configValue]:
-            target.checked !== undefined ? target.checked : target.value,
-        };
-      }
+    if (ev.detail.value === "") {
+      this._config = { ...this._config };
+      delete this._config[target.configValue!];
+    } else {
+      this._config = {
+        ...this._config,
+        [target.configValue]: ev.detail.value,
+      };
     }
 
     fireEvent(this, "config-changed", { config: this._config });
@@ -219,27 +262,6 @@ export class HuiEntitiesCardEditor extends LitElement
     this._subElementEditorConfig = undefined;
   }
 
-  private _handleEntityRowConfigChanged(ev: CustomEvent): void {
-    ev.stopPropagation();
-    const value = ev.detail.config as LovelaceRowConfig;
-
-    const newConfigEntities = this._configEntities!.concat();
-
-    if (!value) {
-      newConfigEntities.splice(this._subElementEditorConfig!.index!, 1);
-      this._goBack();
-    } else {
-      newConfigEntities[this._subElementEditorConfig!.index!] = value;
-    }
-
-    this._subElementEditorConfig!.elementConfig = value;
-
-    this._config = { ...this._config!, entities: newConfigEntities };
-    this._configEntities = processEditorEntities(this._config!.entities);
-
-    fireEvent(this, "config-changed", { config: this._config! });
-  }
-
   static get styles(): CSSResultArray {
     return [
       configElementStyle,
@@ -249,6 +271,10 @@ export class HuiEntitiesCardEditor extends LitElement
           justify-content: space-between;
           align-items: center;
           font-size: 18px;
+        }
+
+        hui-header-footer-editor {
+          padding-top: 4px;
         }
       `,
     ];

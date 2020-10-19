@@ -25,6 +25,14 @@ import { sortableStyles } from "../../../resources/ha-sortable-style";
 import { HomeAssistant } from "../../../types";
 import { EntityConfig, LovelaceRowConfig } from "../entity-rows/types";
 
+declare global {
+  interface HASSDomEvents {
+    "entities-changed": {
+      entities: LovelaceRowConfig[];
+    };
+  }
+}
+
 @customElement("hui-entities-card-row-editor")
 export class HuiEntitiesCardRowEditor extends LitElement {
   @property({ attribute: false }) protected hass?: HomeAssistant;
