@@ -198,24 +198,26 @@ export class DialogLovelaceResourceDetail extends LitElement {
   }
 
   private async _updateResource() {
+    if (!this._type) {
+      return;
+    }
+
     this._submitting = true;
-    if (this._type) {
-      try {
-        const values: LovelaceResourcesMutableParams = {
-          url: this._url.trim(),
-          res_type: this._type,
-        };
-        if (this._params!.resource) {
-          await this._params!.updateResource(values);
-        } else {
-          await this._params!.createResource(values);
-        }
-        this._params = undefined;
-      } catch (err) {
-        this._error = err?.message || "Unknown error";
-      } finally {
-        this._submitting = false;
+    try {
+      const values: LovelaceResourcesMutableParams = {
+        url: this._url.trim(),
+        res_type: this._type,
+      };
+      if (this._params!.resource) {
+        await this._params!.updateResource(values);
+      } else {
+        await this._params!.createResource(values);
       }
+      this._params = undefined;
+    } catch (err) {
+      this._error = err?.message || "Unknown error";
+    } finally {
+      this._submitting = false;
     }
   }
 
