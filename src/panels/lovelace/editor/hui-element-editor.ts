@@ -28,7 +28,7 @@ import type { LovelaceRowConfig } from "../entity-rows/types";
 import type { LovelaceGenericElementEditor } from "../types";
 import "./config-elements/hui-generic-entity-row-editor";
 import { GUISupportError } from "./gui-support-error";
-import { GUIModeChangedEvent } from "./types";
+import { EditSubElementEvent, GUIModeChangedEvent } from "./types";
 
 export interface ConfigChangedEvent {
   config: LovelaceCardConfig | LovelaceRowConfig;
@@ -40,6 +40,7 @@ declare global {
   interface HASSDomEvents {
     "config-changed": ConfigChangedEvent;
     "GUImode-changed": GUIModeChangedEvent;
+    "edit-detail-element": EditSubElementEvent;
   }
 }
 

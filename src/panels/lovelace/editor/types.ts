@@ -88,6 +88,10 @@ export interface SubElementEditorConfig {
   type: string;
 }
 
+export interface EditSubElementEvent {
+  subElementConfig: SubElementEditorConfig;
+}
+
 export const actionConfigStruct = object({
   action: string(),
   navigation_path: optional(string()),

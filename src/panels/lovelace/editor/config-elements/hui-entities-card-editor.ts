@@ -40,20 +40,11 @@ import "../hui-sub-element-editor";
 import { processEditorEntities } from "../process-editor-entities";
 import {
   EditorTarget,
+  EditSubElementEvent,
   entitiesConfigStruct,
   SubElementEditorConfig,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
-
-interface EditDetailElementEvent {
-  subElementConfig: SubElementEditorConfig;
-}
-
-declare global {
-  interface HASSDomEvents {
-    "edit-detail-element": EditDetailElementEvent;
-  }
-}
 
 const cardConfigStruct = object({
   type: string(),
@@ -157,14 +148,14 @@ export class HuiEntitiesCardEditor extends LitElement
             .hass=${this.hass}
             .configValue=${"header"}
             .config=${this._config.header}
-            @value-changed=${this._headerFooterChanged}
+            @value-changed=${this._valueChanged}
             @edit-detail-element=${this._editDetailElement}
           ></hui-header-footer-editor>
           <hui-header-footer-editor
             .hass=${this.hass}
             .configValue=${"footer"}
             .config=${this._config.footer}
-            @value-changed=${this._headerFooterChanged}
+            @value-changed=${this._valueChanged}
             @edit-detail-element=${this._editDetailElement}
           ></hui-header-footer-editor>
         </div>
@@ -190,7 +181,7 @@ export class HuiEntitiesCardEditor extends LitElement
     const value =
       target.checked !== undefined
         ? target.checked
-        : target.value || ev.detail.config;
+        : target.value || ev.detail.config || ev.detail.value;
 
     if (
       (configValue! === "title" && target.value === this._title) ||
@@ -230,31 +221,7 @@ export class HuiEntitiesCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _headerFooterChanged(ev: CustomEvent): void {
-    if (!this._config || !this.hass) {
-      return;
-    }
-
-    const target = ev.target! as EditorTarget;
-
-    if (!target.configValue) {
-      return;
-    }
-
-    if (ev.detail.value === "") {
-      this._config = { ...this._config };
-      delete this._config[target.configValue!];
-    } else {
-      this._config = {
-        ...this._config,
-        [target.configValue]: ev.detail.value,
-      };
-    }
-
-    fireEvent(this, "config-changed", { config: this._config });
-  }
-
-  private _editDetailElement(ev: HASSDomEvent<EditDetailElementEvent>): void {
+  private _editDetailElement(ev: HASSDomEvent<EditSubElementEvent>): void {
     this._subElementEditorConfig = ev.detail.subElementConfig;
   }
 
