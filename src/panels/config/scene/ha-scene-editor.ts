@@ -57,6 +57,7 @@ import { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "../../../components/ha-svg-icon";
+import { showToast } from "../../../util/toast";
 import { mdiContentSave } from "@mdi/js";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 
@@ -715,6 +716,9 @@ export class HaSceneEditor extends SubscribeMixin(
       }
     } catch (err) {
       this._errors = err.body.message || err.message;
+      showToast(this, {
+        message: err.body.message || err.message,
+      });
       throw err;
     }
   }
