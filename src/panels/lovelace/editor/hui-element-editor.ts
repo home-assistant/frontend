@@ -110,8 +110,6 @@ export class HuiElementEditor extends LitElement {
   private _setConfig(): void {
     if (!this._error) {
       try {
-        console.log("update config");
-
         this._updateConfigElement();
         this._error = undefined;
       } catch (err) {
@@ -244,7 +242,6 @@ export class HuiElementEditor extends LitElement {
   private _handleUIConfigChanged(ev: UIConfigChangedEvent) {
     ev.stopPropagation();
     const config = ev.detail.config;
-    console.log("Config Changed in Element", config);
     this.value = config;
   }
 
@@ -271,7 +268,7 @@ export class HuiElementEditor extends LitElement {
         // If the type has changed, we need to load a new GUI editor
 
         if (!this.configElementType) {
-          throw new Error(`No card type defined`);
+          throw new Error(`No type defined`);
         }
 
         this._configElementType = this.configElementType;
@@ -298,7 +295,6 @@ export class HuiElementEditor extends LitElement {
 
       // Setup GUI editor and check that it can handle the current config
       try {
-        // @ts-ignore
         this._configElement!.setConfig(this.value);
       } catch (err) {
         throw new GUISupportError(
