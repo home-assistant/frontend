@@ -15,7 +15,7 @@ import { HomeAssistant } from "../../../types";
 class ErrorLogCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _errorHTML!: TemplateResult[];
+  @internalProperty() private _errorHTML!: TemplateResult[] | string;
 
   protected render(): TemplateResult {
     return html`
@@ -78,30 +78,27 @@ class ErrorLogCard extends LitElement {
   }
 
   private async _refreshErrorLog(): Promise<void> {
-    this._errorHTML = [
-      html`${this.hass.localize("ui.panel.config.logs.loading_log")}`,
-    ];
+    this._errorHTML = this.hass.localize("ui.panel.config.logs.loading_log");
     const log = await fetchErrorLog(this.hass!);
 
-    this._errorHTML = log.split("\n").map((entry) => {
-      if (
-        entry.includes("ERROR") ||
-        entry.includes("FATAL") ||
-        entry.includes("CRITICAL")
-      )
-        return html`<div class="error">${entry}</div>`;
+    this._errorHTML = log
+      ? log.split("\n").map((entry) => {
+          if (entry.includes("INFO"))
+            return html`<div class="info">${entry}</div>`;
 
-      if (entry.includes("WARNING"))
-        return html`<div class="warning">${entry}</div>`;
+          if (entry.includes("WARNING"))
+            return html`<div class="warning">${entry}</div>`;
 
-      return html`<div class="info">${entry}</div>`;
-    });
+          if (
+            entry.includes("ERROR") ||
+            entry.includes("FATAL") ||
+            entry.includes("CRITICAL")
+          )
+            return html`<div class="error">${entry}</div>`;
 
-    if (!this._errorHTML) {
-      this._errorHTML = [
-        html`${this.hass.localize("ui.panel.config.logs.no_errors")}`,
-      ];
-    }
+          return html`<div>${entry}</div>`;
+        })
+      : this.hass.localize("ui.panel.config.logs.no_errors");
   }
 }
 
