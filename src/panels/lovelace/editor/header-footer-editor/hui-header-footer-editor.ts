@@ -27,7 +27,7 @@ export class HuiHeaderFooterEditor extends LitElement {
 
   @property({ attribute: false }) public config?: LovelaceHeaderFooterConfig;
 
-  @property() public configValue!: string;
+  @property() public configValue!: "header" | "footer";
 
   protected render(): TemplateResult {
     return html`
@@ -92,6 +92,7 @@ export class HuiHeaderFooterEditor extends LitElement {
   private _add(): void {
     showCreateHeaderFooterDialog(this, {
       pickHeaderFooter: (config) => this._elementPicked(config),
+      type: this.configValue,
     });
   }
 

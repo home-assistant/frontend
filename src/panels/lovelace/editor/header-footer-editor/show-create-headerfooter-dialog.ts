@@ -3,6 +3,7 @@ import { LovelaceHeaderFooterConfig } from "../../header-footer/types";
 
 export interface CreateHeaderFooterDialogParams {
   pickHeaderFooter: (config: LovelaceHeaderFooterConfig) => void;
+  type: "header" | "footer";
   entities?: string[]; // We can pass entity id's that will be added to the config when a header footer is picked
 }
 

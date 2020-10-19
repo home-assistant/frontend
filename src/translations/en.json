@@ -2589,6 +2589,7 @@
           "header-footer": {
             "header": "Header",
             "footer": "Footer",
+            "choose_header_footer": "Choose a {type}",
             "types": {
               "graph": {
                 "name": "Graph"

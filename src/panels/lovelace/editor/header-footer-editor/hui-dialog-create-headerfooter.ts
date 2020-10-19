@@ -49,7 +49,16 @@ export class HuiCreateDialogHeaderFooter extends LitElement
       <ha-dialog
         open
         scrimClickAction
-        .heading=${createCloseHeading(this.hass, "Pick Header or Footer")}
+        .heading=${createCloseHeading(
+          this.hass,
+          this.hass!.localize(
+            `ui.panel.lovelace.editor.header-footer.choose_header_footer`,
+            "type",
+            this.hass!.localize(
+              `ui.panel.lovelace.editor.header-footer.${this._params.type}`
+            )
+          )
+        )}
         @keydown=${this._ignoreKeydown}
         @closed=${this._cancel}
       >
