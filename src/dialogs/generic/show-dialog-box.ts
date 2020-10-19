@@ -5,6 +5,7 @@ interface BaseDialogParams {
   confirmText?: string;
   text?: string | TemplateResult;
   title?: string;
+  warning?: boolean;
 }
 
 export interface AlertDialogParams extends BaseDialogParams {
@@ -30,8 +31,6 @@ export interface DialogParams
   confirm?: (out?: string) => void;
   confirmation?: boolean;
   prompt?: boolean;
-  question?: boolean;
-  warning?: boolean;
 }
 
 export const loadGenericDialog = () =>
@@ -43,7 +42,6 @@ const showDialogHelper = (
   extra?: {
     confirmation?: DialogParams["confirmation"];
     prompt?: DialogParams["prompt"];
-    question?: DialogParams["question"];
   }
 ) =>
   new Promise((resolve) => {
@@ -79,20 +77,11 @@ export const showAlertDialog = (
 
 export const showConfirmationDialog = (
   element: HTMLElement,
-  dialogParams: DialogParams
+  dialogParams: ConfirmationDialogParams
 ) =>
   showDialogHelper(element, dialogParams, { confirmation: true }) as Promise<
     boolean
   >;
-
-export const showQuestionDialog = (
-  element: HTMLElement,
-  dialogParams: DialogParams
-) =>
-  showDialogHelper(element, dialogParams, {
-    question: true,
-    confirmation: true,
-  }) as Promise<boolean>;
 
 export const showPromptDialog = (
   element: HTMLElement,

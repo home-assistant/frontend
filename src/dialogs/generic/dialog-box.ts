@@ -99,20 +99,16 @@ class DialogBox extends LitElement {
           <mwc-button @click=${this._dismiss} slot="secondaryAction">
             ${this._params.dismissText
               ? this._params.dismissText
-              : this._params.question
-              ? this.hass.localize("ui.dialogs.generic.no")
               : this.hass.localize("ui.dialogs.generic.cancel")}
           </mwc-button>
         `}
         <mwc-button
           @click=${this._confirm}
-          ?dialogInitialFocus=${!this._params.prompt && !this._params.question}
+          ?dialogInitialFocus=${!this._params.prompt}
           slot="primaryAction"
         >
           ${this._params.confirmText
             ? this._params.confirmText
-            : this._params.question
-            ? this.hass.localize("ui.dialogs.generic.yes")
             : this.hass.localize("ui.dialogs.generic.ok")}
         </mwc-button>
       </ha-dialog>
