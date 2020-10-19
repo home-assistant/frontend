@@ -158,19 +158,21 @@ class MoreInfoLight extends LitElement {
 
   protected updated(changedProps: PropertyValues): void {
     const stateObj = this.stateObj! as LightEntity;
-    if (changedProps.has("stateObj") && stateObj.state === "on") {
-      this._brightnessSliderValue = Math.round(
-        (stateObj.attributes.brightness * 100) / 255
-      );
-      this._ctSliderValue = stateObj.attributes.color_temp;
-      this._wvSliderValue = stateObj.attributes.white_value;
+    if (changedProps.has("stateObj")) {
+      if (stateObj.state === "on") {
+        this._brightnessSliderValue = Math.round(
+          (stateObj.attributes.brightness * 100) / 255
+        );
+        this._ctSliderValue = stateObj.attributes.color_temp;
+        this._wvSliderValue = stateObj.attributes.white_value;
 
-      if (stateObj.attributes.hs_color) {
-        this._colorPickerColor = {
-          h: stateObj.attributes.hs_color[0],
-          s: stateObj.attributes.hs_color[1] / 100,
-        };
-      }
+        if (stateObj.attributes.hs_color) {
+          this._colorPickerColor = {
+            h: stateObj.attributes.hs_color[0],
+            s: stateObj.attributes.hs_color[1] / 100,
+          };
+        }
+      } else this._brightnessSliderValue = 0;
     }
   }
 
