@@ -482,7 +482,9 @@
             "rpi_gpio": "[%key:ui::panel::config::server_control::section::reloading::rpi_gpio%]"
           }
         },
-        "filter_placeholder": "Entity Filter"
+        "filter_placeholder": "Entity Filter",
+        "restricted_label": "This feature only available to admins.",
+        "restricted_more_info": "Contact instance owner or admin for necessary permissions."
       },
       "voice_command": {
         "did_not_hear": "Home Assistant did not hear anything",
