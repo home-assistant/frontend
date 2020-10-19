@@ -608,6 +608,9 @@
           "initial": "Initial value",
           "restore": "Restore the last known value when Home Assistant starts",
           "step": "Step size"
+        },
+        "timer": {
+          "duration": "Duration"
         }
       },
       "options_flow": {
@@ -793,7 +796,8 @@
             "input_select": "Dropdown",
             "input_boolean": "Toggle",
             "input_datetime": "Date and/or time",
-            "counter": "Counter"
+            "counter": "Counter",
+            "timer": "Timer"
           },
           "picker": {
             "headers": {

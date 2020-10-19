@@ -6,4 +6,5 @@ export const PLATFORMS_WITH_SETTINGS_TAB = {
   input_boolean: "entity-settings-helper-tab",
   input_datetime: "entity-settings-helper-tab",
   counter: "entity-settings-helper-tab",
+  timer: "entity-settings-helper-tab",
 };
