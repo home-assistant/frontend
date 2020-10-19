@@ -718,9 +718,9 @@
                     "enabled_description": "關閉的實體將不會新增至 Home Assistant。",
                     "enabled_label": "啟用實體",
                     "entity_id": "實體 ID",
-                    "icon": "圖示覆寫",
+                    "icon": "圖示",
                     "icon_error": "圖示必須按照格式「prefix:iconname」設定，例如「mdi:home」",
-                    "name": "名稱覆寫",
+                    "name": "名稱",
                     "note": "注意：可能無法適用所有整合。",
                     "unavailable": "該實體目前不可用。",
                     "update": "更新"
@@ -737,6 +737,13 @@
                 "ok": "好"
             },
             "helper_settings": {
+                "counter": {
+                    "initial": "初始值",
+                    "maximum": "最大值",
+                    "minimum": "最小值",
+                    "restore": "回復至上次 Home Assistant 啟動時已知值",
+                    "step": "階段大小"
+                },
                 "generic": {
                     "icon": "圖示",
                     "name": "名稱"
@@ -1644,6 +1651,7 @@
                         "no_helpers": "目前尚沒有任何 Helper！"
                     },
                     "types": {
+                        "counter": "計數器",
                         "input_boolean": "開關",
                         "input_datetime": "日期及/或時間",
                         "input_number": "數字",
@@ -2163,6 +2171,7 @@
                         "last_scanned": "最後掃描時間",
                         "name": "名稱"
                     },
+                    "learn_more": "詳細了解標籤",
                     "never_scanned": "從未掃描",
                     "no_tags": "無標籤",
                     "write": "編寫"

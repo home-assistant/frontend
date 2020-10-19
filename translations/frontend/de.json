@@ -717,9 +717,9 @@
                     "enabled_description": "Deaktivierte Entitäten werden nicht zu Home Assistant hinzugefügt.",
                     "enabled_label": "Entität aktivieren",
                     "entity_id": "Entitäts-ID",
-                    "icon": "Symbol Überschreiben",
+                    "icon": "Symbol",
                     "icon_error": "Symbole sollten das Format 'Präfix:iconname' haben, z. B. 'mdi:home'",
-                    "name": "Namen überschreiben",
+                    "name": "Namen",
                     "note": "Hinweis: Dies funktioniert möglicherweise noch nicht bei allen Integrationen.",
                     "unavailable": "Diese Entität ist derzeit nicht verfügbar.",
                     "update": "Aktualisieren"
@@ -736,6 +736,13 @@
                 "ok": "OK"
             },
             "helper_settings": {
+                "counter": {
+                    "initial": "Anfangswert",
+                    "maximum": "Maximaler Wert",
+                    "minimum": "Minimaler Wert",
+                    "restore": "Den letzten bekannten Wert wiederherstellen, wenn Home Assistant startet",
+                    "step": "Schrittgröße"
+                },
                 "generic": {
                     "icon": "Symbol",
                     "name": "Name"
@@ -948,7 +955,7 @@
                         "confirmation_text": "Alle Geräte in diesem Bereich werden nicht mehr zugewiesen sein.",
                         "confirmation_title": "Möchtest du diesen Bereich wirklich löschen?"
                     },
-                    "description": "Die Bereiche deines Zuhause verwalten",
+                    "description": "Bereiche in deinem Zuhause verwalten",
                     "editor": {
                         "area_id": "Bereich-ID",
                         "create": "Erstellen",
@@ -1525,7 +1532,7 @@
                         "no_devices": "keine Geräte"
                     },
                     "delete": "Löschen",
-                    "description": "Verwalte verbundene Geräte",
+                    "description": "Verbundene Geräte verwalten",
                     "device_info": "Geräteinformationen",
                     "device_not_found": "Gerät nicht gefunden.",
                     "entities": {
@@ -1626,6 +1633,7 @@
                         "no_helpers": "Sieht so aus, als hättest du noch keine Helfer!"
                     },
                     "types": {
+                        "counter": "Zähler",
                         "input_boolean": "Umschalten",
                         "input_datetime": "Datum und/oder Uhrzeit",
                         "input_number": "Nummer",
@@ -1860,7 +1868,7 @@
                             "driverremoved": "Der Treiber wurde entfernt",
                             "driverreset": "Der Treiber wurde zurückgesetzt",
                             "ready": "Bereit zum Verbinden",
-                            "started": "Verbindung mit MQTT hergestellt",
+                            "started": "Verbunden mit MQTT",
                             "starting": "Verbinde zu MQTT"
                         },
                         "offline": "Offline",
@@ -1901,11 +1909,11 @@
                     "confirm_delete": "Möchtest du diese Person wirklich löschen?",
                     "confirm_delete2": "Alle Geräte, die zu dieser Person gehören, werden nicht mehr zugeordnet.",
                     "create_person": "Person erstellen",
-                    "description": "Verwalte die Personen, die Home Assistant verfolgt.",
+                    "description": "Verwalte die Personen, denen Home Assistant folgt.",
                     "detail": {
                         "admin": "Administrator",
                         "allow_login": "Erlauben Sie dieser Person, sich einzuloggen.",
-                        "confirm_delete_user": "Bist Du sicher, dass Du das Benutzerkonto von {name} löschen möchtest? Du kannst das Benutzerkonto immer noch verfolgen, aber es kann nicht mehr zum Anmelden verwendet werden.",
+                        "confirm_delete_user": "Bist Du sicher, dass Du das Benutzerkonto von {name} löschen möchtest? Du kannst der Person immer noch folgen, aber sie kann sich nicht mehr anmelden.",
                         "create": "Erstellen",
                         "delete": "Löschen",
                         "device_tracker_intro": "Wähle die Geräte, die dieser Person gehören.",
@@ -2092,6 +2100,7 @@
                         "last_scanned": "Zuletzt gescannt",
                         "name": "Name"
                     },
+                    "learn_more": "Erfahre mehr über NFC Tags",
                     "never_scanned": "Nie gescannt",
                     "no_tags": "Keine NFC Tags",
                     "write": "Schreiben"
@@ -2206,7 +2215,7 @@
                         "create_group": "Zigbee Home Automation - Gruppe erstellen",
                         "create_group_details": "Gib die erforderlichen Details ein, um eine neue Zigbee-Gruppe zu erstellen",
                         "creating_group": "Erstelle Gruppe",
-                        "description": "Verwalten von Zigbee-Gruppen",
+                        "description": "Zigbee-Gruppen verwalten",
                         "group_details": "Hier sind alle Details der ausgewählten Zigbee Gruppe.",
                         "group_id": "Gruppen-ID",
                         "group_info": "Gruppen Information",
@@ -2249,7 +2258,7 @@
                     "configured_in_yaml": "Zonen, die über configuration.yaml konfiguriert wurden, können nicht über die Benutzeroberfläche bearbeitet werden.",
                     "confirm_delete": "Möchtest du diesen Bereich wirklich löschen?",
                     "create_zone": "Zone erstellen",
-                    "description": "Verwalte die Zonen, in denen du Personen verfolgen möchtest.",
+                    "description": "Verwalte die Zonen, in denen du Personen folgen möchtest.",
                     "detail": {
                         "create": "Erstellen",
                         "delete": "Löschen",
@@ -2681,11 +2690,11 @@
                         },
                         "picture-glance": {
                             "description": "Die Bild Glance-Karte zeigt ein Bild und die entsprechenden Entitätszustände als Symbol. Die Entitäten auf der rechten Seite ermöglichen das Umschalten von Aktionen, andere zeigen den Dialog mit weiteren Informationen an.",
-                            "name": "Picture Glance"
+                            "name": "Bild Glance"
                         },
                         "picture": {
                             "description": "Mit der Bildkarte kannst du ein Bild festlegen, das für die Navigation zu verschiedenen Pfaden in deiner Benutzeroberfläche oder zum Aufrufen eines Dienstes verwendet werden soll.",
-                            "name": "Picture"
+                            "name": "Bild"
                         },
                         "plant-status": {
                             "description": "Die Pflanzenstatuskarte ist für alle liebenswerten Botaniker da draußen.",
@@ -3067,7 +3076,7 @@
                     "new_password": "Neues Passwort",
                     "submit": "Absenden"
                 },
-                "current_user": "Sie sind derzeit als {fullName} angemeldet.",
+                "current_user": "Du bist derzeit als {fullName} angemeldet.",
                 "customize_sidebar": {
                     "button": "Bearbeiten",
                     "description": "Du kannst auch die Kopfzeile der Seitenleiste gedrückt halten, um den Bearbeitungsmodus zu aktivieren.",

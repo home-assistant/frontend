@@ -718,9 +718,9 @@
                     "enabled_description": "Les entitats desactivades no s'afegiran a Home Assistant.",
                     "enabled_label": "Activa l'entitat",
                     "entity_id": "ID de l'entitat",
-                    "icon": "Sustitució d'icona",
+                    "icon": "Icona",
                     "icon_error": "Els icones han de tenir el format 'prefix:nom_icona', per exemple: 'mdi:home'",
-                    "name": "Substitució de Nom",
+                    "name": "Nom",
                     "note": "Nota: podria no funcionar amb alguna de les integracions.",
                     "unavailable": "Aquesta entitat no està disponible actualment.",
                     "update": "Actualitza"
@@ -737,6 +737,13 @@
                 "ok": "OK"
             },
             "helper_settings": {
+                "counter": {
+                    "initial": "Valor inicial",
+                    "maximum": "Valor màxim",
+                    "minimum": "Valor mínim",
+                    "restore": "Restaura l'últim valor conegut quan Home Assistant s'iniciï.",
+                    "step": "Mida del pas"
+                },
                 "generic": {
                     "icon": "Icona",
                     "name": "Nom"
@@ -1644,6 +1651,7 @@
                         "no_helpers": "Sembla que encara no tens ajudants."
                     },
                     "types": {
+                        "counter": "Comptador",
                         "input_boolean": "Interruptor",
                         "input_datetime": "Data i/o hora",
                         "input_number": "Número",
@@ -2142,7 +2150,7 @@
                 "tags": {
                     "add_tag": "Afegeix etiqueta",
                     "automation_title": "S'escanegi l'etiqueta {name}",
-                    "caption": "Etiquetes (NFC/RFID)",
+                    "caption": "Etiquetes",
                     "create_automation": "Crea una automatització amb una etiqueta",
                     "description": "Gestiona les etiquetes",
                     "detail": {
@@ -2163,6 +2171,7 @@
                         "last_scanned": "Últim escaneig",
                         "name": "Nom"
                     },
+                    "learn_more": "Més informació sobre les etiquetes",
                     "never_scanned": "Mai escanejat",
                     "no_tags": "Sense etiquetes",
                     "write": "Escriu"

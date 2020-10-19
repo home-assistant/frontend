@@ -66,14 +66,14 @@
     },
     "state_badge": {
         "alarm_control_panel": {
-            "armed": "Påslått",
-            "armed_away": "Påslått",
-            "armed_custom_bypass": "Påslått",
-            "armed_home": "Påslått",
-            "armed_night": "Påslått",
-            "arming": "Slår på",
-            "disarmed": "Deaktiver",
-            "disarming": "Slå av",
+            "armed": "Aktivert",
+            "armed_away": "Aktivert",
+            "armed_custom_bypass": "Aktivert",
+            "armed_home": "Aktivert",
+            "armed_night": "Aktivert",
+            "arming": "Aktivererer",
+            "disarmed": "Deaktivere",
+            "disarming": "Deaktivere",
             "pending": "Venter",
             "triggered": "Utløs"
         },
@@ -94,14 +94,14 @@
     },
     "state": {
         "alarm_control_panel": {
-            "armed": "Armert",
-            "armed_away": "Armert borte",
-            "armed_custom_bypass": "Armert tilpasset unntak",
-            "armed_home": "Armert hjemme",
-            "armed_night": "Armert natt",
-            "arming": "Armerer",
-            "disarmed": "Avslått",
-            "disarming": "Skrur av",
+            "armed": "Aktivert",
+            "armed_away": "Aktivert borte",
+            "armed_custom_bypass": "Aktivert tilpasset unntak",
+            "armed_home": "Aktivert hjemme",
+            "armed_night": "Aktivert natt",
+            "arming": "Aktivererer",
+            "disarmed": "Dekativert",
+            "disarming": "Deaktiverer",
             "pending": "Venter",
             "triggered": "Utløst"
         },
@@ -350,13 +350,13 @@
         },
         "card": {
             "alarm_control_panel": {
-                "arm_away": "Armer borte",
+                "arm_away": "Aktiver borte",
                 "arm_custom_bypass": "Tilpasset bypass",
-                "arm_home": "Armer hjemme",
+                "arm_home": "Aktiver hjemme",
                 "arm_night": "Aktiver natt",
                 "clear_code": "Tøm",
                 "code": "Kode",
-                "disarm": "Deaktiver"
+                "disarm": "Deaktivere"
             },
             "automation": {
                 "last_triggered": "Sist utløst",
@@ -368,21 +368,21 @@
             "climate": {
                 "aux_heat": "Aux varme",
                 "away_mode": "Bortemodus",
-                "cooling": "{name} kjøling",
+                "cooling": "{name} kjøler",
                 "current_temperature": "{name} nåværende temperatur",
                 "currently": "Er nå",
                 "fan_mode": "Viftemodus",
-                "heating": "{name} oppvarming",
+                "heating": "{name} varmer",
                 "high": "høy",
                 "low": "lav",
                 "on_off": "På / av",
                 "operation": "Operasjon",
-                "preset_mode": "",
+                "preset_mode": "Forhåndsinnstilling",
                 "swing_mode": "Svingmodus",
-                "target_humidity": "Ønsket luftfuktighet",
-                "target_temperature": "Ønsket temperatur",
-                "target_temperature_entity": "{name} måltemperatur",
-                "target_temperature_mode": "{name} måltemperatur {mode}"
+                "target_humidity": "Satt luftfuktighet",
+                "target_temperature": "Satt temperatur",
+                "target_temperature_entity": "{name} satt temperatur",
+                "target_temperature_mode": "{name} satt temperatur {mode}"
             },
             "counter": {
                 "actions": {
@@ -737,6 +737,13 @@
                 "ok": ""
             },
             "helper_settings": {
+                "counter": {
+                    "initial": "Opprinnelig verdi",
+                    "maximum": "Maksimal verdi",
+                    "minimum": "Minimum verdi",
+                    "restore": "Gjenopprett den sist kjente verdien når Home Assistant starter",
+                    "step": "Trinnstørrelse"
+                },
                 "generic": {
                     "icon": "Ikon",
                     "name": "Navn"
@@ -1644,6 +1651,7 @@
                         "no_helpers": "Det ser ut som om du ikke har noen hjelpere ennå!"
                     },
                     "types": {
+                        "counter": "Teller",
                         "input_boolean": "Veksle",
                         "input_datetime": "Dato og/eller klokkeslett",
                         "input_number": "Nummer",
@@ -1733,7 +1741,7 @@
                         "confirm_delete_ignore": "Dette vil få integrasjonen til å vises i de oppdagede integrasjonene dine igjen når den blir oppdaget. Dette kan kreve omstart eller ta litt tid.",
                         "confirm_delete_ignore_title": "Slutt å ignorere {name}?",
                         "confirm_ignore": "Er du sikker på at du ikke vil sette opp denne integrasjonen? Du kan angre ved å klikke på 'Vis ignorerte integrasjoner' i overflow-menyen øverst til høyre.",
-                        "confirm_ignore_title": "Ignorer oppdaging av {name}?",
+                        "confirm_ignore_title": "Ignorer automatisk oppdagelse av {name}?",
                         "hide_ignored": "Skjul ignorerte integrasjoner",
                         "ignore": "Ignorer",
                         "ignored": "Ignorert",
@@ -2142,7 +2150,7 @@
                 "tags": {
                     "add_tag": "Legg til tag",
                     "automation_title": "Tag {name} skannes",
-                    "caption": "Tags",
+                    "caption": "Tagger",
                     "create_automation": "Opprett automatisering med tag",
                     "description": "Administrer tagger",
                     "detail": {
@@ -2153,7 +2161,7 @@
                         "description": "Beskrivelse",
                         "name": "Navn",
                         "new_tag": "Ny tag",
-                        "tag_id": "Tag id",
+                        "tag_id": "Tag ID",
                         "tag_id_placeholder": "Automatisk generert når den er tom",
                         "update": "Oppdater",
                         "usage": "En tag kan utløse en automasjon når den skannes, du kan bruke NFC-koder, QR-koder eller hvilken som helst annen type tag. Bruk {companion_link} til å skrive denne taggen til en programmerbar NFC-tag eller opprette en QR-kode nedenfor."
@@ -2163,6 +2171,7 @@
                         "last_scanned": "Sist skannet",
                         "name": "Navn"
                     },
+                    "learn_more": "Lær mer om tagger",
                     "never_scanned": "Aldri skannet",
                     "no_tags": "Ingen tagger",
                     "write": "Skrive"
@@ -2212,7 +2221,7 @@
                 "zha": {
                     "add_device_page": {
                         "discovered_text": "Enheter vises her når de er oppdaget.",
-                        "discovery_text": "Oppdagede enheter vises her. Følg instruksjonene for enheten(e) og sett enheten(e) i paringsmodus.",
+                        "discovery_text": "Automatisk oppdagede enheter vises her. Følg instruksjonene for enheten(e) og sett enheten(e) i paringsmodus.",
                         "header": "Zigbee Home Automation - Legg til enheter",
                         "no_devices_found": "Ingen enheter ble funnet, sørg for at de er i paring-modus og hold dem våkne mens oppdagelsen kjører.",
                         "pairing_mode": "Kontroller at enhetene er i paringsmodus. Sjekk instruksjonene til enheten om hvordan du gjør dette.",
@@ -2586,7 +2595,7 @@
                     "card": {
                         "alarm-panel": {
                             "available_states": "Tilgjengelige tilstander",
-                            "description": "Alarmpanelkortet lar deg armere og deaktivere alarmkontrollpanelets integrasjoner.",
+                            "description": "Alarmpanelkortet lar deg aktivere og deaktivere alarm kontrollpanelets integrasjoner.",
                             "name": "Alarmpanel"
                         },
                         "button": {
@@ -2776,7 +2785,7 @@
                             "name": "Handleliste"
                         },
                         "thermostat": {
-                            "description": "Termostatkortet gir kontroll over din klimaentitet. Lar deg endre temperaturen og modus for entiteten.",
+                            "description": "Termostatkortet gir kontroll over din klimaentitet. Lar deg endre temperatur og modus for entiteten.",
                             "name": "Termostat"
                         },
                         "vertical-stack": {
@@ -2798,7 +2807,7 @@
                         "no_description": "Ingen beskrivelse tilgjengelig."
                     },
                     "edit_badges": {
-                        "panel_mode": "Disse merkene vises ikke fordi denne visningen er i \"Panelmodus\"."
+                        "panel_mode": "Disse merkene vises ikke fordi denne visningen er i \"Panelmodus\""
                     },
                     "edit_card": {
                         "add": "Legg til kort",

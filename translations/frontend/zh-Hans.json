@@ -718,9 +718,9 @@
                     "enabled_description": "已禁用的实体不再添加到 Home Assistant。",
                     "enabled_label": "启用实体",
                     "entity_id": "实体 ID",
-                    "icon": "图标覆盖",
+                    "icon": "图标",
                     "icon_error": "图标的格式应为 prefix:iconname，例如：mdi:home",
-                    "name": "覆盖名称",
+                    "name": "名称",
                     "note": "注意：这可能不适用于所有集成。",
                     "unavailable": "该实体暂不可用。",
                     "update": "更新"
@@ -737,6 +737,13 @@
                 "ok": "确定"
             },
             "helper_settings": {
+                "counter": {
+                    "initial": "初始值",
+                    "maximum": "最大值",
+                    "minimum": "最小值",
+                    "restore": "当 Home Assistant 启动时，还原为最近一次的值",
+                    "step": "步长"
+                },
                 "generic": {
                     "icon": "图标",
                     "name": "名称"
@@ -1217,7 +1224,7 @@
                                     "above": "大于",
                                     "below": "小于",
                                     "label": "数字类状态",
-                                    "value_template": "自定义值（可选）"
+                                    "value_template": "数值模板（可选）"
                                 },
                                 "state": {
                                     "attribute": "属性（可选）",
@@ -1238,7 +1245,7 @@
                                 },
                                 "template": {
                                     "label": "自定义模板",
-                                    "value_template": "自定义值"
+                                    "value_template": "数值模板"
                                 },
                                 "time_pattern": {
                                     "hours": "小时",
@@ -1644,6 +1651,7 @@
                         "no_helpers": "您还没有辅助元素。"
                     },
                     "types": {
+                        "counter": "计数器",
                         "input_boolean": "开关",
                         "input_datetime": "日期/时间",
                         "input_number": "数值",
@@ -2163,6 +2171,7 @@
                         "last_scanned": "上次扫描",
                         "name": "名称"
                     },
+                    "learn_more": "详细了解标签",
                     "never_scanned": "从未扫描",
                     "no_tags": "没有标签",
                     "write": "写入"
