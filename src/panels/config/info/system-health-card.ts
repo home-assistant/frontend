@@ -128,8 +128,6 @@ class SystemHealthCard extends LitElement {
   }
 
   private _copyInfo(): void {
-    // We have to copy title text and content separately, because
-    // copying the whole <ha-card> would also copy the tooltip text.
     const selection = window.getSelection()!;
     selection.removeAllRanges();
 
