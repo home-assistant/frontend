@@ -38,7 +38,7 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
 
   @property({ type: Boolean }) public restoring = false;
 
-  @internalProperty() private _log: string = "";
+  @internalProperty() private _log = "";
 
   @internalProperty() private _showFullLog = false;
 
