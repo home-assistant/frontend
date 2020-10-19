@@ -2260,7 +2260,8 @@
           "common": {
             "edit": "Edit",
             "clear": "Clear",
-            "add": "Add"
+            "add": "Add",
+            "none": "None"
           },
           "raw_editor": {
             "header": "Edit Configuration",

@@ -37,7 +37,7 @@ export class HuiHeaderFooterEditor extends LitElement {
             `ui.panel.lovelace.editor.header-footer.${this.configValue}`
           )}:
           ${!this.config?.type
-            ? "None"
+            ? this.hass!.localize("ui.panel.lovelace.editor.common.none")
             : this.hass!.localize(
                 `ui.panel.lovelace.editor.header-footer.types.${this.config?.type}.name`
               )}
