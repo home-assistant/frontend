@@ -28,12 +28,12 @@ export interface LegacyLovelaceConfig extends LovelaceConfig {
 
 export interface LovelaceResource {
   id: string;
-  type: "css" | "js" | "module" | "html" | undefined;
+  type: "css" | "js" | "module" | "html";
   url: string;
 }
 
 export interface LovelaceResourcesMutableParams {
-  res_type: Partial<LovelaceResource["type"]>;
+  res_type: LovelaceResource["type"];
   url: string;
 }
 

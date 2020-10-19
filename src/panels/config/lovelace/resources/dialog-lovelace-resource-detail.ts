@@ -45,7 +45,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
 
   @internalProperty() private _url!: LovelaceResource["url"];
 
-  @internalProperty() private _type: LovelaceResource["type"] = undefined;
+  @internalProperty() private _type?: LovelaceResource["type"];
 
   @internalProperty() private _error?: string;
 
@@ -188,7 +188,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
   private _urlChanged(ev: PolymerChangedEvent<string>) {
     this._error = undefined;
     this._url = ev.detail.value;
-    if (this._type === undefined) {
+    if (!this._type) {
       this._type = detectResourceType(this._url);
     }
   }
@@ -199,21 +199,23 @@ export class DialogLovelaceResourceDetail extends LitElement {
 
   private async _updateResource() {
     this._submitting = true;
-    try {
-      const values: LovelaceResourcesMutableParams = {
-        url: this._url.trim(),
-        res_type: this._type,
-      };
-      if (this._params!.resource) {
-        await this._params!.updateResource(values);
-      } else {
-        await this._params!.createResource(values);
+    if (this._type) {
+      try {
+        const values: LovelaceResourcesMutableParams = {
+          url: this._url.trim(),
+          res_type: this._type,
+        };
+        if (this._params!.resource) {
+          await this._params!.updateResource(values);
+        } else {
+          await this._params!.createResource(values);
+        }
+        this._params = undefined;
+      } catch (err) {
+        this._error = err?.message || "Unknown error";
+      } finally {
+        this._submitting = false;
       }
-      this._params = undefined;
-    } catch (err) {
-      this._error = err?.message || "Unknown error";
-    } finally {
-      this._submitting = false;
     }
   }
 
