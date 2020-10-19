@@ -38,7 +38,7 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
 
   @property({ type: Boolean }) public restoring = false;
 
-  @internalProperty() private _log?: string;
+  @internalProperty() private _log: string = "";
 
   @internalProperty() private _showFullLog = false;
 
@@ -49,17 +49,15 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
             "ui.panel.page-onboarding.restore.in_progress"
           )}
         >
-          ${this._log
-            ? this._showFullLog
-              ? html`<hassio-ansi-to-html .content=${this._log}>
-                </hassio-ansi-to-html>`
-              : html`<onboarding-loading></onboarding-loading>
-                  <hassio-ansi-to-html
-                    class="logentry"
-                    .content=${this._lastLogEntry(this._log)}
-                  >
-                  </hassio-ansi-to-html>`
-            : ""}
+          ${this._showFullLog
+            ? html`<hassio-ansi-to-html .content=${this._log}>
+              </hassio-ansi-to-html>`
+            : html`<onboarding-loading></onboarding-loading>
+                <hassio-ansi-to-html
+                  class="logentry"
+                  .content=${this._lastLogEntry(this._log)}
+                >
+                </hassio-ansi-to-html>`}
           <div class="card-actions">
             <mwc-button @click=${this._toggeFullLog}>
               ${this._showFullLog
@@ -121,19 +119,31 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
         const response = await fetch("/api/hassio/supervisor/logs", {
           method: "GET",
         });
+        if (response.status === 401) {
+          // If we get a unauthorized response, the restore is done
+          this._restoreDone();
+        } else if (
+          response.status &&
+          !ignoredStatusCodes.has(response.status)
+        ) {
+          // Handle error responses
+          this._log += this._filterLogs(extractApiErrorMessage(response));
+        }
         const logs = await response.text();
         this._log = this._filterLogs(logs);
         if (this._log.match(/\d{2}:\d{2}:\d{2}\s.*Restore\s\w+\sdone/)) {
           // The log indicates that the restore done, navigate the user back to base
-          navigate(this, "/", true);
-          location.reload();
+          this._restoreDone();
         }
       } catch (err) {
-        if (err.status_code && !ignoredStatusCodes.has(err.status_code)) {
-          this._log += extractApiErrorMessage(err);
-        }
+        this._log += this._filterLogs(err.toString());
       }
     }
+  }
+
+  private _restoreDone(): void {
+    navigate(this, "/", true);
+    location.reload();
   }
 
   private _showSnapshotDialog(slug: string): void {
