@@ -574,6 +574,9 @@ export class HaConfigDevicePage extends LitElement {
             text: this.hass.localize(
               "ui.panel.config.devices.confirm_rename_entity_ids_warning"
             ),
+            confirmText: this.hass.localize("ui.common.yes"),
+            dismissText: this.hass.localize("ui.common.no"),
+            warning: true,
           }));
 
         const updateProms = entities.map((entity) => {
