@@ -131,7 +131,13 @@ export class HUIView extends UpdatingElement {
       this._layoutElement!.lovelace = lovelace;
     }
 
-    if (configChanged || hassChanged || editModeChanged) {
+    if (
+      configChanged ||
+      hassChanged ||
+      editModeChanged ||
+      changedProperties.has("_cards") ||
+      changedProperties.has("_badges")
+    ) {
       this._layoutElement!.cards = this._cards;
       this._layoutElement!.badges = this._badges;
     }
