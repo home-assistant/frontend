@@ -68,8 +68,6 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
 
   private _lastLogbookDate?: Date;
 
-  private _logbookRefreshInterval?: number;
-
   private _throttleGetLogbookEntries = throttle(() => {
     this._getLogBookData();
   }, 10000);
@@ -85,20 +83,6 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
       hours_to_show: 24,
       ...config,
     };
-  }
-
-  public connectedCallback() {
-    super.connectedCallback();
-
-    if (!this._logbookRefreshInterval) {
-      this._logbookRefreshInterval = window.setInterval(() => {
-        this._getLogBookData();
-      }, 60 * 1000);
-    }
-  }
-
-  public disconnectedCallback() {
-    clearInterval(this._logbookRefreshInterval);
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
