@@ -49,7 +49,7 @@ documentContainer.innerHTML = `<custom-style>
       --secondary-background-color: #e5e5e5; /* behind the cards on state */
 
       /* for header */
-      --header-height: 65px;
+      --header-height: 64px;
 
       /* for label-badge */
       --label-badge-red: #DF4C1E;
