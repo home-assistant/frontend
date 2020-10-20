@@ -33,7 +33,6 @@ import { computeStateName } from "../../common/entity/compute_state_name";
 interface QuickBarItem extends ScorableTextItem {
   icon: string;
   action(data?: any): void;
-  score?: number;
 }
 
 @customElement("ha-quick-bar")
