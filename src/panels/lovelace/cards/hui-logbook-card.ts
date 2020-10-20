@@ -128,10 +128,8 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     const oldConfig = changedProperties.get("_config") as LogbookCardConfig;
 
     if (
-      !oldHass ||
-      !oldConfig ||
-      oldHass.themes !== this.hass.themes ||
-      oldConfig.theme !== this._config.theme
+      (oldHass && oldHass.themes !== this.hass.themes) ||
+      (oldConfig && oldConfig.theme !== this._config.theme)
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
@@ -156,7 +154,6 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
       oldHass &&
       this._configEntities!.some(
         (entity) =>
-          "entity" in entity &&
           oldHass.states[entity.entity] !== this.hass!.states[entity.entity]
       )
     ) {
