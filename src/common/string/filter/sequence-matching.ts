@@ -7,10 +7,7 @@ import { fuzzyScore } from "./filter";
  * @param {string} filter - Sequence of letters to check for
  * @param {string} word - Word to check for sequence
  *
- * returns either:
- *    number => if word contains sequence, return a score
- *    string => if word is empty, return the word (to allow for alphabetical sorting of all available words)
- *    undefined => if no match was found
+ * @return {number} Score representing how well the word matches the filter. Return of 0 means no match.
  */
 
 export const fuzzySequentialMatch = (filter: string, ...words: string[]) => {
@@ -44,7 +41,7 @@ export const fuzzySequentialMatch = (filter: string, ...words: string[]) => {
 };
 
 export interface ScorableTextItem {
-  score: number;
+  score?: number;
   text: string;
   altText?: string;
 }
@@ -62,7 +59,7 @@ export const fuzzyFilterSort: FuzzyFilterSort = (filter, items) => {
         : fuzzySequentialMatch(filter, item.text);
       return item;
     })
-    .sort(({ score: scoreA }, { score: scoreB }) =>
+    .sort(({ score: scoreA = 0 }, { score: scoreB = 0 }) =>
       scoreA > scoreB ? -1 : scoreA < scoreB ? 1 : 0
     );
 };

@@ -189,7 +189,7 @@ export class QuickBar extends LitElement {
     if (this._itemFilter !== "") {
       this._items = fuzzyFilterSort<QuickBarItem>(
         this._itemFilter.trimLeft(),
-        this._commandMode ? this._commandItems : this._entityItems
+        this._items
       );
     }
   }
@@ -212,7 +212,6 @@ export class QuickBar extends LitElement {
           domainToName(this.hass.localize, domain)
         ),
       icon: domainIcon(domain),
-      score: 0,
       action: () => this.hass.callService(domain, "reload"),
     }));
   }
@@ -223,7 +222,6 @@ export class QuickBar extends LitElement {
         text: computeStateName(this.hass.states[entityId]),
         altText: entityId,
         icon: domainIcon(computeDomain(entityId), this.hass.states[entityId]),
-        score: 0,
         action: () => fireEvent(this, "hass-more-info", { entityId }),
       }))
       .sort((a, b) => compare(a.text.toLowerCase(), b.text.toLowerCase()));
