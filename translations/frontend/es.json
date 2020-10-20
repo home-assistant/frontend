@@ -737,6 +737,13 @@
                 "ok": "Aceptar"
             },
             "helper_settings": {
+                "counter": {
+                    "initial": "Valor inicial",
+                    "maximum": "Valor máximo",
+                    "minimum": "Valor mínimo",
+                    "restore": "Restaurar el último valor conocido cuando se inicia Home Assistant",
+                    "step": "Tamaño del paso"
+                },
                 "generic": {
                     "icon": "Icono",
                     "name": "Nombre"
@@ -1644,6 +1651,7 @@
                         "no_helpers": "¡Parece que aún no tienes ayudantes!"
                     },
                     "types": {
+                        "counter": "Contador",
                         "input_boolean": "Alternar",
                         "input_datetime": "Fecha y/o hora",
                         "input_number": "Número",
@@ -2163,6 +2171,7 @@
                         "last_scanned": "Última vez escaneada",
                         "name": "Nombre"
                     },
+                    "learn_more": "Más información sobre las etiquetas",
                     "never_scanned": "Nunca escaneado",
                     "no_tags": "Sin etiquetas",
                     "write": "Escribir"
