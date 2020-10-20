@@ -95,6 +95,13 @@ export class HuiLogbookCardEditor extends LitElement
             @value-changed=${this._valueChanged}
           ></paper-input>
         </div>
+        <h3>
+          ${`${this.hass!.localize(
+            "ui.panel.lovelace.editor.card.generic.entities"
+          )} (${this.hass!.localize(
+            "ui.panel.lovelace.editor.card.config.required"
+          )})`}
+        </h3>
         <ha-entities-picker
           .hass=${this.hass}
           .value=${this._configEntities}
