@@ -21,7 +21,6 @@ import {
 import { HassioHassOSInfo } from "../../../src/data/hassio/host";
 import {
   HassioHomeAssistantInfo,
-  HassioInfo,
   HassioSupervisorInfo,
 } from "../../../src/data/hassio/supervisor";
 import {
