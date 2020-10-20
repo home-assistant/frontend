@@ -131,7 +131,12 @@ export class HUIView extends UpdatingElement {
       this._layoutElement!.lovelace = lovelace;
     }
 
-    if (configChanged || hassChanged || editModeChanged) {
+    if (
+      configChanged ||
+      hassChanged ||
+      editModeChanged ||
+      changedProperties.has("_cards" || changedProperties.has("_badges"))
+    ) {
       this._layoutElement!.cards = this._cards;
       this._layoutElement!.badges = this._badges;
     }
@@ -189,14 +194,17 @@ export class HUIView extends UpdatingElement {
     cardElToReplace: LovelaceCard,
     config: LovelaceCardConfig
   ): void {
+    console.log(cardElToReplace, config);
     const newCardEl = this.createCardElement(config);
     newCardEl.hass = this.hass;
     if (cardElToReplace.parentElement) {
+      console.log("Replace child");
       cardElToReplace.parentElement!.replaceChild(newCardEl, cardElToReplace);
     }
     this._cards = this._cards!.map((curCardEl) =>
       curCardEl === cardElToReplace ? newCardEl : curCardEl
     );
+    console.log(this._cards);
   }
 
   private _rebuildBadge(
