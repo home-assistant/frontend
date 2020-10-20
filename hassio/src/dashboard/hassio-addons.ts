@@ -52,18 +52,18 @@ class HassioAddons extends LitElement {
                           .title=${addon.name}
                           .description=${addon.description}
                           available
-                          .showTopbar=${addon.installed !== addon.version}
+                          .showTopbar=${addon.installed &&
+                          addon.update_available!}
                           topbarClass="update"
-                          .icon=${addon.installed !== addon.version
+                          .icon=${addon.installed && addon.update_available!
                             ? mdiArrowUpBoldCircle
                             : mdiPuzzle}
                           .iconTitle=${addon.state !== "started"
                             ? "Add-on is stopped"
-                            : addon.installed !== addon.version
+                            : addon.installed && addon.update_available!
                             ? "New version available"
                             : "Add-on is running"}
-                          .iconClass=${addon.installed &&
-                          addon.installed !== addon.version
+                          .iconClass=${addon.installed && addon.update_available
                             ? addon.state === "started"
                               ? "update"
                               : "update stopped"
