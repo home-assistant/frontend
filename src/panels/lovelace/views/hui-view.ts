@@ -135,7 +135,8 @@ export class HUIView extends UpdatingElement {
       configChanged ||
       hassChanged ||
       editModeChanged ||
-      changedProperties.has("_cards" || changedProperties.has("_badges"))
+      changedProperties.has("_cards") ||
+      changedProperties.has("_badges")
     ) {
       this._layoutElement!.cards = this._cards;
       this._layoutElement!.badges = this._badges;
