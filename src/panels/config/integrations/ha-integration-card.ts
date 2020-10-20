@@ -475,7 +475,7 @@ export class HaIntegrationCard extends LitElement {
           align-items: center;
           height: 40px;
           padding: 16px 16px 8px 16px;
-          vertical-align: middle;
+          justify-content: center;
         }
         .group-header h1 {
           margin: 0;
@@ -506,7 +506,6 @@ export class HaIntegrationCard extends LitElement {
           margin-bottom: 0;
         }
         h2 {
-          margin-top: 0;
           min-height: 24px;
         }
         h3 {
