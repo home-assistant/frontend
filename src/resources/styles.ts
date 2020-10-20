@@ -119,10 +119,6 @@ export const haStyle = css`
     margin-left: 20px;
   }
 
-  ha-menu-button {
-    margin-left: 4px;
-  }
-
   h1 {
     font-family: var(--paper-font-headline_-_font-family);
     -webkit-font-smoothing: var(--paper-font-headline_-_-webkit-font-smoothing);
