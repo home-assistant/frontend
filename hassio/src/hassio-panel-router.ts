@@ -25,7 +25,7 @@ class HassioPanelRouter extends HassRouterPage {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @property({ attribute: false }) public supervisorInfo: HassioSupervisorInfo;
+  @property({ attribute: false }) public supervisorInfo?: HassioSupervisorInfo;
 
   @property({ attribute: false }) public hassioInfo!: HassioInfo;
 

@@ -40,12 +40,12 @@ export class HassioUpdate extends LitElement {
 
   @property({ attribute: false }) public hassOsInfo?: HassioHassOSInfo;
 
-  @property({ attribute: false }) public supervisorInfo?: HassioInfo;
+  @property({ attribute: false }) public supervisorInfo?: HassioSupervisorInfo;
 
   private _pendingUpdates = memoizeOne(
     (
       core?: HassioHomeAssistantInfo,
-      supervisor?: HassioInfo,
+      supervisor?: HassioSupervisorInfo,
       os?: HassioHassOSInfo
     ): number => {
       return [core, supervisor, os].filter(
