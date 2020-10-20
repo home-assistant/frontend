@@ -740,6 +740,7 @@ class HUIRoot extends LitElement {
         }
         ha-tabs {
           width: 100%;
+          height: 100%;
           margin: 0 8px 0 4px;
           --paper-tabs-selection-bar-color: var(--text-primary-color, #fff);
           text-transform: uppercase;
