@@ -3176,10 +3176,10 @@
   dependencies:
     defer-to-connect "^2.0.0"
 
-"@thomasloven/round-slider@0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@thomasloven/round-slider/-/round-slider-0.5.0.tgz#e2307bcc50aa69a67f6dcb575d0c9ea9e42024e4"
-  integrity sha512-ygHbL7ygDA9KCjWeJLgPX/bQajaL+BAz7MTQsQiePy55yEPFB/uv2yNsjesw9Gg8zNh7HQbbvvySe0C85veHkA==
+"@thomasloven/round-slider@0.5.2":
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/@thomasloven/round-slider/-/round-slider-0.5.2.tgz#a4637c8bd912819da94a0ebce4b2099bb9a84836"
+  integrity sha512-40zzZvsRdD2BVZFfritPSuWTlN05FWZ+l7PuIPJlcpEJWbD/X2dRxt4/YKxHLVDj8CT6m1vwcS0wceu7vmJLFQ==
   dependencies:
     lit-element "^2.2.1"
 
