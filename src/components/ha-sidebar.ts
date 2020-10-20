@@ -386,7 +386,9 @@ class HaSidebar extends LitElement {
             .hass=${hass}
           ></ha-user-badge>
 
-          <span class="item-text">${hass.user ? hass.user.name : ""}</span>
+          <span class="item-text">
+            ${hass.user ? hass.user.name : ""}
+          </span>
         </paper-icon-item>
       </a>
       <div disabled class="bottom-spacer"></div>
@@ -788,11 +790,11 @@ class HaSidebar extends LitElement {
         }
 
         paper-listbox {
-          padding: 8px 0 4px 0;
+          padding: 4px 0;
           display: flex;
           flex-direction: column;
           box-sizing: border-box;
-          height: calc(100% - 176px - env(safe-area-inset-bottom));
+          height: calc(100% - 196px - env(safe-area-inset-bottom));
           overflow-x: hidden;
           background: none;
           margin-left: env(safe-area-inset-left);
