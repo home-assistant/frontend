@@ -282,12 +282,13 @@ export class HuiElementEditor extends LitElement {
       type = ACTION_TYPE;
     } else if (
       this.elementType === "row" &&
+      "type" in this.value &&
       !this.value.type &&
       "entity" in this.value
     ) {
       type = GENERIC_ROW_TYPE;
     } else {
-      type = this.value.type!;
+      type = "type" in this.value ? this.value.type! : "";
     }
 
     let configElement = this._configElement;
