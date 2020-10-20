@@ -20,7 +20,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     private _haveCheckedAdminStatus = false;
 
     protected updated(changedProps: PropertyValues) {
-      if (this.haveCheckedAdminStatus) {
+      if (this._haveCheckedAdminStatus) {
         return;
       }
 
