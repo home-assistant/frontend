@@ -15,9 +15,9 @@ const isMacOS = /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform);
 
 export default <T extends Constructor<HassElement>>(superClass: T) =>
   class extends superClass {
-    private isAdmin = false;
+    private _isAdmin = false;
 
-    private haveCheckedAdminStatus = false;
+    private _haveCheckedAdminStatus = false;
 
     protected updated(changedProps: PropertyValues) {
       if (this.haveCheckedAdminStatus) {
