@@ -23,7 +23,7 @@ export const binarySensorIcon = (state?: string, stateObj?: HassEntity) => {
     case "problem":
     case "safety":
     case "smoke":
-      return is_off ? "hass:shield-check" : "hass:alert";
+      return is_off ? "hass:check-circle" : "hass:alert-circle";
     case "heat":
       return is_off ? "hass:thermometer" : "hass:fire";
     case "light":
