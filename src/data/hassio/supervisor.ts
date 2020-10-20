@@ -2,7 +2,21 @@ import { HomeAssistant, PanelInfo } from "../../types";
 import { HassioAddonInfo, HassioAddonRepository } from "./addon";
 import { hassioApiResultExtractor, HassioResponse } from "./common";
 
-export type HassioHomeAssistantInfo = any;
+export type HassioHomeAssistantInfo = {
+  version: string;
+  version_latest: string;
+  arch: string;
+  machine: string;
+  ip_address: string;
+  image: string;
+  boot: boolean;
+  port: number;
+  ssl: boolean;
+  watchdog: boolean;
+  wait_boot: number;
+  audio_input: string | null;
+  audio_output: string | null;
+};
 
 export type HassioSupervisorInfo = {
   addons: HassioAddonInfo[];
