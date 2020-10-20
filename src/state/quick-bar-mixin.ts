@@ -44,7 +44,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       }
     }
 
-    private registerShortcut() {
+    private _registerShortcut() {
       document.addEventListener("keydown", (e: KeyboardEvent) => {
         if (this.isOSCtrlKey(e) && e.code === "KeyP") {
           e.preventDefault();
