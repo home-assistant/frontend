@@ -82,8 +82,7 @@ export class QuickBar extends LitElement {
   protected updated(changedProperties: PropertyValues) {
     if (
       this._opened &&
-      (changedProperties.has("_opened") ||
-        changedProperties.has("_filter") ||
+      (changedProperties.has("_filter") ||
         changedProperties.has("_commandMode"))
     ) {
       this._setFilteredItems();
@@ -96,7 +95,13 @@ export class QuickBar extends LitElement {
     }
 
     return html`
-      <ha-dialog .heading=${true} open @closed=${this.closeDialog} hideActions>
+      <ha-dialog
+        .heading=${true}
+        open
+        @opened=${this._handleOpened}
+        @closed=${this.closeDialog}
+        hideActions
+      >
         <search-input
           dialogInitialFocus
           no-label-float
@@ -138,6 +143,10 @@ export class QuickBar extends LitElement {
             </mwc-list>`}
       </ha-dialog>
     `;
+  }
+
+  private _handleOpened() {
+    this._setFilteredItems();
   }
 
   private renderItem(item: QuickBarItem, index?: number) {
