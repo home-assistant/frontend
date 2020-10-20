@@ -404,14 +404,7 @@ class HUIRoot extends LitElement {
               `
             : ""}
         </app-header>
-        <div
-          id="view"
-          class="${classMap({
-            "tabs-hidden":
-              !this._editMode && this.lovelace!.config.views.length < 2,
-          })}"
-          @ll-rebuild="${this._debouncedConfigChanged}"
-        ></div>
+        <div id="view" @ll-rebuild="${this._debouncedConfigChanged}"></div>
       </ha-app-layout>
     `;
   }
@@ -809,9 +802,6 @@ class HUIRoot extends LitElement {
           */
           flex: 1 1 100%;
           max-width: 100%;
-        }
-        #view.tabs-hidden {
-          min-height: calc(100vh - 48px);
         }
         .hide-tab {
           display: none;
