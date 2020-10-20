@@ -40,7 +40,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       super.firstUpdated(changedProps);
 
       if (this._isAdmin) {
-        this.registerShortcut();
+        this._registerShortcut();
       }
     }
 
