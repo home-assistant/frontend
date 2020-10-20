@@ -169,7 +169,8 @@ export interface LightCardConfig extends LovelaceCardConfig {
 }
 
 export interface LogbookCardConfig extends LovelaceCardConfig {
-  entity: string;
+  type: "logbook";
+  entities: string[];
   title?: string;
   hours_to_show?: number;
 }

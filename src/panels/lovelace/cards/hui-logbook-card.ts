@@ -13,19 +13,21 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { isValidEntityId } from "../../../common/entity/valid_entity_id";
+import { throttle } from "../../../common/util/throttle";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
 import { getLogbookData, LogbookEntry } from "../../../data/logbook";
 import { haStyleScrollbar } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import "../../logbook/ha-logbook";
 import { findEntities } from "../common/find-entites";
-import { createEntityNotFoundWarning } from "../components/hui-warning";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
-import "./hui-error-card";
-import { LogbookCardConfig } from "./types";
+import { processConfigEntities } from "../common/process-config-entities";
+import "../components/hui-warning";
+import type { EntityConfig } from "../entity-rows/types";
+import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type { LogbookCardConfig } from "./types";
 
 @customElement("hui-logbook-card")
 export class HuiLogbookCard extends LitElement implements LovelaceCard {
@@ -41,8 +43,8 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     entities: string[],
     entitiesFill: string[]
   ) {
-    const includeDomains = ["sensor", "light", "switch"];
-    const maxEntities = 1;
+    const includeDomains = ["light", "switch"];
+    const maxEntities = 3;
     const foundEntities = findEntities(
       hass,
       maxEntities,
@@ -52,7 +54,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     );
 
     return {
-      entity: foundEntities[0] || "",
+      entity: foundEntities,
     };
   }
 
@@ -64,18 +66,22 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
 
   @internalProperty() private _persons = {};
 
+  @internalProperty() private _configEntities?: EntityConfig[];
+
   private _lastLogbookDate?: Date;
 
   private _logbookRefreshInterval?: number;
+
+  private _throttleGetLogbookEntries = throttle(() => {
+    this._getLogBookData();
+  }, 10000);
 
   public getCardSize(): number {
     return 5;
   }
 
   public setConfig(config: LogbookCardConfig): void {
-    if (config.entity && !isValidEntityId(config.entity)) {
-      throw new Error("Invalid Entity");
-    }
+    this._configEntities = processConfigEntities<EntityConfig>(config.entities);
 
     this._config = {
       hours_to_show: 24,
@@ -97,32 +103,83 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     clearInterval(this._logbookRefreshInterval);
   }
 
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (
+      changedProps.has("_config") ||
+      changedProps.has("_persons") ||
+      changedProps.has("_logbookEntries")
+    ) {
+      return true;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+
+    if (
+      !this._configEntities ||
+      !oldHass ||
+      oldHass.themes !== this.hass!.themes ||
+      oldHass.language !== this.hass!.language
+    ) {
+      return true;
+    }
+
+    for (const entity of this._configEntities) {
+      if (oldHass.states[entity.entity] !== this.hass!.states[entity.entity]) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   protected firstUpdated(): void {
     this._fetchPersonNames();
   }
 
   protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
-
-    if (!changedProperties.has("_config")) {
+    if (!this._config || !this.hass) {
       return;
     }
 
+    const oldHass = changedProperties.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProperties.get("_config") as LogbookCardConfig;
 
     if (
-      oldConfig?.entity !== this._config!.entity ||
-      oldConfig?.hours_to_show !== this._config!.hours_to_show
+      !oldHass ||
+      !oldConfig ||
+      oldHass.themes !== this.hass.themes ||
+      oldConfig.theme !== this._config.theme
     ) {
-      clearInterval(this._logbookRefreshInterval);
+      applyThemesOnElement(this, this.hass.themes, this._config.theme);
+    }
 
+    if (
+      changedProperties.has("_config") &&
+      (oldConfig?.entities !== this._config.entities ||
+        oldConfig?.hours_to_show !== this._config!.hours_to_show)
+    ) {
       this._logbookEntries = undefined;
       this._lastLogbookDate = undefined;
-      this._getLogBookData();
 
-      this._logbookRefreshInterval = window.setInterval(() => {
-        this._getLogBookData();
-      }, 60 * 1000);
+      if (!this._configEntities) {
+        return;
+      }
+
+      this._throttleGetLogbookEntries();
+      return;
+    }
+
+    if (
+      oldHass &&
+      this._configEntities!.some(
+        (entity) =>
+          "entity" in entity &&
+          oldHass.states[entity.entity] !== this.hass!.states[entity.entity]
+      )
+    ) {
+      // wait for commit of data (we only account for the default setting of 1 sec)
+      setTimeout(this._throttleGetLogbookEntries, 1000);
     }
   }
 
@@ -138,16 +195,6 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
             "ui.components.logbook.component_not_loaded"
           )}</hui-warning
         >
-      `;
-    }
-
-    const stateObj = this.hass.states[this._config.entity];
-
-    if (!stateObj) {
-      return html`
-        <hui-warning>
-          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
-        </hui-warning>
       `;
     }
 
@@ -206,7 +253,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
       this.hass,
       lastDate.toISOString(),
       now.toISOString(),
-      this._config.entity,
+      this._configEntities!.map((entity) => entity.entity).toString(),
       true
     );
 

@@ -1,5 +1,6 @@
 import "@polymer/paper-input/paper-input";
 import {
+  CSSResult,
   customElement,
   html,
   internalProperty,
@@ -7,19 +8,21 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { assert, number, object, optional, string } from "superstruct";
+import { array, assert, number, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/entity/ha-entities-picker";
 import "../../../../components/entity/ha-entity-picker";
 import { HomeAssistant } from "../../../../types";
 import { LogbookCardConfig } from "../../cards/types";
+import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
-import { EditorTarget, EntitiesEditorEvent } from "../types";
+import { EditorTarget } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = object({
   type: string(),
-  entity: optional(string()),
+  entities: optional(array(string())),
   title: optional(string()),
   hours_to_show: optional(number()),
   theme: optional(string()),
@@ -32,17 +35,20 @@ export class HuiLogbookCardEditor extends LitElement
 
   @internalProperty() private _config?: LogbookCardConfig;
 
+  @internalProperty() private _configEntities?: string[];
+
   public setConfig(config: LogbookCardConfig): void {
     assert(config, cardConfigStruct);
     this._config = config;
+    this._configEntities = config.entities;
   }
 
   get _title(): string {
     return this._config!.title || "";
   }
 
-  get _entity(): string {
-    return this._config!.entity || "";
+  get _entities(): string[] {
+    return this._config!.entities || [];
   }
 
   get _hours_to_show(): number {
@@ -59,7 +65,6 @@ export class HuiLogbookCardEditor extends LitElement
     }
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <paper-input
           .label="${this.hass.localize(
@@ -90,21 +95,17 @@ export class HuiLogbookCardEditor extends LitElement
             @value-changed=${this._valueChanged}
           ></paper-input>
         </div>
-        <ha-entity-picker
-          allow-custom-entity
-          .label=${this.hass.localize(
-            "ui.panel.lovelace.editor.card.generic.entity"
-          )}
+        <ha-entities-picker
           .hass=${this.hass}
-          .value=${this._entity}
-          .configValue=${"entity"}
-          @change=${this._valueChanged}
-        ></ha-entity-picker>
+          .value=${this._configEntities}
+          @value-changed=${this._valueChanged}
+        >
+        </ha-entities-picker>
       </div>
     `;
   }
 
-  private _valueChanged(ev: EntitiesEditorEvent): void {
+  private _valueChanged(ev: CustomEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
@@ -113,7 +114,9 @@ export class HuiLogbookCardEditor extends LitElement
     if (this[`_${target.configValue}`] === target.value) {
       return;
     }
-    if (target.configValue) {
+    if (ev.detail && ev.detail.value && Array.isArray(ev.detail.value)) {
+      this._config = { ...this._config, entities: ev.detail.value };
+    } else if (target.configValue) {
       if (target.value === "") {
         this._config = { ...this._config };
         delete this._config[target.configValue!];
@@ -131,6 +134,10 @@ export class HuiLogbookCardEditor extends LitElement
       }
     }
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  static get styles(): CSSResult {
+    return configElementStyle;
   }
 }
 
