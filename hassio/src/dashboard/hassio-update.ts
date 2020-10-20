@@ -49,7 +49,7 @@ export class HassioUpdate extends LitElement {
       os?: HassioHassOSInfo
     ): number => {
       return [core, supervisor, os].filter(
-        (value) => !!value && value?.version !== value?.version_latest
+        (value) => !!value && value?.update_available
       ).length;
     }
   );
@@ -108,7 +108,7 @@ export class HassioUpdate extends LitElement {
     apiPath: string,
     releaseNotesUrl: string
   ): TemplateResult {
-    if (!object.version_latest || object.version_latest === object.version) {
+    if (!object.update_available) {
       return html``;
     }
     return html`
