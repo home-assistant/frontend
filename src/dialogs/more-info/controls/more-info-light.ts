@@ -66,7 +66,7 @@ class MoreInfoLight extends LitElement {
               <ha-labeled-slider
                 caption=${this.hass.localize("ui.card.light.brightness")}
                 icon="hass:brightness-5"
-                min="0"
+                min="1"
                 max="100"
                 value=${this._brightnessSliderValue}
                 @change=${this._brightnessSliderChanged}
