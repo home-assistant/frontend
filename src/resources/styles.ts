@@ -110,9 +110,12 @@ export const haStyle = css`
     color: var(--app-header-text-color, white);
   }
 
-  app-toolbar,
-  app-header div[sticky] {
+  app-toolbar {
     height: var(--header-height);
+  }
+
+  app-header div[sticky] {
+    height: 48px;
   }
 
   app-toolbar [main-title] {

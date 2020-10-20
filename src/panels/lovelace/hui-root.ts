@@ -738,6 +738,10 @@ class HUIRoot extends LitElement {
           --paper-tabs-selection-bar-color: var(--text-primary-color, #fff);
           text-transform: uppercase;
         }
+        .edit-mode ha-tabs {
+          margin-left: max(env(safe-area-inset-left), 24px);
+          margin-right: max(env(safe-area-inset-right), 24px);
+        }
         .edit-mode {
           background-color: var(--dark-color, #455a64);
           color: var(--text-dark-color);
