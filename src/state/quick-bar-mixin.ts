@@ -18,7 +18,14 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     protected firstUpdated(changedProps: PropertyValues) {
       super.firstUpdated(changedProps);
 
+      this._registerShortcut();
+    }
+
+    private _registerShortcut() {
       document.addEventListener("keydown", (e: KeyboardEvent) => {
+        if (!this.hass?.user?.is_admin) {
+          return;
+        }
         if (this.isOSCtrlKey(e) && e.code === "KeyP") {
           e.preventDefault();
           const eventParams: QuickBarParams = {};

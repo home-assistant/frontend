@@ -17,7 +17,10 @@ import "../../components/ha-dialog";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { PolymerChangedEvent } from "../../polymer-types";
-import { fuzzySequentialMatch } from "../../common/string/sequence_matching";
+import {
+  fuzzyFilterSort,
+  ScorableTextItem,
+} from "../../common/string/filter/sequence-matching";
 import { componentsWithService } from "../../common/config/components_with_service";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -27,12 +30,9 @@ import { compare } from "../../common/string/compare";
 import { SingleSelectedEvent } from "@material/mwc-list/mwc-list-foundation";
 import { computeStateName } from "../../common/entity/compute_state_name";
 
-interface QuickBarItem {
-  text: string;
-  altText?: string;
+interface QuickBarItem extends ScorableTextItem {
   icon: string;
   action(data?: any): void;
-  score?: number;
 }
 
 @customElement("ha-quick-bar")
@@ -184,19 +184,20 @@ export class QuickBar extends LitElement {
       this._itemFilter = newFilter;
     }
 
-    this._items = (this._commandMode ? this._commandItems : this._entityItems)
-      .filter(({ text, altText }) => {
-        const values = [text];
-        if (altText) {
-          values.push(altText);
-        }
-        return fuzzySequentialMatch(this._itemFilter.trimLeft(), values);
-      })
-      .sort((itemA, itemB) => compare(itemA.text, itemB.text));
+    this._items = this._commandMode ? this._commandItems : this._entityItems;
+
+    if (this._itemFilter !== "") {
+      this._items = fuzzyFilterSort<QuickBarItem>(
+        this._itemFilter.trimLeft(),
+        this._items
+      );
+    }
   }
 
   private _generateCommandItems(): QuickBarItem[] {
-    return [...this._generateReloadCommands()];
+    return [...this._generateReloadCommands()].sort((a, b) =>
+      compare(a.text.toLowerCase(), b.text.toLowerCase())
+    );
   }
 
   private _generateReloadCommands(): QuickBarItem[] {
@@ -216,12 +217,14 @@ export class QuickBar extends LitElement {
   }
 
   private _generateEntityItems(): QuickBarItem[] {
-    return Object.keys(this.hass.states).map((entityId) => ({
-      text: computeStateName(this.hass.states[entityId]),
-      altText: entityId,
-      icon: domainIcon(computeDomain(entityId), this.hass.states[entityId]),
-      action: () => fireEvent(this, "hass-more-info", { entityId }),
-    }));
+    return Object.keys(this.hass.states)
+      .map((entityId) => ({
+        text: computeStateName(this.hass.states[entityId]),
+        altText: entityId,
+        icon: domainIcon(computeDomain(entityId), this.hass.states[entityId]),
+        action: () => fireEvent(this, "hass-more-info", { entityId }),
+      }))
+      .sort((a, b) => compare(a.text.toLowerCase(), b.text.toLowerCase()));
   }
 
   static get styles() {
