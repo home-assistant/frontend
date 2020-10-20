@@ -59,6 +59,8 @@ export class QuickBar extends LitElement {
 
   @internalProperty() private _activatedIndex = 0;
 
+  @internalProperty() private _done = false;
+
   @query("search-input", false) private _filterInputField?: HTMLElement;
 
   @query("mwc-list", false) private _list?: HTMLElement;
@@ -72,6 +74,7 @@ export class QuickBar extends LitElement {
 
   public closeDialog() {
     this._opened = false;
+    this._done = false;
     this._filter = "";
     this._commandTriggered = -1;
     this._items = [];
@@ -132,13 +135,16 @@ export class QuickBar extends LitElement {
               activatable
               @selected=${this._handleSelected}
               style=${styleMap({
-                height: `${Math.min(this._items.length * 72 + 26, 500)}px`,
+                height: `${Math.min(
+                  this._items.length * (this._commandMode ? 56 : 72) + 26,
+                  this._done ? 500 : 0
+                )}px`,
               })}
             >
               ${scroll({
-                items: this._items as [],
+                items: this._items,
                 renderItem: (item: QuickBarItem, index?: number) =>
-                  this.renderItem(item, index),
+                  this._renderItem(item, index),
               })}
             </mwc-list>`}
       </ha-dialog>
@@ -147,9 +153,12 @@ export class QuickBar extends LitElement {
 
   private _handleOpened() {
     this._setFilteredItems();
+    this.updateComplete.then(() => {
+      this._done = true;
+    });
   }
 
-  private renderItem(item: QuickBarItem, index?: number) {
+  private _renderItem(item: QuickBarItem, index?: number) {
     return html`
       <mwc-list-item
         .twoline=${Boolean(item.altText)}
@@ -277,7 +286,7 @@ export class QuickBar extends LitElement {
       .sort((a, b) => compare(a.text.toLowerCase(), b.text.toLowerCase()));
   }
 
-  private async _setFilteredItems() {
+  private _setFilteredItems() {
     const items = this._commandMode ? this._commandItems : this._entityItems;
     this._items = this._filter
       ? this._filterItems(items || [], this._filter)
@@ -285,13 +294,8 @@ export class QuickBar extends LitElement {
   }
 
   private _filterItems = memoizeOne(
-    (items: QuickBarItem[], filter: string): QuickBarItem[] => {
-      const filteredAndSortedItems = fuzzyFilterSort<QuickBarItem>(
-        filter.trimLeft(),
-        items
-      );
-      return filteredAndSortedItems;
-    }
+    (items: QuickBarItem[], filter: string): QuickBarItem[] =>
+      fuzzyFilterSort<QuickBarItem>(filter.trimLeft(), items)
   );
 
   static get styles() {
