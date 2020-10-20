@@ -52,8 +52,7 @@ class HassioAddons extends LitElement {
                           .title=${addon.name}
                           .description=${addon.description}
                           available
-                          .showTopbar=${addon.installed ||
-                          addon.update_available!}
+                          .showTopbar=${addon.update_available}
                           topbarClass="update"
                           .icon=${addon.update_available!
                             ? mdiArrowUpBoldCircle

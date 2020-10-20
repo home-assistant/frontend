@@ -15,7 +15,7 @@ export interface HassioAddonInfo {
   slug: string;
   stage: "stable" | "experimental" | "deprecated";
   state: "started" | "stopped" | null;
-  update_available: boolean | null;
+  update_available: boolean;
   url: string | null;
   version_latest: string;
   version: string;
