@@ -279,7 +279,7 @@ export const haStyleDialog = css`
       max-width: calc(
         100% - env(safe-area-inset-right) - env(safe-area-inset-left)
       ) !important;
-      max-height: calc(100% - 64px);
+      max-height: calc(100% - var(--header-height));
 
       position: fixed !important;
       bottom: 0px;
