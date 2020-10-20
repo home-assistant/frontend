@@ -116,10 +116,7 @@ export class HuiActionsEditor extends LitElement {
                   .type=${"tap_action"}
                   @click=${this._editAction}
                 >
-                  <ha-svg-icon
-                    .path=${mdiPencil}
-                    .type=${"tap_action"}
-                  ></ha-svg-icon>
+                  <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
                 </mwc-icon-button>
               </div>
             </div>`
@@ -169,10 +166,7 @@ export class HuiActionsEditor extends LitElement {
                   .type=${"hold_action"}
                   @click=${this._editAction}
                 >
-                  <ha-svg-icon
-                    .path=${mdiPencil}
-                    .type=${"hold_action"}
-                  ></ha-svg-icon>
+                  <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
                 </mwc-icon-button>
               </div>
             </div>`
@@ -222,10 +216,7 @@ export class HuiActionsEditor extends LitElement {
                   .type=${"double_tap_action"}
                   @click=${this._editAction}
                 >
-                  <ha-svg-icon
-                    .path=${mdiPencil}
-                    .type=${"double_tap_action"}
-                  ></ha-svg-icon>
+                  <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
                 </mwc-icon-button>
               </div>
             </div>`
