@@ -718,9 +718,9 @@
                     "enabled_description": "Deaktiverte entiteter vil ikke bli lagt til i Home Assistant.",
                     "enabled_label": "Aktiver entitet",
                     "entity_id": "Entitets-ID",
-                    "icon": "Overstyr ikon",
+                    "icon": "Ikon",
                     "icon_error": "Ikoner bør være i formatet 'prefiks:ikonnavn', f.eks 'mdi:home'",
-                    "name": "Overstyr Navn",
+                    "name": "Navn",
                     "note": "Merk: Dette fungerer kanskje ikke ennå med alle integrasjoner.",
                     "unavailable": "Denne entiteten er ikke tilgjengelig for øyeblikket.",
                     "update": "Oppdater"

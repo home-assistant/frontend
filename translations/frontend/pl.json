@@ -718,9 +718,9 @@
                     "enabled_description": "Wyłączone encje nie będą dostępne w Home Assistancie.",
                     "enabled_label": "Włącz encję",
                     "entity_id": "Identyfikator encji",
-                    "icon": "Nadpisanie ikony",
+                    "icon": "Ikona",
                     "icon_error": "Ikony powinny mieć format 'prefix:iconname', np. 'mdi:home'",
-                    "name": "Nadpisanie nazwy",
+                    "name": "Nazwa",
                     "note": "Uwaga: to może jeszcze nie działać ze wszystkimi integracjami.",
                     "unavailable": "Ta encja nie jest obecnie dostępna.",
                     "update": "AKTUALIZUJ"
@@ -1158,8 +1158,8 @@
                         "edit_yaml": "Edycja jako YAML",
                         "enable_disable": "Włącz/wyłącz automatyzację",
                         "introduction": "Użyj automatyzacji, aby ożywić swój dom",
-                        "load_error_not_editable": "Tylko automatyzacje zdefiniowane w pliku automations.yaml są edytowalne.",
-                        "load_error_unknown": "Wystąpił błąd podczas ładowania automatyzacji ({err_no}).",
+                        "load_error_not_editable": "Tylko automatyzacje zdefiniowane w pliku automations.yaml są edytowalne",
+                        "load_error_unknown": "Wystąpił błąd podczas ładowania automatyzacji ({err_no})",
                         "max": {
                             "parallel": "Maksymalna liczba równoległych uruchomień",
                             "queued": "Długość kolejki"
@@ -1306,7 +1306,7 @@
                             "info": "Dzięki integracji z Alexą dla Chmury Home Assistant będzie możliwe kontrolowanie wszystkich urządzeń Home Assistanta za pośrednictwem dowolnego urządzenia obsługującego Amazon Alexa.",
                             "info_state_reporting": "Jeśli włączysz raportowanie stanów, Home Assistant wyśle wszystkie zmiany stanu udostępnionych encji na serwery Amazona. Dzięki temu zawsze możesz zobaczyć najnowsze stany w aplikacji Alexa i używać zmian stanów do tworzenia rutyn.",
                             "manage_entities": "Zarządzanie encjami",
-                            "state_reporting_error": "Nie można przesłać stanu {enable_disable}.",
+                            "state_reporting_error": "Nie można przesłać stanu {enable_disable}",
                             "sync_entities": "Synchronizuj encje",
                             "sync_entities_error": "Nie udało się zsynchronizować encji:",
                             "title": "Alexa"
@@ -1771,7 +1771,7 @@
                     "load_full_log": "Załaduj cały log Home Assistanta",
                     "loading_log": "Ładowanie loga błędów…",
                     "multiple_messages": "wiadomość pojawiła się po raz pierwszy {time} i powtarzała się {counter} razy",
-                    "no_errors": "Nie zgłoszono żadnych błędów.",
+                    "no_errors": "Nie zgłoszono żadnych błędów",
                     "no_issues": "Nie ma nowych problemów!",
                     "refresh": "Odśwież",
                     "title": "Logi"
@@ -2020,8 +2020,8 @@
                         },
                         "icon": "Ikona",
                         "introduction": "Użyj scen, aby ożywić swój dom.",
-                        "load_error_not_editable": "Tylko sceny zdefiniowane w pliku scenes.yaml są edytowalne.",
-                        "load_error_unknown": "Błąd ładowania sceny ({err_no}).",
+                        "load_error_not_editable": "Tylko sceny zdefiniowane w pliku scenes.yaml są edytowalne",
+                        "load_error_unknown": "Błąd ładowania sceny ({err_no})",
                         "name": "Nazwa",
                         "save": "Zapisz",
                         "unsaved_confirm": "Masz niezapisane zmiany. Na pewno chcesz wyjść?"
@@ -2058,7 +2058,7 @@
                         "id_already_exists_save_error": "Nie możesz zapisać tego skryptu, ponieważ identyfikator nie jest unikalny, wprowadź inny identyfikator lub pozostaw pole puste, aby wygenerować go automatycznie.",
                         "introduction": "Użyj skryptów, aby wykonać sekwencję akcji.",
                         "link_available_actions": "Dowiedz się więcej o dostępnych akcjach.",
-                        "load_error_not_editable": "Tylko skrypty zdefiniowane w pliku scripts.yaml są edytowalne.",
+                        "load_error_not_editable": "Tylko skrypty zdefiniowane w pliku scripts.yaml są edytowalne",
                         "max": {
                             "parallel": "Maksymalna liczba równoległych uruchomień",
                             "queued": "Długość kolejki"
@@ -2509,7 +2509,7 @@
                         "reset": "Zresetuj do szablonu demonstracyjnego",
                         "template_extensions": "Rozszerzenia szablonów Home Assistanta",
                         "title": "Szablon",
-                        "unknown_error_template": "Nieznany błąd podczas renderowania szablonu."
+                        "unknown_error_template": "Nieznany błąd podczas renderowania szablonu"
                     }
                 }
             },
@@ -2807,7 +2807,7 @@
                         "no_description": "Brak dostępnego opisu."
                     },
                     "edit_badges": {
-                        "panel_mode": "Te odznaki nie zostaną wyświetlone, ponieważ ten widok jest w \"Trybie panelu”."
+                        "panel_mode": "Te odznaki nie zostaną wyświetlone, ponieważ ten widok jest w \"Trybie panelu\"."
                     },
                     "edit_card": {
                         "add": "Dodaj kartę",
@@ -2961,11 +2961,11 @@
                     "providers": {
                         "command_line": {
                             "abort": {
-                                "login_expired": "Sesja wygasła, zaloguj się ponownie."
+                                "login_expired": "Sesja wygasła, zaloguj się ponownie"
                             },
                             "error": {
-                                "invalid_auth": "Nieprawidłowa nazwa użytkownika lub hasło.",
-                                "invalid_code": "Nieprawidłowy kod uwierzytelniający."
+                                "invalid_auth": "Nieprawidłowa nazwa użytkownika lub hasło",
+                                "invalid_code": "Nieprawidłowy kod uwierzytelniający"
                             },
                             "step": {
                                 "init": {
@@ -2984,11 +2984,11 @@
                         },
                         "homeassistant": {
                             "abort": {
-                                "login_expired": "Sesja wygasła, zaloguj się ponownie."
+                                "login_expired": "Sesja wygasła, zaloguj się ponownie"
                             },
                             "error": {
-                                "invalid_auth": "Nieprawidłowa nazwa użytkownika lub hasło.",
-                                "invalid_code": "Nieprawidłowy kod uwierzytelniający."
+                                "invalid_auth": "Nieprawidłowa nazwa użytkownika lub hasło",
+                                "invalid_code": "Nieprawidłowy kod uwierzytelniający"
                             },
                             "step": {
                                 "init": {
@@ -3007,12 +3007,12 @@
                         },
                         "legacy_api_password": {
                             "abort": {
-                                "login_expired": "Sesja wygasła, zaloguj się ponownie.",
-                                "no_api_password_set": "Nie masz skonfigurowanego hasła interfejsu API."
+                                "login_expired": "Sesja wygasła, zaloguj się ponownie",
+                                "no_api_password_set": "Nie masz skonfigurowanego hasła interfejsu API"
                             },
                             "error": {
                                 "invalid_auth": "Nieprawidłowe hasło API",
-                                "invalid_code": "Nieprawidłowy kod uwierzytelniający."
+                                "invalid_code": "Nieprawidłowy kod uwierzytelniający"
                             },
                             "step": {
                                 "init": {
@@ -3031,8 +3031,8 @@
                         },
                         "trusted_networks": {
                             "abort": {
-                                "not_allowed": "Twój komputer nie ma zezwolenia.",
-                                "not_whitelisted": "Twój komputer nie znajduje się na białej liście."
+                                "not_allowed": "Twój komputer nie ma zezwolenia",
+                                "not_whitelisted": "Twój komputer nie znajduje się na białej liście"
                             },
                             "step": {
                                 "init": {
@@ -3204,8 +3204,8 @@
                 },
                 "push_notifications": {
                     "description": "Wysyłaj powiadomienia na to urządzenie.",
-                    "error_load_platform": "Skonfiguruj notify.html5.",
-                    "error_use_https": "Wymagany protokół SSL dla interfejsu użytkownika.",
+                    "error_load_platform": "Skonfiguruj notify.html5",
+                    "error_use_https": "Wymagany protokół SSL dla interfejsu użytkownika",
                     "header": "Powiadomienia push",
                     "link_promo": "Dowiedz się więcej",
                     "push_notifications": "Powiadomienia push"
@@ -3233,7 +3233,7 @@
                         "light": "Jasny"
                     },
                     "dropdown_label": "Motyw",
-                    "error_no_theme": "Brak dostępnych motywów.",
+                    "error_no_theme": "Brak dostępnych motywów",
                     "header": "Motyw",
                     "link_promo": "Dowiedz się więcej o motywach",
                     "primary_color": "Kolor podstawowy",

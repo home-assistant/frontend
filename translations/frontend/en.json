@@ -779,6 +779,9 @@
                 },
                 "platform_not_loaded": "The {platform} integration is not loaded. Please add it to your configuration either by adding 'default_config:' or ''{platform}:''.",
                 "required_error_msg": "This field is required",
+                "timer": {
+                    "duration": "Duration"
+                },
                 "yaml_not_editable": "The settings of this entity cannot be edited from the UI. Only entities set up from the UI are configurable from the UI."
             },
             "image_cropper": {
@@ -1521,24 +1524,31 @@
                     "add_prompt": "No {name} have been added using this device yet. You can add one by clicking the + button above.",
                     "automation": {
                         "actions": {
-                            "caption": "When something is triggered..."
+                            "caption": "When something is triggered...",
+                            "no_actions": "No actions",
+                            "unknown_action": "Unknown action"
                         },
                         "automations": "Automations",
                         "conditions": {
-                            "caption": "Only do something if..."
+                            "caption": "Only do something if...",
+                            "no_conditions": "No conditions",
+                            "unknown_condition": "Unknown condition"
                         },
                         "create": "Create automation with device",
                         "no_automations": "No automations",
                         "no_device_automations": "There are no automations available for this device.",
                         "triggers": {
-                            "caption": "Do something when..."
-                        }
+                            "caption": "Do something when...",
+                            "no_triggers": "No triggers",
+                            "unknown_trigger": "Unknown trigger"
+                        },
+                        "unknown_automation": "Unknown automation"
                     },
                     "cant_edit": "You can only edit items that are created in the UI.",
                     "caption": "Devices",
                     "confirm_delete": "Are you sure you want to delete this device?",
-                    "confirm_rename_entity_ids": "Do you also want to rename the entity id's of your entities?",
-                    "confirm_rename_entity_ids_warning": "This will not change any configuration (like automations, scripts, scenes, Lovelace) that is currently using these entities, you will have to update them yourself.",
+                    "confirm_rename_entity_ids": "Do you also want to rename the entity IDs of your entities?",
+                    "confirm_rename_entity_ids_warning": "This will not change any configuration (like automations, scripts, scenes, dashboards) that is currently using these entities! You will have to update them yourself to use the new entity IDs!",
                     "data_table": {
                         "area": "Area",
                         "battery": "Battery",
@@ -1656,7 +1666,8 @@
                         "input_datetime": "Date and/or time",
                         "input_number": "Number",
                         "input_select": "Dropdown",
-                        "input_text": "Text"
+                        "input_text": "Text",
+                        "timer": "Timer"
                     }
                 },
                 "info": {
@@ -1875,6 +1886,8 @@
                         "network": "Network",
                         "node_id": "Node ID",
                         "ozw_instance": "OpenZWave Instance",
+                        "query_stage": "Query Stage",
+                        "wakeup_instructions": "Wake-up Instructions",
                         "zwave": "Z-Wave"
                     },
                     "device_info": {
@@ -1884,6 +1897,10 @@
                     },
                     "navigation": {
                         "network": "Network",
+                        "node": {
+                            "config": "Config",
+                            "dashboard": "Dashboard"
+                        },
                         "nodes": "Nodes",
                         "select_instance": "Select Instance"
                     },
@@ -1911,6 +1928,15 @@
                         "header": "Network Management",
                         "introduction": "Manage network-wide functions.",
                         "node_count": "{count} nodes"
+                    },
+                    "node_config": {
+                        "header": "Node Configuration",
+                        "help_source": "Config parameter descriptions and help text are provided by the OpenZWave project.",
+                        "introduction": "Manage the different configuration parameters for a Z-Wave node.",
+                        "wakeup_help": "Battery powered nodes must be awake to change their configuration. If the node is not awake, OpenZWave will attempt to update the node's configuration the next time it wakes up, which could be multiple hours (or days) later. Follow these steps to wake up your device:"
+                    },
+                    "node_metadata": {
+                        "product_manual": "Product Manual"
                     },
                     "node_query_stages": {
                         "associations": "Refreshing association groups and memberships",
@@ -2508,6 +2534,7 @@
                         "no_listeners": "This template does not listen for any state changed events and will not update automatically.",
                         "reset": "Reset to demo template",
                         "template_extensions": "Home Assistant template extensions",
+                        "time": "This template updates every 60 seconds after the last state changed event.",
                         "title": "Template",
                         "unknown_error_template": "Unknown error rendering template"
                     }
@@ -2858,7 +2885,7 @@
                     "migrate": {
                         "header": "Configuration Incompatible",
                         "migrate": "Migrate configuration",
-                        "para_migrate": "Home Assistant can add ID's to all your cards and views automatically for you by pressing the 'Migrate configuration' button.",
+                        "para_migrate": "Home Assistant can add IDs to all your cards and views automatically for you by pressing the 'Migrate configuration' button.",
                         "para_no_id": "This element doesn't have an ID. Please add an ID to this element in 'ui-lovelace.yaml'."
                     },
                     "move_card": {

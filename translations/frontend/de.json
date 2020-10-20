@@ -601,7 +601,7 @@
             },
             "media-browser": {
                 "audio_not_supported": "Ihr Browser unterstützt das Audioelement nicht.",
-                "choose_player": "Wähle ein Abspielegerät",
+                "choose_player": "Wähle ein Abspielgerät",
                 "choose-source": "Quelle wählen",
                 "class": {
                     "album": "Album",
@@ -2744,7 +2744,7 @@
                         "duplicate": "Karte duplizieren",
                         "edit": "Bearbeiten",
                         "header": "Kartenkonfiguration",
-                        "move": "Zur Ansicht Bewegen",
+                        "move": "Ansicht wechseln",
                         "move_after": "Karte nach hinten verschieben",
                         "move_before": "Karte nach vorne verschieben",
                         "options": "Mehr Optionen",
