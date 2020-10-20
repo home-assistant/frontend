@@ -327,9 +327,6 @@ export class HaPanelLogbook extends LitElement {
           display: inline-block;
           flex-grow: 1;
           max-width: 400px;
-          --paper-input-suffix: {
-            height: 24px;
-          }
         }
 
         :host([narrow]) ha-entity-picker {
