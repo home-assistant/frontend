@@ -222,7 +222,7 @@ export class HuiPictureGlanceCardEditor extends HuiActionBaseCardEditor {
             "ui.panel.lovelace.editor.card.button.default_action_help"
           )}
           @edit-action=${this._editAction}
-          @clear-action=${this._clearAction}
+          @update-action=${this._updateAction}
         ></hui-actions-editor>
         <hui-entity-editor
           .hass=${this.hass}

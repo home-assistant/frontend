@@ -10,7 +10,7 @@ import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { ActionConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
-import { EditorTarget, GUIModeChangedEvent } from "../types";
+import { GUIModeChangedEvent } from "../types";
 import type { HuiElementEditor } from "../hui-element-editor";
 import type { EditActionEvent } from "../../components/hui-actions-editor";
 
@@ -52,6 +52,24 @@ export class HuiActionBaseCardEditor extends LitElement
     this._editActionConfig = this[`_${this._editActionType}`];
   }
 
+  protected _updateAction(ev: CustomEvent): void {
+    const config = ev.detail.config as ActionConfig;
+
+    if (this[`_${ev.detail.type}`] === config) {
+      return;
+    }
+
+    const newConfig = { ...this._config };
+
+    if (config === undefined) {
+      delete newConfig[ev.detail.type];
+    } else {
+      newConfig[ev.detail.type] = config;
+    }
+
+    fireEvent(this, "config-changed", { config: newConfig });
+  }
+
   protected _goBack(): void {
     this._editActionConfig = undefined;
     this._editActionType = undefined;
@@ -77,17 +95,6 @@ export class HuiActionBaseCardEditor extends LitElement
     };
 
     fireEvent(this, "config-changed", { config: this._config! });
-  }
-
-  protected _clearAction(ev: CustomEvent): void {
-    const target = ev.target! as EditorTarget;
-
-    fireEvent(this, "config-changed", {
-      config: {
-        ...this._config!,
-        [target.type!]: { action: "none" },
-      },
-    });
   }
 }
 

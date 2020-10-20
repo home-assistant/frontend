@@ -246,6 +246,9 @@ export class HuiActionEditor extends LitElement {
                       this._service.split(".", 2)[1]
                     )}
                   </div>
+                  <div>
+                    ${this.hass.localize("ui.common.services.service_data")}
+                  </div>
                   <div class="service-data-editor">
                     <ha-yaml-editor
                       .defaultValue=${this._service_data}
@@ -487,7 +490,6 @@ export class HuiActionEditor extends LitElement {
       .secondary {
         font-size: 12px;
         color: var(--secondary-text-color);
-        padding-left: 30px;
       }
     `;
   }

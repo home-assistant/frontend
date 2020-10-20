@@ -1,6 +1,5 @@
 import {
   ActionConfig,
-  ConfirmationRestrictionConfig,
   LovelaceBadgeConfig,
   LovelaceCardConfig,
   LovelaceConfig,

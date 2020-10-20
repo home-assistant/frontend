@@ -145,7 +145,7 @@ export class HuiLightCardEditor extends HuiActionBaseCardEditor {
             "ui.panel.lovelace.editor.card.button.default_action_help"
           )}
           @edit-action=${this._editAction}
-          @clear-action=${this._clearAction}
+          @update-action=${this._updateAction}
         ></hui-actions-editor>
       </div>
     `;

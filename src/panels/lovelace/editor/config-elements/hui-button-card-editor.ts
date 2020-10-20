@@ -72,8 +72,8 @@ export class HuiButtonCardEditor extends HuiActionBaseCardEditor {
       : "";
   }
 
-  get _tap_action(): ActionConfig | undefined {
-    return this._config!.tap_action;
+  get _tap_action(): ActionConfig {
+    return this._config!.tap_action || { action: "toggle" };
   }
 
   get _hold_action(): ActionConfig {
@@ -231,7 +231,7 @@ export class HuiButtonCardEditor extends HuiActionBaseCardEditor {
             "ui.panel.lovelace.editor.card.button.default_action_help"
           )}
           @edit-action=${this._editAction}
-          @clear-action=${this._clearAction}
+          @update-action=${this._updateAction}
         ></hui-actions-editor>
       </div>
     `;

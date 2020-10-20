@@ -285,7 +285,8 @@
       "services": {
         "column_parameter": "Parameter",
         "column_description": "Description",
-        "column_example": "Example"
+        "column_example": "Example",
+        "service_data": "Service Data"
       }
     },
     "components": {
