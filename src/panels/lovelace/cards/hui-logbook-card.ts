@@ -75,7 +75,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
   }, 10000);
 
   public getCardSize(): number {
-    return 5;
+    return 9 + (this._config?.title ? 1 : 0);
   }
 
   public setConfig(config: LogbookCardConfig): void {
