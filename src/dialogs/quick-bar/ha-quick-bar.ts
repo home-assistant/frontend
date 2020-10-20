@@ -32,6 +32,7 @@ import "../../common/search/search-input";
 import { mdiConsoleLine } from "@mdi/js";
 import { scroll } from "lit-virtualizer";
 import { styleMap } from "lit-html/directives/style-map";
+import { SingleSelectedEvent } from "@material/mwc-list/mwc-list-foundation";
 
 interface QuickBarItem extends ScorableTextItem {
   icon: string;
@@ -124,7 +125,7 @@ export class QuickBar extends LitElement {
             ></ha-circular-progress>`
           : html`<mwc-list
               activatable
-              @selected=${this.processItemAndCloseDialog}
+              @selected=${this._handleSelected}
               style=${styleMap({
                 height: `${Math.min(this._items.length * 72 + 26, 500)}px`,
               })}
@@ -177,6 +178,12 @@ export class QuickBar extends LitElement {
 
   private _resetActivatedIndex() {
     this._activatedIndex = 0;
+  }
+
+  private _handleSelected(ev: SingleSelectedEvent) {
+    const index = ev.detail.index;
+    const item = (ev.target as any).items[index].item;
+    this.processItemAndCloseDialog(item, index);
   }
 
   private _handleInputKeyDown(ev: KeyboardEvent) {
@@ -262,10 +269,10 @@ export class QuickBar extends LitElement {
   }
 
   private async _setFilteredItems() {
-    this._items = this._commandMode ? this._commandItems : this._entityItems;
-    if (this._filter !== "") {
-      this._items = this._filterItems(this._items || [], this._filter);
-    }
+    const items = this._commandMode ? this._commandItems : this._entityItems;
+    this._items = this._filter
+      ? this._filterItems(items || [], this._filter)
+      : items;
   }
 
   private _filterItems = memoizeOne(
@@ -283,7 +290,7 @@ export class QuickBar extends LitElement {
       haStyleDialog,
       css`
         .heading {
-          padding: 20px 20px 0px;
+          padding: 8px 20px 0px;
         }
 
         mwc-list-item span[slot="secondary"],
