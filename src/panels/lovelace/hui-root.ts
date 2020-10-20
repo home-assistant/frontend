@@ -476,10 +476,7 @@ class HUIRoot extends LitElement {
       if (!oldLovelace || oldLovelace.editMode !== this.lovelace!.editMode) {
         const views = this.config && this.config.views;
 
-        // Adjust for higher header
-        if (!views || views.length < 2) {
-          fireEvent(this, "iron-resize");
-        }
+        fireEvent(this, "iron-resize");
 
         // Leave unused entities when leaving edit mode
         if (
@@ -587,12 +584,10 @@ class HUIRoot extends LitElement {
 
   private _enableEditMode(): void {
     this.lovelace!.setEditMode(true);
-    fireEvent(this, "iron-resize");
   }
 
   private _editModeDisable(): void {
     this.lovelace!.setEditMode(false);
-    fireEvent(this, "iron-resize");
   }
 
   private _editLovelace() {
