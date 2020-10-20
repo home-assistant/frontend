@@ -735,7 +735,7 @@ class HaSidebar extends LitElement {
         }
         .menu {
           box-sizing: border-box;
-          height: 48px;
+          height: var(--header-height);
           display: flex;
           padding: 0 8.5px;
           border-bottom: 1px solid transparent;

@@ -21,6 +21,7 @@ import {
   LitElement,
   property,
   PropertyValues,
+  query,
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
@@ -51,6 +52,7 @@ import {
 } from "../../dialogs/generic/show-dialog-box";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import "../../layouts/ha-app-layout";
+import type { haAppLayout } from "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
@@ -71,6 +73,8 @@ class HUIRoot extends LitElement {
   @property() public route?: { path: string; prefix: string };
 
   @internalProperty() private _curView?: number | "hass-unused-entities";
+
+  @query("ha-app-layout", true) private _appLayout!: haAppLayout;
 
   private _viewCache?: { [viewId: string]: HUIView };
 
@@ -674,12 +678,6 @@ class HUIRoot extends LitElement {
         unusedEntities.lovelace = this.lovelace!;
         unusedEntities.narrow = this.narrow;
       });
-      if (this.config.background) {
-        unusedEntities.style.setProperty(
-          "--lovelace-background",
-          this.config.background
-        );
-      }
       root.appendChild(unusedEntities);
       return;
     }
@@ -706,7 +704,7 @@ class HUIRoot extends LitElement {
     const configBackground = viewConfig.background || this.config.background;
 
     if (configBackground) {
-      root.parentElement!.style.setProperty(
+      this._appLayout.style.setProperty(
         "--lovelace-background",
         configBackground
       );
@@ -780,7 +778,7 @@ class HUIRoot extends LitElement {
           color: var(--error-color);
         }
         #view {
-          min-height: calc(100vh - 48px);
+          min-height: calc(100vh - var(--header-height));
           /**
           * Since we only set min-height, if child nodes need percentage
           * heights they must use absolute positioning so we need relative

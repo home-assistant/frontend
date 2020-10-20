@@ -112,7 +112,7 @@ export const haStyle = css`
 
   app-toolbar,
   app-header div[sticky] {
-    height: 48px;
+    height: var(--header-height);
   }
 
   app-toolbar [main-title] {
