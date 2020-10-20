@@ -99,7 +99,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     }
 
     const brightness =
-      Math.round((stateObj.attributes.brightness / 254) * 100) || 0;
+      Math.round((stateObj.attributes.brightness / 255) * 100) || 0;
 
     return html`
       <ha-card>
@@ -116,7 +116,8 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
           <div id="controls">
             <div id="slider">
               <round-slider
-                min="0"
+                min="1"
+                max="100"
                 .value=${brightness}
                 .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
                 @value-changing=${this._dragEvent}

@@ -61,6 +61,7 @@ export const derivedStyles = {
   "paper-slider-knob-color": "var(--slider-color)",
   "paper-slider-knob-start-color": "var(--slider-color)",
   "paper-slider-pin-color": "var(--slider-color)",
+  "paper-slider-pin-start-color": "var(--slider-color)",
   "paper-slider-active-color": "var(--slider-color)",
   "paper-slider-secondary-color": "var(--slider-secondary-color)",
   "paper-slider-container-color": "var(--slider-bar-color)",
