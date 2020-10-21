@@ -40,6 +40,10 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
         .defaultValue=${event_data}
         @value-changed=${this._dataChanged}
       ></ha-yaml-editor>
+      <br />
+      ${this.hass.localize(
+        "ui.panel.config.automation.editor.triggers.type.event.context_users"
+      )}
       <ha-users-picker
         .pickedUserLabel=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.event.context_user_picked"

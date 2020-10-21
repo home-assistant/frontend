@@ -53,6 +53,9 @@ class HaUsersPickerLight extends LitElement {
             <div>
               <ha-user-picker
                 .label=${this.pickedUserLabel}
+                .noUserLabel=${this.hass?.localize(
+                  "ui.components.user-picker.remove_user"
+                )}
                 .index=${idx}
                 .hass=${this.hass}
                 .value=${user_id}
@@ -71,9 +74,11 @@ class HaUsersPickerLight extends LitElement {
         )
       )}
       <ha-user-picker
-        .label=${this.pickUserLabel}
+        .noUserLabel=${this.pickUserLabel ||
+        this.hass?.localize("ui.components.user-picker.add_user")}
         .hass=${this.hass}
         .users=${notSelectedUsers}
+        .disabled=${!notSelectedUsers?.length}
         @value-changed=${this._addUser}
       ></ha-user-picker>
     `;
@@ -82,8 +87,10 @@ class HaUsersPickerLight extends LitElement {
   private _notSelectedUsers = memoizeOne(
     (users?: User[], currentUsers?: string[]) =>
       currentUsers
-        ? users?.filter((user) => !currentUsers.includes(user.id))
-        : users
+        ? users?.filter(
+            (user) => !user.system_generated && !currentUsers.includes(user.id)
+          )
+        : users?.filter((user) => !user.system_generated)
   );
 
   private _notSelectedUsersAndSelected = (
@@ -144,6 +151,9 @@ class HaUsersPickerLight extends LitElement {
 
   static get styles(): CSSResult {
     return css`
+      :host {
+        display: block;
+      }
       div {
         display: flex;
         align-items: center;

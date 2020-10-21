@@ -24,9 +24,13 @@ class HaUserPicker extends LitElement {
 
   @property() public label?: string;
 
+  @property() public noUserLabel?: string;
+
   @property() public value = "";
 
   @property() public users?: User[];
+
+  @property({ type: Boolean }) public disabled = false;
 
   private _sortedUsers = memoizeOne((users?: User[]) => {
     if (!users) {
@@ -40,7 +44,10 @@ class HaUserPicker extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <paper-dropdown-menu-light .label=${this.label}>
+      <paper-dropdown-menu-light
+        .label=${this.label}
+        .disabled=${this.disabled}
+      >
         <paper-listbox
           slot="dropdown-content"
           .selected=${this.value}
@@ -48,7 +55,8 @@ class HaUserPicker extends LitElement {
           @iron-select=${this._userChanged}
         >
           <paper-icon-item data-user-id="">
-            No user
+            ${this.noUserLabel ||
+            this.hass?.localize("ui.components.user-picker.no_user")}
           </paper-icon-item>
           ${this._sortedUsers(this.users).map(
             (user) => html`
@@ -107,3 +115,9 @@ class HaUserPicker extends LitElement {
 }
 
 customElements.define("ha-user-picker", HaUserPicker);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-user-picker": HaUserPicker;
+  }
+}
