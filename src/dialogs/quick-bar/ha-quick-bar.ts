@@ -60,7 +60,7 @@ export class QuickBar extends LitElement {
   @query("mwc-list-item", false) private _firstListItem?: HTMLElement;
 
   public async showDialog(params: QuickBarParams) {
-    this._commandMode = params.commandMode || false;
+    this._commandMode = params.commandMode || this._toggleIfAlreadyOpened();
     this._opened = true;
     this._commandItems = this._generateCommandItems();
     this._entityItems = this._generateEntityItems();
@@ -225,6 +225,10 @@ export class QuickBar extends LitElement {
         action: () => fireEvent(this, "hass-more-info", { entityId }),
       }))
       .sort((a, b) => compare(a.text.toLowerCase(), b.text.toLowerCase()));
+  }
+
+  private _toggleIfAlreadyOpened() {
+    return this._opened ? !this._commandMode : false;
   }
 
   static get styles() {
