@@ -35,7 +35,7 @@ import { hassioStyle } from "../resources/hassio-style";
 export class HassioUpdate extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public hassInfo: HassioHomeAssistantInfo;
+  @property({ attribute: false }) public hassInfo?: HassioHomeAssistantInfo;
 
   @property({ attribute: false }) public hassOsInfo?: HassioHassOSInfo;
 
@@ -74,15 +74,15 @@ export class HassioUpdate extends LitElement {
         <div class="card-group">
           ${this._renderUpdateCard(
             "Home Assistant Core",
-            this.hassInfo,
+            this.hassInfo!,
             "hassio/homeassistant/update",
             `https://${
-              this.hassInfo.version_latest.includes("b") ? "rc" : "www"
+              this.hassInfo?.version_latest.includes("b") ? "rc" : "www"
             }.home-assistant.io/latest-release-notes/`
           )}
           ${this._renderUpdateCard(
             "Supervisor",
-            this.supervisorInfo,
+            this.supervisorInfo!,
             "hassio/supervisor/update",
             `https://github.com//home-assistant/hassio/releases/tag/${
               this.supervisorInfo!.version_latest

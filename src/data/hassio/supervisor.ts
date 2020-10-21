@@ -3,19 +3,20 @@ import { HassioAddonInfo, HassioAddonRepository } from "./addon";
 import { hassioApiResultExtractor, HassioResponse } from "./common";
 
 export type HassioHomeAssistantInfo = {
-  version: string;
-  version_latest: string;
   arch: string;
-  machine: string;
-  ip_address: string;
-  image: string;
-  boot: boolean;
-  port: number;
-  ssl: boolean;
-  watchdog: boolean;
-  wait_boot: number;
   audio_input: string | null;
   audio_output: string | null;
+  boot: boolean;
+  image: string;
+  ip_address: string;
+  machine: string;
+  port: number;
+  ssl: boolean;
+  update_available: boolean;
+  version_latest: string;
+  version: string;
+  wait_boot: number;
+  watchdog: boolean;
 };
 
 export type HassioSupervisorInfo = {
