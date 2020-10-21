@@ -69,11 +69,9 @@ export class HuiButtonsBase extends LitElement {
                 `
               : ""}
             <span>
-              ${entityConf.show_name ||
+              ${(entityConf.show_name && stateObj) ||
               (entityConf.name && entityConf.show_name !== false)
-                ? entityConf.name || stateObj
-                  ? computeStateName(stateObj)
-                  : ""
+                ? entityConf.name || computeStateName(stateObj)
                 : ""}
             </span>
           </div>
