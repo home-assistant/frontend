@@ -45,10 +45,8 @@ const createWebpackConfig = ({
     optimization: {
       minimizer: [
         new TerserPlugin({
-          cache: true,
           parallel: true,
           extractComments: true,
-          sourceMap: true,
           terserOptions: bundle.terserOptions(latestBuild),
         }),
       ],
