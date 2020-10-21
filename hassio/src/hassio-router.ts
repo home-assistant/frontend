@@ -68,7 +68,7 @@ class HassioRouter extends HassRouterPage {
 
   @internalProperty() private _supervisorInfo?: HassioSupervisorInfo;
 
-  @internalProperty() private _hostInfo: HassioHostInfo;
+  @internalProperty() private _hostInfo?: HassioHostInfo;
 
   @internalProperty() private _hassioInfo?: HassioInfo;
 

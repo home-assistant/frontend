@@ -29,7 +29,7 @@ class HassioPanelRouter extends HassRouterPage {
 
   @property({ attribute: false }) public hassioInfo!: HassioInfo;
 
-  @property({ attribute: false }) public hostInfo: HassioHostInfo;
+  @property({ attribute: false }) public hostInfo?: HassioHostInfo;
 
   @property({ attribute: false }) public hassInfo?: HassioHomeAssistantInfo;
 
