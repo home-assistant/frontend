@@ -81,6 +81,7 @@ export class QuickBar extends LitElement {
     this._done = false;
     this._focusSet = false;
     this._filter = "";
+    this._search = "";
     this._commandTriggered = -1;
     this._items = [];
     fireEvent(this, "dialog-closed", { dialog: this.localName });
