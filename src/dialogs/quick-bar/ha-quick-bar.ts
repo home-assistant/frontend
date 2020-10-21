@@ -63,7 +63,7 @@ export class QuickBar extends LitElement {
 
   @query("search-input", false) private _filterInputField?: HTMLElement;
 
-  @query("mwc-list", false) private _list?: HTMLElement;
+  @query("mwc-list-item", false) private _firstListItem?: HTMLElement;
 
   public async showDialog(params: QuickBarParams) {
     this._commandMode = params.commandMode || false;
@@ -213,7 +213,7 @@ export class QuickBar extends LitElement {
       this.processItemAndCloseDialog(this._items[0], 0);
     } else if (ev.code === "ArrowDown") {
       ev.preventDefault();
-      this._list?.focus();
+      this._firstListItem?.focus();
     }
   }
 
