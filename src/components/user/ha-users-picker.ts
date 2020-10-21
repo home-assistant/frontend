@@ -10,7 +10,7 @@ import {
 import { fireEvent } from "../../common/dom/fire_event";
 import type { PolymerChangedEvent } from "../../polymer-types";
 import type { HomeAssistant } from "../../types";
-import { User } from "../../data/user";
+import { fetchUsers, User } from "../../data/user";
 import "./ha-user-picker";
 import { mdiClose } from "@mdi/js";
 import memoizeOne from "memoize-one";
@@ -27,11 +27,20 @@ class HaUsersPickerLight extends LitElement {
   @property({ attribute: "pick-user-label" })
   public pickUserLabel?: string;
 
-  @property({ type: Array, attribute: "users" })
+  @property({ attribute: false })
   public users?: User[];
 
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    if (this.users === undefined) {
+      fetchUsers(this.hass!).then((users) => {
+        this.users = users;
+      });
+    }
+  }
+
   protected render(): TemplateResult {
-    if (!this.hass) {
+    if (!this.hass || !this.users) {
       return html``;
     }
 
@@ -57,14 +66,17 @@ class HaUsersPickerLight extends LitElement {
       <ha-user-picker
         .label=${this.pickUserLabel}
         .hass=${this.hass}
-        .users=${this._notSelectedUsers(this.users, currentUsers)}
+        .users=${this._notSelectedUsers(this.users, this.value)}
         @value-changed=${this._addUser}
       ></ha-user-picker>
     `;
   }
 
-  private _notSelectedUsers = memoizeOne((users, currentUsers) =>
-    users?.filter((user) => !currentUsers.includes(user.id))
+  private _notSelectedUsers = memoizeOne(
+    (users?: User[], currentUsers?: string[]) =>
+      currentUsers
+        ? users?.filter((user) => !currentUsers.includes(user.id))
+        : users
   );
 
   private get _currentUsers() {

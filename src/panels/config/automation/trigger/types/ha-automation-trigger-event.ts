@@ -1,15 +1,9 @@
 import "@polymer/paper-input/paper-input";
-import {
-  customElement,
-  LitElement,
-  property,
-  internalProperty,
-} from "lit-element";
+import { customElement, LitElement, property } from "lit-element";
 import { html } from "lit-html";
 import "../../../../../components/ha-yaml-editor";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { EventTrigger } from "../../../../../data/automation";
-import { fetchUsers, User } from "../../../../../data/user";
 import { HomeAssistant } from "../../../../../types";
 import {
   handleChangeEvent,
@@ -22,8 +16,6 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public trigger!: EventTrigger;
-
-  @internalProperty() private _users?: User[];
 
   public static get defaultConfig() {
     return { event_type: "" };
@@ -57,7 +49,6 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
         )}
         .hass=${this.hass}
         .value=${this._wrapUsersInArray(context?.user_id)}
-        .users=${this._users}
         @value-changed=${this._usersChanged}
       ></ha-users-picker>
     `;
@@ -100,14 +91,6 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
     fireEvent(this, "value-changed", {
       value,
     });
-  }
-
-  protected firstUpdated(): void {
-    this._getUsers();
-  }
-
-  private async _getUsers(): Promise<void> {
-    this._users = await fetchUsers(this.hass);
   }
 }
 
