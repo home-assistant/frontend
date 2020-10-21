@@ -365,7 +365,6 @@ export class HuiDialogEditCard extends LitElement
         @media all and (min-width: 850px) {
           ha-dialog {
             --mdc-dialog-min-width: 845px;
-            --dialog-surface-top: 40px;
             --mdc-dialog-max-height: calc(100% - 72px);
           }
         }
