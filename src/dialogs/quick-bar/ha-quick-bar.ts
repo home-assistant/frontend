@@ -1,7 +1,9 @@
-import "../../components/ha-circular-progress";
-import "../../components/ha-header-bar";
-import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-list/mwc-list";
+import type { List } from "@material/mwc-list/mwc-list";
+import { SingleSelectedEvent } from "@material/mwc-list/mwc-list-foundation";
+import "@material/mwc-list/mwc-list-item";
+import type { ListItem } from "@material/mwc-list/mwc-list-item";
+import { mdiConsoleLine } from "@mdi/js";
 import {
   css,
   customElement,
@@ -12,31 +14,29 @@ import {
   PropertyValues,
   query,
 } from "lit-element";
+import { ifDefined } from "lit-html/directives/if-defined";
+import { styleMap } from "lit-html/directives/style-map";
+import { scroll } from "lit-virtualizer";
+import memoizeOne from "memoize-one";
+import { componentsWithService } from "../../common/config/components_with_service";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-dialog";
-import { haStyleDialog } from "../../resources/styles";
+import { computeDomain } from "../../common/entity/compute_domain";
+import { computeStateName } from "../../common/entity/compute_state_name";
+import { domainIcon } from "../../common/entity/domain_icon";
+import "../../common/search/search-input";
+import { compare } from "../../common/string/compare";
 import {
   fuzzyFilterSort,
   ScorableTextItem,
 } from "../../common/string/filter/sequence-matching";
-import { HomeAssistant } from "../../types";
-import { componentsWithService } from "../../common/config/components_with_service";
-import { domainIcon } from "../../common/entity/domain_icon";
-import { computeDomain } from "../../common/entity/compute_domain";
-import { domainToName } from "../../data/integration";
-import { QuickBarParams } from "./show-dialog-quick-bar";
-import { compare } from "../../common/string/compare";
-import { computeStateName } from "../../common/entity/compute_state_name";
-import memoizeOne from "memoize-one";
-import "../../common/search/search-input";
-import { mdiConsoleLine } from "@mdi/js";
-import { scroll } from "lit-virtualizer";
-import { styleMap } from "lit-html/directives/style-map";
-import { SingleSelectedEvent } from "@material/mwc-list/mwc-list-foundation";
-import type { List } from "@material/mwc-list/mwc-list";
-import type { ListItem } from "@material/mwc-list/mwc-list-item";
-import { ifDefined } from "lit-html/directives/if-defined";
 import { debounce } from "../../common/util/debounce";
+import "../../components/ha-circular-progress";
+import "../../components/ha-dialog";
+import "../../components/ha-header-bar";
+import { domainToName } from "../../data/integration";
+import { haStyleDialog } from "../../resources/styles";
+import { HomeAssistant } from "../../types";
+import { QuickBarParams } from "./show-dialog-quick-bar";
 
 interface QuickBarItem extends ScorableTextItem {
   icon: string;
