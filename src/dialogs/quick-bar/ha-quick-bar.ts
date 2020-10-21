@@ -35,7 +35,7 @@ import "../../components/ha-dialog";
 import "../../components/ha-header-bar";
 import { domainToName } from "../../data/integration";
 import { haStyleDialog } from "../../resources/styles";
-import { HomeAssistant } from "../../types";
+import { HomeAssistant, Panels } from "../../types";
 import {
   ConfirmationDialogParams,
   showConfirmationDialog,
@@ -43,10 +43,15 @@ import {
 import { QuickBarParams } from "./show-dialog-quick-bar";
 import { navigate } from "../../common/navigate";
 import { configSections } from "../../panels/config/ha-panel-config";
+import { toTitleCase } from "../../common/string/helpers";
 
 interface QuickBarItem extends ScorableTextItem {
   icon: string;
   action(data?: any): void;
+}
+
+interface QuickBarNavigationItem extends QuickBarItem {
+  path: string;
 }
 
 @customElement("ha-quick-bar")
@@ -294,13 +299,14 @@ export class QuickBar extends LitElement {
     const reloadableDomains = componentsWithService(this.hass, "reload").sort();
 
     return reloadableDomains.map((domain) => ({
-      text:
+      text: toTitleCase(
         this.hass.localize(`ui.dialogs.quick-bar.commands.reload.${domain}`) ||
-        this.hass.localize(
-          "ui.dialogs.quick-bar.commands.reload.reload",
-          "domain",
-          domainToName(this.hass.localize, domain)
-        ),
+          this.hass.localize(
+            "ui.dialogs.quick-bar.commands.reload.reload",
+            "domain",
+            domainToName(this.hass.localize, domain)
+          )
+      ),
       icon: domainIcon(domain),
       action: () => this.hass.callService(domain, "reload"),
     }));
@@ -361,37 +367,62 @@ export class QuickBar extends LitElement {
     return { ...panel, text };
   }
 
-  private _generateNavigationCommandItems(): QuickBarItem[] {
-    const panels = [
+  private _getPanelText(panel: Panels["panel"]) {
+    let translationKey = "";
+
+    if (!panel.title) {
+      switch (panel.component_name) {
+        case "profile":
+          translationKey = "panel.profile";
+          break;
+        case "lovelace":
+          translationKey = "panel.states";
+          break;
+      }
+    } else {
+      translationKey = `panel.${panel.title}`;
+    }
+
+    return this.hass.localize(
+      "ui.dialogs.quick-bar.commands.navigation.navigate_to",
+      "panel",
+      toTitleCase(this.hass.localize(translationKey))
+    );
+  }
+
+  private _generateNavigationPanelItems(): Omit<
+    QuickBarNavigationItem,
+    "action"
+  >[] {
+    return Object.keys(this.hass.panels).map((panelKey) => {
+      const panel = this.hass.panels[panelKey];
+
+      return {
+        text: this._getPanelText(panel),
+        icon: "hass:robot",
+        path: `/${panel.url_path}`,
+      };
+    });
+  }
+
+  private _generateNavigationSectionItems(): Partial<QuickBarNavigationItem>[] {
+    return [
       this.getNavigationInfo("general", "logs"),
       this.getNavigationInfo("automation", "automation"),
       this.getNavigationInfo("automation", "script"),
       this.getNavigationInfo("general", "server_control"),
-      {
-        text: this.hass.localize(
-          "ui.dialogs.quick-bar.commands.navigation.navigate_to",
-          "panel",
-          this.hass.localize("panel.developer_tools")
-        ),
-        icon: "mdi:view-dashboard",
-        path: "/developer-tools/state",
-      },
-      {
-        text: this.hass.localize(
-          "ui.dialogs.quick-bar.commands.navigation.navigate_to",
-          "panel",
-          this.hass.localize("panel.states")
-        ),
-        icon: "mdi:view-dashboard",
-        path: "/lovelace/default_view",
-      },
     ];
-
-    return this._generateNavigationItems(panels);
   }
 
-  private _generateNavigationItems(panels) {
-    return panels.map(({ text, icon, path }) => {
+  private _generateNavigationCommandItems(): QuickBarItem[] {
+    const panelItems = this._generateNavigationPanelItems();
+    const sectionItems = this._generateNavigationSectionItems();
+
+    return this._withNavigationActions([...panelItems, ...sectionItems]);
+  }
+
+  private _withNavigationActions(items) {
+    return items.map(({ text, icon, path }) => {
       return {
         text,
         icon: icon || "hass:robot",
