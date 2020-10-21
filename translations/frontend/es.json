@@ -779,6 +779,9 @@
                 },
                 "platform_not_loaded": "La integración {platform} no se ha cargado. Por favor añádela a tu configuración, ya sea agregando 'default_config:' o ''{platform}:''.",
                 "required_error_msg": "Este campo es obligatorio",
+                "timer": {
+                    "duration": "Duración"
+                },
                 "yaml_not_editable": "La configuración de esta entidad no se puede editar desde la IU. Solo las entidades configuradas desde la IU se pueden configurar desde la IU"
             },
             "image_cropper": {
@@ -1521,18 +1524,25 @@
                     "add_prompt": "Todavía no se ha añadido ningún {name} usando este dispositivo. Puedes añadir uno pulsando en el botón + de arriba.",
                     "automation": {
                         "actions": {
-                            "caption": "Cuando algo se activa...."
+                            "caption": "Cuando algo se activa....",
+                            "no_actions": "No hay acciones",
+                            "unknown_action": "Acción desconocida"
                         },
                         "automations": "Automatizaciones",
                         "conditions": {
-                            "caption": "Sólo hacer algo si..."
+                            "caption": "Sólo hacer algo si...",
+                            "no_conditions": "No hay condiciones",
+                            "unknown_condition": "Condición desconocida"
                         },
                         "create": "Crear automatización con el dispositivo",
                         "no_automations": "Sin automatizaciones",
                         "no_device_automations": "No hay automatizaciones disponibles para este dispositivo.",
                         "triggers": {
-                            "caption": "Hacer algo cuando..."
-                        }
+                            "caption": "Hacer algo cuando...",
+                            "no_triggers": "No hay desencadenantes",
+                            "unknown_trigger": "Desencadenante desconocido"
+                        },
+                        "unknown_automation": "Automatización desconocida"
                     },
                     "cant_edit": "Solo puedes editar los elementos que se crean en la interfaz de usuario.",
                     "caption": "Dispositivos",
@@ -1656,7 +1666,8 @@
                         "input_datetime": "Fecha y/o hora",
                         "input_number": "Número",
                         "input_select": "Desplegable",
-                        "input_text": "Texto"
+                        "input_text": "Texto",
+                        "timer": "Temporizador"
                     }
                 },
                 "info": {
@@ -1875,6 +1886,8 @@
                         "network": "Red",
                         "node_id": "ID del Nodo",
                         "ozw_instance": "Instancia OpenZWave",
+                        "query_stage": "Etapa de consulta",
+                        "wakeup_instructions": "Instrucciones para despertar",
                         "zwave": "Z-Wave"
                     },
                     "device_info": {
@@ -1884,6 +1897,10 @@
                     },
                     "navigation": {
                         "network": "Red",
+                        "node": {
+                            "config": "Configurar",
+                            "dashboard": "Panel de control"
+                        },
                         "nodes": "Nodos",
                         "select_instance": "Seleccionar Instancia"
                     },
@@ -1911,6 +1928,15 @@
                         "header": "Administración de la Red",
                         "introduction": "Gestionar las funciones de toda la red.",
                         "node_count": "{count} nodos"
+                    },
+                    "node_config": {
+                        "header": "Configuración del nodo",
+                        "help_source": "Las descripciones de los parámetros de configuración y el texto de ayuda son proporcionados por el proyecto OpenZWave.",
+                        "introduction": "Administrar los diferentes parámetros de configuración de un nodo Z-Wave.",
+                        "wakeup_help": "Los nodos alimentados por batería deben estar activos para cambiar su configuración. Si el nodo no está activo, OpenZWave intentará actualizar la configuración del nodo la próxima vez que se active, lo que podría ser varias horas (o días) más tarde. Sigue estos pasos para reactivar tu dispositivo:"
+                    },
+                    "node_metadata": {
+                        "product_manual": "Manual del producto"
                     },
                     "node_query_stages": {
                         "associations": "Refrescando grupos de asociaciones y miembros",
@@ -2508,6 +2534,7 @@
                         "no_listeners": "Esta plantilla no escucha ningún evento de cambio de estado y no se actualizará automáticamente.",
                         "reset": "Reiniciar a la plantilla de demostración",
                         "template_extensions": "Extensiones de plantilla de Home Assistant",
+                        "time": "Esta plantilla se actualiza cada 60 segundos después del último evento de cambio de estado.",
                         "title": "Plantillas",
                         "unknown_error_template": "Error desconocido al mostrar la plantilla"
                     }

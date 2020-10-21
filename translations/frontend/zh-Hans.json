@@ -779,6 +779,9 @@
                 },
                 "platform_not_loaded": "{platform} 组件尚未加载。请从 'default_config:' 或 ''{platform}:'' 中选择一种方式，将其写入配置中。",
                 "required_error_msg": "此字段为必填字段",
+                "timer": {
+                    "duration": "时长"
+                },
                 "yaml_not_editable": "无法从 UI 编辑此实体的设置。只有通过 UI 设置的实体可以从 UI 配置。"
             },
             "image_cropper": {
@@ -1521,24 +1524,31 @@
                     "add_prompt": "尚未使用此设备添加任何{name}。您可以点击上方的 + 按钮来添加。",
                     "automation": {
                         "actions": {
-                            "caption": "满足条件时执行："
+                            "caption": "满足条件时执行：",
+                            "no_actions": "没有动作",
+                            "unknown_action": "未知动作"
                         },
                         "automations": "自动化",
                         "conditions": {
-                            "caption": "并且满足以下条件时："
+                            "caption": "并且满足以下条件时：",
+                            "no_conditions": "没有环境条件",
+                            "unknown_condition": "未知环境条件"
                         },
                         "create": "通过设备创建自动化",
                         "no_automations": "没有自动化",
                         "no_device_automations": "该设备没有可用的自动化。",
                         "triggers": {
-                            "caption": "当以下事件发生时："
-                        }
+                            "caption": "当以下事件发生时：",
+                            "no_triggers": "没有触发条件",
+                            "unknown_trigger": "未知触发条件"
+                        },
+                        "unknown_automation": "未知自动化"
                     },
                     "cant_edit": "您只能编辑在 UI 中创建的项目。",
                     "caption": "设备",
                     "confirm_delete": "您确定要删除此设备吗？",
-                    "confirm_rename_entity_ids": "是否要重命名实体的实体 ID？",
-                    "confirm_rename_entity_ids_warning": "此操作不会改变正在使用这些实体的配置（如自动化、脚本、场景、Lovelace），您必须手动更新它们。",
+                    "confirm_rename_entity_ids": "是否要将实体 ID 一并重命名？",
+                    "confirm_rename_entity_ids_warning": "此操作不会改变正在使用这些实体的配置（如自动化、脚本、场景、仪表盘），您必须手动更新它们以便使用新的实体 ID。",
                     "data_table": {
                         "area": "区域",
                         "battery": "电量",
@@ -1656,7 +1666,8 @@
                         "input_datetime": "日期/时间",
                         "input_number": "数值",
                         "input_select": "下拉菜单",
-                        "input_text": "文本"
+                        "input_text": "文本",
+                        "timer": "计时器"
                     }
                 },
                 "info": {
@@ -1875,6 +1886,8 @@
                         "network": "网络",
                         "node_id": "节点 ID",
                         "ozw_instance": "OpenZWave 实例",
+                        "query_stage": "查询阶段",
+                        "wakeup_instructions": "唤醒方法",
                         "zwave": "Z-Wave"
                     },
                     "device_info": {
@@ -1884,6 +1897,10 @@
                     },
                     "navigation": {
                         "network": "网络",
+                        "node": {
+                            "config": "配置",
+                            "dashboard": "仪表盘"
+                        },
                         "nodes": "节点",
                         "select_instance": "选择实例"
                     },
@@ -1911,6 +1928,15 @@
                         "header": "网络管理",
                         "introduction": "管理网络功能。",
                         "node_count": "{count} 个节点"
+                    },
+                    "node_config": {
+                        "header": "节点配置",
+                        "help_source": "配置参数描述和帮助文本由 OpenZWave 项目提供。",
+                        "introduction": "管理 Z-Wave 节点的不同配置参数。",
+                        "wakeup_help": "电池供电的节点必须先唤醒才能更改其配置。如果节点未唤醒，OpenZWave 会尝试在节点下次唤醒时更新其配置，可能需要等待几个小时甚至几天的时间。请按照以下步骤唤醒您的设备："
+                    },
+                    "node_metadata": {
+                        "product_manual": "产品说明书"
                     },
                     "node_query_stages": {
                         "associations": "正在刷新关联组和成员",
@@ -2164,7 +2190,7 @@
                         "tag_id": "标签 ID",
                         "tag_id_placeholder": "留空则自动生成",
                         "update": "更新",
-                        "usage": "标签可以在被扫描时触发自动化。您可以使用 NFC 标签、二维码或各种其他类型的标签。请使用我们的{companion_link}将此标签写入可编程 NFC 标签，或在下面创建二维码。"
+                        "usage": "标签可以在被扫描时触发自动化。您可以使用 NFC 标签、二维码或各种其他类型的标签。请使用我们的{companion_link}将此标签写入可编程 NFC 标签，或在下方创建二维码。"
                     },
                     "edit": "编辑",
                     "headers": {
@@ -2508,6 +2534,7 @@
                         "no_listeners": "此模板不监听任何状态改变事件，并且不会自动更新。",
                         "reset": "重置为演示模板",
                         "template_extensions": "Home Assistant 模板插件",
+                        "time": "此模板在最后一次状态变化事件后每 60 秒更新一次。",
                         "title": "模板",
                         "unknown_error_template": "渲染模板时发生了未知错误"
                     }
