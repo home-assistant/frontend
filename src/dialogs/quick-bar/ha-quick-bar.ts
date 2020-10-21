@@ -71,13 +71,13 @@ export class QuickBar extends LitElement {
     this._commandMode = params.commandMode || false;
     this._commandItems = this._generateCommandItems();
     this._entityItems = this._generateEntityItems();
-    this._focusSet = false;
     this._opened = true;
   }
 
   public closeDialog() {
     this._opened = false;
     this._done = false;
+    this._focusSet = false;
     this._filter = "";
     this._commandTriggered = -1;
     this._items = [];
@@ -162,11 +162,13 @@ export class QuickBar extends LitElement {
     });
   }
 
-  private _handleRangeChanged(e) {
+  private async _handleRangeChanged(e) {
     if (this._focusSet) {
       return;
     }
     if (e.firstVisible > -1) {
+      this._focusSet = true;
+      await this.updateComplete;
       this._setFocusFirstListItem();
     }
   }
