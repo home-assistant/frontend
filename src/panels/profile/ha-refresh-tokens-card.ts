@@ -29,12 +29,12 @@ const compareTokenLastUsedAt = (tokenA: RefreshToken, tokenB: RefreshToken) => {
   const timeB = tokenB.last_used_at ? new Date(tokenB.last_used_at) : 0;
   if (timeA < timeB) {
     return 1;
-  } 
+  }
   if (timeA > timeB) {
     return -1;
   }
   return 0;
-}
+};
 
 @customElement("ha-refresh-tokens-card")
 class HaRefreshTokens extends LitElement {
@@ -44,7 +44,9 @@ class HaRefreshTokens extends LitElement {
 
   private _refreshTokens = memoizeOne(
     (refreshTokens: RefreshToken[]): RefreshToken[] =>
-      refreshTokens?.filter((token) => token.type === "normal").sort(compareTokenLastUsedAt)
+      refreshTokens
+        ?.filter((token) => token.type === "normal")
+        .sort(compareTokenLastUsedAt)
   );
 
   protected render(): TemplateResult {
