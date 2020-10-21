@@ -109,7 +109,7 @@ export class MoreInfoLogbook extends LitElement {
       return;
     }
 
-    if (!this.entityId || !changedProps.has("hass")) {
+    if (!changedProps.has("hass")) {
       return;
     }
 
