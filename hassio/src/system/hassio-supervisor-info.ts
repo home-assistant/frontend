@@ -7,6 +7,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-settings-row";
@@ -206,7 +207,7 @@ class HassioSupervisorInfo extends LitElement {
       };
       await setSupervisorOption(this.hass, data);
       await reloadSupervisor(this.hass);
-      this.supervisorInfo = await fetchHassioSupervisorInfo(this.hass);
+      fireEvent(this, "hass-api-called", { success: true, response: null });
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to set supervisor option",

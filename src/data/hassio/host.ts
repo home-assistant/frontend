@@ -1,13 +1,23 @@
 import { HomeAssistant } from "../../types";
 import { hassioApiResultExtractor, HassioResponse } from "./common";
 
-export type HassioHostInfo = any;
+export type HassioHostInfo = {
+  chassis: string;
+  cpe: string;
+  deployment: string;
+  disk_free: number;
+  disk_total: number;
+  disk_used: number;
+  features: string[];
+  hostname: string;
+  kernel: string;
+  operating_system: string;
+};
 
 export interface HassioHassOSInfo {
-  board: "ova" | "rpi";
+  board: string;
+  boot: string;
   update_available: boolean;
-  version_cli_latest: string;
-  version_cli: string;
   version_latest: string;
   version: string;
 }
