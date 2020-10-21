@@ -34,14 +34,17 @@ export class HaTabs extends PaperTabs {
 
       superStyle!.appendChild(
         document.createTextNode(`
+          :host {
+            padding-top: .5px;
+          }
           .not-visible {
             display: none;
           }
-          :host > paper-icon-button:first-of-type {
-            padding-left: 0;
-          }
           paper-icon-button {
-            margin: 0 -8px 0 0;
+            width: 24px;
+            height: 48px;
+            padding: 0;
+            margin: 0;
           }
         `)
       );
@@ -85,7 +88,7 @@ export class HaTabs extends PaperTabs {
 
     if (this._lastLeftHiddenState !== this._leftHidden) {
       this._lastLeftHiddenState = this._leftHidden;
-      this.$.tabsContainer.scrollLeft += this._leftHidden ? -46 : 46;
+      this.$.tabsContainer.scrollLeft += this._leftHidden ? -23 : 23;
     }
   }
 }

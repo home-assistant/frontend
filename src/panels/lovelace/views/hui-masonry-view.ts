@@ -260,7 +260,6 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     return css`
       :host {
         display: block;
-        background: var(--lovelace-background);
         padding-top: 4px;
         height: 100%;
         box-sizing: border-box;

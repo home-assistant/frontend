@@ -3,11 +3,15 @@ import "@material/mwc-list/mwc-list-item";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import {
   mdiClose,
+  mdiCog,
   mdiDotsVertical,
+  mdiHelp,
   mdiHelpCircle,
   mdiMicrophone,
   mdiPencil,
   mdiPlus,
+  mdiRefresh,
+  mdiShape,
 } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-scroll-effects/effects/waterfall";
@@ -21,6 +25,7 @@ import {
   LitElement,
   property,
   PropertyValues,
+  query,
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
@@ -51,6 +56,7 @@ import {
 } from "../../dialogs/generic/show-dialog-box";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import "../../layouts/ha-app-layout";
+import type { haAppLayout } from "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
@@ -71,6 +77,8 @@ class HUIRoot extends LitElement {
   @property() public route?: { path: string; prefix: string };
 
   @internalProperty() private _curView?: number | "hass-unused-entities";
+
+  @query("ha-app-layout", true) private _appLayout!: haAppLayout;
 
   private _viewCache?: { [viewId: string]: HUIView };
 
@@ -187,11 +195,50 @@ class HUIRoot extends LitElement {
                     .hass=${this.hass}
                     .narrow=${this.narrow}
                   ></ha-menu-button>
-                  <div main-title>${this.config.title || "Home Assistant"}</div>
-                  ${this._conversation(this.hass.config.components)
+                  ${this.lovelace!.config.views.length > 1
+                    ? html`
+                        <ha-tabs
+                          scrollable
+                          .selected="${this._curView}"
+                          @iron-activate="${this._handleViewSelected}"
+                          dir="${computeRTLDirection(this.hass!)}"
+                        >
+                          ${this.lovelace!.config.views.map(
+                            (view) => html`
+                              <paper-tab
+                                aria-label="${view.title}"
+                                class="${classMap({
+                                  "hide-tab": Boolean(
+                                    view.visible !== undefined &&
+                                      ((Array.isArray(view.visible) &&
+                                        !view.visible.some(
+                                          (e) => e.user === this.hass!.user!.id
+                                        )) ||
+                                        view.visible === false)
+                                  ),
+                                })}"
+                              >
+                                ${view.icon
+                                  ? html`
+                                      <ha-icon
+                                        title="${view.title}"
+                                        .icon="${view.icon}"
+                                      ></ha-icon>
+                                    `
+                                  : view.title || "Unnamed view"}
+                              </paper-tab>
+                            `
+                          )}
+                        </ha-tabs>
+                      `
+                    : html`<div main-title>${this.config.title}</div>`}
+                  ${!this.narrow &&
+                  this._conversation(this.hass.config.components)
                     ? html`
                         <mwc-icon-button
-                          label="Start conversation"
+                          .label=${this.hass!.localize(
+                            "ui.panel.lovelace.menu.start_conversation"
+                          )}
                           @click=${this._showVoiceCommandDialog}
                         >
                           <ha-svg-icon .path=${mdiMicrophone}></ha-svg-icon>
@@ -210,27 +257,63 @@ class HUIRoot extends LitElement {
                     >
                       <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
                     </mwc-icon-button>
+                    ${this.narrow &&
+                    this._conversation(this.hass.config.components)
+                      ? html`
+                          <mwc-list-item
+                            .label=${this.hass!.localize(
+                              "ui.panel.lovelace.menu.start_conversation"
+                            )}
+                            graphic="icon"
+                            @request-selected=${this._showVoiceCommandDialog}
+                          >
+                            <span
+                              >${this.hass!.localize(
+                                "ui.panel.lovelace.menu.start_conversation"
+                              )}</span
+                            >
+                            <ha-svg-icon
+                              slot="graphic"
+                              .path=${mdiMicrophone}
+                            ></ha-svg-icon>
+                          </mwc-list-item>
+                        `
+                      : ""}
                     ${this._yamlMode
                       ? html`
                           <mwc-list-item
                             aria-label=${this.hass!.localize(
                               "ui.panel.lovelace.menu.refresh"
                             )}
+                            graphic="icon"
                             @request-selected="${this._handleRefresh}"
                           >
-                            ${this.hass!.localize(
-                              "ui.panel.lovelace.menu.refresh"
-                            )}
+                            <span
+                              >${this.hass!.localize(
+                                "ui.panel.lovelace.menu.refresh"
+                              )}</span
+                            >
+                            <ha-svg-icon
+                              slot="graphic"
+                              .path=${mdiRefresh}
+                            ></ha-svg-icon>
                           </mwc-list-item>
                           <mwc-list-item
                             aria-label=${this.hass!.localize(
                               "ui.panel.lovelace.unused_entities.title"
                             )}
+                            graphic="icon"
                             @request-selected="${this._handleUnusedEntities}"
                           >
-                            ${this.hass!.localize(
-                              "ui.panel.lovelace.unused_entities.title"
-                            )}
+                            <span
+                              >${this.hass!.localize(
+                                "ui.panel.lovelace.unused_entities.title"
+                              )}</span
+                            >
+                            <ha-svg-icon
+                              slot="graphic"
+                              .path=${mdiShape}
+                            ></ha-svg-icon>
                           </mwc-list-item>
                         `
                       : ""}
@@ -238,6 +321,7 @@ class HUIRoot extends LitElement {
                       ?.mode === "yaml"
                       ? html`
                           <mwc-list-item
+                            graphic="icon"
                             aria-label=${this.hass!.localize(
                               "ui.panel.lovelace.menu.reload_resources"
                             )}
@@ -246,12 +330,17 @@ class HUIRoot extends LitElement {
                             ${this.hass!.localize(
                               "ui.panel.lovelace.menu.reload_resources"
                             )}
+                            <ha-svg-icon
+                              slot="graphic"
+                              .path=${mdiRefresh}
+                            ></ha-svg-icon>
                           </mwc-list-item>
                         `
                       : ""}
                     ${this.hass!.user?.is_admin && !this.hass!.config.safe_mode
                       ? html`
                           <mwc-list-item
+                            graphic="icon"
                             aria-label=${this.hass!.localize(
                               "ui.panel.lovelace.menu.configure_ui"
                             )}
@@ -260,6 +349,10 @@ class HUIRoot extends LitElement {
                             ${this.hass!.localize(
                               "ui.panel.lovelace.menu.configure_ui"
                             )}
+                            <ha-svg-icon
+                              slot="graphic"
+                              .path=${mdiCog}
+                            ></ha-svg-icon>
                           </mwc-list-item>
                         `
                       : ""}
@@ -270,17 +363,22 @@ class HUIRoot extends LitElement {
                       target="_blank"
                     >
                       <mwc-list-item
+                        graphic="icon"
                         aria-label=${this.hass!.localize(
                           "ui.panel.lovelace.menu.help"
                         )}
                       >
                         ${this.hass!.localize("ui.panel.lovelace.menu.help")}
+                        <ha-svg-icon
+                          slot="graphic"
+                          .path=${mdiHelp}
+                        ></ha-svg-icon>
                       </mwc-list-item>
                     </a>
                   </ha-button-menu>
                 </app-toolbar>
               `}
-          ${this.lovelace!.config.views.length > 1 || this._editMode
+          ${this._editMode
             ? html`
                 <div sticky>
                   <ha-tabs
@@ -368,14 +466,7 @@ class HUIRoot extends LitElement {
               `
             : ""}
         </app-header>
-        <div
-          id="view"
-          class="${classMap({
-            "tabs-hidden":
-              !this._editMode && this.lovelace!.config.views.length < 2,
-          })}"
-          @ll-rebuild="${this._debouncedConfigChanged}"
-        ></div>
+        <div id="view" @ll-rebuild="${this._debouncedConfigChanged}"></div>
       </ha-app-layout>
     `;
   }
@@ -443,10 +534,7 @@ class HUIRoot extends LitElement {
       if (!oldLovelace || oldLovelace.editMode !== this.lovelace!.editMode) {
         const views = this.config && this.config.views;
 
-        // Adjust for higher header
-        if (!views || views.length < 2) {
-          fireEvent(this, "iron-resize");
-        }
+        fireEvent(this, "iron-resize");
 
         // Leave unused entities when leaving edit mode
         if (
@@ -643,12 +731,6 @@ class HUIRoot extends LitElement {
         unusedEntities.lovelace = this.lovelace!;
         unusedEntities.narrow = this.narrow;
       });
-      if (this.config.background) {
-        unusedEntities.style.setProperty(
-          "--lovelace-background",
-          this.config.background
-        );
-      }
       root.appendChild(unusedEntities);
       return;
     }
@@ -675,7 +757,12 @@ class HUIRoot extends LitElement {
     const configBackground = viewConfig.background || this.config.background;
 
     if (configBackground) {
-      view.style.setProperty("--lovelace-background", configBackground);
+      this._appLayout.style.setProperty(
+        "--lovelace-background",
+        configBackground
+      );
+    } else {
+      this._appLayout.style.removeProperty("--lovelace-background");
     }
 
     root.appendChild(view);
@@ -697,12 +784,18 @@ class HUIRoot extends LitElement {
 
         ha-app-layout {
           min-height: 100%;
+          background: var(--lovelace-background);
         }
         ha-tabs {
-          margin-left: max(env(safe-area-inset-left), 24px);
-          margin-right: max(env(safe-area-inset-right), 24px);
+          width: 100%;
+          height: 100%;
+          margin-left: 4px;
           --paper-tabs-selection-bar-color: var(--text-primary-color, #fff);
           text-transform: uppercase;
+        }
+        .edit-mode ha-tabs {
+          margin-left: max(env(safe-area-inset-left), 24px);
+          margin-right: max(env(safe-area-inset-right), 24px);
         }
         .edit-mode {
           background-color: var(--dark-color, #455a64);
@@ -738,7 +831,7 @@ class HUIRoot extends LitElement {
           color: var(--error-color);
         }
         #view {
-          min-height: calc(100vh - 112px);
+          min-height: calc(100vh - var(--header-height));
           /**
           * Since we only set min-height, if child nodes need percentage
           * heights they must use absolute positioning so we need relative
@@ -760,9 +853,6 @@ class HUIRoot extends LitElement {
           */
           flex: 1 1 100%;
           max-width: 100%;
-        }
-        #view.tabs-hidden {
-          min-height: calc(100vh - 64px);
         }
         .hide-tab {
           display: none;

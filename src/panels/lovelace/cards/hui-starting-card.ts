@@ -57,7 +57,7 @@ export class HuiStartingCard extends LitElement implements LovelaceCard {
     return css`
       :host {
         display: block;
-        height: calc(100vh - 64px);
+        height: calc(100vh - var(--header-height));
       }
       ha-circular-progress {
         padding-bottom: 20px;
