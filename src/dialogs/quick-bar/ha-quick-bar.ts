@@ -36,6 +36,7 @@ import { SingleSelectedEvent } from "@material/mwc-list/mwc-list-foundation";
 import type { List } from "@material/mwc-list/mwc-list";
 import type { ListItem } from "@material/mwc-list/mwc-list-item";
 import { ifDefined } from "lit-html/directives/if-defined";
+import { debounce } from "../../common/util/debounce";
 
 interface QuickBarItem extends ScorableTextItem {
   icon: string;
@@ -234,16 +235,20 @@ export class QuickBar extends LitElement {
 
     if (newFilter.startsWith(">")) {
       this._commandMode = true;
-      this._filter = newFilter.substring(1);
+      this._debouncedSetFilter(newFilter.substring(1));
     } else {
       this._commandMode = false;
-      this._filter = newFilter;
+      this._debouncedSetFilter(newFilter);
     }
 
     if (oldCommandMode !== this._commandMode) {
       this._items = undefined;
     }
   }
+
+  private _debouncedSetFilter = debounce((filter: string) => {
+    this._filter = filter;
+  }, 100);
 
   private _setFocusFirstListItem() {
     // @ts-ignore
