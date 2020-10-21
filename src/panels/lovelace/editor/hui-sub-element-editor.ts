@@ -15,9 +15,11 @@ import {
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../types";
+import type { LovelaceRowConfig } from "../entity-rows/types";
+import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import "./entity-row-editor/hui-row-element-editor";
-import type { HuiRowElementEditor } from "./entity-row-editor/hui-row-element-editor";
 import "./header-footer-editor/hui-header-footer-element-editor";
+import type { HuiElementEditor } from "./hui-element-editor";
 import type { GUIModeChangedEvent, SubElementEditorConfig } from "./types";
 
 declare global {
@@ -36,7 +38,9 @@ export class HuiSubElementEditor extends LitElement {
 
   @internalProperty() private _guiMode = true;
 
-  @query(".editor") private _editorElement?: HuiRowElementEditor;
+  @query(".editor") private _editorElement?: HuiElementEditor<
+    LovelaceRowConfig | LovelaceHeaderFooterConfig
+  >;
 
   protected render(): TemplateResult {
     return html`

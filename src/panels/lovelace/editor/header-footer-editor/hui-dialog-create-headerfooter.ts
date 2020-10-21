@@ -9,17 +9,15 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { until } from "lit-html/directives/until";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceHeaderFooterConfig } from "../../header-footer/types";
+import type { HomeAssistant } from "../../../../types";
+import type { LovelaceHeaderFooterConfig } from "../../header-footer/types";
 import { headerFooterElements } from "../lovelace-headerfooters";
-import { HeaderFooter } from "../types";
 import { getHeaderFooterStubConfig } from "./get-headerfooter-stub-config";
-import { CreateHeaderFooterDialogParams } from "./show-create-headerfooter-dialog";
+import type { CreateHeaderFooterDialogParams } from "./show-create-headerfooter-dialog";
 
 @customElement("hui-dialog-create-headerfooter")
 export class HuiCreateDialogHeaderFooter extends LitElement
@@ -63,18 +61,22 @@ export class HuiCreateDialogHeaderFooter extends LitElement
         @closed=${this._cancel}
       >
         <div class="elements">
-          ${headerFooterElements.map((headerFooter) =>
-            until(
-              this._renderHeaderFooterElement(headerFooter),
+          ${headerFooterElements.map(
+            (headerFooter) =>
               html`
-                <div class="spinner">
-                  <ha-circular-progress
-                    active
-                    alt="Loading"
-                  ></ha-circular-progress>
-                </div>
+                <ha-card
+                  outlined
+                  .type=${headerFooter.type}
+                  @click=${this._handleHeaderFooterPicked}
+                >
+                  <ha-svg-icon .path=${headerFooter.icon}></ha-svg-icon>
+                  <div>
+                    ${this.hass!.localize(
+                      `ui.panel.lovelace.editor.header-footer.types.${headerFooter.type}.name`
+                    )}
+                  </div>
+                </ha-card>
               `
-            )
           )}
         </div>
         <div slot="primaryAction">
@@ -86,10 +88,8 @@ export class HuiCreateDialogHeaderFooter extends LitElement
     `;
   }
 
-  private async _renderHeaderFooterElement(
-    headerFooter: HeaderFooter
-  ): Promise<TemplateResult> {
-    const { type, icon } = headerFooter;
+  private async _handleHeaderFooterPicked(ev: CustomEvent): Promise<void> {
+    const type = (ev.currentTarget as any).type;
     let config: LovelaceHeaderFooterConfig = { type };
 
     if (this.hass) {
@@ -101,24 +101,7 @@ export class HuiCreateDialogHeaderFooter extends LitElement
       );
     }
 
-    return html`
-      <ha-card
-        outlined
-        .config=${config}
-        @click=${this._handleHeaderFooterPicked}
-      >
-        <ha-svg-icon .path=${icon}></ha-svg-icon>
-        <div>
-          ${this.hass!.localize(
-            `ui.panel.lovelace.editor.header-footer.types.${type}.name`
-          )}
-        </div>
-      </ha-card>
-    `;
-  }
-
-  private _handleHeaderFooterPicked(ev: CustomEvent) {
-    this._params!.pickHeaderFooter((ev.currentTarget as any).config);
+    this._params!.pickHeaderFooter(config);
     this.closeDialog();
   }
 

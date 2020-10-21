@@ -87,13 +87,15 @@ export class HuiEntitiesCardEditor extends LitElement
       return html``;
     }
 
+    console.log("render editor", this._subElementEditorConfig);
+
     if (this._subElementEditorConfig) {
       return html`
         <hui-sub-element-editor
           .hass=${this.hass}
           .config=${this._subElementEditorConfig}
           @go-back=${this._goBack}
-          @config-changed=${this._valueChanged}
+          @config-changed=${this._handleSubElementChanged}
         >
         </hui-sub-element-editor>
       `;
@@ -143,22 +145,20 @@ export class HuiEntitiesCardEditor extends LitElement
             ></ha-switch>
           </ha-formfield>
         </div>
-        <div class="side-by-side">
-          <hui-header-footer-editor
-            .hass=${this.hass}
-            .configValue=${"header"}
-            .config=${this._config.header}
-            @value-changed=${this._valueChanged}
-            @edit-detail-element=${this._editDetailElement}
-          ></hui-header-footer-editor>
-          <hui-header-footer-editor
-            .hass=${this.hass}
-            .configValue=${"footer"}
-            .config=${this._config.footer}
-            @value-changed=${this._valueChanged}
-            @edit-detail-element=${this._editDetailElement}
-          ></hui-header-footer-editor>
-        </div>
+        <hui-header-footer-editor
+          .hass=${this.hass}
+          .configValue=${"header"}
+          .config=${this._config.header}
+          @value-changed=${this._valueChanged}
+          @edit-detail-element=${this._editDetailElement}
+        ></hui-header-footer-editor>
+        <hui-header-footer-editor
+          .hass=${this.hass}
+          .configValue=${"footer"}
+          .config=${this._config.footer}
+          @value-changed=${this._valueChanged}
+          @edit-detail-element=${this._editDetailElement}
+        ></hui-header-footer-editor>
       </div>
       <hui-entities-card-row-editor
         .hass=${this.hass}
@@ -217,6 +217,46 @@ export class HuiEntitiesCardEditor extends LitElement
         };
       }
     }
+
+    fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  private _handleSubElementChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    if (!this._config || !this.hass) {
+      return;
+    }
+
+    const configValue = this._subElementEditorConfig?.type;
+    const value = ev.detail.config;
+
+    if (configValue === "row") {
+      const newConfigEntities = this._configEntities!.concat();
+      if (!value) {
+        newConfigEntities.splice(this._subElementEditorConfig!.index!, 1);
+        this._goBack();
+      } else {
+        newConfigEntities[this._subElementEditorConfig!.index!] = value;
+      }
+
+      this._config = { ...this._config!, entities: newConfigEntities };
+      this._configEntities = processEditorEntities(this._config!.entities);
+    } else if (configValue) {
+      if (value === "") {
+        this._config = { ...this._config };
+        delete this._config[configValue!];
+      } else {
+        this._config = {
+          ...this._config,
+          [configValue]: value,
+        };
+      }
+    }
+
+    this._subElementEditorConfig = {
+      ...this._subElementEditorConfig!,
+      elementConfig: value,
+    };
 
     fireEvent(this, "config-changed", { config: this._config });
   }

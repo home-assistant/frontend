@@ -51,14 +51,14 @@ export interface UIConfigChangedEvent extends Event {
 }
 
 @customElement("hui-element-editor")
-export class HuiElementEditor extends LitElement {
+export class HuiElementEditor<T extends { type?: string }> extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public lovelace?: LovelaceConfig;
 
   @internalProperty() private _yaml?: string;
 
-  @internalProperty() private _config?: any;
+  @internalProperty() private _config?: T;
 
   @internalProperty() private _configElement?: LovelaceGenericElementEditor;
 
@@ -94,11 +94,11 @@ export class HuiElementEditor extends LitElement {
     this._setConfig();
   }
 
-  public get value(): any | undefined {
+  public get value(): T | undefined {
     return this._config;
   }
 
-  public set value(config: any | undefined) {
+  public set value(config: T | undefined) {
     if (this._config && deepEqual(config, this._config)) {
       return;
     }
@@ -354,6 +354,6 @@ export class HuiElementEditor extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-element-editor": HuiElementEditor;
+    "hui-element-editor": HuiElementEditor<any>;
   }
 }

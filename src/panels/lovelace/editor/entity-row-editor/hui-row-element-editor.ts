@@ -1,14 +1,15 @@
 import { customElement } from "lit-element";
 import { getRowElementClass } from "../../create-element/create-row-element";
+import { LovelaceRowConfig } from "../../entity-rows/types";
 import type { LovelaceRowEditor } from "../../types";
 import { HuiElementEditor } from "../hui-element-editor";
 
 const GENERIC_ROW_TYPE = "generic-row";
 
 @customElement("hui-row-element-editor")
-export class HuiRowElementEditor extends HuiElementEditor {
+export class HuiRowElementEditor extends HuiElementEditor<LovelaceRowConfig> {
   protected get configElementType(): string | undefined {
-    if (!this.value?.type && "entity" in this.value) {
+    if (!this.value?.type && "entity" in this.value!) {
       return GENERIC_ROW_TYPE;
     }
 
