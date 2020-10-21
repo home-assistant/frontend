@@ -245,6 +245,7 @@ export class QuickBar extends LitElement {
 
     if (oldCommandMode !== this._commandMode) {
       this._items = undefined;
+      this._focusSet = false;
     }
   }
 
