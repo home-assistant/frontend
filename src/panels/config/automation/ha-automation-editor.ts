@@ -171,7 +171,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
             <ha-svg-icon
               slot="graphic"
               .path=${mdiContentDuplicate}
-              class=${classMap({ enabled_icon: this.automationId })}
             ></ha-svg-icon>
           </mwc-list-item>
 
@@ -777,9 +776,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         }
         mwc-fab.dirty {
           bottom: 0;
-        }
-        .enabled_icon {
-          color: var(--primary-text-color);
         }
         .selected_menu_item {
           color: var(--primary-color);
