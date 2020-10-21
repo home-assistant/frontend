@@ -19,37 +19,6 @@ import "./ha-config-url-form";
 class HaConfigSectionCore extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-      <style include="iron-flex ha-style">
-        .validate-container {
-          @apply --layout-vertical;
-          @apply --layout-center-center;
-          height: 140px;
-        }
-
-        .validate-result {
-          color: var(--success-color);
-          font-weight: 500;
-          margin-bottom: 1em;
-        }
-
-        .config-invalid {
-          margin: 1em 0;
-        }
-
-        .config-invalid .text {
-          color: var(--error-color);
-          font-weight: 500;
-        }
-
-        .config-invalid mwc-button {
-          float: right;
-        }
-
-        .validate-log {
-          white-space: pre-wrap;
-          direction: ltr;
-        }
-      </style>
       <ha-config-section is-wide="[[isWide]]">
         <span slot="header"
           >[[localize('ui.panel.config.core.section.core.header')]]</span
@@ -93,33 +62,6 @@ class HaConfigSectionCore extends LocalizeMixin(PolymerElement) {
 
       showAdvanced: Boolean,
     };
-  }
-
-  groupLoaded(hass) {
-    return isComponentLoaded(hass, "group");
-  }
-
-  automationLoaded(hass) {
-    return isComponentLoaded(hass, "automation");
-  }
-
-  scriptLoaded(hass) {
-    return isComponentLoaded(hass, "script");
-  }
-
-  validateConfig() {
-    this.validating = true;
-    this.validateLog = "";
-    this.isValid = null;
-
-    this.hass.callApi("POST", "config/core/check_config").then((result) => {
-      this.validating = false;
-      this.isValid = result.result === "valid";
-
-      if (!this.isValid) {
-        this.validateLog = result.errors;
-      }
-    });
   }
 }
 

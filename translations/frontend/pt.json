@@ -571,7 +571,34 @@
                 "no_history_found": "Nenhum histórico de estado encontrado."
             },
             "logbook": {
-                "entries_not_found": "Não foram encontradas entradas no Log."
+                "by": "por",
+                "by_service": "pelo serviço",
+                "entries_not_found": "Não foram encontradas entradas no Log.",
+                "messages": {
+                    "became_unavailable": "ficou indisponível",
+                    "changed_to_state": "alterado para {state}",
+                    "cleared_device_class": "Vazio (nenhuma {device_class} detetada)",
+                    "detected_device_class": "detetado {device_class}",
+                    "rose": "rosa",
+                    "set": "definir",
+                    "turned_off": "desligado",
+                    "turned_on": "ligado",
+                    "was_at_home": "estava em casa",
+                    "was_at_state": "estava em {state}",
+                    "was_away": "estava fora",
+                    "was_closed": "foi fechado",
+                    "was_connected": "foi conectado",
+                    "was_disconnected": "foi desconectado",
+                    "was_locked": "foi trancado",
+                    "was_low": "estava baixo",
+                    "was_normal": "estava normal",
+                    "was_opened": "foi aberto",
+                    "was_plugged_in": "foi conectado",
+                    "was_safe": "estava seguro",
+                    "was_unlocked": "foi destrancado",
+                    "was_unplugged": "foi desconectado",
+                    "was_unsafe": "estava inseguro"
+                }
             },
             "media-browser": {
                 "audio_not_supported": "O seu navegador não suporta o elemento de áudio.",
@@ -648,9 +675,23 @@
                     "week": "{count} {count, plural,\n  one {semana}\n  other {semanas}\n}"
                 },
                 "future": "Há {time}",
+                "future_duration": {
+                    "day": "In {count} {count, plural,\n  one {dia}\n  other {dias}\n}",
+                    "hour": "In {count} {count, plural,\n  one {hora}\n  other {horas}\n}",
+                    "minute": "In {count} {count, plural,\n  one {minuto}\n  other {minutos}\n}",
+                    "second": "In {count} {count, plural,\n  one {segundo}\n  other {segundos}\n}",
+                    "week": "In {count} {count, plural,\n  one {semana}\n  other {semanas}\n}"
+                },
                 "just_now": "Agora mesmo",
                 "never": "Nunca",
-                "past": "{time} atrás"
+                "past": "{time} atrás",
+                "past_duration": {
+                    "day": "{count} {count, plural,\n  one {dia}\n  other {dias}\n} atrás",
+                    "hour": "{count} {count, plural,\n  one {hora}\n  other {horas}\n} atrás",
+                    "minute": "{count} {count, plural,\n  one {minuto}\n  other {minutos}\n} atrás",
+                    "second": "{count} {count, plural,\n  one {segundo}\n  other {segundos}\n} atrás",
+                    "week": "{count} {count, plural,\n  one {semana}\n  other {semanas}\n} atrás"
+                }
             },
             "service-picker": {
                 "service": "Serviço"
@@ -684,7 +725,8 @@
                     "unavailable": "Esta entidade não está atualmente disponível.",
                     "update": "Atualizar"
                 },
-                "no_unique_id": "Esta entidade não tem uma identificação única, portanto suas configurações não podem ser geridas a partir da IU.",
+                "faq": "Documentação",
+                "no_unique_id": "Esta entidade não tem uma identificação única, portanto suas configurações não podem ser geridas a partir da UI. Para mais informações, ver {faq_link}.",
                 "related": "Relacionadas",
                 "settings": "Definições"
             },
@@ -741,6 +783,7 @@
                 "dismiss": "Descartar diálogo",
                 "edit": "Editar entidade",
                 "history": "Histórico",
+                "last_updated": "Última atualização",
                 "person": {
                     "create_zone": "Criar zona a partir da localização atual"
                 },
@@ -795,6 +838,44 @@
                 "success": {
                     "description": "Salva com sucesso"
                 }
+            },
+            "quick-bar": {
+                "commands": {
+                    "reload": {
+                        "automation": "Recarregar automações",
+                        "command_line": "Recarregar entidades de linha de comando",
+                        "core": "Recarregar localização e personalizações",
+                        "filesize": "Recarregar tamanho do ficheiro de entidades",
+                        "filter": "Recarregar entidades de filtro",
+                        "generic": "Recarregar entidades genéricas de câmeras IP",
+                        "generic_thermostat": "Recarregar entidades termostáticas genéricas",
+                        "group": "Recarregar grupos, grupos de entidades e serviços de notificação",
+                        "history_stats": "Recarregar entidades de estatísticas de histórico",
+                        "homekit": "Recarregar HomeKit",
+                        "input_boolean": "Recarregar booleanos de entrada",
+                        "input_datetime": "Recarregar input date times",
+                        "input_number": "Recarregar input numbers",
+                        "input_select": "Recarregar input selects",
+                        "input_text": "Recarregar input texts",
+                        "min_max": "Recarregar entidades Mín. / Máx.",
+                        "mqtt": "Recarregar entidades mqtt",
+                        "person": "Recarregar pessoas",
+                        "ping": "Recarregar entidades de sensor binárias de ping",
+                        "reload": "Recarregar {domain}",
+                        "rest": "Recarregar as restantes entidades e notificar serviços",
+                        "rpi_gpio": "Recarregar entidades Raspberry Pi GPIO",
+                        "scene": "Recarregar cenas",
+                        "script": "Recarregar scripts",
+                        "smtp": "Recarregar serviços de notificação de smtp",
+                        "statistics": "Recarregar entidades estatísticas",
+                        "telegram": "Recarregar os serviços de notificação do Telegram",
+                        "template": "Recarregar entidades modelo",
+                        "trend": "Recarregar entidades de tendência",
+                        "universal": "Recarregue entidades reprodutoras de multimédia",
+                        "zone": "Recarregar zonas"
+                    }
+                },
+                "filter_placeholder": "Filtro de Entidade"
             },
             "voice_command": {
                 "did_not_hear": "O Home Assistant não ouve nada",
@@ -1864,7 +1945,8 @@
                     },
                     "select_instance": {
                         "header": "Selecione uma instância OpenZWave",
-                        "introduction": "Tem mais do que uma instância Openzwave em execução. Que instância deseja gerir?"
+                        "introduction": "Tem mais do que uma instância Openzwave em execução. Que instância deseja gerir?",
+                        "none_found": "Não conseguimos encontrar uma instância OpenZWave. Se você acredita que isso está incorreto, verifique as configurações do OpenZWave e do MQTT e certifique-se de que o Home Assistant possa se comunicar com o seu corretor MQTT."
                     },
                     "services": {
                         "add_node": "Adicionar nó",
@@ -1879,6 +1961,9 @@
                     "create_person": "Criar pessoa",
                     "description": "Gerir as pessoas que o Home Assistant segue.",
                     "detail": {
+                        "admin": "Administrador",
+                        "allow_login": "Permitir login",
+                        "confirm_delete_user": "Tem a certeza que quer apagar a conta de utilizador do {name}? Ainda poderá rastrear o utilizador, mas a pessoa não poderá mais efetuar o login.",
                         "create": "Criar",
                         "delete": "Apagar",
                         "device_tracker_intro": "Selecione os dispositivos que pertencem a esta pessoa.",
@@ -1895,7 +1980,9 @@
                     },
                     "introduction": "Aqui pode definir cada pessoa de interesse no Home Assistant.",
                     "no_persons_created_yet": "Parece que você ainda não criou nenhuma pessoa.",
-                    "note_about_persons_configured_in_yaml": "Nota: pessoas configuradas via configuration.yaml não podem ser editadas via UI."
+                    "note_about_persons_configured_in_yaml": "Nota: pessoas configuradas via configuration.yaml não podem ser editadas via UI.",
+                    "person_not_found": "Não conseguimos encontrar a pessoa que estavas a tentar editar.",
+                    "person_not_found_title": "Pessoa não encontrada"
                 },
                 "scene": {
                     "activated": "Ativar cena {name}.",
@@ -1971,6 +2058,7 @@
                             "restart": "Reiniciar",
                             "single": "Predefinição"
                         },
+                        "save_script": "Salvar script",
                         "sequence": "Seqüência",
                         "sequence_sentence": "A seqüência de ações para este script."
                     },
@@ -1984,6 +2072,7 @@
                         "introduction": "O editor de scripts permite criar e editar scripts. Leia as instruções do link em baixo para se certificar de que configurou o Home Assistant corretamente.",
                         "learn_more": "Saber mais sobre scripts",
                         "no_scripts": "Não foi possível encontrar nenhum script editável",
+                        "run_script": "Executar script",
                         "show_info": "Mostrar informações sobre o script",
                         "trigger_script": "Despoletar script"
                     }
@@ -2051,6 +2140,7 @@
                     "create_automation": "Criar automação com etiqueta",
                     "description": "Gerir etiquetas",
                     "detail": {
+                        "companion_apps": "Aplicações de dispositivos móveis",
                         "create": "Criar",
                         "create_and_write": "Criar e Escrever",
                         "delete": "Apagar",
@@ -2059,7 +2149,8 @@
                         "new_tag": "Nova etiqueta",
                         "tag_id": "Identificação da etiqueta",
                         "tag_id_placeholder": "Gerado automaticamente quando deixado vazio",
-                        "update": "Atualizar"
+                        "update": "Atualizar",
+                        "usage": "Uma tag pode acionar uma automação quando digitalizada, você pode usar tags NFC, códigos QR ou qualquer outro tipo de tag. Use o nosso {companion_link} para escrever esta tag em uma tag NFC programável ou crie um código QR abaixo."
                     },
                     "edit": "Editar",
                     "headers": {
@@ -2228,7 +2319,7 @@
                         "create": "Criar",
                         "delete": "Eliminar",
                         "icon": "Ícone",
-                        "icon_error_msg": "O ícone deve estar no prefixo do formato: iconname, por exemplo: mdi: home",
+                        "icon_error_msg": "O ícone deve estar no formato \"prefixo:nome do icon\", por exemplo: \"mdi:home\"",
                         "latitude": "Latitude",
                         "longitude": "Longitude",
                         "name": "Nome",
@@ -2472,6 +2563,20 @@
                     "refresh": "Atualizar"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "Chamar serviço",
+                            "default_action": "Ação por defeito",
+                            "more-info": "Mais informações",
+                            "navigate": "Navegar",
+                            "none": "Nenhuma Ação",
+                            "toggle": "Alternar",
+                            "url": "Url"
+                        },
+                        "editor_service_data": "Os dados de serviço só podem ser inseridos no editor de código",
+                        "navigation_path": "URL de navegação",
+                        "url_path": "URL"
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "Estados Disponíveis",
@@ -2479,15 +2584,19 @@
                             "name": "Painel de alarme"
                         },
                         "button": {
+                            "default_action_help": "A ação padrão depende dos recursos da entidade, ela será alternada ou mais informações serão mostradas.",
                             "description": "O Cartão de Botões permite-lhe adicionar botões para realizar tarefas.",
                             "name": "Botão"
                         },
                         "calendar": {
+                            "calendar_entities": "Entidades do calendário",
                             "description": "O cartão do Calendário exibe um calendário incluindo dia, semana e visualizações de lista",
+                            "inital_view": "Vista Inicial",
                             "name": "Calendário",
                             "views": {
                                 "dayGridDay": "Dia",
-                                "dayGridMonth": "Mês"
+                                "dayGridMonth": "Mês",
+                                "listWeek": "Lista"
                             }
                         },
                         "conditional": {
@@ -2508,6 +2617,7 @@
                         "entities": {
                             "description": "O cartão de entidades é o tipo mais comum de cartão. Ele agrupa itens em listas.",
                             "edit_special_row": "Editar linha usando o editor de código",
+                            "entity_row_editor": "Editor de Linha de Entidade",
                             "entity_row": {
                                 "attribute": "Atributo",
                                 "button": "Botão",
@@ -2520,6 +2630,15 @@
                                 "weblink": "Ligação Web"
                             },
                             "name": "Entidades",
+                            "secondary_info_values": {
+                                "brightness": "Brilho",
+                                "entity-id": "ID da entidade",
+                                "last-changed": "Última modificação",
+                                "last-triggered": "Acionado pela última vez",
+                                "none": "Sem informações secundárias",
+                                "position": "Posição",
+                                "tilt-position": "Posição de Inclinação"
+                            },
                             "show_header_toggle": "Show Header Toggle?",
                             "special_row": "linha especial",
                             "toggle": "Alternar entidades."
@@ -2680,6 +2799,8 @@
                         "edit": "Editar",
                         "header": "Configuração do cartão",
                         "move": "Mover para Vista",
+                        "move_after": "Mover cartão após",
+                        "move_before": "Mover cartão antes de",
                         "options": "Mais opções",
                         "pick_card": "Que cartão gostaria de adicionar?",
                         "pick_card_view_title": "Que cartão você gostaria de adicionar à sua vista {name}?",
@@ -2973,6 +3094,12 @@
                     "more_integrations": "Mais"
                 },
                 "intro": "Está pronto para despertar a sua casa, reclamar a sua privacidade e juntar-se a uma comunidade mundial de tecnólogos?",
+                "restore": {
+                    "description": "Em alternativa, pode restaurar a partir de um snapshot anterior.",
+                    "hide_log": "Ocultar log completo",
+                    "in_progress": "Restauração em curso",
+                    "show_log": "Mostrar log completo"
+                },
                 "user": {
                     "create_account": "Criar conta",
                     "data": {

@@ -22,6 +22,8 @@ import { createInputDateTime } from "../../../data/input_datetime";
 import { createInputNumber } from "../../../data/input_number";
 import { createInputSelect } from "../../../data/input_select";
 import { createInputText } from "../../../data/input_text";
+import { createCounter } from "../../../data/counter";
+import { createTimer } from "../../../data/timer";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { Helper } from "./const";
@@ -30,6 +32,8 @@ import "./forms/ha-input_datetime-form";
 import "./forms/ha-input_number-form";
 import "./forms/ha-input_select-form";
 import "./forms/ha-input_text-form";
+import "./forms/ha-counter-form";
+import "./forms/ha-timer-form";
 
 const HELPERS = {
   input_boolean: createInputBoolean,
@@ -37,6 +41,8 @@ const HELPERS = {
   input_number: createInputNumber,
   input_datetime: createInputDateTime,
   input_select: createInputSelect,
+  counter: createCounter,
+  timer: createTimer,
 };
 
 @customElement("dialog-helper-detail")

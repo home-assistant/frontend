@@ -221,6 +221,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
         @row-click=${this._editDashboard}
         id="url_path"
         hasFab
+        clickable
       >
         <mwc-fab
           slot="fab"
@@ -229,7 +230,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           )}"
           @click=${this._addDashboard}
         >
-          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </mwc-fab>
       </hass-tabs-subpage-data-table>
     `;

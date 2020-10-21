@@ -83,7 +83,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
     return this._config!.camera_view || "auto";
   }
 
-  get _state_image(): {} {
+  get _state_image(): Record<string, unknown> {
     return this._config!.state_image || {};
   }
 

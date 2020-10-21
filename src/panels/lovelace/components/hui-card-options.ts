@@ -58,14 +58,14 @@ export class HuiCardOptions extends LitElement {
                 .length ===
               this.path![1] + 1}
             >
-              <ha-svg-icon path=${mdiArrowDown}></ha-svg-icon>
+              <ha-svg-icon .path=${mdiArrowDown}></ha-svg-icon>
             </mwc-icon-button>
             <mwc-icon-button
               title="Move card up"
               class="move-arrow"
               @click=${this._cardUp}
               ?disabled=${this.path![1] === 0}
-              ><ha-svg-icon path=${mdiArrowUp}></ha-svg-icon
+              ><ha-svg-icon .path=${mdiArrowUp}></ha-svg-icon
             ></mwc-icon-button>
             <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
               <mwc-icon-button
@@ -77,7 +77,7 @@ export class HuiCardOptions extends LitElement {
                   "ui.panel.lovelace.editor.edit_card.options"
                 )}"
               >
-                <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+                <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
               </mwc-icon-button>
 
               <mwc-list-item>

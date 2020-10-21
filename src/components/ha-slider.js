@@ -21,6 +21,7 @@ class HaSlider extends PaperSliderClass {
             .pin > .slider-knob > .slider-knob-inner {
               font-size:  var(--ha-slider-pin-font-size, 10px);
               line-height: normal;
+              cursor: pointer;
             }
 
             .disabled.ring > .slider-knob > .slider-knob-inner {
@@ -69,9 +70,9 @@ class HaSlider extends PaperSliderClass {
               transform: scale(1) translate(0, -10px);
             }
 
-              .slider-input {
-                width: 54px;
-              }
+            .slider-input {
+              width: 54px;
+            }
         `)
       );
     }

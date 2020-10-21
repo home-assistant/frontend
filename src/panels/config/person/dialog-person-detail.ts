@@ -14,7 +14,6 @@ import "../../../components/entity/ha-entities-picker";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-picture-upload";
 import type { HaPictureUpload } from "../../../components/ha-picture-upload";
-import "../../../components/user/ha-user-picker";
 import { PersonMutableParams } from "../../../data/person";
 import { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { PolymerChangedEvent } from "../../../polymer-types";
@@ -439,9 +438,6 @@ class DialogPersonDetail extends LitElement {
         ha-formfield {
           display: block;
           padding: 16px 0;
-        }
-        ha-user-picker {
-          margin-top: 16px;
         }
         a {
           color: var(--primary-color);

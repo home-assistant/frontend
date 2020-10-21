@@ -117,6 +117,15 @@ export class HuiDialogEditView extends LitElement {
         content = html`
           ${this._badges?.length
             ? html`
+                ${this._config?.panel
+                  ? html`
+                      <p class="warning">
+                        ${this.hass!.localize(
+                          "ui.panel.lovelace.editor.edit_badges.panel_mode"
+                        )}
+                      </p>
+                    `
+                  : ""}
                 <div class="preview-badges">
                   ${this._badges.map((badgeConfig) => {
                     return html`
@@ -206,10 +215,13 @@ export class HuiDialogEditView extends LitElement {
           ?disabled="${!this._config || this._saving}"
           @click="${this._save}"
         >
-          <ha-circular-progress
-            ?active="${this._saving}"
-            alt="Saving"
-          ></ha-circular-progress>
+          ${this._saving
+            ? html`<ha-circular-progress
+                active
+                size="small"
+                title="Saving"
+              ></ha-circular-progress>`
+            : ""}
           ${this.hass!.localize("ui.common.save")}</mwc-button
         >
       </ha-dialog>
@@ -386,11 +398,6 @@ export class HuiDialogEditView extends LitElement {
           border-bottom: 1px solid rgba(0, 0, 0, 0.1);
           padding: 0 20px;
         }
-        mwc-button ha-circular-progress {
-          width: 14px;
-          height: 14px;
-          margin-right: 20px;
-        }
         mwc-button.warning {
           margin-right: auto;
         }
@@ -412,6 +419,10 @@ export class HuiDialogEditView extends LitElement {
           justify-content: center;
           margin: 12px 16px;
           flex-wrap: wrap;
+        }
+        .warning {
+          color: var(--warning-color);
+          text-align: center;
         }
 
         @media all and (min-width: 600px) {

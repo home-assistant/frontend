@@ -101,6 +101,7 @@ export class HaConfigLovelaceRescources extends LitElement {
         )}
         @row-click=${this._editResource}
         hasFab
+        clickable
       >
         <mwc-fab
           slot="fab"
@@ -109,7 +110,7 @@ export class HaConfigLovelaceRescources extends LitElement {
           )}
           @click=${this._addResource}
         >
-          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </mwc-fab>
       </hass-tabs-subpage-data-table>
     `;

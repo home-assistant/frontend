@@ -270,7 +270,7 @@ export class HaConfigServerControl extends LitElement {
         }
 
         .validate-log {
-          white-space: pre-wrap;
+          white-space: pre-line;
           direction: ltr;
         }
 

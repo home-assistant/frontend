@@ -465,7 +465,8 @@
         },
         "components": {
             "device-picker": {
-                "device": "Устройство"
+                "device": "Устройство",
+                "show_devices": "Показване на устройства"
             },
             "entity": {
                 "entity-attribute-picker": {
@@ -481,7 +482,13 @@
                 "no_history_found": "Не е намерена история за състоянието"
             },
             "logbook": {
-                "entries_not_found": "Липсват логове в дневника"
+                "entries_not_found": "Липсват логове в дневника",
+                "messages": {
+                    "became_unavailable": "стана недостъпен",
+                    "changed_to_state": "променен на {състояние}",
+                    "turned_off": "Изключи",
+                    "turned_on": "Включи"
+                }
             },
             "media-browser": {
                 "audio_not_supported": "Браузърът не поддържа този аудио елемент.",
@@ -522,15 +529,23 @@
                     "delete": "Изтриване",
                     "update": "Актуализация"
                 },
+                "faq": "документация",
                 "no_unique_id": "Този обект няма уникален идентификатор, затова неговите настройки не могат да бъдат управлявани от потребителския интерфейс."
             },
             "helper_settings": {
+                "generic": {
+                    "name": "Име"
+                },
                 "input_number": {
+                    "max": "Максимална стойност",
+                    "min": "Минимална стойност",
                     "step": "Размер на стъпката"
                 },
                 "input_text": {
                     "max": "Максимална дължина",
-                    "min": "Минимална дължина"
+                    "min": "Минимална дължина",
+                    "password": "Парола",
+                    "text": "Текст"
                 },
                 "platform_not_loaded": "{platform} интеграцията не е заредена. Моля, добавете я във вашата конфигурация като добавите 'default_config:' или ''{platform}:''.",
                 "yaml_not_editable": "Настройките на този обект не могат да бъдат редактирани. Могат да се конфигурират само обектите, създадени от потребителския интерфейс."
@@ -849,11 +864,20 @@
                             "config_documentation": "Документация за конфигурацията"
                         },
                         "google": {
-                            "config_documentation": "Документация за конфигурацията"
+                            "config_documentation": "Документация за конфигурацията",
+                            "devices_pin": "ПИН код за Устройства за защита",
+                            "enter_pin_hint": "Въведете ПИН за използване на устройства за защита",
+                            "security_devices": "Устройства за защита"
+                        },
+                        "webhooks": {
+                            "disable_hook_error_msg": "Неуспешно деактивиране на webhook:",
+                            "manage": "Управление",
+                            "no_hooks_yet_link_integration": "webhook-базирана интеграция"
                         }
                     },
                     "alexa": {
                         "dont_expose_entity": "Не излагай обекта",
+                        "expose": "Откриване към Alexa",
                         "expose_entity": "Изложи обекта",
                         "exposed": "{избран} изложен",
                         "follow_domain": "следван домейн",
@@ -864,13 +888,26 @@
                     "description_features": "Контролирайте дома си, и когато не сте вкъщи, активирайте интегрирациите с Alexa и Google Assistant.",
                     "description_login": "Влезли сте като {email}",
                     "description_not_login": "Не сте влезли",
+                    "dialog_certificate": {
+                        "close": "Затвори"
+                    },
+                    "dialog_cloudhook": {
+                        "close": "Затвори",
+                        "copied_to_clipboard": "Копирано в клипборда",
+                        "view_documentation": "Преглед на документацията"
+                    },
                     "google": {
+                        "disable_2FA": "Деактивирайте двуфакторното удостоверяване",
                         "dont_expose_entity": "Не излагай обекта",
+                        "expose": "Откриване към Google Assistant",
                         "expose_entity": "Изложи обекта",
                         "exposed": "{избран} изложен",
                         "follow_domain": "следван домейн",
                         "manage_domains": "Управление на домейни",
                         "not_exposed": "{избран} неизложен"
+                    },
+                    "login": {
+                        "learn_more_link": "Научете повече за Home Assistant Cloud"
                     }
                 },
                 "core": {
@@ -909,6 +946,11 @@
                 "devices": {
                     "caption": "Устройства",
                     "confirm_delete": "Сигурни ли сте, че искате да изтриете устройството?",
+                    "data_table": {
+                        "area": "Област",
+                        "battery": "Батерия",
+                        "manufacturer": "Производител"
+                    },
                     "delete": "Изтриване",
                     "description": "Управление на свързани устройства",
                     "entities": {
@@ -1013,12 +1055,20 @@
                     },
                     "refresh_node": {
                         "button": "Обнови възела"
+                    },
+                    "select_instance": {
+                        "none_found": "Не можахме да намерим OpenZWave инстанция. Ако смятате че не е вярно, проверете Вашите OpenZWare и MQTT и се уверете че, Home Assistant може да комуникира със MQTT брокера "
                     }
                 },
                 "person": {
                     "caption": "Хора",
                     "description": "Управлявайте хората, които следите от Home Assistant.",
                     "detail": {
+                        "admin": "Администратор",
+                        "allow_login": "Разрешаване на потребител да се впише",
+                        "confirm_delete_user": "Сигурен ли сте, че искате да изтриете потребителски акаунт {name}? Все още ще можете да проследявате човека, но той, повече няма да може да се вписва.",
+                        "create": "Създаване",
+                        "delete": "Изтрий",
                         "device_tracker_intro": "Изберете устройствата, които принадлежат на това лице.",
                         "device_tracker_pick": "Изберете устройство за проследяване",
                         "device_tracker_picked": "Устройство за проследяване",
@@ -1026,16 +1076,32 @@
                     }
                 },
                 "scene": {
+                    "activated": "Активирана сцена {name} .",
+                    "editor": {
+                        "devices": {
+                            "header": "Устройства"
+                        },
+                        "unsaved_confirm": "Имате незапазени промени. Сигурни ли сте, че искате да напуснете?"
+                    },
                     "picker": {
+                        "delete_confirm": "Сигурни ли сте, че искате да изтриете тази сцена?",
+                        "delete_scene": "Изтриване на сцена",
+                        "edit_scene": "Редактиране на сцена",
+                        "header": "Редактор на сцени",
                         "headers": {
                             "name": "Име"
-                        }
+                        },
+                        "show_info_scene": "Показване на информация за сцена"
                     }
                 },
                 "script": {
                     "caption": "Скриптове",
                     "description": "Създаване и редактиране на скриптове",
+                    "editor": {
+                        "delete_script": "Изтриване на скрипт"
+                    },
                     "picker": {
+                        "edit_script": "Редактиране на скрипт",
                         "headers": {
                             "name": "Име"
                         },
@@ -1091,14 +1157,19 @@
                     "description": "Управление на потребителите",
                     "editor": {
                         "activate_user": "Активиране на потребител",
+                        "active": "Активен",
                         "admin": "Администратор",
                         "caption": "Преглед на потребителя",
                         "change_password": "Смяна на парола",
                         "deactivate_user": "Деактивиране на потребителя",
                         "delete_user": "Изтриване на потребител",
+                        "group": "Група",
+                        "id": "ID",
                         "name": "Име",
                         "new_password": "Нова парола",
+                        "owner": "Собственик",
                         "password_changed": "Паролата е променена!",
+                        "system_generated": "Генерирано от системата",
                         "system_generated_users_not_editable": "Неуспешно обновяване на системно генерираните потребители"
                     },
                     "picker": {
@@ -1112,9 +1183,14 @@
                     "add_device_page": {
                         "discovery_text": "Откритите устройства ще се покажат тук. Следвайте инструкциите за вашето устройство(а) и поставете устройствата в режим на сдвояване.",
                         "header": "Zigbee Home Automation - Добавяне на устройства",
+                        "search_again": "Потърси отново",
                         "spinner": "Търсене на ZHA Zigbee устройства..."
                     },
                     "caption": "ZHA",
+                    "common": {
+                        "add_devices": "Добави устройства",
+                        "devices": "Устройства"
+                    },
                     "description": "Управление на Zigbee мрежата за домашна автоматизация",
                     "node_management": {
                         "hint_wakeup": "Някои устройства като сензорите Xiaomi имат бутон за събуждане, който можете да натискате на интервали от ~ 5 секунди, които поддържат устройствата будни, докато взаимодействате с тях."
@@ -1229,10 +1305,20 @@
                 "editor": {
                     "card": {
                         "entities": {
+                            "entity_row_editor": "Редактор на обекти",
+                            "secondary_info_values": {
+                                "brightness": "Яркост",
+                                "entity-id": "Идентификация на обект",
+                                "last-changed": "Последна промяна",
+                                "last-triggered": "Последно задействане",
+                                "position": "Позиция",
+                                "tilt-position": "Наклон"
+                            },
                             "toggle": "Превключване на обекти."
                         },
                         "generic": {
-                            "state_color": "Да се оцветят ли иконите спрямо състоянието?"
+                            "state_color": "Да се оцветят ли иконите спрямо състоянието?",
+                            "theme": "Тема"
                         },
                         "iframe": {
                             "name": "Уеб страница"
@@ -1272,6 +1358,7 @@
                         "delete": "Изтриване на изгледа",
                         "edit": "Редактиране на изгледа",
                         "header": "Конфигурация на изглед",
+                        "tab_settings": "Настройки",
                         "visibility": {
                             "select_users": "Изберете кои потребители да виждат този изглед в навигацията"
                         }

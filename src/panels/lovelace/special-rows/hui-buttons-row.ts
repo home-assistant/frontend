@@ -17,7 +17,7 @@ import {
 
 @customElement("hui-buttons-row")
 export class HuiButtonsRow extends LitElement implements LovelaceRow {
-  public static getStubConfig(): object {
+  public static getStubConfig(): Record<string, unknown> {
     return { entities: [] };
   }
 

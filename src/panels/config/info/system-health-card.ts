@@ -1,14 +1,18 @@
 import "../../../components/ha-circular-progress";
+import { mdiContentCopy } from "@mdi/js";
 import {
   css,
   CSSResult,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
+  query,
   TemplateResult,
 } from "lit-element";
 import "../../../components/ha-card";
+import "@polymer/paper-tooltip/paper-tooltip";
+import type { PaperTooltipElement } from "@polymer/paper-tooltip/paper-tooltip";
 import { domainToName } from "../../../data/integration";
 import {
   fetchSystemHealthInfo,
@@ -36,6 +40,8 @@ class SystemHealthCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @internalProperty() private _info?: SystemHealthInfo;
+
+  @query("paper-tooltip", true) private _toolTip?: PaperTooltipElement;
 
   protected render(): TemplateResult {
     if (!this.hass) {
@@ -78,7 +84,24 @@ class SystemHealthCard extends LitElement {
     }
 
     return html`
-      <ha-card .header=${domainToName(this.hass.localize, "system_health")}>
+      <ha-card>
+        <h1 class="card-header">
+          <div class="card-header-text">
+            ${domainToName(this.hass.localize, "system_health")}
+          </div>
+          <mwc-icon-button id="copy" @click=${this._copyInfo}>
+            <ha-svg-icon .path=${mdiContentCopy}></ha-svg-icon>
+          </mwc-icon-button>
+          <paper-tooltip
+            manual-mode
+            for="copy"
+            position="left"
+            animation-delay="0"
+            offset="4"
+          >
+            ${this.hass.localize("ui.common.copied")}
+          </paper-tooltip>
+        </h1>
         <div class="card-content">${sections}</div>
       </ha-card>
     `;
@@ -104,6 +127,25 @@ class SystemHealthCard extends LitElement {
     }
   }
 
+  private _copyInfo(): void {
+    const selection = window.getSelection()!;
+    selection.removeAllRanges();
+
+    const copyElement = this.shadowRoot?.querySelector(
+      "ha-card"
+    ) as HTMLElement;
+
+    const range = document.createRange();
+    range.selectNodeContents(copyElement);
+    selection.addRange(range);
+
+    document.execCommand("copy");
+    window.getSelection()!.removeAllRanges();
+
+    this._toolTip!.show();
+    setTimeout(() => this._toolTip?.hide(), 3000);
+  }
+
   static get styles(): CSSResult {
     return css`
       table {
@@ -118,6 +160,11 @@ class SystemHealthCard extends LitElement {
         display: flex;
         align-items: center;
         justify-content: center;
+      }
+
+      .card-header {
+        justify-content: space-between;
+        display: flex;
       }
     `;
   }

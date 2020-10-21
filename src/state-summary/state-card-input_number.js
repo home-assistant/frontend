@@ -46,7 +46,7 @@ class StateCardInputNumber extends mixinBehaviors(
           value="{{value}}"
           step="[[step]]"
           hidden="[[hiddenslider]]"
-          pin=""
+          pin
           on-change="selectedValueChanged"
           on-click="stopPropagation"
           id="slider"

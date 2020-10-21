@@ -4,7 +4,7 @@ import { Condition } from "../common/validate-condition";
 
 interface LovelaceElementConfigBase {
   type: string;
-  style: object;
+  style: Record<string, string>;
 }
 
 export type LovelaceElementConfig =
@@ -51,7 +51,7 @@ export interface ImageElementConfig extends LovelaceElementConfigBase {
 export interface ServiceButtonElementConfig extends LovelaceElementConfigBase {
   title?: string;
   service?: string;
-  service_data?: object;
+  service_data?: Record<string, unknown>;
 }
 
 export interface StateBadgeElementConfig extends LovelaceElementConfigBase {

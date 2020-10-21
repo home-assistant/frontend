@@ -57,7 +57,9 @@ import { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "../../../components/ha-svg-icon";
+import { showToast } from "../../../util/toast";
 import { mdiContentSave } from "@mdi/js";
+import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 
 interface DeviceEntities {
   id: string;
@@ -70,7 +72,9 @@ interface DeviceEntitiesLookup {
 }
 
 @customElement("ha-scene-editor")
-export class HaSceneEditor extends SubscribeMixin(LitElement) {
+export class HaSceneEditor extends SubscribeMixin(
+  KeyboardShortcutMixin(LitElement)
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
@@ -265,7 +269,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
                     (device) =>
                       html`
                         <ha-card>
-                          <div class="card-header">
+                          <h1 class="card-header">
                             ${device.name}
                             <ha-icon-button
                               icon="hass:delete"
@@ -275,7 +279,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
                               .device=${device.id}
                               @click=${this._deleteDevice}
                             ></ha-icon-button>
-                          </div>
+                          </h1>
                           ${device.entities.map((entityId) => {
                             const entityStateObj = this.hass.states[entityId];
                             if (!entityStateObj) {
@@ -405,7 +409,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
           @click=${this._saveScene}
           class=${classMap({ dirty: this._dirty })}
         >
-          <ha-svg-icon slot="icon" path=${mdiContentSave}></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
         </mwc-fab>
       </hass-tabs-subpage>
     `;
@@ -712,8 +716,15 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
       }
     } catch (err) {
       this._errors = err.body.message || err.message;
+      showToast(this, {
+        message: err.body.message || err.message,
+      });
       throw err;
     }
+  }
+
+  protected handleKeyboardSave() {
+    this._saveScene();
   }
 
   static get styles(): CSSResult[] {

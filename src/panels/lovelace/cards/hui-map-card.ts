@@ -1,4 +1,3 @@
-import "../../../components/ha-icon-button";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   Circle,
@@ -23,24 +22,25 @@ import {
 import { classMap } from "lit-html/directives/class-map";
 import {
   LeafletModuleType,
-  setupLeafletMap,
   replaceTileLayer,
+  setupLeafletMap,
 } from "../../../common/dom/setup-leaflet-map";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { debounce } from "../../../common/util/debounce";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
+import "../../../components/ha-card";
+import "../../../components/ha-icon-button";
 import { fetchRecent } from "../../../data/history";
 import { HomeAssistant } from "../../../types";
 import "../../map/ha-entity-marker";
 import { findEntities } from "../common/find-entites";
+import { installResizeObserver } from "../common/install-resize-observer";
 import { processConfigEntities } from "../common/process-config-entities";
 import { EntityConfig } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
-import "../../../components/ha-card";
 import { MapCardConfig } from "./types";
-import { installResizeObserver } from "../common/install-resize-observer";
 
 @customElement("hui-map-card")
 class HuiMapCard extends LitElement implements LovelaceCard {
@@ -162,7 +162,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   public getCardSize(): number {
     if (!this._config?.aspect_ratio) {
-      return 5;
+      return 7;
     }
 
     const ratio = parseAspectRatio(this._config.aspect_ratio);
@@ -660,17 +660,14 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
-      :host([ispanel]) ha-card {
-        width: 100%;
-        height: 100%;
-      }
-
       :host([ispanel][editMode]) ha-card {
         height: calc(100% - 51px);
       }
 
       ha-card {
         overflow: hidden;
+        width: 100%;
+        height: 100%;
       }
 
       #map {

@@ -1,3 +1,4 @@
+import "@material/mwc-icon-button";
 import "../../../components/ha-icon-button";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
@@ -23,7 +24,7 @@ import { HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
 import "../../../components/ha-svg-icon";
-import { mdiPlus } from "@mdi/js";
+import { mdiPlus, mdiHelpCircle } from "@mdi/js";
 import { stateIcon } from "../../../common/entity/state_icon";
 import { documentationUrl } from "../../../util/documentation-url";
 
@@ -61,7 +62,7 @@ class HaScriptPicker extends LitElement {
                 .script=${script}
                 icon="hass:play"
                 title="${this.hass.localize(
-                  "ui.panel.config.script.picker.activate_script"
+                  "ui.panel.config.script.picker.run_script"
                 )}"
                 @click=${(ev: Event) => this._runScript(ev)}
               ></ha-icon-button>
@@ -141,21 +142,19 @@ class HaScriptPicker extends LitElement {
         )}
         hasFab
       >
-        <ha-icon-button
-          slot="toolbar-icon"
-          icon="hass:help-circle"
-          @click=${this._showHelp}
-        ></ha-icon-button>
+        <mwc-icon-button slot="toolbar-icon" @click=${this._showHelp}>
+          <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
+        </mwc-icon-button>
         <a href="/config/script/edit/new" slot="fab">
           <mwc-fab
             ?is-wide=${this.isWide}
             ?narrow=${this.narrow}
             title="${this.hass.localize(
-              "ui.panel.config.script.picker.add_script"
+              "ui.panel.config.script.picker.create_new_script"
             )}"
             ?rtl=${computeRTL(this.hass)}
           >
-            <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+            <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
           </mwc-fab>
         </a>
       </hass-tabs-subpage-data-table>

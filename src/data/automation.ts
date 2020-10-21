@@ -109,10 +109,17 @@ export interface TemplateTrigger {
   value_template: string;
 }
 
+export interface ContextConstraint {
+  context_id?: string;
+  parent_id?: string;
+  user_id?: string | string[];
+}
+
 export interface EventTrigger {
   platform: "event";
   event_type: string;
-  event_data: any;
+  event_data?: any;
+  context?: ContextConstraint;
 }
 
 export type Trigger =
@@ -217,12 +224,12 @@ export const subscribeTrigger = (
   hass: HomeAssistant,
   onChange: (result: {
     variables: {
-      trigger: {};
+      trigger: Record<string, unknown>;
     };
     context: Context;
   }) => void,
   trigger: Trigger | Trigger[],
-  variables?: {}
+  variables?: Record<string, unknown>
 ) =>
   hass.connection.subscribeMessage(onChange, {
     type: "subscribe_trigger",
@@ -233,7 +240,7 @@ export const subscribeTrigger = (
 export const testCondition = (
   hass: HomeAssistant,
   condition: Condition | Condition[],
-  variables?: {}
+  variables?: Record<string, unknown>
 ) =>
   hass.callWS<{ result: boolean }>({
     type: "test_condition",

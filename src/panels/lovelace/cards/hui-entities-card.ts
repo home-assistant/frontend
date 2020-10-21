@@ -96,7 +96,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     }
     // +1 for the header
     let size =
-      (this._config.title || this._showHeaderToggle ? 1 : 0) +
+      (this._config.title || this._showHeaderToggle ? 2 : 0) +
       (this._config.entities.length || 1);
     if (this._headerElement) {
       const headerSize = computeCardSize(this._headerElement);
@@ -186,7 +186,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
         ${!this._config.title && !this._showHeaderToggle && !this._config.icon
           ? ""
           : html`
-              <div class="card-header">
+              <h1 class="card-header">
                 <div class="name">
                   ${this._config.icon
                     ? html`
@@ -204,11 +204,11 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
                       <hui-entities-toggle
                         .hass=${this._hass}
                         .entities=${(this._configEntities!.filter(
-                          (conf) => !("type" in conf)
+                          (conf) => "entity" in conf
                         ) as EntityConfig[]).map((conf) => conf.entity)}
                       ></hui-entities-toggle>
                     `}
-              </div>
+              </h1>
             `}
         <div id="states" class="card-content">
           ${this._configEntities!.map((entityConf) =>

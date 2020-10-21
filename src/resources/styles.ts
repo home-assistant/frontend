@@ -3,7 +3,7 @@ import { css } from "lit-element";
 export const darkStyles = {
   "primary-background-color": "#111111",
   "card-background-color": "#1c1c1c",
-  "secondary-background-color": "#1e1e1e",
+  "secondary-background-color": "#202020",
   "primary-text-color": "#e1e1e1",
   "secondary-text-color": "#9b9b9b",
   "disabled-text-color": "#6f6f6f",
@@ -61,6 +61,7 @@ export const derivedStyles = {
   "paper-slider-knob-color": "var(--slider-color)",
   "paper-slider-knob-start-color": "var(--slider-color)",
   "paper-slider-pin-color": "var(--slider-color)",
+  "paper-slider-pin-start-color": "var(--slider-color)",
   "paper-slider-active-color": "var(--slider-color)",
   "paper-slider-secondary-color": "var(--slider-secondary-color)",
   "paper-slider-container-color": "var(--slider-bar-color)",
@@ -74,6 +75,8 @@ export const derivedStyles = {
   "mdc-theme-on-secondary": "var(--text-primary-color)",
   "mdc-theme-on-surface": "var(--primary-text-color)",
   "mdc-theme-text-primary-on-background": "var(--primary-text-color)",
+  "mdc-theme-text-secondary-on-background": "var(--secondary-text-color)",
+  "mdc-theme-text-icon-on-background": "var(--secondary-text-color)",
   "app-header-text-color": "var(--text-primary-color)",
   "app-header-background-color": "var(--primary-color)",
   "material-body-text-color": "var(--primary-text-color)",
@@ -110,10 +113,16 @@ export const haStyle = css`
     color: var(--app-header-text-color, white);
   }
 
-  app-toolbar ha-menu-button + [main-title],
-  app-toolbar ha-icon-button-arrow-prev + [main-title],
-  app-toolbar ha-icon-button + [main-title] {
-    margin-left: 24px;
+  app-toolbar {
+    height: var(--header-height);
+  }
+
+  app-header div[sticky] {
+    height: 48px;
+  }
+
+  app-toolbar [main-title] {
+    margin-left: 20px;
   }
 
   h1 {
@@ -273,7 +282,7 @@ export const haStyleDialog = css`
       max-width: calc(
         100% - env(safe-area-inset-right) - env(safe-area-inset-left)
       ) !important;
-      max-height: calc(100% - 64px);
+      max-height: calc(100% - var(--header-height));
 
       position: fixed !important;
       bottom: 0px;
@@ -297,6 +306,10 @@ export const haStyleDialog = css`
   ha-dialog .form {
     padding-bottom: 24px;
     color: var(--primary-text-color);
+  }
+
+  a {
+    color: var(--primary-color);
   }
 
   /* make dialog fullscreen on small screens */

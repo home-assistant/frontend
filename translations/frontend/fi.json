@@ -1793,6 +1793,7 @@
                     "create_person": "Luo henkilö",
                     "description": "Hallitse henkilöitä, joita Home Assistant seuraa",
                     "detail": {
+                        "confirm_delete_user": "Haluatko varmasti poistaa käyttäjän {name}? Voit edelleen seurata käyttäjää, mutta henkilö ei voi enää kirjautua sisään.",
                         "create": "Luo",
                         "delete": "Poista",
                         "device_tracker_intro": "Valitse tälle henkilölle kuuluvat laitteet.",
@@ -2394,6 +2395,9 @@
                                 "weblink": "Nettilinkki"
                             },
                             "name": "Kohteet",
+                            "secondary_info_values": {
+                                "brightness": "Kirkkaus"
+                            },
                             "show_header_toggle": "Näytä otsikkokytkin?",
                             "toggle": "Ota kohteet käyttöön tai poista käytöstä"
                         },

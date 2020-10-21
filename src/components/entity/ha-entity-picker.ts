@@ -1,3 +1,5 @@
+import "@material/mwc-icon-button/mwc-icon-button";
+import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
@@ -20,7 +22,7 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
-import "../ha-icon-button";
+import "../ha-svg-icon";
 import "./state-badge";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
@@ -97,9 +99,11 @@ export class HaEntityPicker extends LitElement {
 
   @property({ type: Boolean }) private _opened = false;
 
-  @query("vaadin-combo-box-light") private _comboBox!: HTMLElement;
+  @query("vaadin-combo-box-light", true) private _comboBox!: HTMLElement;
 
   private _initedStates = false;
+
+  private _states: HassEntity[] = [];
 
   private _getStates = memoizeOne(
     (
@@ -166,7 +170,7 @@ export class HaEntityPicker extends LitElement {
 
   protected updated(changedProps: PropertyValues) {
     if (!this._initedStates || (changedProps.has("_opened") && this._opened)) {
-      const states = this._getStates(
+      this._states = this._getStates(
         this._opened,
         this.hass,
         this.includeDomains,
@@ -174,7 +178,7 @@ export class HaEntityPicker extends LitElement {
         this.entityFilter,
         this.includeDeviceClasses
       );
-      (this._comboBox as any).items = states;
+      (this._comboBox as any).filteredItems = this._states;
       this._initedStates = true;
     }
   }
@@ -192,6 +196,7 @@ export class HaEntityPicker extends LitElement {
         .renderer=${rowRenderer}
         @opened-changed=${this._openedChanged}
         @value-changed=${this._valueChanged}
+        @filter-changed=${this._filterChanged}
       >
         <paper-input
           .autofocus=${this.autofocus}
@@ -206,33 +211,35 @@ export class HaEntityPicker extends LitElement {
           autocorrect="off"
           spellcheck="false"
         >
-          ${this.value && !this.hideClearIcon
-            ? html`
-                <ha-icon-button
-                  aria-label=${this.hass.localize(
-                    "ui.components.entity.entity-picker.clear"
-                  )}
-                  slot="suffix"
-                  class="clear-button"
-                  icon="hass:close"
-                  @click=${this._clearValue}
-                  no-ripple
-                >
-                  Clear
-                </ha-icon-button>
-              `
-            : ""}
+          <div class="suffix" slot="suffix">
+            ${this.value && !this.hideClearIcon
+              ? html`
+                  <mwc-icon-button
+                    .label=${this.hass.localize(
+                      "ui.components.entity.entity-picker.clear"
+                    )}
+                    class="clear-button"
+                    tabindex="-1"
+                    @click=${this._clearValue}
+                    no-ripple
+                  >
+                    <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+                  </mwc-icon-button>
+                `
+              : ""}
 
-          <ha-icon-button
-            aria-label=${this.hass.localize(
-              "ui.components.entity.entity-picker.show_entities"
-            )}
-            slot="suffix"
-            class="toggle-button"
-            .icon=${this._opened ? "hass:menu-up" : "hass:menu-down"}
-          >
-            Toggle
-          </ha-icon-button>
+            <mwc-icon-button
+              .label=${this.hass.localize(
+                "ui.components.entity.entity-picker.show_entities"
+              )}
+              class="toggle-button"
+              tabindex="-1"
+            >
+              <ha-svg-icon
+                .path=${this._opened ? mdiMenuUp : mdiMenuDown}
+              ></ha-svg-icon>
+            </mwc-icon-button>
+          </div>
         </paper-input>
       </vaadin-combo-box-light>
     `;
@@ -258,6 +265,15 @@ export class HaEntityPicker extends LitElement {
     }
   }
 
+  private _filterChanged(ev: CustomEvent): void {
+    const filterString = ev.detail.value.toLowerCase();
+    (this._comboBox as any).filteredItems = this._states.filter(
+      (state) =>
+        state.entity_id.toLowerCase().includes(filterString) ||
+        computeStateName(state).toLowerCase().includes(filterString)
+    );
+  }
+
   private _setValue(value: string) {
     this.value = value;
     setTimeout(() => {
@@ -268,7 +284,10 @@ export class HaEntityPicker extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      paper-input > ha-icon-button {
+      .suffix {
+        display: flex;
+      }
+      mwc-icon-button {
         --mdc-icon-button-size: 24px;
         padding: 0px 2px;
         color: var(--secondary-text-color);

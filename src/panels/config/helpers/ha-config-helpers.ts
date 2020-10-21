@@ -153,6 +153,7 @@ export class HaConfigHelpers extends LitElement {
         .data=${this._getItems(this._stateItems)}
         @row-click=${this._openEditDialog}
         hasFab
+        clickable
         .noDataText=${this.hass.localize(
           "ui.panel.config.helpers.picker.no_helpers"
         )}
@@ -164,7 +165,7 @@ export class HaConfigHelpers extends LitElement {
           )}"
           @click=${this._createHelpler}
         >
-          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </mwc-fab>
       </hass-tabs-subpage-data-table>
     `;

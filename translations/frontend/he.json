@@ -424,7 +424,7 @@
                 "text_to_speak": "טקסט לדיבור"
             },
             "persistent_notification": {
-                "dismiss": "בטל"
+                "dismiss": "נקה"
             },
             "scene": {
                 "activate": "הפעל"
@@ -556,6 +556,35 @@
                 "loading_history": "טוען היסטוריה...",
                 "no_history_found": "לא נמצאה היסטוריה"
             },
+            "logbook": {
+                "by": "על ידי",
+                "by_service": "באמצעות שרות",
+                "messages": {
+                    "became_unavailable": "הפך ללא זמין",
+                    "changed_to_state": "שונה ל- {state}",
+                    "cleared_device_class": "נוקה (לא זוהה {device_class} )",
+                    "detected_device_class": "זוהה {device_class}",
+                    "rose": "עלה",
+                    "set": "הגדר",
+                    "turned_off": "נכבה",
+                    "turned_on": "הופעל",
+                    "was_at_home": "היה בבית",
+                    "was_at_state": "היה ב {state}",
+                    "was_away": "לא היה נמצא",
+                    "was_closed": "היה סגור",
+                    "was_connected": "היה מחובר",
+                    "was_disconnected": "היה מנותק",
+                    "was_locked": "היה נעול",
+                    "was_low": "היה נמוך",
+                    "was_normal": "היה נורמלי",
+                    "was_opened": "היה פתוח",
+                    "was_plugged_in": "היה מחובר",
+                    "was_safe": "היה בטוח",
+                    "was_unlocked": "לא היה נעול",
+                    "was_unplugged": "היה מנותק",
+                    "was_unsafe": "היה לא בטוח"
+                }
+            },
             "media-browser": {
                 "class": {
                     "video": "וידאו"
@@ -621,6 +650,7 @@
                     "unavailable": "ישות זו אינה זמינה כרגע.",
                     "update": "עדכון"
                 },
+                "faq": "תיעוד",
                 "no_unique_id": "לישות זו אין מזהה ייחודי, ולכן לא ניתן לנהל את ההגדרות שלה מממשק המשתמש.",
                 "related": "קשורים",
                 "settings": "הגדרות"
@@ -731,6 +761,9 @@
                 "success": {
                     "description": "האפשרויות נשמרו בהצלחה."
                 }
+            },
+            "quick-bar": {
+                "filter_placeholder": "מסנן ישויות"
             },
             "voice_command": {
                 "did_not_hear": "Home Assistant לא שמע כלום",
@@ -987,6 +1020,7 @@
                             },
                             "unsupported_condition": "תנאי לא נתמך: {condition}"
                         },
+                        "copy_to_clipboard": "העתק ללוח",
                         "default_name": "אוטומציה חדשה",
                         "description": {
                             "label": "תיאור",
@@ -1330,6 +1364,7 @@
                     "different_include": "יתכן דרך דומיין, גלובלי או כלול אחר.",
                     "pick_attribute": "בחר תכונה לדריסה",
                     "picker": {
+                        "documentation": "תיעוד התאמה אישית",
                         "entity": "ישות",
                         "header": "התאמה אישית",
                         "introduction": "כוונן תכונות של כל ישות. ההתאמות הנוספות שנוספו / ייכנסו לתוקף באופן מיידי. התאמות אישיות שהוסרו ייכנסו לתוקף כאשר הישות תעודכן."
@@ -1416,6 +1451,8 @@
                         },
                         "filter": {
                             "filter": "סנן",
+                            "hidden_entities": "{number} hidden {number, plural,\n  one {ישות}\n  other {ישויות}\n}",
+                            "show_all": "הצג הכל",
                             "show_disabled": "הצג ישויות מושבתות",
                             "show_readonly": "הצג ישויות לקריאה בלבד",
                             "show_unavailable": "הצג ישויות לא זמינות"
@@ -1482,7 +1519,7 @@
                     "built_using": "נבנה באמצעות",
                     "caption": "מידע",
                     "custom_uis": "ממשקי משתמש מותאמים אישית:",
-                    "description": "מידע על ההתקנה של Home Assistant שלך",
+                    "description": "צפה במידע על התקנת Home Assistant שלך",
                     "developed_by": "פותח על ידי חבורה של אנשים מדהימים.",
                     "documentation": "תיעוד",
                     "frontend": "frontend-ui",
@@ -1543,7 +1580,7 @@
                         "finish": "סיום",
                         "loading_first_time": "אנא המתן בזמן שהאינטגרציה מותקנת",
                         "not_all_required_fields": "לא כל שדות החובה מולאו.",
-                        "submit": "שלח"
+                        "submit": "המשך"
                     },
                     "configure": "הגדר",
                     "configured": "הוגדר",
@@ -1631,7 +1668,7 @@
                             "open": "פתח"
                         }
                     },
-                    "description": "הגדרת לוחות המחוונים של Lovelace",
+                    "description": "נהל/י את לוח הבקרה של Lovelace",
                     "resources": {
                         "cant_edit_yaml": "אתה משתמש ב- Lovelace במצב YAML, לכן אינך יכול לנהל את המשאבים שלך דרך ממשק המשתמש. נהל אותם ב- configuration.yaml.",
                         "caption": "משאבים",
@@ -1721,6 +1758,9 @@
                         "title": "רענן מידע הרכיב",
                         "wakeup_header": "הוראות התעוררות עבור",
                         "wakeup_instructions_source": "הוראות ההתעוררות מקורן במסד הנתונים של קהילת ה OpenZWave."
+                    },
+                    "select_instance": {
+                        "none_found": "לא הצלחנו למצוא שרת OpenZWave. אם אתה סבור שזה לא נכון, בדוק את הגדרות OpenZWave ו- MQTT וודא ש Home Assistant יכול לתקשר עם ה MQTT broker."
                     }
                 },
                 "person": {
@@ -1731,6 +1771,9 @@
                     "create_person": "צור אדם",
                     "description": "נהל את האנשים ש Home Assistant יעקב אחריהם.",
                     "detail": {
+                        "admin": "מנהל המערכת",
+                        "allow_login": "אפשר לאדם להתחבר",
+                        "confirm_delete_user": "האם אתה בטוח שברצונך למחוק את חשבון המשתמש {name} ? אתה עדיין יכול לעקוב אחר המשתמש, אך הוא כבר לא יוכל להתחבר.",
                         "create": "צור",
                         "delete": "מחק",
                         "device_tracker_intro": "בחר את המכשירים השייכים לאדם זה.",
@@ -1746,8 +1789,11 @@
                         "update": "עדכון"
                     },
                     "introduction": "כאן תוכלו להגדיר כל אדם ב Home Assistant.",
+                    "learn_more": "למד עוד על אנשים",
                     "no_persons_created_yet": "נראה שעדיין לא יצרת אנשים.",
-                    "note_about_persons_configured_in_yaml": "הערה: לא ניתן באמצעות ממשק המשתמש לערוך אנשים המוגדרים ב configuration.yaml."
+                    "note_about_persons_configured_in_yaml": "הערה: לא ניתן באמצעות ממשק המשתמש לערוך אנשים המוגדרים ב configuration.yaml.",
+                    "person_not_found": "לא הצלחנו למצוא את האדם שניסית לערוך.",
+                    "person_not_found_title": "אדם לא נמצא"
                 },
                 "scene": {
                     "activated": "הופעלה סצינה {name}.",
@@ -1823,6 +1869,7 @@
                             "restart": "אתחול",
                             "single": "יחיד (ברירת מחדל)"
                         },
+                        "save_script": "שמור סקריפט",
                         "sequence": "סדר פעולות",
                         "sequence_sentence": "רצף הפעולות של סקריפט זה."
                     },
@@ -1836,6 +1883,7 @@
                         "introduction": "עורך הסקריפטים מאפשר לך ליצור ולערוך סקריפטים. נא כנס לקישור שלמטה כדי לקרוא את ההוראות בכדי לוודא שקבעת את תצורת Home Assistant כהלה.",
                         "learn_more": "למד עוד אודות קבצי סקריפטים",
                         "no_scripts": "לא מצאנו סקריפטים הניתנים לעריכה",
+                        "run_script": "הפעל סקריפט",
                         "show_info": "הצג מידע על התסריט",
                         "trigger_script": "הפעל סקריפט"
                     }
@@ -1865,7 +1913,7 @@
                             "confirm_stop": "האם אתה בטוח שברצונך לעצור את Home Assistant?",
                             "heading": "ניהול שרת",
                             "introduction": "לשלוט על שרת הHome Assistant שלך... מHome Assistant.",
-                            "restart": "אתחול",
+                            "restart": "אתחל",
                             "stop": "עצור"
                         },
                         "validation": {
@@ -1884,6 +1932,7 @@
                     "create_automation": "צור אוטומציה עם תג",
                     "description": "ניהול תגים",
                     "detail": {
+                        "companion_apps": "אפליקציות נלוות",
                         "create": "צור",
                         "create_and_write": "צור וכתוב",
                         "delete": "מחק",
@@ -1892,7 +1941,8 @@
                         "new_tag": "תג חדש",
                         "tag_id": "מזהה תג",
                         "tag_id_placeholder": "מחולל אוטומטית אם ריק",
-                        "update": "עדכן"
+                        "update": "עדכן",
+                        "usage": "תג יכול להפעיל אוטומציה בעת סריקה, באפשרותך להשתמש בתגי NFC, קודי QR או כל סוג אחר של תג. השתמש ב {companion_link} שלנו כדי לכתוב תג זה לתג NFC הניתן לתכנות או ליצור קוד QR להלן."
                     },
                     "edit": "ערוך",
                     "headers": {
@@ -1945,7 +1995,7 @@
                         "discovered_text": "מכשירים יופיעו כאן לאחר שהתגלו.",
                         "discovery_text": ". המכשירים שהתגלו יופיעו כאן. עקוב אחר ההוראות עבור ההתקנים שלך והצב את ההתקנים במצב תיאום.",
                         "header": "אוטומציית Zigbee - הוספת התקנים",
-                        "no_devices_found": "לא נמצאו התקנים כלשהם, וודאו שהם במצב צימוד והקפידו שיהיו דולקים בזמן הגילוי.",
+                        "no_devices_found": "לא נמצאו התקנים כלשהם, וודא שהם במצב צימוד והקפד שיהיו פעילים בזמן החיפוש.",
                         "pairing_mode": "ודא שהמכשירים שלך במצב צימוד. בדוק את הוראות המכשיר שלך כיצד לבצע זאת.",
                         "search_again": "חפש שוב",
                         "spinner": "מחפש מכשירי ZHA Zigbee..."
@@ -2294,6 +2344,17 @@
                     "refresh": "רענן"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "הפעל שירות",
+                            "default_action": "פעולת ברירת מחדל",
+                            "more-info": "מידע נוסף",
+                            "navigate": "נווט",
+                            "none": "אין פעולה",
+                            "toggle": "החלף מצב",
+                            "url": "Url"
+                        }
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "מצבים זמינים",
@@ -2301,6 +2362,7 @@
                             "name": "לוח אזעקה"
                         },
                         "button": {
+                            "default_action_help": "פעולת ברירת המחדל תלויה ביכולות הישות, היא תופעל או שמידע נוסף יוצג.",
                             "description": "כרטיס ה־Button מאפשר להוסיף כפתורים לביצוע משימות.",
                             "name": "כפתור"
                         },
@@ -2330,6 +2392,7 @@
                         },
                         "entities": {
                             "description": "כרטיס היישויות הוא סוג הכרטיס הנפוץ ביותר. הוא מקבץ ישויות יחד לרשימות.",
+                            "entity_row_editor": "עורך שורת ישות",
                             "entity_row": {
                                 "attribute": "שדה",
                                 "button": "כפתור",
@@ -2337,6 +2400,15 @@
                                 "conditional": "מותנה"
                             },
                             "name": "ישויות",
+                            "secondary_info_values": {
+                                "brightness": "בהירות",
+                                "entity-id": "מזהה ישות",
+                                "last-changed": "שונה לאחרונה",
+                                "last-triggered": "הופעל לאחרונה",
+                                "none": "אין מידע משני",
+                                "position": "מיקום",
+                                "tilt-position": "הטה מיקום"
+                            },
                             "show_header_toggle": "הצג שינוי מצב כותרת?",
                             "toggle": "החלף מצב ישויות."
                         },
@@ -2482,14 +2554,19 @@
                         "custom_card": "מותאם אישית",
                         "no_description": "אין תיאור זמין"
                     },
+                    "edit_badges": {
+                        "panel_mode": "תגים אלה לא יוצגו מאחר שתצוגה זו נמצאת במצב \"לוח\"."
+                    },
                     "edit_card": {
                         "add": "הוסף כרטיסייה",
                         "confirm_cancel": "האם אתה בטוח שברצונך לבטל?",
                         "delete": "מחק",
-                        "duplicate": "שכפול כרטיס",
+                        "duplicate": "שכפל כרטיס",
                         "edit": "ערוך",
                         "header": "הגדרות כרטיסייה",
                         "move": "הזז",
+                        "move_after": "העבר כרטיס אחרי",
+                        "move_before": "העבר כרטיס לפני",
                         "options": "אפשרויות נוספות",
                         "pick_card": "בחר את הכרטיסייה שברצונך להוסיף.",
                         "pick_card_view_title": "איזה כרטיס ברצונך להוסיף לתצוגת {name}?",
@@ -2606,7 +2683,7 @@
                     "confirm_delete": "האם אתה בטוח שברצונך למחוק תצוגה זו?",
                     "confirm_delete_existing_cards": "מחיקת תצוגה זו תסיר גם את הכרטיסים",
                     "confirm_delete_existing_cards_text": "האם אתה בטוח שברצונך למחוק את התצוגה '' {name} '' שלך? התצוגה כוללת {number} כרטיסים שיימחקו. לא ניתן לבטל פעולה זו.",
-                    "confirm_delete_text": "האם אתה בטוח שברצונך למחוק את התצוגה \"{name}\"?"
+                    "confirm_delete_text": "האם את/ה בטוח שברצונך למחוק את התצוגה \"{name}\"?"
                 },
                 "warning": {
                     "attribute_not_found": "השדה {attribute} אינו זמין ב־{entity}",
@@ -2781,6 +2858,12 @@
                     "more_integrations": "עוד"
                 },
                 "intro": "האם אתה רוצה לקחת שליטה על הבית שלך ולהצטרף לקהילה הגדולה שלנו?",
+                "restore": {
+                    "description": "לחלופין, באפשרותך לשחזר מגיבוי קודם.",
+                    "hide_log": "הסתר יומן מלא",
+                    "in_progress": "שחזור מתבצע",
+                    "show_log": "הצג יומן מלא"
+                },
                 "user": {
                     "create_account": "צור חשבון",
                     "data": {
