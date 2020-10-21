@@ -55,6 +55,8 @@ export class QuickBar extends LitElement {
 
   @internalProperty() private _filter = "";
 
+  @internalProperty() private _search = "";
+
   @internalProperty() private _opened = false;
 
   @internalProperty() private _commandMode = false;
@@ -116,7 +118,7 @@ export class QuickBar extends LitElement {
           .label=${this.hass.localize(
             "ui.dialogs.quick-bar.filter_placeholder"
           )}
-          .filter=${this._commandMode ? `>${this._filter}` : this._filter}
+          .filter=${this._commandMode ? `>${this._search}` : this._search}
           @keydown=${this._handleInputKeyDown}
           @focus=${this._setFocusFirstListItem}
         >
@@ -237,11 +239,13 @@ export class QuickBar extends LitElement {
 
     if (newFilter.startsWith(">")) {
       this._commandMode = true;
-      this._debouncedSetFilter(newFilter.substring(1));
+      this._search = newFilter.substring(1);
     } else {
       this._commandMode = false;
-      this._debouncedSetFilter(newFilter);
+      this._search = newFilter;
     }
+
+    this._debouncedSetFilter(this._search);
 
     if (oldCommandMode !== this._commandMode) {
       this._items = undefined;
