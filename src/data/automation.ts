@@ -110,7 +110,7 @@ export interface TemplateTrigger {
 }
 
 export interface ContextConstraint {
-  context_id: string;
+  context_id?: string;
   parent_id?: string;
   user_id?: string | string[];
 }

@@ -88,11 +88,17 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
 
   private _usersChanged(ev) {
     ev.stopPropagation();
+    const value = { ...this.trigger };
+    if (!ev.detail.value.length && value.context) {
+      delete value.context.user_id;
+    } else {
+      if (!value.context) {
+        value.context = {};
+      }
+      value.context.user_id = ev.detail.value;
+    }
     fireEvent(this, "value-changed", {
-      value: {
-        ...this.trigger,
-        context: { ...this.trigger.context, user_id: ev.detail.value },
-      },
+      value,
     });
   }
 
