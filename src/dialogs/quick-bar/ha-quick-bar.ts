@@ -29,7 +29,6 @@ import {
   fuzzyFilterSort,
   ScorableTextItem,
 } from "../../common/string/filter/sequence-matching";
-import { debounce } from "../../common/util/debounce";
 import "../../components/ha-circular-progress";
 import "../../components/ha-dialog";
 import "../../components/ha-header-bar";
@@ -237,10 +236,10 @@ export class QuickBar extends LitElement {
 
     if (newFilter.startsWith(">")) {
       this._commandMode = true;
-      this._debouncedSetFilter(newFilter.substring(1));
+      this._filter = newFilter.substring(1);
     } else {
       this._commandMode = false;
-      this._debouncedSetFilter(newFilter);
+      this._filter = newFilter;
     }
 
     if (oldCommandMode !== this._commandMode) {
@@ -248,10 +247,6 @@ export class QuickBar extends LitElement {
       this._focusSet = false;
     }
   }
-
-  private _debouncedSetFilter = debounce((filter: string) => {
-    this._filter = filter;
-  }, 100);
 
   private _setFocusFirstListItem() {
     // @ts-ignore
