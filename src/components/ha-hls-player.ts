@@ -104,7 +104,6 @@ class HaHLSPlayer extends LitElement {
 
   private async _startHls(): Promise<void> {
     const videoEl = this._videoEl;
-    const playlist_url = this.url.replace("master_playlist", "playlist");
     const useExoPlayerPromise = this._getUseExoPlayer();
     const masterPlaylistPromise = fetch(this.url);
 
@@ -127,10 +126,20 @@ class HaHLSPlayer extends LitElement {
 
     this._useExoPlayer = await useExoPlayerPromise;
     let hevcRegexp: RegExp;
-    let masterPlaylist: string;
+    const masterPlaylist = await (await masterPlaylistPromise).text();
+
+    // use regular playlist instead of master playlist if possible
+    let playlist_url: string;
+    const playlistRegexp = /#EXT-X-STREAM-INF:.+?\s+(.+)/;
+    const match = playlistRegexp.exec(masterPlaylist);
+    if (match !== null) {
+      playlist_url = new URL(match[1], this.url).href;
+    } else {
+      playlist_url = this.url;
+    }
+
     if (this._useExoPlayer) {
       hevcRegexp = /CODECS=".*?((hev1)|(hvc1))\..*?"/;
-      masterPlaylist = await (await masterPlaylistPromise).text();
     }
     if (this._useExoPlayer && hevcRegexp!.test(masterPlaylist!)) {
       this._renderHLSExoPlayer(playlist_url);
