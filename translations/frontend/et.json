@@ -779,6 +779,9 @@
                 },
                 "platform_not_loaded": "Sidumist {platform} ei leitud. Lisage see oma konfiguratsiooni, lisades kas \"default_config:\" või ''{platform}:''.",
                 "required_error_msg": "See väli on nõutav",
+                "timer": {
+                    "duration": "Kestus"
+                },
                 "yaml_not_editable": "Selle olemi sätteid ei saa kasutajaliidesest redigeerida. Kasutajaliidesest saab konfigureerida ainult kasutajaliideses loodud olemeid."
             },
             "image_cropper": {
@@ -1521,24 +1524,31 @@
                     "add_prompt": "Selle seadme abil pole veel ühtegi {name} lisatud. Saate lisada  klõpsates ülal nuppu +.",
                     "automation": {
                         "actions": {
-                            "caption": "Kui midagi käivitatakse ..."
+                            "caption": "Kui midagi käivitatakse ...",
+                            "no_actions": "Tegevused puuduvad",
+                            "unknown_action": "Tundmatu tegevus"
                         },
                         "automations": "Automatiseeringud",
                         "conditions": {
-                            "caption": "Tee midagi ainult siis, kui ..."
+                            "caption": "Tee midagi ainult siis, kui ...",
+                            "no_conditions": "Tingimused puuduvad",
+                            "unknown_condition": "Tundmatu tingimus"
                         },
                         "create": "Loo seadmega automatiseering",
                         "no_automations": "Automatiseeringuid pole",
                         "no_device_automations": "Selle seadme jaoks pole automatiseerimisi saadaval.",
                         "triggers": {
-                            "caption": "Tee midagi, kui..."
-                        }
+                            "caption": "Tee midagi, kui...",
+                            "no_triggers": "Päästikud puuduvad",
+                            "unknown_trigger": "Tundmatu päästik"
+                        },
+                        "unknown_automation": "Tundmatu automatiseering"
                     },
                     "cant_edit": "Saate muuta ainult kasutajaliideses loodud üksusi.",
                     "caption": "Seadmed",
                     "confirm_delete": "Oled kindel, et soovid selle seadme kustutada?",
                     "confirm_rename_entity_ids": "Kas soovid ka oma olemite ID-d ümber nimetada?",
-                    "confirm_rename_entity_ids_warning": "See ei muuda ühtegi konfiguratsiooni (nt automatiseerimised, skriptid, stseenid, Lovelace) mis neid olemeid praegu kasutab.Peate neid ise värskendama.",
+                    "confirm_rename_entity_ids_warning": "See ei muuda ühtegi konfiguratsiooni (nt. automatiseerimised, skriptid, stseenid, Lovelace) mis neid olemeid praegu kasutab. Peate neid ise värskendama.",
                     "data_table": {
                         "area": "Ala",
                         "battery": "Aku",
@@ -1656,7 +1666,8 @@
                         "input_datetime": "Kuupäev ja / või kellaaeg",
                         "input_number": "Arvväärtus",
                         "input_select": "Rippmenüü",
-                        "input_text": "Tekst"
+                        "input_text": "Tekst",
+                        "timer": "Taimer"
                     }
                 },
                 "info": {
@@ -1875,6 +1886,8 @@
                         "network": "Võrk",
                         "node_id": "Sõlme ID",
                         "ozw_instance": "OpenZWave'i eksemplar",
+                        "query_stage": "Küsitlemine",
+                        "wakeup_instructions": "Äratusjuhised",
                         "zwave": "Z-Wave"
                     },
                     "device_info": {
@@ -1884,6 +1897,10 @@
                     },
                     "navigation": {
                         "network": "Võrk",
+                        "node": {
+                            "config": "Seaded",
+                            "dashboard": "Kasutajaliidese vaade"
+                        },
                         "nodes": "Sõlmed",
                         "select_instance": "Valige eksemplar"
                     },
@@ -1911,6 +1928,15 @@
                         "header": "Võrgu haldamine",
                         "introduction": "Kogu võrku hõlmavate funktsioonide haldamine.",
                         "node_count": "{count} sõlme"
+                    },
+                    "node_config": {
+                        "header": "Sõlme seaded",
+                        "help_source": "Seadete kirjeldused ja spikri tekst on pärit OpenZWave projektist.",
+                        "introduction": "Halda Z-Wave'i sõlme erinevaid seadistusparameetreid.",
+                        "wakeup_help": "Patareitoitega sõlmed peavad olema ärkvel, et muuta nende sätteid. Kui sõlm ei ole ärkvel,  püüab OpenZWave uuendada sõlme sätteid järgmine kord kui see ärkab, mis võib olla mitu tundi (või päeva) hiljem. Seadme äratamiseks toimi järgnevalt:"
+                    },
+                    "node_metadata": {
+                        "product_manual": "Toote kasutusjuhend"
                     },
                     "node_query_stages": {
                         "associations": "Seosgruppide ja liikmesuse värskendamine",
@@ -2508,6 +2534,7 @@
                         "no_listeners": "See mall ei kuula olekuga muudetud sündmusi ega värskenda seda automaatselt.",
                         "reset": "Lähtesta demomallile",
                         "template_extensions": "Home Assistanti mallilaiendid",
+                        "time": "See mall värskendub iga 60 sekundi järel pärast viimast olekut muutnud sündmust.",
                         "title": "Mall",
                         "unknown_error_template": "Malli renderdamisel ilmnes tundmatu viga"
                     }
@@ -2858,7 +2885,7 @@
                     "migrate": {
                         "header": "Konfiguratsioon ei ühildu",
                         "migrate": "Siirda seaded",
-                        "para_migrate": "Home Assistant võib kõikidele kaartidele ja vaadetele automaatselt ID-d lisada, kui vajutad nupule \"Siirda seaded\".",
+                        "para_migrate": "Home Assistant võib kõikidele kaartidele ja vaadetele automaatselt ID-d lisada, kui vajutad nupule 'Siirda seaded'.",
                         "para_no_id": "Sellel elemendil puudub ID. Lisa sellele elemendile ID 'ui-lovelace.yaml' failis."
                     },
                     "move_card": {

@@ -4,11 +4,12 @@ import { hassioApiResultExtractor, HassioResponse } from "./common";
 export type HassioHostInfo = any;
 
 export interface HassioHassOSInfo {
-  version: string;
+  board: "ova" | "rpi";
+  update_available: boolean;
+  version_cli_latest: string;
   version_cli: string;
   version_latest: string;
-  version_cli_latest: string;
-  board: "ova" | "rpi";
+  version: string;
 }
 
 export const fetchHassioHostInfo = async (hass: HomeAssistant) => {

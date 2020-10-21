@@ -108,8 +108,8 @@ class HassioHostInfo extends LitElement {
             <span slot="description">
               ${this.hostInfo.operating_system}
             </span>
-            ${this.hostInfo.version !== this.hostInfo.version_latest &&
-            this.hostInfo.features.includes("hassos")
+            ${this.hostInfo.features.includes("hassos") &&
+            this.hostInfo.update_available
               ? html`
                   <ha-progress-button
                     title="Update the host OS"

@@ -66,7 +66,7 @@ class HassioRouter extends HassRouterPage {
     },
   };
 
-  @internalProperty() private _supervisorInfo: HassioSupervisorInfo;
+  @internalProperty() private _supervisorInfo?: HassioSupervisorInfo;
 
   @internalProperty() private _hostInfo: HassioHostInfo;
 
@@ -74,7 +74,7 @@ class HassioRouter extends HassRouterPage {
 
   @internalProperty() private _hassOsInfo?: HassioHassOSInfo;
 
-  @internalProperty() private _hassInfo: HassioHomeAssistantInfo;
+  @internalProperty() private _hassInfo?: HassioHomeAssistantInfo;
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);

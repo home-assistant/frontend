@@ -62,7 +62,8 @@ const ISSUES = {
 class HassioSupervisorInfo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public supervisorInfo!: HassioSupervisorInfoType;
+  @property({ attribute: false })
+  public supervisorInfo!: HassioSupervisorInfoType;
 
   @property() public hostInfo!: HassioHostInfoType;
 
@@ -85,7 +86,7 @@ class HassioSupervisorInfo extends LitElement {
             <span slot="description">
               ${this.supervisorInfo.version_latest}
             </span>
-            ${this.supervisorInfo.version !== this.supervisorInfo.version_latest
+            ${this.supervisorInfo.update_available
               ? html`
                   <ha-progress-button
                     title="Update the supervisor"
