@@ -303,9 +303,6 @@ class DialogZoneDetail extends LitElement {
         ha-location-editor {
           margin-top: 16px;
         }
-        ha-user-picker {
-          margin-top: 16px;
-        }
         a {
           color: var(--primary-color);
         }
