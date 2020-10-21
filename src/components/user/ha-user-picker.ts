@@ -24,7 +24,7 @@ class HaUserPicker extends LitElement {
 
   @property() public label?: string;
 
-  @property() public value?: string;
+  @property() public value = "";
 
   @property() public users?: User[];
 
@@ -43,7 +43,7 @@ class HaUserPicker extends LitElement {
       <paper-dropdown-menu-light .label=${this.label}>
         <paper-listbox
           slot="dropdown-content"
-          .selected=${this._value}
+          .selected=${this.value}
           attr-for-selected="data-user-id"
           @iron-select=${this._userChanged}
         >
@@ -67,10 +67,6 @@ class HaUserPicker extends LitElement {
     `;
   }
 
-  private get _value() {
-    return this.value || "";
-  }
-
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     if (this.users === undefined) {
@@ -83,7 +79,7 @@ class HaUserPicker extends LitElement {
   private _userChanged(ev) {
     const newValue = ev.detail.item.dataset.userId;
 
-    if (newValue !== this._value) {
+    if (newValue !== this.value) {
       this.value = ev.detail.value;
       setTimeout(() => {
         fireEvent(this, "value-changed", { value: newValue });

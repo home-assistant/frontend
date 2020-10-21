@@ -1,4 +1,6 @@
 import {
+  css,
+  CSSResult,
   customElement,
   html,
   LitElement,
@@ -10,6 +12,8 @@ import type { PolymerChangedEvent } from "../../polymer-types";
 import type { HomeAssistant } from "../../types";
 import { User } from "../../data/user";
 import "./ha-user-picker";
+import { mdiClose } from "@mdi/js";
+import memoizeOne from "memoize-one";
 
 @customElement("ha-users-picker")
 class HaUsersPickerLight extends LitElement {
@@ -44,17 +48,24 @@ class HaUsersPickerLight extends LitElement {
               .users=${this.users}
               @value-changed=${this._userChanged}
             ></ha-user-picker>
+            <mwc-icon-button .userId=${user_id} @click=${this._removeUser}>
+              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+            </mwc-icon-button>
           </div>
         `
       )}
       <ha-user-picker
         .label=${this.pickUserLabel}
         .hass=${this.hass}
-        .users=${this.users}
+        .users=${this._notSelectedUsers(this.users, currentUsers)}
         @value-changed=${this._addUser}
       ></ha-user-picker>
     `;
   }
+
+  private _notSelectedUsers = memoizeOne((users, currentUsers) =>
+    users?.filter((user) => !currentUsers.includes(user.id))
+  );
 
   private get _currentUsers() {
     return this.value || [];
@@ -96,6 +107,20 @@ class HaUsersPickerLight extends LitElement {
     }
 
     this._updateUsers([...currentUsers, toAdd]);
+  }
+
+  private _removeUser(event) {
+    const userId = (event.currentTarget as any).userId;
+    this._updateUsers(this._currentUsers.filter((user) => user !== userId));
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      div {
+        display: flex;
+        align-items: center;
+      }
+    `;
   }
 }
 
