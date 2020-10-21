@@ -2279,6 +2279,7 @@
           "configure_ui": "Edit Dashboard",
           "help": "Help",
           "refresh": "Refresh",
+          "start_conversation": "Start conversation",
           "reload_resources": "Reload resources",
           "exit_edit_mode": "Exit UI edit mode",
           "close": "Close"

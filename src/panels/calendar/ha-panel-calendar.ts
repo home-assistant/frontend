@@ -179,7 +179,7 @@ class PanelCalendar extends LitElement {
         }
 
         :host(:not([narrow])) .content {
-          height: calc(100vh - 64px);
+          height: calc(100vh - var(--header-height);
         }
 
         .calendar-list {

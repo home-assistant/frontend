@@ -112,12 +112,16 @@ export const haStyle = css`
     color: var(--app-header-text-color, white);
   }
 
-  app-toolbar [main-title] {
-    margin-left: 20px;
+  app-toolbar {
+    height: var(--header-height);
   }
 
-  ha-menu-button {
-    margin-left: 4px;
+  app-header div[sticky] {
+    height: 48px;
+  }
+
+  app-toolbar [main-title] {
+    margin-left: 20px;
   }
 
   h1 {
@@ -277,7 +281,7 @@ export const haStyleDialog = css`
       max-width: calc(
         100% - env(safe-area-inset-right) - env(safe-area-inset-left)
       ) !important;
-      max-height: calc(100% - 64px);
+      max-height: calc(100% - var(--header-height));
 
       position: fixed !important;
       bottom: 0px;
