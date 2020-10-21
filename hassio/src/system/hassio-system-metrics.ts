@@ -21,11 +21,11 @@ import { fetchHassioStats, HassioStats } from "../../../src/data/hassio/common";
 import { HassioHostInfo } from "../../../src/data/hassio/host";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
+import { bytesToString } from "../../../src/util/bytes-to-string";
 import {
   getValueInPercentage,
   roundWithOneDecimal,
 } from "../../../src/util/calculate";
-import { bytesToString } from "../../../src/util/bytes-to-string";
 import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-system-metrics")
@@ -65,9 +65,7 @@ class HassioSystemMetrics extends LitElement {
       {
         description: "Used Space",
         value: this._getUsedSpace(this.hostInfo),
-        tooltip: `${
-          this.hostInfo.disk_used
-        } GB/${this.hostInfo.disk_total} GB`,
+        tooltip: `${this.hostInfo.disk_used} GB/${this.hostInfo.disk_total} GB`,
       },
     ];
 
