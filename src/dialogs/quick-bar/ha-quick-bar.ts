@@ -329,11 +329,6 @@ export class QuickBar extends LitElement {
           padding: 8px 20px 0px;
         }
 
-        mwc-list-item span[slot="secondary"],
-        ha-icon[slot="graphic"] {
-          color: var(--secondary-text-color);
-        }
-
         ha-dialog {
           --dialog-z-index: 8;
           --dialog-content-padding: 0;
@@ -347,10 +342,6 @@ export class QuickBar extends LitElement {
             --dialog-surface-top: 40px;
             --mdc-dialog-max-height: calc(100% - 72px);
           }
-        }
-
-        ha-icon {
-          color: var(--secondary-text-color);
         }
 
         ha-svg-icon.prefix {
