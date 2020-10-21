@@ -14,8 +14,8 @@ class HaLabeledSlider extends PolymerElement {
         }
 
         .title {
-          margin-bottom: 16px;
-          color: var(--secondary-text-color);
+          margin-bottom: 8px;
+          color: var(--primary-text-color);
         }
 
         .slider-container {
@@ -42,7 +42,6 @@ class HaLabeledSlider extends PolymerElement {
           max="[[max]]"
           step="[[step]]"
           pin="[[pin]]"
-          disabled="[[disabled]]"
           disabled="[[disabled]]"
           value="{{value}}"
         ></ha-slider>

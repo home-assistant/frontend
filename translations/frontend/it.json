@@ -41,7 +41,7 @@
             },
             "preset_mode": {
                 "activity": "Attività",
-                "away": "Stand by",
+                "away": "Fuori casa",
                 "boost": "Boost",
                 "comfort": "Comfort",
                 "eco": "Protezione antigelo",
@@ -571,7 +571,34 @@
                 "no_history_found": "Nessuno storico trovato."
             },
             "logbook": {
-                "entries_not_found": "Non sono state trovate voci nel registro."
+                "by": "da",
+                "by_service": "dal servizio",
+                "entries_not_found": "Non sono state trovate voci nel registro.",
+                "messages": {
+                    "became_unavailable": "non è più disponibile",
+                    "changed_to_state": "cambiato in {state}",
+                    "cleared_device_class": "cancellato (nessun {device_class} rilevato)",
+                    "detected_device_class": "rilevato {device_class}",
+                    "rose": "sorto",
+                    "set": "impostato",
+                    "turned_off": "spento",
+                    "turned_on": "acceso",
+                    "was_at_home": "era a casa",
+                    "was_at_state": "era a {state}",
+                    "was_away": "era fuori casa",
+                    "was_closed": "era chiuso",
+                    "was_connected": "era connesso",
+                    "was_disconnected": "era disconnesso",
+                    "was_locked": "era bloccato",
+                    "was_low": "era basso",
+                    "was_normal": "era normale",
+                    "was_opened": "era aperto",
+                    "was_plugged_in": "è stato collegato",
+                    "was_safe": "era sicuro",
+                    "was_unlocked": "era sbloccato",
+                    "was_unplugged": "è stato scollegato",
+                    "was_unsafe": "non era sicuro"
+                }
             },
             "media-browser": {
                 "audio_not_supported": "Il tuo browser non supporta l'elemento audio.",
@@ -648,9 +675,23 @@
                     "week": "{count} {count, plural,\none {settimana}\nother {settimane}\n}"
                 },
                 "future": "tra {time}",
+                "future_duration": {
+                    "day": "tra {count} {count, plural,\n  one {giorno}\n  other {giorni}\n}",
+                    "hour": "tra {count} {count, plural,\n  one {ora}\n  other {ore}\n}",
+                    "minute": "tra {count} {count, plural,\n  one {minuto}\n  other {minuti}\n}",
+                    "second": "tra {count} {count, plural,\n  one {secondo}\n  other {secondi}\n}",
+                    "week": "tra {count} {count, plural,\n  one {settimana}\n  other {settimane}\n}"
+                },
                 "just_now": "Proprio ora",
                 "never": "Mai",
-                "past": "{time} fa"
+                "past": "{time} fa",
+                "past_duration": {
+                    "day": "{count} {count, plural,\n  one {giorno}\n  other {giorni}\n} fa",
+                    "hour": "{count} {count, plural,\n  one {ora}\n  other {ore}\n} fa",
+                    "minute": "{count} {count, plural,\n  one {minuto}\n  other {minuti}\n} fa",
+                    "second": "{count} {count, plural,\n  one {secondo}\n  other {secondi}\n} fa",
+                    "week": "{count} {count, plural,\n  one {settimana}\n  other {settimane}\n} fa"
+                }
             },
             "service-picker": {
                 "service": "Servizio"
@@ -684,7 +725,8 @@
                     "unavailable": "Questa entità non è attualmente disponibile.",
                     "update": "Aggiorna"
                 },
-                "no_unique_id": "Questa entità non ha un ID univoco, pertanto le sue impostazioni non possono essere gestite dall'Interfaccia Utente.",
+                "faq": "documentazione",
+                "no_unique_id": "Questa entità non ha un ID univoco, pertanto le sue impostazioni non possono essere gestite dall'Interfaccia Utente. Vedere {faq_link} per maggiori dettagli.",
                 "related": "Relazionato",
                 "settings": "Impostazioni"
             },
@@ -741,6 +783,7 @@
                 "dismiss": "Chiudi finestra di dialogo",
                 "edit": "Modifica entità",
                 "history": "Storico",
+                "last_updated": "Ultimo aggiornamento",
                 "person": {
                     "create_zone": "Crea zona dalla posizione corrente"
                 },
@@ -795,6 +838,44 @@
                 "success": {
                     "description": "Opzioni salvate correttamente."
                 }
+            },
+            "quick-bar": {
+                "commands": {
+                    "reload": {
+                        "automation": "Ricarica le Automazioni",
+                        "command_line": "Ricarica le entità di riga di comando",
+                        "core": "Ricarica la Posizione e le Personalizzazioni",
+                        "filesize": "Ricarica le entità di dimensione file",
+                        "filter": "Ricarica le entità filtro",
+                        "generic": "Ricarica le entità della telecamera IP generica",
+                        "generic_thermostat": "Ricarica le entità del termostato generico",
+                        "group": "Ricarica gruppi, entità di gruppo e servizi di notifica",
+                        "history_stats": "Ricarica le entità delle statistiche storiche",
+                        "homekit": "Ricarica HomeKit",
+                        "input_boolean": "Ricarica input booleani",
+                        "input_datetime": "Ricarica input data e/o orari",
+                        "input_number": "Ricarica input numerici",
+                        "input_select": "Ricarica input a discesa",
+                        "input_text": "Ricarica input testuali",
+                        "min_max": "Ricarica le entità min/max",
+                        "mqtt": "Ricarica le entità MQTT",
+                        "person": "Ricarica le persone",
+                        "ping": "Ricarica le entità del sensore binario Ping",
+                        "reload": "Ricarica {domain}",
+                        "rest": "Ricarica le entità di rest e i servizi di notifica",
+                        "rpi_gpio": "Ricarica le entità GPIO di Raspberry Pi",
+                        "scene": "Ricarica le Scene",
+                        "script": "Ricarica gli Script",
+                        "smtp": "Ricarica i servizi di notifica SMTP",
+                        "statistics": "Ricarica le entità statistiche",
+                        "telegram": "Ricarica i servizi di notifica Telegram",
+                        "template": "Ricarica le entità modello",
+                        "trend": "Ricarica le entità di tendenza",
+                        "universal": "Ricarica le entità del lettore multimediale universale",
+                        "zone": "Ricarica le Zone"
+                    }
+                },
+                "filter_placeholder": "Filtro Entità"
             },
             "voice_command": {
                 "did_not_hear": "Home Assistant non ha sentito nulla",
@@ -1040,7 +1121,16 @@
                                     "before": "Prima",
                                     "label": "Tempo",
                                     "type_input": "Valore di un aiutante data/ora",
-                                    "type_value": "Tempo fisso"
+                                    "type_value": "Tempo fisso",
+                                    "weekdays": {
+                                        "fri": "Venerdì",
+                                        "mon": "Lunedi",
+                                        "sat": "Sabato",
+                                        "sun": "Domenica",
+                                        "thu": "Giovedì",
+                                        "tue": "Martedì",
+                                        "wed": "Mercoledì"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Entità con posizione",
@@ -1050,6 +1140,7 @@
                             },
                             "unsupported_condition": "Nessun supporto dell'Interfaccia Utente per la condizione: {condition}"
                         },
+                        "copy_to_clipboard": "Copia negli Appunti",
                         "default_name": "Nuova Automazione",
                         "description": {
                             "label": "Descrizione",
@@ -1407,6 +1498,7 @@
                     "different_include": "Possibilmente tramite un dominio, un glob o un'altra inclusione.",
                     "pick_attribute": "Scegli un attributo da sovrascrivere",
                     "picker": {
+                        "documentation": "Documentazione di personalizzazione",
                         "entity": "Entità",
                         "header": "Personalizzazioni",
                         "introduction": "Modificare gli attributi per entità. \nLe personalizzazioni aggiunte/modificate avranno effetto immediato. \nLe personalizzazioni rimosse avranno effetto quando l'entità sarà aggiornata."
@@ -1494,6 +1586,8 @@
                         },
                         "filter": {
                             "filter": "Filtro",
+                            "hidden_entities": "{number} {number, plural,\n  one {entità}\n  other {entità} \n} nascoste",
+                            "show_all": "Mostra tutto",
                             "show_disabled": "Mostra entità disabilitate",
                             "show_readonly": "Mostra entità di sola lettura",
                             "show_unavailable": "Mostra entità non disponibili"
@@ -1855,7 +1949,8 @@
                     },
                     "select_instance": {
                         "header": "Seleziona un'istanza OpenZWave",
-                        "introduction": "Hai più di un'istanza OpenZWave in esecuzione. Quale istanza vorresti gestire?"
+                        "introduction": "Hai più di un'istanza OpenZWave in esecuzione. Quale istanza vorresti gestire?",
+                        "none_found": "Non siamo riusciti a trovare un'istanza di OpenZWave. Se ritieni che ciò non sia corretto, controlla le tue impostazioni di OpenZWave e MQTT e assicurati che Home Assistant possa comunicare con il tuo broker MQTT."
                     },
                     "services": {
                         "add_node": "Aggiungi Nodo",
@@ -1870,6 +1965,9 @@
                     "create_person": "Crea persona",
                     "description": "Gestisci le persone tracciate da Home Assistant",
                     "detail": {
+                        "admin": "Amministratore",
+                        "allow_login": "Consenti alla persona di accedere",
+                        "confirm_delete_user": "Sei sicuro di voler eliminare l'account utente per {name}? Puoi ancora tenere traccia dell'utente, ma la persona non sarà più in grado di accedere.",
                         "create": "Crea",
                         "delete": "Elimina",
                         "device_tracker_intro": "Seleziona i dispositivi che appartengono a questa persona.",
@@ -1885,8 +1983,11 @@
                         "update": "Aggiorna"
                     },
                     "introduction": "Qui è possibile definire ogni persona di interesse in Home Assistant.",
+                    "learn_more": "Ulteriori informazioni sulle persone",
                     "no_persons_created_yet": "Sembra che tu non abbia ancora creato nessuna persona.",
-                    "note_about_persons_configured_in_yaml": "Nota: le persone configurate tramite configuration.yaml non possono essere modificate tramite l'interfaccia utente."
+                    "note_about_persons_configured_in_yaml": "Nota: le persone configurate tramite configuration.yaml non possono essere modificate tramite l'Interfaccia Utente.",
+                    "person_not_found": "Non è stato possibile trovare la persona che si stava tentando di modificare.",
+                    "person_not_found_title": "Persona non trovata"
                 },
                 "scene": {
                     "activated": "Scena attivata {name}.",
@@ -1962,11 +2063,12 @@
                             "restart": "Riavviare",
                             "single": "Singolo (predefinito)"
                         },
+                        "save_script": "Salva script",
                         "sequence": "Sequenza",
                         "sequence_sentence": "Sequenza di azioni di questo script."
                     },
                     "picker": {
-                        "add_script": "Aggiungi script",
+                        "add_script": "Crea nuovo script",
                         "edit_script": "Modifica script",
                         "header": "Editor script",
                         "headers": {
@@ -1975,53 +2077,54 @@
                         "introduction": "L'Editor di Script consente di creare e modificare Script. Seguire il collegamento seguente per leggere le istruzioni e assicurarsi di aver configurato correttamente Home Assistant.",
                         "learn_more": "Ulteriori informazioni sugli script",
                         "no_scripts": "Non è stato possibile trovare alcuno script modificabile",
+                        "run_script": "Esegui script",
                         "show_info": "Mostra informazioni sullo script",
                         "trigger_script": "Attiva script"
                     }
                 },
                 "server_control": {
-                    "caption": "Controlli del server",
-                    "description": "Riavviare e arrestare il server Home Assistant",
+                    "caption": "Controlli del Server",
+                    "description": "Riavviare e arrestare il Server Home Assistant",
                     "section": {
                         "reloading": {
                             "automation": "Ricarica le Automazioni",
-                            "command_line": "Ricarica le entità della riga di comando",
+                            "command_line": "Ricarica le entità di riga di comando",
                             "core": "Ricarica la Posizione e le Personalizzazioni",
-                            "filesize": "Ricarica entità dimensione file",
-                            "filter": "Ricaricare le entità filtro",
-                            "generic": "Ricaricare le entità delle generiche telecamere IP",
-                            "generic_thermostat": "Ricaricare le entità termostati generiche",
+                            "filesize": "Ricarica le entità di dimensione file",
+                            "filter": "Ricarica le entità filtro",
+                            "generic": "Ricarica le entità della telecamera IP generica",
+                            "generic_thermostat": "Ricarica le entità del termostato generico",
                             "group": "Ricarica gruppi, entità di gruppo e servizi di notifica",
                             "heading": "Ricarica Configurazione YAML",
-                            "history_stats": "Ricarica le entità delle statistiche della cronologia",
+                            "history_stats": "Ricarica le entità delle statistiche storiche",
                             "homekit": "Ricarica HomeKit",
                             "input_boolean": "Ricarica input booleani",
-                            "input_datetime": "Ricarica input data e/o tempo",
+                            "input_datetime": "Ricarica input data e/o orari",
                             "input_number": "Ricarica input numerici",
                             "input_select": "Ricarica input a discesa",
                             "input_text": "Ricarica input testuali",
-                            "introduction": "Alcune parti di Home Assistant possono essere ricaricate senza richiedere un riavvio. Premendo su Ricarica si rimuoverà la loro Configurazione YAML  attuale e si caricherà la versione aggiornata.",
-                            "min_max": "Ricaricare le entità min/max",
-                            "mqtt": "Ricarica le entità mqtt",
+                            "introduction": "Alcune parti di Home Assistant possono essere ricaricate senza richiedere un riavvio. Premendo su Ricarica si rimuoverà la loro Configurazione YAML attuale e si caricherà la versione aggiornata.",
+                            "min_max": "Ricarica le entità min/max",
+                            "mqtt": "Ricarica le entità MQTT",
                             "person": "Ricarica le persone",
-                            "ping": "Ricarica le entità del sensore binario ping",
+                            "ping": "Ricarica le entità del sensore binario Ping",
                             "reload": "Ricarica {domain}",
                             "rest": "Ricarica le entità di rest e i servizi di notifica",
-                            "rpi_gpio": "Ricarica le entità GPIO di Raspberry Pi ",
+                            "rpi_gpio": "Ricarica le entità GPIO di Raspberry Pi",
                             "scene": "Ricarica le Scene",
                             "script": "Ricarica gli Script",
-                            "smtp": "Ricarica i servizi di notifica smtp",
-                            "statistics": "Ricaricare le entità statistiche",
-                            "telegram": "Ricarica i servizi di notifica telegram",
-                            "template": "Ricaricare le entità modello",
-                            "trend": "Ricaricare le entità di tendenza",
+                            "smtp": "Ricarica i servizi di notifica SMTP",
+                            "statistics": "Ricarica le entità statistiche",
+                            "telegram": "Ricarica i servizi di notifica Telegram",
+                            "template": "Ricarica le entità modello",
+                            "trend": "Ricarica le entità di tendenza",
                             "universal": "Ricarica le entità del lettore multimediale universale",
-                            "zone": "Ricarica le zone"
+                            "zone": "Ricarica le Zone"
                         },
                         "server_management": {
                             "confirm_restart": "Sei sicuro di voler riavviare Home Assistant?",
-                            "confirm_stop": "Sei sicuro di voler fermare Home Assistant?",
-                            "heading": "Gestione del server",
+                            "confirm_stop": "Sei sicuro di voler arrestare Home Assistant?",
+                            "heading": "Gestione del Server",
                             "introduction": "Controllare il server Home Assistant... da Home Assistant.",
                             "restart": "Riavviare",
                             "stop": "Arrestare"
@@ -2042,6 +2145,7 @@
                     "create_automation": "Creare un'automazione con l'etichetta",
                     "description": "Gestisci le etichette",
                     "detail": {
+                        "companion_apps": "app complementari",
                         "create": "Crea",
                         "create_and_write": "Crea e Scrivi",
                         "delete": "Cancella",
@@ -2050,7 +2154,8 @@
                         "new_tag": "Nuova Etichetta",
                         "tag_id": "Id Etichetta",
                         "tag_id_placeholder": "Autogenerato quando lasciato vuoto",
-                        "update": "Aggiorna"
+                        "update": "Aggiorna",
+                        "usage": "Un tag può attivare un'automazione quando viene scansionato, puoi utilizzare tag NFC, codici QR o qualsiasi altro tipo di tag. Utilizza il nostro {companion_link} per scrivere questo tag su un tag NFC programmabile o crea un codice QR di seguito."
                     },
                     "edit": "Modifica",
                     "headers": {
@@ -2214,12 +2319,12 @@
                     "configured_in_yaml": "Le zone configurate tramite configuration.yaml non possono essere modificate tramite l'interfaccia utente.",
                     "confirm_delete": "Sei sicuro di voler cancellare questa zona?",
                     "create_zone": "Crea zona",
-                    "description": "Gestisci le zone in cui vuoi rintracciare le persone",
+                    "description": "Gestire le zone in cui si desidera tenere traccia delle persone",
                     "detail": {
                         "create": "Crea",
                         "delete": "Elimina",
                         "icon": "Icona",
-                        "icon_error_msg": "L'icona dovrebbe essere nel formato prefisso:nome_icona, ad esempio: mdi:home",
+                        "icon_error_msg": "L'icona deve essere nel formato \"prefisso:nome_icona\", ad esempio: \"mdi:home\"",
                         "latitude": "Latitudine",
                         "longitude": "Logitudine",
                         "name": "Nome",
@@ -2463,6 +2568,20 @@
                     "refresh": "Aggiorna"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "Chiama il Servizio",
+                            "default_action": "Azione predefinita",
+                            "more-info": "Ulteriori informazioni",
+                            "navigate": "Navigare",
+                            "none": "Nessuna Azione",
+                            "toggle": "Commutatore",
+                            "url": "Url"
+                        },
+                        "editor_service_data": "I dati di servizio possono essere inseriti solo nell'editor del codice",
+                        "navigation_path": "Percorso di navigazione",
+                        "url_path": "Percorso Url"
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "Stati disponibili",
@@ -2470,12 +2589,20 @@
                             "name": "Pannello di allarme"
                         },
                         "button": {
+                            "default_action_help": "L'azione predefinita dipende dalle capacità dell'entità, verrà attivata o disattivata o verranno mostrate più informazioni.",
                             "description": "La scheda Pulsante consente di aggiungere pulsanti per eseguire attività.",
                             "name": "Pulsante"
                         },
                         "calendar": {
+                            "calendar_entities": "Entità Calendario",
                             "description": "La scheda Calendario mostra un calendario che include le visualizzazioni per giorno, settimana ed elenco",
-                            "name": "Calendario"
+                            "inital_view": "Vista iniziale",
+                            "name": "Calendario",
+                            "views": {
+                                "dayGridDay": "Giorno",
+                                "dayGridMonth": "Mese",
+                                "listWeek": "Elenco"
+                            }
                         },
                         "conditional": {
                             "card": "Scheda",
@@ -2494,7 +2621,8 @@
                         },
                         "entities": {
                             "description": "La scheda Entità è il tipo di scheda più comune. Raggruppa gli elementi in elenchi.",
-                            "edit_special_row": "Modificare la riga utilizzando l'editor di codice",
+                            "edit_special_row": "Visualizza i dettagli di questa riga facendo clic sul pulsante di modifica",
+                            "entity_row_editor": "Editor di riga dell'entità",
                             "entity_row": {
                                 "attribute": "Attributo",
                                 "button": "Pulsante",
@@ -2507,6 +2635,15 @@
                                 "weblink": "Collegamento Web"
                             },
                             "name": "Entità",
+                            "secondary_info_values": {
+                                "brightness": "Luminosità",
+                                "entity-id": "ID Entità",
+                                "last-changed": "Ultima modifica",
+                                "last-triggered": "Ultima attivazione",
+                                "none": "Nessuna informazione secondaria",
+                                "position": "Posizione",
+                                "tilt-position": "Posizione di inclinazione"
+                            },
                             "show_header_toggle": "Mostrare l'interruttore dell'intestazione?",
                             "special_row": "riga speciale",
                             "toggle": "Attiva/disattiva entità."
@@ -2659,6 +2796,9 @@
                         "entity": "Entità",
                         "no_description": "Nessuna descrizione disponibile."
                     },
+                    "edit_badges": {
+                        "panel_mode": "Questi badge non verranno visualizzati perché questa vista è in \"Modalità pannello\"."
+                    },
                     "edit_card": {
                         "add": "Aggiungi scheda",
                         "confirm_cancel": "Sei sicuro di voler annullare?",
@@ -2667,6 +2807,8 @@
                         "edit": "Modifica",
                         "header": "Configurazione della scheda",
                         "move": "Sposta nella vista",
+                        "move_after": "Sposta la scheda dopo",
+                        "move_before": "Sposta la scheda prima",
                         "options": "Altre opzioni",
                         "pick_card": "Quale scheda vorresti aggiungere?",
                         "pick_card_view_title": "Quale scheda vorresti aggiungere alla tua vista {name}?",
@@ -2750,7 +2892,7 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "In questo modo viene eseguito il rendering della prima scheda a larghezza intera; altre schede in questa vista non verranno renderizzate.",
+                            "description": "Questo renderizza la prima scheda a tutta larghezza. Le altre schede in questa vista e i badge non verranno renderizzati.",
                             "title": "Modalità pannello?",
                             "warning_multiple_cards": "Questa vista contiene più di una scheda, ma una vista a pannello può mostrare solo una scheda."
                         }
@@ -2819,7 +2961,7 @@
                                 "init": {
                                     "data": {
                                         "password": "Password",
-                                        "username": "Username"
+                                        "username": "Nome utente"
                                     }
                                 },
                                 "mfa": {
@@ -2960,6 +3102,12 @@
                     "more_integrations": "Di Più"
                 },
                 "intro": "Sei pronto per risvegliare la tua casa, reclamare la tua privacy e far parte di una comunità mondiale di smanettoni?",
+                "restore": {
+                    "description": "In alternativa è possibile ripristinare da un'istantanea precedente.",
+                    "hide_log": "Nascondi il registro completo",
+                    "in_progress": "Ripristino in corso",
+                    "show_log": "Mostra il registro completo"
+                },
                 "user": {
                     "create_account": "Crea un Account",
                     "data": {

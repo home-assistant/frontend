@@ -571,7 +571,34 @@
                 "no_history_found": "Aucun historique des valeurs trouvé."
             },
             "logbook": {
-                "entries_not_found": "Aucune entrée trouvée dans le journal."
+                "by": "par",
+                "by_service": "par le service",
+                "entries_not_found": "Aucune entrée trouvée dans le journal.",
+                "messages": {
+                    "became_unavailable": "est devenu indisponible",
+                    "changed_to_state": "changé en {state}.",
+                    "cleared_device_class": "effacé (no {device_class} detected)",
+                    "detected_device_class": "détecté {device_class}",
+                    "rose": "aube",
+                    "set": "Défini",
+                    "turned_off": "éteint",
+                    "turned_on": "activé",
+                    "was_at_home": "Présent",
+                    "was_at_state": "était à {state}",
+                    "was_away": "Absent",
+                    "was_closed": "était fermé",
+                    "was_connected": "était connecté",
+                    "was_disconnected": "était déconnecté",
+                    "was_locked": "Était verrouillé",
+                    "was_low": "était faible",
+                    "was_normal": "était normal",
+                    "was_opened": "était ouvert",
+                    "was_plugged_in": "était branché",
+                    "was_safe": "était sûr",
+                    "was_unlocked": "Était déverrouillé",
+                    "was_unplugged": "était débranché",
+                    "was_unsafe": "n'était pas sûr"
+                }
             },
             "media-browser": {
                 "audio_not_supported": "Votre navigateur ne prend pas en charge l'élément audio.",
@@ -684,7 +711,8 @@
                     "unavailable": "Cette entité n'est pas disponible actuellement.",
                     "update": "Mise à jour"
                 },
-                "no_unique_id": "Cette entité n'a pas d'identifiant unique, ses paramètres ne peuvent donc pas être gérés à partir de l'interface utilisateur.",
+                "faq": "documentation",
+                "no_unique_id": "Cette entité n'a pas d'ID unique, par conséquent ses paramètres ne peuvent pas être gérés à partir de l'interface utilisateur. Consultez le {faq_link} pour plus de détails.",
                 "related": "Liées",
                 "settings": "Réglages"
             },
@@ -741,6 +769,7 @@
                 "dismiss": "Fermer la fenêtre de dialogue",
                 "edit": "Modifier l'entité",
                 "history": "Historique",
+                "last_updated": "Dernière mise à jour",
                 "person": {
                     "create_zone": "Créer une zone à partir de l'emplacement actuel"
                 },
@@ -795,6 +824,9 @@
                 "success": {
                     "description": "Options enregistrées avec succès."
                 }
+            },
+            "quick-bar": {
+                "filter_placeholder": "Filtre d'entité"
             },
             "voice_command": {
                 "did_not_hear": "Home Assistant n'a rien entendu",
@@ -1039,8 +1071,17 @@
                                     "after": "Après",
                                     "before": "Avant",
                                     "label": "Heure",
-                                    "type_input": "Valeur d'une aide de date/heure",
-                                    "type_value": "Temps fixe"
+                                    "type_input": "Valeur d'une entrée de date/heure",
+                                    "type_value": "Temps fixe",
+                                    "weekdays": {
+                                        "fri": "Vendredi",
+                                        "mon": "Lundi",
+                                        "sat": "samedi",
+                                        "sun": "dimanche",
+                                        "thu": "Jeudi",
+                                        "tue": "Mardi",
+                                        "wed": "Mercredi"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Entité avec localisation",
@@ -1157,7 +1198,7 @@
                                 "time": {
                                     "at": "À",
                                     "label": "Heure",
-                                    "type_input": "Valeur d'une aide de date/heure",
+                                    "type_input": "Valeur d'une entrée de date/heure",
                                     "type_value": "Temps fixe"
                                 },
                                 "webhook": {
@@ -1855,7 +1896,8 @@
                     },
                     "select_instance": {
                         "header": "Sélectionnez une instance OpenZWave",
-                        "introduction": "Vous avez plus d'une instance OpenZWave en cours d'exécution. Quelle instance souhaitez-vous gérer ?"
+                        "introduction": "Vous avez plus d'une instance OpenZWave en cours d'exécution. Quelle instance souhaitez-vous gérer ?",
+                        "none_found": "Nous n'avons pas trouvé d'instance d'OpenZWave. Si vous pensez c'est incorrect, vérifiez vos configurations OpenZWave et MQTT et assurez-vous que Home Assistant peut communiquer avec votre serveur MQTT."
                     },
                     "services": {
                         "add_node": "Ajouter un nœud",
@@ -1868,8 +1910,11 @@
                     "confirm_delete": "Êtes-vous sûr de vouloir supprimer cette personne?",
                     "confirm_delete2": "Tous les appareils appartenant à cette personne ne seront plus affectés.",
                     "create_person": "Créer une personne",
-                    "description": "Gérer les personnes suivies par Home Assistant.",
+                    "description": "Gérez les personnes suivies par Home Assistant",
                     "detail": {
+                        "admin": "Administrateur",
+                        "allow_login": "Autoriser la personne à se connecter",
+                        "confirm_delete_user": "Êtes-vous sûr de vouloir supprimer le compte utilisateur de {name} ? Vous pouvez toujours suivre l'utilisateur, mais la personne ne pourra plus se connecter.",
                         "create": "Créer",
                         "delete": "Supprimer",
                         "device_tracker_intro": "Sélectionnez les appareils appartenant à cette personne.",
@@ -1885,8 +1930,10 @@
                         "update": "Mettre à jour"
                     },
                     "introduction": "Ici, vous pouvez définir chaque personne d'intérêt dans Home Assistant.",
-                    "no_persons_created_yet": "Il semble que vous n'ayez pas encore créé de personnes.",
-                    "note_about_persons_configured_in_yaml": "Remarque: les personnes configurées via configuration.yaml ne peuvent pas être modifiées via l'interface utilisateur."
+                    "no_persons_created_yet": "Il semble que vous n’avez encore créé personne.",
+                    "note_about_persons_configured_in_yaml": "Remarque: les personnes configurées via configuration.yaml ne peuvent pas être modifiées via l'interface utilisateur.",
+                    "person_not_found": "Nous n'avons pas trouvé la personne que vous tentiez de modifier.",
+                    "person_not_found_title": "Personne introuvable"
                 },
                 "scene": {
                     "activated": "Scène activée {name}.",
@@ -1962,11 +2009,12 @@
                             "restart": "Redémarrer",
                             "single": "Unique (par défaut)"
                         },
+                        "save_script": "Enregistrer le script",
                         "sequence": "Séquence",
                         "sequence_sentence": "La séquence d'actions de ce script."
                     },
                     "picker": {
-                        "add_script": "Ajouter un script",
+                        "add_script": "Créer un nouveau script",
                         "edit_script": "Éditer le script",
                         "header": "Éditeur de script",
                         "headers": {
@@ -1975,6 +2023,7 @@
                         "introduction": "L'éditeur de script vous permet de créer et d'éditer des scripts. Suivez le lien ci-dessous pour lire les instructions afin de vous assurer que vous avez correctement configuré Home Assistant.",
                         "learn_more": "En savoir plus sur les scripts",
                         "no_scripts": "Nous n'avons pas trouvé de scripts modifiables",
+                        "run_script": "Exécuter le script",
                         "show_info": "Afficher des informations sur le script",
                         "trigger_script": "Script de déclenchement"
                     }
@@ -2042,6 +2091,7 @@
                     "create_automation": "Créer une automatisation avec une balise",
                     "description": "Gérer les balises",
                     "detail": {
+                        "companion_apps": "applications associées",
                         "create": "Créer",
                         "create_and_write": "Créer et Ecrire",
                         "delete": "Supprimer",
@@ -2050,7 +2100,8 @@
                         "new_tag": "Nouvelle balise",
                         "tag_id": "Id de balise",
                         "tag_id_placeholder": "Généré automatiquement lorsque laissé vide",
-                        "update": "Mise à jour"
+                        "update": "Mise à jour",
+                        "usage": "Un tag peut déclencher une automatisation lorsqu'il est scanné, vous pouvez utiliser des tags NFC, des codes QR ou tout autre type de tag. Utilisez notre {companion_link} pour écrire cette balise sur une balise NFC programmable ou créez un code QR ci-dessous."
                     },
                     "edit": "Modifier",
                     "headers": {
@@ -2214,12 +2265,12 @@
                     "configured_in_yaml": "Les zones configurées via configuration.yaml ne peuvent pas être modifiées via l'interface utilisateur.",
                     "confirm_delete": "Êtes-vous sûr de vouloir supprimer cette zone ?",
                     "create_zone": "Créer une zone",
-                    "description": "Gérer les zones dans lesquelles vous voulez suivre les personnes.",
+                    "description": "Gérez les zones dans lesquelles vous souhaitez suivre les personnes",
                     "detail": {
                         "create": "Créer",
                         "delete": "Effacer",
                         "icon": "Icône",
-                        "icon_error_msg": "L'icône doit être au format préfixe:nom d'icône, par exemple : mdi:home",
+                        "icon_error_msg": "L'icône doit être au format \"préfixe:nom d'icône\", par exemple : \"mdi:home\"",
                         "latitude": "Latitude",
                         "longitude": "Longitude",
                         "name": "Nom",
@@ -2294,10 +2345,10 @@
                     },
                     "ozw_log": {
                         "header": "Journal OZW",
-                        "introduction": "Afficher le journal. Entrer un nombre de 1 à 1000 lignes pour limiter le nombre de lignes chargées dans le journal, ou entrer 0 pour désactiver la limitation du nombre de lignes affichées (journal complet). \"Load\" affichera un instantané du journal, alors que \"Tail\" affichera le journal en l'actualisant au fur et à mesure que de nouvelles entrées apparaissent.",
+                        "introduction": "Afficher le journal. Entrer un nombre de 1 à 1000 lignes pour limiter le nombre de lignes chargées dans le journal, ou entrer 0 pour désactiver la limitation du nombre de lignes affichées (journal complet). \"Charger\" affichera un instantané du journal, alors que \"Suivre\" affichera le journal en l'actualisant au fur et à mesure que de nouvelles entrées apparaissent.",
                         "last_log_lines": "Nombre de dernières lignes de journal",
-                        "load": "Charge",
-                        "tail": "Queue"
+                        "load": "Charger",
+                        "tail": "Suivre"
                     },
                     "services": {
                         "add_node": "Ajouter un nœud",
@@ -2463,6 +2514,20 @@
                     "refresh": "Rafraîchir"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "Appeler le service",
+                            "default_action": "Actions par défaut",
+                            "more-info": "Plus d’infos",
+                            "navigate": "Naviguer",
+                            "none": "Pas d'action",
+                            "toggle": "Interrupteur",
+                            "url": "Url"
+                        },
+                        "editor_service_data": "Les informations sur les services ne peuvent être saisies que dans l'éditeur de code",
+                        "navigation_path": "Chemin de navigation",
+                        "url_path": "Chemin de l'url"
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "États disponibles",
@@ -2470,14 +2535,19 @@
                             "name": "Panneau d'alarme"
                         },
                         "button": {
+                            "default_action_help": "L'action par défaut dépend des capacités de l'entité, elle sera soit activée/désactivée, soit plus d'informations seront affichées.",
                             "description": "La carte Bouton vous permet d'ajouter des boutons pour effectuer des tâches.",
                             "name": "Bouton"
                         },
                         "calendar": {
+                            "calendar_entities": "Calendrier",
                             "description": "La carte Calendrier affiche un calendrier comprenant des vues par jour, par semaine et par liste",
+                            "inital_view": "Vue initiale",
                             "name": "Calendrier",
                             "views": {
-                                "listWeek": "Français"
+                                "dayGridDay": "Jour",
+                                "dayGridMonth": "Mois",
+                                "listWeek": "liste"
                             }
                         },
                         "conditional": {
@@ -2497,7 +2567,8 @@
                         },
                         "entities": {
                             "description": "La carte Entités est le type de carte le plus courant. Il regroupe les éléments dans des listes.",
-                            "edit_special_row": "Modifier la ligne à l'aide de l'éditeur de code",
+                            "edit_special_row": "Affichez les détails de cette ligne en cliquant sur le bouton Modifier",
+                            "entity_row_editor": "Modifier à l'aide de l'éditeur de code",
                             "entity_row": {
                                 "attribute": "Attribut",
                                 "button": "Bouton",
@@ -2510,6 +2581,15 @@
                                 "weblink": "Lien Web"
                             },
                             "name": "Entités",
+                            "secondary_info_values": {
+                                "brightness": "Luminosité",
+                                "entity-id": "ID de l'entité",
+                                "last-changed": "Dernière modification",
+                                "last-triggered": "Dernier déclenchement",
+                                "none": "Pas d'informations secondaires",
+                                "position": "Position",
+                                "tilt-position": "position d'inclinaison"
+                            },
                             "show_header_toggle": "Afficher le bouton d'en-tête ?",
                             "special_row": "ligne spéciale",
                             "toggle": "Basculer les entités."
@@ -2665,11 +2745,13 @@
                     "edit_card": {
                         "add": "Ajouter une action",
                         "confirm_cancel": "Êtes-vous sûr de vouloir annuler ?",
-                        "delete": "Supprimer",
+                        "delete": "Supprimer la carte",
                         "duplicate": "Dupliquer la carte",
                         "edit": "Modifier",
                         "header": "Configuration de la carte",
                         "move": "Déplacer",
+                        "move_after": "Déplacer la carte après",
+                        "move_before": "Déplacer la carte avant",
                         "options": "Plus d'options",
                         "pick_card": "Quelle carte aimeriez-vous ajouter ?",
                         "pick_card_view_title": "Quelle carte souhaitez-vous ajouter à votre vue {name} ?",
@@ -2963,6 +3045,12 @@
                     "more_integrations": "Plus"
                 },
                 "intro": "Êtes-vous prêt à réveiller votre maison, à récupérer votre vie privée et à rejoindre une communauté mondiale de bricoleurs?",
+                "restore": {
+                    "description": "Vous pouvez également restaurer à partir d'un snapshot précédent.",
+                    "hide_log": "Masquer le journal",
+                    "in_progress": "Restauration en cours",
+                    "show_log": "Afficher le journal"
+                },
                 "user": {
                     "create_account": "Créer un compte",
                     "data": {

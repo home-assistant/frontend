@@ -17,12 +17,12 @@ interface OptimisticCollection<T> extends Collection<T> {
  */
 
 export const getOptimisticCollection = <StateType>(
-  saveCollection: (conn: Connection, data: StateType) => Promise<unknown>,
+  saveCollection: (conn2: Connection, data: StateType) => Promise<unknown>,
   conn: Connection,
   key: string,
-  fetchCollection: (conn: Connection) => Promise<StateType>,
+  fetchCollection: (conn2: Connection) => Promise<StateType>,
   subscribeUpdates?: (
-    conn: Connection,
+    conn2: Connection,
     store: Store<StateType>
   ) => Promise<UnsubscribeFunc>
 ): OptimisticCollection<StateType> => {

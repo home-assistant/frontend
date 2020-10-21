@@ -740,20 +740,25 @@
             },
             "zha_device_info": {
                 "buttons": {
+                    "reconfigure": "Reconfigurare dispozitiv",
+                    "remove": "Eliminare dispozitiv",
                     "zigbee_information": "Informații Zigbee"
                 },
                 "confirmations": {
                     "remove": "Ești sigur că vrei să înlături dispozitivul?"
                 },
                 "device_signature": "Semnătura dispozitivului Zigbee",
+                "last_seen": "Ultima dată văzut",
                 "manuf": "de {manufacturer}",
                 "no_area": "Nici o zonă",
+                "power_source": "Sursă de alimentare",
                 "services": {
                     "reconfigure": "Reconfigurați dispozitivul ZHA (dispozitiv de vindecare). Utilizați acest lucru dacă aveți probleme cu dispozitivul. Dacă dispozitivul în cauză este un dispozitiv alimentat cu baterii, asigurați-vă că este treaz și accepta comenzi atunci când utilizați acest serviciu.",
                     "remove": "Eliminați un dispozitiv din rețeaua Zigbee.",
                     "updateDeviceName": "Setați un nume personalizat pentru acest dispozitiv în registrul de dispozitive.",
                     "zigbee_information": "Vizualizați informațiile Zigbee pentru dispozitiv."
                 },
+                "unknown": "Necunoscut",
                 "zha_device_card": {
                     "area_picker_label": "Zonă",
                     "device_name_placeholder": "Nume dat de utilizator",
@@ -781,7 +786,8 @@
         },
         "notification_toast": {
             "connection_lost": "Conexiunea a fost pierdută. Se reconectează ...",
-            "service_call_failed": "Nu s-a putut apela serviciul {service}."
+            "service_call_failed": "Nu s-a putut apela serviciul {service}.",
+            "triggered": "Declanșat {name}"
         },
         "panel": {
             "calendar": {
@@ -874,6 +880,9 @@
                                         }
                                     }
                                 },
+                                "scene": {
+                                    "label": "Activare scenă"
+                                },
                                 "service": {
                                     "label": "Cheama serviciu",
                                     "service_data": "Date serviciu"
@@ -908,6 +917,10 @@
                                     "label": "Și"
                                 },
                                 "device": {
+                                    "extra_fields": {
+                                        "above": "De mai sus",
+                                        "below": "De mai jos"
+                                    },
                                     "label": "Dispozitiv"
                                 },
                                 "not": {
@@ -990,6 +1003,11 @@
                             "type_select": "Tip acțiune",
                             "type": {
                                 "device": {
+                                    "extra_fields": {
+                                        "above": "Deasupra",
+                                        "below": "Sub",
+                                        "for": "Durată"
+                                    },
                                     "label": "Dispozitiv"
                                 },
                                 "event": {
@@ -1086,7 +1104,10 @@
                 "cloud": {
                     "account": {
                         "alexa": {
-                            "config_documentation": "Documentație de configurare"
+                            "config_documentation": "Documentație de configurare",
+                            "manage_entities": "Gestionați entități",
+                            "state_reporting_error": "Imposibil de {enable_disable} stare raport.",
+                            "sync_entities_error": "Sincronizarea entităților nu a reușit:"
                         },
                         "google": {
                             "config_documentation": "Documentație de configurare",
@@ -1468,6 +1489,12 @@
                         "node_failed": "Nod nereușit",
                         "stage": "Etapă",
                         "zwave_info": "Z-Wave Info"
+                    },
+                    "node_config": {
+                        "help_source": "Descrierile parametrilor config și textul de ajutor sunt furnizate de proiectul OpenZWave."
+                    },
+                    "node_metadata": {
+                        "product_manual": "Manual produs"
                     }
                 },
                 "person": {
@@ -1551,10 +1578,13 @@
                         "sequence_sentence": "Secvența acțiunilor acestui scenariu."
                     },
                     "picker": {
+                        "add_script": "Creați un script nou",
                         "edit_script": "Editare script",
+                        "header": "Editor de scripturi",
                         "headers": {
                             "name": "Nume"
                         },
+                        "no_scripts": "Nu am putut găsi niciun script modificabil",
                         "show_info": "Afișează informații despre script",
                         "trigger_script": "Script activator"
                     }
@@ -1893,6 +1923,7 @@
                         "listeners": "Acest șablon ascultă următoarele evenimente modificate de stare:",
                         "no_listeners": "Acest șablon ascultă următoarele evenimente modificate de stare:",
                         "template_extensions": "Șabloane de extensie pentru Home Assistant",
+                        "time": "Acest șablon se actualizează la fiecare 60 de secunde după ultimul eveniment modificat de stare.",
                         "title": "Sabloane",
                         "unknown_error_template": "Sa produs o eroare de randare necunoscută."
                     }
@@ -1978,7 +2009,17 @@
                         },
                         "entities": {
                             "description": "Cardul Entities este cel mai comun tip de card. Acesta grupează elementele împreună în liste.",
+                            "entity_row_editor": "Editează rândul entității",
                             "name": "Entități",
+                            "secondary_info_values": {
+                                "brightness": "Luminozitate",
+                                "entity-id": "ID-ul entității",
+                                "last-changed": "Schimbat Ultima Dată",
+                                "last-triggered": "Accesat Ultima Dată",
+                                "none": "NU există informații suplimentare",
+                                "position": "Poziție",
+                                "tilt-position": "Înclinare"
+                            },
                             "toggle": "Schimbati entitatile"
                         },
                         "entity-filter": {
@@ -1994,12 +2035,21 @@
                         "generic": {
                             "attribute": "Atribut",
                             "double_tap_action": "Acțiune atingere dublă",
+                            "entity": "Entitate",
+                            "hold_action": "Suspendare acțiunii",
+                            "hours_to_show": "Ore de afișat",
+                            "icon": "Pictogramă",
+                            "icon_height": "Înălțimea pictogramei",
+                            "image": "Calea imaginii",
                             "manual": "Manual",
                             "manual_description": "Trebuie să adăugați un card personalizat sau doriți doar să scrieți manual yaml?",
+                            "maximum": "Maximă",
                             "no_theme": "Nicio temă",
                             "search": "Căutare",
                             "secondary_info_attribute": "Atribut informații secundare",
-                            "state": "Stare"
+                            "state": "Stare",
+                            "unit": "Unitate",
+                            "url": "Url"
                         },
                         "glance": {
                             "description": "Cardul Glance este util pentru a grupa mai mulți senzori într-o imagine de ansamblu compactă.",
@@ -2023,7 +2073,9 @@
                             "name": "Lumina"
                         },
                         "map": {
+                            "dark_mode": "Modul întunecat?",
                             "description": "Cardul Map care vă permite să afișați entități pe o hartă.",
+                            "geo_location_sources": "Surse de geolocalizare",
                             "hours_to_show": "Ore de afisat",
                             "name": "Hartă"
                         },

@@ -287,7 +287,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
             .label=${this.hass.localize("ui.common.overflow_menu")}
             slot="trigger"
           >
-            <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+            <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
           </mwc-icon-button>
           <mwc-list-item>
             ${this.hass.localize(
@@ -480,7 +480,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           title=${this.hass.localize("ui.panel.config.integrations.new")}
           @click=${this._createFlow}
         >
-          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </mwc-fab>
       </hass-tabs-subpage>
     `;

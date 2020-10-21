@@ -24,7 +24,7 @@ export class HaFormSelect extends LitElement implements HaFormElement {
 
   @property() public suffix!: string;
 
-  @query("ha-paper-dropdown-menu") private _input?: HTMLElement;
+  @query("ha-paper-dropdown-menu", true) private _input?: HTMLElement;
 
   public focus() {
     if (this._input) {

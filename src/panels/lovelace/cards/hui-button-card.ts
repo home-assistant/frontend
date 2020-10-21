@@ -80,7 +80,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
 
   public getCardSize(): number {
     return (
-      (this._config?.show_icon ? 3 : 0) + (this._config?.show_name ? 1 : 0)
+      (this._config?.show_icon ? 4 : 0) + (this._config?.show_name ? 1 : 0)
     );
   }
 

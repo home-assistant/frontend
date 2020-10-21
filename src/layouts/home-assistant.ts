@@ -17,9 +17,10 @@ import {
 import "./ha-init-page";
 import "./home-assistant-main";
 import { storeState } from "../util/ha-pref-storage";
+import QuickBarMixin from "../state/quick-bar-mixin";
 
 @customElement("home-assistant")
-export class HomeAssistantAppEl extends HassElement {
+export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   @internalProperty() private _route?: Route;
 
   @internalProperty() private _error = false;

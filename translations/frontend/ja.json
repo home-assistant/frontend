@@ -19,6 +19,7 @@
         "logbook": "ログブック",
         "mailbox": "メールボックス",
         "map": "地図",
+        "media_browser": "メディアブラウザ",
         "profile": "プロファイル",
         "shopping_list": "買い物リスト",
         "states": "状態"
@@ -481,9 +482,11 @@
                     "wnw": "西北西",
                     "wsw": "西南西"
                 },
+                "day": "日",
                 "forecast": "天気予報",
                 "high": "高",
-                "low": "低"
+                "low": "低",
+                "night": "夜"
             }
         },
         "common": {
@@ -491,6 +494,8 @@
             "back": "戻る",
             "cancel": "キャンセル",
             "close": "閉じる",
+            "continue": "続行",
+            "copied": "コピー",
             "delete": "削除",
             "error_required": "必須",
             "loading": "読込中",
@@ -537,6 +542,10 @@
                 "toggle": "切り替え"
             },
             "entity": {
+                "entity-attribute-picker": {
+                    "attribute": "属性",
+                    "show_attributes": "属性を表示"
+                },
                 "entity-picker": {
                     "clear": "消去",
                     "entity": "エンティティ",
@@ -547,8 +556,62 @@
                 "loading_history": "状態履歴を読込中...",
                 "no_history_found": "状態履歴がありません。"
             },
+            "logbook": {
+                "by": "by",
+                "by_service": "サービス別",
+                "entries_not_found": "ログブックのエントリが見つかりません。",
+                "messages": {
+                    "became_unavailable": "利用できなくなりました",
+                    "changed_to_state": "{state}に変更されました",
+                    "cleared_device_class": "クリアされました（ {device_class}検出されませんでした）",
+                    "detected_device_class": "{device_class} が検出されました",
+                    "rose": "ローズ",
+                    "set": "セット",
+                    "turned_off": "終了しました",
+                    "turned_on": "オンになりました",
+                    "was_at_home": "家にいた",
+                    "was_at_state": "{state}でした",
+                    "was_away": "離れていた",
+                    "was_closed": "閉鎖されました",
+                    "was_connected": "接続されました",
+                    "was_disconnected": "切断されました",
+                    "was_locked": "ロックされました",
+                    "was_low": "低かった",
+                    "was_normal": "正常でした",
+                    "was_opened": "開かれました",
+                    "was_plugged_in": "接続されました",
+                    "was_safe": "安全でした",
+                    "was_unlocked": "ロックが解除されました",
+                    "was_unplugged": "プラグが抜かれました",
+                    "was_unsafe": "安全ではなかった"
+                }
+            },
             "media-browser": {
+                "audio_not_supported": "お使いのブラウザはオーディオをサポートしていません。",
+                "choose_player": "プレーヤーを選択",
                 "choose-source": "ソースを選択",
+                "class": {
+                    "album": "アルバム",
+                    "app": "アプリ",
+                    "artist": "アーティスト",
+                    "channel": "チャネル",
+                    "composer": "作曲者",
+                    "contributing_artist": "アーティスト",
+                    "directory": "ライブラリ",
+                    "episode": "エピソード",
+                    "game": "ゲーム",
+                    "genre": "ジャンル",
+                    "image": "画像",
+                    "movie": "Movie",
+                    "music": "Music",
+                    "playlist": "プレイリスト",
+                    "podcast": "ポッドキャスト",
+                    "season": "シーズン",
+                    "track": "トラック",
+                    "tv_show": "テレビ番組",
+                    "url": "URL",
+                    "video": "ビデオ"
+                },
                 "content-type": {
                     "album": "アルバム",
                     "artist": "アーティスト",
@@ -556,12 +619,23 @@
                     "playlist": "プレイリスト",
                     "server": "サーバー"
                 },
+                "documentation": "ドキュメント",
+                "learn_adding_local_media": "メディアの追加の詳細については、{ドキュメント}を参照してください。",
+                "local_media_files": "ビデオ、オーディオ、画像ファイルをメディアディレクトリに配置して、ブラウザやサポートされているメディアプレーヤーで参照して再生できるようにします。",
+                "media_browsing_error": "メディア参照エラー",
+                "media_not_supported": "ブラウザ メディア プレーヤーはこの種類のメディアをサポートしていません",
+                "media_player": "メディアプレーヤー",
                 "media-player-browser": "メディアプレーヤーブラウザ",
                 "no_items": "アイテムなし",
+                "no_local_media_found": "ローカルメディアが見つかりません",
+                "no_media_folder": "メディアディレクトリをまだ作成していないようです。",
                 "pick": "選択",
                 "pick-media": "メディアを選択",
                 "play": "再生",
-                "play-media": "メディアを再生"
+                "play-media": "メディアを再生",
+                "setup_local_help": "ローカルメディアの設定方法については、 {documentation}を確認してください。",
+                "video_not_supported": "お使いのブラウザはビデオをサポートしていません。",
+                "web-browser": "Webブラウザ"
             },
             "picture-upload": {
                 "label": "画像",
@@ -587,9 +661,23 @@
                     "week": "{count} {count, plural,\n  one {週間}\n  other {週間}\n}"
                 },
                 "future": "{time}以内",
+                "future_duration": {
+                    "day": "{count} {count, plural,\n  one {日}\n  other {日}\n}",
+                    "hour": "{count} {count, plural,\n  one {時間}\n  other {時間}\n}",
+                    "minute": "{count} {count, plural,\n  one {分}\n  other {分}\n}",
+                    "second": "{count} {count, plural,\n  one {秒}\n  other {秒}\n}",
+                    "week": "{count} {count, plural,\n  one {週}\n  other {週}\n}"
+                },
                 "just_now": "ちょうど今",
                 "never": "未実行",
-                "past": "{time}前"
+                "past": "{time}前",
+                "past_duration": {
+                    "day": "{count} {count, plural,\n  one {日}\n  other {日}\n}前",
+                    "hour": "{count} {count, plural,\n  one {時間}\n  other {時間}\n}前",
+                    "minute": "{count} {count, plural,\n  one {分}\n  other {分}\n}前",
+                    "second": "{count} {count, plural,\n  one {秒}\n  other {秒}\n}前",
+                    "week": "{count} {count, plural,\n  one {週}\n  other {週}前\n}"
+                }
             },
             "service-picker": {
                 "service": "サービス"
@@ -603,6 +691,7 @@
                 "update": "更新"
             },
             "domain_toggler": {
+                "reset_entities": "エンティティをリセット",
                 "title": "ドメインを切り替え"
             },
             "entity_registry": {
@@ -622,6 +711,7 @@
                     "unavailable": "このエンティティは現在利用できません。",
                     "update": "更新"
                 },
+                "faq": "ドキュメント",
                 "no_unique_id": "このエンティティには一意のIDがないため、その設定はUIから管理できません。",
                 "related": "関連",
                 "settings": "設定"
@@ -633,6 +723,13 @@
                 "ok": "OK"
             },
             "helper_settings": {
+                "counter": {
+                    "initial": "初期値",
+                    "maximum": "最大値",
+                    "minimum": "最小値",
+                    "restore": "ホーム アシスタントの起動時に、最後の値を復元します",
+                    "step": "ステップサイズ"
+                },
                 "generic": {
                     "icon": "アイコン",
                     "name": "名前"
@@ -668,14 +765,21 @@
                 },
                 "platform_not_loaded": "{platform}統合がロードされていません。 'default_config：'または '' {platform} ： ''を追加して、構成に追加してください。",
                 "required_error_msg": "この項目は必須です",
+                "timer": {
+                    "duration": "期間"
+                },
                 "yaml_not_editable": "このエンティティの設定は UI から編集できません。UI から設定されたエンティティのみが UI から構成できます。"
             },
             "image_cropper": {
                 "crop": "収納"
             },
             "more_info_control": {
+                "controls": "コントロール",
+                "details": "詳細",
                 "dismiss": "ダイアログを閉じる",
                 "edit": "エンティティを編集",
+                "history": "履歴",
+                "last_updated": "最終更新",
                 "person": {
                     "create_zone": "現在地からゾーンを作成"
                 },
@@ -731,6 +835,44 @@
                     "description": "オプションを保存しました。"
                 }
             },
+            "quick-bar": {
+                "commands": {
+                    "reload": {
+                        "automation": "オートメーションの再読込",
+                        "command_line": "コマンドラインエンティティをリロードする",
+                        "core": "場所とカスタマイズをリロード",
+                        "filesize": "ファイルサイズエンティティをリロードします",
+                        "filter": "フィルタエンティティをリロードします",
+                        "generic": "IPカメラエンティティをリロードします",
+                        "generic_thermostat": "サーモスタットエンティティをリロードします",
+                        "group": "グループの再読込",
+                        "history_stats": "履歴エンティティをリロードします",
+                        "homekit": "HomeKitをリロード",
+                        "input_boolean": "入力ブール値を再読み込み",
+                        "input_datetime": "入力日時を再読み込み",
+                        "input_number": "入力番号を再読み込み",
+                        "input_select": "入力選択をリロード",
+                        "input_text": "入力テキストを再読み込み",
+                        "min_max": "最小/最大エンティティをリロードします",
+                        "mqtt": "mqttエンティティをリロードします",
+                        "person": "人の再読込",
+                        "ping": "pingバイナリセンサーエンティティをリロードします",
+                        "reload": "{domain}をリロードします",
+                        "rest": "残りのエンティティをリロードし通知します",
+                        "rpi_gpio": "Raspberry Pi GPIOエンティティをリロードします",
+                        "scene": "シーンの再読込",
+                        "script": "スクリプトの再読込",
+                        "smtp": "SMTP通知サービスをリロードします",
+                        "statistics": "統計エンティティをリロードします",
+                        "telegram": "テレグラム通知サービスをリロードします",
+                        "template": "テンプレートエンティティをリロードします",
+                        "trend": "トレンドエンティティをリロードします",
+                        "universal": "ユニバーサルメディアプレーヤーエンティティをリロードします",
+                        "zone": "ゾーンの再読込"
+                    }
+                },
+                "filter_placeholder": "エンティティフィルター"
+            },
             "voice_command": {
                 "did_not_hear": "Home Assistant は何も聞きませんでした",
                 "error": "エラーが発生しました",
@@ -785,6 +927,7 @@
         "notification_drawer": {
             "click_to_configure": "ボタンをクリックして{entity}を設定します",
             "close": "閉じる",
+            "dismiss_all": "すべて却下する",
             "empty": "通知はありません",
             "title": "通知"
         },
@@ -903,7 +1046,13 @@
                                     "label": "サービスの呼び出し",
                                     "service_data": "サービスのデータ"
                                 },
+                                "wait_for_trigger": {
+                                    "continue_timeout": "タイムアウト時に続行",
+                                    "label": "トリガーを待つ",
+                                    "timeout": "タイムアウト (オプション)"
+                                },
                                 "wait_template": {
+                                    "continue_timeout": "タイムアウト時に続行",
                                     "label": "待つ",
                                     "timeout": "タイムアウト（オプション）",
                                     "wait_template": "待機テンプレート"
@@ -967,7 +1116,18 @@
                                 "time": {
                                     "after": "後",
                                     "before": "前",
-                                    "label": "時間"
+                                    "label": "時間",
+                                    "type_input": "日付/時刻ヘルパーの値",
+                                    "type_value": "定刻",
+                                    "weekdays": {
+                                        "fri": "金曜日",
+                                        "mon": "月曜日",
+                                        "sat": "土曜日",
+                                        "sun": "日曜日",
+                                        "thu": "木曜日",
+                                        "tue": "火曜日",
+                                        "wed": "水曜日"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "場所に対応するエンティティ",
@@ -977,6 +1137,7 @@
                             },
                             "unsupported_condition": "未サポートの条件：{condition}"
                         },
+                        "copy_to_clipboard": "クリップボードにコピー",
                         "default_name": "新しいオートメーション",
                         "description": {
                             "label": "説明",
@@ -1055,6 +1216,7 @@
                                     "value_template": "バリューテンプレート（オプショナル）"
                                 },
                                 "state": {
+                                    "attribute": "属性（オプション）",
                                     "for": "のために",
                                     "from": "変化前",
                                     "label": "状態",
@@ -1082,7 +1244,9 @@
                                 },
                                 "time": {
                                     "at": "時期",
-                                    "label": "時刻"
+                                    "label": "時刻",
+                                    "type_input": "日付/時刻ヘルパーの値",
+                                    "type_value": "定刻"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -1105,6 +1269,8 @@
                         "add_automation": "オートメーションの追加",
                         "delete_automation": "オートメーションを削除",
                         "delete_confirm": "このオートメーションを削除してもよろしいですか？",
+                        "duplicate": "複製",
+                        "duplicate_automation": "重複したオートメーション",
                         "edit_automation": "オートメーションを編集",
                         "header": "オートメーションエディター",
                         "headers": {
@@ -1186,8 +1352,14 @@
                     },
                     "alexa": {
                         "banner": "この UI を介して公開されるエンティティの編集は、configuration.yaml でエンティティ フィルターを構成しているため無効になります。",
+                        "dont_expose_entity": "エンティティを公開しない",
                         "expose": "Alexa に公開",
+                        "expose_entity": "エンティティの公開",
+                        "exposed": "{selected}は公開されました",
                         "exposed_entities": "公開されたエンティティ",
+                        "follow_domain": "ドメインをフォローする",
+                        "manage_domains": "ドメインの管理",
+                        "not_exposed": "{selected} は公開されていません",
                         "not_exposed_entities": "公開されていないエンティティ",
                         "title": "Alexa"
                     },
@@ -1225,8 +1397,14 @@
                     "google": {
                         "banner": "この UI を介して公開されるエンティティの編集は、configuration.yaml でエンティティ フィルターを構成しているため無効になります。",
                         "disable_2FA": "多要素認証を無効にする",
+                        "dont_expose_entity": "エンティティを公開しない",
                         "expose": "Google Assistant に公開",
+                        "expose_entity": "エンティティを公開する",
+                        "exposed": "{selected}は公開されました",
                         "exposed_entities": "公開されたエンティティ",
+                        "follow_domain": "ドメインをフォローする",
+                        "manage_domains": "ドメインの管理",
+                        "not_exposed": "{selected} は公開されていません",
                         "not_exposed_entities": "公開されていないエンティティ",
                         "sync_to_google": "変更をGoogleに同期しています。",
                         "title": "Google Assistant"
@@ -1317,6 +1495,7 @@
                     "different_include": "おそらくドメインを介して、globまたは別のものを含む。",
                     "pick_attribute": "オーバーライドする属性を選択してください",
                     "picker": {
+                        "documentation": "カスタマイズドキュメント",
                         "entity": "エンティティ",
                         "header": "カスタマイズ",
                         "introduction": "エンティティごとの属性を微調整します。追加/編集されたカスタマイズは、すぐに有効になります。削除されたカスタマイズは、エンティティが更新されたときに有効になります。"
@@ -1331,18 +1510,25 @@
                     "add_prompt": "このデバイスを使用した{name}はまだ追加されていません。上の[+]ボタンをクリックして追加できます。",
                     "automation": {
                         "actions": {
-                            "caption": "何かがトリガーされたとき..."
+                            "caption": "何かがトリガーされたとき...",
+                            "no_actions": "アクションなし",
+                            "unknown_action": "不明なアクション"
                         },
                         "automations": "オートメーション",
                         "conditions": {
-                            "caption": "次の場合にのみ何かしてください..."
+                            "caption": "次の場合にのみ何かしてください...",
+                            "no_conditions": "条件なし",
+                            "unknown_condition": "状態不明"
                         },
                         "create": "デバイスからオートメーションを作成",
                         "no_automations": "オートメーションなし",
                         "no_device_automations": "このデバイスで利用可能なオートメーションはありません。",
                         "triggers": {
-                            "caption": "いつ何かをする."
-                        }
+                            "caption": "いつ何かをする.",
+                            "no_triggers": "トリガーなし",
+                            "unknown_trigger": "不明なトリガー"
+                        },
+                        "unknown_automation": "不明なオートメーション"
                     },
                     "cant_edit": "編集できるのは、UI で作成された項目のみです。",
                     "caption": "デバイス",
@@ -1404,6 +1590,8 @@
                         },
                         "filter": {
                             "filter": "フィルター",
+                            "hidden_entities": "{number} 非表示 {number, plural,\n  one {エンティティ}\n  other {エンティティ}\n}",
+                            "show_all": "すべてを表示",
                             "show_disabled": "無効なエンティティを表示",
                             "show_readonly": "読み取り専用のエンティティを表示",
                             "show_unavailable": "利用できないエンティティの表示"
@@ -1459,11 +1647,13 @@
                         "no_helpers": "まだヘルパーがいないようです！"
                     },
                     "types": {
+                        "counter": "カウンター",
                         "input_boolean": "切り替え",
                         "input_datetime": "日付・時刻",
                         "input_number": "数",
                         "input_select": "ドロップダウン",
-                        "input_text": "テキスト"
+                        "input_text": "テキスト",
+                        "timer": "タイマー"
                     }
                 },
                 "info": {
@@ -1493,6 +1683,7 @@
                 },
                 "integrations": {
                     "add_integration": "インテグレーションを追加",
+                    "attention": "注意が必要",
                     "caption": "インテグレーション",
                     "config_entry": {
                         "area": "{area}",
@@ -1516,6 +1707,7 @@
                         "reload_restart_confirm": "ホームアシスタントを再起動してこのインテグレーションの再読み込みを完了してください。\n",
                         "rename": "名前を変更",
                         "restart_confirm": "ホーム アシスタントを再起動して、この統合の削除を完了します。",
+                        "services": "{count} {count, plural,\n  one {サービス}\n  other {サービス}\n}",
                         "settings_button": "{integration} の設定を編集",
                         "system_options": "システムオプション",
                         "system_options_button": "{integration} のシステムオプション",
@@ -1562,6 +1754,7 @@
                     "none_found_detail": "別の検索基準をためしてみます。",
                     "note_about_integrations": "まだすべての統合をUI経由で設定できるわけではありません。",
                     "note_about_website_reference": "より多くが利用可能です",
+                    "reconfigure": "再構成",
                     "rename_dialog": "このコンフィグレーションエントリーの名前を変更",
                     "rename_input_label": "エントリー名",
                     "search": "インテグレーションを検索"
@@ -1679,6 +1872,8 @@
                         "network": "ネットワーク",
                         "node_id": "ノードID",
                         "ozw_instance": "OpenZWaveインスタンス",
+                        "query_stage": "クエリ ステージ",
+                        "wakeup_instructions": "ウェイクアップ手順",
                         "zwave": "Z-Wave"
                     },
                     "device_info": {
@@ -1688,6 +1883,10 @@
                     },
                     "navigation": {
                         "network": "ネットワーク",
+                        "node": {
+                            "config": "設定",
+                            "dashboard": "ダッシュ ボード"
+                        },
                         "nodes": "ノード",
                         "select_instance": "インスタンスを選択"
                     },
@@ -1716,6 +1915,15 @@
                         "introduction": "接続されたデバイスの管理",
                         "node_count": "{count}ノード"
                     },
+                    "node_config": {
+                        "header": "ノード構成",
+                        "help_source": "設定パラメータの説明とヘルプテキストは、OpenZWaveプロジェクトによって提供されます。",
+                        "introduction": "Z-Wave ノードの各種設定パラメータを管理します。",
+                        "wakeup_help": "バッテリ駆動のノードは、構成を変更するためにスリープ状態になっている必要があります。ノードがスリープ解除されていない場合、OpenZWave は、ノードがウェイクアップする次の時間 (または数日後) にノードの構成を更新しようとします。デバイスを起動するには、次の手順に従います。"
+                    },
+                    "node_metadata": {
+                        "product_manual": "製品マニュアル"
+                    },
                     "node_query_stages": {
                         "associations": "関連グループとメンバーシップの更新",
                         "cacheload": "OpenZWave キャッシュファイルから情報を読み込んでいます。バッテリー・ノードは、ノードがウェイクアップするまでこの段階にとどまります。",
@@ -1735,8 +1943,21 @@
                         "versions": "ファームウェアおよびコマンドクラスのバージョンに関する情報の取得",
                         "wakeup": "ウェイクアップ キューとメッセージのサポートのセットアップ"
                     },
+                    "node": {
+                        "button": "ノードの詳細",
+                        "not_found": "ノードが見つかりません"
+                    },
+                    "nodes_table": {
+                        "failed": "失敗しました",
+                        "id": "ID",
+                        "manufacturer": "メーカー",
+                        "model": "モデル",
+                        "query_stage": "クエリステージ",
+                        "zwave_plus": "Z-Wave Plus"
+                    },
                     "refresh_node": {
                         "battery_note": "ノードがバッテリ駆動の場合は、必ずスリープ解除してから続行してください。",
+                        "button": "ノードの更新",
                         "complete": "ノードの更新が完了しました",
                         "description": "これにより、OpenZWaveはノードに再インタビューし、ノードのコマンドクラス、機能、および値を更新するように指示します。",
                         "node_status": "ノードの状態",
@@ -1749,7 +1970,8 @@
                     },
                     "select_instance": {
                         "header": "OpenZWaveインスタンスを選択",
-                        "introduction": "複数のOpenZWaveインスタンスが実行されています。どのインスタンスを管理しますか？"
+                        "introduction": "複数のOpenZWaveインスタンスが実行されています。どのインスタンスを管理しますか？",
+                        "none_found": "OpenZWaveインスタンスが見つかりませんでした。これが正しくないと思われる場合は、OpenZWaveとMQTTの設定を確認し、HomeAssistantがMQTTブローカーと通信できることを確認してください。"
                     },
                     "services": {
                         "add_node": "ノードを追加",
@@ -1764,6 +1986,9 @@
                     "create_person": "人を作成",
                     "description": "Home Assistant を追跡している人の管理。",
                     "detail": {
+                        "admin": "管理者",
+                        "allow_login": "ユーザーにログインを許可する",
+                        "confirm_delete_user": "{name}ユーザーアカウントを削除してもよろしいですか？ユーザーを追跡することはできますが、ユーザーはログインできなくなります。",
                         "create": "作成",
                         "delete": "削除",
                         "device_tracker_intro": "このユーザーに属するデバイスを選択します。",
@@ -1779,8 +2004,11 @@
                         "update": "更新"
                     },
                     "introduction": "ここでは、Home Assistantで関心のある各人を定義できます。",
+                    "learn_more": "ユーザーの詳細",
                     "no_persons_created_yet": "まだ人を作成していませんですね。",
-                    "note_about_persons_configured_in_yaml": "注：configuration.yaml で設定された人は、UI で編集できません。"
+                    "note_about_persons_configured_in_yaml": "注：configuration.yaml で設定された人は、UI で編集できません。",
+                    "person_not_found": "編集しようとしている人が見つかりませんでした。",
+                    "person_not_found_title": "人が見つかりません"
                 },
                 "scene": {
                     "activated": "アクティブ化されたシーン {name}。",
@@ -1856,6 +2084,7 @@
                             "restart": "再起動",
                             "single": "シングル（デフォルト）"
                         },
+                        "save_script": "スクリプトを保存",
                         "sequence": "シーケンス",
                         "sequence_sentence": "このスクリプトのアクションのシーケンス。"
                     },
@@ -1869,6 +2098,7 @@
                         "introduction": "スクリプトエディタを使用すると、スクリプトを作成および編集できます。以下のリンクに従って手順を読み、Home Assistantが正しく設定されていることを確認してください。",
                         "learn_more": "スクリプトの詳細",
                         "no_scripts": "編集可能なスクリプトが見つかりませんでした",
+                        "run_script": "スクリプトを実行する",
                         "show_info": "スクリプトに関する情報を表示",
                         "trigger_script": "トリガースクリプト"
                     }
@@ -1896,12 +2126,17 @@
                             "input_text": "入力テキストを再読み込み",
                             "introduction": "Home Assistant の一部は、再起動を必要とせずに再読込できます。再読込を押すと、現在の設定をアンロードし、新しい設定を読み込みます。",
                             "min_max": "最小/最大エンティティを再読み込み",
+                            "mqtt": "mqtt エンティティの再読み込み",
                             "person": "人の再読込",
                             "ping": "ping バイナリ センサー エンティティの再読み込み",
+                            "reload": "{ドメイン} の再読み込み",
                             "rest": "残りのエンティティの再読み込み",
+                            "rpi_gpio": "Raspberry PiGPIOエンティティの再読み込み",
                             "scene": "シーンの再読込",
                             "script": "スクリプトの再読込",
+                            "smtp": "SMTP 通知サービスの再読み込み",
                             "statistics": "静的エンティティの再読み込み",
+                            "telegram": "テレグラム通知サービスの再読み込み",
                             "template": "テンプレート エンティティの再読み込み",
                             "trend": "トレンドエンティティを再読み込み",
                             "universal": "ユニバーサル メディア プレーヤー エンティティの再読み込み",
@@ -1931,6 +2166,7 @@
                     "create_automation": "タグを使用したオートメーションの作成",
                     "description": "タグの管理",
                     "detail": {
+                        "companion_apps": "コンパニオン アプリ",
                         "create": "作成",
                         "create_and_write": "作成と書き込み",
                         "delete": "削除",
@@ -1939,13 +2175,15 @@
                         "new_tag": "新しいタグ",
                         "tag_id": "タグID",
                         "tag_id_placeholder": "空のままにすると自動生成",
-                        "update": "更新"
+                        "update": "更新",
+                        "usage": "タグは、スキャン時にオートメーションをトリガーすることができ、NFCタグ、QRコード、または他の種類のタグを使用することができます。{companion_link} を使用して、このタグをプログラム可能な NFC タグに書き込むか、以下の QR コードを作成してください。"
                     },
                     "edit": "編集",
                     "headers": {
                         "last_scanned": "最後にスキャンされた",
                         "name": "名前"
                     },
+                    "learn_more": "タグの詳細",
                     "never_scanned": "最後にスキャンされた",
                     "no_tags": "タグなし",
                     "write": "書き込み"
@@ -2272,11 +2510,17 @@
                         "title": "状態"
                     },
                     "templates": {
+                        "all_listeners": "このテンプレートは、すべての状態変更イベントをリッスンします。",
                         "description": "テンプレートは、いくつかのホームアシスタント固有の拡張機能を持つJinja2テンプレートエンジンを使用してレンダリングされます。",
+                        "domain": "ドメイン",
                         "editor": "テンプレートエディター",
+                        "entity": "エンティティ",
                         "jinja_documentation": "Jinja2テンプレートのドキュメント",
+                        "listeners": "このテンプレートは、次の状態変更イベントをリッスンします。",
+                        "no_listeners": "このテンプレートは、状態が変更されたイベントが聞こえないため、自動的に更新されません。",
                         "reset": "デモ テンプレートにリセット",
                         "template_extensions": "ホーム アシスタント テンプレートの拡張機能",
+                        "time": "このテンプレートは、最後の状態変更イベントの後 60 秒ごとに更新されます。",
                         "title": "テンプレート",
                         "unknown_error_template": "不明なテンプレートレンダリングエラー"
                     }
@@ -2347,6 +2591,20 @@
                     "refresh": "更新"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "サービスの呼び出し",
+                            "default_action": "デフォルトアクション",
+                            "more-info": "詳細",
+                            "navigate": "ナビゲート",
+                            "none": "アクションなし",
+                            "toggle": "トグル",
+                            "url": "URL"
+                        },
+                        "editor_service_data": "サービス データはコード エディターでのみ入力できます。",
+                        "navigation_path": "ナビゲーションパス",
+                        "url_path": "URLパス"
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "利用可能な状態",
@@ -2354,12 +2612,20 @@
                             "name": "アラームパネル"
                         },
                         "button": {
+                            "default_action_help": "既定のアクションは、エンティティの機能に依存し、切り替えるか、より多くの情報が表示されます。",
                             "description": "ボタン カードを使用すると、タスクを実行するためのボタンを追加できます。",
                             "name": "ボタン"
                         },
                         "calendar": {
+                            "calendar_entities": "カレンダーエンティティ",
                             "description": "カレンダーカードには、日、週、リストビューを含むカレンダーが表示されます",
-                            "name": "カレンダー"
+                            "inital_view": "初期ビュー",
+                            "name": "カレンダー",
+                            "views": {
+                                "dayGridDay": "日",
+                                "dayGridMonth": "月",
+                                "listWeek": "リスト"
+                            }
                         },
                         "conditional": {
                             "card": "カード",
@@ -2378,8 +2644,31 @@
                         },
                         "entities": {
                             "description": "エンティティ カードは、最も一般的な種類のカードです。アイテムをリストにまとめます。",
+                            "edit_special_row": "コードエディタを使用して編集する",
+                            "entity_row_editor": "エンティティエディタ",
+                            "entity_row": {
+                                "attribute": "属性",
+                                "button": "ボタン",
+                                "buttons": "ボタン",
+                                "call-service": "サービスの呼び出し",
+                                "cast": "キャスト",
+                                "conditional": "条件付き",
+                                "divider": "仕切り",
+                                "section": "セクション",
+                                "weblink": "ウェブリンク"
+                            },
                             "name": "エンティティ",
+                            "secondary_info_values": {
+                                "brightness": "明るさ",
+                                "entity-id": "エンティティ ID",
+                                "last-changed": "最終変更",
+                                "last-triggered": "最後にトリガーされた",
+                                "none": "セカンダリ情報なし",
+                                "position": "ポジション",
+                                "tilt-position": "チルト位置"
+                            },
                             "show_header_toggle": "ヘッダー切り替えを表示しますか？",
+                            "special_row": "特別",
                             "toggle": "エンティテを切り替え"
                         },
                         "entity-filter": {
@@ -2500,7 +2789,8 @@
                             "description": "センサーカードは、時間の経過に伴う変化を視覚化するオプションのグラフを使用して、センサーの状態をすばやく提供します。",
                             "graph_detail": "グラフの詳細",
                             "graph_type": "グラフの種類",
-                            "name": "センサー"
+                            "name": "センサー",
+                            "show_more_detail": "詳細を表示"
                         },
                         "shopping-list": {
                             "description": "ショッピングリストカードを使用すると、ショッピングリストのアイテムを追加、編集、チェックオフ、およびクリアができます。",
@@ -2522,8 +2812,15 @@
                         }
                     },
                     "cardpicker": {
+                        "by_card": "カード別",
+                        "by_entity": "エンティティ別",
                         "custom_card": "カスタム",
+                        "domain": "ドメイン",
+                        "entity": "エンティティ",
                         "no_description": "説明がありません。"
+                    },
+                    "edit_badges": {
+                        "panel_mode": "このビューは「パネルモード」になっているため、これらのバッジは表示されません。"
                     },
                     "edit_card": {
                         "add": "カードを追加",
@@ -2533,9 +2830,12 @@
                         "edit": "編集",
                         "header": "カード設定",
                         "move": "ビューに移動",
+                        "move_after": "後にカードを移動",
+                        "move_before": "前にカードを移動",
                         "options": "その他のオプション",
                         "pick_card": "どのカードを追加しますか？",
                         "pick_card_view_title": "{name}ビューにどのカードを追加しますか？",
+                        "search_cards": "カードを検索",
                         "show_code_editor": "コードエディタを表示",
                         "show_visual_editor": "ビジュアルエディターを表示",
                         "toggle_editor": "エディターの切り替え",
@@ -2825,6 +3125,12 @@
                     "more_integrations": "もっと見る"
                 },
                 "intro": "あなたはあなたの家を目覚めさせ、あなたのプライバシーを取り戻し、ティンカーの世界的なコミュニティに参加する準備ができていますか?",
+                "restore": {
+                    "description": "以前のスナップショットから復元することもできます。",
+                    "hide_log": "ログ全体を非表示",
+                    "in_progress": "復元中",
+                    "show_log": "ログ全体を表示"
+                },
                 "user": {
                     "create_account": "アカウントの作成",
                     "data": {
@@ -2856,6 +3162,11 @@
                     "submit": "送信"
                 },
                 "current_user": "現在、 {fullName}としてログインしています。",
+                "customize_sidebar": {
+                    "button": "編集",
+                    "description": "サイドバーのヘッダーを長押しして編集モードを有効にすることもできます。",
+                    "header": "サイドバーから順序を変更し、アイテムを非表示にする"
+                },
                 "dashboard": {
                     "description": "このデバイスのデフォルトのダッシュボードを選択してください。",
                     "dropdown_label": "ダッシュボード",
@@ -2878,6 +3189,7 @@
                     "confirm_delete": "{name} のアクセス トークンを削除しますか?",
                     "create": "トークンの作成",
                     "create_failed": "アクセス トークンを作成できませんでした。",
+                    "created": "{日付} に作成されました",
                     "created_at": "{日付} に作成されました",
                     "delete_failed": "アクセス トークンを削除できませんでした。",
                     "description": "スクリプトがホーム アシスタント インスタンスと対話できるように、長期間使用できるアクセス トークンを作成します。各トークンは作成から10年間有効です。次の長期アクセス トークンは現在アクティブです。",
@@ -2885,6 +3197,7 @@
                     "header": "長期間有効なアクセストークン",
                     "last_used": "{location} から {date} で最後に使用されました",
                     "learn_auth_requests": "認証された要求を作成する方法について説明します。",
+                    "name": "名前",
                     "not_used": "一度も使用されていない",
                     "prompt_copy_token": "アクセス トークンをコピーします。再び表示されません。",
                     "prompt_name": "名前？"
@@ -2951,6 +3264,7 @@
             }
         },
         "sidebar": {
+            "done": "完了",
             "external_app_configuration": "アプリの構成",
             "sidebar_toggle": "サイドバーの切り替え"
         }

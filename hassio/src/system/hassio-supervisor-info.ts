@@ -7,18 +7,21 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-settings-row";
 import "../../../src/components/ha-switch";
+import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import { HassioHostInfo as HassioHostInfoType } from "../../../src/data/hassio/host";
+import { fetchHassioResolution } from "../../../src/data/hassio/resolution";
 import {
+  fetchHassioSupervisorInfo,
   HassioSupervisorInfo as HassioSupervisorInfoType,
   reloadSupervisor,
   setSupervisorOption,
   SupervisorOptions,
   updateSupervisor,
-  fetchHassioSupervisorInfo,
 } from "../../../src/data/hassio/supervisor";
 import {
   showAlertDialog,
@@ -26,14 +29,42 @@ import {
 } from "../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
+import { documentationUrl } from "../../../src/util/documentation-url";
 import { hassioStyle } from "../resources/hassio-style";
-import { extractApiErrorMessage } from "../../../src/data/hassio/common";
+
+const ISSUES = {
+  container: {
+    title: "Containers known to cause issues",
+    url: "/more-info/unsupported/container",
+  },
+  dbus: { title: "DBUS", url: "/more-info/unsupported/dbus" },
+  docker_configuration: {
+    title: "Docker Configuration",
+    url: "/more-info/unsupported/docker_configuration",
+  },
+  docker_version: {
+    title: "Docker Version",
+    url: "/more-info/unsupported/docker_version",
+  },
+  lxc: { title: "LXC", url: "/more-info/unsupported/lxc" },
+  network_manager: {
+    title: "Network Manager",
+    url: "/more-info/unsupported/network_manager",
+  },
+  os: { title: "Operating System", url: "/more-info/unsupported/os" },
+  privileged: {
+    title: "Supervisor is not privileged",
+    url: "/more-info/unsupported/privileged",
+  },
+  systemd: { title: "Systemd", url: "/more-info/unsupported/systemd" },
+};
 
 @customElement("hassio-supervisor-info")
 class HassioSupervisorInfo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public supervisorInfo!: HassioSupervisorInfoType;
+  @property({ attribute: false })
+  public supervisorInfo!: HassioSupervisorInfoType;
 
   @property() public hostInfo!: HassioHostInfoType;
 
@@ -51,12 +82,12 @@ class HassioSupervisorInfo extends LitElement {
           </ha-settings-row>
           <ha-settings-row>
             <span slot="heading">
-              Newest version
+              Newest Version
             </span>
             <span slot="description">
               ${this.supervisorInfo.version_latest}
             </span>
-            ${this.supervisorInfo.version !== this.supervisorInfo.version_latest
+            ${this.supervisorInfo.update_available
               ? html`
                   <ha-progress-button
                     title="Update the supervisor"
@@ -98,7 +129,7 @@ class HassioSupervisorInfo extends LitElement {
           ${this.supervisorInfo?.supported
             ? html` <ha-settings-row three-line>
                 <span slot="heading">
-                  Share diagnostics
+                  Share Diagnostics
                 </span>
                 <div slot="description" class="diagnostics-description">
                   Share crash reports and diagnostic information.
@@ -118,24 +149,19 @@ class HassioSupervisorInfo extends LitElement {
               </ha-settings-row>`
             : html`<div class="error">
                 You are running an unsupported installation.
-                <a
-                  href="https://github.com/home-assistant/architecture/blob/master/adr/${this.hostInfo.features.includes(
-                    "hassos"
-                  )
-                    ? "0015-home-assistant-os.md"
-                    : "0014-home-assistant-supervised.md"}"
-                  target="_blank"
-                  rel="noreferrer"
+                <button
+                  class="link"
                   title="Learn more about how you can make your system compliant"
+                  @click=${this._unsupportedDialog}
                 >
-                  Learn More
-                </a>
+                  Learn more
+                </button>
               </div>`}
         </div>
         <div class="card-actions">
           <ha-progress-button
             @click=${this._supervisorReload}
-            title="Reload parts of the supervisor."
+            title="Reload parts of the supervisor"
           >
             Reload
           </ha-progress-button>
@@ -181,7 +207,7 @@ class HassioSupervisorInfo extends LitElement {
       };
       await setSupervisorOption(this.hass, data);
       await reloadSupervisor(this.hass);
-      this.supervisorInfo = await fetchHassioSupervisorInfo(this.hass);
+      fireEvent(this, "hass-api-called", { success: true, response: null });
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to set supervisor option",
@@ -212,7 +238,7 @@ class HassioSupervisorInfo extends LitElement {
     button.progress = true;
 
     const confirmed = await showConfirmationDialog(this, {
-      title: "Update supervisor",
+      title: "Update Supervisor",
       text: `Are you sure you want to update supervisor to version ${this.supervisorInfo.version_latest}?`,
       confirmText: "update",
       dismissText: "cancel",
@@ -246,6 +272,32 @@ class HassioSupervisorInfo extends LitElement {
         <br /><br />
         The data does not include any private/sensitive information and you can
         disable this in settings at any time you want.`,
+    });
+  }
+
+  private async _unsupportedDialog(): Promise<void> {
+    const resolution = await fetchHassioResolution(this.hass);
+    await showAlertDialog(this, {
+      title: "You are running an unsupported installation",
+      text: html`Below is a list of issues found with your installation, click
+        on the links to learn how you can resolve the issues. <br /><br />
+        <ul>
+          ${resolution.unsupported.map(
+            (issue) => html`
+              <li>
+                ${ISSUES[issue]
+                  ? html`<a
+                      href="${documentationUrl(this.hass, ISSUES[issue].url)}"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      ${ISSUES[issue].title}
+                    </a>`
+                  : issue}
+              </li>
+            `
+          )}
+        </ul>`,
     });
   }
 

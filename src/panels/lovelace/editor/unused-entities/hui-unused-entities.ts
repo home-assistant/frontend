@@ -112,7 +112,7 @@ export class HuiUnusedEntities extends LitElement {
           .label=${this.hass.localize("ui.panel.lovelace.editor.edit_card.add")}
           @click=${this._addToLovelaceView}
         >
-          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </mwc-fab>
       </div>
     `;
@@ -159,11 +159,11 @@ export class HuiUnusedEntities extends LitElement {
     return css`
       :host {
         background: var(--lovelace-background);
+        overflow: hidden;
       }
       .container {
         display: flex;
         flex-direction: column;
-        /* min-height: calc(100vh - 112px); */
         height: 100%;
       }
       ha-card {

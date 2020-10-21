@@ -36,7 +36,7 @@ class HaInputSelectForm extends LitElement {
 
   @internalProperty() private _options: string[] = [];
 
-  @query("#option_input") private _optionInput?: PaperInputElement;
+  @query("#option_input", true) private _optionInput?: PaperInputElement;
 
   set item(item: InputSelect) {
     this._item = item;

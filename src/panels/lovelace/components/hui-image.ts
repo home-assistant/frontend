@@ -46,6 +46,10 @@ export class HuiImage extends LitElement {
 
   @property() public stateFilter?: StateSpecificConfig;
 
+  @property() public darkModeImage?: string;
+
+  @property() public darkModeFilter?: string;
+
   @internalProperty() private _loadError?: boolean;
 
   @internalProperty() private _cameraImageSrc?: string;
@@ -97,6 +101,8 @@ export class HuiImage extends LitElement {
         imageSrc = this.image;
         imageFallback = true;
       }
+    } else if (this.darkModeImage && this.hass.themes.darkMode) {
+      imageSrc = this.darkModeImage;
     } else {
       imageSrc = this.image;
     }
@@ -108,8 +114,12 @@ export class HuiImage extends LitElement {
     // Figure out filter to use
     let filter = this.filter || "";
 
+    if (this.hass.themes.darkMode && this.darkModeFilter) {
+      filter += this.darkModeFilter;
+    }
+
     if (this.stateFilter && this.stateFilter[state]) {
-      filter = this.stateFilter[state];
+      filter += this.stateFilter[state];
     }
 
     if (!filter && this.entity) {

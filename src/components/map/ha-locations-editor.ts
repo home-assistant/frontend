@@ -90,8 +90,8 @@ export class HaLocationsEditor extends LitElement {
     if (!marker) {
       return;
     }
-    if ((marker as Circle).getBounds) {
-      this._leafletMap.fitBounds((marker as Circle).getBounds());
+    if ("getBounds" in marker) {
+      this._leafletMap.fitBounds(marker.getBounds());
       (marker as Circle).bringToFront();
     } else {
       const circle = this._circles[id];
@@ -296,8 +296,8 @@ export class HaLocationsEditor extends LitElement {
             // @ts-ignore
             (ev: MouseEvent) => this._markerClicked(ev)
           )
-          .addTo(this._leafletMap);
-        marker.id = location.id;
+          .addTo(this._leafletMap!);
+        (marker as any).id = location.id;
 
         this._locationMarkers![location.id] = marker;
       }

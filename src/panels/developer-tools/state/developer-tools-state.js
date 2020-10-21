@@ -237,6 +237,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         computed:
           "computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter)",
       },
+
       rtl: {
         reflectToAttribute: true,
         computed: "_computeRTL(hass)",

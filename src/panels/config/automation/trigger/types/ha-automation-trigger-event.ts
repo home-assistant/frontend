@@ -2,12 +2,14 @@ import "@polymer/paper-input/paper-input";
 import { customElement, LitElement, property } from "lit-element";
 import { html } from "lit-html";
 import "../../../../../components/ha-yaml-editor";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import { EventTrigger } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
 import {
   handleChangeEvent,
   TriggerElement,
 } from "../ha-automation-trigger-row";
+import "../../../../../components/user/ha-users-picker";
 
 @customElement("ha-automation-trigger-event")
 export class HaEventTrigger extends LitElement implements TriggerElement {
@@ -16,11 +18,11 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
   @property() public trigger!: EventTrigger;
 
   public static get defaultConfig() {
-    return { event_type: "", event_data: {} };
+    return { event_type: "" };
   }
 
   protected render() {
-    const { event_type, event_data } = this.trigger;
+    const { event_type, event_data, context } = this.trigger;
     return html`
       <paper-input
         .label=${this.hass.localize(
@@ -38,7 +40,32 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
         .defaultValue=${event_data}
         @value-changed=${this._dataChanged}
       ></ha-yaml-editor>
+      <br />
+      ${this.hass.localize(
+        "ui.panel.config.automation.editor.triggers.type.event.context_users"
+      )}
+      <ha-users-picker
+        .pickedUserLabel=${this.hass.localize(
+          "ui.panel.config.automation.editor.triggers.type.event.context_user_picked"
+        )}
+        .pickUserLabel=${this.hass.localize(
+          "ui.panel.config.automation.editor.triggers.type.event.context_user_pick"
+        )}
+        .hass=${this.hass}
+        .value=${this._wrapUsersInArray(context?.user_id)}
+        @value-changed=${this._usersChanged}
+      ></ha-users-picker>
     `;
+  }
+
+  private _wrapUsersInArray(user_id: string | string[] | undefined): string[] {
+    if (!user_id) {
+      return [];
+    }
+    if (typeof user_id === "string") {
+      return [user_id];
+    }
+    return user_id;
   }
 
   private _valueChanged(ev: CustomEvent): void {
@@ -52,6 +79,22 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
       return;
     }
     handleChangeEvent(this, ev);
+  }
+
+  private _usersChanged(ev) {
+    ev.stopPropagation();
+    const value = { ...this.trigger };
+    if (!ev.detail.value.length && value.context) {
+      delete value.context.user_id;
+    } else {
+      if (!value.context) {
+        value.context = {};
+      }
+      value.context.user_id = ev.detail.value;
+    }
+    fireEvent(this, "value-changed", {
+      value,
+    });
   }
 }
 

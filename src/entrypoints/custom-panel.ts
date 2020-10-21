@@ -35,7 +35,10 @@ function setProperties(properties) {
   setCustomPanelProperties(panelEl, properties);
 }
 
-function initialize(panel: CustomPanelInfo, properties: {}) {
+function initialize(
+  panel: CustomPanelInfo,
+  properties: Record<string, unknown>
+) {
   const style = document.createElement("style");
   style.innerHTML = "body{margin:0}";
   document.head.appendChild(style);

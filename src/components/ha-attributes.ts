@@ -33,7 +33,9 @@ class HaAttributes extends LitElement {
         ).map(
           (attribute) => html`
             <div class="data-entry">
-              <div class="key">${attribute.replace(/_/g, " ")}</div>
+              <div class="key">
+                ${attribute.replace(/_/g, " ").replace("id", "ID")}
+              </div>
               <div class="value">
                 ${this.formatAttribute(attribute)}
               </div>
@@ -61,6 +63,9 @@ class HaAttributes extends LitElement {
       .data-entry .value {
         max-width: 200px;
         overflow-wrap: break-word;
+      }
+      .key:first-letter {
+        text-transform: capitalize;
       }
       .attribution {
         color: var(--secondary-text-color);

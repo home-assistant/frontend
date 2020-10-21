@@ -70,6 +70,7 @@ class DialogBox extends LitElement {
                 <p
                   class=${classMap({
                     "no-bottom-padding": Boolean(this._params.prompt),
+                    warning: Boolean(this._params.warning),
                   })}
                 >
                   ${this._params.text}
@@ -179,6 +180,9 @@ class DialogBox extends LitElement {
         ha-dialog {
           /* Place above other dialogs */
           --dialog-z-index: 104;
+        }
+        .warning {
+          color: var(--warning-color);
         }
       `,
     ];

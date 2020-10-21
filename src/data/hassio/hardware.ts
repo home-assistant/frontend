@@ -18,7 +18,7 @@ export interface HassioHardwareInfo {
   input: string[];
   disk: string[];
   gpio: string[];
-  audio: object;
+  audio: Record<string, unknown>;
 }
 
 export const fetchHassioHardwareAudio = async (hass: HomeAssistant) => {

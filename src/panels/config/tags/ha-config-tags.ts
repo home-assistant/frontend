@@ -1,5 +1,12 @@
 import "@material/mwc-fab";
-import { mdiCog, mdiContentDuplicate, mdiPlus, mdiRobot } from "@mdi/js";
+import "@material/mwc-icon-button";
+import {
+  mdiCog,
+  mdiContentDuplicate,
+  mdiHelpCircle,
+  mdiPlus,
+  mdiRobot,
+} from "@mdi/js";
 import {
   customElement,
   html,
@@ -23,11 +30,15 @@ import {
   updateTag,
   UpdateTagParams,
 } from "../../../data/tag";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import { getExternalConfig } from "../../../external_app/external_config";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant, Route } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
 import { configSections } from "../ha-panel-config";
 import { showTagDetailDialog } from "./show-dialog-tag-detail";
 import "./tag-image";
@@ -193,15 +204,49 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         .noDataText=${this.hass.localize("ui.panel.config.tags.no_tags")}
         hasFab
       >
+        <mwc-icon-button slot="toolbar-icon" @click=${this._showHelp}>
+          <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
+        </mwc-icon-button>
         <mwc-fab
           slot="fab"
           title=${this.hass.localize("ui.panel.config.tags.add_tag")}
           @click=${this._addTag}
         >
-          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </mwc-fab>
       </hass-tabs-subpage-data-table>
     `;
+  }
+
+  private _showHelp() {
+    showAlertDialog(this, {
+      title: this.hass.localize("ui.panel.config.tags.caption"),
+      text: html`
+        <p>
+          ${this.hass.localize(
+            "ui.panel.config.tags.detail.usage",
+            "companion_link",
+            html`<a
+              href="https://companion.home-assistant.io/"
+              target="_blank"
+              rel="noreferrer"
+              >${this.hass!.localize(
+                "ui.panel.config.tags.detail.companion_apps"
+              )}</a
+            >`
+          )}
+        </p>
+        <p>
+          <a
+            href="${documentationUrl(this.hass, "/integrations/tag/")}"
+            target="_blank"
+            rel="noreferrer"
+          >
+            ${this.hass.localize("ui.panel.config.tags.learn_more")}
+          </a>
+        </p>
+      `,
+    });
   }
 
   private async _fetchTags() {

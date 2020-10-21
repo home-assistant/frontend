@@ -32,6 +32,10 @@ const LAZY_LOADED_MORE_INFO_CONTROL = {
 export const stateMoreInfoType = (stateObj: HassEntity): string => {
   const domain = computeStateDomain(stateObj);
 
+  return domainMoreInfoType(domain);
+};
+
+export const domainMoreInfoType = (domain: string): string => {
   if (DOMAINS_WITH_MORE_INFO.includes(domain)) {
     return domain;
   }

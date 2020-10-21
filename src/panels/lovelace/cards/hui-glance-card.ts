@@ -73,13 +73,14 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
   public getCardSize(): number {
     const rowHeight =
       (this._config!.show_icon ? 1 : 0) +
-        (this._config!.show_name && this._config!.show_state ? 1 : 0) || 1;
+      (this._config!.show_name ? 1 : 0) +
+      (this._config!.show_state ? 1 : 0);
 
     const numRows = Math.ceil(
       this._configEntities!.length / (this._config!.columns || 5)
     );
 
-    return (this._config!.title ? 1 : 0) + rowHeight * numRows;
+    return (this._config!.title ? 2 : 0) + rowHeight * numRows;
   }
 
   public setConfig(config: GlanceCardConfig): void {
@@ -189,10 +190,16 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
+      ha-card {
+        height: 100%;
+      }
       .entities {
         display: flex;
         padding: 0 16px 4px;
         flex-wrap: wrap;
+        height: 100%;
+        box-sizing: border-box;
+        align-content: center;
       }
       .entities.no-header {
         padding-top: 16px;

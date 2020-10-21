@@ -51,21 +51,17 @@ class SearchInput extends LitElement {
         @value-changed=${this._filterInputChanged}
         .noLabelFloat=${this.noLabelFloat}
       >
-        <ha-svg-icon
-          path=${mdiMagnify}
-          slot="prefix"
-          class="prefix"
-        ></ha-svg-icon>
+        <slot name="prefix" slot="prefix">
+          <ha-svg-icon class="prefix" .path=${mdiMagnify}></ha-svg-icon>
+        </slot>
         ${this.filter &&
         html`
           <mwc-icon-button
             slot="suffix"
-            class="suffix"
             @click=${this._clearSearch}
-            alt="Clear"
             title="Clear"
           >
-            <ha-svg-icon path=${mdiClose}></ha-svg-icon>
+            <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
           </mwc-icon-button>
         `}
       </paper-input>

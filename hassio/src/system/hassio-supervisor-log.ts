@@ -76,7 +76,7 @@ class HassioSupervisorLog extends LitElement {
         ${this.hass.userData?.showAdvanced
           ? html`
               <paper-dropdown-menu
-                label="Log provider"
+                label="Log Provider"
                 @iron-select=${this._setLogProvider}
               >
                 <paper-listbox
