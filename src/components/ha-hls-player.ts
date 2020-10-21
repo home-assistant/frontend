@@ -130,10 +130,10 @@ class HaHLSPlayer extends LitElement {
 
     // use regular playlist instead of master playlist if possible
     let playlist_url: string;
-    const playlistRegexp = /#EXT-X-STREAM-INF:.+?\s+(.+)/g;
+    const playlistRegexp = /#EXT-X-STREAM-INF:.+?(\r\n|\r|\n)(.+)/g;
     const match = playlistRegexp.exec(masterPlaylist);
     if (match !== null && playlistRegexp.exec(masterPlaylist) === null) {
-      playlist_url = new URL(match[1], this.url).href;
+      playlist_url = new URL(match[2], this.url).href;
     } else {
       playlist_url = this.url;
     }
