@@ -38,48 +38,56 @@ export class MoreInfoLogbook extends LitElement {
     this._getLogBookData();
   }, 10000);
 
-  protected render(): TemplateResult {
+  private _canHaveLogbookEntries(): boolean {
     if (!this.entityId) {
-      return html``;
+      return false;
     }
     const stateObj = this.hass.states[this.entityId];
 
     if (!stateObj || stateObj.attributes.unit_of_measurement) {
-      return html``;
+      return false;
     }
 
     const domain = computeStateDomain(stateObj);
     if (CONTINUOUS_DOMAINS.includes(domain)) {
-      return html``;
+      return false;
     }
 
-    return html`
-      ${isComponentLoaded(this.hass, "logbook")
-        ? !this._logbookEntries
-          ? html`
-              <ha-circular-progress
-                active
-                alt=${this.hass.localize("ui.common.loading")}
-              ></ha-circular-progress>
-            `
-          : this._logbookEntries.length
-          ? html`
-              <ha-logbook
-                class="ha-scrollbar"
-                narrow
-                no-icon
-                no-name
-                relative-time
-                .hass=${this.hass}
-                .entries=${this._logbookEntries}
-                .userIdToName=${this._persons}
-              ></ha-logbook>
-            `
-          : html`<div class="no-entries">
-              ${this.hass.localize("ui.components.logbook.entries_not_found")}
-            </div>`
-        : ""}
-    `;
+    return true;
+  }
+
+  protected render(): TemplateResult {
+    return !this._canHaveLogbookEntries()
+      ? html``
+      : html`
+          ${isComponentLoaded(this.hass, "logbook")
+            ? !this._logbookEntries
+              ? html`
+                  <ha-circular-progress
+                    active
+                    alt=${this.hass.localize("ui.common.loading")}
+                  ></ha-circular-progress>
+                `
+              : this._logbookEntries.length
+              ? html`
+                  <ha-logbook
+                    class="ha-scrollbar"
+                    narrow
+                    no-icon
+                    no-name
+                    relative-time
+                    .hass=${this.hass}
+                    .entries=${this._logbookEntries}
+                    .userIdToName=${this._persons}
+                  ></ha-logbook>
+                `
+              : html`<div class="no-entries">
+                  ${this.hass.localize(
+                    "ui.components.logbook.entries_not_found"
+                  )}
+                </div>`
+            : ""}
+        `;
   }
 
   protected firstUpdated(): void {
@@ -89,13 +97,13 @@ export class MoreInfoLogbook extends LitElement {
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
+    if (!this._canHaveLogbookEntries()) {
+      return;
+    }
+
     if (changedProps.has("entityId")) {
       this._lastLogbookDate = undefined;
       this._logbookEntries = undefined;
-
-      if (!this.entityId) {
-        return;
-      }
 
       this._throttleGetLogbookEntries();
       return;
