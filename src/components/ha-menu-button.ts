@@ -6,9 +6,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
@@ -98,8 +98,7 @@ class HaMenuButton extends LitElement {
       return;
     }
 
-    this.style.display =
-      newNarrow || this._alwaysVisible ? "initial" : "none";
+    this.style.display = newNarrow || this._alwaysVisible ? "initial" : "none";
 
     if (!newNarrow) {
       this._hasNotifications = false;

@@ -1,6 +1,12 @@
 import "@material/mwc-fab";
 import "@material/mwc-icon-button";
-import { mdiCog, mdiContentDuplicate, mdiPlus, mdiRobot, mdiHelpCircle } from "@mdi/js";
+import {
+  mdiCog,
+  mdiContentDuplicate,
+  mdiHelpCircle,
+  mdiPlus,
+  mdiRobot,
+} from "@mdi/js";
 import {
   customElement,
   html,
@@ -24,15 +30,18 @@ import {
   updateTag,
   UpdateTagParams,
 } from "../../../data/tag";
-import { showConfirmationDialog, showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import { getExternalConfig } from "../../../external_app/external_config";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant, Route } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
 import { configSections } from "../ha-panel-config";
 import { showTagDetailDialog } from "./show-dialog-tag-detail";
 import "./tag-image";
-import { documentationUrl } from "../../../util/documentation-url";
 
 export interface TagRowData extends Tag {
   last_scanned_datetime: Date | null;
@@ -214,18 +223,18 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
       title: this.hass.localize("ui.panel.config.tags.caption"),
       text: html`
         <p>
-        ${this.hass.localize(
-          "ui.panel.config.tags.detail.usage",
-          "companion_link",
-          html`<a
-            href="https://companion.home-assistant.io/"
-            target="_blank"
-            rel="noreferrer"
-            >${this.hass!.localize(
-              "ui.panel.config.tags.detail.companion_apps"
-            )}</a
-          >`
-        )}
+          ${this.hass.localize(
+            "ui.panel.config.tags.detail.usage",
+            "companion_link",
+            html`<a
+              href="https://companion.home-assistant.io/"
+              target="_blank"
+              rel="noreferrer"
+              >${this.hass!.localize(
+                "ui.panel.config.tags.detail.companion_apps"
+              )}</a
+            >`
+          )}
         </p>
         <p>
           <a
