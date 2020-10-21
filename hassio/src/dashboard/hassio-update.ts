@@ -5,11 +5,11 @@ import {
   CSSResult,
   customElement,
   html,
-  internalProperty,
   LitElement,
   property,
   TemplateResult,
 } from "lit-element";
+import memoizeOne from "memoize-one";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-svg-icon";
@@ -35,29 +35,30 @@ import { hassioStyle } from "../resources/hassio-style";
 export class HassioUpdate extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public hassInfo: HassioHomeAssistantInfo;
+  @property({ attribute: false }) public hassInfo?: HassioHomeAssistantInfo;
 
   @property({ attribute: false }) public hassOsInfo?: HassioHassOSInfo;
 
-  @property() public supervisorInfo: HassioSupervisorInfo;
+  @property({ attribute: false }) public supervisorInfo?: HassioSupervisorInfo;
 
-  @internalProperty() private _error?: string;
+  private _pendingUpdates = memoizeOne(
+    (
+      core?: HassioHomeAssistantInfo,
+      supervisor?: HassioSupervisorInfo,
+      os?: HassioHassOSInfo
+    ): number => {
+      return [core, supervisor, os].filter(
+        (value) => !!value && value?.update_available
+      ).length;
+    }
+  );
 
   protected render(): TemplateResult {
-    const updatesAvailable: number = [
+    const updatesAvailable = this._pendingUpdates(
       this.hassInfo,
       this.supervisorInfo,
-      this.hassOsInfo,
-    ].filter((value) => {
-      return (
-        !!value &&
-        (value.version_latest
-          ? value.version !== value.version_latest
-          : value.version_latest
-          ? value.version !== value.version_latest
-          : false)
-      );
-    }).length;
+      this.hassOsInfo
+    );
 
     if (!updatesAvailable) {
       return html``;
@@ -65,9 +66,6 @@ export class HassioUpdate extends LitElement {
 
     return html`
       <div class="content">
-        ${this._error
-          ? html` <div class="error">Error: ${this._error}</div> `
-          : ""}
         <h1>
           ${updatesAvailable > 1
             ? "Updates Available 🎉"
@@ -76,26 +74,24 @@ export class HassioUpdate extends LitElement {
         <div class="card-group">
           ${this._renderUpdateCard(
             "Home Assistant Core",
-            this.hassInfo.version,
-            this.hassInfo.version_latest,
+            this.hassInfo!,
             "hassio/homeassistant/update",
             `https://${
-              this.hassInfo.version_latest.includes("b") ? "rc" : "www"
-            }.home-assistant.io/latest-release-notes/`,
-            mdiHomeAssistant
+              this.hassInfo?.version_latest.includes("b") ? "rc" : "www"
+            }.home-assistant.io/latest-release-notes/`
           )}
           ${this._renderUpdateCard(
             "Supervisor",
-            this.supervisorInfo.version,
-            this.supervisorInfo.version_latest,
+            this.supervisorInfo!,
             "hassio/supervisor/update",
-            `https://github.com//home-assistant/hassio/releases/tag/${this.supervisorInfo.version_latest}`
+            `https://github.com//home-assistant/hassio/releases/tag/${
+              this.supervisorInfo!.version_latest
+            }`
           )}
           ${this.hassOsInfo
             ? this._renderUpdateCard(
                 "Operating System",
-                this.hassOsInfo.version,
-                this.hassOsInfo.version_latest,
+                this.hassOsInfo,
                 "hassio/os/update",
                 `https://github.com//home-assistant/hassos/releases/tag/${this.hassOsInfo.version_latest}`
               )
@@ -107,28 +103,22 @@ export class HassioUpdate extends LitElement {
 
   private _renderUpdateCard(
     name: string,
-    curVersion: string,
-    lastVersion: string,
+    object: HassioHomeAssistantInfo | HassioSupervisorInfo | HassioHassOSInfo,
     apiPath: string,
-    releaseNotesUrl: string,
-    icon?: string
+    releaseNotesUrl: string
   ): TemplateResult {
-    if (!lastVersion || lastVersion === curVersion) {
+    if (!object.update_available) {
       return html``;
     }
     return html`
       <ha-card>
         <div class="card-content">
-          ${icon
-            ? html`
-                <div class="icon">
-                  <ha-svg-icon .path=${icon}></ha-svg-icon>
-                </div>
-              `
-            : ""}
-          <div class="update-heading">${name} ${lastVersion}</div>
+          <div class="icon">
+            <ha-svg-icon .path=${mdiHomeAssistant}></ha-svg-icon>
+          </div>
+          <div class="update-heading">${name} ${object.version_latest}</div>
           <div class="warning">
-            You are currently running version ${curVersion}
+            You are currently running version ${object.version}
           </div>
         </div>
         <div class="card-actions">
@@ -138,7 +128,7 @@ export class HassioUpdate extends LitElement {
           <ha-progress-button
             .apiPath=${apiPath}
             .name=${name}
-            .version=${lastVersion}
+            .version=${object.version_latest}
             @click=${this._confirmUpdate}
           >
             Update
