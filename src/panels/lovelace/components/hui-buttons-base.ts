@@ -8,17 +8,19 @@ import {
   queryAll,
   TemplateResult,
 } from "lit-element";
+
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import "../../../components/entity/state-badge";
-import type { StateBadge } from "../../../components/entity/state-badge";
-import "../../../components/ha-icon";
-import type { ActionHandlerEvent } from "../../../data/lovelace";
-import type { HomeAssistant } from "../../../types";
-import type { EntitiesCardEntityConfig } from "../cards/types";
 import { computeTooltip } from "../common/compute-tooltip";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
+
+import type { StateBadge } from "../../../components/entity/state-badge";
+import type { ActionHandlerEvent } from "../../../data/lovelace";
+import type { HomeAssistant } from "../../../types";
+import type { EntitiesCardEntityConfig } from "../cards/types";
+
+import "../../../components/entity/state-badge";
 
 @customElement("hui-buttons-base")
 export class HuiButtonsBase extends LitElement {
@@ -43,11 +45,6 @@ export class HuiButtonsBase extends LitElement {
     return html`
       ${(this.configEntities || []).map((entityConf) => {
         const stateObj = this._hass!.states[entityConf.entity];
-        if (!stateObj) {
-          return html`<div class="missing">
-            <ha-icon icon="hass:alert"></ha-icon>
-          </div>`;
-        }
 
         return html`
           <div
@@ -72,7 +69,7 @@ export class HuiButtonsBase extends LitElement {
                 `
               : ""}
             <span>
-              ${entityConf.show_name ||
+              ${(entityConf.show_name && stateObj) ||
               (entityConf.name && entityConf.show_name !== false)
                 ? entityConf.name || computeStateName(stateObj)
                 : ""}
@@ -93,9 +90,6 @@ export class HuiButtonsBase extends LitElement {
       :host {
         display: flex;
         justify-content: space-evenly;
-      }
-      .missing {
-        color: #fce588;
       }
       div {
         cursor: pointer;
