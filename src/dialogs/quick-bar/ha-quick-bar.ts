@@ -33,6 +33,9 @@ import { mdiConsoleLine } from "@mdi/js";
 import { scroll } from "lit-virtualizer";
 import { styleMap } from "lit-html/directives/style-map";
 import { SingleSelectedEvent } from "@material/mwc-list/mwc-list-foundation";
+import type { List } from "@material/mwc-list/mwc-list";
+import type { ListItem } from "@material/mwc-list/mwc-list-item";
+import { ifDefined } from "lit-html/directives/if-defined";
 
 interface QuickBarItem extends ScorableTextItem {
   icon: string;
@@ -57,18 +60,17 @@ export class QuickBar extends LitElement {
 
   @internalProperty() private _commandTriggered = -1;
 
-  @internalProperty() private _activatedIndex = 0;
-
   @internalProperty() private _done = false;
 
   @query("search-input", false) private _filterInputField?: HTMLElement;
 
-  @query("mwc-list-item", false) private _firstListItem?: HTMLElement;
+  private _focusSet = false;
 
   public async showDialog(params: QuickBarParams) {
     this._commandMode = params.commandMode || false;
     this._commandItems = this._generateCommandItems();
     this._entityItems = this._generateEntityItems();
+    this._focusSet = false;
     this._opened = true;
   }
 
@@ -78,7 +80,6 @@ export class QuickBar extends LitElement {
     this._filter = "";
     this._commandTriggered = -1;
     this._items = [];
-    this._resetActivatedIndex();
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -116,7 +117,7 @@ export class QuickBar extends LitElement {
           )}
           .filter=${this._commandMode ? `>${this._filter}` : this._filter}
           @keydown=${this._handleInputKeyDown}
-          @focus=${this._resetActivatedIndex}
+          @focus=${this._setFocusFirstListItem}
         >
           ${this._commandMode
             ? html`<ha-svg-icon
@@ -133,6 +134,8 @@ export class QuickBar extends LitElement {
             ></ha-circular-progress>`
           : html`<mwc-list
               activatable
+              @rangechange=${this._handleRangeChanged}
+              @keydown=${this._handleListItemKeyDown}
               @selected=${this._handleSelected}
               style=${styleMap({
                 height: `${Math.min(
@@ -158,14 +161,21 @@ export class QuickBar extends LitElement {
     });
   }
 
+  private _handleRangeChanged(e) {
+    if (this._focusSet) {
+      return;
+    }
+    if (e.firstVisible > -1) {
+      this._setFocusFirstListItem();
+    }
+  }
+
   private _renderItem(item: QuickBarItem, index?: number) {
     return html`
       <mwc-list-item
         .twoline=${Boolean(item.altText)}
-        .activated=${index === this._activatedIndex}
         .item=${item}
-        .index=${index}
-        @keydown=${this._handleListItemKeyDown}
+        index=${ifDefined(index)}
         hasMeta
         graphic=${item.altText ? "avatar" : "icon"}
       >
@@ -194,13 +204,9 @@ export class QuickBar extends LitElement {
     this.closeDialog();
   }
 
-  private _resetActivatedIndex() {
-    this._activatedIndex = 0;
-  }
-
   private _handleSelected(ev: SingleSelectedEvent) {
     const index = ev.detail.index;
-    const item = (ev.target as any).items[index].item;
+    const item = ((ev.target as List).items[index] as any).item;
     this.processItemAndCloseDialog(item, index);
   }
 
@@ -213,8 +219,13 @@ export class QuickBar extends LitElement {
       this.processItemAndCloseDialog(this._items[0], 0);
     } else if (ev.code === "ArrowDown") {
       ev.preventDefault();
-      this._firstListItem?.focus();
+      this._getItemAtIndex(0)?.focus();
+      this._getItemAtIndex(1)?.focus();
     }
+  }
+
+  private _getItemAtIndex(index: number): ListItem | null {
+    return this.renderRoot.querySelector(`mwc-list-item[index="${index}"]`);
   }
 
   private _handleSearchChange(ev: CustomEvent): void {
@@ -234,22 +245,23 @@ export class QuickBar extends LitElement {
     }
   }
 
+  private _setFocusFirstListItem() {
+    // @ts-ignore
+    this._getItemAtIndex(0)?.rippleHandlers.startFocus();
+  }
+
   private _handleListItemKeyDown(ev: KeyboardEvent) {
     const isSingleCharacter = ev.key.length === 1;
-    const isFirstListItem = (ev.target as any).index === 0;
+    const isFirstListItem =
+      (ev.target as HTMLElement).getAttribute("index") === "0";
     if (ev.key === "ArrowUp") {
       if (isFirstListItem) {
         this._filterInputField?.focus();
-      } else {
-        this._activatedIndex--;
       }
-    } else if (ev.key === "ArrowDown") {
-      this._activatedIndex++;
     }
-
     if (ev.key === "Backspace" || isSingleCharacter) {
+      (ev.currentTarget as List).scrollTop = 0;
       this._filterInputField?.focus();
-      this._resetActivatedIndex();
     }
   }
 
