@@ -14,6 +14,7 @@ import { fetchUsers, User } from "../../data/user";
 import "./ha-user-picker";
 import { mdiClose } from "@mdi/js";
 import memoizeOne from "memoize-one";
+import { guard } from "lit-html/directives/guard";
 
 @customElement("ha-users-picker")
 class HaUsersPickerLight extends LitElement {
@@ -44,29 +45,35 @@ class HaUsersPickerLight extends LitElement {
       return html``;
     }
 
-    const currentUsers = this._currentUsers;
+    const notSelectedUsers = this._notSelectedUsers(this.users, this.value);
     return html`
-      ${currentUsers.map(
-        (user_id) => html`
-          <div>
-            <ha-user-picker
-              .label=${this.pickedUserLabel}
-              .curValue=${user_id}
-              .hass=${this.hass}
-              .value=${user_id}
-              .users=${this.users}
-              @value-changed=${this._userChanged}
-            ></ha-user-picker>
-            <mwc-icon-button .userId=${user_id} @click=${this._removeUser}>
-              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-            </mwc-icon-button>
-          </div>
-        `
+      ${guard([notSelectedUsers], () =>
+        this.value?.map(
+          (user_id, idx) => html`
+            <div>
+              <ha-user-picker
+                .label=${this.pickedUserLabel}
+                .index=${idx}
+                .hass=${this.hass}
+                .value=${user_id}
+                .users=${this._notSelectedUsersAndSelected(
+                  user_id,
+                  this.users,
+                  notSelectedUsers
+                )}
+                @value-changed=${this._userChanged}
+              ></ha-user-picker>
+              <mwc-icon-button .userId=${user_id} @click=${this._removeUser}>
+                <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+              </mwc-icon-button>
+            </div>
+          `
+        )
       )}
       <ha-user-picker
         .label=${this.pickUserLabel}
         .hass=${this.hass}
-        .users=${this._notSelectedUsers(this.users, this.value)}
+        .users=${notSelectedUsers}
         @value-changed=${this._addUser}
       ></ha-user-picker>
     `;
@@ -78,6 +85,18 @@ class HaUsersPickerLight extends LitElement {
         ? users?.filter((user) => !currentUsers.includes(user.id))
         : users
   );
+
+  private _notSelectedUsersAndSelected = (
+    userId: string,
+    users?: User[],
+    notSelected?: User[]
+  ) => {
+    const selectedUser = users?.find((user) => user.id === userId);
+    if (selectedUser) {
+      return notSelected ? [...notSelected, selectedUser] : [selectedUser];
+    }
+    return notSelected;
+  };
 
   private get _currentUsers() {
     return this.value || [];
@@ -92,18 +111,15 @@ class HaUsersPickerLight extends LitElement {
 
   private _userChanged(event: PolymerChangedEvent<string>) {
     event.stopPropagation();
-    const curValue = (event.currentTarget as any).curValue;
+    const index = (event.currentTarget as any).index;
     const newValue = event.detail.value;
-    if (newValue === curValue) {
-      return;
-    }
+    const newUsers = [...this._currentUsers];
     if (newValue === "") {
-      this._updateUsers(this._currentUsers.filter((user) => user !== curValue));
+      newUsers.splice(index, 1);
     } else {
-      this._updateUsers(
-        this._currentUsers.map((user) => (user === curValue ? newValue : user))
-      );
+      newUsers.splice(index, 1, newValue);
     }
+    this._updateUsers(newUsers);
   }
 
   private async _addUser(event: PolymerChangedEvent<string>) {
