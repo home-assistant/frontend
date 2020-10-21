@@ -52,14 +52,14 @@
         },
         "humidifier": {
             "mode": {
-                "auto": "automatycznie",
+                "auto": "automatyczny",
                 "away": "poza domem",
                 "baby": "dziecko",
                 "boost": "wzmocnienie",
                 "comfort": "komfort",
-                "eco": "ekonomicznie",
+                "eco": "ekonomiczny",
                 "home": "w domu",
-                "normal": "normalnie",
+                "normal": "normalny",
                 "sleep": "noc"
             }
         }
@@ -313,9 +313,9 @@
             "returning": "powrót do stacji dokującej"
         },
         "weather": {
-            "clear-night": "pogodnie, noc",
+            "clear-night": "pogodna noc",
             "cloudy": "pochmurno",
-            "exceptional": "wyjątkowy",
+            "exceptional": "warunki nadzwyczajne",
             "fog": "mgła",
             "hail": "grad",
             "lightning": "błyskawice",
@@ -323,8 +323,8 @@
             "partlycloudy": "częściowe zachmurzenie",
             "pouring": "ulewa",
             "rainy": "deszczowo",
-            "snowy": "śnieżnie",
-            "snowy-rainy": "śnieżnie, deszczowo",
+            "snowy": "opady śniegu",
+            "snowy-rainy": "śnieg z deszczem",
             "sunny": "słonecznie",
             "windy": "wietrznie",
             "windy-variant": "wietrznie"
@@ -699,7 +699,7 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "Jeśli wyłączone, nowo wykryte encje integracji {integration} nie będą automatycznie dodawane do Home Assistanta.",
+                "enable_new_entities_description": "Jeśli wyłączone, nowo wykryte encje integracji {integration} nie będą automatycznie dodawane do Home Assistant.",
                 "enable_new_entities_label": "Włącz dodawanie nowych encji.",
                 "title": "Opcje systemowe dla {integration}",
                 "update": "Aktualizuj"
@@ -715,7 +715,7 @@
                     "confirm_delete": "Czy na pewno chcesz usunąć ten wpis?",
                     "delete": "USUŃ",
                     "enabled_cause": "Wyłączone przez {cause}.",
-                    "enabled_description": "Wyłączone encje nie będą dostępne w Home Assistancie.",
+                    "enabled_description": "Wyłączone encje nie będą dostępne w Home Assistant.",
                     "enabled_label": "Włącz encję",
                     "entity_id": "Identyfikator encji",
                     "icon": "Ikona",
@@ -779,6 +779,9 @@
                 },
                 "platform_not_loaded": "Komponent {platform} nie jest załadowany, dodaj go do swojej konfiguracji dodając 'default_config:' lub ''{platform}:''.",
                 "required_error_msg": "To pole jest wymagane",
+                "timer": {
+                    "duration": "Czas"
+                },
                 "yaml_not_editable": "Ustawienia tej encji nie mogą być edytowane z interfejsu użytkownika. Tylko encje dodane z interfejsu użytkownika można konfigurować z poziomu interfejsu użytkownika."
             },
             "image_cropper": {
@@ -999,7 +1002,7 @@
                             "delete_confirm": "Czy na pewno chcesz to usunąć?",
                             "duplicate": "Duplikuj",
                             "header": "Akcje",
-                            "introduction": "Akcje są wykonywane przez Home Assistanta po uruchomieniu automatyzacji.",
+                            "introduction": "Akcje są wykonywane przez Home Assistant po uruchomieniu automatyzacji.",
                             "learn_more": "Dowiedz się więcej o akcjach",
                             "name": "Akcja",
                             "type_select": "Typ akcji",
@@ -1301,9 +1304,9 @@
                             "config_documentation": "Dokumentacja konfiguracji",
                             "disable": "Wyłącz",
                             "enable": "Włącz",
-                            "enable_ha_skill": "Włącz skill Home Assistanta dla Alexy",
+                            "enable_ha_skill": "Włącz skill Home Assistant dla Alexy",
                             "enable_state_reporting": "Włącz raportowanie stanów",
-                            "info": "Dzięki integracji z Alexą dla Chmury Home Assistant będzie możliwe kontrolowanie wszystkich urządzeń Home Assistanta za pośrednictwem dowolnego urządzenia obsługującego Amazon Alexa.",
+                            "info": "Dzięki integracji z Alexą dla Chmury Home Assistant będzie możliwe kontrolowanie wszystkich urządzeń Home Assistant za pośrednictwem dowolnego urządzenia obsługującego Amazon Alexa.",
                             "info_state_reporting": "Jeśli włączysz raportowanie stanów, Home Assistant wyśle wszystkie zmiany stanu udostępnionych encji na serwery Amazona. Dzięki temu zawsze możesz zobaczyć najnowsze stany w aplikacji Alexa i używać zmian stanów do tworzenia rutyn.",
                             "manage_entities": "Zarządzanie encjami",
                             "state_reporting_error": "Nie można przesłać stanu {enable_disable}",
@@ -1317,12 +1320,12 @@
                         "google": {
                             "config_documentation": "Dokumentacja konfiguracji",
                             "devices_pin": "Kod PIN urządzeń bezpieczeństwa",
-                            "enable_ha_skill": "Włącz skill Home Assistanta dla Asystenta Google",
+                            "enable_ha_skill": "Włącz skill Home Assistant dla Asystenta Google",
                             "enable_state_reporting": "Włącz raportowanie stanów",
                             "enter_pin_error": "Nie można zapisać kodu PIN:",
                             "enter_pin_hint": "Wprowadź kod PIN, aby korzystać z urządzeń bezpieczeństwa",
                             "enter_pin_info": "Wpisz kod PIN, aby wejść w interakcję z urządzeniami bezpieczeństwa. Urządzeniami bezpieczeństwa są drzwi, drzwi garażowe i zamki. Podczas interakcji z takimi urządzeniami za pośrednictwem Asystenta Google zostaniesz poproszony o wprowadzenie tego kodu PIN.",
-                            "info": "Dzięki integracji z Asystentem Google dla Chmury Home Assistant będzie możliwe kontrolowanie wszystkich urządzeń Home Assistanta za pośrednictwem dowolnego urządzenia obsługującego Asystenta Google.",
+                            "info": "Dzięki integracji z Asystentem Google dla Chmury Home Assistant będzie możliwe kontrolowanie wszystkich urządzeń Home Assistant za pośrednictwem dowolnego urządzenia obsługującego Asystenta Google.",
                             "info_state_reporting": "Jeśli włączysz raportowanie stanów, Home Assistant wyśle wszystkie zmiany stanu udostępnionych encji na serwery Google. Dzięki temu zawsze możesz zobaczyć najnowsze stany w aplikacji Google.",
                             "manage_entities": "Zarządzanie encjami",
                             "security_devices": "Urządzenia bezpieczeństwa",
@@ -1340,7 +1343,7 @@
                         "remote": {
                             "access_is_being_prepared": "Trwa przygotowywanie dostępu zdalnego. Powiadomimy Cię, gdy będzie gotowy.",
                             "certificate_info": "Informacje o certyfikacie",
-                            "info": "Chmura Home Assistant umożliwia bezpieczny zdalny dostęp do instancji Home Assistanta z dala od domu.",
+                            "info": "Chmura Home Assistant umożliwia bezpieczny zdalny dostęp do instancji Home Assistant z dala od domu.",
                             "instance_is_available": "Twoja instancja jest dostępna pod adresem",
                             "instance_will_be_available": "Twoja instancja będzie dostępna pod adresem",
                             "link_learn_how_it_works": "Dowiedz się, jak to działa",
@@ -1375,7 +1378,7 @@
                         "title": "Alexa"
                     },
                     "caption": "Chmura Home Assistant",
-                    "description_features": "Sterowanie spoza domu, integracja z Alexą i Google Assistantem.",
+                    "description_features": "Sterowanie spoza domu, integracja z Alexą i Asystentem Google.",
                     "description_login": "Zalogowany jako {email}",
                     "description_not_login": "Nie zalogowany",
                     "dialog_certificate": {
@@ -1446,7 +1449,7 @@
                         "email_error_msg": "Niepoprawny adres e-mail",
                         "feature_amazon_alexa": "integracja z Amazon Alexa",
                         "feature_google_home": "integracja z Google Assistant",
-                        "feature_remote_control": "kontrola Home Assistantem z dala od domu",
+                        "feature_remote_control": "kontrola Home Assistant z dala od domu",
                         "feature_webhook_apps": "prosta integracja z aplikacjami opartymi na webhookach, takimi jak OwnTracks",
                         "headline": "Rozpocznij darmowy okres próbny",
                         "information": "Utwórz konto, aby rozpocząć bezpłatny miesięczny okres próbny Chmury Home Assistant. Informacje o środkach płatności nie są konieczne.",
@@ -1470,7 +1473,7 @@
                 },
                 "core": {
                     "caption": "Ogólne",
-                    "description": "Zmień podstawowe opcje Home Assistanta",
+                    "description": "Zmień podstawowe opcje Home Assistant",
                     "section": {
                         "core": {
                             "core_config": {
@@ -1521,18 +1524,25 @@
                     "add_prompt": "{name} używające tego urządzenia nie zostały jeszcze dodane. Możesz je dodać, klikając przycisk + powyżej.",
                     "automation": {
                         "actions": {
-                            "caption": "Wykonaj akcje..."
+                            "caption": "Wykonaj akcje...",
+                            "no_actions": "Brak akcji",
+                            "unknown_action": "Nieznana akcja"
                         },
                         "automations": "Automatyzacje",
                         "conditions": {
-                            "caption": "Jeśli..."
+                            "caption": "Jeśli...",
+                            "no_conditions": "Brak warunków",
+                            "unknown_condition": "Nieznany warunek"
                         },
                         "create": "Utwórz automatyzację z urządzeniem",
                         "no_automations": "Brak automatyzacji",
                         "no_device_automations": "Brak dostępnych automatyzacji dla tego urządzenia.",
                         "triggers": {
-                            "caption": "Gdy..."
-                        }
+                            "caption": "Gdy...",
+                            "no_triggers": "Brak wyzwalaczy",
+                            "unknown_trigger": "Nieznany wyzwalacz"
+                        },
+                        "unknown_automation": "Nieznana automatyzacja"
                     },
                     "cant_edit": "Możesz edytować tylko elementy utworzone w interfejsie użytkownika.",
                     "caption": "Urządzenia",
@@ -1584,7 +1594,7 @@
                     "picker": {
                         "disable_selected": {
                             "button": "Wyłącz wybrane",
-                            "confirm_text": "Wyłączone encje nie będą dostępne w Home Assistancie.",
+                            "confirm_text": "Wyłączone encje nie będą dostępne w Home Assistant.",
                             "confirm_title": "Czy chcesz wyłączyć encje: {number}?"
                         },
                         "enable_selected": {
@@ -1611,7 +1621,7 @@
                         "introduction2": "Użyj rejestru encji, aby nadpisać jej nazwę, zmienić jej identyfikator lub usunąć ją z Home Assistant'a. Uwaga: usunięcie wpisu rejestru encji nie spowoduje usunięcia encji. Aby to zrobić, kliknij poniższy link i usuń integracje encji.",
                         "remove_selected": {
                             "button": "Usuń wybrane",
-                            "confirm_partly_text": "Można usunąć tylko {removable} z wybranych {selected} encji. Encje można usunąć tylko wtedy, gdy integracja wspiera taką możliwość. Czasami trzeba ponownie uruchomić Home Assistanta, zanim będzie można usunąć encje usuniętej integracji. Czy na pewno chcesz usunąć usuwalne encje?",
+                            "confirm_partly_text": "Można usunąć tylko {removable} z wybranych {selected} encji. Encje można usunąć tylko wtedy, gdy integracja wspiera taką możliwość. Czasami trzeba ponownie uruchomić Home Assistant, zanim będzie można usunąć encje usuniętej integracji. Czy na pewno chcesz usunąć usuwalne encje?",
                             "confirm_partly_title": "Wybrane encje możliwe do usunięcia: {number}",
                             "confirm_text": "Powinieneś uprzednio usunąć integrację z automatyzacji i konfiguracji Lovelace, jeśli encje w niej występują.",
                             "confirm_title": "Czy chcesz usunąć encje: {number}?"
@@ -1631,7 +1641,7 @@
                     "clear": "Wyczyść",
                     "filtering_by": "Filtrowanie przez"
                 },
-                "header": "Konfiguruj Home Assistanta",
+                "header": "Konfiguruj Home Assistant",
                 "helpers": {
                     "caption": "Pomocnicy",
                     "description": "Zarządzaj elementami, które pomagają w tworzeniu automatyzacji",
@@ -1656,14 +1666,15 @@
                         "input_datetime": "Data i/lub czas",
                         "input_number": "Numer",
                         "input_select": "Pole wyboru",
-                        "input_text": "Tekst"
+                        "input_text": "Tekst",
+                        "timer": "Minutnik"
                     }
                 },
                 "info": {
                     "built_using": "Zbudowany przy użyciu",
                     "caption": "Informacje",
                     "custom_uis": "Niestandardowe interfejsy użytkownika:",
-                    "description": "Informacje o instalacji Home Assistanta",
+                    "description": "Informacje o instalacji Home Assistant",
                     "developed_by": "Opracowany przez grono wspaniałych ludzi.",
                     "documentation": "Dokumentacja",
                     "frontend": "frontend-ui",
@@ -1707,9 +1718,9 @@
                         "options": "Opcje",
                         "reload": "Wczytaj ponownie",
                         "reload_confirm": "Integracja została ponownie wczytana",
-                        "reload_restart_confirm": "Uruchom ponownie Home Assistanta, aby dokończyć ponowne wczytywanie tej integracji",
+                        "reload_restart_confirm": "Uruchom ponownie Home Assistant, aby dokończyć ponowne wczytywanie tej integracji",
                         "rename": "Zmień nazwę",
-                        "restart_confirm": "Zrestartuj Home Assistanta, aby zakończyć usuwanie tej integracji",
+                        "restart_confirm": "Zrestartuj Home Assistant, aby zakończyć usuwanie tej integracji",
                         "services": "{count} {count, plural,\n  one {usługa}\n  few {usługi}\n  many {usług}\n  other {usług}\n}",
                         "settings_button": "Edytuj ustawienia dla {integration}",
                         "system_options": "Opcje systemowe",
@@ -1736,7 +1747,7 @@
                     "description": "Zarządzaj integracjami",
                     "details": "Szczegóły integracji",
                     "discovered": "Wykryte",
-                    "home_assistant_website": "Home Assistanta",
+                    "home_assistant_website": "Home Assistant",
                     "ignore": {
                         "confirm_delete_ignore": "Spowoduje to, że integracja pojawi się ponownie w wykrytych integracjach. Może to wymagać ponownego uruchomienia lub czasu.",
                         "confirm_delete_ignore_title": "Wyłączenie ignorowania {name}",
@@ -1762,13 +1773,13 @@
                     "rename_input_label": "Nazwa wpisu",
                     "search": "Szukaj integracji"
                 },
-                "introduction": "Tutaj możesz skonfigurować Home Assistanta i jego komponenty. Nie wszystkie opcje można konfigurować z interfejsu użytkownika, ale pracujemy nad tym.",
+                "introduction": "Tutaj możesz skonfigurować Home Assistant i jego komponenty. Nie wszystkie opcje można konfigurować z interfejsu użytkownika, ale pracujemy nad tym.",
                 "logs": {
                     "caption": "Logi",
                     "clear": "Wyczyść",
-                    "description": "Wyświetlanie logów Home Assistanta",
+                    "description": "Wyświetlanie logów Home Assistant",
                     "details": "Szczegóły loga ({level})",
-                    "load_full_log": "Załaduj cały log Home Assistanta",
+                    "load_full_log": "Załaduj cały log Home Assistant",
                     "loading_log": "Ładowanie loga błędów…",
                     "multiple_messages": "wiadomość pojawiła się po raz pierwszy {time} i powtarzała się {counter} razy",
                     "no_errors": "Nie zgłoszono żadnych błędów",
@@ -1875,6 +1886,8 @@
                         "network": "Sieć",
                         "node_id": "Identyfikator węzła",
                         "ozw_instance": "Instancja OpenZWave",
+                        "query_stage": "Etap odpytywania",
+                        "wakeup_instructions": "Instrukcje wybudzania",
                         "zwave": "Z-Wave"
                     },
                     "device_info": {
@@ -1884,6 +1897,10 @@
                     },
                     "navigation": {
                         "network": "Sieć",
+                        "node": {
+                            "config": "Konfiguracja",
+                            "dashboard": "Dashboard"
+                        },
                         "nodes": "Węzły",
                         "select_instance": "Wybierz instancję"
                     },
@@ -1911,6 +1928,15 @@
                         "header": "Zarządzanie siecią",
                         "introduction": "Zarządzaj funkcjami w całej sieci.",
                         "node_count": "{count} węzłów"
+                    },
+                    "node_config": {
+                        "header": "Konfiguracja węzła",
+                        "help_source": "Opisy parametrów konfiguracji i teksty pomocy są dostarczane przez projekt OpenZWave.",
+                        "introduction": "Zarządzaj różnymi parametrami konfiguracyjnymi węzła Z-Wave.",
+                        "wakeup_help": "Węzły zasilanie bateryjnie muszą być wybudzone, aby zmienić ich konfigurację. Jeśli węzeł nie jest wybudzony, OpenZwave spróbuje zaktualizować jego konfigurację przy następnym wybudzeniu węzła, co może potrwać kilka godzin (lub dni). Wykonaj poniższe kroki, by wybudzić twoje urządzenie:"
+                    },
+                    "node_metadata": {
+                        "product_manual": "Instrukcja obsługi"
                     },
                     "node_query_stages": {
                         "associations": "Odświeżanie grup skojarzeń i członkostwa",
@@ -1953,8 +1979,8 @@
                         "start_refresh_button": "Rozpocznij odświeżanie",
                         "step": "Krok",
                         "title": "Odświeżanie informacji o węźle",
-                        "wakeup_header": "Instrukcje budzenia dla",
-                        "wakeup_instructions_source": "Instrukcje budzenia pochodzą z bazy danych urządzeń społeczności OpenZWave."
+                        "wakeup_header": "Instrukcje wybudzania dla",
+                        "wakeup_instructions_source": "Instrukcje wybudzania pochodzą z bazy danych urządzeń społeczności OpenZWave."
                     },
                     "select_instance": {
                         "header": "Wybierz instancję OpenZWave",
@@ -2093,7 +2119,7 @@
                 },
                 "server_control": {
                     "caption": "Kontrola serwera",
-                    "description": "Uruchom ponownie i zatrzymaj serwer Home Assistanta",
+                    "description": "Uruchom ponownie i zatrzymaj serwer Home Assistant",
                     "section": {
                         "reloading": {
                             "automation": "Automatyzacje",
@@ -2131,10 +2157,10 @@
                             "zone": "Strefy"
                         },
                         "server_management": {
-                            "confirm_restart": "Czy na pewno chcesz ponownie uruchomić Home Assistanta?",
-                            "confirm_stop": "Czy na pewno chcesz zatrzymać Home Assistanta?",
+                            "confirm_restart": "Czy na pewno chcesz ponownie uruchomić Home Assistant?",
+                            "confirm_stop": "Czy na pewno chcesz zatrzymać Home Assistant?",
                             "heading": "Zarządzanie serwerem",
-                            "introduction": "Kontroluj serwer Home Assistanta.",
+                            "introduction": "Kontroluj serwer Home Assistant.",
                             "restart": "Uruchom ponownie",
                             "stop": "Zatrzymaj"
                         },
@@ -2317,8 +2343,8 @@
                     "node_management": {
                         "header": "Zarządzanie urządzeniami",
                         "help_node_dropdown": "Wybierz urządzenie, aby wyświetlić jego opcje.",
-                        "hint_battery_devices": "Uwaga: usypiane urządzenia (zasilane bateryjnie) muszą się obudzić podczas wykonywania poleceń. Na ogół możesz obudzić uśpione urządzenie, uruchamiając je.",
-                        "hint_wakeup": "Niektóre urządzenia, takie jak czujniki Xiaomi, mają przycisk budzenia, który można naciskać w odstępach co około 5 sekund, dzięki czemu urządzenia pozostają w stanie czuwania podczas interakcji z nimi.",
+                        "hint_battery_devices": "Uwaga: usypiane urządzenia (zasilane bateryjnie) muszą być wybudzone podczas wykonywania poleceń. Na ogół możesz wybudzić uśpione urządzenie, uruchamiając je.",
+                        "hint_wakeup": "Niektóre urządzenia, takie jak czujniki Xiaomi, mają przycisk wybudzania, który można naciskać w odstępach co około 5 sekund, dzięki czemu urządzenia pozostają w stanie czuwania podczas interakcji z nimi.",
                         "introduction": "Uruchom polecenia ZHA, które wpływają na pojedyncze urządzenie. Wybierz urządzenie, aby wyświetlić listę dostępnych poleceń."
                     },
                     "title": "Zigbee Home Automation"
@@ -2360,7 +2386,7 @@
                         "instance": "Instancja",
                         "unknown": "nieznany",
                         "value": "Wartość",
-                        "wakeup_interval": "Częstotliwość wybudzenia"
+                        "wakeup_interval": "Częstotliwość wybudzania"
                     },
                     "description": "Zarządzaj siecią Z-Wave",
                     "learn_more": "Dowiedz się więcej o Z-Wave",
@@ -2383,14 +2409,14 @@
                         "header": "Parametry konfiguracji węzła",
                         "seconds": "sekundy",
                         "set_config_parameter": "Ustaw parametr",
-                        "set_wakeup": "Ustaw częstotliwość wybudzenia",
+                        "set_wakeup": "Ustaw częstotliwość wybudzania",
                         "true": "Prawda"
                     },
                     "node_management": {
                         "add_to_group": "Dodaj do grupy",
                         "entities": "Encje tego węzła",
                         "entity_info": "Informacje o encji",
-                        "exclude_entity": "Wyklucz tę encję z Home Assistanta",
+                        "exclude_entity": "Wyklucz tę encję z Home Assistant",
                         "group": "Grupa",
                         "header": "Zarządzanie węzłami Z-Wave",
                         "introduction": "Uruchom polecenia Z-Wave, które wpływają na pojedynczy węzeł. Wybierz węzeł, aby wyświetlić listę dostępnych poleceń.",
@@ -2484,7 +2510,7 @@
                         "alert_entity_field": "Encja jest polem obowiązkowym",
                         "attributes": "Atrybuty",
                         "current_entities": "Bieżące encje",
-                        "description1": "Ustaw stany encji urządzeń Home Assistanta.",
+                        "description1": "Ustaw stany encji urządzeń Home Assistant.",
                         "description2": "Nie wpłynie to na rzeczywiste urządzenia.",
                         "entity": "Encja",
                         "filter_attributes": "filtr atrybutów",
@@ -2499,7 +2525,7 @@
                     },
                     "templates": {
                         "all_listeners": "Ten szablon nasłuchuje wszystkich zdarzeń zmiany stanu.",
-                        "description": "Szablony są renderowane przy użyciu silnika szablonów Jinja2 z kilkoma specyficznymi rozszerzeniami Home Assistanta.",
+                        "description": "Szablony są renderowane przy użyciu silnika szablonów Jinja2 z kilkoma specyficznymi rozszerzeniami Home Assistant.",
                         "domain": "Domena",
                         "editor": "Edytor szablonów",
                         "entity": "Encja",
@@ -2507,7 +2533,8 @@
                         "listeners": "Ten szablon nasłuchuje następujących zdarzeń zmiany stanu:",
                         "no_listeners": "Ten szablon nie nasłuchuje żadnych zdarzeń zmiany stanu i nie zostanie zaktualizowany automatycznie.",
                         "reset": "Zresetuj do szablonu demonstracyjnego",
-                        "template_extensions": "Rozszerzenia szablonów Home Assistanta",
+                        "template_extensions": "Rozszerzenia szablonów Home Assistant",
+                        "time": "Ten szablon aktualizuje się co 60 sekund po ostatniej zmianie stanu.",
                         "title": "Szablon",
                         "unknown_error_template": "Nieznany błąd podczas renderowania szablonu"
                     }
@@ -2943,7 +2970,7 @@
                     "entity_non_numeric": "Encja nie jest numeryczna: {entity}",
                     "entity_not_found": "Encja niedostępna: {entity}",
                     "entity_unavailable": "{entity} jest obecnie niedostępna",
-                    "starting": "Home Assistant uruchamia się, nie wszystkie możliwości mogą być dostępne"
+                    "starting": "Home Assistant uruchamia się, jeszcze nie wszystko będzie dostępne"
                 }
             },
             "mailbox": {
@@ -2954,7 +2981,7 @@
             },
             "page-authorize": {
                 "abort_intro": "Logowanie przerwane",
-                "authorizing_client": "Uzyskujesz dostęp do instancji Home Assistanta w lokalizacji {clientId}.",
+                "authorizing_client": "Uzyskujesz dostęp do instancji Home Assistant w lokalizacji {clientId}.",
                 "form": {
                     "error": "Błąd: {error}",
                     "next": "Dalej",
@@ -3103,7 +3130,7 @@
                     "intro": "{name}, witamy w Home Assistant. Jak chcesz nazwać swój dom?",
                     "intro_location": "Chcielibyśmy wiedzieć, gdzie mieszkasz. Te dane pomogą w wyświetlaniu informacji i konfigurowaniu automatyki opartej na położeniu słońca. Te dane nigdy nie będą udostępniane poza Twoją sieć lokalną.",
                     "intro_location_detect": "Możemy pomóc Ci wprowadzić te informacje, wysyłając jednorazowe zapytanie do usługi zewnętrznej.",
-                    "location_name": "Nazwa instalacji Home Assistanta",
+                    "location_name": "Nazwa instalacji Home Assistant",
                     "location_name_default": "Dom"
                 },
                 "integration": {
@@ -3136,7 +3163,7 @@
             },
             "profile": {
                 "advanced_mode": {
-                    "description": "Home Assistant domyślnie ukrywa zaawansowane funkcje i opcje. Możesz włączyć do nich dostęp za pomocą tej opcji. Jest to ustawienie przyporządkowane do użytkownika i nie wpływa na pozostałych użytkowników korzystających z Home Assistanta.",
+                    "description": "Home Assistant domyślnie ukrywa zaawansowane funkcje i opcje. Możesz włączyć do nich dostęp za pomocą tej opcji. Jest to ustawienie przyporządkowane do użytkownika i nie wpływa na pozostałych użytkowników korzystających z Home Assistant.",
                     "link_promo": "Dowiedz się więcej",
                     "title": "Tryb zaawansowany"
                 },
@@ -3179,7 +3206,7 @@
                     "created": "Utworzony {date}",
                     "created_at": "Utworzony {date}",
                     "delete_failed": "Nie udało się usunąć tokena.",
-                    "description": "Długoterminowe tokeny dostępu umożliwiają skryptom interakcję z Home Assistantem. Każdy token będzie ważny przez 10 lat od utworzenia. Następujące tokeny są obecnie aktywne.",
+                    "description": "Długoterminowe tokeny dostępu umożliwiają skryptom interakcję z Home Assistant. Każdy token będzie ważny przez 10 lat od utworzenia. Następujące tokeny są obecnie aktywne.",
                     "empty_state": "Nie masz jeszcze żadnych tokenów.",
                     "header": "Tokeny dostępu",
                     "last_used": "Ostatnio używany {date} z {location}",

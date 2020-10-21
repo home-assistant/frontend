@@ -779,6 +779,9 @@
                 },
                 "platform_not_loaded": "Integrasjonen av {platform} er ikke lastet. Legg den til i konfigurasjonen din enten ved å legge til 'default_config:' eller '' {platform} : ''.",
                 "required_error_msg": "Dette feltet er påkrevd",
+                "timer": {
+                    "duration": "Varighet"
+                },
                 "yaml_not_editable": "Innstillingene for denne entiteten kan ikke redigeres fra brukergrensesnittet. Bare entiteter som er satt opp fra brukergrensesnittet, kan konfigureres fra brukergrensesnittet."
             },
             "image_cropper": {
@@ -996,13 +999,13 @@
                         "actions": {
                             "add": "Legg til handling",
                             "delete": "Slett",
-                            "delete_confirm": "Er du sikker på at du ønsker å slette?",
+                            "delete_confirm": "Er du sikker på at du vil slette dette?",
                             "duplicate": "Dupliser",
                             "header": "Handlinger",
-                            "introduction": "Handlingen(e) er hva Home Assistant vil utføre når en automasjon utløses.",
+                            "introduction": "Handlingene er det Home Assistant vil utføre når en automasjon utløses",
                             "learn_more": "Lær mer om handlinger",
                             "name": "Handling",
-                            "type_select": "Handling",
+                            "type_select": "Handlingstype",
                             "type": {
                                 "choose": {
                                     "add_option": "Legg til alternativ",
@@ -1075,7 +1078,7 @@
                         "conditions": {
                             "add": "Legg til betingelse",
                             "delete": "Slett",
-                            "delete_confirm": "Er du sikker på at du ønsker å slette?",
+                            "delete_confirm": "Er du sikker på at du vil slette dette?",
                             "duplicate": "Dupliser",
                             "header": "Betingelser",
                             "introduction": "Betingelsene er valgfrie og vil forhindre videre utførelse med mindre alle vilkår er oppfylt.",
@@ -1102,7 +1105,7 @@
                                     "above": "Over",
                                     "below": "Under",
                                     "label": "Numerisk tilstand",
-                                    "value_template": "Verdi fra mal (valgfritt)"
+                                    "value_template": "Verdimal (valgfritt)"
                                 },
                                 "or": {
                                     "label": "Eller"
@@ -1122,7 +1125,7 @@
                                 },
                                 "template": {
                                     "label": "Mal",
-                                    "value_template": "Verdi mal"
+                                    "value_template": "Verdimal"
                                 },
                                 "time": {
                                     "after": "Etter",
@@ -1158,7 +1161,7 @@
                         "edit_yaml": "Rediger som YAML",
                         "enable_disable": "Aktivere/deaktivere automasjon",
                         "introduction": "Bruk automasjon for å få liv i hjemmet ditt",
-                        "load_error_not_editable": "Kun automasjoner i automations.yaml kan redigeres.",
+                        "load_error_not_editable": "Kun automasjoner i automations.yaml kan redigeres",
                         "load_error_unknown": "Feil ved lasting av automasjon ({err_no}).",
                         "max": {
                             "parallel": "Maks antall parallelle kjøringer",
@@ -1224,11 +1227,11 @@
                                     "above": "Over",
                                     "below": "Under",
                                     "label": "Numerisk tilstand",
-                                    "value_template": "Verdi fra mal (valgfritt)"
+                                    "value_template": "Verdimal (valgfritt)"
                                 },
                                 "state": {
                                     "attribute": "Attributt (valgfritt)",
-                                    "for": "",
+                                    "for": "I",
                                     "from": "Fra",
                                     "label": "Tilstand",
                                     "to": "Til"
@@ -1245,7 +1248,7 @@
                                 },
                                 "template": {
                                     "label": "Mal",
-                                    "value_template": "Verdi mal"
+                                    "value_template": "Verdimal"
                                 },
                                 "time_pattern": {
                                     "hours": "Timer",
@@ -1521,24 +1524,31 @@
                     "add_prompt": "Ingen {name} er lagt til ved hjelp av denne enheten ennå. Du kan legge til en ved å klikke på + knappen ovenfor.",
                     "automation": {
                         "actions": {
-                            "caption": "Når noe er utløst..."
+                            "caption": "Når noe er utløst...",
+                            "no_actions": "Ingen handlinger",
+                            "unknown_action": "Ukjent handling"
                         },
                         "automations": "Automasjoner",
                         "conditions": {
-                            "caption": "Bare gjør noe hvis..."
+                            "caption": "Bare gjør noe hvis...",
+                            "no_conditions": "Ingen betingelser",
+                            "unknown_condition": "Ukjent tilstand"
                         },
                         "create": "Lag automasjon med enheten",
                         "no_automations": "Ingen automasjoner",
                         "no_device_automations": "Det er ingen automasjoner tilgjengelig for denne enheten.",
                         "triggers": {
-                            "caption": "Gjør noe når ..."
-                        }
+                            "caption": "Gjør noe når ...",
+                            "no_triggers": "Ingen utløsere",
+                            "unknown_trigger": "Ukjent utløser"
+                        },
+                        "unknown_automation": "Ukjent automatisering"
                     },
                     "cant_edit": "Du kan bare redigere elementer som er opprettet i brukergrensesnittet.",
                     "caption": "Enheter",
                     "confirm_delete": "Er du sikker på at du vil slette denne enheten?",
-                    "confirm_rename_entity_ids": "Vil du også endre navn på entitets-ID-en for entitetene dine?",
-                    "confirm_rename_entity_ids_warning": "Dette vil ikke endre noen konfigurasjon (som automatiseringer, skript, scener, Lovelace) som bruker disse entitetene, du må oppdatere dem selv.",
+                    "confirm_rename_entity_ids": "Vil du også endre enhets-ID-ene til enhetene dine?",
+                    "confirm_rename_entity_ids_warning": "Dette vil ikke endre noen konfigurasjon (som automatiseringer, skript, scener, dashbord) som for øyeblikket bruker disse enhetene! Du må oppdatere dem selv for å bruke de nye enhets-IDene!",
                     "data_table": {
                         "area": "Område",
                         "battery": "Batteri",
@@ -1656,7 +1666,8 @@
                         "input_datetime": "Dato og/eller klokkeslett",
                         "input_number": "Nummer",
                         "input_select": "",
-                        "input_text": "Tekst"
+                        "input_text": "Tekst",
+                        "timer": "Timer"
                     }
                 },
                 "info": {
@@ -1875,6 +1886,8 @@
                         "network": "Nettverk",
                         "node_id": "Node-ID",
                         "ozw_instance": "OpenZWave Instance",
+                        "query_stage": "Spørringsstadie",
+                        "wakeup_instructions": "Instruksjoner for oppvåking",
                         "zwave": "Z-Wave"
                     },
                     "device_info": {
@@ -1884,6 +1897,10 @@
                     },
                     "navigation": {
                         "network": "Nettverk",
+                        "node": {
+                            "config": "Konfigurasjon",
+                            "dashboard": "Dashboard"
+                        },
                         "nodes": "Noder",
                         "select_instance": "Velg Forekomst"
                     },
@@ -1911,6 +1928,15 @@
                         "header": "Nettverksadministrasjon",
                         "introduction": "Administrer funksjoner for hele nettverket.",
                         "node_count": "{count} noder"
+                    },
+                    "node_config": {
+                        "header": "Nodekonfigurasjon",
+                        "help_source": "Konfigurasjonsparameter beskrivelser og hjelpetekst er gitt av OpenZWave-prosjektet",
+                        "introduction": "Administrer de forskjellige konfigurasjonsparametrene for en Z-Wave-node",
+                        "wakeup_help": "Batteridrevne noder må være våken for å endre konfigurasjonen. Hvis noden ikke er våken, vil OpenZWave prøve å oppdatere nodenes konfigurasjon neste gang den våkner, noe som kan være flere timer (eller dager) senere. Følg disse trinnene for å vekke enheten:"
+                    },
+                    "node_metadata": {
+                        "product_manual": "Produkthåndbok"
                     },
                     "node_query_stages": {
                         "associations": "Oppdatere tilknytningsgrupper og medlemskap",
@@ -2508,6 +2534,7 @@
                         "no_listeners": "Denne malen lytter ikke etter noen tilstand endret hendelser og oppdateres ikke automatisk.",
                         "reset": "Tilbakestill til demomal",
                         "template_extensions": "Mal utvidelser for Home Assistant",
+                        "time": "Denne malen oppdateres hvert 60. sekund etter den siste endrede hendelsen",
                         "title": "Mal",
                         "unknown_error_template": "Ukjent feil ved rendring av mal"
                     }
@@ -2681,7 +2708,7 @@
                             "attribute": "Attributt",
                             "camera_image": "Kameraentitet",
                             "camera_view": "Kameravisning",
-                            "double_tap_action": "Dobbeltklikk Handling",
+                            "double_tap_action": "Dobbeltklikk handling",
                             "entities": "Entiteter",
                             "entity": "Entitet",
                             "hold_action": "Hold handling",
@@ -2858,7 +2885,7 @@
                     "migrate": {
                         "header": "Inkompatibel konfigurasjon",
                         "migrate": "Migrer konfigurasjon",
-                        "para_migrate": "Home Assistant kan legge til ID-er på alle kortene og visningene automatisk for deg ved å trykke på 'Migrer konfigurasjon' knappen.",
+                        "para_migrate": "Home Assistant kan legge til ID-er til alle kortene og visningene dine automatisk for deg ved å trykke på 'Migrer konfigurasjon' -knappen.",
                         "para_no_id": "Dette elementet har ingen ID. Vennligst legg til en ID på dette elementet i 'ui-lovelace.yaml'."
                     },
                     "move_card": {

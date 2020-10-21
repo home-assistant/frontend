@@ -779,6 +779,9 @@
                 },
                 "platform_not_loaded": "整合 {platform} 未載入。請於設定檔進行添加、新增 'default_config:' 或 ''{platform}:''。",
                 "required_error_msg": "必填欄位",
+                "timer": {
+                    "duration": "持續時間"
+                },
                 "yaml_not_editable": "此實體的設定無法藉由 UI 編輯、僅有透過 UI 設定的實體可於 UI 進行設定。"
             },
             "image_cropper": {
@@ -1521,24 +1524,31 @@
                     "add_prompt": "此設備尚未添加任何 {name}。可點選上方的 + 按鈕進行新增。",
                     "automation": {
                         "actions": {
-                            "caption": "當某實體被觸發時..."
+                            "caption": "當某實體被觸發時...",
+                            "no_actions": "無動作",
+                            "unknown_action": "未知動作"
                         },
                         "automations": "自動化",
                         "conditions": {
-                            "caption": "執行動作、假如..."
+                            "caption": "執行動作、假如...",
+                            "no_conditions": "無觸發條件",
+                            "unknown_condition": "未知觸發條件"
                         },
                         "create": "以設備新增自動化",
                         "no_automations": "沒有自動化",
                         "no_device_automations": "該設備沒有任何自動化可使用。",
                         "triggers": {
-                            "caption": "執行動作、當..."
-                        }
+                            "caption": "執行動作、當...",
+                            "no_triggers": "無觸發",
+                            "unknown_trigger": "未知觸發"
+                        },
+                        "unknown_automation": "未知自動化"
                     },
                     "cant_edit": "只能編輯於 UI 中新增的實體。",
                     "caption": "設備",
                     "confirm_delete": "確定要刪除此設備？",
                     "confirm_rename_entity_ids": "是否也要變更實體的實體 ID？",
-                    "confirm_rename_entity_ids_warning": "將不會變更任何實體正在使用的設定（例如自動化、腳本、場景與 Lovelace），必須自行更新。",
+                    "confirm_rename_entity_ids_warning": "將不會變更任何實體正在使用的設定（例如自動化、腳本、場景與 Lovelace），必須使用新實體 ID 自行更新。",
                     "data_table": {
                         "area": "分區",
                         "battery": "電量",
@@ -1656,7 +1666,8 @@
                         "input_datetime": "日期及/或時間",
                         "input_number": "數字",
                         "input_select": "下拉選單",
-                        "input_text": "文字"
+                        "input_text": "文字",
+                        "timer": "計時器"
                     }
                 },
                 "info": {
@@ -1875,6 +1886,8 @@
                         "network": "網路",
                         "node_id": "節點 ID",
                         "ozw_instance": "OpenZWave 設備",
+                        "query_stage": "查詢階段",
+                        "wakeup_instructions": "喚醒說明",
                         "zwave": "Z-Wave"
                     },
                     "device_info": {
@@ -1884,6 +1897,10 @@
                     },
                     "navigation": {
                         "network": "網路",
+                        "node": {
+                            "config": "設定",
+                            "dashboard": "主面板"
+                        },
                         "nodes": "節點",
                         "select_instance": "選擇設備"
                     },
@@ -1911,6 +1928,15 @@
                         "header": "網路管理",
                         "introduction": "管理網路方面功能。",
                         "node_count": "{count} 個節點"
+                    },
+                    "node_config": {
+                        "header": "節點設定",
+                        "help_source": "設定參數說明與協助由 Openzwave 專案所提供。",
+                        "introduction": "管理 Z-Wave 節點不同設定參數。",
+                        "wakeup_help": "電池供電的節點必須喚醒才能更改其設定。如果該節點未喚醒，OpenZWave 將在下次喚醒時，嘗試更新該節點的設定，可能需要幾個小時（或幾天）。請按照以下步驟喚醒設備："
+                    },
+                    "node_metadata": {
+                        "product_manual": "產品手冊"
                     },
                     "node_query_stages": {
                         "associations": "更新相關群組與成員",
@@ -2508,6 +2534,7 @@
                         "no_listeners": "此模板不監聽任何狀態變更事件，將不會自動更新。",
                         "reset": "重置示範範模板",
                         "template_extensions": "Home Assistant 模板擴充",
+                        "time": "此模板於上次狀態變更事件後每 60 秒更新一次。",
                         "title": "模板",
                         "unknown_error_template": "未知渲染模版錯誤"
                     }
@@ -2858,7 +2885,7 @@
                     "migrate": {
                         "header": "設定不相容",
                         "migrate": "遷移設定",
-                        "para_migrate": "Home Assistant 能於您點選「遷移設定」按鈕後，自動新增 ID 與視圖至所有面板。",
+                        "para_migrate": "Home Assistant 能於您點選 '遷移設定' 按鈕後，自動新增 ID 與視圖至所有面板。",
                         "para_no_id": "該元件未含 ID，請於「ui-lovelace.yaml」中為該元件新增 ID。"
                     },
                     "move_card": {

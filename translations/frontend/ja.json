@@ -765,6 +765,9 @@
                 },
                 "platform_not_loaded": "{platform}統合がロードされていません。 'default_config：'または '' {platform} ： ''を追加して、構成に追加してください。",
                 "required_error_msg": "この項目は必須です",
+                "timer": {
+                    "duration": "期間"
+                },
                 "yaml_not_editable": "このエンティティの設定は UI から編集できません。UI から設定されたエンティティのみが UI から構成できます。"
             },
             "image_cropper": {
@@ -1507,18 +1510,25 @@
                     "add_prompt": "このデバイスを使用した{name}はまだ追加されていません。上の[+]ボタンをクリックして追加できます。",
                     "automation": {
                         "actions": {
-                            "caption": "何かがトリガーされたとき..."
+                            "caption": "何かがトリガーされたとき...",
+                            "no_actions": "アクションなし",
+                            "unknown_action": "不明なアクション"
                         },
                         "automations": "オートメーション",
                         "conditions": {
-                            "caption": "次の場合にのみ何かしてください..."
+                            "caption": "次の場合にのみ何かしてください...",
+                            "no_conditions": "条件なし",
+                            "unknown_condition": "状態不明"
                         },
                         "create": "デバイスからオートメーションを作成",
                         "no_automations": "オートメーションなし",
                         "no_device_automations": "このデバイスで利用可能なオートメーションはありません。",
                         "triggers": {
-                            "caption": "いつ何かをする."
-                        }
+                            "caption": "いつ何かをする.",
+                            "no_triggers": "トリガーなし",
+                            "unknown_trigger": "不明なトリガー"
+                        },
+                        "unknown_automation": "不明なオートメーション"
                     },
                     "cant_edit": "編集できるのは、UI で作成された項目のみです。",
                     "caption": "デバイス",
@@ -1642,7 +1652,8 @@
                         "input_datetime": "日付・時刻",
                         "input_number": "数",
                         "input_select": "ドロップダウン",
-                        "input_text": "テキスト"
+                        "input_text": "テキスト",
+                        "timer": "タイマー"
                     }
                 },
                 "info": {
@@ -1861,6 +1872,8 @@
                         "network": "ネットワーク",
                         "node_id": "ノードID",
                         "ozw_instance": "OpenZWaveインスタンス",
+                        "query_stage": "クエリ ステージ",
+                        "wakeup_instructions": "ウェイクアップ手順",
                         "zwave": "Z-Wave"
                     },
                     "device_info": {
@@ -1870,6 +1883,10 @@
                     },
                     "navigation": {
                         "network": "ネットワーク",
+                        "node": {
+                            "config": "設定",
+                            "dashboard": "ダッシュ ボード"
+                        },
                         "nodes": "ノード",
                         "select_instance": "インスタンスを選択"
                     },
@@ -1897,6 +1914,15 @@
                         "header": "ネットワーク管理",
                         "introduction": "接続されたデバイスの管理",
                         "node_count": "{count}ノード"
+                    },
+                    "node_config": {
+                        "header": "ノード構成",
+                        "help_source": "設定パラメータの説明とヘルプテキストは、OpenZWaveプロジェクトによって提供されます。",
+                        "introduction": "Z-Wave ノードの各種設定パラメータを管理します。",
+                        "wakeup_help": "バッテリ駆動のノードは、構成を変更するためにスリープ状態になっている必要があります。ノードがスリープ解除されていない場合、OpenZWave は、ノードがウェイクアップする次の時間 (または数日後) にノードの構成を更新しようとします。デバイスを起動するには、次の手順に従います。"
+                    },
+                    "node_metadata": {
+                        "product_manual": "製品マニュアル"
                     },
                     "node_query_stages": {
                         "associations": "関連グループとメンバーシップの更新",
@@ -2494,6 +2520,7 @@
                         "no_listeners": "このテンプレートは、状態が変更されたイベントが聞こえないため、自動的に更新されません。",
                         "reset": "デモ テンプレートにリセット",
                         "template_extensions": "ホーム アシスタント テンプレートの拡張機能",
+                        "time": "このテンプレートは、最後の状態変更イベントの後 60 秒ごとに更新されます。",
                         "title": "テンプレート",
                         "unknown_error_template": "不明なテンプレートレンダリングエラー"
                     }
