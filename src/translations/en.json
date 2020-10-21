@@ -325,6 +325,11 @@
           "show_attributes": "Show attributes"
         }
       },
+      "user-picker": {
+        "no_user": "No user",
+        "add_user": "Add user",
+        "remove_user": "Remove user"
+      },
       "device-picker": {
         "clear": "Clear",
         "toggle": "Toggle",
@@ -1105,7 +1110,10 @@
                 "event": {
                   "label": "Event",
                   "event_type": "Event type",
-                  "event_data": "Event data"
+                  "event_data": "Event data",
+                  "context_users": "Limit to events triggered by",
+                  "context_user_picked": "User firing event",
+                  "context_user_pick": "Add user"
                 },
                 "geo_location": {
                   "label": "Geolocation",
