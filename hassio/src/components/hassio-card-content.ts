@@ -50,7 +50,7 @@ class HassioCardContent extends LitElement {
           `
         : html`
             <ha-svg-icon
-              class=${this.iconClass}
+              class=${this.iconClass!}
               .path=${this.icon}
               .title=${this.iconTitle}
             ></ha-svg-icon>
