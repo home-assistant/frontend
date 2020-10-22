@@ -32,7 +32,6 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
 
         .ha-form {
           margin-right: 16px;
-          max-width: 400px;
         }
 
         ha-progress-button {

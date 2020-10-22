@@ -35,7 +35,6 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
         .ha-form {
           margin-right: 16px;
-          max-width: 400px;
         }
 
         mwc-button {
@@ -48,8 +47,7 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
         event-subscribe-card {
           display: block;
-          max-width: 800px;
-          margin: 16px auto;
+          margin: 16px 16px 0 0;
         }
 
         a {
@@ -93,6 +91,7 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
               )]]</mwc-button
             >
           </div>
+          <event-subscribe-card hass="[[hass]]"></event-subscribe-card>
         </div>
 
         <div>
@@ -106,7 +105,6 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
           ></events-list>
         </div>
       </div>
-      <event-subscribe-card hass="[[hass]]"></event-subscribe-card>
     `;
   }
 

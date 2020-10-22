@@ -32,10 +32,6 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           padding: 16px;
         }
 
-        .inputs {
-          max-width: 400px;
-        }
-
         mwc-button {
           margin-top: 8px;
         }

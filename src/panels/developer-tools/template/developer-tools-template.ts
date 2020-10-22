@@ -13,6 +13,7 @@ import { classMap } from "lit-html/directives/class-map";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-code-editor";
+import "../../../components/ha-card";
 import {
   RenderTemplateResult,
   subscribeRenderTemplate,
@@ -90,54 +91,58 @@ class HaPanelDevTemplate extends LitElement {
         })}"
       >
         <div class="edit-pane">
-          <p>
-            ${this.hass.localize(
-              "ui.panel.developer-tools.tabs.templates.description"
-            )}
-          </p>
-          <ul>
-            <li>
-              <a
-                href="http://jinja.pocoo.org/docs/dev/templates/"
-                target="_blank"
-                rel="noreferrer"
-                >${this.hass.localize(
-                  "ui.panel.developer-tools.tabs.templates.jinja_documentation"
-                )}
-              </a>
-            </li>
-            <li>
-              <a
-                href="${documentationUrl(
-                  this.hass,
-                  "/docs/configuration/templating/"
-                )}"
-                target="_blank"
-                rel="noreferrer"
-              >
+          <ha-card>
+            <div class="card-content">
+              <p>
                 ${this.hass.localize(
-                  "ui.panel.developer-tools.tabs.templates.template_extensions"
-                )}</a
-              >
-            </li>
-          </ul>
-          <p>
-            ${this.hass.localize(
-              "ui.panel.developer-tools.tabs.templates.editor"
-            )}
-          </p>
-          <ha-code-editor
-            mode="jinja2"
-            .value=${this._template}
-            .error=${this._error}
-            autofocus
-            @value-changed=${this._templateChanged}
-          ></ha-code-editor>
-          <mwc-button @click=${this._restoreDemo}>
-            ${this.hass.localize(
-              "ui.panel.developer-tools.tabs.templates.reset"
-            )}
-          </mwc-button>
+                  "ui.panel.developer-tools.tabs.templates.description"
+                )}
+              </p>
+              <ul>
+                <li>
+                  <a
+                    href="http://jinja.pocoo.org/docs/dev/templates/"
+                    target="_blank"
+                    rel="noreferrer"
+                    >${this.hass.localize(
+                      "ui.panel.developer-tools.tabs.templates.jinja_documentation"
+                    )}
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="${documentationUrl(
+                      this.hass,
+                      "/docs/configuration/templating/"
+                    )}"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.developer-tools.tabs.templates.template_extensions"
+                    )}</a
+                  >
+                </li>
+              </ul>
+              <p>
+                ${this.hass.localize(
+                  "ui.panel.developer-tools.tabs.templates.editor"
+                )}
+              </p>
+              <ha-code-editor
+                mode="jinja2"
+                .value=${this._template}
+                .error=${this._error}
+                autofocus
+                @value-changed=${this._templateChanged}
+              ></ha-code-editor>
+              <mwc-button @click=${this._restoreDemo}>
+                ${this.hass.localize(
+                  "ui.panel.developer-tools.tabs.templates.reset"
+                )}
+              </mwc-button>
+            </div>
+          </ha-card>
         </div>
 
         <div class="render-pane">
@@ -243,12 +248,12 @@ class HaPanelDevTemplate extends LitElement {
         }
 
         .horizontal .edit-pane {
-          max-width: 50%;
+          max-width: 65%;
         }
 
         .render-pane {
           position: relative;
-          max-width: 50%;
+          flex-grow: 1;
         }
 
         .render-spinner {
@@ -263,6 +268,7 @@ class HaPanelDevTemplate extends LitElement {
           white-space: pre-wrap;
           background-color: var(--secondary-background-color);
           padding: 8px;
+          margin-top: 0;
         }
 
         .all_listeners {
