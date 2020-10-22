@@ -81,17 +81,30 @@ class StateInfo extends LocalizeMixin(PolymerElement) {
               datetime="[[stateObj.last_changed]]"
             ></ha-relative-time>
             <paper-tooltip animation-delay="0" for="last_changed">
-              [[localize('ui.dialogs.more_info_control.last_changed')]]:
-              <ha-relative-time
-                hass="[[hass]]"
-                datetime="[[stateObj.last_changed]]"
-              ></ha-relative-time>
-              <br />
-              [[localize('ui.dialogs.more_info_control.last_updated')]]:
-              <ha-relative-time
-                hass="[[hass]]"
-                datetime="[[stateObj.last_updated]]"
-              ></ha-relative-time>
+              <table>
+                <tr>
+                  <td>
+                    [[localize('ui.dialogs.more_info_control.last_changed')]]:
+                  </td>
+                  <td>
+                    <ha-relative-time
+                      hass="[[hass]]"
+                      datetime="[[stateObj.last_changed]]"
+                    ></ha-relative-time>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    [[localize('ui.dialogs.more_info_control.last_updated')]]:
+                  </td>
+                  <td>
+                    <ha-relative-time
+                      hass="[[hass]]"
+                      datetime="[[stateObj.last_updated]]"
+                    ></ha-relative-time>
+                  </td>
+                </tr>
+              </table>
             </paper-tooltip>
           </div>
         </template>
