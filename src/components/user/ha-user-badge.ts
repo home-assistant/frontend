@@ -108,17 +108,17 @@ class UserBadge extends LitElement {
         display: contents;
       }
       .picture {
-        width: calc(var(--header-height) - 20px);
-        height: calc(var(--header-height) - 20px);
+        width: calc(var(--sidebar-width) - 20px);
+        height: calc(var(--sidebar-width) - 20px);
         background-size: cover;
         border-radius: 50%;
       }
       .initials {
-        margin-left: calc(var(--header-height) / -2 + 27px);
+        margin-left: calc(var(--sidebar-width) / -2 + 27px);
         display: inline-block;
         box-sizing: border-box;
-        width: calc(var(--header-height) - 20px);
-        line-height: calc(var(--header-height) - 20px);
+        width: calc(var(--sidebar-width) - 20px);
+        line-height: calc(var(--sidebar-width) - 20px);
         border-radius: 50%;
         text-align: center;
         background-color: var(--light-primary-color);
