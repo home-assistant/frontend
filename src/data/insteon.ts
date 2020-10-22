@@ -1,5 +1,6 @@
 import { HomeAssistant } from "../types";
 import type { HaFormSchema } from "../components/ha-form/ha-form";
+import { Prop } from "vue/types/options";
 
 export interface InsteonDevice {
   name: string;
@@ -30,16 +31,6 @@ export interface ALDBRecord {
   dirty: boolean;
 }
 
-export interface ALDBInfo {
-  schema: HaFormSchema;
-  records: ALDBRecord[];
-}
-
-export interface PropertiesInfo {
-  schema: HaFormSchema;
-  properties: Properties;
-}
-
 export const fetchInsteonDevice = (
   hass: HomeAssistant,
   id: string
@@ -52,7 +43,7 @@ export const fetchInsteonDevice = (
 export const fetchInsteonALDB = (
   hass: HomeAssistant,
   id: string
-): Promise<ALDBInfo> =>
+): Promise<ALDBRecord[]> =>
   hass.callWS({
     type: "insteon/aldb/get",
     device_address: id,
@@ -79,7 +70,7 @@ export const fetchInsteonProperties = (
 export const fetchInsteonProperties = (
   hass: HomeAssistant,
   id: string
-): Promise<PropertiesInfo> =>
+): Promise<Properties[]> =>
   hass.callWS({
     type: "insteon/properties/get",
     device_id: id,
