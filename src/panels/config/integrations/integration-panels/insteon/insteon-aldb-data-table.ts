@@ -30,7 +30,7 @@ export class InsteonALDBDataTable extends LitElement {
 
   @property() public records: ALDBRecord[] = [];
 
-  @property() public noDataText: string;
+  @property() public noDataText?: string;
 
   @query("ha-data-table") private _dataTable!: HaDataTable;
 
