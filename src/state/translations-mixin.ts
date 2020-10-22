@@ -133,7 +133,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           return this.hass!.localize;
         }
 
-        this._updateResources(language, resources);
+        await this._updateResources(language, resources);
         return this.hass!.localize;
       }
 
@@ -187,7 +187,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         return this.hass!.localize;
       }
 
-      this._updateResources(language, resources);
+      await this._updateResources(language, resources);
       return this.hass!.localize;
     }
 
@@ -216,7 +216,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
     }
 
-    private _updateResources(language: string, data: any) {
+    private async _updateResources(language: string, data: any) {
       // Update the language in hass, and update the resources with the newly
       // loaded resources. This merges the new data on top of the old data for
       // this language, so that the full translation set can be loaded across
@@ -229,7 +229,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       };
       const changes: Partial<HomeAssistant> = { resources };
       if (this.hass && language === this.hass.language) {
-        changes.localize = computeLocalize(this, language, resources);
+        changes.localize = await computeLocalize(this, language, resources);
       }
       this._updateHass(changes);
     }
