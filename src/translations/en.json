@@ -2392,6 +2392,10 @@
                 "data1": "Data 1",
                 "data2": "Data 2",
                 "data3": "Data 3"
+              },
+              "warn": {
+                "write": "This will write the All-Link Database records to the device.",
+                "load": "Loading the All-Link Database from the device may take a while."
               }
             },
             "properties": {
@@ -2461,10 +2465,6 @@
               "actions": {
                 "load": "Load from device",
                 "write": "Write to device",
-                "warning_header": "Warning",
-                "warn_write": "This will write the properties to the device. Are you sure you want to continue?",
-                "warn_load": "Loading the properties from the device may take a while. Are you sure you want to continue?",
-                "warn_exit": "You have changes that have not been written to the device. Are you sure you want to continue?",
                 "reset": "Discard changes"
               },
               "warn": {

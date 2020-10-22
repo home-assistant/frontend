@@ -19,6 +19,7 @@ import { ALDBRecord, AddressRegex } from "../../../../../data/insteon";
 import "../../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../../components/ha-form/ha-form";
 import { InsteonALDBRecordDialogParams } from "./show-dialog-insteon-aldb-record";
+import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 
 @customElement("dialog-insteon-aldb-record")
 class DialogInsteonALDBRecord extends LitElement {
@@ -28,9 +29,11 @@ class DialogInsteonALDBRecord extends LitElement {
 
   @property() public narrow?: boolean;
 
-  @internalProperty() private _record: ALDBRecord | undefined;
+  @internalProperty() private _record?: ALDBRecord;
 
-  @internalProperty() private _schema?: HaFormSchema;
+  @internalProperty() private _schema?: HaFormSchema[];
+
+  @internalProperty() private _title?: string;
 
   @internalProperty() private _callback?: (record: ALDBRecord) => Promise<void>;
 
@@ -46,6 +49,8 @@ class DialogInsteonALDBRecord extends LitElement {
     this._formData.mode = this._currentMode();
     this._schema = params.schema;
     this._callback = params.callback;
+    this._title = params.title;
+    this._errors = {};
   }
 
   protected render(): TemplateResult {
@@ -57,7 +62,7 @@ class DialogInsteonALDBRecord extends LitElement {
         open
         hideActions
         @closing="${this._close}"
-        .heading=${createCloseHeading(this.hass, "Edit ALDB Record")}
+        .heading=${createCloseHeading(this.hass, this._title)}
       >
         <div class="form">
           <ha-form
@@ -103,7 +108,9 @@ class DialogInsteonALDBRecord extends LitElement {
       this._close();
       await this._callback!(record!);
     } else {
-      this._errors!.base = "Some checks failed";
+      this._errors!.base = this.hass.localize(
+        "ui.panel.config.insteon.device.common.error.base"
+      );
     }
   }
 
