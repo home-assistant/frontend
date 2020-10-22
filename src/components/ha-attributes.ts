@@ -34,7 +34,7 @@ class HaAttributes extends LitElement {
           (attribute) => html`
             <div class="data-entry">
               <div class="key">
-                ${attribute.replace(/_/g, " ").replace("id", "ID")}
+                ${attribute.replace(/_/g, " ").replace(/\bid\b/g, "ID")}
               </div>
               <div class="value">
                 ${this.formatAttribute(attribute)}
