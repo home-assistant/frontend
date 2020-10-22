@@ -225,7 +225,7 @@ export class QuickBar extends LitElement {
 
   private _addSpinnerToCommandItem(index: number): void {
     const spinner = document.createElement("ha-circular-progress");
-    spinner.setAttribute("size", "small");
+    spinner.size = small;
     spinner.setAttribute("slot", "meta");
     spinner.active = true;
     this._getItemAtIndex(index)?.appendChild(spinner);
