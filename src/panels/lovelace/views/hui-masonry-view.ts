@@ -49,6 +49,8 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
   @property({ attribute: false }) public lovelace?: Lovelace;
 
+  @property({ type: Boolean }) public narrow!: boolean;
+
   @property({ type: Number }) public index?: number;
 
   @property({ attribute: false }) public cards: Array<
@@ -126,6 +128,10 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
       if (changedProperties.size === 1) {
         return;
       }
+    }
+
+    if (changedProperties.has("narrow")) {
+      this._updateColumns();
     }
 
     const oldLovelace = changedProperties.get("lovelace") as
@@ -252,7 +258,8 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     // Do -1 column if the menu is docked and open
     this._columns = Math.max(
       1,
-      matchColumns - Number(this.hass!.dockedSidebar === "docked")
+      matchColumns -
+        Number(!this.narrow && this.hass!.dockedSidebar === "docked")
     );
   }
 
