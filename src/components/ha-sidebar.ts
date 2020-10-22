@@ -725,7 +725,7 @@ class HaSidebar extends LitElement {
           -moz-user-select: none;
           border-right: 1px solid var(--divider-color);
           background-color: var(--sidebar-background-color);
-          width: 64px;
+          width: var(--sidebar-width);
         }
         :host([expanded]) {
           width: 256px;
@@ -736,9 +736,8 @@ class HaSidebar extends LitElement {
           border-left: 1px solid var(--divider-color);
         }
         .menu {
-          height: var(--header-height);
+          height: var(--sidebar-width);
           display: flex;
-          padding: 0 8.5px;
           border-bottom: 1px solid transparent;
           white-space: nowrap;
           font-weight: 400;
@@ -747,7 +746,6 @@ class HaSidebar extends LitElement {
           background-color: var(--primary-background-color);
           font-size: 20px;
           align-items: center;
-          padding-left: calc(8.5px + env(safe-area-inset-left));
         }
         :host([rtl]) .menu {
           padding-left: 8.5px;
@@ -761,6 +759,7 @@ class HaSidebar extends LitElement {
         }
         .menu mwc-icon-button {
           color: var(--sidebar-icon-color);
+          margin: auto calc(var(--sidebar-width) / 2 - 24px);
         }
         :host([expanded]) .menu mwc-icon-button {
           margin-right: 23px;
@@ -793,13 +792,12 @@ class HaSidebar extends LitElement {
           display: flex;
           flex-direction: column;
           box-sizing: border-box;
-          height: calc(100% - var(--header-height) - 132px);
+          height: calc(100% - var(--sidebar-width) - 132px);
           height: calc(
-            100% - var(--header-height) - 132px - env(safe-area-inset-bottom)
+            100% - var(--sidebar-width) - 132px - env(safe-area-inset-bottom)
           );
           overflow-x: hidden;
           background: none;
-          margin-left: env(safe-area-inset-left);
         }
 
         :host([rtl]) paper-listbox {
@@ -819,14 +817,11 @@ class HaSidebar extends LitElement {
 
         paper-icon-item {
           box-sizing: border-box;
-          margin: 4px 8px;
-          padding-left: 12px;
+          margin: 4px calc(var(--sidebar-width) / 2 - 24px);
           border-radius: 4px;
+          padding-left: 12px;
           --paper-item-min-height: 40px;
-          width: 48px;
-        }
-        :host([expanded]) paper-icon-item {
-          width: 240px;
+          width: 100%;
         }
         :host([rtl]) paper-icon-item {
           padding-left: auto;
@@ -840,7 +835,6 @@ class HaSidebar extends LitElement {
 
         .iron-selected paper-icon-item::before,
         a:not(.iron-selected):focus::before {
-          border-radius: 4px;
           position: absolute;
           top: 0;
           right: 0;
@@ -850,6 +844,7 @@ class HaSidebar extends LitElement {
           content: "";
           transition: opacity 15ms linear;
           will-change: opacity;
+          margin-left: -6px;
         }
         .iron-selected paper-icon-item::before {
           background-color: var(--sidebar-selected-icon-color);
@@ -917,14 +912,11 @@ class HaSidebar extends LitElement {
           flex: 1;
         }
         .profile {
-          margin-left: env(safe-area-inset-left);
+          margin-left: -5px;
         }
         :host([rtl]) .profile {
           margin-left: initial;
           margin-right: env(safe-area-inset-right);
-        }
-        .profile paper-icon-item {
-          padding-left: 4px;
         }
         :host([rtl]) .profile paper-icon-item {
           padding-left: auto;
