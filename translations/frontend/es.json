@@ -718,9 +718,9 @@
                     "enabled_description": "Las entidades deshabilitadas no se agregarán a Home Assistant.",
                     "enabled_label": "Activar entidad",
                     "entity_id": "ID de la entidad",
-                    "icon": "Reemplazar Icono",
+                    "icon": "Icono",
                     "icon_error": "Los iconos deben tener el formato 'prefijo:nombreicono', por ejemplo, 'mdi:home'",
-                    "name": "Cambio de nombre",
+                    "name": "Nombre",
                     "note": "Nota: puede que esto no funcione todavía con todas las integraciones",
                     "unavailable": "Esta entidad no está disponible actualmente.",
                     "update": "Actualizar"
@@ -1547,8 +1547,8 @@
                     "cant_edit": "Solo puedes editar los elementos que se crean en la interfaz de usuario.",
                     "caption": "Dispositivos",
                     "confirm_delete": "¿Estás seguro de que quieres eliminar este dispositivo?",
-                    "confirm_rename_entity_ids": "¿También quieres cambiar el nombre de los identificadores de entidad de tus entidades?",
-                    "confirm_rename_entity_ids_warning": "Esto no cambiará ninguna configuración (como automatizaciones, scripts, escenas, Lovelace) que estén utilizando actualmente estas entidades, tendrás que actualizarlas tú mismo.",
+                    "confirm_rename_entity_ids": "¿También quieres renombrar los IDs de entidad de tus entidades?",
+                    "confirm_rename_entity_ids_warning": "Esto no cambiará ninguna configuración (como automatizaciones, scripts, escenas, paneles de control) que estén utilizando actualmente estas entidades. Tendrás que actualizarlas tú mismo para utilizar los nuevos IDs de entidad.",
                     "data_table": {
                         "area": "Área",
                         "battery": "Batería",

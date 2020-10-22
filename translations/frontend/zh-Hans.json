@@ -1221,7 +1221,7 @@
                                 "mqtt": {
                                     "label": "MQTT",
                                     "payload": "参数（可选）",
-                                    "topic": "Topic"
+                                    "topic": "主题"
                                 },
                                 "numeric_state": {
                                     "above": "大于",
