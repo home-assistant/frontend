@@ -290,8 +290,8 @@ export class QuickBar extends LitElement {
   private _generateCommandItems(): QuickBarItem[] {
     return [
       ...this._generateReloadCommands(),
-      ...this._generateServerControlCommandItems(),
-      ...this._generateNavigationCommandItems(),
+      ...this._generateServerControlCommands(),
+      ...this._generateNavigationCommands(),
     ].sort((a, b) => compare(a.text.toLowerCase(), b.text.toLowerCase()));
   }
 
@@ -312,11 +312,11 @@ export class QuickBar extends LitElement {
     }));
   }
 
-  private _generateServerControlCommandItems(): QuickBarItem[] {
+  private _generateServerControlCommands(): QuickBarItem[] {
     const serverActions = ["restart", "stop"];
 
     return serverActions.map((action) =>
-      this._generateConfirmationCommandItem(
+      this._generateConfirmationCommand(
         {
           text: this.hass.localize(
             "ui.dialogs.quick-bar.commands.server_control.perform_action",
@@ -333,21 +333,51 @@ export class QuickBar extends LitElement {
     );
   }
 
-  private _generateConfirmationCommandItem(
-    item: QuickBarItem,
-    confirmText: ConfirmationDialogParams["confirmText"]
-  ): QuickBarItem {
-    return {
-      ...item,
-      action: () =>
-        showConfirmationDialog(this, {
-          confirmText,
-          confirm: item.action,
-        }),
-    };
+  private _generateNavigationCommands(): QuickBarItem[] {
+    const panelItems = this._generateNavigationPanelCommands();
+    const sectionItems = this._generateNavigationSectionCommands();
+
+    return this._withNavigationActions([...panelItems, ...sectionItems]);
   }
 
-  private getNavigationInfo(sectionKey: string, component: string) {
+  private _generateNavigationPanelCommands(): Omit<
+    QuickBarNavigationItem,
+    "action"
+  >[] {
+    return Object.keys(this.hass.panels).map((panelKey) => {
+      const panel = this.hass.panels[panelKey];
+
+      return {
+        text: this._getPanelText(panel),
+        icon: "hass:robot",
+        path: `/${panel.url_path}`,
+      };
+    });
+  }
+
+  private _generateNavigationSectionCommands(): Partial<
+    QuickBarNavigationItem
+  >[] {
+    return [
+      this._getNavigationInfoFromConfig("general", "logs"),
+      this._getNavigationInfoFromConfig("automation", "automation"),
+      this._getNavigationInfoFromConfig("automation", "script"),
+      this._getNavigationInfoFromConfig("general", "server_control"),
+    ];
+  }
+
+  private _generateEntityItems(): QuickBarItem[] {
+    return Object.keys(this.hass.states)
+      .map((entityId) => ({
+        text: computeStateName(this.hass.states[entityId]),
+        altText: entityId,
+        icon: domainIcon(computeDomain(entityId), this.hass.states[entityId]),
+        action: () => fireEvent(this, "hass-more-info", { entityId }),
+      }))
+      .sort((a, b) => compare(a.text.toLowerCase(), b.text.toLowerCase()));
+  }
+
+  private _getNavigationInfoFromConfig(sectionKey: string, component: string) {
     const panel = configSections[sectionKey].find(
       (section) => section.component === component
     );
@@ -390,35 +420,18 @@ export class QuickBar extends LitElement {
     );
   }
 
-  private _generateNavigationPanelItems(): Omit<
-    QuickBarNavigationItem,
-    "action"
-  >[] {
-    return Object.keys(this.hass.panels).map((panelKey) => {
-      const panel = this.hass.panels[panelKey];
-
-      return {
-        text: this._getPanelText(panel),
-        icon: "hass:robot",
-        path: `/${panel.url_path}`,
-      };
-    });
-  }
-
-  private _generateNavigationSectionItems(): Partial<QuickBarNavigationItem>[] {
-    return [
-      this.getNavigationInfo("general", "logs"),
-      this.getNavigationInfo("automation", "automation"),
-      this.getNavigationInfo("automation", "script"),
-      this.getNavigationInfo("general", "server_control"),
-    ];
-  }
-
-  private _generateNavigationCommandItems(): QuickBarItem[] {
-    const panelItems = this._generateNavigationPanelItems();
-    const sectionItems = this._generateNavigationSectionItems();
-
-    return this._withNavigationActions([...panelItems, ...sectionItems]);
+  private _generateConfirmationCommand(
+    item: QuickBarItem,
+    confirmText: ConfirmationDialogParams["confirmText"]
+  ): QuickBarItem {
+    return {
+      ...item,
+      action: () =>
+        showConfirmationDialog(this, {
+          confirmText,
+          confirm: item.action,
+        }),
+    };
   }
 
   private _withNavigationActions(items) {
@@ -429,17 +442,6 @@ export class QuickBar extends LitElement {
         action: () => navigate(this, path),
       };
     });
-  }
-
-  private _generateEntityItems(): QuickBarItem[] {
-    return Object.keys(this.hass.states)
-      .map((entityId) => ({
-        text: computeStateName(this.hass.states[entityId]) || entityId,
-        altText: entityId,
-        icon: domainIcon(computeDomain(entityId), this.hass.states[entityId]),
-        action: () => fireEvent(this, "hass-more-info", { entityId }),
-      }))
-      .sort((a, b) => compare(a.text.toLowerCase(), b.text.toLowerCase()));
   }
 
   private _toggleIfAlreadyOpened() {
