@@ -57,39 +57,37 @@ export class MoreInfoLogbook extends LitElement {
   }
 
   protected render(): TemplateResult {
-  	if(!this._canHaveLogbookEntries()) {
-  		return html``;
-  	}
-  	
+    if (!this._canHaveLogbookEntries()) {
+      return html``;
+    }
+
     return html`
-          ${isComponentLoaded(this.hass, "logbook")
-            ? !this._logbookEntries
-              ? html`
-                  <ha-circular-progress
-                    active
-                    alt=${this.hass.localize("ui.common.loading")}
-                  ></ha-circular-progress>
-                `
-              : this._logbookEntries.length
-              ? html`
-                  <ha-logbook
-                    class="ha-scrollbar"
-                    narrow
-                    no-icon
-                    no-name
-                    relative-time
-                    .hass=${this.hass}
-                    .entries=${this._logbookEntries}
-                    .userIdToName=${this._persons}
-                  ></ha-logbook>
-                `
-              : html`<div class="no-entries">
-                  ${this.hass.localize(
-                    "ui.components.logbook.entries_not_found"
-                  )}
-                </div>`
-            : ""}
-        `;
+      ${isComponentLoaded(this.hass, "logbook")
+        ? !this._logbookEntries
+          ? html`
+              <ha-circular-progress
+                active
+                alt=${this.hass.localize("ui.common.loading")}
+              ></ha-circular-progress>
+            `
+          : this._logbookEntries.length
+          ? html`
+              <ha-logbook
+                class="ha-scrollbar"
+                narrow
+                no-icon
+                no-name
+                relative-time
+                .hass=${this.hass}
+                .entries=${this._logbookEntries}
+                .userIdToName=${this._persons}
+              ></ha-logbook>
+            `
+          : html`<div class="no-entries">
+              ${this.hass.localize("ui.components.logbook.entries_not_found")}
+            </div>`
+        : ""}
+    `;
   }
 
   protected firstUpdated(): void {
