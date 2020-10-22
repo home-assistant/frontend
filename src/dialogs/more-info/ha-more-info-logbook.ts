@@ -39,7 +39,17 @@ export class MoreInfoLogbook extends LitElement {
   }, 10000);
 
   protected render(): TemplateResult {
-    if (!this._canHaveLogbookEntries()) {
+    if (!this.entityId) {
+      return html``;
+    }
+    const stateObj = this.hass.states[this.entityId];
+
+    if (!stateObj || stateObj.attributes.unit_of_measurement) {
+      return html``;
+    }
+
+    const domain = computeStateDomain(stateObj);
+    if (CONTINUOUS_DOMAINS.includes(domain)) {
       return html``;
     }
 
@@ -79,19 +89,19 @@ export class MoreInfoLogbook extends LitElement {
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
-    if (!this._canHaveLogbookEntries()) {
-      return;
-    }
-
     if (changedProps.has("entityId")) {
       this._lastLogbookDate = undefined;
       this._logbookEntries = undefined;
+
+      if (!this.entityId) {
+        return;
+      }
 
       this._throttleGetLogbookEntries();
       return;
     }
 
-    if (!changedProps.has("hass")) {
+    if (!this.entityId || !changedProps.has("hass")) {
       return;
     }
 
@@ -104,24 +114,6 @@ export class MoreInfoLogbook extends LitElement {
       // wait for commit of data (we only account for the default setting of 1 sec)
       setTimeout(this._throttleGetLogbookEntries, 1000);
     }
-  }
-
-  private _canHaveLogbookEntries(): boolean {
-    if (!this.entityId) {
-      return false;
-    }
-    const stateObj = this.hass.states[this.entityId];
-
-    if (!stateObj || stateObj.attributes.unit_of_measurement) {
-      return false;
-    }
-
-    const domain = computeStateDomain(stateObj);
-    if (CONTINUOUS_DOMAINS.includes(domain)) {
-      return false;
-    }
-
-    return true;
   }
 
   private async _getLogBookData() {
