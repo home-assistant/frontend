@@ -1,5 +1,4 @@
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "@polymer/paper-input/paper-input";
+import "@material/mwc-button/mwc-button";
 import {
   css,
   CSSResult,
@@ -10,7 +9,7 @@ import {
   internalProperty,
   TemplateResult,
 } from "lit-element";
-import "../../components/dialog/ha-paper-dialog";
+import "../../components/ha-dialog";
 import "../../components/ha-circular-progress";
 import "../../components/ha-switch";
 import "../../components/ha-formfield";
@@ -19,7 +18,6 @@ import {
   getConfigEntrySystemOptions,
   updateConfigEntrySystemOptions,
 } from "../../data/config_entries";
-import type { PolymerChangedEvent } from "../../polymer-types";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { ConfigEntrySystemOptionsDialogParams } from "./show-dialog-config-entry-system-options";
@@ -31,18 +29,21 @@ class DialogConfigEntrySystemOptions extends LitElement {
 
   @internalProperty() private _disableNewEntities!: boolean;
 
+  @internalProperty() private _open = false;
+
   @internalProperty() private _error?: string;
 
   @internalProperty() private _params?: ConfigEntrySystemOptionsDialogParams;
 
   @internalProperty() private _loading?: boolean;
 
-  @internalProperty() private _submitting?: boolean;
+  @internalProperty() private _submitting = false;
 
   public async showDialog(
     params: ConfigEntrySystemOptionsDialogParams
   ): Promise<void> {
     this._params = params;
+    this._open = true;
     this._error = undefined;
     this._loading = true;
     const systemOptions = await getConfigEntrySystemOptions(
@@ -54,27 +55,31 @@ class DialogConfigEntrySystemOptions extends LitElement {
     await this.updateComplete;
   }
 
+  public closeDialog(): void {
+    this._open = false;
+    this._error = "";
+    this._params = undefined;
+  }
+
   protected render(): TemplateResult {
     if (!this._params) {
       return html``;
     }
 
     return html`
-      <ha-paper-dialog
-        with-backdrop
-        opened
-        @opened-changed="${this._openedChanged}"
+      <ha-dialog
+        open=${this._open}
+        scrimClickAction
+        escapeKeyAction
+        @close=${this.closeDialog}
+        .heading=${this.hass.localize(
+          "ui.dialogs.config_entry_system_options.title",
+          "integration",
+          this.hass.localize(`component.${this._params.entry.domain}.title`) ||
+            this._params.entry.domain
+        )}
       >
-        <h2>
-          ${this.hass.localize(
-            "ui.dialogs.config_entry_system_options.title",
-            "integration",
-            this.hass.localize(
-              `component.${this._params.entry.domain}.title`
-            ) || this._params.entry.domain
-          )}
-        </h2>
-        <paper-dialog-scrollable>
+        <div>
           ${this._loading
             ? html`
                 <div class="init-spinner">
@@ -112,22 +117,18 @@ class DialogConfigEntrySystemOptions extends LitElement {
                   </ha-formfield>
                 </div>
               `}
-        </paper-dialog-scrollable>
-        ${!this._loading
-          ? html`
-              <div class="paper-dialog-buttons">
-                <mwc-button
-                  @click="${this._updateEntry}"
-                  .disabled=${this._submitting}
-                >
-                  ${this.hass.localize(
-                    "ui.dialogs.config_entry_system_options.update"
-                  )}
-                </mwc-button>
-              </div>
-            `
-          : ""}
-      </ha-paper-dialog>
+        </div>
+        <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
+          ${this.hass.localize("ui.common.cancel")}
+        </mwc-button>
+        <mwc-button
+          slot="primaryAction"
+          @click="${this._updateEntry}"
+          .disabled=${this._submitting}
+        >
+          ${this.hass.localize("ui.dialogs.config_entry_system_options.update")}
+        </mwc-button>
+      </ha-dialog>
     `;
   }
 
@@ -154,19 +155,10 @@ class DialogConfigEntrySystemOptions extends LitElement {
     }
   }
 
-  private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
-    if (!(ev.detail as any).value) {
-      this._params = undefined;
-    }
-  }
-
   static get styles(): CSSResult[] {
     return [
       haStyleDialog,
       css`
-        ha-paper-dialog {
-          max-width: 500px;
-        }
         .init-spinner {
           padding: 50px 100px;
           text-align: center;
