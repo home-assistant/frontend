@@ -2452,7 +2452,8 @@
                 "last-triggered": "Last Triggered",
                 "position": "Position",
                 "tilt-position": "Tilt Position",
-                "brightness": "Brightness"
+                "brightness": "Brightness",
+                "last-updated": "Last Updated"
               },
               "entity_row": {
                 "divider": "Divider",
