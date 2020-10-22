@@ -45,6 +45,7 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
     | "entity-id"
     | "last-changed"
     | "last-triggered"
+    | "last-updated"
     | "position"
     | "tilt-position"
     | "brightness";
