@@ -161,12 +161,13 @@ class HaPanelDevTemplate extends LitElement {
               )}:
               ${resultType}`
             : ""}
+          <!-- prettier-ignore -->
           <pre
             class="rendered ${classMap({
-              error: Boolean(this._error),
-              [resultType]: resultType,
-            })}"
-          ><!-- display: block -->${this._error}${type === "object"
+            error: Boolean(this._error),
+            [resultType]: resultType,
+          })}"
+          >${this._error}${type === "object"
             ? JSON.stringify(this._templateResult!.result, null, 2)
             : this._templateResult?.result}</pre>
           ${this._templateResult?.listeners.time
