@@ -17,7 +17,9 @@ export function checkConditionsMet(
     if (c.minWidth || c.maxWidth) {
       return c.minWidth
         ? window.matchMedia(`(min-width: ${c.minWidth}px)`).matches
-        : window.matchMedia(`(max-width: ${c.maxWidth}px)`).matches;
+        : true && c.maxWidth
+        ? window.matchMedia(`(max-width: ${c.maxWidth}px)`).matches
+        : true;
     }
 
     const state = hass.states[c.entity!]
