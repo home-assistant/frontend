@@ -718,9 +718,9 @@
                     "enabled_description": "Uitgeschakelde entiteiten zullen niet aan Home Assistant worden toegevoegd",
                     "enabled_label": "Schakel entiteit in",
                     "entity_id": "Entiteits-ID",
-                    "icon": "Overschrijf pictogram",
+                    "icon": "Pictogram",
                     "icon_error": "Pictogrammen moeten de notatie 'prefix:pictogramnaam' hebben, bijvoorbeeld 'mdi:home'",
-                    "name": "Naam overschrijven",
+                    "name": "Naam",
                     "note": "Opmerking: dit werkt mogelijk nog niet met alle integraties.",
                     "unavailable": "Deze entiteit is momenteel niet beschikbaar.",
                     "update": "Bijwerken"
@@ -737,6 +737,13 @@
                 "ok": "OK"
             },
             "helper_settings": {
+                "counter": {
+                    "initial": "Beginwaarde",
+                    "maximum": "Maximale waarde",
+                    "minimum": "Minimale waarde",
+                    "restore": "Herstel de laatst bekende waarde wanneer Home Assistant start",
+                    "step": "Stapgrootte"
+                },
                 "generic": {
                     "icon": "Pictogram",
                     "name": "Naam"
@@ -772,6 +779,9 @@
                 },
                 "platform_not_loaded": "De {platform} integratie is niet geladen. Voeg het aan je configuratie toe door 'default_config:' of ''{platform}:'' toe te voegen.",
                 "required_error_msg": "Dit veld is verplicht",
+                "timer": {
+                    "duration": "Duur"
+                },
                 "yaml_not_editable": "De instellingen van deze entiteit kunnen niet worden bewerkt vanuit de gebruikersinterface. Alleen entiteiten die zijn ingesteld vanuit de gebruikersinterface, kunnen worden geconfigureerd vanuit de gebruikersinterface."
             },
             "image_cropper": {
@@ -931,6 +941,7 @@
         "notification_drawer": {
             "click_to_configure": "Klik op de knop om {entity} te configureren",
             "close": "Sluiten",
+            "dismiss_all": "Alles afkeuren",
             "empty": "Geen notificaties",
             "title": "Notificaties"
         },
@@ -1513,24 +1524,31 @@
                     "add_prompt": "Er is nog geen {name} toegevoegd met dit apparaat. U kunt er één toevoegen door op de + knop hierboven te klikken.",
                     "automation": {
                         "actions": {
-                            "caption": "Wanneer iets wordt getriggerd..."
+                            "caption": "Wanneer iets wordt getriggerd...",
+                            "no_actions": "Geen acties",
+                            "unknown_action": "Onbekende actie"
                         },
                         "automations": "Automatiseringen",
                         "conditions": {
-                            "caption": "Doe alleen iets als..."
+                            "caption": "Doe alleen iets als...",
+                            "no_conditions": "Geen toestanden",
+                            "unknown_condition": "Onbekende toestand"
                         },
                         "create": "Maak een automatisering aan met het apparaat",
                         "no_automations": "Geen automatiseringen",
                         "no_device_automations": "Er zijn geen automatiseringen beschikbaar voor dit apparaat.",
                         "triggers": {
-                            "caption": "Doe iets wanneer..."
-                        }
+                            "caption": "Doe iets wanneer...",
+                            "no_triggers": "Geen triggers",
+                            "unknown_trigger": "Onbekende trigger"
+                        },
+                        "unknown_automation": "Onbekende automatisering"
                     },
                     "cant_edit": "Je kunt alleen items bewerken die in de gebruikersinterface zijn gemaakt.",
                     "caption": "Apparaten",
                     "confirm_delete": "Weet je zeker dat je dit apparaat wilt verwijderen?",
                     "confirm_rename_entity_ids": "Wil je ook de entiteits-ID's van je entiteiten hernoemen?",
-                    "confirm_rename_entity_ids_warning": "Dit zal geen enkele configuratie veranderen (zoals automatiseringen, scripts, scènes, Lovelace) die momenteel deze entiteiten gebruikt, je zult ze zelf moeten updaten.",
+                    "confirm_rename_entity_ids_warning": "Dit zal geen enkele configuratie wijzigen (zoals automatiseringen, scripts, scènes, dashboards) die momenteel deze entiteiten gebruikt! U moet ze zelf bijwerken om de nieuwe entiteits-ID's te gebruiken!",
                     "data_table": {
                         "area": "Gebied",
                         "battery": "Batterij",
@@ -1643,11 +1661,13 @@
                         "no_helpers": "Er zijn geen helpers gevonden!"
                     },
                     "types": {
+                        "counter": "Teller",
                         "input_boolean": "Schakelaar",
                         "input_datetime": "Datum en/of tijd",
                         "input_number": "Numeriek",
                         "input_select": "Keuzelijst",
-                        "input_text": "Tekst"
+                        "input_text": "Tekst",
+                        "timer": "Timer"
                     }
                 },
                 "info": {
@@ -1866,6 +1886,8 @@
                         "network": "Netwerk",
                         "node_id": "Knooppunt-ID",
                         "ozw_instance": "Instantie van OpenZWave",
+                        "query_stage": "Vraagfase",
+                        "wakeup_instructions": "Wekinstructies",
                         "zwave": "Z-Wave"
                     },
                     "device_info": {
@@ -1875,6 +1897,10 @@
                     },
                     "navigation": {
                         "network": "Netwerk",
+                        "node": {
+                            "config": "Configuratie",
+                            "dashboard": "Dashboard"
+                        },
                         "nodes": "Knooppunten",
                         "select_instance": "Instantie selecteren"
                     },
@@ -1902,6 +1928,15 @@
                         "header": "Netwerkbeheer",
                         "introduction": "Beheer netwerkbrede functies.",
                         "node_count": "{count} knooppunten"
+                    },
+                    "node_config": {
+                        "header": "Node Configuratie",
+                        "help_source": "Configuratieparameterbeschrijvingen en helptekst worden geleverd door het OpenZWave-project.",
+                        "introduction": "Beheer de verschillende configuratieparameters voor een Z-Wave-Node.",
+                        "wakeup_help": "Batterijgevoede Nodes moeten wakker zijn om hun configuratie te wijzigen. Als de Node niet wakker is, zal OpenZWave proberen de configuratie van de Node bij te werken de volgende keer dat het ontwaakt, wat meerdere uren (of dagen) later kan zijn. Volg deze stappen om uw apparaat uit de slaapstand te halen:"
+                    },
+                    "node_metadata": {
+                        "product_manual": "Producthandleiding"
                     },
                     "node_query_stages": {
                         "associations": "Associatiegroepen en lidmaatschappen verversen",
@@ -2162,6 +2197,7 @@
                         "last_scanned": "Laatst gescand",
                         "name": "Naam"
                     },
+                    "learn_more": "Meer informatie over tags",
                     "never_scanned": "Nooit gescand",
                     "no_tags": "Geen tags",
                     "write": "Schrijf"
@@ -2498,6 +2534,7 @@
                         "no_listeners": "Deze template luistert niet naar gebeurtenissen met statuswijziging en wordt niet automatisch bijgewerkt.",
                         "reset": "Resetten naar demosjabloon",
                         "template_extensions": "Home Assistant sjabloon extensiesHome Assistant",
+                        "time": "Deze sjabloon wordt elke 60 seconden bijgewerkt na de laatste statuswijziging.",
                         "title": "Sjablonen",
                         "unknown_error_template": "Onbekende fout bij weergave sjabloon"
                     }
@@ -2848,7 +2885,7 @@
                     "migrate": {
                         "header": "Configuratie incompatibel",
                         "migrate": "Configuratie migreren",
-                        "para_migrate": "Home Assistant kan ID's voor al je kaarten en weergaven automatisch voor je toevoegen door op de knop 'Migrate config' te klikken.",
+                        "para_migrate": "Home Assistant kan automatisch ID's aan al uw kaarten en weergaven toevoegen door op de knop 'Configuratie migreren' te drukken.",
                         "para_no_id": "Dit element heeft geen ID. Voeg een ID toe aan dit element in 'ui-lovelace.yaml'."
                     },
                     "move_card": {

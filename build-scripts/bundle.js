@@ -55,7 +55,6 @@ module.exports.babelOptions = ({ latestBuild }) => ({
     !latestBuild && [
       require("@babel/preset-env").default,
       {
-        modules: false,
         useBuiltIns: "entry",
         corejs: "3.6",
       },
@@ -71,7 +70,6 @@ module.exports.babelOptions = ({ latestBuild }) => ({
     // Only support the syntax, Webpack will handle it.
     "@babel/plugin-syntax-import-meta",
     "@babel/plugin-syntax-dynamic-import",
-    "@babel/plugin-syntax-top-level-await",
     "@babel/plugin-proposal-optional-chaining",
     "@babel/plugin-proposal-nullish-coalescing-operator",
     [

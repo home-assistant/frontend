@@ -325,6 +325,11 @@
           "show_attributes": "Show attributes"
         }
       },
+      "user-picker": {
+        "no_user": "No user",
+        "add_user": "Add user",
+        "remove_user": "Remove user"
+      },
       "device-picker": {
         "clear": "Clear",
         "toggle": "Toggle",
@@ -695,7 +700,8 @@
       "connection_lost": "Connection lost. Reconnecting…",
       "started": "Home Assistant has started!",
       "starting": "Home Assistant is starting, not everything will be available until it is finished.",
-      "triggered": "Triggered {name}"
+      "triggered": "Triggered {name}",
+      "dismiss": "Dismiss"
     },
     "sidebar": {
       "external_app_configuration": "App Configuration",
@@ -1104,7 +1110,10 @@
                 "event": {
                   "label": "Event",
                   "event_type": "Event type",
-                  "event_data": "Event data"
+                  "event_data": "Event data",
+                  "context_users": "Limit to events triggered by",
+                  "context_user_picked": "User firing event",
+                  "context_user_pick": "Add user"
                 },
                 "geo_location": {
                   "label": "Geolocation",
@@ -2278,6 +2287,7 @@
           "configure_ui": "Edit Dashboard",
           "help": "Help",
           "refresh": "Refresh",
+          "start_conversation": "Start conversation",
           "reload_resources": "Reload resources",
           "exit_edit_mode": "Exit UI edit mode",
           "close": "Close"
@@ -2442,7 +2452,8 @@
                 "last-triggered": "Last Triggered",
                 "position": "Position",
                 "tilt-position": "Tilt Position",
-                "brightness": "Brightness"
+                "brightness": "Brightness",
+                "last-updated": "Last Updated"
               },
               "entity_row": {
                 "divider": "Divider",
@@ -2946,12 +2957,13 @@
             "description": "Templates are rendered using the Jinja2 template engine with some Home Assistant specific extensions.",
             "editor": "Template editor",
             "reset": "Reset to demo template",
+            "result_type": "Result type",
             "jinja_documentation": "Jinja2 template documentation",
             "template_extensions": "Home Assistant template extensions",
             "unknown_error_template": "Unknown error rendering template",
-            "time": "This template updates every 60 seconds after the last state changed event.",
+            "time": "This template updates at the start of each minute.",
             "all_listeners": "This template listens for all state changed events.",
-            "no_listeners": "This template does not listen for any state changed events and will not update automatically.",
+            "no_listeners": "This template does not listen for any events and will not update automatically.",
             "listeners": "This template listens for the following state changed events:",
             "entity": "Entity",
             "domain": "Domain"

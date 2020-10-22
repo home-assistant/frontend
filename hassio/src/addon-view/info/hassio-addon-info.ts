@@ -135,7 +135,7 @@ class HassioAddonInfo extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      ${this._computeUpdateAvailable
+      ${this.addon.update_available
         ? html`
             <ha-card header="Update available! 🎉">
               <div class="card-content">
@@ -607,15 +607,6 @@ class HassioAddonInfo extends LitElement {
 
   private get _computeIsRunning(): boolean {
     return this.addon?.state === "started";
-  }
-
-  private get _computeUpdateAvailable(): boolean | "" {
-    return (
-      this.addon &&
-      !this.addon.detached &&
-      this.addon.version &&
-      this.addon.version !== this.addon.version_latest
-    );
   }
 
   private get _pathWebui(): string | null {

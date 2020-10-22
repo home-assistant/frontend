@@ -12,6 +12,7 @@ export const darkStyles = {
   "switch-unchecked-button-color": "#999999",
   "switch-unchecked-track-color": "#9b9b9b",
   "divider-color": "rgba(225, 225, 225, .12)",
+  "mdc-ripple-color": "#AAAAAA",
   "codemirror-keyword": "#C792EA",
   "codemirror-operator": "#89DDFF",
   "codemirror-variable": "#f07178",
@@ -75,6 +76,8 @@ export const derivedStyles = {
   "mdc-theme-on-secondary": "var(--text-primary-color)",
   "mdc-theme-on-surface": "var(--primary-text-color)",
   "mdc-theme-text-primary-on-background": "var(--primary-text-color)",
+  "mdc-theme-text-secondary-on-background": "var(--secondary-text-color)",
+  "mdc-theme-text-icon-on-background": "var(--secondary-text-color)",
   "app-header-text-color": "var(--text-primary-color)",
   "app-header-background-color": "var(--primary-color)",
   "material-body-text-color": "var(--primary-text-color)",
@@ -87,6 +90,7 @@ export const derivedStyles = {
   "mdc-radio-disabled-color": "var(--disabled-text-color)",
   "mdc-tab-text-label-color-default": "var(--primary-text-color)",
   "mdc-button-disabled-ink-color": "var(--disabled-text-color)",
+  "mdc-button-outline-color": "var(--divider-color)",
   "mdc-dialog-scroll-divider-color": "var(--divider-color)",
 };
 
@@ -111,12 +115,16 @@ export const haStyle = css`
     color: var(--app-header-text-color, white);
   }
 
-  app-toolbar [main-title] {
-    margin-left: 20px;
+  app-toolbar {
+    height: var(--header-height);
   }
 
-  ha-menu-button {
-    margin-left: 4px;
+  app-header div[sticky] {
+    height: 48px;
+  }
+
+  app-toolbar [main-title] {
+    margin-left: 20px;
   }
 
   h1 {
@@ -276,7 +284,7 @@ export const haStyleDialog = css`
       max-width: calc(
         100% - env(safe-area-inset-right) - env(safe-area-inset-left)
       ) !important;
-      max-height: calc(100% - 64px);
+      max-height: calc(100% - var(--header-height));
 
       position: fixed !important;
       bottom: 0px;

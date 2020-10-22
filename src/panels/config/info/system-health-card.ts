@@ -72,7 +72,7 @@ class SystemHealthCard extends LitElement {
         }
         if (domain !== "homeassistant") {
           sections.push(
-            html` <h3>${domainToName(this.hass.localize, domain)}</h3> `
+            html`<h3>${domainToName(this.hass.localize, domain)}</h3>`
           );
         }
         sections.push(html`

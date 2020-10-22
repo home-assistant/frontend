@@ -7,6 +7,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-settings-row";
@@ -62,7 +63,8 @@ const ISSUES = {
 class HassioSupervisorInfo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public supervisorInfo!: HassioSupervisorInfoType;
+  @property({ attribute: false })
+  public supervisorInfo!: HassioSupervisorInfoType;
 
   @property() public hostInfo!: HassioHostInfoType;
 
@@ -85,7 +87,7 @@ class HassioSupervisorInfo extends LitElement {
             <span slot="description">
               ${this.supervisorInfo.version_latest}
             </span>
-            ${this.supervisorInfo.version !== this.supervisorInfo.version_latest
+            ${this.supervisorInfo.update_available
               ? html`
                   <ha-progress-button
                     title="Update the supervisor"
@@ -205,7 +207,7 @@ class HassioSupervisorInfo extends LitElement {
       };
       await setSupervisorOption(this.hass, data);
       await reloadSupervisor(this.hass);
-      this.supervisorInfo = await fetchHassioSupervisorInfo(this.hass);
+      fireEvent(this, "hass-api-called", { success: true, response: null });
     } catch (err) {
       showAlertDialog(this, {
         title: "Failed to set supervisor option",

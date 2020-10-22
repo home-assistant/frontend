@@ -45,16 +45,11 @@ const createWebpackConfig = ({
     optimization: {
       minimizer: [
         new TerserPlugin({
-          cache: true,
           parallel: true,
           extractComments: true,
-          sourceMap: true,
           terserOptions: bundle.terserOptions(latestBuild),
         }),
       ],
-    },
-    experiments: {
-      topLevelAwait: true,
     },
     plugins: [
       new ManifestPlugin({
@@ -99,6 +94,15 @@ const createWebpackConfig = ({
       new webpack.NormalModuleReplacementPlugin(
         new RegExp(bundle.emptyPackages({ latestBuild }).join("|")),
         path.resolve(paths.polymer_dir, "src/util/empty.js")
+      ),
+      // We need to change the import of the polyfill for EventTarget, so we replace the polyfill file with our customized one
+      new webpack.NormalModuleReplacementPlugin(
+        new RegExp(
+          require.resolve(
+            "lit-virtualizer/lib/uni-virtualizer/lib/polyfillLoaders/EventTarget.js"
+          )
+        ),
+        path.resolve(paths.polymer_dir, "src/resources/EventTarget-ponyfill.js")
       ),
     ],
     resolve: {

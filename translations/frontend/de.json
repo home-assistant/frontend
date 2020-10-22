@@ -778,6 +778,9 @@
                 },
                 "platform_not_loaded": "Die {platform} -Komponente ist nicht geladen. Füge sie bitte deiner Konfiguration hinzu. Entweder durch Hinzufügen von 'default_config:' oder ''{platform}:''.",
                 "required_error_msg": "Dieses Feld ist erforderlich",
+                "timer": {
+                    "duration": "Dauer"
+                },
                 "yaml_not_editable": "Die Einstellungen dieser Entität können nicht über die Benutzeroberfläche bearbeitet werden. Nur über die Benutzeroberfläche eingerichtete Entitäten können über die Benutzeroberfläche konfiguriert werden."
             },
             "image_cropper": {
@@ -1504,18 +1507,24 @@
                     "add_prompt": "Mit diesem Gerät wurden noch keine {name} hinzugefügt. Du kannst eins hinzufügen, indem du auf den + Knopf drückst.",
                     "automation": {
                         "actions": {
-                            "caption": "Wenn etwas ausgelöst wird ..."
+                            "caption": "Wenn etwas ausgelöst wird ...",
+                            "no_actions": "Keine Aktionen"
                         },
                         "automations": "Automatisierungen",
                         "conditions": {
-                            "caption": "Tue nur dann etwas, wenn....."
+                            "caption": "Tue nur dann etwas, wenn.....",
+                            "no_conditions": "Keine Bedingungen",
+                            "unknown_condition": "Unbekannte Bedingung"
                         },
                         "create": "Automatisierung mit Gerät erstellen",
                         "no_automations": "Keine Automatisierungen",
                         "no_device_automations": "Für dieses Gerät sind keine Automatisierungen verfügbar.",
                         "triggers": {
-                            "caption": "Tue etwas, wenn..."
-                        }
+                            "caption": "Tue etwas, wenn...",
+                            "no_triggers": "Keine Auslöser",
+                            "unknown_trigger": "Unbekannter Auslöser"
+                        },
+                        "unknown_automation": "Unbekannte Automatisierung"
                     },
                     "cant_edit": "Du kannst nur Elemente bearbeiten, die in der Benutzeroberfläche erstellt wurden.",
                     "caption": "Geräte",
@@ -1638,7 +1647,8 @@
                         "input_datetime": "Datum und/oder Uhrzeit",
                         "input_number": "Nummer",
                         "input_select": "Dropdown",
-                        "input_text": "Text"
+                        "input_text": "Text",
+                        "timer": "Timer"
                     }
                 },
                 "info": {
@@ -1861,6 +1871,9 @@
                     },
                     "navigation": {
                         "network": "Netzwerk",
+                        "node": {
+                            "config": "Konfig"
+                        },
                         "select_instance": "Instanz auswählen"
                     },
                     "network_status": {
@@ -1878,6 +1891,9 @@
                     },
                     "network": {
                         "header": "Netzwerkverwaltung"
+                    },
+                    "node_metadata": {
+                        "product_manual": "Produkthandbuch"
                     },
                     "node_query_stages": {
                         "associations": "Aktualisiert die verbundenen Gruppen und Mitgliedschaften"
