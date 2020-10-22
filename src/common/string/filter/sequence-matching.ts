@@ -59,7 +59,7 @@ export const fuzzyFilterSort: FuzzyFilterSort = (filter, items) => {
         : fuzzySequentialMatch(filter, item.text);
       return item;
     })
-    .filter((item) => item.score === undefined || item.score > 0)
+    .filter((item) => item.score !== undefined && item.score > 0)
     .sort(({ score: scoreA = 0 }, { score: scoreB = 0 }) =>
       scoreA > scoreB ? -1 : scoreA < scoreB ? 1 : 0
     );
