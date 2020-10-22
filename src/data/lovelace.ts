@@ -89,6 +89,7 @@ export interface LovelaceViewConfig {
 export interface LovelaceViewElement extends HTMLElement {
   hass?: HomeAssistant;
   lovelace?: Lovelace;
+  narrow?: boolean;
   index?: number;
   cards?: Array<LovelaceCard | HuiErrorCard>;
   badges?: LovelaceBadge[];
