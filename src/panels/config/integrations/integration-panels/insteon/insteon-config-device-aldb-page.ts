@@ -28,6 +28,8 @@ import {
   loadALDB,
   resetALDB,
   addDefaultLinks,
+  NEW_ALDB_SCHEMA,
+  CHANGE_ALDB_SCHEMA,
 } from "../../../../../data/insteon";
 import "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
@@ -56,8 +58,6 @@ class InsteonConfigDeviceALDBPage extends LitElement {
 
   @internalProperty() private _records?: ALDBRecord[];
 
-  @internalProperty() private _allRecords?: ALDBRecord[];
-
   @internalProperty() private _showHideUnused = "show_unused";
 
   @internalProperty() private _showUnused = false;
@@ -79,9 +79,8 @@ class InsteonConfigDeviceALDBPage extends LitElement {
         this._records = this._filterRecords(aldbInfo.records, this._showUnused);
         this._schema = aldbInfo.schema;
       });
-      fetchInsteonALDB(this.hass, this.deviceId!).then((aldbInfo) => {
-        this._records = this._filterRecords(aldbInfo.records, this._showUnused);
-        this._schema = aldbInfo.schema;
+      fetchInsteonALDB(this.hass, this.deviceId!).then((records) => {
+        this._records = this._filterRecords(records, this._showUnused);
       });
     }
   }
@@ -256,8 +255,9 @@ class InsteonConfigDeviceALDBPage extends LitElement {
       dirty: true,
     };
     showInsteonALDBRecordDialog(this, {
-      schema: this._schema!,
+      schema: NEW_ALDB_SCHEMA,
       record: record,
+      title: this.hass.localize("ui.panel.config.insteon.device.aldb.new"),
       callback: async (rec) => await this._handleRecordCreate(rec),
     });
   }
@@ -295,7 +295,10 @@ class InsteonConfigDeviceALDBPage extends LitElement {
     } else {
       this._showHideUnused = "show_unused";
     }
-    this._records = this._filterRecords(this._allRecords!, this._showUnused);
+    this._records = [];
+    fetchInsteonALDB(this.hass, this.deviceId!).then((records) => {
+      this._records = this._filterRecords(records, this._showUnused);
+    });
   }
 
   private async _onWriteALDBClick() {
@@ -317,8 +320,10 @@ class InsteonConfigDeviceALDBPage extends LitElement {
   }
 
   private async _onResetALDBClick() {
-    resetALDB(this.hass, this._device!.address);
-    this._getRecords();
+    resetALDB(this.hass, this.deviceId!);
+    fetchInsteonALDB(this.hass, this.deviceId!).then((records) => {
+      this._records = this._filterRecords(records, this._showUnused);
+    });
   }
 
   private async _onAddDefaultLinksClicked() {
@@ -339,25 +344,15 @@ class InsteonConfigDeviceALDBPage extends LitElement {
     if (!record.in_use) {
       this._showUnused = true;
     }
-    this._getRecords();
-  }
-
-  private async _handleRecordCreate(record: ALDBRecord) {
-    createALDBRecord(this.hass, this._device!.address, record);
-    this._getRecords();
-  }
-
-  private async _handleRecordCreate(record: ALDBRecord) {
-    createALDBRecord(this.hass, this.deviceId!, record);
-    fetchInsteonALDB(this.hass, this.deviceId!).then((aldbInfo) => {
-      this._records = this._filterRecords(aldbInfo.records, this._showUnused);
+    fetchInsteonALDB(this.hass, this.deviceId!).then((records) => {
+      this._records = this._filterRecords(records, this._showUnused);
     });
   }
 
   private async _handleRecordCreate(record: ALDBRecord) {
     createALDBRecord(this.hass, this.deviceId!, record);
-    fetchInsteonALDB(this.hass, this.deviceId!).then((aldbInfo) => {
-      this._records = this._filterRecords(aldbInfo.records, this._showUnused);
+    fetchInsteonALDB(this.hass, this.deviceId!).then((records) => {
+      this._records = this._filterRecords(records, this._showUnused);
     });
   }
 
@@ -365,8 +360,9 @@ class InsteonConfigDeviceALDBPage extends LitElement {
     const id = ev.detail.id;
     const record = this._records!.find((rec) => rec.mem_addr === id);
     showInsteonALDBRecordDialog(this, {
-      schema: this._schema!,
+      schema: CHANGE_ALDB_SCHEMA,
       record: record!,
+      title: this.hass.localize("ui.panel.config.insteon.device.aldb.change"),
       callback: async (rec) => await this._handleRecordChange(rec),
     });
   }
