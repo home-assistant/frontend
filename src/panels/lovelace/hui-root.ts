@@ -490,6 +490,10 @@ class HUIRoot extends LitElement {
       huiView.hass = this.hass;
     }
 
+    if (changedProperties.has("narrow") && huiView) {
+      huiView.narrow = this.narrow;
+    }
+
     let newSelectView;
     let force = false;
 
@@ -753,6 +757,7 @@ class HUIRoot extends LitElement {
 
     view.lovelace = this.lovelace;
     view.hass = this.hass;
+    view.narrow = this.narrow;
 
     const configBackground = viewConfig.background || this.config.background;
 
