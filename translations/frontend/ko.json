@@ -1830,7 +1830,7 @@
                     },
                     "node": {
                         "button": "노드 세부 정보",
-                        "not_found": "노드를 찾을 수 없습니다."
+                        "not_found": "노드를 찾을 수 없습니다"
                     },
                     "nodes_table": {
                         "failed": "실패함",

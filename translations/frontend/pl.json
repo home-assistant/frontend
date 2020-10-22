@@ -29,7 +29,7 @@
             "fan_mode": {
                 "auto": "automatyczny",
                 "off": "wyłączony",
-                "on": "włączony"
+                "on": "wł."
             },
             "hvac_action": {
                 "cooling": "chłodzenie",
@@ -37,7 +37,7 @@
                 "fan": "wentylator",
                 "heating": "grzanie",
                 "idle": "nieaktywny",
-                "off": "wyłączony"
+                "off": "wył."
             },
             "preset_mode": {
                 "activity": "aktywność",
@@ -107,7 +107,7 @@
         },
         "automation": {
             "off": "wyłączony",
-            "on": "włączony"
+            "on": "wł."
         },
         "binary_sensor": {
             "battery": {
@@ -123,8 +123,8 @@
                 "on": "online"
             },
             "default": {
-                "off": "wyłączony",
-                "on": "włączony"
+                "off": "wył.",
+                "on": "wł."
             },
             "door": {
                 "off": "zamknięte",
@@ -192,8 +192,8 @@
             }
         },
         "calendar": {
-            "off": "wyłączony",
-            "on": "włączony"
+            "off": "wył.",
+            "on": "wł."
         },
         "camera": {
             "idle": "nieaktywna",
@@ -206,10 +206,10 @@
             "fan_only": "tylko wentylator",
             "heat": "grzanie",
             "heat_cool": "grzanie/chłodzenie",
-            "off": "wyłączony"
+            "off": "wył."
         },
         "configurator": {
-            "configure": "Konfiguruj",
+            "configure": "konfiguruj",
             "configured": "skonfigurowany"
         },
         "cover": {
@@ -220,8 +220,8 @@
             "stopped": "zatrzymanie"
         },
         "default": {
-            "off": "wyłączony",
-            "on": "włączony",
+            "off": "wył.",
+            "on": "wł.",
             "unavailable": "niedostępny",
             "unknown": "nieznany"
         },
@@ -229,8 +229,8 @@
             "not_home": "poza domem"
         },
         "fan": {
-            "off": "wyłączony",
-            "on": "włączony"
+            "off": "wył.",
+            "on": "wł."
         },
         "group": {
             "closed": "zamknięte",
@@ -238,9 +238,9 @@
             "home": "w domu",
             "locked": "zamknięty",
             "not_home": "poza domem",
-            "off": "wyłączony",
+            "off": "wył.",
             "ok": "ok",
-            "on": "włączony",
+            "on": "wł.",
             "open": "otwarte",
             "opening": "otwieranie",
             "problem": "problem",
@@ -248,12 +248,12 @@
             "unlocked": "otwarty"
         },
         "input_boolean": {
-            "off": "wyłączony",
-            "on": "włączony"
+            "off": "wył.",
+            "on": "wł."
         },
         "light": {
-            "off": "wyłączony",
-            "on": "włączony"
+            "off": "wył.",
+            "on": "wł."
         },
         "lock": {
             "locked": "zamknięty",
@@ -261,8 +261,8 @@
         },
         "media_player": {
             "idle": "nieaktywny",
-            "off": "wyłączony",
-            "on": "włączony",
+            "off": "wył.",
+            "on": "wł.",
             "paused": "wstrzymany",
             "playing": "odtwarzanie",
             "standby": "tryb czuwania"
@@ -275,27 +275,27 @@
             "problem": "problem"
         },
         "remote": {
-            "off": "wyłączony",
-            "on": "włączony"
+            "off": "wył.",
+            "on": "wł."
         },
         "scene": {
             "scening": "sceny"
         },
         "script": {
-            "off": "wyłączony",
-            "on": "włączony"
+            "off": "wył.",
+            "on": "wł."
         },
         "sensor": {
             "off": "wyłączony",
-            "on": "włączony"
+            "on": "wł."
         },
         "sun": {
             "above_horizon": "powyżej horyzontu",
             "below_horizon": "poniżej horyzontu"
         },
         "switch": {
-            "off": "wyłączony",
-            "on": "włączony"
+            "off": "wył.",
+            "on": "wł."
         },
         "timer": {
             "active": "aktywny",
@@ -375,7 +375,7 @@
                 "heating": "{name} grzanie",
                 "high": "wysoka",
                 "low": "niska",
-                "on_off": "Wł. / wył.",
+                "on_off": "wł. / wył.",
                 "operation": "Tryb pracy",
                 "preset_mode": "Ustawienia",
                 "swing_mode": "Tryb ruchu łopatek",
@@ -465,7 +465,7 @@
             "water_heater": {
                 "away_mode": "Tryb poza domem",
                 "currently": "Obecnie",
-                "on_off": "Wł. / wył.",
+                "on_off": "wł. / wył.",
                 "operation": "Tryb pracy",
                 "target_temperature": "Temperatura docelowa"
             },
@@ -576,7 +576,7 @@
                 "entries_not_found": "Nie znaleziono wpisów w dzienniku.",
                 "messages": {
                     "became_unavailable": "jest niedostępny(-a)",
-                    "changed_to_state": "zmienił(-a) się na {state}",
+                    "changed_to_state": "zmienił się na {state}",
                     "cleared_device_class": "brak (nie {device_class} ruchu)",
                     "detected_device_class": "wykryto {device_class}",
                     "rose": "wzeszło",

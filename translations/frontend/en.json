@@ -695,6 +695,11 @@
             },
             "service-picker": {
                 "service": "Service"
+            },
+            "user-picker": {
+                "add_user": "Add user",
+                "no_user": "No user",
+                "remove_user": "Remove user"
             }
         },
         "dialogs": {
@@ -947,6 +952,7 @@
         },
         "notification_toast": {
             "connection_lost": "Connection lost. Reconnecting…",
+            "dismiss": "Dismiss",
             "service_call_failed": "Failed to call service {service}.",
             "started": "Home Assistant has started!",
             "starting": "Home Assistant is starting, not everything will be available until it is finished.",
@@ -1200,6 +1206,9 @@
                                     "trigger": "Trigger"
                                 },
                                 "event": {
+                                    "context_user_pick": "Add user",
+                                    "context_user_picked": "User firing event",
+                                    "context_users": "Limit to events triggered by",
                                     "event_data": "Event data",
                                     "event_type": "Event type",
                                     "label": "Event"
@@ -2941,7 +2950,8 @@
                     "exit_edit_mode": "Exit UI edit mode",
                     "help": "Help",
                     "refresh": "Refresh",
-                    "reload_resources": "Reload resources"
+                    "reload_resources": "Reload resources",
+                    "start_conversation": "Start conversation"
                 },
                 "reload_lovelace": "Reload UI",
                 "reload_resources": {
