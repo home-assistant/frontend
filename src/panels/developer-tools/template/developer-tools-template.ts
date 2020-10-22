@@ -82,6 +82,13 @@ class HaPanelDevTemplate extends LitElement {
   }
 
   protected render() {
+    const type = typeof this._templateResult?.result;
+    const resultType =
+      type === "object"
+        ? Array.isArray(this._templateResult?.result)
+          ? "list"
+          : "dict"
+        : type;
     return html`
       <div
         class="content ${classMap({
@@ -141,16 +148,28 @@ class HaPanelDevTemplate extends LitElement {
         </div>
 
         <div class="render-pane">
-          <ha-circular-progress
-            class="render-spinner"
-            .active=${this._rendering}
-            size="small"
-          ></ha-circular-progress>
-
+          ${this._rendering
+            ? html`<ha-circular-progress
+                class="render-spinner"
+                active
+                size="small"
+              ></ha-circular-progress>`
+            : ""}
+          ${this._templateResult
+            ? html`${this.hass.localize(
+                "ui.panel.developer-tools.tabs.templates.result_type"
+              )}:
+              ${resultType}`
+            : ""}
+          <!-- prettier-ignore -->
           <pre
-            class="rendered ${classMap({ error: Boolean(this._error) })}"
-          ><!-- display: block -->${this._error}${this._templateResult
-            ?.result}</pre>
+            class="rendered ${classMap({
+            error: Boolean(this._error),
+            [resultType]: resultType,
+          })}"
+          >${this._error}${type === "object"
+            ? JSON.stringify(this._templateResult!.result, null, 2)
+            : this._templateResult?.result}</pre>
           ${this._templateResult?.listeners.time
             ? html`
                 <p>
