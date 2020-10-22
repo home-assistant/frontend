@@ -1,5 +1,6 @@
 import { HomeAssistant } from "../types";
 import type { HaFormSchema } from "../components/ha-form/ha-form";
+import { Prop } from "vue/types/options";
 
 export interface InsteonDevice {
   name: string;
@@ -26,16 +27,6 @@ export interface ALDBRecord {
   dirty: boolean;
 }
 
-export interface ALDBInfo {
-  schema: HaFormSchema;
-  records: ALDBRecord[];
-}
-
-export interface PropertiesInfo {
-  schema: HaFormSchema;
-  properties: Properties;
-}
-
 export const fetchInsteonDevice = (
   hass: HomeAssistant,
   id: string
@@ -48,7 +39,7 @@ export const fetchInsteonDevice = (
 export const fetchInsteonALDB = (
   hass: HomeAssistant,
   id: string
-): Promise<ALDBInfo> =>
+): Promise<ALDBRecord[]> =>
   hass.callWS({
     type: "insteon/aldb/get",
     device_id: id,
@@ -57,7 +48,7 @@ export const fetchInsteonALDB = (
 export const fetchInsteonProperties = (
   hass: HomeAssistant,
   id: string
-): Promise<PropertiesInfo> =>
+): Promise<Properties[]> =>
   hass.callWS({
     type: "insteon/properties/get",
     device_id: id,
@@ -151,3 +142,46 @@ export const addDefaultLinks = (
     type: "insteon/aldb/add_default_links",
     device_id: id,
   });
+
+export const NEW_ALDB_SCHEMA: HaFormSchema[] = [
+  {
+    name: "mode",
+    options: [("C", "Controller"), ("R", "Responder")],
+    required: true,
+    type: "select",
+  },
+  {
+    name: "group",
+    required: true,
+    type: "integer",
+  },
+  {
+    name: "target",
+    required: true,
+    type: "string",
+  },
+  {
+    name: "data1",
+    required: true,
+    type: "integer",
+  },
+  {
+    name: "data2",
+    required: true,
+    type: "integer",
+  },
+  {
+    name: "data3",
+    required: true,
+    type: "integer",
+  },
+];
+
+export const CHANGE_ALDB_SCHEMA: HaFormSchema[] = [
+  {
+    name: "in_use",
+    required: true,
+    type: "boolean",
+  },
+  ...NEW_ALDB_SCHEMA,
+];
