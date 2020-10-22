@@ -89,6 +89,7 @@ export const derivedStyles = {
   "mdc-radio-disabled-color": "var(--disabled-text-color)",
   "mdc-tab-text-label-color-default": "var(--primary-text-color)",
   "mdc-button-disabled-ink-color": "var(--disabled-text-color)",
+  "mdc-button-outline-color": "var(--divider-color)",
   "mdc-dialog-scroll-divider-color": "var(--divider-color)",
 };
 
