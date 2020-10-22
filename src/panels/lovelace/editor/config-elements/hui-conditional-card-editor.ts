@@ -11,7 +11,15 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
-import { any, array, assert, object, optional, string } from "superstruct";
+import {
+  any,
+  array,
+  assert,
+  object,
+  optional,
+  string,
+  number,
+} from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
@@ -28,9 +36,11 @@ import { GUIModeChangedEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 const conditionStruct = object({
-  entity: string(),
+  entity: optional(string()),
   state: optional(string()),
   state_not: optional(string()),
+  minWidth: optional(number()),
+  maxWidth: optional(number()),
 });
 const cardConfigStruct = object({
   type: string(),
@@ -167,9 +177,12 @@ export class HuiConditionalCardEditor extends LitElement
                       <paper-input
                         .label="${this.hass!.localize(
                           "ui.panel.lovelace.editor.card.generic.state"
-                        )} (${this.hass!.localize(
-                          "ui.panel.lovelace.editor.card.conditional.current_state"
-                        )}: '${this.hass?.states[cond.entity].state}')"
+                        )} ${cond.entity
+                          ? html`(${this.hass!.localize(
+                              "ui.panel.lovelace.editor.card.conditional.current_state"
+                            )}:
+                            '${this.hass?.states[cond.entity].state}')`
+                          : ""}"
                         .value=${cond.state_not !== undefined
                           ? cond.state_not
                           : cond.state}
