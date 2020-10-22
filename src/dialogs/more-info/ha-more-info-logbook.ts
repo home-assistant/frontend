@@ -57,9 +57,11 @@ export class MoreInfoLogbook extends LitElement {
   }
 
   protected render(): TemplateResult {
-    return !this._canHaveLogbookEntries()
-      ? html``
-      : html`
+  	if(!this._canHaveLogbookEntries()) {
+  		return html``;
+  	}
+  	
+    return html`
           ${isComponentLoaded(this.hass, "logbook")
             ? !this._logbookEntries
               ? html`
