@@ -128,29 +128,27 @@ class SystemHealthCard extends LitElement {
   }
 
   private _copyInfo(): void {
-    // We have to copy title text and content separately, because
-    // copying the whole <ha-card> would also copy the tooltip text.
-    const selection = window.getSelection()!;
-    selection.removeAllRanges();
-
-    let copyElement = this.shadowRoot?.querySelector(
-      ".card-header-text"
-    ) as HTMLElement;
-
-    let range = document.createRange();
-    range.selectNodeContents(copyElement);
-    selection.addRange(range);
-
-    copyElement = this.shadowRoot?.querySelector(
+    const copyElement = this.shadowRoot?.querySelector(
       ".card-content"
     ) as HTMLElement;
 
-    range = document.createRange();
+    // Add temporary heading (fixed in EN since usually executed to provide support data)
+    copyElement.insertAdjacentHTML(
+      "afterbegin",
+      '<h3 id="temporary">System Health</h3>'
+    );
+
+    const selection = window.getSelection()!;
+    selection.removeAllRanges();
+    const range = document.createRange();
     range.selectNodeContents(copyElement);
     selection.addRange(range);
 
     document.execCommand("copy");
     window.getSelection()!.removeAllRanges();
+
+    // Remove temporary heading again
+    copyElement.querySelector("#temporary")?.remove();
 
     this._toolTip!.show();
     setTimeout(() => this._toolTip?.hide(), 3000);
