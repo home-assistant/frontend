@@ -166,6 +166,7 @@ export class HaPickThemeRow extends LitElement {
         this._selectedTheme = this._themes.indexOf(
           this.hass.selectedTheme.theme
         );
+        fireEvent(this, "iron-resize");
       } else if (!this.hass.selectedTheme) {
         this._selectedTheme = 0;
       }
