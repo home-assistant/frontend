@@ -64,7 +64,10 @@ class MoreInfoCover extends LocalizeMixin(PolymerElement) {
           </ha-labeled-slider>
         </div>
       </div>
-      <ha-attributes state-obj="[[stateObj]]"></ha-attributes>
+      <ha-attributes
+        state-obj="[[stateObj]]"
+        extra-filters="current_position,current_tilt_position"
+      ></ha-attributes>
     `;
   }
 
