@@ -664,6 +664,9 @@
         "title": "Toggle Domains",
         "reset_entities": "Reset Entities"
       },
+      "action_list": {
+        "title": "Choose an Action"
+      },
       "mqtt_device_debug_info": {
         "title": "{device} debug info",
         "deserialize": "Attempt to parse MQTT messages as JSON",

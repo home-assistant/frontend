@@ -2,6 +2,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { forwardHaptic } from "../../../data/haptics";
 import { ActionConfig } from "../../../data/lovelace";
+import { showActionListDialog } from "../../../dialogs/action-list/show-action-list";
 import { HomeAssistant } from "../../../types";
 import { toggleEntity } from "./entity/toggle-entity";
 
@@ -93,6 +94,18 @@ export const handleAction = (
       const [domain, service] = actionConfig.service.split(".", 2);
       hass.callService(domain, service, actionConfig.service_data);
       forwardHaptic("light");
+      break;
+    }
+    case "list": {
+      if (!actionConfig.actions) {
+        forwardHaptic("failure");
+        return;
+      }
+      showActionListDialog(node, {
+        entity: config.entity,
+        actions: actionConfig.actions,
+        name: actionConfig.name,
+      });
       break;
     }
     case "fire-dom-event": {
