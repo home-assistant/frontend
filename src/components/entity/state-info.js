@@ -59,6 +59,27 @@ class StateInfo extends LocalizeMixin(PolymerElement) {
           @apply --paper-font-common-nowrap;
           color: var(--secondary-text-color);
         }
+
+        .row {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: no-wrap;
+          width: 100%;
+        }
+        .column-name,
+        .column-value {
+          display: flex;
+          flex-direction: column;
+          flex-basis: 100%;
+          flex: 1;
+          padding: 2px;
+        }
+        .column-name {
+          align-items: flex-start;
+        }
+        .column-value {
+          align-items: flex-end;
+        }
       </style>
     `;
   }
@@ -81,30 +102,30 @@ class StateInfo extends LocalizeMixin(PolymerElement) {
               datetime="[[stateObj.last_changed]]"
             ></ha-relative-time>
             <paper-tooltip animation-delay="0" for="last_changed">
-              <table>
-                <tr>
-                  <td>
+              <div>
+                <div class="row">
+                  <div class="column-name">
                     [[localize('ui.dialogs.more_info_control.last_changed')]]:
-                  </td>
-                  <td>
+                  </div>
+                  <div class="column-value">
                     <ha-relative-time
                       hass="[[hass]]"
                       datetime="[[stateObj.last_changed]]"
                     ></ha-relative-time>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="column-name">
                     [[localize('ui.dialogs.more_info_control.last_updated')]]:
-                  </td>
-                  <td>
+                  </div>
+                  <div class="column-value">
                     <ha-relative-time
                       hass="[[hass]]"
                       datetime="[[stateObj.last_updated]]"
                     ></ha-relative-time>
-                  </td>
-                </tr>
-              </table>
+                  </div>
+                </div>
+              </div>
             </paper-tooltip>
           </div>
         </template>
