@@ -792,6 +792,14 @@ class HaSidebar extends LitElement {
         .menu mwc-icon-button {
           color: var(--sidebar-icon-color);
         }
+        :host([expanded]) .menu mwc-icon-button {
+          margin-right: 19px;
+        }
+        :host([expanded][rtl]) .menu mwc-icon-button {
+          margin-right: 0px;
+          margin-left: 19px;
+        }
+
         .title {
           margin-left: 19px;
           width: 100%;
