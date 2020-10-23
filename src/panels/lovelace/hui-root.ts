@@ -831,7 +831,8 @@ class HUIRoot extends LitElement {
           color: var(--error-color);
         }
         #view {
-          min-height: calc(100vh - var(--header-height));
+          /** -8 to account for the gap between content and app header */
+          min-height: calc(100vh - var(--header-height) - 8);
           /**
           * Since we only set min-height, if child nodes need percentage
           * heights they must use absolute positioning so we need relative

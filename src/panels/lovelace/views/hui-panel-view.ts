@@ -132,7 +132,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
       :host {
         display: block;
         height: 100%;
-        /** Ensure gap between content and header for visual separation */
+        /** Ensure gap between content and app header for visual separation */
         margin-top: 8px;
       }
 
