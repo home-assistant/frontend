@@ -133,10 +133,9 @@ class SystemHealthCard extends LitElement {
     ) as HTMLElement;
 
     // Add temporary heading (fixed in EN since usually executed to provide support data)
-    copyElement.insertAdjacentHTML(
-      "afterbegin",
-      '<h3 id="temporary">System Health</h3>'
-    );
+    const tempTitle = document.createElement("h3");
+    tempTitle.innerText = "System Health";
+    copyElement.insertBefore(tempTitle, copyElement.firstElementChild);
 
     const selection = window.getSelection()!;
     selection.removeAllRanges();
@@ -148,7 +147,7 @@ class SystemHealthCard extends LitElement {
     window.getSelection()!.removeAllRanges();
 
     // Remove temporary heading again
-    copyElement.querySelector("#temporary")?.remove();
+    copyElement.removeChild(tempTitle);
 
     this._toolTip!.show();
     setTimeout(() => this._toolTip?.hide(), 3000);
