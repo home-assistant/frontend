@@ -31,8 +31,6 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { SensorCardConfig, ShoppingListCardConfig } from "./types";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { mdiDrag, mdiSort, mdiPlus, mdiNotificationClearAll } from "@mdi/js";
 
 let Sortable;
