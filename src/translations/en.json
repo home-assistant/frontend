@@ -2676,9 +2676,9 @@
           "error_use_https": "Requires SSL enabled for frontend.",
           "push_notifications": "Push notifications",
           "link_promo": "Learn more",
-          "add_device": {
+          "add_device_prompt": {
             "title": "What should this device be called?",
-            "text": "Please enter a name for the device"
+            "input_label": "Device name"
           }
         },
         "language": {
