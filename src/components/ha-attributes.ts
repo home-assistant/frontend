@@ -70,7 +70,7 @@ class HaAttributes extends LitElement {
       }
       .attribution {
         color: var(--secondary-text-color);
-        text-align: right;
+        text-align: center;
       }
       pre {
         font-family: inherit;
