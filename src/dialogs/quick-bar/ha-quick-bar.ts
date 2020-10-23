@@ -45,6 +45,7 @@ import { navigate } from "../../common/navigate";
 import { configSections } from "../../panels/config/ha-panel-config";
 import { toTitleCase } from "../../common/string/helpers";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
+import { shouldShowPage } from "../../common/config/should_show_page";
 
 interface QuickBarItem extends ScorableTextItem {
   icon: string;
@@ -53,6 +54,10 @@ interface QuickBarItem extends ScorableTextItem {
 
 interface QuickBarNavigationItem extends QuickBarItem {
   path: string;
+}
+
+interface NavigationInfo extends PageNavigation {
+  text: string;
 }
 
 @customElement("ha-quick-bar")
@@ -288,6 +293,17 @@ export class QuickBar extends LitElement {
     }
   }
 
+  private _generateEntityItems(): QuickBarItem[] {
+    return Object.keys(this.hass.states)
+      .map((entityId) => ({
+        text: computeStateName(this.hass.states[entityId]),
+        altText: entityId,
+        icon: domainIcon(computeDomain(entityId), this.hass.states[entityId]),
+        action: () => fireEvent(this, "hass-more-info", { entityId }),
+      }))
+      .sort((a, b) => compare(a.text.toLowerCase(), b.text.toLowerCase()));
+  }
+
   private _generateCommandItems(): QuickBarItem[] {
     return [
       ...this._generateReloadCommands(),
@@ -336,7 +352,7 @@ export class QuickBar extends LitElement {
 
   private _generateNavigationCommands(): QuickBarItem[] {
     const panelItems = this._generateNavigationPanelCommands();
-    const sectionItems = this._generateNavigationSectionCommands();
+    const sectionItems = this._generateNavigationConfigSectionCommands();
 
     return this._withNavigationActions([...panelItems, ...sectionItems]);
   }
@@ -356,17 +372,24 @@ export class QuickBar extends LitElement {
     });
   }
 
-  private _generateNavigationSectionCommands(): Partial<
+  private _generateNavigationConfigSectionCommands(): Partial<
     QuickBarNavigationItem
   >[] {
-    const items: (PageNavigation | { text: string })[] = [];
+    const items: NavigationInfo[] = [];
 
     for (const sectionKey of Object.keys(configSections)) {
       for (const page of configSections[sectionKey]) {
-        if (page.component) {
-          items.push(
-            this._getNavigationInfoFromConfig(sectionKey, page.component)
-          );
+        if (shouldShowPage(this.hass, page)) {
+          if (page.component) {
+            const info = this._getNavigationInfoFromConfig(
+              sectionKey,
+              page.component
+            );
+
+            if (info) {
+              items.push(info);
+            }
+          }
         }
       }
     }
@@ -374,21 +397,10 @@ export class QuickBar extends LitElement {
     return items;
   }
 
-  private _generateEntityItems(): QuickBarItem[] {
-    return Object.keys(this.hass.states)
-      .map((entityId) => ({
-        text: computeStateName(this.hass.states[entityId]),
-        altText: entityId,
-        icon: domainIcon(computeDomain(entityId), this.hass.states[entityId]),
-        action: () => fireEvent(this, "hass-more-info", { entityId }),
-      }))
-      .sort((a, b) => compare(a.text.toLowerCase(), b.text.toLowerCase()));
-  }
-
   private _getNavigationInfoFromConfig(
     sectionKey: string,
     component: string
-  ): PageNavigation | { text: string } {
+  ): NavigationInfo | undefined {
     const panel = configSections[sectionKey].find(
       (section) => section.component === component
     );
@@ -397,15 +409,21 @@ export class QuickBar extends LitElement {
       throw Error("Navigation section or its translation not found");
     }
 
-    const text = this.hass.localize(
-      "ui.dialogs.quick-bar.commands.navigation.navigate_to",
-      "panel",
-      this.hass.localize(
-        `ui.dialogs.quick-bar.commands.navigation.${component}`
-      )
+    const shortCaption = this.hass.localize(
+      `ui.dialogs.quick-bar.commands.navigation.${component}`
     );
 
-    return { ...panel, text };
+    if (!shortCaption) {
+      return;
+    }
+
+    const caption = this.hass.localize(
+      "ui.dialogs.quick-bar.commands.navigation.navigate_to",
+      "panel",
+      shortCaption
+    );
+
+    return { ...panel, text: caption };
   }
 
   private _getPanelText(panel: Panels["panel"]) {
