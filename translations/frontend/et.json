@@ -592,7 +592,7 @@
                     "was_locked": "lukustati",
                     "was_low": "oli madal",
                     "was_normal": "oli normaalne",
-                    "was_opened": "avanes",
+                    "was_opened": "avati",
                     "was_plugged_in": "ühendati",
                     "was_safe": "oli turvatud",
                     "was_unlocked": "avanes",
@@ -675,12 +675,30 @@
                     "week": "{count} {count, plural,\n  one {nädal}\n  other {nädalat}\n}"
                 },
                 "future": "{time} pärast",
-                "just_now": "Kohe",
+                "future_duration": {
+                    "day": "{count} {count, plural,\n  one {päev}\n  other {päeva}\n} pärast",
+                    "hour": "{count} {count, plural,\n  one {tund}\n  other {tunni}\n} pärast",
+                    "minute": "{count} {count, plural,\n  one {minut}\n  other {minutit}\n} pärast",
+                    "second": "{count} {count, plural,\n  one {sekund}\n  other {sekundi}\n} pärast",
+                    "week": "{count} {count, plural,\n  one {nädal}\n  other {nädala}\n} pärast"
+                },
+                "just_now": "Just praegu",
                 "never": "Iial",
-                "past": "{time} tagasi"
+                "past": "{time} tagasi",
+                "past_duration": {
+                    "day": "{count} {count, plural,\n  one {päev}\n  other {päeva}\n} eest",
+                    "hour": "{count} {count, plural,\n  one {tund}\n  other {tunni}\n} eest",
+                    "minute": "{count} {count, plural,\n  one {minut}\n  other {minuti}\n} eest",
+                    "second": "{count} {count, plural,\n  one {sekund}\n  other {sekundi}\n} eest",
+                    "week": "{count} {count, plural,\n  one {nädal}\n  other {nädala}\n} eest"
+                }
             },
             "service-picker": {
                 "service": "Teenus"
+            },
+            "user-picker": {
+                "add_user": "Lisa kasutaja",
+                "remove_user": "Kustuta kasutaja"
             }
         },
         "dialogs": {
@@ -723,6 +741,13 @@
                 "ok": "OK"
             },
             "helper_settings": {
+                "counter": {
+                    "initial": "Algne väärtus",
+                    "maximum": "Maksimaalne väärtus",
+                    "minimum": "Minimaalne väärtus",
+                    "restore": "Taasta viimane teadaolev väärtus kui Home Assistant käivitub",
+                    "step": "Loenduri samm"
+                },
                 "generic": {
                     "icon": "Ikoon",
                     "name": "Nimi"
@@ -758,6 +783,9 @@
                 },
                 "platform_not_loaded": "Sidumist {platform} ei leitud. Lisage see oma konfiguratsiooni, lisades kas \"default_config:\" või ''{platform}:''.",
                 "required_error_msg": "See väli on nõutav",
+                "timer": {
+                    "duration": "Kestus"
+                },
                 "yaml_not_editable": "Selle olemi sätteid ei saa kasutajaliidesest redigeerida. Kasutajaliidesest saab konfigureerida ainult kasutajaliideses loodud olemeid."
             },
             "image_cropper": {
@@ -825,6 +853,44 @@
                     "description": "Valikud on edukalt salvestatud."
                 }
             },
+            "quick-bar": {
+                "commands": {
+                    "reload": {
+                        "automation": "Taaslae automatiseeringud",
+                        "command_line": "Taaslae käsurea olemid",
+                        "core": "Taaslae asukohad ja mugandamised",
+                        "filesize": "Taaslae faili suuruse olemid",
+                        "filter": "Taaslae filtri olemid",
+                        "generic": "Taaslae IP kaamerate olemid",
+                        "generic_thermostat": "Taaslae termostaadi olemid",
+                        "group": "Taaslae grupid, grupiolemid ja teavitusteenused",
+                        "history_stats": "Taaslae ajaloo olemid",
+                        "homekit": "Taaslae HomeKit",
+                        "input_boolean": "Taaslae loogikasisestused",
+                        "input_datetime": "Taaslae ajaväärtused",
+                        "input_number": "Taaslae arvsisestused",
+                        "input_select": "Taaslae sisendivalikud",
+                        "input_text": "Taaslae tekstisisestused",
+                        "min_max": "Taaslae min/maks olemid",
+                        "mqtt": "Taaslae MQTT olemid",
+                        "person": "Taaslae isikud",
+                        "ping": "Taaslae ping binaaranduri olemid",
+                        "reload": "Taaslae {domain}",
+                        "rest": "Taaslae REST olemid ja teavitusteenused",
+                        "rpi_gpio": "Taaslae Raspberry PI viikude olemid",
+                        "scene": "Taaslae stseenid",
+                        "script": "Taaslae skriptid",
+                        "smtp": "Taaslae SMTP teavitusteenused",
+                        "statistics": "Taaslae statistika olemid",
+                        "telegram": "Taaslae TELEGRAM-i teavitusteenused",
+                        "template": "Taaslae mallisisestused",
+                        "trend": "Taaslae trendide olemid",
+                        "universal": "Taaslae meediumimängija olemid",
+                        "zone": "Tasslae tsoonid"
+                    }
+                },
+                "filter_placeholder": "Olemite filter"
+            },
             "voice_command": {
                 "did_not_hear": "Home Assistant ei kuulnud midagi",
                 "error": "Oih, ilmnes tõrge",
@@ -879,11 +945,13 @@
         "notification_drawer": {
             "click_to_configure": "{entity} seadistamiseks klõpsa nuppu",
             "close": "Sulge",
+            "dismiss_all": "Kustuta teavitused",
             "empty": "Teavitusi pole",
             "title": "Teavitused"
         },
         "notification_toast": {
             "connection_lost": "Ühendus kadunud. Taasühendamine...",
+            "dismiss": "Loobu",
             "service_call_failed": "Teenuse {service} väljakutsumine ebaõnnestus.",
             "started": "Koduabiline on käivitunud!",
             "starting": "Home Assistant  käivitub, kõik elemendid ei pruugi veel saadaval olla",
@@ -1088,6 +1156,7 @@
                             },
                             "unsupported_condition": "Kasutajaliides ei toeta tingimust: {condition}"
                         },
+                        "copy_to_clipboard": "Kopeeri lõikelauale",
                         "default_name": "Uus automatiseering",
                         "description": {
                             "label": "Kirjeldus",
@@ -1136,6 +1205,7 @@
                                     "trigger": "Päästik"
                                 },
                                 "event": {
+                                    "context_user_pick": "Lisa kasutaja",
                                     "event_data": "Sündmuse andmed",
                                     "event_type": "Sündmuse tüüp",
                                     "label": "Sündmus"
@@ -1286,7 +1356,7 @@
                             "title": "Kaugjuhtimine"
                         },
                         "sign_out": "Logi välja",
-                        "thank_you_note": "Täname, et liitusite Home Assistanti pilvega. Just teiesuguste inimeste tõttu suudame  me pakkudakõigile suurepärase Home Assistanti kogemuse. Aitäh!",
+                        "thank_you_note": "Täname, et liitusite Home Assistanti pilvega. Just teiesuguste inimeste tõttu suudame  me pakkuda kõigile suurepärase Home Assistanti kogemuse. Aitäh!",
                         "webhooks": {
                             "disable_hook_error_msg": "Veebihaagi keelamine ebaõnnestus:",
                             "info": "Kõigele mis on konfigureeritud veebihaagi käivitamisel võib anda avalikult ligipääsetava URL-i, mis võimaldab teil saata andmeid Home Assistantile kõikjalt ilma et Teie seade oleks Internetis nähtav.",
@@ -1445,6 +1515,7 @@
                     "different_include": "Võimalik domeeni, globaalse või mõne muu lisamise kaudu.",
                     "pick_attribute": "Vali muudetav atribuut",
                     "picker": {
+                        "documentation": "Kohandamiste dokumentatsioon",
                         "entity": "Olem",
                         "header": "Kohandamine",
                         "introduction": "Kohanda olemi atribuute. Lisatud või muudetud kohandused rakenduvad kohe. Eemaldatud kohandused rakenduvad olemi värskendamisel."
@@ -1459,24 +1530,31 @@
                     "add_prompt": "Selle seadme abil pole veel ühtegi {name} lisatud. Saate lisada  klõpsates ülal nuppu +.",
                     "automation": {
                         "actions": {
-                            "caption": "Kui midagi käivitatakse ..."
+                            "caption": "Kui midagi käivitatakse ...",
+                            "no_actions": "Tegevused puuduvad",
+                            "unknown_action": "Tundmatu tegevus"
                         },
                         "automations": "Automatiseeringud",
                         "conditions": {
-                            "caption": "Tee midagi ainult siis, kui ..."
+                            "caption": "Tee midagi ainult siis, kui ...",
+                            "no_conditions": "Tingimused puuduvad",
+                            "unknown_condition": "Tundmatu tingimus"
                         },
                         "create": "Loo seadmega automatiseering",
                         "no_automations": "Automatiseeringuid pole",
                         "no_device_automations": "Selle seadme jaoks pole automatiseerimisi saadaval.",
                         "triggers": {
-                            "caption": "Tee midagi, kui..."
-                        }
+                            "caption": "Tee midagi, kui...",
+                            "no_triggers": "Päästikud puuduvad",
+                            "unknown_trigger": "Tundmatu päästik"
+                        },
+                        "unknown_automation": "Tundmatu automatiseering"
                     },
                     "cant_edit": "Saate muuta ainult kasutajaliideses loodud üksusi.",
                     "caption": "Seadmed",
                     "confirm_delete": "Oled kindel, et soovid selle seadme kustutada?",
                     "confirm_rename_entity_ids": "Kas soovid ka oma olemite ID-d ümber nimetada?",
-                    "confirm_rename_entity_ids_warning": "See ei muuda ühtegi konfiguratsiooni (nt automatiseerimised, skriptid, stseenid, Lovelace) mis neid olemeid praegu kasutab.Peate neid ise värskendama.",
+                    "confirm_rename_entity_ids_warning": "See ei muuda ühtegi konfiguratsiooni (nt. automatiseerimised, skriptid, stseenid, Lovelace) mis neid olemeid praegu kasutab. Peate neid ise värskendama.",
                     "data_table": {
                         "area": "Ala",
                         "battery": "Aku",
@@ -1532,6 +1610,8 @@
                         },
                         "filter": {
                             "filter": "Filter",
+                            "hidden_entities": "{number} hidden {number, plural,\n  one {olem}\n  other {olemit}\n}",
+                            "show_all": "Kuva kõik",
                             "show_disabled": "Kuva keelatud olemid",
                             "show_readonly": "Näita kirjutuskaitstud olemeid",
                             "show_unavailable": "Kuva kättesaamatud olemid"
@@ -1587,11 +1667,13 @@
                         "no_helpers": "Tundub, et teil pole veel ühtegi abistajat!"
                     },
                     "types": {
+                        "counter": "Loendur",
                         "input_boolean": "Lülita",
                         "input_datetime": "Kuupäev ja / või kellaaeg",
                         "input_number": "Arvväärtus",
                         "input_select": "Rippmenüü",
-                        "input_text": "Tekst"
+                        "input_text": "Tekst",
+                        "timer": "Taimer"
                     }
                 },
                 "info": {
@@ -1810,6 +1892,8 @@
                         "network": "Võrk",
                         "node_id": "Sõlme ID",
                         "ozw_instance": "OpenZWave'i eksemplar",
+                        "query_stage": "Küsitlemine",
+                        "wakeup_instructions": "Äratusjuhised",
                         "zwave": "Z-Wave"
                     },
                     "device_info": {
@@ -1819,6 +1903,10 @@
                     },
                     "navigation": {
                         "network": "Võrk",
+                        "node": {
+                            "config": "Seaded",
+                            "dashboard": "Kasutajaliidese vaade"
+                        },
                         "nodes": "Sõlmed",
                         "select_instance": "Valige eksemplar"
                     },
@@ -1846,6 +1934,15 @@
                         "header": "Võrgu haldamine",
                         "introduction": "Kogu võrku hõlmavate funktsioonide haldamine.",
                         "node_count": "{count} sõlme"
+                    },
+                    "node_config": {
+                        "header": "Sõlme seaded",
+                        "help_source": "Seadete kirjeldused ja spikri tekst on pärit OpenZWave projektist.",
+                        "introduction": "Halda Z-Wave'i sõlme erinevaid seadistusparameetreid.",
+                        "wakeup_help": "Patareitoitega sõlmed peavad olema ärkvel, et muuta nende sätteid. Kui sõlm ei ole ärkvel,  püüab OpenZWave uuendada sõlme sätteid järgmine kord kui see ärkab, mis võib olla mitu tundi (või päeva) hiljem. Seadme äratamiseks toimi järgnevalt:"
+                    },
+                    "node_metadata": {
+                        "product_manual": "Toote kasutusjuhend"
                     },
                     "node_query_stages": {
                         "associations": "Seosgruppide ja liikmesuse värskendamine",
@@ -1927,8 +2024,11 @@
                         "update": "Uuenda"
                     },
                     "introduction": "Siin saate määratleda iga huvipakkuva isiku Home Assistantis.",
+                    "learn_more": "Lisateave isikute kohta",
                     "no_persons_created_yet": "Paistab, et sa pole veel ühtegi isikut lisanud.",
-                    "note_about_persons_configured_in_yaml": "Märkus: configuration.yaml kaudu seadistatud isikuid ei saa kasutajaliidese kaudu muuta."
+                    "note_about_persons_configured_in_yaml": "Märkus: configuration.yaml kaudu seadistatud isikuid ei saa kasutajaliidese kaudu muuta.",
+                    "person_not_found": "Ei leidnud inimest  keda proovid seadistada.",
+                    "person_not_found_title": "Isikuid ei leitud"
                 },
                 "scene": {
                     "activated": "Aktiveeritud stseen {name} .",
@@ -2086,6 +2186,7 @@
                     "create_automation": "Lisa automatiseering TAG abil",
                     "description": "Halda TAGe",
                     "detail": {
+                        "companion_apps": "mobiilirakendused",
                         "create": "Loo",
                         "create_and_write": "Loo ja kirjuta",
                         "delete": "Kustuta",
@@ -2094,13 +2195,15 @@
                         "new_tag": "Uus TAG",
                         "tag_id": "TAG ID",
                         "tag_id_placeholder": "Tühjaks jätmise korral luuakse automaatselt",
-                        "update": "Uuenda"
+                        "update": "Uuenda",
+                        "usage": "Silt võib skannimisel käivitada automaatiseeringu. Võite kasutada NFC-silte, QR-koode või muud tüüpi silte. Kasutage meie äppi {companion_link}, et kirjutada see silt programmeeritavale NFC-märgendile või luua allpool QR-kood."
                     },
                     "edit": "Muuda",
                     "headers": {
                         "last_scanned": "Viimati skaneeritud",
                         "name": "Nimi"
                     },
+                    "learn_more": "Lisateave märgiste kohta",
                     "never_scanned": "TAGe pole skaneeritud",
                     "no_tags": "TAGe pole",
                     "write": "Salvesta TAG"
@@ -2437,6 +2540,7 @@
                         "no_listeners": "See mall ei kuula olekuga muudetud sündmusi ega värskenda seda automaatselt.",
                         "reset": "Lähtesta demomallile",
                         "template_extensions": "Home Assistanti mallilaiendid",
+                        "time": "See mall värskendub iga 60 sekundi järel pärast viimast olekut muutnud sündmust.",
                         "title": "Mall",
                         "unknown_error_template": "Malli renderdamisel ilmnes tundmatu viga"
                     }
@@ -2735,6 +2839,9 @@
                         "entity": "Üksus",
                         "no_description": "Kirjeldus puudub."
                     },
+                    "edit_badges": {
+                        "panel_mode": "Neid märke ei kuvata kuna see vaade on paneelirežiimis."
+                    },
                     "edit_card": {
                         "add": "Lisa kaart",
                         "confirm_cancel": "Kas oled kindel, et tahad loobuda?",
@@ -2784,7 +2891,7 @@
                     "migrate": {
                         "header": "Konfiguratsioon ei ühildu",
                         "migrate": "Siirda seaded",
-                        "para_migrate": "Home Assistant võib kõikidele kaartidele ja vaadetele automaatselt ID-d lisada, kui vajutad nupule \"Siirda seaded\".",
+                        "para_migrate": "Home Assistant võib kõikidele kaartidele ja vaadetele automaatselt ID-d lisada, kui vajutad nupule 'Siirda seaded'.",
                         "para_no_id": "Sellel elemendil puudub ID. Lisa sellele elemendile ID 'ui-lovelace.yaml' failis."
                     },
                     "move_card": {
@@ -2828,7 +2935,7 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "Esimene kaart kuvatakse täislaiuses, teisi selle vaate kaarte ei kuvata",
+                            "description": "Esimene kaart kuvatakse täislaiuses, teisi selle vaate kaarte ja märke ei kuvata",
                             "title": "Üksiku kaardi režiim?",
                             "warning_multiple_cards": "See vaade koosneb rohkem kui ühest kaardist, aga paneeli vaade saab näidata ainult ühte kaarti"
                         }
@@ -2840,7 +2947,8 @@
                     "exit_edit_mode": "Välju kasutajaliidese redigeerimisrežiimist",
                     "help": "Abi",
                     "refresh": "Värskenda",
-                    "reload_resources": "Taaslae ressursid"
+                    "reload_resources": "Taaslae ressursid",
+                    "start_conversation": "Alusta vestlust"
                 },
                 "reload_lovelace": "Taaslae Lovelace",
                 "reload_resources": {

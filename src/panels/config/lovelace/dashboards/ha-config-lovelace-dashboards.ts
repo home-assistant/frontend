@@ -221,6 +221,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
         @row-click=${this._editDashboard}
         id="url_path"
         hasFab
+        clickable
       >
         <mwc-fab
           slot="fab"

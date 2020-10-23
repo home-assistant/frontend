@@ -57,6 +57,7 @@ import { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "../../../components/ha-svg-icon";
+import { showToast } from "../../../util/toast";
 import { mdiContentSave } from "@mdi/js";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 
@@ -268,7 +269,7 @@ export class HaSceneEditor extends SubscribeMixin(
                     (device) =>
                       html`
                         <ha-card>
-                          <div class="card-header">
+                          <h1 class="card-header">
                             ${device.name}
                             <ha-icon-button
                               icon="hass:delete"
@@ -278,7 +279,7 @@ export class HaSceneEditor extends SubscribeMixin(
                               .device=${device.id}
                               @click=${this._deleteDevice}
                             ></ha-icon-button>
-                          </div>
+                          </h1>
                           ${device.entities.map((entityId) => {
                             const entityStateObj = this.hass.states[entityId];
                             if (!entityStateObj) {
@@ -715,6 +716,9 @@ export class HaSceneEditor extends SubscribeMixin(
       }
     } catch (err) {
       this._errors = err.body.message || err.message;
+      showToast(this, {
+        message: err.body.message || err.message,
+      });
       throw err;
     }
   }

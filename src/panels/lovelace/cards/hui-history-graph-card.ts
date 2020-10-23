@@ -3,25 +3,25 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
+import { throttle } from "../../../common/util/throttle";
 import "../../../components/ha-card";
 import "../../../components/state-history-charts";
 import { CacheConfig, getRecentWithCache } from "../../../data/cached-history";
+import { HistoryResult } from "../../../data/history";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entites";
+import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
 import { EntityConfig } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
 import { HistoryGraphCardConfig } from "./types";
-import { HistoryResult } from "../../../data/history";
-import { hasConfigOrEntitiesChanged } from "../common/has-changed";
-import { throttle } from "../../../common/util/throttle";
 
 @customElement("hui-history-graph-card")
 export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
@@ -67,7 +67,9 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   private _throttleGetStateHistory?: () => void;
 
   public getCardSize(): number {
-    return 4;
+    return this._config?.title
+      ? 2
+      : 0 + 2 * (this._configEntities?.length || 1);
   }
 
   public setConfig(config: HistoryGraphCardConfig): void {
@@ -185,6 +187,10 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
+      ha-card {
+        height: 100%;
+        overflow-y: auto;
+      }
       .content {
         padding: 16px;
       }

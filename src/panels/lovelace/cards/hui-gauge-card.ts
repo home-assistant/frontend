@@ -4,26 +4,25 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-
+import { styleMap } from "lit-html/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import "../../../components/ha-card";
+import "../../../components/ha-gauge";
 import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entites";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { GaugeCardConfig } from "./types";
-import "../../../components/ha-gauge";
-import { styleMap } from "lit-html/directives/style-map";
 
 export const severityMap = {
   red: "var(--label-badge-red)",
@@ -69,7 +68,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   @internalProperty() private _config?: GaugeCardConfig;
 
   public getCardSize(): number {
-    return 2;
+    return 4;
   }
 
   public setConfig(config: GaugeCardConfig): void {
@@ -195,10 +194,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
-      :host {
-        display: block;
-      }
-
       ha-card {
         cursor: pointer;
         height: 100%;

@@ -26,7 +26,7 @@ import {
 } from "../../../../../data/ozw";
 import { ERR_NOT_FOUND } from "../../../../../data/websocket_api";
 import { showOZWRefreshNodeDialog } from "./show-dialog-ozw-refresh-node";
-import { ozwNetworkTabs } from "./ozw-network-router";
+import { ozwNodeTabs } from "./ozw-node-router";
 
 @customElement("ozw-node-dashboard")
 class OZWNodeDashboard extends LitElement {
@@ -74,7 +74,7 @@ class OZWNodeDashboard extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .tabs=${ozwNetworkTabs(this.ozwInstance)}
+        .tabs=${ozwNodeTabs(this.ozwInstance, this.nodeId)}
       >
         <ha-config-section .narrow=${this.narrow} .isWide=${this.isWide}>
           <div slot="header">
@@ -87,19 +87,29 @@ class OZWNodeDashboard extends LitElement {
           ${this._node
             ? html`
                 <ha-card class="content">
-                  <div class="card-content">
-                    <b
-                      >${this._node.node_manufacturer_name}
-                      ${this._node.node_product_name}</b
-                    ><br />
-                    Node ID: ${this._node.node_id}<br />
-                    Query Stage: ${this._node.node_query_stage}
-                    ${this._metadata?.metadata.ProductManualURL
-                      ? html` <a
-                          href="${this._metadata.metadata.ProductManualURL}"
-                        >
-                          <p>Product Manual</p>
-                        </a>`
+                  <div class="card-content flex">
+                    <div class="node-details">
+                      <b>
+                        ${this._node.node_manufacturer_name}
+                        ${this._node.node_product_name}
+                      </b>
+                      <br />
+                      Node ID: ${this._node.node_id}<br />
+                      Query Stage: ${this._node.node_query_stage}
+                      ${this._metadata?.metadata.ProductManualURL
+                        ? html` <a
+                            href="${this._metadata.metadata.ProductManualURL}"
+                          >
+                            <p>Product Manual</p>
+                          </a>`
+                        : ``}
+                    </div>
+                    ${this._metadata?.metadata.ProductPicBase64
+                      ? html`<img
+                          class="product-image"
+                          src="data:image/png;base64,${this._metadata?.metadata
+                            .ProductPicBase64}"
+                        />`
                       : ``}
                   </div>
                   <div class="card-actions">
@@ -199,6 +209,11 @@ class OZWNodeDashboard extends LitElement {
           max-width: 600px;
         }
 
+        .flex {
+          display: flex;
+          justify-content: space-between;
+        }
+
         .card-actions.warning ha-call-service-button {
           color: var(--error-color);
         }
@@ -218,6 +233,15 @@ class OZWNodeDashboard extends LitElement {
 
         [hidden] {
           display: none;
+        }
+
+        .product-image {
+          padding: 12px;
+          max-height: 140px;
+          max-width: 140px;
+        }
+        .card-actions {
+          clear: right;
         }
       `,
     ];

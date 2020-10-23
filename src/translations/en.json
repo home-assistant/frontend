@@ -325,6 +325,11 @@
           "show_attributes": "Show attributes"
         }
       },
+      "user-picker": {
+        "no_user": "No user",
+        "add_user": "Add user",
+        "remove_user": "Remove user"
+      },
       "device-picker": {
         "clear": "Clear",
         "toggle": "Toggle",
@@ -446,7 +451,7 @@
       }
     },
     "dialogs": {
-      "quick-open": {
+      "quick-bar": {
         "commands": {
           "reload": {
             "reload": "[%key:ui::panel::config::server_control::section::reloading::reload%]",
@@ -551,8 +556,8 @@
         "no_unique_id": "This entity does not have a unique ID, therefore its settings cannot be managed from the UI. See the {faq_link} for more detail.",
         "faq": "documentation",
         "editor": {
-          "name": "Name Override",
-          "icon": "Icon Override",
+          "name": "Name",
+          "icon": "Icon",
           "icon_error": "Icons should be in the format 'prefix:iconname', e.g. 'mdi:home'",
           "entity_id": "Entity ID",
           "unavailable": "This entity is not currently available.",
@@ -601,6 +606,16 @@
           "add_option": "Add option",
           "no_options": "There are no options yet.",
           "add": "Add"
+        },
+        "counter": {
+          "minimum": "Minimum value",
+          "maximum": "Maximum value",
+          "initial": "Initial value",
+          "restore": "Restore the last known value when Home Assistant starts",
+          "step": "Step size"
+        },
+        "timer": {
+          "duration": "Duration"
         }
       },
       "options_flow": {
@@ -677,14 +692,16 @@
       "click_to_configure": "Click button to configure {entity}",
       "empty": "No Notifications",
       "title": "Notifications",
-      "close": "Close"
+      "close": "Close",
+      "dismiss_all": "Dismiss all"
     },
     "notification_toast": {
       "service_call_failed": "Failed to call service {service}.",
       "connection_lost": "Connection lost. Reconnecting…",
       "started": "Home Assistant has started!",
       "starting": "Home Assistant is starting, not everything will be available until it is finished.",
-      "triggered": "Triggered {name}"
+      "triggered": "Triggered {name}",
+      "dismiss": "Dismiss"
     },
     "sidebar": {
       "external_app_configuration": "App Configuration",
@@ -750,6 +767,7 @@
         "tags": {
           "caption": "Tags",
           "description": "Manage tags",
+          "learn_more": "Learn more about tags",
           "no_tags": "No tags",
           "add_tag": "Add tag",
           "write": "Write",
@@ -783,7 +801,9 @@
             "input_number": "Number",
             "input_select": "Dropdown",
             "input_boolean": "Toggle",
-            "input_datetime": "Date and/or time"
+            "input_datetime": "Date and/or time",
+            "counter": "Counter",
+            "timer": "Timer"
           },
           "picker": {
             "headers": {
@@ -998,6 +1018,7 @@
           "picker": {
             "header": "Customizations",
             "introduction": "Tweak per-entity attributes. Added/edited customizations will take effect immediately. Removed customizations will take effect when the entity is updated.",
+            "documentation": "Customization documentation",
             "entity": "Entity"
           },
           "warning": {
@@ -1064,6 +1085,7 @@
             },
             "edit_yaml": "Edit as YAML",
             "edit_ui": "Edit with UI",
+            "copy_to_clipboard": "Copy to Clipboard",
             "triggers": {
               "name": "Trigger",
               "header": "Triggers",
@@ -1088,7 +1110,10 @@
                 "event": {
                   "label": "Event",
                   "event_type": "Event type",
-                  "event_data": "Event data"
+                  "event_data": "Event data",
+                  "context_users": "Limit to events triggered by",
+                  "context_user_picked": "User firing event",
+                  "context_user_pick": "Add user"
                 },
                 "geo_location": {
                   "label": "Geolocation",
@@ -1592,15 +1617,22 @@
           "automation": {
             "automations": "Automations",
             "no_automations": "No automations",
+            "unknown_automation": "Unknown automation",
             "create": "Create automation with device",
             "triggers": {
-              "caption": "Do something when..."
+              "caption": "Do something when...",
+              "no_triggers": "No triggers",
+              "unknown_trigger": "Unknown trigger"
             },
             "conditions": {
-              "caption": "Only do something if..."
+              "caption": "Only do something if...",
+              "no_conditions": "No conditions",
+              "unknown_condition": "Unknown condition"
             },
             "actions": {
-              "caption": "When something is triggered..."
+              "caption": "When something is triggered...",
+              "no_actions": "No actions",
+              "unknown_action": "Unknown action"
             },
             "no_device_automations": "There are no automations available for this device."
           },
@@ -1625,8 +1657,8 @@
           },
           "scripts": "Scripts",
           "scenes": "Scenes",
-          "confirm_rename_entity_ids": "Do you also want to rename the entity id's of your entities?",
-          "confirm_rename_entity_ids_warning": "This will not change any configuration (like automations, scripts, scenes, Lovelace) that is currently using these entities, you will have to update them yourself.",
+          "confirm_rename_entity_ids": "Do you also want to rename the entity IDs of your entities?",
+          "confirm_rename_entity_ids_warning": "This will not change any configuration (like automations, scripts, scenes, dashboards) that is currently using these entities! You will have to update them yourself to use the new entity IDs!",
           "data_table": {
             "device": "Device",
             "manufacturer": "Manufacturer",
@@ -1652,7 +1684,9 @@
               "filter": "Filter",
               "show_disabled": "Show disabled entities",
               "show_unavailable": "Show unavailable entities",
-              "show_readonly": "Show read-only entities"
+              "show_readonly": "Show read-only entities",
+              "hidden_entities": "{number} hidden {number, plural,\n  one {entity}\n  other {entities}\n}",
+              "show_all": "Show all"
             },
             "status": {
               "restored": "Restored",
@@ -1692,6 +1726,7 @@
           "description": "Manage the people that Home Assistant tracks",
           "introduction": "Here you can define each person of interest in Home Assistant.",
           "note_about_persons_configured_in_yaml": "Note: people configured via configuration.yaml cannot be edited via the UI.",
+          "learn_more": "Learn more about people",
           "no_persons_created_yet": "Looks like you have not created any people yet.",
           "create_person": "Create Person",
           "add_person": "Add Person",
@@ -1884,7 +1919,9 @@
             "ozw_instance": "OpenZWave Instance",
             "instance": "Instance",
             "controller": "Controller",
-            "network": "Network"
+            "network": "Network",
+            "wakeup_instructions": "Wake-up Instructions",
+            "query_stage": "Query Stage"
           },
           "device_info": {
             "zwave_info": "Z-Wave Info",
@@ -1946,7 +1983,11 @@
           "navigation": {
             "select_instance": "Select Instance",
             "network": "Network",
-            "nodes": "Nodes"
+            "nodes": "Nodes",
+            "node": {
+              "dashboard": "Dashboard",
+              "config": "Config"
+            }
           },
           "select_instance": {
             "header": "Select an OpenZWave Instance",
@@ -1969,6 +2010,15 @@
           "node": {
             "button": "Node Details",
             "not_found": "Node not found"
+          },
+          "node_config": {
+            "header": "Node Configuration",
+            "introduction": "Manage the different configuration parameters for a Z-Wave node.",
+            "help_source": "Config parameter descriptions and help text are provided by the OpenZWave project.",
+            "wakeup_help": "Battery powered nodes must be awake to change their configuration. If the node is not awake, OpenZWave will attempt to update the node's configuration the next time it wakes up, which could be multiple hours (or days) later. Follow these steps to wake up your device:"
+          },
+          "node_metadata": {
+            "product_manual": "Product Manual"
           },
           "services": {
             "add_node": "Add Node",
@@ -2239,6 +2289,7 @@
           "configure_ui": "Edit Dashboard",
           "help": "Help",
           "refresh": "Refresh",
+          "start_conversation": "Start conversation",
           "reload_resources": "Reload resources",
           "exit_edit_mode": "Exit UI edit mode",
           "close": "Close"
@@ -2289,6 +2340,9 @@
               "select_users": "Select which users should see this view in the navigation"
             }
           },
+          "edit_badges": {
+            "panel_mode": "These badges will not be displayed because this view is in \"Panel Mode\"."
+          },
           "edit_card": {
             "header": "Card Configuration",
             "typed_header": "{type} Card Configuration",
@@ -2336,7 +2390,7 @@
           "migrate": {
             "header": "Configuration Incompatible",
             "para_no_id": "This element doesn't have an ID. Please add an ID to this element in 'ui-lovelace.yaml'.",
-            "para_migrate": "Home Assistant can add ID's to all your cards and views automatically for you by pressing the 'Migrate configuration' button.",
+            "para_migrate": "Home Assistant can add IDs to all your cards and views automatically for you by pressing the 'Migrate configuration' button.",
             "migrate": "Migrate configuration"
           },
           "action-editor": {
@@ -2400,7 +2454,8 @@
                 "last-triggered": "Last Triggered",
                 "position": "Position",
                 "tilt-position": "Tilt Position",
-                "brightness": "Brightness"
+                "brightness": "Brightness",
+                "last-updated": "Last Updated"
               },
               "entity_row": {
                 "divider": "Divider",
@@ -2561,7 +2616,7 @@
           "view": {
             "panel_mode": {
               "title": "Panel Mode?",
-              "description": "This renders the first card at full width; other cards in this view will not be rendered.",
+              "description": "This renders the first card at full width. Other cards in this view as well as badges will not be rendered.",
               "warning_multiple_cards": "This view contains more than one card, but a panel view can only show 1 card."
             }
           },
@@ -2904,11 +2959,13 @@
             "description": "Templates are rendered using the Jinja2 template engine with some Home Assistant specific extensions.",
             "editor": "Template editor",
             "reset": "Reset to demo template",
+            "result_type": "Result type",
             "jinja_documentation": "Jinja2 template documentation",
             "template_extensions": "Home Assistant template extensions",
             "unknown_error_template": "Unknown error rendering template",
+            "time": "This template updates at the start of each minute.",
             "all_listeners": "This template listens for all state changed events.",
-            "no_listeners": "This template does not listen for any state changed events and will not update automatically.",
+            "no_listeners": "This template does not listen for any events and will not update automatically.",
             "listeners": "This template listens for the following state changed events:",
             "entity": "Entity",
             "domain": "Domain"

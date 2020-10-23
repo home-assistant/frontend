@@ -66,7 +66,7 @@ export class HuiDialogEditCard extends LitElement
 
   @internalProperty() private _guiModeAvailable? = true;
 
-  @query("hui-element-editor", true) private _cardEditorEl?: HuiElementEditor;
+  @query("hui-element-editor") private _cardEditorEl?: HuiElementEditor;
 
   @internalProperty() private _GUImode = true;
 
@@ -365,7 +365,6 @@ export class HuiDialogEditCard extends LitElement
         @media all and (min-width: 850px) {
           ha-dialog {
             --mdc-dialog-min-width: 845px;
-            --dialog-surface-top: 40px;
             --mdc-dialog-max-height: calc(100% - 72px);
           }
         }

@@ -1,31 +1,44 @@
 import type { Constructor, PropertyValues } from "lit-element";
 import { HassElement } from "./hass-element";
 import {
-  QuickOpenDialogParams,
-  showQuickOpenDialog,
-} from "../dialogs/quick-open/show-dialog-quick-open";
+  QuickBarParams,
+  showQuickBar,
+} from "../dialogs/quick-bar/show-dialog-quick-bar";
 
 declare global {
   interface HASSDomEvents {
-    "hass-quick-open": QuickOpenDialogParams;
+    "hass-quick-bar": QuickBarParams;
   }
 }
+
+const isMacOS = /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform);
 
 export default <T extends Constructor<HassElement>>(superClass: T) =>
   class extends superClass {
     protected firstUpdated(changedProps: PropertyValues) {
       super.firstUpdated(changedProps);
 
+      this._registerShortcut();
+    }
+
+    private _registerShortcut() {
       document.addEventListener("keydown", (e: KeyboardEvent) => {
-        if (e.code === "KeyP" && e.metaKey) {
+        if (!this.hass?.user?.is_admin) {
+          return;
+        }
+        if (this.isOSCtrlKey(e) && e.code === "KeyP") {
           e.preventDefault();
-          const eventParams: QuickOpenDialogParams = {};
+          const eventParams: QuickBarParams = {};
           if (e.shiftKey) {
             eventParams.commandMode = true;
           }
 
-          showQuickOpenDialog(this, eventParams);
+          showQuickBar(this, eventParams);
         }
       });
+    }
+
+    private isOSCtrlKey(e: KeyboardEvent) {
+      return isMacOS ? e.metaKey : e.ctrlKey;
     }
   };

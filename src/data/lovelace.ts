@@ -33,7 +33,7 @@ export interface LovelaceResource {
 }
 
 export interface LovelaceResourcesMutableParams {
-  res_type: "css" | "js" | "module" | "html";
+  res_type: LovelaceResource["type"];
   url: string;
 }
 
@@ -89,6 +89,7 @@ export interface LovelaceViewConfig {
 export interface LovelaceViewElement extends HTMLElement {
   hass?: HomeAssistant;
   lovelace?: Lovelace;
+  narrow?: boolean;
   index?: number;
   cards?: Array<LovelaceCard | HuiErrorCard>;
   badges?: LovelaceBadge[];

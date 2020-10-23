@@ -124,6 +124,7 @@ export class ZHAGroupsDashboard extends LitElement {
         .columns=${this._columns(this.narrow)}
         .data=${this._formattedGroups(this._groups)}
         @row-click=${this._handleRowClicked}
+        clickable
       >
         <a href="/config/zha/group-add" slot="fab">
           <mwc-fab

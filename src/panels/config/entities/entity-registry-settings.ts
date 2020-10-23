@@ -27,6 +27,7 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import type { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { domainIcon } from "../../../common/entity/domain_icon";
 
 @customElement("entity-registry-settings")
 export class EntityRegistrySettings extends LitElement {
@@ -93,7 +94,11 @@ export class EntityRegistrySettings extends LitElement {
           .value=${this._icon}
           @value-changed=${this._iconChanged}
           .label=${this.hass.localize("ui.dialogs.entity_registry.editor.icon")}
-          .placeholder=${this.entry.original_icon}
+          .placeholder=${this.entry.original_icon ||
+          domainIcon(
+            computeDomain(this.entry.entity_id),
+            this.hass.states[this.entry.entity_id]
+          )}
           .disabled=${this._submitting}
           .errorMessage=${this.hass.localize(
             "ui.dialogs.entity_registry.editor.icon_error"

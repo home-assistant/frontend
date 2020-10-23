@@ -475,7 +475,7 @@ export class HaIntegrationCard extends LitElement {
           align-items: center;
           height: 40px;
           padding: 16px 16px 8px 16px;
-          vertical-align: middle;
+          justify-content: center;
         }
         .group-header h1 {
           margin: 0;
@@ -495,7 +495,6 @@ export class HaIntegrationCard extends LitElement {
           max-height: 100%;
           max-width: 90%;
         }
-
         .none-found {
           margin: auto;
           text-align: center;
@@ -507,8 +506,15 @@ export class HaIntegrationCard extends LitElement {
           margin-bottom: 0;
         }
         h2 {
-          margin-top: 0;
           min-height: 24px;
+        }
+        h3 {
+          word-wrap: break-word;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 3;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
         ha-button-menu {
           color: var(--secondary-text-color);

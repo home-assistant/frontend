@@ -77,7 +77,9 @@ export class SystemLogCard extends LitElement {
                                     integrations[idx]!
                                   )
                                 : item.source[0]}
-                              (${item.level})
+                              ${html`(<span class="${item.level.toLowerCase()}"
+                                  >${item.level}</span
+                                >)`}
                               ${item.count > 1
                                 ? html`
                                     -
@@ -163,6 +165,14 @@ export class SystemLogCard extends LitElement {
         display: flex;
         align-items: center;
         justify-content: center;
+      }
+
+      .error {
+        color: var(--error-color);
+      }
+
+      .warning {
+        color: var(--warning-color);
       }
     `;
   }

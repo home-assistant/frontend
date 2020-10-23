@@ -9,6 +9,7 @@ interface TemplateListeners {
   all: boolean;
   domains: string[];
   entities: string[];
+  time: boolean;
 }
 
 export const subscribeRenderTemplate = (

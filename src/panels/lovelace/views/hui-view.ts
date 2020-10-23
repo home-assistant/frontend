@@ -31,6 +31,8 @@ export class HUIView extends UpdatingElement {
 
   @property({ attribute: false }) public lovelace?: Lovelace;
 
+  @property({ type: Boolean }) public narrow!: boolean;
+
   @property({ type: Number }) public index?: number;
 
   @internalProperty() private _cards: Array<LovelaceCard | HuiErrorCard> = [];
@@ -111,6 +113,7 @@ export class HUIView extends UpdatingElement {
       this._createCards(viewConfig!);
 
       this._layoutElement!.hass = this.hass;
+      this._layoutElement!.narrow = this.narrow;
       this._layoutElement!.lovelace = lovelace;
       this._layoutElement!.index = this.index;
     }
@@ -127,11 +130,21 @@ export class HUIView extends UpdatingElement {
       this._layoutElement!.hass = this.hass;
     }
 
+    if (changedProperties.has("narrow")) {
+      this._layoutElement!.narrow = this.narrow;
+    }
+
     if (editModeChanged) {
       this._layoutElement!.lovelace = lovelace;
     }
 
-    if (configChanged || hassChanged || editModeChanged) {
+    if (
+      configChanged ||
+      hassChanged ||
+      editModeChanged ||
+      changedProperties.has("_cards") ||
+      changedProperties.has("_badges")
+    ) {
       this._layoutElement!.cards = this._cards;
       this._layoutElement!.badges = this._badges;
     }

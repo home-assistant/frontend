@@ -1,7 +1,7 @@
+import "@material/mwc-fab";
 import { mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
-import "@material/mwc-fab";
 import {
   css,
   CSSResult,
@@ -24,12 +24,13 @@ import {
 } from "../../../data/person";
 import { fetchUsers, User } from "../../../data/user";
 import {
-  showConfirmationDialog,
   showAlertDialog,
+  showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage";
 import { HomeAssistant, Route } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import {
@@ -74,7 +75,9 @@ class HaConfigPerson extends LitElement {
             >${hass.localize("ui.panel.config.person.caption")}</span
           >
           <span slot="introduction">
-            ${hass.localize("ui.panel.config.person.introduction")}
+            <p>
+              ${hass.localize("ui.panel.config.person.introduction")}
+            </p>
             ${this._configItems.length > 0
               ? html`
                   <p>
@@ -84,7 +87,16 @@ class HaConfigPerson extends LitElement {
                   </p>
                 `
               : ""}
+
+            <a
+              href=${documentationUrl(this.hass, "/integrations/person/")}
+              target="_blank"
+              rel="noreferrer"
+            >
+              ${this.hass.localize("ui.panel.config.person.learn_more")}
+            </a>
           </span>
+
           <ha-card class="storage">
             ${this._storageItems.map((entry) => {
               return html`

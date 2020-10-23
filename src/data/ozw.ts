@@ -63,6 +63,16 @@ export interface OZWNetworkStatistics {
   retries: number;
 }
 
+export interface OZWDeviceConfig {
+  label: string;
+  type: string;
+  value: string | number;
+  parameter: number;
+  min: number;
+  max: number;
+  help: string;
+}
+
 export const nodeQueryStages = [
   "ProtocolInfo",
   "Probe",
@@ -176,6 +186,17 @@ export const fetchOZWNodeMetadata = (
 ): Promise<OZWDeviceMetaDataResponse> =>
   hass.callWS({
     type: "ozw/node_metadata",
+    ozw_instance: ozw_instance,
+    node_id: node_id,
+  });
+
+export const fetchOZWNodeConfig = (
+  hass: HomeAssistant,
+  ozw_instance: number,
+  node_id: number
+): Promise<OZWDeviceConfig[]> =>
+  hass.callWS({
+    type: "ozw/get_config_parameters",
     ozw_instance: ozw_instance,
     node_id: node_id,
   });

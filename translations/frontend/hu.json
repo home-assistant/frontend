@@ -625,7 +625,7 @@
                     "unavailable": "Ez az entitás jelenleg nem elérhető.",
                     "update": "Frissítés"
                 },
-                "no_unique_id": "Ez az entitás nem rendelkezik egyedi azonosítóval, ezért a beállításai nem kezelhetők a felhasználói felületről.",
+                "no_unique_id": "Ennek az entitásnak nincs egyedi azonosítója, ezért beállításait nem lehet kezelni a kezelőfelületről. További részletek a {faq_link} .",
                 "related": "Kapcsolatok",
                 "settings": "Beállítások"
             },
@@ -1315,23 +1315,30 @@
                 "devices": {
                     "automation": {
                         "actions": {
-                            "caption": "Ha valami triggerelődik, akkor..."
+                            "caption": "Ha valami triggerelődik, akkor...",
+                            "no_actions": "Nincs műveletek",
+                            "unknown_action": "Ismeretlen művelet"
                         },
                         "automations": "Automatizálások",
                         "conditions": {
-                            "caption": "Csak akkor csinálj valamit, ha a(z)..."
+                            "caption": "Csak akkor csinálj valamit, ha a(z)...",
+                            "no_conditions": "Nincsenek feltételek",
+                            "unknown_condition": "Ismeretlen állapot"
                         },
                         "create": "Eszköz automatizálás létrehozása",
                         "no_automations": "Nincsenek automatizálások",
                         "no_device_automations": "Ehhez az eszközhöz nem állnak rendelkezésre automatizálások.",
                         "triggers": {
-                            "caption": "Kezdj el csinálni valamit, amikor a(z)..."
+                            "caption": "Kezdj el csinálni valamit, amikor a(z)...",
+                            "no_triggers": "Nincs kiváltó ok",
+                            "unknown_trigger": "Ismeretlen ok."
                         }
                     },
                     "cant_edit": "Kizárólag a felhasználói felületen létrehozott elemeket szerkesztheted.",
                     "caption": "Eszközök",
                     "confirm_delete": "Biztosan törölni szeretnéd ezt az eszközt?",
                     "confirm_rename_entity_ids": "Szeretnéd átnevezni az entitások ID-ját is?",
+                    "confirm_rename_entity_ids_warning": "Ez nem módosítja azokat a konfigurációkat (például automatizálásokat, parancsfájlokat, jeleneteket, irányítópultokat), amelyek jelenleg ezeket az entitásokat használják! Az új entitásazonosítók használatához saját kezűleg kell frissítenie őket!",
                     "data_table": {
                         "area": "Terület",
                         "battery": "Akkumulátor",
@@ -1651,6 +1658,26 @@
                     "title": "MQTT",
                     "topic": "téma"
                 },
+                "ozw": {
+                    "common": {
+                        "query_stage": "Lekérdezési fázis",
+                        "wakeup_instructions": "Ébresztési utasítások"
+                    },
+                    "navigation": {
+                        "node": {
+                            "config": "Konfiguráció",
+                            "dashboard": "Irányítópult"
+                        }
+                    },
+                    "node_config": {
+                        "header": "Csomópont konfigurációja",
+                        "introduction": "Kezelje a Z-Wave csomópont különböző konfigurációs paramétereit.",
+                        "wakeup_help": "Az akkumulátoros csomópontoknak ébren kell lenniük a konfiguráció módosításához. Ha a csomópont nincs ébren, az OpenZWave megpróbálja frissíteni a csomópont konfigurációját a következő ébredéskor, ami több órával (vagy nappal) később is megtörténhet. Az eszköz felébresztéséhez kövesse az alábbi lépéseket:"
+                    },
+                    "node_metadata": {
+                        "product_manual": "Termék kézikönyve"
+                    }
+                },
                 "person": {
                     "add_person": "Személy hozzáadása",
                     "caption": "Személyek",
@@ -1829,6 +1856,7 @@
                         "id": "ID",
                         "name": "Név",
                         "owner": "Tulajdonos",
+                        "password_changed": "A jelszó módosítása sikeresen megtörtént",
                         "system_generated": "Rendszer által létrehozott",
                         "system_generated_users_not_editable": "Nem lehet frissíteni a rendszer által létrehozott felhasználókat.",
                         "system_generated_users_not_removable": "Nem lehet eltávolítani a rendszer által létrehozott felhasználókat.",
@@ -2101,6 +2129,7 @@
                         "editor": "Sablonszerkesztő",
                         "jinja_documentation": "Jinja2 sablon dokumentáció",
                         "template_extensions": "Home Assistant sablon bővítmények",
+                        "time": "Ez a sablon 60 másodpercenként frissül az utolsó állapotváltozási esemény után.",
                         "title": "Sablon",
                         "unknown_error_template": "Ismeretlen hiba a sablon kiértékelésekor"
                     }
@@ -2201,6 +2230,7 @@
                         },
                         "entities": {
                             "description": "Az Entitások kártya a legalapvetőbb kártya. Az elemeket listákba csoportosítja.",
+                            "edit_special_row": "A sor részleteinek megtekintése a Szerkesztés gombra kattintva",
                             "name": "Entitások",
                             "show_header_toggle": "Fejléc kapcsoló megjelenítése?",
                             "toggle": "Entitások váltása."

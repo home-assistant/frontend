@@ -34,6 +34,10 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
             "Home Assistant is starting, not everything will be available until it is finished.",
           duration: 0,
           dismissable: false,
+          action: {
+            text: this.hass!.localize("ui.notification_toast.dismiss"),
+            action: () => {},
+          },
         });
       } else if (
         oldHass?.config &&

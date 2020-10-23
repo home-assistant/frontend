@@ -45,6 +45,7 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
     | "entity-id"
     | "last-changed"
     | "last-triggered"
+    | "last-updated"
     | "position"
     | "tilt-position"
     | "brightness";
@@ -218,6 +219,8 @@ export interface PictureElementsCardConfig extends LovelaceCardConfig {
   entity?: string;
   elements: LovelaceElementConfig[];
   theme?: string;
+  dark_mode_image?: string;
+  dark_mode_filter?: string;
 }
 
 export interface PictureEntityCardConfig extends LovelaceCardConfig {

@@ -15,6 +15,10 @@ import { showSnapshotUploadDialog } from "../../hassio/src/dialogs/snapshot/show
 import { navigate } from "../common/navigate";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-card";
+import {
+  extractApiErrorMessage,
+  ignoredStatusCodes,
+} from "../data/hassio/common";
 import { makeDialogManager } from "../dialogs/make-dialog-manager";
 import { ProvideHassLitMixin } from "../mixins/provide-hass-lit-mixin";
 import { haStyle } from "../resources/styles";
@@ -32,9 +36,9 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
 
   @property() public language!: string;
 
-  @property({ type: Boolean }) private restoring = false;
+  @property({ type: Boolean }) public restoring = false;
 
-  @internalProperty() private _log?: string;
+  @internalProperty() private _log = "";
 
   @internalProperty() private _showFullLog = false;
 
@@ -45,17 +49,15 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
             "ui.panel.page-onboarding.restore.in_progress"
           )}
         >
-          ${this._log
-            ? this._showFullLog
-              ? html`<hassio-ansi-to-html .content=${this._log}>
-                </hassio-ansi-to-html>`
-              : html`<onboarding-loading></onboarding-loading>
-                  <hassio-ansi-to-html
-                    class="logentry"
-                    .content=${this._lastLogEntry(this._log)}
-                  >
-                  </hassio-ansi-to-html>`
-            : ""}
+          ${this._showFullLog
+            ? html`<hassio-ansi-to-html .content=${this._log}>
+              </hassio-ansi-to-html>`
+            : html`<onboarding-loading></onboarding-loading>
+                <hassio-ansi-to-html
+                  class="logentry"
+                  .content=${this._lastLogEntry(this._log)}
+                >
+                </hassio-ansi-to-html>`}
           <div class="card-actions">
             <mwc-button @click=${this._toggeFullLog}>
               ${this._showFullLog
@@ -83,7 +85,8 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
         (entry) =>
           !entry.includes("/supervisor/logs") &&
           !entry.includes("/supervisor/ping") &&
-          !entry.includes("DEBUG")
+          !entry.includes("DEBUG") &&
+          !entry.includes("TypeError: Failed to fetch")
       )
       .join("\n")
       .replace(/\s[A-Z]+\s\(\w+\)\s\[[\w.]+\]/gi, "")
@@ -116,17 +119,31 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
         const response = await fetch("/api/hassio/supervisor/logs", {
           method: "GET",
         });
+        if (response.status === 401) {
+          // If we get a unauthorized response, the restore is done
+          this._restoreDone();
+        } else if (
+          response.status &&
+          !ignoredStatusCodes.has(response.status)
+        ) {
+          // Handle error responses
+          this._log += this._filterLogs(extractApiErrorMessage(response));
+        }
         const logs = await response.text();
         this._log = this._filterLogs(logs);
         if (this._log.match(/\d{2}:\d{2}:\d{2}\s.*Restore\s\w+\sdone/)) {
           // The log indicates that the restore done, navigate the user back to base
-          navigate(this, "/", true);
-          location.reload();
+          this._restoreDone();
         }
       } catch (err) {
-        this._log = err.toString();
+        this._log += this._filterLogs(err.toString());
       }
     }
+  }
+
+  private _restoreDone(): void {
+    navigate(this, "/", true);
+    location.reload();
   }
 
   private _showSnapshotDialog(slug: string): void {

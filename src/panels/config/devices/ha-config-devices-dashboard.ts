@@ -82,11 +82,11 @@ export class HaConfigDeviceDashboard extends LitElement {
             filterTexts.push(
               `${this.hass.localize(
                 "ui.panel.config.integrations.integration"
-              )} ${integrationName}${
+              )} "${integrationName}${
                 integrationName !== configEntry.title
                   ? `: ${configEntry.title}`
                   : ""
-              }`
+              }"`
             );
             break;
           }
@@ -310,6 +310,7 @@ export class HaConfigDeviceDashboard extends LitElement {
           this.hass.localize
         )}
         @row-click=${this._handleRowClicked}
+        clickable
       >
       </hass-tabs-subpage-data-table>
     `;

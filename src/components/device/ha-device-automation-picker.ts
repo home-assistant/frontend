@@ -33,15 +33,23 @@ export abstract class HaDeviceAutomationPicker<
 
   @property() public value?: T;
 
-  protected NO_AUTOMATION_TEXT = "No automations";
-
-  protected UNKNOWN_AUTOMATION_TEXT = "Unknown automation";
-
   @internalProperty() private _automations: T[] = [];
 
   // Trigger an empty render so we start with a clean DOM.
   // paper-listbox does not like changing things around.
   @internalProperty() private _renderEmpty = false;
+
+  protected get NO_AUTOMATION_TEXT() {
+    return this.hass.localize(
+      "ui.panel.config.devices.automation.actions.no_actions"
+    );
+  }
+
+  protected get UNKNOWN_AUTOMATION_TEXT() {
+    return this.hass.localize(
+      "ui.panel.config.devices.automation.actions.unknown_action"
+    );
+  }
 
   private _localizeDeviceAutomation: (
     hass: HomeAssistant,

@@ -23,9 +23,9 @@ import { hassioStyle } from "../resources/hassio-style";
 class HassioAddonRepositoryEl extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public repo!: HassioAddonRepository;
+  @property({ attribute: false }) public repo!: HassioAddonRepository;
 
-  @property() public addons!: HassioAddonInfo[];
+  @property({ attribute: false }) public addons!: HassioAddonInfo[];
 
   @property() public filter!: string;
 
@@ -78,18 +78,18 @@ class HassioAddonRepositoryEl extends LitElement {
                     .title=${addon.name}
                     .description=${addon.description}
                     .available=${addon.available}
-                    .icon=${addon.installed && addon.installed !== addon.version
+                    .icon=${addon.installed && addon.update_available
                       ? mdiArrowUpBoldCircle
                       : mdiPuzzle}
                     .iconTitle=${addon.installed
-                      ? addon.installed !== addon.version
+                      ? addon.update_available
                         ? "New version available"
                         : "Add-on is installed"
                       : addon.available
                       ? "Add-on is not installed"
                       : "Add-on is not available on your system"}
                     .iconClass=${addon.installed
-                      ? addon.installed !== addon.version
+                      ? addon.update_available
                         ? "update"
                         : "installed"
                       : !addon.available
@@ -104,7 +104,7 @@ class HassioAddonRepositoryEl extends LitElement {
                       : undefined}
                     .showTopbar=${addon.installed || !addon.available}
                     .topbarClass=${addon.installed
-                      ? addon.installed !== addon.version
+                      ? addon.update_available
                         ? "update"
                         : "installed"
                       : !addon.available

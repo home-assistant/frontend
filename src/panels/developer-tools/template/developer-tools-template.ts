@@ -82,6 +82,13 @@ class HaPanelDevTemplate extends LitElement {
   }
 
   protected render() {
+    const type = typeof this._templateResult?.result;
+    const resultType =
+      type === "object"
+        ? Array.isArray(this._templateResult?.result)
+          ? "list"
+          : "dict"
+        : type;
     return html`
       <div
         class="content ${classMap({
@@ -141,34 +148,55 @@ class HaPanelDevTemplate extends LitElement {
         </div>
 
         <div class="render-pane">
-          <ha-circular-progress
-            class="render-spinner"
-            .active=${this._rendering}
-            size="small"
-          ></ha-circular-progress>
-
+          ${this._rendering
+            ? html`<ha-circular-progress
+                class="render-spinner"
+                active
+                size="small"
+              ></ha-circular-progress>`
+            : ""}
+          ${this._templateResult
+            ? html`${this.hass.localize(
+                "ui.panel.developer-tools.tabs.templates.result_type"
+              )}:
+              ${resultType}`
+            : ""}
+          <!-- prettier-ignore -->
           <pre
-            class="rendered ${classMap({ error: Boolean(this._error) })}"
-          ><!-- display: block -->${this._error}${this._templateResult
-            ?.result}</pre>
+            class="rendered ${classMap({
+            error: Boolean(this._error),
+            [resultType]: resultType,
+          })}"
+          >${this._error}${type === "object"
+            ? JSON.stringify(this._templateResult!.result, null, 2)
+            : this._templateResult?.result}</pre>
+          ${this._templateResult?.listeners.time
+            ? html`
+                <p>
+                  ${this.hass.localize(
+                    "ui.panel.developer-tools.tabs.templates.time"
+                  )}
+                </p>
+              `
+            : ""}
           ${!this._templateResult?.listeners
             ? ""
             : this._templateResult.listeners.all
             ? html`
-                <h3 class="all_listeners">
+                <p class="all_listeners">
                   ${this.hass.localize(
                     "ui.panel.developer-tools.tabs.templates.all_listeners"
                   )}
-                </h3>
+                </p>
               `
             : this._templateResult.listeners.domains.length ||
               this._templateResult.listeners.entities.length
             ? html`
-                <h3>
+                <p>
                   ${this.hass.localize(
                     "ui.panel.developer-tools.tabs.templates.listeners"
                   )}
-                </h3>
+                </p>
                 <ul>
                   ${this._templateResult.listeners.domains
                     .sort()
@@ -200,11 +228,13 @@ class HaPanelDevTemplate extends LitElement {
                     )}
                 </ul>
               `
-            : html` <span class="all_listeners">
+            : !this._templateResult?.listeners.time
+            ? html` <span class="all_listeners">
                 ${this.hass.localize(
                   "ui.panel.developer-tools.tabs.templates.no_listeners"
                 )}
-              </span>`}
+              </span>`
+            : html``}
         </div>
       </div>
     `;
