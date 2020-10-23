@@ -2675,7 +2675,11 @@
           "error_load_platform": "Configure notify.html5.",
           "error_use_https": "Requires SSL enabled for frontend.",
           "push_notifications": "Push notifications",
-          "link_promo": "Learn more"
+          "link_promo": "Learn more",
+          "add_device": {
+            "title": "What should this device be called?",
+            "text": "Please enter a name for the device"
+          }
         },
         "language": {
           "header": "Language",
