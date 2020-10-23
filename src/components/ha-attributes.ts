@@ -63,6 +63,7 @@ class HaAttributes extends LitElement {
       .data-entry .value {
         max-width: 200px;
         overflow-wrap: break-word;
+        text-align: right;
       }
       .key:first-letter {
         text-transform: capitalize;
