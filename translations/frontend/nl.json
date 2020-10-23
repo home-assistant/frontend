@@ -695,6 +695,11 @@
             },
             "service-picker": {
                 "service": "Service"
+            },
+            "user-picker": {
+                "add_user": "Gebruiker toevoegen",
+                "no_user": "Geen gebruiker",
+                "remove_user": "Gebruiker verwijderen"
             }
         },
         "dialogs": {
@@ -947,6 +952,7 @@
         },
         "notification_toast": {
             "connection_lost": "Verbinding verbroken. Opnieuw verbinden...",
+            "dismiss": "Afwijzen",
             "service_call_failed": "Kan service {service} niet aanroepen",
             "started": "Home Assistant is gestart!",
             "starting": "Home Assistant is aan het opstarten. Gedurende het opstarten zal niet alles beschikbaar zijn.",
@@ -1200,6 +1206,9 @@
                                     "trigger": "Trigger"
                                 },
                                 "event": {
+                                    "context_user_pick": "Gebruiker toevoegen",
+                                    "context_user_picked": "Gebeurtenis door gebruiker",
+                                    "context_users": "Limiet voor gebeurtenissen die zijn geactiveerd door",
                                     "event_data": "Gebeurtenisdata",
                                     "event_type": "Gebeurtenistype",
                                     "label": "Gebeurtenis"
@@ -2941,7 +2950,8 @@
                     "exit_edit_mode": "UI-bewerkingsmodus afsluiten",
                     "help": "Help",
                     "refresh": "Vernieuwen",
-                    "reload_resources": "Herlaad bronnen"
+                    "reload_resources": "Herlaad bronnen",
+                    "start_conversation": "Gesprek starten"
                 },
                 "reload_lovelace": "Lovelace herladen",
                 "reload_resources": {

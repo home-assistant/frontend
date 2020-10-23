@@ -695,6 +695,11 @@
             },
             "service-picker": {
                 "service": "服务"
+            },
+            "user-picker": {
+                "add_user": "添加用户",
+                "no_user": "没有用户",
+                "remove_user": "删除用户"
             }
         },
         "dialogs": {
@@ -947,6 +952,7 @@
         },
         "notification_toast": {
             "connection_lost": "连接中断。正在重新连接...",
+            "dismiss": "关闭",
             "service_call_failed": "调用服务 {service} 失败。",
             "started": "Home Assistant 已启动！",
             "starting": "Home Assistant 正在启动。在启动完成前，部分功能暂不可用。",
@@ -1200,6 +1206,9 @@
                                     "trigger": "触发条件"
                                 },
                                 "event": {
+                                    "context_user_pick": "添加用户",
+                                    "context_user_picked": "用户触发事件",
+                                    "context_users": "仅限以下用户触发事件",
                                     "event_data": "事件数据",
                                     "event_type": "事件类型",
                                     "label": "事件"
@@ -2941,7 +2950,8 @@
                     "exit_edit_mode": "退出 UI 编辑模式",
                     "help": "帮助",
                     "refresh": "刷新",
-                    "reload_resources": "重载资源"
+                    "reload_resources": "重载资源",
+                    "start_conversation": "开始对话"
                 },
                 "reload_lovelace": "重新加载 Lovelace",
                 "reload_resources": {

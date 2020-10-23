@@ -695,6 +695,10 @@
             },
             "service-picker": {
                 "service": "Teenus"
+            },
+            "user-picker": {
+                "add_user": "Lisa kasutaja",
+                "remove_user": "Kustuta kasutaja"
             }
         },
         "dialogs": {
@@ -947,6 +951,7 @@
         },
         "notification_toast": {
             "connection_lost": "Ühendus kadunud. Taasühendamine...",
+            "dismiss": "Loobu",
             "service_call_failed": "Teenuse {service} väljakutsumine ebaõnnestus.",
             "started": "Koduabiline on käivitunud!",
             "starting": "Home Assistant  käivitub, kõik elemendid ei pruugi veel saadaval olla",
@@ -1200,6 +1205,7 @@
                                     "trigger": "Päästik"
                                 },
                                 "event": {
+                                    "context_user_pick": "Lisa kasutaja",
                                     "event_data": "Sündmuse andmed",
                                     "event_type": "Sündmuse tüüp",
                                     "label": "Sündmus"
@@ -2941,7 +2947,8 @@
                     "exit_edit_mode": "Välju kasutajaliidese redigeerimisrežiimist",
                     "help": "Abi",
                     "refresh": "Värskenda",
-                    "reload_resources": "Taaslae ressursid"
+                    "reload_resources": "Taaslae ressursid",
+                    "start_conversation": "Alusta vestlust"
                 },
                 "reload_lovelace": "Taaslae Lovelace",
                 "reload_resources": {

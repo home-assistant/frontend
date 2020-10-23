@@ -695,6 +695,11 @@
             },
             "service-picker": {
                 "service": "Servicio"
+            },
+            "user-picker": {
+                "add_user": "Añadir usuario",
+                "no_user": "Sin usuario",
+                "remove_user": "Eliminar usuario"
             }
         },
         "dialogs": {
@@ -947,6 +952,7 @@
         },
         "notification_toast": {
             "connection_lost": "Conexión perdida. Reconectando...",
+            "dismiss": "Descartar",
             "service_call_failed": "Error al llamar al servicio {service}.",
             "started": "¡Home Assistant se ha iniciado!",
             "starting": "Home Assistant se está iniciando, no estará todo disponible hasta que finalice.",
@@ -1200,6 +1206,9 @@
                                     "trigger": "Desencadenante"
                                 },
                                 "event": {
+                                    "context_user_pick": "Añadir usuario",
+                                    "context_user_picked": "Evento desencadenado por usuario",
+                                    "context_users": "Límite a eventos desencadenados por",
                                     "event_data": "Datos del evento",
                                     "event_type": "Tipo de evento",
                                     "label": "Evento"
@@ -2941,7 +2950,8 @@
                     "exit_edit_mode": "Salir del modo de edición de la interfaz de usuario",
                     "help": "Ayuda",
                     "refresh": "Actualizar",
-                    "reload_resources": "Recargar recursos"
+                    "reload_resources": "Recargar recursos",
+                    "start_conversation": "Iniciar conversación"
                 },
                 "reload_lovelace": "Recargar la IU Lovelace",
                 "reload_resources": {
