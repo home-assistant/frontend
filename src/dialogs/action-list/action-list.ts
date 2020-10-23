@@ -59,22 +59,20 @@ class ActionListDialog extends LitElement
             this.hass.localize("ui.dialogs.action_list.title")
         )}
       >
-        <div>
-          ${this._params.actions.map(
-            (action) =>
-              html`
-                <div>
-                  <mwc-button
-                    @click=${this._handleAction}
-                    .config=${action}
-                    tabindex="1"
-                  >
-                    ${action.name}
-                  </mwc-button>
-                </div>
-              `
-          )}
-        </div>
+        ${this._params.actions.map(
+          (action) =>
+            html`
+              <div>
+                <mwc-button
+                  @click=${this._handleAction}
+                  .config=${action}
+                  tabindex="1"
+                >
+                  ${action.name}
+                </mwc-button>
+              </div>
+            `
+        )}
       </ha-dialog>
     `;
   }
