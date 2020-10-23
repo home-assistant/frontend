@@ -30,8 +30,8 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
           padding: 16px;
         }
 
-        .ha-form {
-          margin-right: 16px;
+        .inputs {
+          max-width: 400px;
         }
 
         ha-progress-button {
@@ -113,7 +113,7 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
           [[localize('ui.panel.developer-tools.tabs.services.description')]]
         </p>
 
-        <div class="ha-form">
+        <div class="inputs">
           <ha-service-picker
             hass="[[hass]]"
             value="{{domainService}}"
@@ -129,20 +129,23 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
             ></ha-entity-picker>
           </template>
           <p>[[localize('ui.panel.developer-tools.tabs.services.data')]]</p>
+        </div>
+        <div class="code-editor">
           <ha-code-editor
             mode="yaml"
             value="[[serviceData]]"
             error="[[!validJSON]]"
             on-value-changed="_yamlChanged"
           ></ha-code-editor>
-          <ha-progress-button
-            on-click="_callService"
-            raised
-            disabled="[[!validJSON]]"
-          >
-            [[localize('ui.panel.developer-tools.tabs.services.call_service')]]
-          </ha-progress-button>
-        </div>
+        </div>  
+        <ha-progress-button
+          on-click="_callService"
+          raised
+          disabled="[[!validJSON]]"
+        >
+          [[localize('ui.panel.developer-tools.tabs.services.call_service')]]
+        </ha-progress-button>
+      </div>
 
         <ha-card>
           <div class="card-header">

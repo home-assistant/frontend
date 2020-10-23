@@ -36,6 +36,10 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           margin-top: 8px;
         }
 
+        .entities {
+          width: 100%;
+        }
+
         .entities th {
           text-align: left;
         }
@@ -74,6 +78,10 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         .entities a {
           color: var(--primary-color);
         }
+
+        .inputs {
+          max-width: 400px;
+        }
       </style>
 
       <div class="inputs">
@@ -102,16 +110,19 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         <p>
           [[localize('ui.panel.developer-tools.tabs.states.state_attributes')]]
         </p>
+      </div>
+      <div class="code-editor">
         <ha-code-editor
           mode="yaml"
           value="[[_stateAttributes]]"
           error="[[!validJSON]]"
           on-value-changed="_yamlChanged"
         ></ha-code-editor>
-        <mwc-button on-click="handleSetState" disabled="[[!validJSON]]" raised
-          >[[localize('ui.panel.developer-tools.tabs.states.set_state')]]</mwc-button
-        >
       </div>
+      <mwc-button on-click="handleSetState" disabled="[[!validJSON]]" raised
+        >[[localize('ui.panel.developer-tools.tabs.states.set_state')]]</mwc-button
+      >
+    </div>
 
       <h1>
         [[localize('ui.panel.developer-tools.tabs.states.current_entities')]]

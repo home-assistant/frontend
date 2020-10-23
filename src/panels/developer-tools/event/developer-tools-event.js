@@ -33,12 +33,16 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
           display: block;
         }
 
-        .ha-form {
-          margin-right: 16px;
+        .inputs {
+          max-width: 400px;
         }
 
         mwc-button {
           margin-top: 8px;
+        }
+
+        .code-editor {
+          margin-right: 16px;
         }
 
         .header {
@@ -68,7 +72,7 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
               )]]
             </a>
           </p>
-          <div class="ha-form">
+          <div class="inputs">
             <paper-input
               label="[[localize(
                 'ui.panel.developer-tools.tabs.events.type'
@@ -80,17 +84,19 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
             <p>
               [[localize( 'ui.panel.developer-tools.tabs.events.data' )]]
             </p>
+          </div>
+          <div class="code-editor">
             <ha-code-editor
               mode="yaml"
               value="[[eventData]]"
               error="[[!validJSON]]"
               on-value-changed="_yamlChanged"
             ></ha-code-editor>
-            <mwc-button on-click="fireEvent" raised disabled="[[!validJSON]]"
-              >[[localize( 'ui.panel.developer-tools.tabs.events.fire_event'
-              )]]</mwc-button
-            >
           </div>
+          <mwc-button on-click="fireEvent" raised disabled="[[!validJSON]]"
+            >[[localize( 'ui.panel.developer-tools.tabs.events.fire_event'
+            )]]</mwc-button
+          >
           <event-subscribe-card hass="[[hass]]"></event-subscribe-card>
         </div>
 
