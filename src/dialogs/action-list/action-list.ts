@@ -10,6 +10,7 @@ import {
 } from "lit-element";
 
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeStateName } from "../../common/entity/compute_state_name";
 import { createCloseHeading } from "../../components/ha-dialog";
 import { ActionConfig, ActionHandlerEvent } from "../../data/lovelace";
 import { handleAction } from "../../panels/lovelace/common/handle-action";
@@ -42,7 +43,7 @@ class ActionListDialog extends LitElement
     const stateObj = this._params.entity
       ? this.hass.states[this._params.entity]
       : undefined;
-    const name = stateObj ? stateObj.attributes.friendly_name : undefined;
+    const name = stateObj ? computeStateName(stateObj) : undefined;
 
     return html`
       <ha-dialog
