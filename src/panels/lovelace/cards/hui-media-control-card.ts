@@ -36,7 +36,7 @@ import {
   ControlButton,
   getCurrentProgress,
   MediaPickedEvent,
-  SUPPORTS_PLAY,
+  SUPPORT_PLAY,
   SUPPORT_BROWSE_MEDIA,
   SUPPORT_NEXT_TRACK,
   SUPPORT_PAUSE,
@@ -544,23 +544,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
     const buttons: ControlButton[] = [];
 
-    if (state === "on" || state === "idle") {
-      if (supportsFeature(stateObj, SUPPORT_TURN_OFF))
-        buttons.push({
-          icon: "hass:power",
-          action: "turn_off",
-        });
-
-      if (state === "idle") {
-        if (supportsFeature(stateObj, SUPPORTS_PLAY)) {
-          buttons.push({
-            icon: "hass:play",
-            action: "media_play",
-          });
-        }
-      }
-
-      return buttons.length > 0 ? buttons : undefined;
+    if (supportsFeature(stateObj, SUPPORT_TURN_OFF)) {
+      buttons.push({
+        icon: "hass:power",
+        action: "turn_off",
+      });
     }
 
     if (supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)) {
@@ -574,7 +562,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       (state === "playing" &&
         (supportsFeature(stateObj, SUPPORT_PAUSE) ||
           supportsFeature(stateObj, SUPPORT_STOP))) ||
-      (state === "paused" && supportsFeature(stateObj, SUPPORTS_PLAY))
+      (state === "paused" && supportsFeature(stateObj, SUPPORT_PLAY))
     ) {
       buttons.push({
         icon:

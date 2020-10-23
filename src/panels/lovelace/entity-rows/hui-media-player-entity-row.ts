@@ -17,7 +17,7 @@ import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-slider";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
 import {
-  SUPPORTS_PLAY,
+  SUPPORT_PLAY,
   SUPPORT_NEXT_TRACK,
   SUPPORT_PAUSE,
   SUPPORT_PREVIOUS_TRACK,
@@ -98,8 +98,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
             ></ha-icon-button>
           `
         : ""}
-      ${stateObj.state !== "playing" &&
-      !supportsFeature(stateObj, SUPPORTS_PLAY)
+      ${stateObj.state !== "playing" && !supportsFeature(stateObj, SUPPORT_PLAY)
         ? ""
         : html`
             <ha-icon-button
