@@ -206,223 +206,16 @@ class HaSidebar extends LitElement {
       return html``;
     }
 
+    // prettier-ignore
     return html`
-      ${this.renderHeader()} ${this.renderItems()} ${this.renderDivider()}
-      ${this.renderNotifications()} ${this.renderUserItem()}
+      ${this._renderHeader()}
+      ${this._renderAllPanels()}
+      ${this._renderDivider()}
+      ${this._renderNotifications()}
+      ${this._renderUserItem()}
       <div disabled class="bottom-spacer"></div>
       <div class="tooltip"></div>
     `;
-  }
-
-  protected renderHeader() {
-    return html`<div
-      class="menu"
-      @action=${this._handleAction}
-      .actionHandler=${actionHandler({
-        hasHold: !this.editMode,
-        disabled: this.editMode,
-      })}
-    >
-      ${!this.narrow
-        ? html`
-            <mwc-icon-button
-              .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
-              @action=${this._toggleSidebar}
-            >
-              <ha-svg-icon
-                .path=${this.hass.dockedSidebar === "docked"
-                  ? mdiMenuOpen
-                  : mdiMenu}
-              ></ha-svg-icon>
-            </mwc-icon-button>
-          `
-        : ""}
-      <div class="title">
-        ${this.editMode
-          ? html`<mwc-button outlined @click=${this._closeEditMode}>
-              ${this.hass.localize("ui.sidebar.done")}
-            </mwc-button>`
-          : "Home Assistant"}
-      </div>
-    </div>`;
-  }
-
-  protected renderItems() {
-    return html`
-      <paper-listbox
-        attr-for-selected="data-panel"
-        class="ha-scrollbar"
-        .selected=${this.hass.panelUrl}
-        @focusin=${this._listboxFocusIn}
-        @focusout=${this._listboxFocusOut}
-        @scroll=${this._listboxScroll}
-        @keydown=${this._listboxKeydown}
-      >
-        ${this.editMode ? this.renderItemsEditMode() : this.renderItemsNormal()}
-      </paper-listbox>
-    `;
-  }
-
-  protected renderItemsEditMode() {
-    const [beforeSpacer, afterSpacer] = computePanels(
-      this.hass.panels,
-      this.hass.defaultPanel,
-      this._panelOrder,
-      this._hiddenPanels
-    );
-
-    return html`<div id="sortable">
-        ${guard([this._hiddenPanels, this._renderEmptySortable], () =>
-          this._renderEmptySortable ? "" : this._renderPanels(beforeSpacer)
-        )}
-      </div>
-      ${this.renderSpacer()}
-      ${this._hiddenPanels.length
-        ? html`${this._hiddenPanels.map((url) => {
-            const panel = this.hass.panels[url];
-            if (!panel) {
-              return "";
-            }
-            return html`<paper-icon-item
-              @click=${this._unhidePanel}
-              class="hidden-panel"
-              .panel=${url}
-            >
-              <ha-icon
-                slot="item-icon"
-                .icon=${panel.url_path === this.hass.defaultPanel
-                  ? "mdi:view-dashboard"
-                  : panel.icon}
-              ></ha-icon>
-              <span class="item-text"
-                >${panel.url_path === this.hass.defaultPanel
-                  ? this.hass.localize("panel.states")
-                  : this.hass.localize(`panel.${panel.title}`) ||
-                    panel.title}</span
-              >
-              <mwc-icon-button class="show-panel">
-                <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
-              </mwc-icon-button>
-            </paper-icon-item>`;
-          })}
-          ${this.renderSpacer()}`
-        : ""}
-      ${this._renderPanels(afterSpacer)}`;
-  }
-
-  protected renderItemsNormal() {
-    const [beforeSpacer, afterSpacer] = computePanels(
-      this.hass.panels,
-      this.hass.defaultPanel,
-      this._panelOrder,
-      this._hiddenPanels
-    );
-
-    return html`${this._renderPanels(beforeSpacer)} ${this.renderSpacer()}
-    ${this._renderPanels(afterSpacer)} ${this.renderExternalConfiguration()}`;
-  }
-
-  protected renderDivider() {
-    return html`<div class="divider"></div>`;
-  }
-
-  protected renderSpacer() {
-    return html`<div class="spacer" disabled></div>`;
-  }
-
-  protected renderNotifications() {
-    let notificationCount = this._notifications
-      ? this._notifications.length
-      : 0;
-    for (const entityId in this.hass.states) {
-      if (computeDomain(entityId) === "configurator") {
-        notificationCount++;
-      }
-    }
-
-    return html` <div
-      class="notifications-container"
-      @mouseenter=${this._itemMouseEnter}
-      @mouseleave=${this._itemMouseLeave}
-    >
-      <paper-icon-item
-        class="notifications"
-        aria-role="option"
-        @click=${this._handleShowNotificationDrawer}
-      >
-        <ha-svg-icon slot="item-icon" .path=${mdiBell}></ha-svg-icon>
-        ${!this.expanded && notificationCount > 0
-          ? html`
-              <span class="notification-badge" slot="item-icon">
-                ${notificationCount}
-              </span>
-            `
-          : ""}
-        <span class="item-text">
-          ${this.hass.localize("ui.notification_drawer.title")}
-        </span>
-        ${this.expanded && notificationCount > 0
-          ? html` <span class="notification-badge">${notificationCount}</span> `
-          : ""}
-      </paper-icon-item>
-    </div>`;
-  }
-
-  protected renderUserItem() {
-    return html`<a
-      class=${classMap({
-        profile: true,
-        // Mimick behavior that paper-listbox provides
-        "iron-selected": this.hass.panelUrl === "profile",
-      })}
-      href="/profile"
-      data-panel="panel"
-      tabindex="-1"
-      aria-role="option"
-      aria-label=${this.hass.localize("panel.profile")}
-      @mouseenter=${this._itemMouseEnter}
-      @mouseleave=${this._itemMouseLeave}
-    >
-      <paper-icon-item>
-        <ha-user-badge
-          slot="item-icon"
-          .user=${this.hass.user}
-          .hass=${this.hass}
-        ></ha-user-badge>
-
-        <span class="item-text">
-          ${this.hass.user ? this.hass.user.name : ""}
-        </span>
-      </paper-icon-item>
-    </a>`;
-  }
-
-  protected renderExternalConfiguration() {
-    return html`${this._externalConfig && this._externalConfig.hasSettingsScreen
-      ? html`
-          <a
-            aria-role="option"
-            aria-label=${this.hass.localize(
-              "ui.sidebar.external_app_configuration"
-            )}
-            href="#external-app-configuration"
-            tabindex="-1"
-            @click=${this._handleExternalAppConfiguration}
-            @mouseenter=${this._itemMouseEnter}
-            @mouseleave=${this._itemMouseLeave}
-          >
-            <paper-icon-item>
-              <ha-svg-icon
-                slot="item-icon"
-                .path=${mdiCellphoneCog}
-              ></ha-svg-icon>
-              <span class="item-text">
-                ${this.hass.localize("ui.sidebar.external_app_configuration")}
-              </span>
-            </paper-icon-item>
-          </a>
-        `
-      : ""}`;
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -502,6 +295,215 @@ class HaSidebar extends LitElement {
         selectedEl.scrollIntoViewIfNeeded();
       }
     }
+  }
+
+  private _renderHeader() {
+    return html`<div
+      class="menu"
+      @action=${this._handleAction}
+      .actionHandler=${actionHandler({
+        hasHold: !this.editMode,
+        disabled: this.editMode,
+      })}
+    >
+      ${!this.narrow
+        ? html`
+            <mwc-icon-button
+              .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
+              @action=${this._toggleSidebar}
+            >
+              <ha-svg-icon
+                .path=${this.hass.dockedSidebar === "docked"
+                  ? mdiMenuOpen
+                  : mdiMenu}
+              ></ha-svg-icon>
+            </mwc-icon-button>
+          `
+        : ""}
+      <div class="title">
+        ${this.editMode
+          ? html`<mwc-button outlined @click=${this._closeEditMode}>
+              ${this.hass.localize("ui.sidebar.done")}
+            </mwc-button>`
+          : "Home Assistant"}
+      </div>
+    </div>`;
+  }
+
+  private _renderAllPanels() {
+    const [beforeSpacer, afterSpacer] = computePanels(
+      this.hass.panels,
+      this.hass.defaultPanel,
+      this._panelOrder,
+      this._hiddenPanels
+    );
+
+    // prettier-ignore
+    return html`
+      <paper-listbox
+        attr-for-selected="data-panel"
+        class="ha-scrollbar"
+        .selected=${this.hass.panelUrl}
+        @focusin=${this._listboxFocusIn}
+        @focusout=${this._listboxFocusOut}
+        @scroll=${this._listboxScroll}
+        @keydown=${this._listboxKeydown}
+      >
+        ${this.editMode
+          ? this._renderPanelsEdit(beforeSpacer)
+          : this._renderPanels(beforeSpacer)}
+        ${this._renderSpacer()}
+        ${this._renderPanels(afterSpacer)}
+        ${this._renderExternalConfiguration()}
+      </paper-listbox>
+    `;
+  }
+
+  private _renderPanelsEdit(beforeSpacer: PanelInfo[]) {
+    // prettier-ignore
+    return html`<div id="sortable">
+        ${guard([this._hiddenPanels, this._renderEmptySortable], () =>
+          this._renderEmptySortable ? "" : this._renderPanels(beforeSpacer)
+        )}
+      </div>
+      ${this._renderSpacer()}
+      ${this._renderHiddenPanels()} `;
+  }
+
+  private _renderHiddenPanels() {
+    return html` ${this._hiddenPanels.length
+      ? html`${this._hiddenPanels.map((url) => {
+          const panel = this.hass.panels[url];
+          if (!panel) {
+            return "";
+          }
+          return html`<paper-icon-item
+            @click=${this._unhidePanel}
+            class="hidden-panel"
+            .panel=${url}
+          >
+            <ha-icon
+              slot="item-icon"
+              .icon=${panel.url_path === this.hass.defaultPanel
+                ? "mdi:view-dashboard"
+                : panel.icon}
+            ></ha-icon>
+            <span class="item-text"
+              >${panel.url_path === this.hass.defaultPanel
+                ? this.hass.localize("panel.states")
+                : this.hass.localize(`panel.${panel.title}`) ||
+                  panel.title}</span
+            >
+            <mwc-icon-button class="show-panel">
+              <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
+            </mwc-icon-button>
+          </paper-icon-item>`;
+        })}
+        ${this._renderSpacer()}`
+      : ""}`;
+  }
+
+  private _renderDivider() {
+    return html`<div class="divider"></div>`;
+  }
+
+  private _renderSpacer() {
+    return html`<div class="spacer" disabled></div>`;
+  }
+
+  private _renderNotifications() {
+    let notificationCount = this._notifications
+      ? this._notifications.length
+      : 0;
+    for (const entityId in this.hass.states) {
+      if (computeDomain(entityId) === "configurator") {
+        notificationCount++;
+      }
+    }
+
+    return html` <div
+      class="notifications-container"
+      @mouseenter=${this._itemMouseEnter}
+      @mouseleave=${this._itemMouseLeave}
+    >
+      <paper-icon-item
+        class="notifications"
+        aria-role="option"
+        @click=${this._handleShowNotificationDrawer}
+      >
+        <ha-svg-icon slot="item-icon" .path=${mdiBell}></ha-svg-icon>
+        ${!this.expanded && notificationCount > 0
+          ? html`
+              <span class="notification-badge" slot="item-icon">
+                ${notificationCount}
+              </span>
+            `
+          : ""}
+        <span class="item-text">
+          ${this.hass.localize("ui.notification_drawer.title")}
+        </span>
+        ${this.expanded && notificationCount > 0
+          ? html` <span class="notification-badge">${notificationCount}</span> `
+          : ""}
+      </paper-icon-item>
+    </div>`;
+  }
+
+  private _renderUserItem() {
+    return html`<a
+      class=${classMap({
+        profile: true,
+        // Mimick behavior that paper-listbox provides
+        "iron-selected": this.hass.panelUrl === "profile",
+      })}
+      href="/profile"
+      data-panel="panel"
+      tabindex="-1"
+      aria-role="option"
+      aria-label=${this.hass.localize("panel.profile")}
+      @mouseenter=${this._itemMouseEnter}
+      @mouseleave=${this._itemMouseLeave}
+    >
+      <paper-icon-item>
+        <ha-user-badge
+          slot="item-icon"
+          .user=${this.hass.user}
+          .hass=${this.hass}
+        ></ha-user-badge>
+
+        <span class="item-text">
+          ${this.hass.user ? this.hass.user.name : ""}
+        </span>
+      </paper-icon-item>
+    </a>`;
+  }
+
+  private _renderExternalConfiguration() {
+    return html`${this._externalConfig && this._externalConfig.hasSettingsScreen
+      ? html`
+          <a
+            aria-role="option"
+            aria-label=${this.hass.localize(
+              "ui.sidebar.external_app_configuration"
+            )}
+            href="#external-app-configuration"
+            tabindex="-1"
+            @click=${this._handleExternalAppConfiguration}
+            @mouseenter=${this._itemMouseEnter}
+            @mouseleave=${this._itemMouseLeave}
+          >
+            <paper-icon-item>
+              <ha-svg-icon
+                slot="item-icon"
+                .path=${mdiCellphoneCog}
+              ></ha-svg-icon>
+              <span class="item-text">
+                ${this.hass.localize("ui.sidebar.external_app_configuration")}
+              </span>
+            </paper-icon-item>
+          </a>
+        `
+      : ""}`;
   }
 
   private get _tooltip() {
