@@ -695,6 +695,11 @@
             },
             "service-picker": {
                 "service": "Tjeneste"
+            },
+            "user-picker": {
+                "add_user": "Legg til bruker",
+                "no_user": "Ingen bruker",
+                "remove_user": "Fjern bruker"
             }
         },
         "dialogs": {
@@ -947,6 +952,7 @@
         },
         "notification_toast": {
             "connection_lost": "Forbindelsen ble brutt. Kobler til på nytt...",
+            "dismiss": "Avvis",
             "service_call_failed": "Kunne ikke tilkalle tjenesten: {service}",
             "started": "Home Assistant har startet!",
             "starting": "Home Assistant starter, alt er ikke tilgjengelig før starten er fullført.",
@@ -1200,6 +1206,9 @@
                                     "trigger": "Utløser"
                                 },
                                 "event": {
+                                    "context_user_pick": "Legg til bruker",
+                                    "context_user_picked": "Bruk avfyring hendelse",
+                                    "context_users": "Begrens til hendelser utløst av",
                                     "event_data": "Hendelse data",
                                     "event_type": "Hendelse type",
                                     "label": "Hendelse"
@@ -2941,7 +2950,8 @@
                     "exit_edit_mode": "Avslutt redigeringsmodus for brukergrensesnitt",
                     "help": "Hjelp",
                     "refresh": "Oppdater",
-                    "reload_resources": "Last inn ressurser på nytt"
+                    "reload_resources": "Last inn ressurser på nytt",
+                    "start_conversation": "Start samtale"
                 },
                 "reload_lovelace": "Last inn brukergrensesnittet på nytt",
                 "reload_resources": {

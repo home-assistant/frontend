@@ -28,7 +28,7 @@
         "climate": {
             "fan_mode": {
                 "auto": "automatyczny",
-                "off": "wyłączony",
+                "off": "wył.",
                 "on": "wł."
             },
             "hvac_action": {
@@ -106,7 +106,7 @@
             "triggered": "wyzwolony"
         },
         "automation": {
-            "off": "wyłączony",
+            "off": "wył.",
             "on": "wł."
         },
         "binary_sensor": {
@@ -286,7 +286,7 @@
             "on": "wł."
         },
         "sensor": {
-            "off": "wyłączony",
+            "off": "wył.",
             "on": "wł."
         },
         "sun": {
@@ -307,8 +307,8 @@
             "docked": "w stacji dokującej",
             "error": "błąd",
             "idle": "nieaktywny",
-            "off": "wyłączony",
-            "on": "włączony",
+            "off": "wył.",
+            "on": "wł.",
             "paused": "wstrzymany",
             "returning": "powrót do stacji dokującej"
         },
@@ -575,29 +575,29 @@
                 "by_service": "przez usługę",
                 "entries_not_found": "Nie znaleziono wpisów w dzienniku.",
                 "messages": {
-                    "became_unavailable": "jest niedostępny(-a)",
-                    "changed_to_state": "zmienił się na {state}",
-                    "cleared_device_class": "brak (nie {device_class} ruchu)",
-                    "detected_device_class": "wykryto {device_class}",
+                    "became_unavailable": "- encja stała się niedostępna",
+                    "changed_to_state": "- stan encji zmienił się na {state}",
+                    "cleared_device_class": "- encja przestała wykrywać {device_class}",
+                    "detected_device_class": "- encja wykryła {device_class}",
                     "rose": "wzeszło",
                     "set": "zaszło",
-                    "turned_off": "wyłączony(-a)",
-                    "turned_on": "włączony(-a)",
-                    "was_at_home": "był w domu",
-                    "was_at_state": "był w {state}",
-                    "was_away": "był poza domem",
-                    "was_closed": "zostały(-o) zamknięte(-a)",
-                    "was_connected": "został podłączony",
-                    "was_disconnected": "został odłączony",
-                    "was_locked": "został zamknięty",
-                    "was_low": "był niski",
-                    "was_normal": "był normalny",
-                    "was_opened": "zostały(-o) otwarte(-a)",
-                    "was_plugged_in": "został(-a) podłączony(-a)",
-                    "was_safe": "nie było zagrożenia",
-                    "was_unlocked": "został otwarty",
-                    "was_unplugged": "został(-a) odłączony(-a)",
-                    "was_unsafe": "było zagrożenie"
+                    "turned_off": "- encja została wyłączona",
+                    "turned_on": "- encja została włączona",
+                    "was_at_home": "- stan encji zmienił się na \"w domu\"",
+                    "was_at_state": "- stan encji zmienił się na {state}",
+                    "was_away": "- stan encji zmienił się na \"poza domem\"",
+                    "was_closed": "nastąpiło zamknięcie",
+                    "was_connected": "nastąpiło podłączenie",
+                    "was_disconnected": "nastąpiło odłączenie",
+                    "was_locked": "nastąpiło zamknięcie",
+                    "was_low": "- stan encji zmienił się na niski",
+                    "was_normal": "- stan encji zmienił się na normalny",
+                    "was_opened": "nastąpiło otwarcie",
+                    "was_plugged_in": "nastąpiło podłączenie",
+                    "was_safe": "- encja przestała wykrywać zagrożenie",
+                    "was_unlocked": "nastąpiło otwarcie",
+                    "was_unplugged": "nastąpiło odłączenie",
+                    "was_unsafe": "- encja wykryła zagrożenie"
                 }
             },
             "media-browser": {
@@ -695,6 +695,11 @@
             },
             "service-picker": {
                 "service": "Usługa"
+            },
+            "user-picker": {
+                "add_user": "Dodaj użytkownika",
+                "no_user": "Brak użytkownika",
+                "remove_user": "Usuń użytkownika"
             }
         },
         "dialogs": {
@@ -713,7 +718,7 @@
                 "dismiss": "Odrzuć",
                 "editor": {
                     "confirm_delete": "Czy na pewno chcesz usunąć ten wpis?",
-                    "delete": "USUŃ",
+                    "delete": "Usuń",
                     "enabled_cause": "Wyłączone przez {cause}.",
                     "enabled_description": "Wyłączone encje nie będą dostępne w Home Assistant.",
                     "enabled_label": "Włącz encję",
@@ -723,7 +728,7 @@
                     "name": "Nazwa",
                     "note": "Uwaga: to może jeszcze nie działać ze wszystkimi integracjami.",
                     "unavailable": "Ta encja nie jest obecnie dostępna.",
-                    "update": "AKTUALIZUJ"
+                    "update": "Aktualizuj"
                 },
                 "faq": "dokumentacja",
                 "no_unique_id": "Ta encja nie ma unikalnego identyfikatora, dlatego z poziomu interfejsu użytkownika nie można zarządzać jej ustawieniami. Więcej szczegółów znajdziesz w {faq_link}.",
@@ -947,6 +952,7 @@
         },
         "notification_toast": {
             "connection_lost": "Utracono połączenie. Łączę ponownie...",
+            "dismiss": "Ukryj",
             "service_call_failed": "Nie udało się wywołać usługi {service}.",
             "started": "Home Assistant uruchomił się!",
             "starting": "Home Assistant uruchamia się, nie wszystko będzie dostępne, dopóki uruchamianie się nie zakończy.",
@@ -1078,7 +1084,7 @@
                         "conditions": {
                             "add": "Dodaj warunek",
                             "delete": "Usuń",
-                            "delete_confirm": "Czy chcesz usunąć?",
+                            "delete_confirm": "Czy na pewno chcesz to usunąć?",
                             "duplicate": "Duplikuj",
                             "header": "Warunki",
                             "introduction": "Warunki nie są wymagane w automatyzacji, ale zastosowanie ich wykluczy jej potencjalnie niechciane uruchomienia, póki logika każdego z nich przyjmuje wartość pozytywną.",
@@ -1200,6 +1206,9 @@
                                     "trigger": "Wyzwalacz"
                                 },
                                 "event": {
+                                    "context_user_pick": "Dodaj użytkownika",
+                                    "context_user_picked": "Użytkownik wywołujący zdarzenie",
+                                    "context_users": "Tylko zdarzenia wywołane przez",
                                     "event_data": "Dane zdarzenia",
                                     "event_type": "Typ zdarzenia",
                                     "label": "Zdarzenie"
@@ -1548,7 +1557,7 @@
                     "caption": "Urządzenia",
                     "confirm_delete": "Czy na pewno chcesz usunąć to urządzenie?",
                     "confirm_rename_entity_ids": "Czy chcesz także zmienić identyfikatory encji?",
-                    "confirm_rename_entity_ids_warning": "Nie zmieni to żadnej konfiguracji (jak automatyzacje, skrypty, sceny, Lovelace), która obecnie używa tych encji, będziesz musiał je zaktualizować samodzielnie.",
+                    "confirm_rename_entity_ids_warning": "Nie zmieni to żadnej konfiguracji (jak automatyzacje, skrypty, sceny, dashboardy), która obecnie używa tych encji. Będziesz musiał je zaktualizować samemu, by używać nowych identyfikatorów encji!",
                     "data_table": {
                         "area": "Obszar",
                         "battery": "Bateria",
@@ -1814,7 +1823,7 @@
                             "title_required": "Tytuł jest wymagany",
                             "update": "Aktualizuj",
                             "url": "URL",
-                            "url_error_msg": "Adres URL nie może zawierać spacji ani znaków specjalnych, z wyjątkiem _ i -"
+                            "url_error_msg": "Adres URL powininen zawierać -, a nie może zawierać spacji ani znaków specjalnych, z wyjątkiem _ i -"
                         },
                         "picker": {
                             "add_dashboard": "Dodaj dashboard",
@@ -1829,7 +1838,7 @@
                             "open": "Otwórz"
                         }
                     },
-                    "description": "Konfiguruj dashboardy interfejsu użytkownika Lovelace",
+                    "description": "Zarządzaj dashboardami interfejsu użytkownika Lovelace",
                     "resources": {
                         "cant_edit_yaml": "Korzystasz z interfejsu użytkownika Lovelace w trybie YAML, dlatego nie możesz zarządzać zasobami za pomocą interfejsu użytkownika. Zarządzaj nimi w pliku configuration.yaml.",
                         "caption": "Zasoby",
@@ -2312,7 +2321,7 @@
                         "create_group": "Zigbee Home Automation - utwórz grupę",
                         "create_group_details": "Wprowadź wymagane dane, aby utworzyć nową grupę Zigbee",
                         "creating_group": "Tworzenie grupy",
-                        "description": "Twórz i modyfikuj grupy Zigbee",
+                        "description": "Zarządzaj grupami Zigbee",
                         "group_details": "Oto wszystkie szczegóły dotyczące zaznaczonej grupy Zigbee.",
                         "group_id": "Identyfikator grupy",
                         "group_info": "Informacje o grupie",
@@ -2847,7 +2856,7 @@
                         "move_after": "Przesuń kartę za",
                         "move_before": "Przesuń kartę przed",
                         "options": "Więcej opcji",
-                        "pick_card": "Wybierz kartę, którą chcesz dodać.",
+                        "pick_card": "Którą kartę chcesz dodać?",
                         "pick_card_view_title": "Którą kartę chcesz dodać do widoku {name}?",
                         "search_cards": "Szukaj kart",
                         "show_code_editor": "Edytor kodu",
@@ -2941,7 +2950,8 @@
                     "exit_edit_mode": "Wyjdź z trybu edycji interfejsu użytkownika",
                     "help": "Pomoc",
                     "refresh": "Wczytaj ponownie",
-                    "reload_resources": "Wczytaj ponownie zasoby"
+                    "reload_resources": "Wczytaj ponownie zasoby",
+                    "start_conversation": "Rozpocznij rozmowę"
                 },
                 "reload_lovelace": "Wczytaj ponownie Lovelace",
                 "reload_resources": {

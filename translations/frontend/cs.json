@@ -695,6 +695,11 @@
             },
             "service-picker": {
                 "service": "Služba"
+            },
+            "user-picker": {
+                "add_user": "Přidat uživatele",
+                "no_user": "Žádný uživatel",
+                "remove_user": "Odebrat uživatele"
             }
         },
         "dialogs": {
@@ -947,6 +952,7 @@
         },
         "notification_toast": {
             "connection_lost": "Připojení bylo ztraceno. Připojuji se znovu...",
+            "dismiss": "Zavřít",
             "service_call_failed": "Službu {service} se nepodařilo zavolat.",
             "started": "Home Assistant je spuštěn!",
             "starting": "Home Assistant se spouští, ne všechno bude k dispozici, dokud nebude spuštění dokončeno.",
@@ -1200,6 +1206,9 @@
                                     "trigger": "Spouštěč"
                                 },
                                 "event": {
+                                    "context_user_pick": "Přidat uživatele",
+                                    "context_user_picked": "Uživatel, který spustil událost",
+                                    "context_users": "Omezit na události spuštěné",
                                     "event_data": "Data události",
                                     "event_type": "Typ události",
                                     "label": "Událost"
@@ -2941,7 +2950,8 @@
                     "exit_edit_mode": "Ukončit režim úprav uživatelského rozhraní",
                     "help": "Pomoc",
                     "refresh": "Obnovit",
-                    "reload_resources": "Nově načíst zdroje"
+                    "reload_resources": "Nově načíst zdroje",
+                    "start_conversation": "Zahájit konverzaci"
                 },
                 "reload_lovelace": "Nově načíst Lovelace",
                 "reload_resources": {

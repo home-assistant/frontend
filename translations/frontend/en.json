@@ -2540,10 +2540,11 @@
                         "entity": "Entity",
                         "jinja_documentation": "Jinja2 template documentation",
                         "listeners": "This template listens for the following state changed events:",
-                        "no_listeners": "This template does not listen for any state changed events and will not update automatically.",
+                        "no_listeners": "This template does not listen for any events and will not update automatically.",
                         "reset": "Reset to demo template",
+                        "result_type": "Result type",
                         "template_extensions": "Home Assistant template extensions",
-                        "time": "This template updates every 60 seconds after the last state changed event.",
+                        "time": "This template updates at the start of each minute.",
                         "title": "Template",
                         "unknown_error_template": "Unknown error rendering template"
                     }
@@ -2686,6 +2687,7 @@
                                 "entity-id": "Entity ID",
                                 "last-changed": "Last Changed",
                                 "last-triggered": "Last Triggered",
+                                "last-updated": "Last Updated",
                                 "none": "No Secondary Info",
                                 "position": "Position",
                                 "tilt-position": "Tilt Position"
