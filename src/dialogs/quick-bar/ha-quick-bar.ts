@@ -45,7 +45,7 @@ import { navigate } from "../../common/navigate";
 import { configSections } from "../../panels/config/ha-panel-config";
 import { toTitleCase } from "../../common/string/helpers";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
-import { shouldShowPage } from "../../common/config/should_show_page";
+import { canShowPage } from "../../common/config/can_show_page";
 
 interface QuickBarItem extends ScorableTextItem {
   icon: string;
@@ -64,9 +64,9 @@ interface NavigationInfo extends PageNavigation {
 export class QuickBar extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _commandItems: QuickBarItem[] = [];
+  @internalProperty() private _commandItems?: QuickBarItem[];
 
-  @internalProperty() private _entityItems: QuickBarItem[] = [];
+  @internalProperty() private _entityItems?: QuickBarItem[];
 
   @internalProperty() private _items?: QuickBarItem[] = [];
 
@@ -86,8 +86,7 @@ export class QuickBar extends LitElement {
 
   public async showDialog(params: QuickBarParams) {
     this._commandMode = params.commandMode || this._toggleIfAlreadyOpened();
-    this._commandItems = this._generateCommandItems();
-    this._entityItems = this._generateEntityItems();
+    this._initializeItemsIfNeeded();
     this._opened = true;
   }
 
@@ -169,6 +168,14 @@ export class QuickBar extends LitElement {
             </mwc-list>`}
       </ha-dialog>
     `;
+  }
+
+  private _initializeItemsIfNeeded() {
+    if (this._commandMode) {
+      this._commandItems = this._generateCommandItemsIfEmpty();
+    } else {
+      this._entityItems = this._generateEntityItemsIfEmpty();
+    }
   }
 
   private _handleOpened() {
@@ -266,6 +273,8 @@ export class QuickBar extends LitElement {
     if (oldCommandMode !== this._commandMode) {
       this._items = undefined;
       this._focusSet = false;
+
+      this._initializeItemsIfNeeded();
     }
   }
 
@@ -293,23 +302,30 @@ export class QuickBar extends LitElement {
     }
   }
 
-  private _generateEntityItems(): QuickBarItem[] {
-    return Object.keys(this.hass.states)
-      .map((entityId) => ({
-        text: computeStateName(this.hass.states[entityId]),
-        altText: entityId,
-        icon: domainIcon(computeDomain(entityId), this.hass.states[entityId]),
-        action: () => fireEvent(this, "hass-more-info", { entityId }),
-      }))
-      .sort((a, b) => compare(a.text.toLowerCase(), b.text.toLowerCase()));
+  private _generateEntityItemsIfEmpty(): QuickBarItem[] {
+    return this._entityItems
+      ? this._entityItems
+      : Object.keys(this.hass.states)
+          .map((entityId) => ({
+            text: computeStateName(this.hass.states[entityId]),
+            altText: entityId,
+            icon: domainIcon(
+              computeDomain(entityId),
+              this.hass.states[entityId]
+            ),
+            action: () => fireEvent(this, "hass-more-info", { entityId }),
+          }))
+          .sort((a, b) => compare(a.text.toLowerCase(), b.text.toLowerCase()));
   }
 
-  private _generateCommandItems(): QuickBarItem[] {
-    return [
-      ...this._generateReloadCommands(),
-      ...this._generateServerControlCommands(),
-      ...this._generateNavigationCommands(),
-    ].sort((a, b) => compare(a.text.toLowerCase(), b.text.toLowerCase()));
+  private _generateCommandItemsIfEmpty(): QuickBarItem[] {
+    return this._commandItems
+      ? this._commandItems
+      : [
+          ...this._generateReloadCommands(),
+          ...this._generateServerControlCommands(),
+          ...this._generateNavigationCommands(),
+        ].sort((a, b) => compare(a.text.toLowerCase(), b.text.toLowerCase()));
   }
 
   private _generateReloadCommands(): QuickBarItem[] {
@@ -379,7 +395,7 @@ export class QuickBar extends LitElement {
 
     for (const sectionKey of Object.keys(configSections)) {
       for (const page of configSections[sectionKey]) {
-        if (shouldShowPage(this.hass, page)) {
+        if (canShowPage(this.hass, page)) {
           if (page.component) {
             const info = this._getNavigationInfoFromConfig(
               sectionKey,
@@ -405,25 +421,21 @@ export class QuickBar extends LitElement {
       (section) => section.component === component
     );
 
-    if (!panel || !panel.translationKey) {
-      throw Error("Navigation section or its translation not found");
-    }
-
     const shortCaption = this.hass.localize(
       `ui.dialogs.quick-bar.commands.navigation.${component}`
     );
 
-    if (!shortCaption) {
-      return;
+    if (panel && panel.translationKey && shortCaption) {
+      const caption = this.hass.localize(
+        "ui.dialogs.quick-bar.commands.navigation.navigate_to",
+        "panel",
+        shortCaption
+      );
+
+      return { ...panel, text: caption };
     }
 
-    const caption = this.hass.localize(
-      "ui.dialogs.quick-bar.commands.navigation.navigate_to",
-      "panel",
-      shortCaption
-    );
-
-    return { ...panel, text: caption };
+    return undefined;
   }
 
   private _getPanelText(panel: Panels["panel"]) {
