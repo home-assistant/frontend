@@ -90,8 +90,8 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
       }
 
       const name = await showPromptDialog(this, {
-        title: "What should this device be called ?",
-        inputLabel: "Please enter a name for the device",
+        title: this.hass.localize("ui.panel.profile.push_notifications.add_device.title"),
+        inputLabel: this.hass.localize("ui.panel.profile.push_notifications.add_device.text"),
         inputType: "string"
       });
       if (name == null) {
