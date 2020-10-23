@@ -2189,7 +2189,8 @@
             "header": "Node Configuration",
             "introduction": "Manage the different configuration parameters for a Z-Wave node.",
             "help_source": "Config parameter descriptions and help text are provided by the OpenZWave project.",
-            "wakeup_help": "Battery powered nodes must be awake to change their configuration. If the node is not awake, OpenZWave will attempt to update the node's configuration the next time it wakes up, which could be multiple hours (or days) later. Follow these steps to wake up your device:"
+            "wakeup_help": "Battery powered nodes must be awake to change their configuration. If the node is not awake, OpenZWave will attempt to update the node's configuration the next time it wakes up, which could be multiple hours (or days) later. Follow these steps to wake up your device:",
+            "update": "Update"
           },
           "node_metadata": {
             "product_manual": "Product Manual"

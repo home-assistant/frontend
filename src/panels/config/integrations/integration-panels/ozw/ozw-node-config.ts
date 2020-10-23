@@ -1,3 +1,8 @@
+import "../../../../../components/ha-switch";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-input/paper-input";
 import "@material/mwc-button/mwc-button";
 import {
   css,
@@ -161,16 +166,8 @@ class OZWNodeConfig extends LitElement {
                   : ``}
                 ${this._config
                   ? html`
-                      ${this._config.map(
-                        (item) => html`
-                          <ha-card class="content">
-                            <div class="card-content">
-                              <b>${item.label}</b><br />
-                              <span class="secondary">${item.help}</span>
-                              <p>${item.value}</p>
-                            </div>
-                          </ha-card>
-                        `
+                      ${this._config.map((item) =>
+                        this._generate_config_block(item)
                       )}
                     `
                   : ``}
@@ -179,6 +176,94 @@ class OZWNodeConfig extends LitElement {
         </ha-config-section>
       </hass-tabs-subpage>
     `;
+  }
+
+  private _generate_config_block(item) {
+    console.log(item);
+    return html` <ha-card class="content" .value=${item.value}>
+      <div class="card-content">
+        <b>${item.label}</b><br />
+        <span class="secondary">${item.help}</span>
+        ${["Byte", "Short", "Int"].includes(item.type)
+          ? html` <paper-input
+              type="number"
+              .value=${item.value}
+              .max=${item.max}
+              .min=${item.min}
+              ?disabled=${item.parameter === 999}
+              .parameter=${item.parameter}
+            >
+            </paper-input>`
+          : ``}
+        ${item.type === "List"
+          ? html`
+              <paper-dropdown-menu
+                ?disabled=${item.parameter === 999}
+                .placeholder=${item.value}
+                .parameter=${item.parameter}
+              >
+                <paper-listbox
+                  slot="dropdown-content"
+                  .selected=${Object.values(item.options).find(
+                    (opt) => opt.Label === item.value
+                  ).Value}
+                >
+                  ${item.options.map(
+                    (option) => html`
+                      <paper-item .value=${option.Value}
+                        >${option.Label}</paper-item
+                      >
+                    `
+                  )}
+                </paper-listbox>
+              </paper-dropdown-menu>
+            `
+          : ""}
+        ${item.type === "BitSet"
+          ? html`
+              ${item.value.map(
+                (option) => html`
+                  <p>
+                    <ha-switch ?checked=${option.value} disabled></ha-switch>
+                    ${option.label}
+                  </p>
+                `
+              )}
+            `
+          : ``}
+        ${!["Byte", "Short", "Int", "List", "BitSet"].includes(item.type)
+          ? html`<p>${item.value}</p>`
+          : ``}
+        ${item.parameter === 999
+          ? html`<p class="error">
+              This config option can't be edited from the UI due to a current
+              OpenZWave integration issue.
+            </p>`
+          : ``}
+      </div>
+      ${["Byte", "Short", "Int"].includes(item.type)
+        ? html` <div class="card-actions">
+            <mwc-button
+              @click=${this._updateTextConfigOption}
+              ?disabled=${item.parameter === 999}
+            >
+              ${this.hass.localize("ui.panel.config.ozw.node_config.update")}
+            </mwc-button>
+          </div>`
+        : ``}
+      ${item.type === "List"
+        ? html`
+            <div class="card-actions">
+              <mwc-button
+                @click=${this._updateListConfigOption}
+                ?disabled=${item.parameter === 999}
+              >
+                ${this.hass.localize("ui.panel.config.ozw.node_config.update")}
+              </mwc-button>
+            </div>
+          `
+        : ``}
+    </ha-card>`;
   }
 
   private async _fetchData() {
@@ -214,6 +299,32 @@ class OZWNodeConfig extends LitElement {
       }
       throw err;
     }
+  }
+
+  private _updateTextConfigOption(ev: Event) {
+    const el = ev.target!.closest("ha-card").querySelector("paper-input");
+    console.log(el.parameter + "::" + el.value);
+    this.hass.callWS({
+      type: "ozw/set_config_parameter",
+      node_id: this.nodeId,
+      ozw_instance: this.ozwInstance,
+      parameter: el.parameter,
+      value: el.value,
+    });
+  }
+
+  private _updateListConfigOption(ev: Event) {
+    const el = ev
+      .target!.closest("ha-card")
+      .querySelector("paper-dropdown-menu");
+    console.log(el.parameter + "::" + el.selectedItem.value);
+    /*  this.hass.callWS({
+      type: "ozw/set_config_parameter",
+      node_id: this.nodeId,
+      ozw_instance: this.ozwInstance,
+      parameter: el.parameter,
+      value: el.value
+    }); */
   }
 
   private async _refreshNodeClicked() {
@@ -262,9 +373,28 @@ class OZWNodeConfig extends LitElement {
           font-size: 0.9em;
           margin-top: 6px;
         }
+
+        paper-dropdown-menu {
+          display: block;
+        }
+
+        ha-switch {
+          margin-right: 12px;
+        }
+
+        .error {
+          color: red;
+        }
       `,
     ];
   }
+}
+
+export interface ChangeEvent {
+  detail?: {
+    value?: any;
+  };
+  target?: EventTarget;
 }
 
 declare global {
