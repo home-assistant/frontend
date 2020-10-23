@@ -44,6 +44,7 @@ import { QuickBarParams } from "./show-dialog-quick-bar";
 import { navigate } from "../../common/navigate";
 import { configSections } from "../../panels/config/ha-panel-config";
 import { toTitleCase } from "../../common/string/helpers";
+import { PageNavigation } from "../../layouts/hass-tabs-subpage";
 
 interface QuickBarItem extends ScorableTextItem {
   icon: string;
@@ -358,12 +359,19 @@ export class QuickBar extends LitElement {
   private _generateNavigationSectionCommands(): Partial<
     QuickBarNavigationItem
   >[] {
-    return [
-      this._getNavigationInfoFromConfig("general", "logs"),
-      this._getNavigationInfoFromConfig("automation", "automation"),
-      this._getNavigationInfoFromConfig("automation", "script"),
-      this._getNavigationInfoFromConfig("general", "server_control"),
-    ];
+    const items: (PageNavigation | { text: string })[] = [];
+
+    for (const sectionKey of Object.keys(configSections)) {
+      for (const page of configSections[sectionKey]) {
+        if (page.component) {
+          items.push(
+            this._getNavigationInfoFromConfig(sectionKey, page.component)
+          );
+        }
+      }
+    }
+
+    return items;
   }
 
   private _generateEntityItems(): QuickBarItem[] {
@@ -377,7 +385,10 @@ export class QuickBar extends LitElement {
       .sort((a, b) => compare(a.text.toLowerCase(), b.text.toLowerCase()));
   }
 
-  private _getNavigationInfoFromConfig(sectionKey: string, component: string) {
+  private _getNavigationInfoFromConfig(
+    sectionKey: string,
+    component: string
+  ): PageNavigation | { text: string } {
     const panel = configSections[sectionKey].find(
       (section) => section.component === component
     );
