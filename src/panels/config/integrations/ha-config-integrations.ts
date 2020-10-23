@@ -739,6 +739,13 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         }
         h2 {
           margin-top: 0;
+          word-wrap: break-word;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 3;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: normal;
         }
       `,
     ];
