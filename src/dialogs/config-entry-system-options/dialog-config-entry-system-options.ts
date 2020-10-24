@@ -13,6 +13,7 @@ import "../../components/ha-dialog";
 import "../../components/ha-circular-progress";
 import "../../components/ha-switch";
 import "../../components/ha-formfield";
+import { fireEvent } from "../../common/dom/fire_event";
 import type { HaSwitch } from "../../components/ha-switch";
 import {
   getConfigEntrySystemOptions,
@@ -29,13 +30,11 @@ class DialogConfigEntrySystemOptions extends LitElement {
 
   @internalProperty() private _disableNewEntities!: boolean;
 
-  @internalProperty() private _open = false;
-
   @internalProperty() private _error?: string;
 
   @internalProperty() private _params?: ConfigEntrySystemOptionsDialogParams;
 
-  @internalProperty() private _loading?: boolean;
+  @internalProperty() private _loading = false;
 
   @internalProperty() private _submitting = false;
 
@@ -43,7 +42,6 @@ class DialogConfigEntrySystemOptions extends LitElement {
     params: ConfigEntrySystemOptionsDialogParams
   ): Promise<void> {
     this._params = params;
-    this._open = true;
     this._error = undefined;
     this._loading = true;
     const systemOptions = await getConfigEntrySystemOptions(
@@ -52,13 +50,12 @@ class DialogConfigEntrySystemOptions extends LitElement {
     );
     this._loading = false;
     this._disableNewEntities = systemOptions.disable_new_entities;
-    await this.updateComplete;
   }
 
   public closeDialog(): void {
-    this._open = false;
     this._error = "";
     this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render(): TemplateResult {
@@ -68,7 +65,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
 
     return html`
       <ha-dialog
-        open=${this._open}
+        open
         scrimClickAction
         escapeKeyAction
         @close=${this.closeDialog}
@@ -118,13 +115,17 @@ class DialogConfigEntrySystemOptions extends LitElement {
                 </div>
               `}
         </div>
-        <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
+        <mwc-button
+          slot="secondaryAction"
+          @click=${this.closeDialog}
+          .disabled=${this._submitting || this._loading}
+        >
           ${this.hass.localize("ui.common.cancel")}
         </mwc-button>
         <mwc-button
           slot="primaryAction"
           @click="${this._updateEntry}"
-          .disabled=${this._submitting}
+          .disabled=${this._submitting || this._loading}
         >
           ${this.hass.localize("ui.dialogs.config_entry_system_options.update")}
         </mwc-button>
