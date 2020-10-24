@@ -2540,10 +2540,11 @@
                         "entity": "Entidad",
                         "jinja_documentation": "Documentación de plantilla Jinja2",
                         "listeners": "Esta plantilla escucha los siguientes eventos de cambio de estado:",
-                        "no_listeners": "Esta plantilla no escucha ningún evento de cambio de estado y no se actualizará automáticamente.",
+                        "no_listeners": "Esta plantilla no escucha ningún evento y no se actualizará automáticamente.",
                         "reset": "Reiniciar a la plantilla de demostración",
+                        "result_type": "Tipo de resultado",
                         "template_extensions": "Extensiones de plantilla de Home Assistant",
-                        "time": "Esta plantilla se actualiza cada 60 segundos después del último evento de cambio de estado.",
+                        "time": "Esta plantilla se actualiza al comienzo de cada minuto.",
                         "title": "Plantillas",
                         "unknown_error_template": "Error desconocido al mostrar la plantilla"
                     }
@@ -2686,6 +2687,7 @@
                                 "entity-id": "ID de entidad",
                                 "last-changed": "Último cambio",
                                 "last-triggered": "Última activación",
+                                "last-updated": "Última actualización",
                                 "none": "Sin información secundaria",
                                 "position": "Posición",
                                 "tilt-position": "Posición de inclinación"

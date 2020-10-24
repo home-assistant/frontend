@@ -2540,10 +2540,11 @@
                         "entity": "Entita",
                         "jinja_documentation": "Dokumentace šablony Jinja2",
                         "listeners": "Tato šablona naslouchá následujícím změnám stavu:",
-                        "no_listeners": "Tato šablona neposlouchá žádné změny stavu a nebude se automaticky aktualizovat.",
+                        "no_listeners": "Tato šablona nenaslouchá žádným událostem a nebude automaticky aktualizována.",
                         "reset": "Obnovit ukázkovou šablonu",
+                        "result_type": "Typ výsledku",
                         "template_extensions": "Rozšíření šablony Home Assistant",
-                        "time": "Tato šablona se aktualizuje každých 60 sekund po poslední změně stavu.",
+                        "time": "Tato šablona se aktualizuje na začátku každé minuty.",
                         "title": "Šablony",
                         "unknown_error_template": "Šablona vykreslování neznámých chyb"
                     }
@@ -2686,6 +2687,7 @@
                                 "entity-id": "ID entity",
                                 "last-changed": "Naposledy změněno",
                                 "last-triggered": "Naposledy spuštěno",
+                                "last-updated": "Naposledy aktualizováno",
                                 "none": "Žádné doplňující informace",
                                 "position": "Pozice",
                                 "tilt-position": "Náklon"

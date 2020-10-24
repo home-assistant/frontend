@@ -1487,7 +1487,7 @@
                     }
                 },
                 "devices": {
-                    "add_prompt": "Inget {name} har lagts till med hjälp av den här enheten ännu. Du kan lägga till en genom att klicka på + knappen ovan.",
+                    "add_prompt": "Inga {name} har lagts till med hjälp av den här enheten ännu. Du kan lägga till genom att klicka på + knappen ovan.",
                     "automation": {
                         "actions": {
                             "caption": "När något utlöses..."
