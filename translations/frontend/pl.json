@@ -1823,7 +1823,7 @@
                             "title_required": "Tytuł jest wymagany",
                             "update": "Aktualizuj",
                             "url": "URL",
-                            "url_error_msg": "Adres URL powininen zawierać -, a nie może zawierać spacji ani znaków specjalnych, z wyjątkiem _ i -"
+                            "url_error_msg": "Adres URL powinien zawierać -, a nie może zawierać spacji ani znaków specjalnych, z wyjątkiem _ i -"
                         },
                         "picker": {
                             "add_dashboard": "Dodaj dashboard",
@@ -2540,10 +2540,11 @@
                         "entity": "Encja",
                         "jinja_documentation": "Dokumentacja szablonów Jinja2",
                         "listeners": "Ten szablon nasłuchuje następujących zdarzeń zmiany stanu:",
-                        "no_listeners": "Ten szablon nie nasłuchuje żadnych zdarzeń zmiany stanu i nie zostanie zaktualizowany automatycznie.",
+                        "no_listeners": "Ten szablon nie nasłuchuje żadnych zdarzeń i nie zostanie zaktualizowany automatycznie.",
                         "reset": "Zresetuj do szablonu demonstracyjnego",
+                        "result_type": "Rodzaj wyniku",
                         "template_extensions": "Rozszerzenia szablonów Home Assistant",
-                        "time": "Ten szablon aktualizuje się co 60 sekund po ostatniej zmianie stanu.",
+                        "time": "Ten szablon aktualizuje się z rozpoczęciem każdej minuty.",
                         "title": "Szablon",
                         "unknown_error_template": "Nieznany błąd podczas renderowania szablonu"
                     }
@@ -2686,6 +2687,7 @@
                                 "entity-id": "Identyfikator encji",
                                 "last-changed": "Ostatnia zmiana",
                                 "last-triggered": "Ostatnie uruchomienie",
+                                "last-updated": "Ostatnia aktualizacja",
                                 "none": "Brak dodatkowych informacji",
                                 "position": "Pozycja",
                                 "tilt-position": "Pochylenie"

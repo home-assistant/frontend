@@ -577,14 +577,14 @@
                 "messages": {
                     "became_unavailable": "muutus kättesaamatuks",
                     "changed_to_state": "muutus olekusse {state}",
-                    "cleared_device_class": "kustutatud ( {device_class} ei leitud)",
+                    "cleared_device_class": "lõpetatud ( {device_class} ei leitud)",
                     "detected_device_class": "tuvastati {device_class}",
                     "rose": "tõusis",
                     "set": "määratud",
                     "turned_off": "lülitus välja",
                     "turned_on": "lülitus sisse",
                     "was_at_home": "oli kodus",
-                    "was_at_state": "oli olekus {state}",
+                    "was_at_state": "oli @ {state}",
                     "was_away": "oli ära",
                     "was_closed": "sulgus",
                     "was_connected": "ühendus",
@@ -698,6 +698,7 @@
             },
             "user-picker": {
                 "add_user": "Lisa kasutaja",
+                "no_user": "Kasutaja puudub",
                 "remove_user": "Kustuta kasutaja"
             }
         },
@@ -915,7 +916,7 @@
                 "manuf": "{manufacturer} järgi",
                 "no_area": "Ala puudub",
                 "power_source": "Toiteallikas",
-                "quirk": "Veidrus",
+                "quirk": "Erim",
                 "services": {
                     "reconfigure": "Taasseadista (tervenda) ZHA seade. Kasuta seda, kui seadmega on probleeme. Kui seade on akutoitega, siis veendu, et see oleks ärkvel ja oleks valmis käske vastu võtma.",
                     "remove": "Eemalda seade Zigbee võrgust.",
@@ -1206,6 +1207,8 @@
                                 },
                                 "event": {
                                     "context_user_pick": "Lisa kasutaja",
+                                    "context_user_picked": "Kasutaja kes vallandas sündmuse",
+                                    "context_users": "Piira sündmustega mille on käivitanud",
                                     "event_data": "Sündmuse andmed",
                                     "event_type": "Sündmuse tüüp",
                                     "label": "Sündmus"
@@ -1507,7 +1510,7 @@
                 "customize": {
                     "attributes_customize": "Need atribuudid on juba määratud kirjes customize.yaml",
                     "attributes_not_set": "Neid olemi atribuute ei määratud. Kui soovite, määrake need.",
-                    "attributes_outside": "Need olemi atribuudid on kohandatud väljastpoolt customize.yaml",
+                    "attributes_outside": "Need olemi atribuudid on kohandatud väljastpool customize.yaml-i",
                     "attributes_override": "Soovi korral saate neid muuta.",
                     "attributes_set": "Need olemi atribuudid määratakse programmiliselt.",
                     "caption": "Kohandamised",
@@ -1698,7 +1701,7 @@
                 },
                 "integration_panel_move": {
                     "link_integration_page": "Sidumiste leht",
-                    "missing_zha": "Puudub ZHA konfigureerimispaneel? See teisaldati lehele {integrations_page} ZHA kirje juurde.",
+                    "missing_zha": "Ei näe ZHA konfigureerimispaneeli? See teisaldati lehele {integrations_page} ZHA kirje juurde.",
                     "missing_zwave": "Puudub Z-Wave konfigureerimispaneel? See teisaldati lehele {integrations_page} Z-Wave kirje juurde."
                 },
                 "integrations": {
@@ -2537,10 +2540,11 @@
                         "entity": "Olem",
                         "jinja_documentation": "Jinja2 malli dokumentatsioon",
                         "listeners": "See mall kuulab järgmisi olekuga muutunud sündmusi:",
-                        "no_listeners": "See mall ei kuula olekuga muudetud sündmusi ega värskenda seda automaatselt.",
+                        "no_listeners": "See mall ei kuula olekuga muudetud sündmusi ega värskendu automaatselt.",
                         "reset": "Lähtesta demomallile",
+                        "result_type": "Tulemuse tüüp",
                         "template_extensions": "Home Assistanti mallilaiendid",
-                        "time": "See mall värskendub iga 60 sekundi järel pärast viimast olekut muutnud sündmust.",
+                        "time": "See mall värskendub iga minuti alguses.",
                         "title": "Mall",
                         "unknown_error_template": "Malli renderdamisel ilmnes tundmatu viga"
                     }
@@ -2683,6 +2687,7 @@
                                 "entity-id": "Olemi ID",
                                 "last-changed": "Viimati muudetud",
                                 "last-triggered": "Viimati vallandunud",
+                                "last-updated": "Viimati uuendatud",
                                 "none": "Teisene teave puudub",
                                 "position": "Asend",
                                 "tilt-position": "Kalle"
@@ -3264,7 +3269,7 @@
                     "dark_mode": {
                         "auto": "Automaatne",
                         "dark": "Tume",
-                        "light": "Tuled"
+                        "light": "Hele"
                     },
                     "dropdown_label": "Teema",
                     "error_no_theme": "Teemasid pole saadaval.",

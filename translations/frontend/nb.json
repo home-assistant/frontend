@@ -2540,10 +2540,11 @@
                         "entity": "Entitet",
                         "jinja_documentation": "Jinja2 mal dokumentasjon",
                         "listeners": "Denne malen lytter etter følgende tilstand endret hendelser:",
-                        "no_listeners": "Denne malen lytter ikke etter noen tilstand endret hendelser og oppdateres ikke automatisk.",
+                        "no_listeners": "Denne malen lytter ikke etter noen hendelser og oppdateres ikke automatisk.",
                         "reset": "Tilbakestill til demomal",
+                        "result_type": "Resultat type",
                         "template_extensions": "Mal utvidelser for Home Assistant",
-                        "time": "Denne malen oppdateres hvert 60. sekund etter den siste endrede hendelsen",
+                        "time": "Denne malen oppdateres i begynnelsen av hvert minutt.",
                         "title": "Mal",
                         "unknown_error_template": "Ukjent feil ved rendring av mal"
                     }
@@ -2686,6 +2687,7 @@
                                 "entity-id": "Entitets-ID",
                                 "last-changed": "Sist endret",
                                 "last-triggered": "Sist utløst",
+                                "last-updated": "Sist oppdatert",
                                 "none": "Ingen sekundær info",
                                 "position": "Posisjon",
                                 "tilt-position": "Vippeposisjon"
