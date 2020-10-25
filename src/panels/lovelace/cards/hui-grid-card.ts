@@ -3,7 +3,7 @@ import { computeCardSize } from "../common/compute-card-size";
 import { HuiStackCard } from "./hui-stack-card";
 import { GridCardConfig } from "./types";
 
-const DEFAULT_COLUMNS = 2;
+const DEFAULT_COLUMNS = 3;
 
 class HuiGridCard extends HuiStackCard<GridCardConfig> {
   public async getCardSize(): Promise<number> {
