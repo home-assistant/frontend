@@ -711,7 +711,7 @@
             },
             "domain_toggler": {
                 "reset_entities": "重置實體",
-                "title": "切換區域"
+                "title": "實體類群開關"
             },
             "entity_registry": {
                 "control": "控制",
@@ -1380,8 +1380,8 @@
                         "expose_entity": "公開實體",
                         "exposed": "{selected} 已公開",
                         "exposed_entities": "已公開實體",
-                        "follow_domain": "跟隨區域",
-                        "manage_domains": "管理區域",
+                        "follow_domain": "跟隨實體類群",
+                        "manage_domains": "管理實體類群",
                         "not_exposed": "{selected} 未公開",
                         "not_exposed_entities": "未公開實體",
                         "title": "Alexa"
@@ -1425,8 +1425,8 @@
                         "expose_entity": "公開實體",
                         "exposed": "{selected} 已公開",
                         "exposed_entities": "已公開實體",
-                        "follow_domain": "跟隨區域",
-                        "manage_domains": "管理區域",
+                        "follow_domain": "跟隨實體類群",
+                        "manage_domains": "管理實體類群",
                         "not_exposed": "{selected} 未公開",
                         "not_exposed_entities": "未公開實體",
                         "sync_to_google": "正與 Google 同步變更。",
@@ -1515,7 +1515,7 @@
                     "attributes_set": "以下實體屬性為可程式化設定。",
                     "caption": "自訂化",
                     "description": "自訂化元件內容與中文化",
-                    "different_include": "可能透過區域、全局或不同的包含。",
+                    "different_include": "可能透過實體類群、全局或不同的包含。",
                     "pick_attribute": "選擇欲覆寫屬性",
                     "picker": {
                         "documentation": "自訂化文件",
@@ -2535,7 +2535,7 @@
                     "templates": {
                         "all_listeners": "此模板監聽所有狀態變更事件。",
                         "description": "模版使用 Jinja2 模板引擎及 Home Assistant 特殊擴充進行模板渲染。",
-                        "domain": "區域",
+                        "domain": "實體類群",
                         "editor": "模板編輯器",
                         "entity": "實體",
                         "jinja_documentation": "Jinja2 模版文件",
@@ -2840,7 +2840,7 @@
                         "by_card": "以面板",
                         "by_entity": "以實體",
                         "custom_card": "自訂面板",
-                        "domain": "區域",
+                        "domain": "實體類群",
                         "entity": "實體",
                         "no_description": "無描述可使用。"
                     },
@@ -2962,7 +2962,7 @@
                 },
                 "unused_entities": {
                     "available_entities": "此些為尚未於 Lovelace 介面中、可供使用的實體。",
-                    "domain": "區域",
+                    "domain": "實體類群",
                     "entity": "實體",
                     "entity_id": "實體 ID",
                     "last_changed": "上次變更",
