@@ -15,6 +15,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-icon";
@@ -22,7 +23,6 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-paper-dropdown-menu";
 import "../../../components/ha-slider";
 import "../../../components/ha-svg-icon";
-import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
 import { UNAVAILABLE, UNAVAILABLE_STATES, UNKNOWN } from "../../../data/entity";
 import {
   ControlButton,
@@ -410,7 +410,7 @@ class MoreInfoMediaPlayer extends LitElement {
   }
 
   private _showBrowseMedia(): void {
-    showMediaBrowserDialog(this, {
+    fireEvent(this, "ha-media-player-browse-dialog", {
       action: "play",
       entityId: this.stateObj!.entity_id,
       mediaPickedCallback: (pickedMedia: MediaPickedEvent) =>

@@ -12,12 +12,12 @@ import { fireEvent, HASSDomEvent } from "../../common/dom/fire_event";
 import type {
   MediaPickedEvent,
   MediaPlayerBrowseAction,
+  MediaPlayerBrowseDialogParams,
 } from "../../data/media-player";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../ha-dialog";
 import "./ha-media-player-browse";
-import { MediaPlayerBrowseDialogParams } from "./show-media-browser-dialog";
 
 @customElement("dialog-media-player-browse")
 class DialogMediaPlayerBrowse extends LitElement {

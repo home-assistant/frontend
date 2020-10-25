@@ -38,6 +38,14 @@ export const CONTRAST_RATIO = 4.5;
 
 export type MediaPlayerBrowseAction = "pick" | "play";
 
+export interface MediaPlayerBrowseDialogParams {
+  action: MediaPlayerBrowseAction;
+  entityId: string;
+  mediaPickedCallback: (pickedMedia: MediaPickedEvent) => void;
+  mediaContentId?: string;
+  mediaContentType?: string;
+}
+
 export const BROWSER_PLAYER = "browser";
 
 export type MediaClassBrowserSetting = {

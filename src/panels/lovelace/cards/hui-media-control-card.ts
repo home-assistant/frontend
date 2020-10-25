@@ -28,7 +28,6 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
-import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import {
   computeMediaDescription,
@@ -667,7 +666,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   private _handleBrowseMedia(): void {
-    showMediaBrowserDialog(this, {
+    fireEvent(this, "ha-media-player-browse-dialog", {
       action: "play",
       entityId: this._config!.entity,
       mediaPickedCallback: (pickedMedia: MediaPickedEvent) =>

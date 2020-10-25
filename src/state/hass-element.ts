@@ -7,6 +7,7 @@ import { hapticMixin } from "./haptic-mixin";
 import { HassBaseEl } from "./hass-base-mixin";
 import MoreInfoMixin from "./more-info-mixin";
 import NotificationMixin from "./notification-mixin";
+import MediaBrowserMixin from "./media-browser-mixin";
 import { panelTitleMixin } from "./panel-title-mixin";
 import SidebarMixin from "./sidebar-mixin";
 import ThemesMixin from "./themes-mixin";
@@ -27,6 +28,7 @@ export class HassElement extends ext(HassBaseEl, [
   connectionMixin,
   NotificationMixin,
   dialogManagerMixin,
+  MediaBrowserMixin,
   urlSyncMixin,
   hapticMixin,
   panelTitleMixin,
