@@ -47,7 +47,7 @@ class HuiGridCard extends HuiStackCard<GridCardConfig> {
           display: grid;
           grid-template-columns: repeat(
             var(--grid-card-column-count, ${DEFAULT_COLUMNS}),
-            auto
+            minmax(0, 1fr)
           );
           grid-gap: var(--grid-card-gap, 8px);
         }
