@@ -2138,7 +2138,7 @@
                             "filter": "Herlaad filter-entiteiten",
                             "generic": "Herlaad generieke IP camera entiteiten",
                             "generic_thermostat": "Herlaad generieke thermostaat entiteiten",
-                            "group": "Herlaad groepen, groepsentiteiten en meld services",
+                            "group": "Herlaad groepen, groepsentiteiten en notify services",
                             "heading": "Configuratie herladen",
                             "history_stats": "Herlaad historische statistieken entiteiten",
                             "homekit": "Herlaad HomeKit",
@@ -2153,14 +2153,14 @@
                             "person": "Herlaad personen",
                             "ping": "Herlaad ping binaire sensor entiteiten",
                             "reload": "Herlaad {domain}",
-                            "rest": "Laad resterende entiteiten opnieuw en stel services op de hoogte",
+                            "rest": "Herlaad rest entiteiten en notify services",
                             "rpi_gpio": "Herlaad Raspberry Pi GPIO-entiteiten",
                             "scene": "Herlaad scenes",
                             "script": "Herlaad scripts",
-                            "smtp": "Herlaad telegram notify services",
+                            "smtp": "Herlaad smtp notify services",
                             "statistics": "Herlaad statistische entiteiten",
                             "telegram": "Herlaad telegram notify services",
-                            "template": "Herlaad sjabloon-entiteiten",
+                            "template": "Herlaad template entiteiten",
                             "trend": "Herlaad trend-entiteiten",
                             "universal": "Herlaad universele mediaspeler entiteiten",
                             "zone": "Herlaad zones"
@@ -2444,10 +2444,10 @@
                     },
                     "ozw_log": {
                         "header": "OZW-logboek",
-                        "introduction": "Bekijk het logboek. 0 is het minimum (laadt het gehele logboek) en 1000 is het maximum. Laad toont een statisch logboek en staart wordt automatisch bijgewerkt met het laatst opgegeven aantal regels van het logboek.",
+                        "introduction": "Bekijk het logboek. 0 is het minimum (laadt het gehele logboek) en 1000 is het maximum. Laad toont een statisch logboek en Tail wordt automatisch bijgewerkt met het laatst opgegeven aantal regels van het logboek.",
                         "last_log_lines": "Aantal laatste logboekregels",
                         "load": "Laden",
-                        "tail": "Staart"
+                        "tail": "Tail"
                     },
                     "services": {
                         "add_node": "Knooppunt toevoegen",
@@ -2543,7 +2543,7 @@
                         "no_listeners": "Deze template luistert niet naar gebeurtenissen met statuswijziging en wordt niet automatisch bijgewerkt.",
                         "reset": "Resetten naar demosjabloon",
                         "template_extensions": "Home Assistant sjabloon extensiesHome Assistant",
-                        "time": "Deze sjabloon wordt elke 60 seconden bijgewerkt na de laatste statuswijziging.",
+                        "time": "Deze template wordt elke 60 seconden bijgewerkt na de laatste statuswijziging.",
                         "title": "Sjablonen",
                         "unknown_error_template": "Onbekende fout bij weergave sjabloon"
                     }

@@ -1207,7 +1207,7 @@
                                 },
                                 "event": {
                                     "context_user_pick": "Legg til bruker",
-                                    "context_user_picked": "Bruk avfyring hendelse",
+                                    "context_user_picked": "Bruker avfyrer hendelse",
                                     "context_users": "Begrens til hendelser utløst av",
                                     "event_data": "Hendelse data",
                                     "event_type": "Hendelse type",
@@ -1942,7 +1942,7 @@
                         "header": "Nodekonfigurasjon",
                         "help_source": "Konfigurasjonsparameter beskrivelser og hjelpetekst er gitt av OpenZWave-prosjektet",
                         "introduction": "Administrer de forskjellige konfigurasjonsparametrene for en Z-Wave-node",
-                        "wakeup_help": "Batteridrevne noder må være våken for å endre konfigurasjonen. Hvis noden ikke er våken, vil OpenZWave prøve å oppdatere nodenes konfigurasjon neste gang den våkner, noe som kan være flere timer (eller dager) senere. Følg disse trinnene for å vekke enheten:"
+                        "wakeup_help": "Batteridrevne noder må være våkne for å endre konfigurasjonen. Hvis noden ikke er våken, vil OpenZWave prøve å oppdatere nodenes konfigurasjon neste gang den våkner, noe som kan være flere timer (eller dager) senere. Følg disse trinnene for å vekke enheten:"
                     },
                     "node_metadata": {
                         "product_manual": "Produkthåndbok"
@@ -2544,7 +2544,7 @@
                         "reset": "Tilbakestill til demomal",
                         "result_type": "Resultat type",
                         "template_extensions": "Mal utvidelser for Home Assistant",
-                        "time": "Denne malen oppdateres i begynnelsen av hvert minutt.",
+                        "time": "Denne malen oppdateres i begynnelsen av hvert minutt",
                         "title": "Mal",
                         "unknown_error_template": "Ukjent feil ved rendring av mal"
                     }

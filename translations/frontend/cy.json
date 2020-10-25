@@ -376,17 +376,31 @@
             },
             "service-picker": {
                 "service": "Gwasanaeth"
+            },
+            "user-picker": {
+                "add_user": "Ychwanegu defnyddiwr",
+                "no_user": "Dim defnyddiwr",
+                "remove_user": "Tynnu defnyddiwr"
             }
         },
         "dialogs": {
             "entity_registry": {
                 "editor": {
                     "delete": "Dileu",
+                    "icon": "Eicon",
+                    "name": "Enw",
                     "update": "Diweddariad"
                 },
                 "no_unique_id": "Nid oes gan yr endid hwn ID unigryw, felly ni ellir rheoli ei osodiadau o'r UI."
             },
             "helper_settings": {
+                "counter": {
+                    "initial": "Gwerth cychwynnol",
+                    "maximum": "Gwerth mwyaf",
+                    "minimum": "Gwerth lleiaf",
+                    "restore": "Adfer y gwerth hysbys diwethaf pan fydd Home Assistant yn cychwyn",
+                    "step": "Maint cam"
+                },
                 "input_datetime": {
                     "date": "Dyddiad",
                     "datetime": "Dyddiad ac amser",
@@ -401,6 +415,9 @@
                     "min": "Hyd lleiaf"
                 },
                 "platform_not_loaded": "Nid yw'r integreiddiad {platform} wedi'i lwytho. Ychwanegwch eich cyfluniad ato naill ai trwy ychwanegu 'default_config:' neu ''{platform}:''.",
+                "timer": {
+                    "duration": "Hyd"
+                },
                 "yaml_not_editable": "Ni ellir olygu gosodiadau'r endid hwn o'r UI. Dim ond endidau a sefydlwyd o'r UI y gellir eu ffurfweddu o'r UI."
             },
             "more_info_control": {
@@ -432,7 +449,11 @@
             "remember": "Cofiwch"
         },
         "notification_drawer": {
-            "close": "Cau"
+            "close": "Cau",
+            "dismiss_all": "Diystyru popeth"
+        },
+        "notification_toast": {
+            "dismiss": "Gwrthod"
         },
         "panel": {
             "config": {
@@ -570,6 +591,9 @@
                             "type_select": "Math sbardun",
                             "type": {
                                 "event": {
+                                    "context_user_pick": "Ychwanegu defnyddiwr",
+                                    "context_user_picked": "Digwyddiad tanio defnyddiwr",
+                                    "context_users": "Cyfyngiad i ddigwyddiadau a ysgogwyd gan",
                                     "event_data": "Data Digwyddiad",
                                     "event_type": "Math o ddigwyddiad",
                                     "label": "Digwyddiad"
@@ -694,8 +718,24 @@
                     }
                 },
                 "devices": {
+                    "automation": {
+                        "actions": {
+                            "no_actions": "Dim gweithrediadau",
+                            "unknown_action": "Gweithred anhysbys"
+                        },
+                        "conditions": {
+                            "no_conditions": "Dim amodau",
+                            "unknown_condition": "Cyflwr anhysbys"
+                        },
+                        "triggers": {
+                            "no_triggers": "Dim sbardunau",
+                            "unknown_trigger": "Sbardun anhysbys"
+                        },
+                        "unknown_automation": "Awtomeiddiad anhysbys"
+                    },
                     "confirm_delete": "Ydych chi'n siŵr eich bod eisiau dileu y ddyfais hon?",
                     "confirm_rename_entity_ids": "A ydych chi hefyd eisiau ailenwi enwau eich endidau?",
+                    "confirm_rename_entity_ids_warning": "Ni fydd hyn yn newid unrhyw ffurfweddiad (fel awtomeiddio, sgriptiau, golygfeydd, dashfyrddau) sy'n defnyddio'r endidau hyn ar hyn o bryd! Bydd yn rhaid i chi eu diweddaru eich hun i ddefnyddio'r IDau endid newydd!",
                     "data_table": {
                         "area": "Ardal",
                         "battery": "Batri",
@@ -715,12 +755,22 @@
                     "caption": "Gofrestrfa Endid",
                     "description": "Trosolwg o holl endidau hysbys.",
                     "picker": {
+                        "filter": {
+                            "hidden_entities": "{rhif} cudd {rhif, lluosog,\n  un {endid}\n  {endidau} eraill}\n}",
+                            "show_all": "Dangos popeth"
+                        },
                         "header": "Gofrestrfa Endid",
                         "introduction": "Mae Home Assistant yn cadw gofrestrfa pob endid a welodd erioed ble gellir eu nodi yn unigryw. Bydd pob un endid wedi neilltuo efo endid adnabod sy'n cael eu cadw ar gyfer yr endid hwnnw.",
                         "introduction2": "Defnyddiwch y gofrestrfa endid i ddiystyru yr enw, newid ID endid neu gael gwared y cofnod Home Assistant. Noder, ni fydd dileu'r cofnod cofrestrfa endid yn dileu yr endid. I wneud hynny, dilynwch y ddolen isod a thynnu oddi ar y dudalen integreiddio."
                     }
                 },
                 "header": "Ffurfweddu Home Assistant",
+                "helpers": {
+                    "types": {
+                        "counter": "Cownter",
+                        "timer": "Amserydd"
+                    }
+                },
                 "integrations": {
                     "caption": "Integreiddiadau",
                     "config_entry": {
@@ -791,10 +841,16 @@
                     "common": {
                         "controller": "Rheolwr",
                         "instance": "Enghraifft",
-                        "network": "Rhwydwaith"
+                        "network": "Rhwydwaith",
+                        "query_stage": "Cyfnod Ymholiad",
+                        "wakeup_instructions": "Cyfarwyddiadau Deffro"
                     },
                     "navigation": {
                         "network": "Rhwydwaith",
+                        "node": {
+                            "config": "Ffurfweddu",
+                            "dashboard": "Dashfwrdd"
+                        },
                         "nodes": "Nodau",
                         "select_instance": "Dewis Enghraifft"
                     },
@@ -822,6 +878,15 @@
                         "header": "Rheolaeth Rhwydwaith",
                         "introduction": "Rheoli swyddogaethau rhwydwaith-lydan",
                         "node_count": "nodau {count}"
+                    },
+                    "node_config": {
+                        "header": "Ffurfweddu nod",
+                        "help_source": "Darperir disgrifiadau paramedr a thestun cymorth gan brosiect OpenZWave.",
+                        "introduction": "Rheoli'r gwahanol baramedrau ffurfweddu ar gyfer nod Z-Wave.",
+                        "wakeup_help": "Rhaid i nodau wedi'u pweru gan fatri fod yn effro i newid eu cyfluniad. Os nad yw'r nod yn effro, bydd OpenZWave yn ceisio diweddaru cyfluniad y nod tro nesaf y bydd yn deffro, a allai fod yn oriau lluosog (neu ddyddiau) yn ddiweddarach. Dilynwch y camau hyn i ddeffro'ch dyfais:"
+                    },
+                    "node_metadata": {
+                        "product_manual": "Llawlyfr Cynnyrch"
                     },
                     "select_instance": {
                         "header": "Dewiswch Enghraifft OpenZWave",
@@ -912,6 +977,9 @@
                         }
                     }
                 },
+                "tags": {
+                    "learn_more": "Dysgu mwy am dagiau"
+                },
                 "users": {
                     "add_user": {
                         "caption": "Ychwanegu defnyddiwr",
@@ -999,7 +1067,10 @@
                         "title": "Cyflerau"
                     },
                     "templates": {
+                        "no_listeners": "Nid yw'r templed hwn yn gwrando am unrhyw ddigwyddiadau ac ni fydd yn diweddaru'n awtomatig.",
                         "reset": "Ailosod i dempled demo",
+                        "result_type": "Math canlyniad",
+                        "time": "Mae'r templed yma yn diweddaru ar ddechrau pob munud.",
                         "title": "Templedi"
                     }
                 }
@@ -1066,7 +1137,10 @@
                         },
                         "entities": {
                             "description": "Y cerdyn Endidau yw'r math mwyaf cyffredin o gerdyn. Mae'n grwpio eitemau gyda'i gilydd fewn i restrau.",
-                            "name": "Endidau"
+                            "name": "Endidau",
+                            "secondary_info_values": {
+                                "last-updated": "Diweddarwyd Ddiwethaf"
+                            }
                         },
                         "entity-filter": {
                             "description": "Mae'r cerdyn Hidlo Endid yn caniatáu ichi ddiffinio rhestr o endidau ydych eisiau diilyn pan fyddant mewn cyflwr penodol.",
@@ -1166,6 +1240,9 @@
                         "custom_card": "Custom",
                         "no_description": "Dim disgrifiad ar gael."
                     },
+                    "edit_badges": {
+                        "panel_mode": "Ni fydd y bathodynnau hyn yn cael eu harddangos oherwydd bod y farn hon yn \"Modd Panel\"."
+                    },
                     "edit_card": {
                         "add": "Ychwanegu Cerdyn",
                         "delete": "Dileu",
@@ -1224,6 +1301,7 @@
                     },
                     "view": {
                         "panel_mode": {
+                            "description": "Mae hyn yn golygu bod y cerdyn cyntaf yn ei led llawn. Ni fydd cardiau eraill yn y gweddlun hon yn ogystal â bathodynnau yn cael ei rendro.",
                             "warning_multiple_cards": "Mae'r golwg yn cynnwys mwy nag un cerdyn, ond dim ond un cerdyn gall y golwg panel ei ddangos."
                         }
                     }
@@ -1234,7 +1312,8 @@
                     "exit_edit_mode": "Gadael modd golygu UI",
                     "help": "Help",
                     "refresh": "Adnewyddu",
-                    "reload_resources": "Ail-lwytho adnoddau"
+                    "reload_resources": "Ail-lwytho adnoddau",
+                    "start_conversation": "Cychwyn sgwrs"
                 },
                 "reload_lovelace": "Ail-lwytho Lovelace",
                 "reload_resources": {
