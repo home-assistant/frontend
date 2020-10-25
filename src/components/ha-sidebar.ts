@@ -1,3 +1,6 @@
+import "./ha-clickable-list-item";
+import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-list/mwc-list";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-icon-button";
 import {
@@ -9,10 +12,6 @@ import {
   mdiPlus,
   mdiViewDashboard,
 } from "@mdi/js";
-import "@polymer/paper-item/paper-icon-item";
-import type { PaperIconItemElement } from "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
   CSSResult,
@@ -210,10 +209,10 @@ class HaSidebar extends LitElement {
     return html`
       ${this._renderHeader()}
       ${this._renderAllPanels()}
-      ${this._renderDivider()}
+      ${this._renderUtilityPanels()}
       ${this._renderNotifications()}
       ${this._renderUserItem()}
-      <div disabled class="bottom-spacer"></div>
+      ${this._renderSpacer()}
       <div class="tooltip"></div>
     `;
   }
@@ -338,10 +337,9 @@ class HaSidebar extends LitElement {
 
     // prettier-ignore
     return html`
-      <paper-listbox
+      <mwc-list
         attr-for-selected="data-panel"
         class="ha-scrollbar"
-        .selected=${this.hass.panelUrl}
         @focusin=${this._listboxFocusIn}
         @focusout=${this._listboxFocusOut}
         @scroll=${this._listboxScroll}
@@ -353,7 +351,7 @@ class HaSidebar extends LitElement {
         ${this._renderSpacer()}
         ${this._renderPanels(afterSpacer)}
         ${this._renderExternalConfiguration()}
-      </paper-listbox>
+      </mwc-list>
     `;
   }
 
@@ -375,13 +373,14 @@ class HaSidebar extends LitElement {
           if (!panel) {
             return "";
           }
-          return html`<paper-icon-item
+          return html`<ha-clickable-list-item
             @click=${this._unhidePanel}
             class="hidden-panel"
             .panel=${url}
+            graphic="icon"
           >
             <ha-icon
-              slot="item-icon"
+              slot="graphic"
               .icon=${panel.url_path === this.hass.defaultPanel
                 ? "mdi:view-dashboard"
                 : panel.icon}
@@ -395,18 +394,14 @@ class HaSidebar extends LitElement {
             <mwc-icon-button class="show-panel">
               <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
             </mwc-icon-button>
-          </paper-icon-item>`;
+          </ha-clickable-list-item>`;
         })}
         ${this._renderSpacer()}`
       : ""}`;
   }
 
-  private _renderDivider() {
-    return html`<div class="divider"></div>`;
-  }
-
   private _renderSpacer() {
-    return html`<div class="spacer" disabled></div>`;
+    return html`<li divider role="separator" class="spacer"></li>`;
   }
 
   private _renderNotifications() {
@@ -419,20 +414,19 @@ class HaSidebar extends LitElement {
       }
     }
 
-    return html` <div
-      class="notifications-container"
-      @mouseenter=${this._itemMouseEnter}
-      @mouseleave=${this._itemMouseLeave}
-    >
-      <paper-icon-item
-        class="notifications"
+    return html`
+      <ha-clickable-list-item
         aria-role="option"
         @click=${this._handleShowNotificationDrawer}
+        graphic="icon"
+        hasMeta
+        @mouseenter=${this._itemMouseEnter}
+        @mouseleave=${this._itemMouseLeave}
       >
-        <ha-svg-icon slot="item-icon" .path=${mdiBell}></ha-svg-icon>
+        <ha-svg-icon slot="graphic" .path=${mdiBell}></ha-svg-icon>
         ${!this.expanded && notificationCount > 0
           ? html`
-              <span class="notification-badge" slot="item-icon">
+              <span slot="graphic" class="notification-badge">
                 ${notificationCount}
               </span>
             `
@@ -441,45 +435,48 @@ class HaSidebar extends LitElement {
           ${this.hass.localize("ui.notification_drawer.title")}
         </span>
         ${this.expanded && notificationCount > 0
-          ? html` <span class="notification-badge">${notificationCount}</span> `
+          ? html`
+              <span class="notification-badge" slot="meta"
+                >${notificationCount}</span
+              >
+            `
           : ""}
-      </paper-icon-item>
-    </div>`;
+      </ha-clickable-list-item>
+    `;
   }
 
   private _renderUserItem() {
-    return html`<a
+    return html`<ha-clickable-list-item
       class=${classMap({
         profile: true,
-        // Mimick behavior that paper-listbox provides
+        // Mimick behavior that mwc-list provides
         "iron-selected": this.hass.panelUrl === "profile",
       })}
-      href="/profile"
+      .href=${"profile"}
       data-panel="panel"
       tabindex="-1"
-      aria-role="option"
       aria-label=${this.hass.localize("panel.profile")}
       @mouseenter=${this._itemMouseEnter}
       @mouseleave=${this._itemMouseLeave}
+      graphic="icon"
+      .activated=${this.hass.panelUrl === "profile"}
     >
-      <paper-icon-item>
-        <ha-user-badge
-          slot="item-icon"
-          .user=${this.hass.user}
-          .hass=${this.hass}
-        ></ha-user-badge>
+      <ha-user-badge
+        slot="graphic"
+        .user=${this.hass.user}
+        .hass=${this.hass}
+      ></ha-user-badge>
 
-        <span class="item-text">
-          ${this.hass.user ? this.hass.user.name : ""}
-        </span>
-      </paper-icon-item>
-    </a>`;
+      <span class="item-text">
+        ${this.hass.user ? this.hass.user.name : ""}
+      </span>
+    </ha-clickable-list-item> `;
   }
 
   private _renderExternalConfiguration() {
     return html`${this._externalConfig && this._externalConfig.hasSettingsScreen
       ? html`
-          <a
+          <ha-clickable-list-item
             aria-role="option"
             aria-label=${this.hass.localize(
               "ui.sidebar.external_app_configuration"
@@ -489,17 +486,13 @@ class HaSidebar extends LitElement {
             @click=${this._handleExternalAppConfiguration}
             @mouseenter=${this._itemMouseEnter}
             @mouseleave=${this._itemMouseLeave}
+            graphic="icon"
           >
-            <paper-icon-item>
-              <ha-svg-icon
-                slot="item-icon"
-                .path=${mdiCellphoneCog}
-              ></ha-svg-icon>
-              <span class="item-text">
-                ${this.hass.localize("ui.sidebar.external_app_configuration")}
-              </span>
-            </paper-icon-item>
-          </a>
+            <ha-svg-icon slot="graphic" .path=${mdiCellphoneCog}></ha-svg-icon>
+            <span class="item-text">
+              ${this.hass.localize("ui.sidebar.external_app_configuration")}
+            </span>
+          </ha-clickable-list-item>
         `
       : ""}`;
   }
@@ -520,7 +513,7 @@ class HaSidebar extends LitElement {
     if (!Sortable) {
       const [sortableImport, sortStylesImport] = await Promise.all([
         import("sortablejs/modular/sortable.core.esm"),
-        import("../resources/ha-sortable-style"),
+        import("../resources/ha-sortable-style-ha-clickable"),
       ]);
 
       const style = document.createElement("style");
@@ -541,8 +534,9 @@ class HaSidebar extends LitElement {
     this._sortable = new Sortable(this.shadowRoot!.getElementById("sortable"), {
       animation: 150,
       fallbackClass: "sortable-fallback",
+      // fallbackTolerance: 15,
       dataIdAttr: "data-panel",
-      handle: "paper-icon-item",
+      handle: "ha-clickable-list-item",
       onSort: async () => {
         this._panelOrder = this._sortable.toArray();
       },
@@ -604,7 +598,7 @@ class HaSidebar extends LitElement {
       clearTimeout(this._mouseLeaveTimeout);
       this._mouseLeaveTimeout = undefined;
     }
-    this._showTooltip(ev.currentTarget as PaperIconItemElement);
+    this._showTooltip(ev.currentTarget);
   }
 
   private _itemMouseLeave() {
@@ -620,7 +614,7 @@ class HaSidebar extends LitElement {
     if (this.expanded || ev.target.nodeName !== "A") {
       return;
     }
-    this._showTooltip(ev.target.querySelector("paper-icon-item"));
+    this._showTooltip(ev.target.querySelector("ha-clickable-list-item"));
   }
 
   private _listboxFocusOut() {
@@ -644,13 +638,13 @@ class HaSidebar extends LitElement {
     this._recentKeydownActiveUntil = new Date().getTime() + 100;
   }
 
-  private _showTooltip(item: PaperIconItemElement) {
+  private _showTooltip(item) {
     if (this._tooltipHideTimeout) {
       clearTimeout(this._tooltipHideTimeout);
       this._tooltipHideTimeout = undefined;
     }
     const tooltip = this._tooltip;
-    const listbox = this.shadowRoot!.querySelector("paper-listbox")!;
+    const listbox = this.shadowRoot!.querySelector("mwc-list")!;
     let top = item.offsetTop + 11;
     if (listbox.contains(item)) {
       top -= listbox.scrollTop;
@@ -689,19 +683,75 @@ class HaSidebar extends LitElement {
     fireEvent(this, "hass-toggle-menu");
   }
 
-  private _renderPanels(panels: PanelInfo[]) {
-    return panels.map((panel) =>
-      this._renderPanel(
-        panel.url_path,
-        panel.url_path === this.hass.defaultPanel
-          ? panel.title || this.hass.localize("panel.states")
-          : this.hass.localize(`panel.${panel.title}`) || panel.title,
-        panel.icon,
-        panel.url_path === this.hass.defaultPanel && !panel.icon
-          ? mdiViewDashboard
-          : undefined
-      )
+  private _isUtilityPanel(panel: PanelInfo) {
+    return (
+      panel.component_name === "developer-tools" ||
+      panel.component_name === "config" ||
+      panel.component_name === "external-config"
     );
+  }
+
+  private _renderPanels(panels: PanelInfo[]) {
+    return panels
+      .filter((panel) => !this._isUtilityPanel(panel))
+      .map((panel) =>
+        this._renderPanel(
+          panel.url_path,
+          panel.url_path === this.hass.defaultPanel
+            ? panel.title || this.hass.localize("panel.states")
+            : this.hass.localize(`panel.${panel.title}`) || panel.title,
+          panel.icon,
+          panel.url_path === this.hass.defaultPanel && !panel.icon
+            ? mdiViewDashboard
+            : undefined
+        )
+      );
+  }
+
+  private _renderUtilityPanels() {
+    const [, afterSpacer] = computePanels(
+      this.hass.panels,
+      this.hass.defaultPanel,
+      this._panelOrder,
+      this._hiddenPanels
+    );
+
+    // prettier-ignore
+    return html`
+      <mwc-list
+        attr-for-selected="data-panel"
+        @focusin=${this._listboxFocusIn}
+        @focusout=${this._listboxFocusOut}
+        @scroll=${this._listboxScroll}
+        @keydown=${this._listboxKeydown}
+      >
+        ${afterSpacer.map((panel) =>
+          this._renderPanel(
+            panel.url_path,
+            panel.url_path === this.hass.defaultPanel
+              ? panel.title || this.hass.localize("panel.states")
+              : this.hass.localize(`panel.${panel.title}`) || panel.title,
+            panel.icon,
+            panel.url_path === this.hass.defaultPanel && !panel.icon
+              ? mdiViewDashboard
+              : undefined
+          )
+        )}
+        ${afterSpacer.map((panel) =>
+          this._renderPanel(
+            panel.url_path,
+            panel.url_path === this.hass.defaultPanel
+              ? panel.title || this.hass.localize("panel.states")
+              : this.hass.localize(`panel.${panel.title}`) || panel.title,
+            panel.icon,
+            panel.url_path === this.hass.defaultPanel && !panel.icon
+              ? mdiViewDashboard
+              : undefined
+          )
+        )}
+        <li divider role="separator" class="spacer"></li>
+      </mwc-list>
+    `;
   }
 
   private _renderPanel(
@@ -711,23 +761,21 @@ class HaSidebar extends LitElement {
     iconPath?: string | null
   ) {
     return html`
-      <a
-        aria-role="option"
-        href=${`/${urlPath}`}
+      <ha-clickable-list-item
+        .activated=${urlPath === this.hass.panelUrl}
+        .href=${urlPath}
         data-panel=${urlPath}
         tabindex="-1"
         @mouseenter=${this._itemMouseEnter}
         @mouseleave=${this._itemMouseLeave}
+        graphic="icon"
       >
-        <paper-icon-item>
-          ${iconPath
-            ? html`<ha-svg-icon
-                slot="item-icon"
-                .path=${iconPath}
-              ></ha-svg-icon>`
-            : html`<ha-icon slot="item-icon" .icon=${icon}></ha-icon>`}
-          <span class="item-text">${title}</span>
-        </paper-icon-item>
+        ${iconPath
+          ? html`<ha-svg-icon slot="graphic" .path=${iconPath}></ha-svg-icon>`
+          : html`<ha-icon slot="graphic" .icon=${icon}></ha-icon>`}
+
+        <span class="item-text">${title}</span>
+
         ${this.editMode
           ? html`<mwc-icon-button
               class="hide-panel"
@@ -737,7 +785,7 @@ class HaSidebar extends LitElement {
               <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
             </mwc-icon-button>`
           : ""}
-      </a>
+      </ha-clickable-list-item>
     `;
   }
 
@@ -806,7 +854,6 @@ class HaSidebar extends LitElement {
         }
         :host([narrow]) .title {
           margin: 0;
-          padding: 0 16px;
         }
         :host([expanded]) .title {
           display: initial;
@@ -822,21 +869,22 @@ class HaSidebar extends LitElement {
           display: none;
         }
 
-        paper-listbox {
+        mwc-list.ha-scrollbar {
+          --mdc-list-vertical-padding: 4px 0;
           padding: 4px 0;
           display: flex;
           flex-direction: column;
           box-sizing: border-box;
-          height: calc(100% - var(--header-height) - 132px);
+          height: calc(100% - var(--header-height) - 350px);
           height: calc(
-            100% - var(--header-height) - 132px - env(safe-area-inset-bottom)
+            100% - var(--header-height) - 350px - env(safe-area-inset-bottom)
           );
           overflow-x: hidden;
           background: none;
           margin-left: env(safe-area-inset-left);
         }
 
-        :host([rtl]) paper-listbox {
+        :host([rtl]) mwc-list {
           margin-left: initial;
           margin-right: env(safe-area-inset-right);
         }
@@ -847,32 +895,36 @@ class HaSidebar extends LitElement {
           font-weight: 500;
           font-size: 14px;
           position: relative;
-          display: block;
           outline: 0;
+          border: 1px solid black;
         }
 
-        paper-icon-item {
+        mwc-list-item {
           box-sizing: border-box;
           margin: 4px;
-          padding-left: 12px;
           border-radius: 4px;
-          --paper-item-min-height: 40px;
           width: 48px;
+          --mdc-list-item-graphic-margin: 16px;
+          --mdc-list-item-meta-size: 32px;
         }
         :host([expanded]) paper-icon-item {
           width: 248px;
         }
-        :host([rtl]) paper-icon-item {
+        :host([rtl]) mwc-list-item {
           padding-left: auto;
           padding-right: 12px;
         }
 
-        ha-icon[slot="item-icon"],
-        ha-svg-icon[slot="item-icon"] {
+        ha-icon[slot="graphic"],
+        ha-svg-icon[slot="graphic"] {
           color: var(--sidebar-icon-color);
         }
 
-        .iron-selected paper-icon-item::before,
+        [slot="graphic"] {
+          width: 100%;
+        }
+
+        .iron-selected mwc-list-item::before,
         a:not(.iron-selected):focus::before {
           border-radius: 4px;
           position: absolute;
@@ -885,7 +937,7 @@ class HaSidebar extends LitElement {
           transition: opacity 15ms linear;
           will-change: opacity;
         }
-        .iron-selected paper-icon-item::before {
+        .iron-selected mwc-list-item::before {
           background-color: var(--sidebar-selected-icon-color);
           opacity: 0.12;
         }
@@ -894,23 +946,24 @@ class HaSidebar extends LitElement {
           opacity: var(--dark-divider-opacity);
           margin: 4px 8px;
         }
-        .iron-selected paper-icon-item:focus::before,
-        .iron-selected:focus paper-icon-item::before {
+        .iron-selected mwc-list-item:focus::before,
+        .iron-selected:focus mwc-list-item::before {
           opacity: 0.2;
         }
 
-        .iron-selected paper-icon-item[pressed]:before {
+        .iron-selected mwc-list-item[pressed]:before {
           opacity: 0.37;
         }
 
-        paper-icon-item span {
+        mwc-list-item span {
           color: var(--sidebar-text-color);
           font-weight: 500;
           font-size: 14px;
+          width: 100%;
         }
 
-        a.iron-selected paper-icon-item ha-icon,
-        a.iron-selected paper-icon-item ha-svg-icon {
+        a.iron-selected mwc-list-item ha-icon,
+        a.iron-selected mwc-list-item ha-svg-icon {
           color: var(--sidebar-selected-icon-color);
         }
 
@@ -918,22 +971,21 @@ class HaSidebar extends LitElement {
           color: var(--sidebar-selected-text-color);
         }
 
-        paper-icon-item .item-text {
+        mwc-list-item mwc-list-item .item-text,
+        mwc-list-item .item-text {
           display: none;
           max-width: calc(100% - 56px);
         }
-        :host([expanded]) paper-icon-item .item-text {
+        :host([expanded]) mwc-list-item .item-text {
           display: block;
         }
 
         .divider {
-          bottom: 112px;
           padding: 10px 0;
         }
         .divider::before {
-          content: " ";
           display: block;
-          height: 1px;
+          height: 100px;
           background-color: var(--divider-color);
         }
         .notifications-container {
@@ -957,10 +1009,10 @@ class HaSidebar extends LitElement {
           margin-left: initial;
           margin-right: env(safe-area-inset-right);
         }
-        .profile paper-icon-item {
+        .profile mwc-list-item {
           padding-left: 4px;
         }
-        :host([rtl]) .profile paper-icon-item {
+        :host([rtl]) .profile mwc-list-item {
           padding-left: auto;
           padding-right: 4px;
         }
@@ -972,15 +1024,16 @@ class HaSidebar extends LitElement {
         }
 
         .notification-badge {
-          min-width: 20px;
+          /* min-width: 20px;
           box-sizing: border-box;
           border-radius: 50%;
           font-weight: 400;
           background-color: var(--accent-color);
-          line-height: 20px;
+          line-height: 30px;
           text-align: center;
-          padding: 0px 6px;
+          padding: 0px 4px;
           color: var(--text-accent-color, var(--text-primary-color));
+          font-size: 14px; */
         }
         ha-svg-icon + .notification-badge {
           position: absolute;
@@ -992,6 +1045,12 @@ class HaSidebar extends LitElement {
         .spacer {
           flex: 1;
           pointer-events: none;
+        }
+
+        .bottom-spacer {
+          flex: 1;
+          pointer-events: none;
+          height: 100%;
         }
 
         .subheader {
