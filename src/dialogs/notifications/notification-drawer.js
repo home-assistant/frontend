@@ -25,7 +25,7 @@ export class HuiNotificationDrawer extends EventsMixin(
         color: var(--primary-text-color);
         border-bottom: 1px solid var(--divider-color);
         background-color: var(--primary-background-color);
-        min-height: 64px;
+        height: var(--header-height);
         width: calc(100% - 32px);
       }
 
