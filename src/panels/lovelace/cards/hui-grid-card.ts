@@ -22,8 +22,8 @@ class HuiGridCard extends HuiStackCard<GridCardConfig> {
     const maxCardSize = Math.max(...results);
 
     return (
-      (maxCardSize * this._cards.length) /
-      (this._config.columns || DEFAULT_COLUMNS)
+      maxCardSize *
+      (this._cards.length / (this._config.columns || DEFAULT_COLUMNS))
     );
   }
 
