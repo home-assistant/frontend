@@ -173,39 +173,30 @@ export const demoLovelaceTeachingbirds: DemoConfig["lovelace"] = () => ({
           type: "vertical-stack",
         },
         {
-          type: "vertical-stack",
+          type: "grid",
+          columns: 2,
           cards: [
             {
-              cards: [
-                {
-                  graph: "line",
-                  type: "sensor",
-                  entity: "sensor.temperature_bedroom",
-                },
-                {
-                  graph: "line",
-                  type: "sensor",
-                  name: "S's room",
-                  entity: "sensor.temperature_stefan",
-                },
-              ],
-              type: "horizontal-stack",
+              graph: "line",
+              type: "sensor",
+              entity: "sensor.temperature_bedroom",
             },
             {
-              cards: [
-                {
-                  graph: "line",
-                  type: "sensor",
-                  entity: "sensor.temperature_passage",
-                },
-                {
-                  graph: "line",
-                  type: "sensor",
-                  name: "Laundry",
-                  entity: "sensor.temperature_downstairs_bathroom",
-                },
-              ],
-              type: "horizontal-stack",
+              graph: "line",
+              type: "sensor",
+              name: "S's room",
+              entity: "sensor.temperature_stefan",
+            },
+            {
+              graph: "line",
+              type: "sensor",
+              entity: "sensor.temperature_passage",
+            },
+            {
+              graph: "line",
+              type: "sensor",
+              name: "Laundry",
+              entity: "sensor.temperature_downstairs_bathroom",
             },
           ],
         },
