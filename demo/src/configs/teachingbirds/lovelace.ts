@@ -7,170 +7,156 @@ export const demoLovelaceTeachingbirds: DemoConfig["lovelace"] = () => ({
       cards: [
         { type: "custom:ha-demo-card" },
         {
+          type: "grid",
           cards: [
             {
-              cards: [
+              image: "/assets/teachingbirds/isa_square.jpg",
+              type: "picture-entity",
+              show_name: false,
+              tap_action: {
+                action: "more-info",
+              },
+              entity: "sensor.presence_isa",
+            },
+            {
+              image: "/assets/teachingbirds/Stefan_square.jpg",
+              type: "picture-entity",
+              show_name: false,
+              tap_action: {
+                action: "more-info",
+              },
+              entity: "sensor.presence_stefan",
+            },
+            {
+              image: "/assets/teachingbirds/background_square.png",
+              elements: [
                 {
-                  image: "/assets/teachingbirds/isa_square.jpg",
-                  type: "picture-entity",
-                  show_name: false,
+                  state_image: {
+                    on: "/assets/teachingbirds/radiator_on.jpg",
+                    off: "/assets/teachingbirds/radiator_off.jpg",
+                  },
+                  type: "image",
+                  style: {
+                    width: "100%",
+                    top: "50%",
+                    left: "50%",
+                  },
                   tap_action: {
                     action: "more-info",
                   },
-                  entity: "sensor.presence_isa",
+                  entity: "switch.stefan_radiator_3",
                 },
                 {
-                  image: "/assets/teachingbirds/Stefan_square.jpg",
-                  type: "picture-entity",
-                  show_name: false,
-                  tap_action: {
-                    action: "more-info",
+                  style: {
+                    top: "90%",
+                    left: "50%",
                   },
-                  entity: "sensor.presence_stefan",
-                },
-                {
-                  image: "/assets/teachingbirds/background_square.png",
-                  elements: [
-                    {
-                      state_image: {
-                        on: "/assets/teachingbirds/radiator_on.jpg",
-                        off: "/assets/teachingbirds/radiator_off.jpg",
-                      },
-                      type: "image",
-                      style: {
-                        width: "100%",
-                        top: "50%",
-                        left: "50%",
-                      },
-                      tap_action: {
-                        action: "more-info",
-                      },
-                      entity: "switch.stefan_radiator_3",
-                    },
-                    {
-                      style: {
-                        top: "90%",
-                        left: "50%",
-                      },
-                      type: "state-label",
-                      entity: "sensor.temperature_stefan",
-                    },
-                  ],
-                  type: "picture-elements",
-                },
-                {
-                  image: "/assets/teachingbirds/background_square.png",
-                  elements: [
-                    {
-                      style: {
-                        "--mdc-icon-size": "100%",
-                        top: "50%",
-                        left: "50%",
-                      },
-                      type: "icon",
-                      tap_action: {
-                        action: "navigate",
-                        navigation_path: "/lovelace/home_info",
-                      },
-                      icon: "mdi:car",
-                    },
-                  ],
-                  type: "picture-elements",
+                  type: "state-label",
+                  entity: "sensor.temperature_stefan",
                 },
               ],
-              type: "horizontal-stack",
+              type: "picture-elements",
             },
             {
-              cards: [
+              image: "/assets/teachingbirds/background_square.png",
+              elements: [
                 {
-                  show_name: false,
-                  type: "picture-entity",
-                  name: "Alarm",
-                  image: "/assets/teachingbirds/House_square.jpg",
-                  entity: "alarm_control_panel.house",
-                },
-                {
-                  name: "Roomba",
-                  image: "/assets/teachingbirds/roomba_square.jpg",
-                  show_name: false,
-                  type: "picture-entity",
-                  state_image: {
-                    "Not Today": "/assets/teachingbirds/roomba_bw_square.jpg",
+                  style: {
+                    "--mdc-icon-size": "100%",
+                    top: "50%",
+                    left: "50%",
                   },
-                  entity: "input_select.roomba_mode",
-                },
-                {
-                  show_name: false,
-                  type: "picture-entity",
-                  state_image: {
-                    Mail: "/assets/teachingbirds/mailbox_square.jpg",
-                    "Package and mail":
-                      "/assets/teachingbirds/mailbox_square.jpg",
-                    Empty: "/assets/teachingbirds/mailbox_bw_square.jpg",
-                    Package: "/assets/teachingbirds/mailbox_square.jpg",
+                  type: "icon",
+                  tap_action: {
+                    action: "navigate",
+                    navigation_path: "/lovelace/home_info",
                   },
-                  entity: "sensor.mailbox",
-                },
-                {
-                  show_name: false,
-                  state_image: {
-                    "Put out": "/assets/teachingbirds/trash_square.jpg",
-                    "Take in": "/assets/teachingbirds/trash_square.jpg",
-                  },
-                  type: "picture-entity",
-                  image: "/assets/teachingbirds/trash_bear_bw_square.jpg",
-                  entity: "sensor.trash_status",
+                  icon: "mdi:car",
                 },
               ],
-              type: "horizontal-stack",
+              type: "picture-elements",
+            },
+
+            {
+              show_name: false,
+              type: "picture-entity",
+              name: "Alarm",
+              image: "/assets/teachingbirds/House_square.jpg",
+              entity: "alarm_control_panel.house",
             },
             {
-              cards: [
-                {
-                  state_image: {
-                    Idle: "/assets/teachingbirds/washer_square.jpg",
-                    Running: "/assets/teachingbirds/laundry_running_square.jpg",
-                    Clean: "/assets/teachingbirds/laundry_clean_2_square.jpg",
-                  },
-                  entity: "input_select.washing_machine_status",
-                  type: "picture-entity",
-                  show_name: false,
-                  name: "Washer",
-                },
-                {
-                  state_image: {
-                    Idle: "/assets/teachingbirds/dryer_square.jpg",
-                    Running: "/assets/teachingbirds/clothes_drying_square.jpg",
-                    Clean: "/assets/teachingbirds/folded_clothes_square.jpg",
-                  },
-                  entity: "input_select.dryer_status",
-                  type: "picture-entity",
-                  show_name: false,
-                  name: "Dryer",
-                },
-                {
-                  image: "/assets/teachingbirds/guests_square.jpg",
-                  type: "picture-entity",
-                  show_name: false,
-                  tap_action: {
-                    action: "toggle",
-                  },
-                  entity: "input_boolean.guest_mode",
-                },
-                {
-                  image: "/assets/teachingbirds/cleaning_square.jpg",
-                  type: "picture-entity",
-                  show_name: false,
-                  tap_action: {
-                    action: "toggle",
-                  },
-                  entity: "input_boolean.cleaning_day",
-                },
-              ],
-              type: "horizontal-stack",
+              name: "Roomba",
+              image: "/assets/teachingbirds/roomba_square.jpg",
+              show_name: false,
+              type: "picture-entity",
+              state_image: {
+                "Not Today": "/assets/teachingbirds/roomba_bw_square.jpg",
+              },
+              entity: "input_select.roomba_mode",
+            },
+            {
+              show_name: false,
+              type: "picture-entity",
+              state_image: {
+                Mail: "/assets/teachingbirds/mailbox_square.jpg",
+                "Package and mail": "/assets/teachingbirds/mailbox_square.jpg",
+                Empty: "/assets/teachingbirds/mailbox_bw_square.jpg",
+                Package: "/assets/teachingbirds/mailbox_square.jpg",
+              },
+              entity: "sensor.mailbox",
+            },
+            {
+              show_name: false,
+              state_image: {
+                "Put out": "/assets/teachingbirds/trash_square.jpg",
+                "Take in": "/assets/teachingbirds/trash_square.jpg",
+              },
+              type: "picture-entity",
+              image: "/assets/teachingbirds/trash_bear_bw_square.jpg",
+              entity: "sensor.trash_status",
+            },
+
+            {
+              state_image: {
+                Idle: "/assets/teachingbirds/washer_square.jpg",
+                Running: "/assets/teachingbirds/laundry_running_square.jpg",
+                Clean: "/assets/teachingbirds/laundry_clean_2_square.jpg",
+              },
+              entity: "input_select.washing_machine_status",
+              type: "picture-entity",
+              show_name: false,
+              name: "Washer",
+            },
+            {
+              state_image: {
+                Idle: "/assets/teachingbirds/dryer_square.jpg",
+                Running: "/assets/teachingbirds/clothes_drying_square.jpg",
+                Clean: "/assets/teachingbirds/folded_clothes_square.jpg",
+              },
+              entity: "input_select.dryer_status",
+              type: "picture-entity",
+              show_name: false,
+              name: "Dryer",
+            },
+            {
+              image: "/assets/teachingbirds/guests_square.jpg",
+              type: "picture-entity",
+              show_name: false,
+              tap_action: {
+                action: "toggle",
+              },
+              entity: "input_boolean.guest_mode",
+            },
+            {
+              image: "/assets/teachingbirds/cleaning_square.jpg",
+              type: "picture-entity",
+              show_name: false,
+              tap_action: {
+                action: "toggle",
+              },
+              entity: "input_boolean.cleaning_day",
             },
           ],
-          type: "vertical-stack",
         },
         {
           type: "grid",
