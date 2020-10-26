@@ -572,6 +572,7 @@
                             },
                             "unsupported_condition": "Cyflwr heb gymorth: {condition}"
                         },
+                        "copy_to_clipboard": "Copïo i'r Clipfwrdd",
                         "default_name": "Awtomeiddiad Newydd",
                         "edit_ui": "Golygu gyda UI",
                         "edit_yaml": "Golygu fel YAML",
@@ -713,6 +714,7 @@
                     "caption": "Addasu",
                     "description": "Addasu eich endidau",
                     "picker": {
+                        "documentation": "Dogfennaeth addasu",
                         "header": "Addasu",
                         "introduction": "Addasu nodweddion yr endid. Bydd ychwanegu/golygu osodiadau bersonol i rym ar unwaith. Bydd addasiadau sydd wedi tynnu yn dod i rym pan fydd yr endid yn cael ei ddiweddaru."
                     }
@@ -905,7 +907,10 @@
                         "device_tracker_pick": "Dewiswch dyfeis i'w dracio",
                         "device_tracker_picked": "Tracio Dyfeis",
                         "name": "Enw"
-                    }
+                    },
+                    "learn_more": "Dysgu mwy am bobl",
+                    "person_not_found": "Ni allem ddarganfod y person yr oeddech yn ceisio ei olygu.",
+                    "person_not_found_title": "Person heb ei ddarganfod"
                 },
                 "scene": {
                     "editor": {
@@ -978,6 +983,9 @@
                     }
                 },
                 "tags": {
+                    "detail": {
+                        "companion_apps": "apiau cydymaith"
+                    },
                     "learn_more": "Dysgu mwy am dagiau"
                 },
                 "users": {

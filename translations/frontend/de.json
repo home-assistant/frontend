@@ -1192,6 +1192,8 @@
                                 },
                                 "event": {
                                     "context_user_pick": "Benutzer hinzufügen",
+                                    "context_user_picked": "Ereignis auslösender Benutzer",
+                                    "context_users": "Auf Ereignisse beschränken, die ausgelöst wurden durch",
                                     "event_data": "Ereignisdaten",
                                     "event_type": "Ereignistyp",
                                     "label": "Ereignis"
@@ -2463,9 +2465,10 @@
                         "entity": "Entität",
                         "jinja_documentation": "Jinja2 Template Dokumentation",
                         "listeners": "Diese Vorlage überwacht die folgenden Statusänderungsereignisse:",
-                        "no_listeners": "Diese Vorlage überwacht keine Geänderten Ereignisse und wird nicht automatisch aktualisiert.",
+                        "no_listeners": "Diese Vorlage überwacht keine Ereignisse und wird nicht automatisch aktualisiert.",
                         "reset": "Zurücksetzen auf Demo-Vorlage",
                         "template_extensions": "Home Assistant-Vorlagenerweiterungen",
+                        "time": "Diese Vorlage wird zu Beginn jeder Minute aktualisiert.",
                         "title": "Vorlage",
                         "unknown_error_template": "Unbekannter Fehler beim Rendern der Vorlage"
                     }

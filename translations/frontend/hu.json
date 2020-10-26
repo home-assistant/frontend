@@ -8,7 +8,7 @@
     },
     "groups": {
         "system-admin": "Adminisztrátorok",
-        "system-read-only": "Csak olvasható felhasználók",
+        "system-read-only": "Felhasználók csak olvasási jogosultsággal",
         "system-users": "Felhasználók"
     },
     "panel": {
@@ -420,6 +420,7 @@
                 "unlock": "Kinyit"
             },
             "media_player": {
+                "browse_media": "Médiaböngészés",
                 "media_next_track": "Következő",
                 "media_play": "Lejátszás",
                 "media_play_pause": "Lejátszás/szünet",
@@ -570,9 +571,33 @@
                 "no_history_found": "Nem található előzmény."
             },
             "logbook": {
-                "entries_not_found": "Nincsenek naplóbejegyzések."
+                "entries_not_found": "Nincsenek naplóbejegyzések.",
+                "messages": {
+                    "became_unavailable": "elérhetetlenné vált",
+                    "changed_to_state": "megváltozott: {state}",
+                    "cleared_device_class": "{device_class} érzékelés befejeződött",
+                    "detected_device_class": "{device_class}-t érzékelt",
+                    "rose": "emelkedett",
+                    "set": "beállít",
+                    "turned_off": "kikapcsolt",
+                    "turned_on": "bekapcsolt",
+                    "was_at_home": "hazaért",
+                    "was_at_state": "{state} állapotban volt",
+                    "was_away": "távol volt",
+                    "was_closed": "be lett zárva",
+                    "was_connected": "csatlakozott",
+                    "was_disconnected": "lecsatlakozott",
+                    "was_low": "alacsony volt",
+                    "was_normal": "normális volt",
+                    "was_opened": "ki lett nyitva",
+                    "was_plugged_in": "be lett dugva",
+                    "was_safe": "biztonságos volt",
+                    "was_unplugged": "ki lett húzva",
+                    "was_unsafe": "nem volt biztonságos"
+                }
             },
             "media-browser": {
+                "audio_not_supported": "A böngésződ nem támogatja az audio elemet.",
                 "choose_player": "Lejátszó kiválasztása",
                 "choose-source": "Forrás kiválasztása",
                 "class": {
@@ -581,6 +606,7 @@
                     "artist": "Előadó",
                     "channel": "Csatorna",
                     "composer": "Zeneszerző",
+                    "contributing_artist": "Közreműködő előadó",
                     "directory": "Könyvtár",
                     "episode": "Epizód",
                     "game": "Játék",
@@ -612,7 +638,12 @@
                 "pick-media": "Média kiválasztása",
                 "play": "Lejátszás",
                 "play-media": "Média lejátszása",
+                "video_not_supported": "A böngésződ nem támogatja a video elemet.",
                 "web-browser": "Böngésző"
+            },
+            "picture-upload": {
+                "label": "Kép",
+                "unsupported_format": "Nem támogatott formátum, válassz JPEG, PNG vagy GIF képet."
             },
             "related-items": {
                 "area": "Terület",
@@ -818,6 +849,7 @@
                         "automation": "Automatizálások újratöltése",
                         "command_line": "Parancssori entitások újratöltése",
                         "core": "Lokáció és testreszabások újratöltése",
+                        "filesize": "Fájlméret entitások újratöltése",
                         "filter": "Szűrőentitások újratöltése",
                         "generic": "Általános IP kamera entitások újratöltése",
                         "generic_thermostat": "Általános termosztát entitások újratöltése",
@@ -832,6 +864,7 @@
                         "min_max": "Min/max entitások újratöltése",
                         "mqtt": "MQTT entitások újratöltése",
                         "person": "Személyek újratöltése",
+                        "ping": "Ping bináris érzékelő entitások újratöltése",
                         "reload": "{domain} újratöltése",
                         "rest": "Rest entitások és értesítési szolgáltatások újratöltése",
                         "rpi_gpio": "Raspberry Pi GPIO entitások újratöltése",
@@ -969,6 +1002,15 @@
                             "name": "Művelet",
                             "type_select": "Művelet típusa",
                             "type": {
+                                "choose": {
+                                    "add_option": "Opció hozzáadása",
+                                    "conditions": "Feltételek",
+                                    "default": "Alapértelmezett műveletek",
+                                    "label": "Választ",
+                                    "option": "Opció {number}",
+                                    "remove_option": "Opció eltávolítása",
+                                    "sequence": "Műveletek"
+                                },
                                 "condition": {
                                     "label": "Feltétel"
                                 },
@@ -990,6 +1032,7 @@
                                 },
                                 "repeat": {
                                     "label": "Ismétlés",
+                                    "sequence": "Műveletek",
                                     "type_select": "Ismétlés típusa",
                                     "type": {
                                         "count": {
@@ -1313,9 +1356,11 @@
                         "dont_expose_entity": "Entitás feltárásának törlése",
                         "expose": "Feltárás Alexának",
                         "expose_entity": "Entitás feltárása",
+                        "exposed": "{selected} feltárva",
                         "exposed_entities": "Feltárt entitások",
                         "follow_domain": "Tartomány követése",
                         "manage_domains": "Tartományok kezelése",
+                        "not_exposed": "{selected} nincs feltárva",
                         "not_exposed_entities": "Feltáratlan entitások",
                         "title": "Alexa"
                     },
@@ -1356,8 +1401,11 @@
                         "dont_expose_entity": "Entitás feltárásának törlése",
                         "expose": "Feltárás a Google Asszisztensnek",
                         "expose_entity": "Entitás feltárása",
+                        "exposed": "{selected} feltárva",
                         "exposed_entities": "Feltárt entitások",
+                        "follow_domain": "Tartomány követése",
                         "manage_domains": "Tartományok kezelése",
+                        "not_exposed": "{selected} nincs feltárva",
                         "not_exposed_entities": "Feltáratlan entitások",
                         "sync_to_google": "A változások szinkronizálása a Google-lal.",
                         "title": "Google Asszisztens"
@@ -1820,8 +1868,14 @@
                         "controller": "Vezérlő",
                         "instance": "Példány",
                         "network": "Hálózat",
+                        "node_id": "Csomópont ID",
+                        "ozw_instance": "OpenZWave példány",
                         "query_stage": "Lekérdezési fázis",
-                        "wakeup_instructions": "Ébresztési utasítások"
+                        "wakeup_instructions": "Ébresztési utasítások",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "zwave_info": "Z-Wave infó"
                     },
                     "navigation": {
                         "network": "Hálózat",
@@ -1839,7 +1893,10 @@
                             "driverawakenodesqueries": "Minden éber csomópont lekérdezésre került",
                             "driverfailed": "Nem sikerült csatlakozni a Z-Wave vezérlőhöz",
                             "driverready": "A Z-Wave vezérlő inicializálása",
+                            "offline": "OZWDaemon offline",
                             "ready": "Csatlakozásra kész",
+                            "started": "Csatlakoztatva az MQTT-hez",
+                            "starting": "Csatlakozás az MQTT-hez",
                             "stopped": "OpenZWave leállt"
                         },
                         "offline": "Offline",
@@ -1848,7 +1905,8 @@
                         "unknown": "Ismeretlen"
                     },
                     "network": {
-                        "header": "Hálózat menedzsment"
+                        "header": "Hálózat menedzsment",
+                        "node_count": "{count} csomópont"
                     },
                     "node_config": {
                         "header": "Csomópont konfigurációja",
@@ -1871,7 +1929,10 @@
                         "zwave_plus": "Z-Wave Plus"
                     },
                     "refresh_node": {
-                        "button": "Csomópont frissítése"
+                        "button": "Csomópont frissítése",
+                        "node_status": "Csomópont állapota",
+                        "start_refresh_button": "Frissítés indítása",
+                        "step": "Lépés"
                     },
                     "select_instance": {
                         "header": "OpenZWave példány kiválasztása"
@@ -1890,6 +1951,8 @@
                     "description": "A Home Assistant által követett személyek kezelése",
                     "detail": {
                         "admin": "Adminisztrátor",
+                        "allow_login": "Személy bejelentkezésének engedélyezése",
+                        "confirm_delete_user": "Biztos benne, hogy törölni szeretné a(z) {name} felhasználói fiókját? Továbbra is képes lesz nyomonkövetni a felhasználót, viszont a személy nem fog tudni bejelentkezni.",
                         "create": "Létrehozás",
                         "delete": "Törlés",
                         "device_tracker_intro": "Válaszd ki azokat az eszközöket, amelyek ehhez a felhasználóhoz tartoznak.",
@@ -2010,6 +2073,7 @@
                             "automation": "Automatizálások újratöltése",
                             "command_line": "Parancssori entitások újratöltése",
                             "core": "Lokáció és testreszabások újratöltése",
+                            "filesize": "Fájlméret entitások újratöltése",
                             "filter": "Szűrőentitások újratöltése",
                             "generic": "Általános IP kamera entitások újratöltése",
                             "generic_thermostat": "Általános termosztát entitások újratöltése",
@@ -2026,6 +2090,7 @@
                             "min_max": "Min/max entitások újratöltése",
                             "mqtt": "MQTT entitások újratöltése",
                             "person": "Személyek újratöltése",
+                            "ping": "Ping bináris érzékelő entitások újratöltése",
                             "reload": "{domain} újratöltése",
                             "rest": "Rest entitások és értesítési szolgáltatások újratöltése",
                             "rpi_gpio": "Raspberry Pi GPIO entitások újratöltése",
@@ -2057,6 +2122,11 @@
                     }
                 },
                 "tags": {
+                    "add_tag": "Címke hozzáadása",
+                    "automation_title": "{name} címke beolvasva",
+                    "caption": "Címkék",
+                    "create_automation": "Automatizálás létrehozása címkével",
+                    "description": "Címkék kezelése",
                     "detail": {
                         "companion_apps": "társalkalmazások",
                         "create": "Létrehozás",
@@ -2066,7 +2136,9 @@
                         "name": "Név",
                         "new_tag": "Új címke",
                         "tag_id": "Címke azonosító",
-                        "update": "Frissítés"
+                        "tag_id_placeholder": "Automatikusan generálódik, ha nincs kitöltve",
+                        "update": "Frissítés",
+                        "usage": "A címke beolvasáskor egy automatizálást indíthat el. Használhatsz NFC tageket, QR-kódokat vagy bármilyen más címkét. Használd a {companion_link} appot, hogy ezt a címkét egy programozható NFC tagre írd, vagy hozz létre egy QR-kódot lentebb."
                     },
                     "edit": "Szerkesztés",
                     "headers": {
@@ -2074,7 +2146,9 @@
                         "name": "Név"
                     },
                     "learn_more": "Tudj meg többet a címkékről",
-                    "never_scanned": "Sosem volt szkennelve"
+                    "never_scanned": "Sosem volt beolvasva",
+                    "no_tags": "Nincsenek címkék",
+                    "write": "Írás"
                 },
                 "users": {
                     "add_user": {
@@ -2168,7 +2242,7 @@
                     "group_binding": {
                         "bind_button_help": "Csatlakoztassa a kiválasztott csoportot a kiválasztott eszközfürtökhöz.",
                         "bind_button_label": "Csoporthoz fűzés",
-                        "cluster_selection_help": "Jelölje ki a kijelölt csoporthoz kötni kívánt fürtöket.",
+                        "cluster_selection_help": "Jelöld ki azokat a klasztereket, amelyeket a kiválasztott csoporthoz szeretnél kötni.",
                         "group_picker_help": "Jelölj ki egy csoportot a kötési parancs kiadásához.",
                         "group_picker_label": "Köthető csoportok",
                         "header": "Csoportkötés",
@@ -2232,7 +2306,7 @@
                         "create": "Létrehozás",
                         "delete": "Törlés",
                         "icon": "Ikon",
-                        "icon_error_msg": "Az ikonnak az előtag:ikonnév formátumban kell lennie, például: mdi:home",
+                        "icon_error_msg": "Az ikonnak az \"előtag:ikonnév\" formátumban kell lennie, például: \"mdi:home\"",
                         "latitude": "Szélesség",
                         "longitude": "Hosszúság",
                         "name": "Név",
@@ -2386,7 +2460,7 @@
                         "reset": "Példa sablon visszaállítása",
                         "result_type": "Eredmény típusa",
                         "template_extensions": "Home Assistant sablon bővítmények",
-                        "time": "Ez a sablon minden perc elején frissül.",
+                        "time": "Ez a sablon minden perc kezdetekor frissül.",
                         "title": "Sablon",
                         "unknown_error_template": "Ismeretlen hiba a sablon kiértékelésekor"
                     }
@@ -2460,7 +2534,9 @@
                     "action-editor": {
                         "actions": {
                             "call-service": "Szolgáltatás meghívása",
+                            "default_action": "Alapértelmezett művelet",
                             "more-info": "További infók",
+                            "navigate": "Navigál",
                             "none": "Nincs művelet",
                             "toggle": "Váltás",
                             "url": "URL"
@@ -2475,11 +2551,13 @@
                             "name": "Riasztópanel"
                         },
                         "button": {
+                            "default_action_help": "Az alapértelmezett művelet az entitás képességeitől függ, az entitás vagy kapcsolni fog vagy több információ fog megjelenni.",
                             "description": "A Gomb kártya gombok hozzáadását teszi lehetővé feladatok végrehajtásához.",
                             "name": "Gomb"
                         },
                         "calendar": {
                             "calendar_entities": "Naptár entitások",
+                            "description": "A Naptár kártya egy olyan naptárat jelenít meg, mely a nap-, hét- és listanézetekkel rendelkezik",
                             "inital_view": "Kezdeti nézet",
                             "name": "Naptár",
                             "views": {
@@ -2506,6 +2584,7 @@
                         "entities": {
                             "description": "Az Entitások kártya a legalapvetőbb kártya. Az elemeket listákba csoportosítja.",
                             "edit_special_row": "A sor részleteinek megtekintése a Szerkesztés gombra kattintva",
+                            "entity_row_editor": "Entitássor szerkesztő",
                             "entity_row": {
                                 "attribute": "Attribútum",
                                 "button": "Gomb",
@@ -2524,7 +2603,8 @@
                                 "last-changed": "Utoljára módosult",
                                 "last-triggered": "Utoljára aktiválva",
                                 "last-updated": "Utoljára frissítve",
-                                "position": "Pozíció",
+                                "none": "Nincs másodlagos információ",
+                                "position": "Helyzet",
                                 "tilt-position": "Döntési pozíció"
                             },
                             "show_header_toggle": "Fejléc kapcsoló megjelenítése?",
@@ -2648,7 +2728,8 @@
                             "description": "Az Érzékelő kártya gyors áttekintést nyújt az érzékelők állapotáról egy opcionális grafikon segítségével, amely az időbeli változásokat szemlélteti.",
                             "graph_detail": "Grafikon részletei",
                             "graph_type": "Grafikon típusa",
-                            "name": "Érzékelő"
+                            "name": "Érzékelő",
+                            "show_more_detail": "További részletek megjelenítése"
                         },
                         "shopping-list": {
                             "description": "A Bevásárló lista kártya lehetővé teszi, hogy tételeket vegyél fel, szerkessz, pipálj ki, és törölj a bevásárlólistádról.",
@@ -2732,6 +2813,9 @@
                         "para_migrate": "A Home Assistant a 'Konfiguráció áttelepítése' gomb megnyomásával az összes kártyához és nézethez automatikusan létre tud hozni ID-kat.",
                         "para_no_id": "Ez az elem nem rendelkezik ID-val. Kérlek, adj hozzá egyet az 'ui-lovelace.yaml' fájlban!"
                     },
+                    "move_card": {
+                        "header": "Válaszd ki azt a nézetet, ahová a kártyát szeretnéd áthelyezni"
+                    },
                     "raw_editor": {
                         "confirm_remove_config_text": "Automatikusan létrehozzuk a Lovelace felhasználói felületed nézeteit a területeiddel és eszközeiddel, ha eltávolítod a Lovelace konfigurációját.",
                         "confirm_remove_config_title": "Biztosan el szeretnéd távolítani a Lovelace felhasználói felület konfigurációját?",
@@ -2758,6 +2842,10 @@
                         "yaml_config": "A kezdéshez itt a jelenlegi konfigurációja ennek az irányítópultnak:",
                         "yaml_control": "Ahhoz, hogy átvedd az irányítást YAML módban, hozz létre egy YAML fájlt az irányítópult konfigurációjában megadott  vagy az alapértelmezett 'ui-lovelace.yaml' névvel.",
                         "yaml_mode": "YAML módot használsz ehhez az irányítópulthoz, ezért nem módosíthatod a Lovelace konfigurációt a felhasználói felületről. Ha mégis onnan szeretnéd, akkor távolítsd el a 'mode: yaml' bejegyzést a Lovelace konfigurációból a 'configuration.yaml' fájlban."
+                    },
+                    "select_view": {
+                        "dashboard_label": "Irányítópult",
+                        "header": "Nézet kiválasztása"
                     },
                     "suggest_card": {
                         "add": "Hozzáadás a Lovelace-hez",
@@ -2978,6 +3066,7 @@
                 },
                 "intro": "Készen állsz arra, hogy felébreszd az otthonod, visszaszerezd a magánéleted és csatlakozz egy világhálós közösséghez?",
                 "restore": {
+                    "description": "Alternatív megoldásként visszaállíthatsz egy korábbi pillanatképet.",
                     "hide_log": "Teljes napló elrejtése",
                     "in_progress": "Visszaállítás folyamatban",
                     "show_log": "Teljes napló megjelenítése"
@@ -3090,6 +3179,7 @@
                     "header": "Kapcsolat automatikus bontása"
                 },
                 "themes": {
+                    "accent_color": "Kiemelő szín",
                     "dark_mode": {
                         "auto": "Automatikus",
                         "dark": "Sötét",
@@ -3098,7 +3188,9 @@
                     "dropdown_label": "Téma",
                     "error_no_theme": "Nincsenek elérhető témák.",
                     "header": "Téma",
-                    "link_promo": "Tudj meg többet a témákról"
+                    "link_promo": "Tudj meg többet a témákról",
+                    "primary_color": "Elsődleges szín",
+                    "reset": "Visszaállítás"
                 },
                 "vibrate": {
                     "description": "Rezgés engedélyezése vagy tiltása ezen az eszközön az eszközök vezérlésekor.",
