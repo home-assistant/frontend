@@ -8,6 +8,7 @@ export const demoLovelaceTeachingbirds: DemoConfig["lovelace"] = () => ({
         { type: "custom:ha-demo-card" },
         {
           type: "grid",
+          columns: 4,
           cards: [
             {
               image: "/assets/teachingbirds/isa_square.jpg",
