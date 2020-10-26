@@ -224,7 +224,7 @@ export class HUIView extends UpdatingElement {
         badgeElToReplace
       );
     }
-    this._badges = this._cards!.map((curBadgeEl) =>
+    this._badges = this._badges!.map((curBadgeEl) =>
       curBadgeEl === badgeElToReplace ? newBadgeEl : curBadgeEl
     );
   }
