@@ -2542,6 +2542,7 @@
                         "listeners": "Deze template luistert naar de volgende gebeurtenissen met gewijzigde status:",
                         "no_listeners": "Deze template luistert niet naar gebeurtenissen met statuswijziging en wordt niet automatisch bijgewerkt.",
                         "reset": "Resetten naar demosjabloon",
+                        "result_type": "Resultaattype",
                         "template_extensions": "Home Assistant sjabloon extensiesHome Assistant",
                         "time": "Deze template wordt elke 60 seconden bijgewerkt na de laatste statuswijziging.",
                         "title": "Sjablonen",
@@ -2686,6 +2687,7 @@
                                 "entity-id": "Entiteit ID",
                                 "last-changed": "Laatst gewijzigd",
                                 "last-triggered": "Voor het laatst uitgevoerd",
+                                "last-updated": "Laatst bijgewerkt",
                                 "none": "Geen secundaire informatie",
                                 "position": "Positie",
                                 "tilt-position": "Kantelpositie"
