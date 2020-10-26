@@ -789,7 +789,10 @@ class HUIRoot extends LitElement {
 
         ha-app-layout {
           min-height: 100%;
-          background: var(--lovelace-background);
+          background: var(
+            --lovelace-background,
+            var(--primary-background-color)
+          );
         }
         ha-tabs {
           width: 100%;
