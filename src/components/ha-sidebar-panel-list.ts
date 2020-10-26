@@ -1,10 +1,10 @@
-import "./ha-sidebar-panel-list";
+import "./ha-divider-list-item";
 import "./ha-clickable-list-item";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-icon-button";
-import { mdiBell, mdiMenu, mdiMenuOpen } from "@mdi/js";
+import { mdiCellphoneCog, mdiClose, mdiPlus, mdiViewDashboard } from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -16,30 +16,134 @@ import {
   property,
   PropertyValues,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { fireEvent } from "../common/dom/fire_event";
-import { computeDomain } from "../common/entity/compute_domain";
+import { guard } from "lit-html/directives/guard";
+import memoizeOne from "memoize-one";
+import { LocalStorage } from "../common/decorators/local-storage";
+import { compare } from "../common/string/compare";
 import { computeRTL } from "../common/util/compute_rtl";
-import { ActionHandlerDetail } from "../data/lovelace";
 import {
-  PersistentNotification,
-  subscribeNotifications,
-} from "../data/persistent_notification";
-import { getExternalConfig } from "../external_app/external_config";
-import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
+  ExternalConfig,
+  getExternalConfig,
+} from "../external_app/external_config";
 import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, PanelInfo } from "../types";
 import "./ha-icon";
 import "./ha-menu-button";
 import "./ha-svg-icon";
 import "./user/ha-user-badge";
 
+const SHOW_AFTER_SPACER = ["config", "developer-tools", "hassio"];
+
 const SUPPORT_SCROLL_IF_NEEDED = "scrollIntoViewIfNeeded" in document.body;
+
+const SORT_VALUE_URL_PATHS = {
+  map: 1,
+  logbook: 2,
+  history: 3,
+  "developer-tools": 9,
+  hassio: 10,
+  config: 11,
+};
+
+const panelSorter = (
+  reverseSort: string[],
+  defaultPanel: string,
+  a: PanelInfo,
+  b: PanelInfo
+) => {
+  const indexA = reverseSort.indexOf(a.url_path);
+  const indexB = reverseSort.indexOf(b.url_path);
+  if (indexA !== indexB) {
+    if (indexA < indexB) {
+      return 1;
+    }
+    return -1;
+  }
+  return defaultPanelSorter(defaultPanel, a, b);
+};
+
+const defaultPanelSorter = (
+  defaultPanel: string,
+  a: PanelInfo,
+  b: PanelInfo
+) => {
+  // Put all the Lovelace at the top.
+  const aLovelace = a.component_name === "lovelace";
+  const bLovelace = b.component_name === "lovelace";
+
+  if (a.url_path === defaultPanel) {
+    return -1;
+  }
+  if (b.url_path === defaultPanel) {
+    return 1;
+  }
+
+  if (aLovelace && bLovelace) {
+    return compare(a.title!, b.title!);
+  }
+  if (aLovelace && !bLovelace) {
+    return -1;
+  }
+  if (bLovelace) {
+    return 1;
+  }
+
+  const aBuiltIn = a.url_path in SORT_VALUE_URL_PATHS;
+  const bBuiltIn = b.url_path in SORT_VALUE_URL_PATHS;
+
+  if (aBuiltIn && bBuiltIn) {
+    return SORT_VALUE_URL_PATHS[a.url_path] - SORT_VALUE_URL_PATHS[b.url_path];
+  }
+  if (aBuiltIn) {
+    return -1;
+  }
+  if (bBuiltIn) {
+    return 1;
+  }
+  // both not built in, sort by title
+  return compare(a.title!, b.title!);
+};
+
+const computePanels = memoizeOne(
+  (
+    panels: HomeAssistant["panels"],
+    defaultPanel: HomeAssistant["defaultPanel"],
+    panelsOrder: string[],
+    hiddenPanels: string[]
+  ): [PanelInfo[], PanelInfo[]] => {
+    if (!panels) {
+      return [[], []];
+    }
+
+    const beforeSpacer: PanelInfo[] = [];
+    const afterSpacer: PanelInfo[] = [];
+
+    Object.values(panels).forEach((panel) => {
+      if (
+        hiddenPanels.includes(panel.url_path) ||
+        (!panel.title && panel.url_path !== defaultPanel)
+      ) {
+        return;
+      }
+      (SHOW_AFTER_SPACER.includes(panel.url_path)
+        ? afterSpacer
+        : beforeSpacer
+      ).push(panel);
+    });
+
+    const reverseSort = [...panelsOrder].reverse();
+
+    beforeSpacer.sort((a, b) => panelSorter(reverseSort, defaultPanel, a, b));
+    afterSpacer.sort((a, b) => panelSorter(reverseSort, defaultPanel, a, b));
+
+    return [beforeSpacer, afterSpacer];
+  }
+);
 
 let Sortable;
 
-@customElement("ha-sidebar")
-class HaSidebar extends LitElement {
+@customElement("ha-sidebar-panel-list")
+class HaSidebarPanelList extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
@@ -50,11 +154,13 @@ class HaSidebar extends LitElement {
 
   @property({ type: Boolean }) public editMode = false;
 
-  @internalProperty() private _notifications?: PersistentNotification[];
-
   // property used only in css
   // @ts-ignore
   @property({ type: Boolean, reflect: true }) public rtl = false;
+
+  @internalProperty() private _renderEmptySortable = false;
+
+  @internalProperty() private _externalConfig?: ExternalConfig;
 
   private _mouseLeaveTimeout?: number;
 
@@ -62,43 +168,29 @@ class HaSidebar extends LitElement {
 
   private _recentKeydownActiveUntil = 0;
 
+  // @ts-ignore
+  @LocalStorage("sidebarPanelOrder", true, {
+    attribute: false,
+  })
+  private _panelOrder: string[] = [];
+
+  // @ts-ignore
+  @LocalStorage("sidebarHiddenPanels", true, {
+    attribute: false,
+  })
+  private _hiddenPanels: string[] = [];
+
   private _sortable?;
 
   protected render() {
     if (!this.hass) {
       return html``;
     }
-    const debug = false;
-
-    return debug
-      ? html`
-          <ha-sidebar-panel-list
-            .hass=${this.hass}
-            .expanded=${this.expanded}
-            .alwaysExpand=${this.alwaysExpand}
-          ></ha-sidebar-panel-list>
-        `
-      : this.render2();
-  }
-
-  protected render2() {
-    if (!this.hass) {
-      return html``;
-    }
 
     // prettier-ignore
     return html`
-      ${this._renderHeader()} ${this._renderAllPanels()}
-      <mwc-list
-        attr-for-selected="data-panel"
-        @focusin=${this._listboxFocusIn}
-        @focusout=${this._listboxFocusOut}
-        @scroll=${this._listboxScroll}
-        @keydown=${this._listboxKeydown}
-      >
-        ${this._renderNotifications()} ${this._renderUserItem()}
-      </mwc-list>
-      ${this._renderSpacer()}
+      ${this._renderNormalPanels()}
+      ${this._renderUtilityPanels()}
       <div class="tooltip"></div>
     `;
   }
@@ -130,7 +222,7 @@ class HaSidebar extends LitElement {
       hass.panelUrl !== oldHass.panelUrl ||
       hass.user !== oldHass.user ||
       hass.localize !== oldHass.localize ||
-      hass.locale !== oldHass.locale ||
+      hass.language !== oldHass.language ||
       hass.states !== oldHass.states ||
       hass.defaultPanel !== oldHass.defaultPanel
     );
@@ -140,11 +232,10 @@ class HaSidebar extends LitElement {
     super.firstUpdated(changedProps);
 
     if (this.hass && this.hass.auth.external) {
-      getExternalConfig(this.hass.auth.external).then(() => {});
+      getExternalConfig(this.hass.auth.external).then((conf) => {
+        this._externalConfig = conf;
+      });
     }
-    subscribeNotifications(this.hass.connection, (notifications) => {
-      this._notifications = notifications;
-    });
   }
 
   protected updated(changedProps) {
@@ -164,7 +255,7 @@ class HaSidebar extends LitElement {
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (!oldHass || oldHass.locale !== this.hass.locale) {
+    if (!oldHass || oldHass.language !== this.hass.language) {
       this.rtl = computeRTL(this.hass);
     }
 
@@ -180,45 +271,78 @@ class HaSidebar extends LitElement {
     }
   }
 
-  private _renderHeader() {
-    return html`<div
-      class="menu"
-      @action=${this._handleAction}
-      .actionHandler=${actionHandler({
-        hasHold: !this.editMode,
-        disabled: this.editMode,
-      })}
-    >
-      ${!this.narrow
-        ? html`
-            <mwc-icon-button
-              .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
-              @action=${this._toggleSidebar}
-            >
-              <ha-svg-icon
-                .path=${this.hass.dockedSidebar === "docked"
-                  ? mdiMenuOpen
-                  : mdiMenu}
-              ></ha-svg-icon>
-            </mwc-icon-button>
-          `
-        : ""}
-      ${this.editMode
-        ? html`<mwc-button outlined @click=${this._closeEditMode}>
-            ${this.hass.localize("ui.sidebar.done")}
-          </mwc-button>`
-        : html`<div class="title">Home Assistant</div>`}
-    </div>`;
+  private _renderNormalPanels() {
+    const [beforeSpacer] = computePanels(
+      this.hass.panels,
+      this.hass.defaultPanel,
+      this._panelOrder,
+      this._hiddenPanels
+    );
+
+    // prettier-ignore
+    return html`
+      <mwc-list
+        attr-for-selected="data-panel"
+        class="ha-scrollbar"
+        @focusin=${this._listboxFocusIn}
+        @focusout=${this._listboxFocusOut}
+        @scroll=${this._listboxScroll}
+        @keydown=${this._listboxKeydown}
+      >
+        ${this.editMode
+          ? this._renderPanelsEdit(beforeSpacer)
+          : this._renderPanels(beforeSpacer)}
+
+        <ha-divider-list-item></ha-divider-list-item>
+
+        
+      </mwc-list>
+    `;
   }
 
-  private _renderAllPanels() {
-    return html`
-      <ha-sidebar-panel-list
-        .hass=${this.hass}
-        .expanded=${this.expanded}
-        .alwaysExpand=${this.alwaysExpand}
-      ></ha-sidebar-panel-list>
-    `;
+  private _renderPanelsEdit(beforeSpacer: PanelInfo[]) {
+    // prettier-ignore
+    return html`<div id="sortable">
+        ${guard([this._hiddenPanels, this._renderEmptySortable], () =>
+          this._renderEmptySortable ? "" : this._renderPanels(beforeSpacer)
+        )}
+      </div>
+      ${this._renderSpacer()}
+      ${this._renderHiddenPanels()} `;
+  }
+
+  private _renderHiddenPanels() {
+    return html` ${this._hiddenPanels.length
+      ? html`${this._hiddenPanels.map((url) => {
+          const panel = this.hass.panels[url];
+          if (!panel) {
+            return "";
+          }
+          return html`<ha-clickable-list-item
+            @click=${this._unhidePanel}
+            class="hidden-panel"
+            .panel=${url}
+            graphic="icon"
+          >
+            <ha-icon
+              slot="graphic"
+              .icon=${panel.url_path === this.hass.defaultPanel
+                ? "mdi:view-dashboard"
+                : panel.icon}
+            ></ha-icon>
+            <span class="item-text"
+              >${panel.url_path === this.hass.defaultPanel
+                ? this.hass.localize("panel.states")
+                : this.hass.localize(`panel.${panel.title}`) ||
+                  panel.title}</span
+            >
+            <mwc-icon-button class="show-panel">
+              <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
+            </mwc-icon-button>
+          </ha-clickable-list-item>`;
+        })}
+        ${this._renderSpacer()}`
+      : ""}`;
   }
 
   private _renderSpacer(enabled = true) {
@@ -227,85 +351,8 @@ class HaSidebar extends LitElement {
       : html`<li divider role="separator" class="bottom-spacer" disabled></li>`;
   }
 
-  private _renderNotifications() {
-    let notificationCount = this._notifications
-      ? this._notifications.length
-      : 0;
-    for (const entityId in this.hass.states) {
-      if (computeDomain(entityId) === "configurator") {
-        notificationCount++;
-      }
-    }
-
-    return html`
-      <ha-clickable-list-item
-        aria-role="option"
-        @click=${this._handleShowNotificationDrawer}
-        graphic="icon"
-        hasMeta
-        @mouseenter=${this._itemMouseEnter}
-        @mouseleave=${this._itemMouseLeave}
-      >
-        <ha-svg-icon slot="graphic" .path=${mdiBell}></ha-svg-icon>
-        ${!this.expanded && notificationCount > 0
-          ? html`
-              <span slot="graphic" class="notification-badge">
-                ${notificationCount}
-              </span>
-            `
-          : ""}
-        <span class="item-text">
-          ${this.hass.localize("ui.notification_drawer.title")}
-        </span>
-        ${this.expanded && notificationCount > 0
-          ? html`
-              <span class="notification-badge" slot="meta"
-                >${notificationCount}</span
-              >
-            `
-          : ""}
-      </ha-clickable-list-item>
-    `;
-  }
-
-  private _renderUserItem() {
-    return html`<ha-clickable-list-item
-      class=${classMap({
-        profile: true,
-        // Mimick behavior that mwc-list provides
-        "iron-selected": this.hass.panelUrl === "profile",
-      })}
-      .href=${"profile"}
-      data-panel="panel"
-      tabindex="-1"
-      aria-label=${this.hass.localize("panel.profile")}
-      @mouseenter=${this._itemMouseEnter}
-      @mouseleave=${this._itemMouseLeave}
-      graphic="icon"
-      .activated=${this.hass.panelUrl === "profile"}
-    >
-      <ha-user-badge
-        slot="graphic"
-        .user=${this.hass.user}
-        .hass=${this.hass}
-      ></ha-user-badge>
-
-      <span class="item-text">
-        ${this.hass.user ? this.hass.user.name : ""}
-      </span>
-    </ha-clickable-list-item> `;
-  }
-
   private get _tooltip() {
     return this.shadowRoot!.querySelector(".tooltip")! as HTMLDivElement;
-  }
-
-  private _handleAction(ev: CustomEvent<ActionHandlerDetail>) {
-    if (ev.detail.action !== "hold") {
-      return;
-    }
-
-    fireEvent(this, "hass-edit-sidebar", { editMode: true });
   }
 
   private async _activateEditMode() {
@@ -336,7 +383,9 @@ class HaSidebar extends LitElement {
       // fallbackTolerance: 15,
       dataIdAttr: "data-panel",
       handle: "ha-clickable-list-item",
-      onSort: async () => {},
+      onSort: async () => {
+        this._panelOrder = this._sortable.toArray();
+      },
     });
   }
 
@@ -345,8 +394,36 @@ class HaSidebar extends LitElement {
     this._sortable = undefined;
   }
 
-  private _closeEditMode() {
-    fireEvent(this, "hass-edit-sidebar", { editMode: false });
+  private async _hidePanel(ev: Event) {
+    ev.preventDefault();
+    const panel = (ev.currentTarget as any).panel;
+    if (this._hiddenPanels.includes(panel)) {
+      return;
+    }
+    // Make a copy for Memoize
+    this._hiddenPanels = [...this._hiddenPanels, panel];
+    this._renderEmptySortable = true;
+    await this.updateComplete;
+    const container = this.shadowRoot!.getElementById("sortable")!;
+    while (container.lastElementChild) {
+      container.removeChild(container.lastElementChild);
+    }
+    this._renderEmptySortable = false;
+  }
+
+  private async _unhidePanel(ev: Event) {
+    ev.preventDefault();
+    const panel = (ev.currentTarget as any).panel;
+    this._hiddenPanels = this._hiddenPanels.filter(
+      (hidden) => hidden !== panel
+    );
+    this._renderEmptySortable = true;
+    await this.updateComplete;
+    const container = this.shadowRoot!.getElementById("sortable")!;
+    while (container.lastElementChild) {
+      container.removeChild(container.lastElementChild);
+    }
+    this._renderEmptySortable = false;
   }
 
   private _itemMouseEnter(ev: MouseEvent) {
@@ -430,15 +507,124 @@ class HaSidebar extends LitElement {
     }
   }
 
-  private _handleShowNotificationDrawer() {
-    fireEvent(this, "hass-show-notifications");
+  private _handleExternalAppConfiguration(ev: Event) {
+    ev.preventDefault();
+    this.hass.auth.external!.fireMessage({
+      type: "config_screen/show",
+    });
   }
 
-  private _toggleSidebar(ev: CustomEvent) {
-    if (ev.detail.action !== "tap") {
-      return;
-    }
-    fireEvent(this, "hass-toggle-menu");
+  private _isUtilityPanel(panel: PanelInfo) {
+    return (
+      panel.component_name === "developer-tools" ||
+      panel.component_name === "config" ||
+      panel.component_name === "external-config"
+    );
+  }
+
+  private _renderPanels(panels: PanelInfo[]) {
+    return panels
+      .filter((panel) => !this._isUtilityPanel(panel))
+      .map((panel) =>
+        this._renderPanel(
+          panel.url_path,
+          panel.url_path === this.hass.defaultPanel
+            ? panel.title || this.hass.localize("panel.states")
+            : this.hass.localize(`panel.${panel.title}`) || panel.title,
+          panel.icon,
+          panel.url_path === this.hass.defaultPanel && !panel.icon
+            ? mdiViewDashboard
+            : undefined
+        )
+      );
+  }
+
+  private _renderUtilityPanels() {
+    const [, afterSpacer] = computePanels(
+      this.hass.panels,
+      this.hass.defaultPanel,
+      this._panelOrder,
+      this._hiddenPanels
+    );
+
+    // prettier-ignore
+    return html`
+    <mwc-list>
+        ${afterSpacer.map((panel) =>
+          this._renderPanel(
+            panel.url_path,
+            panel.url_path === this.hass.defaultPanel
+              ? panel.title || this.hass.localize("panel.states")
+              : this.hass.localize(`panel.${panel.title}`) || panel.title,
+            panel.icon,
+            panel.url_path === this.hass.defaultPanel && !panel.icon
+              ? mdiViewDashboard
+              : undefined
+          )
+        )}
+        ${this._renderExternalConfiguration()}
+        <li divider role="separator" class="spacer"></li>
+      </mwc-list>
+    `;
+  }
+
+  private _renderExternalConfiguration() {
+    return html`${this._externalConfig && this._externalConfig.hasSettingsScreen
+      ? html`
+          <ha-clickable-list-item
+            aria-role="option"
+            aria-label=${this.hass.localize(
+              "ui.sidebar.external_app_configuration"
+            )}
+            href="#external-app-configuration"
+            tabindex="-1"
+            @click=${this._handleExternalAppConfiguration}
+            @mouseenter=${this._itemMouseEnter}
+            @mouseleave=${this._itemMouseLeave}
+            graphic="icon"
+          >
+            <ha-svg-icon slot="graphic" .path=${mdiCellphoneCog}></ha-svg-icon>
+            <span class="item-text">
+              ${this.hass.localize("ui.sidebar.external_app_configuration")}
+            </span>
+          </ha-clickable-list-item>
+        `
+      : ""}`;
+  }
+
+  private _renderPanel(
+    urlPath: string,
+    title: string | null,
+    icon?: string | null,
+    iconPath?: string | null
+  ) {
+    return html`
+      <ha-clickable-list-item
+        .activated=${urlPath === this.hass.panelUrl}
+        .href=${urlPath}
+        data-panel=${urlPath}
+        tabindex="-1"
+        @mouseenter=${this._itemMouseEnter}
+        @mouseleave=${this._itemMouseLeave}
+        graphic="icon"
+      >
+        ${iconPath
+          ? html`<ha-svg-icon slot="graphic" .path=${iconPath}></ha-svg-icon>`
+          : html`<ha-icon slot="graphic" .icon=${icon}></ha-icon>`}
+
+        <span class="item-text">${title}</span>
+
+        ${this.editMode
+          ? html`<mwc-icon-button
+              class="hide-panel"
+              .panel=${urlPath}
+              @click=${this._hidePanel}
+            >
+              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+            </mwc-icon-button>`
+          : ""}
+      </ha-clickable-list-item>
+    `;
   }
 
   static get styles(): CSSResult[] {
@@ -446,7 +632,9 @@ class HaSidebar extends LitElement {
       haStyleScrollbar,
       css`
         :host {
-          height: calc(100% - var(--header-height));
+          height: calc(100% + var(--header-height));
+          /* position: absolute; */
+          position: relative;
           display: block;
           overflow: hidden;
           -ms-user-select: none;
@@ -454,7 +642,11 @@ class HaSidebar extends LitElement {
           -moz-user-select: none;
           border-right: 1px solid var(--divider-color);
           background-color: var(--sidebar-background-color);
-          width: 56px;
+          width: 64px;
+          /* height: calc(100% - var(--header-height) - 132px);
+          height: calc(
+            100% - var(--header-height) - 132px - env(safe-area-inset-bottom)
+          ); */
         }
         :host([expanded]) {
           width: 256px;
@@ -464,27 +656,10 @@ class HaSidebar extends LitElement {
           border-right: 0;
           border-left: 1px solid var(--divider-color);
         }
-        .menu {
-          height: var(--header-height);
-          box-sizing: border-box;
-          display: flex;
-          padding: 0 4px;
-          border-bottom: 1px solid transparent;
-          white-space: nowrap;
-          font-weight: 400;
-          color: var(--sidebar-menu-button-text-color, --primary-text-color);
-          border-bottom: 1px solid var(--divider-color);
-          background-color: var(
-            --sidebar-menu-button-background-color,
-            --primary-background-color
-          );
-          font-size: 20px;
-          align-items: center;
-          padding-left: calc(4px + env(safe-area-inset-left));
-        }
+
         :host([rtl]) .menu {
-          padding-left: 4px;
-          padding-right: calc(4px + env(safe-area-inset-right));
+          padding-left: 8.5px;
+          padding-right: calc(8.5px + env(safe-area-inset-right));
         }
         :host([expanded]) .menu {
           width: calc(256px + env(safe-area-inset-left));
@@ -495,25 +670,25 @@ class HaSidebar extends LitElement {
         .menu mwc-icon-button {
           color: var(--sidebar-icon-color);
         }
+        :host([expanded]) .menu mwc-icon-button {
+          margin-right: 23px;
+        }
+        :host([expanded][rtl]) .menu mwc-icon-button {
+          margin-right: 0px;
+          margin-left: 23px;
+        }
+
         .title {
-          margin-left: 19px;
           width: 100%;
           display: none;
         }
-        :host([rtl]) .title {
-          margin-left: 0;
-          margin-right: 19px;
-        }
         :host([narrow]) .title {
-          margin: 0;
+          padding: 0 0px;
         }
         :host([expanded]) .title {
           display: initial;
         }
-        :host([expanded]) .menu mwc-button {
-          margin: 0 8px;
-        }
-        .menu mwc-button {
+        .title mwc-button {
           width: 100%;
         }
         #sortable,
@@ -521,22 +696,32 @@ class HaSidebar extends LitElement {
           display: none;
         }
 
-        /* mwc-list.ha-scrollbar {
+        div.panels {
+          height: 100%;
+          position: relative;
+        }
+
+        ha-divider-list-item {
+          /* --ha-divider-height: calc(100vh - var(--header-height)); */
+        }
+
+        mwc-list.ha-scrollbar {
           height: 100%;
           --mdc-list-vertical-padding: 4px 0;
           padding: 4px 0;
           display: flex;
           flex-direction: column;
           box-sizing: border-box;
-          height: calc(100% - var(--header-height) - 350px);
-          height: calc(
-            100% - var(--header-height) - 350px - env(safe-area-inset-bottom)
-          );
           overflow-x: hidden;
           background: none;
           margin-left: env(safe-area-inset-left);
-          background-color: blue;
-        } */
+        }
+
+        mwc-list.utility-panels {
+          position: absolute;
+          bottom: 0px;
+          width: 100%;
+        }
 
         :host([rtl]) mwc-list {
           margin-left: initial;
@@ -555,14 +740,14 @@ class HaSidebar extends LitElement {
 
         mwc-list-item {
           box-sizing: border-box;
-          margin: 4px;
+          margin: 4px 8px;
           border-radius: 4px;
           width: 48px;
           --mdc-list-item-graphic-margin: 16px;
           --mdc-list-item-meta-size: 32px;
         }
-        :host([expanded]) paper-icon-item {
-          width: 248px;
+        :host([expanded]) mwc-list-item {
+          width: 240px;
         }
         :host([rtl]) mwc-list-item {
           padding-left: auto;
@@ -583,9 +768,9 @@ class HaSidebar extends LitElement {
           border-radius: 4px;
           position: absolute;
           top: 0;
-          right: 2px;
+          right: 0;
           bottom: 0;
-          left: 2px;
+          left: 0;
           pointer-events: none;
           content: "";
           transition: opacity 15ms linear;
@@ -641,59 +826,6 @@ class HaSidebar extends LitElement {
           display: block;
           height: 100px;
           background-color: var(--divider-color);
-        }
-        .notifications-container {
-          display: flex;
-          margin-left: env(safe-area-inset-left);
-        }
-        :host([rtl]) .notifications-container {
-          margin-left: initial;
-          margin-right: env(safe-area-inset-right);
-        }
-        .notifications {
-          cursor: pointer;
-        }
-        .notifications .item-text {
-          flex: 1;
-        }
-        .profile {
-          margin-left: env(safe-area-inset-left);
-        }
-        :host([rtl]) .profile {
-          margin-left: initial;
-          margin-right: env(safe-area-inset-right);
-        }
-        .profile mwc-list-item {
-          padding-left: 4px;
-        }
-        :host([rtl]) .profile mwc-list-item {
-          padding-left: auto;
-          padding-right: 4px;
-        }
-        .profile .item-text {
-          margin-left: 8px;
-        }
-        :host([rtl]) .profile .item-text {
-          margin-right: 8px;
-        }
-
-        .notification-badge {
-          /* min-width: 20px;
-          box-sizing: border-box;
-          border-radius: 50%;
-          font-weight: 400;
-          background-color: var(--accent-color);
-          line-height: 30px;
-          text-align: center;
-          padding: 0px 4px;
-          color: var(--text-accent-color, var(--text-primary-color));
-          font-size: 14px; */
-        }
-        ha-svg-icon + .notification-badge {
-          position: absolute;
-          bottom: 14px;
-          left: 26px;
-          font-size: 0.65em;
         }
 
         .spacer {
@@ -751,6 +883,6 @@ class HaSidebar extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-sidebar": HaSidebar;
+    "ha-sidebar-panel-list": HaSidebarPanelList;
   }
 }
