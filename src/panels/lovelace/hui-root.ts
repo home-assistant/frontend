@@ -762,7 +762,10 @@ class HUIRoot extends LitElement {
         configBackground
       );
     } else {
-      this._appLayout.style.removeProperty("--lovelace-background");
+      this._appLayout.style.setProperty(
+        "--lovelace-background",
+        "var(--primary-background-color)"
+      );
     }
 
     root.appendChild(view);
