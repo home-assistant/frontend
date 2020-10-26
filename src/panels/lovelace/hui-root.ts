@@ -762,10 +762,7 @@ class HUIRoot extends LitElement {
         configBackground
       );
     } else {
-      this._appLayout.style.setProperty(
-        "--lovelace-background",
-        "var(--primary-background-color)"
-      );
+      this._appLayout.style.removeProperty("--lovelace-background");
     }
 
     root.appendChild(view);
@@ -787,7 +784,10 @@ class HUIRoot extends LitElement {
 
         ha-app-layout {
           min-height: 100%;
-          background: var(--lovelace-background);
+          background: var(
+            --lovelace-background,
+            var(--primary-background-color)
+          );
         }
         ha-tabs {
           width: 100%;
