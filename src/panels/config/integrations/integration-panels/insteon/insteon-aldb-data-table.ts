@@ -183,7 +183,7 @@ export class InsteonALDBDataTable extends LitElement {
         .id=${"record_id"}
         .dir=${computeRTLDirection(this.hass)}
         .searchLabel=${this.hass.localize("ui.components.data-table.search")}
-        noDataText="${this.noDataText}"
+        noDataText="${this.noDataText!}"
       ></ha-data-table>
     `;
   }

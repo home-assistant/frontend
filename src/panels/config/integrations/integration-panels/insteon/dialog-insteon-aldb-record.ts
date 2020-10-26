@@ -62,7 +62,7 @@ class DialogInsteonALDBRecord extends LitElement {
         open
         hideActions
         @closing="${this._close}"
-        .heading=${createCloseHeading(this.hass, this._title)}
+        .heading=${createCloseHeading(this.hass, this._title!)}
       >
         <div class="form">
           <ha-form
