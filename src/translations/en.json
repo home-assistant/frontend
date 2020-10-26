@@ -999,7 +999,7 @@
               "filesize": "Reload file size entities",
               "telegram": "Reload telegram notify services",
               "smtp": "Reload smtp notify services",
-              "mqtt": "Reload mqtt entities",
+              "mqtt": "Reload manually configured mqtt entities",
               "rpi_gpio": "Reload Raspberry Pi GPIO entities"
             },
             "server_management": {
