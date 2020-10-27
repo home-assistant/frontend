@@ -5,8 +5,8 @@ import {
   QuickBarParams,
   showQuickBar,
 } from "../dialogs/quick-bar/show-dialog-quick-bar";
-import { storeState } from "../util/ha-pref-storage";
 import { HomeAssistant } from "../types";
+import { storeState } from "../util/ha-pref-storage";
 
 declare global {
   interface HASSDomEvents {

@@ -2022,7 +2022,8 @@
           },
           "services": {
             "add_node": "Add Node",
-            "remove_node": "Remove Node"
+            "remove_node": "Remove Node",
+            "cancel_command": "Cancel Command"
           }
         },
         "zha": {
@@ -2679,7 +2680,11 @@
           "error_load_platform": "Configure notify.html5.",
           "error_use_https": "Requires SSL enabled for frontend.",
           "push_notifications": "Push notifications",
-          "link_promo": "Learn more"
+          "link_promo": "Learn more",
+          "add_device_prompt": {
+            "title": "What should this device be called?",
+            "input_label": "Device name"
+          }
         },
         "language": {
           "header": "Language",

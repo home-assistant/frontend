@@ -374,6 +374,25 @@
                     "entity": "Endid"
                 }
             },
+            "logbook": {
+                "messages": {
+                    "became_unavailable": "Daeth anargael",
+                    "changed_to_state": "wedi newid i {state}",
+                    "cleared_device_class": "clirio (ni ganfuwyd {device_class}",
+                    "detected_device_class": "canfodwyd {device_class}",
+                    "turned_off": "i ffwrdd",
+                    "turned_on": "troi ymlaen",
+                    "was_at_home": "oedd gartref",
+                    "was_closed": "oedd ar gau",
+                    "was_locked": "wedi'i gloi",
+                    "was_opened": "agorwyd",
+                    "was_plugged_in": "oedd wedi'i gysylltu",
+                    "was_safe": "yn ddiogel",
+                    "was_unlocked": "wedi'i ddatgloi",
+                    "was_unplugged": "wedi'i ddatgysylltu",
+                    "was_unsafe": "yn anniogel"
+                }
+            },
             "service-picker": {
                 "service": "Gwasanaeth"
             },
@@ -391,6 +410,7 @@
                     "name": "Enw",
                     "update": "Diweddariad"
                 },
+                "faq": "Dogfennaeth",
                 "no_unique_id": "Nid oes gan yr endid hwn ID unigryw, felly ni ellir rheoli ei osodiadau o'r UI."
             },
             "helper_settings": {
@@ -434,6 +454,9 @@
                 "updater": {
                     "title": "Diweddaru Cyfarwyddiadau"
                 }
+            },
+            "quick-bar": {
+                "filter_placeholder": "Hidlo Endid"
             },
             "voice_command": {
                 "label": "Teipiwch gwestiwn a gwasgwch 'Enter'",
@@ -758,7 +781,7 @@
                     "description": "Trosolwg o holl endidau hysbys.",
                     "picker": {
                         "filter": {
-                            "hidden_entities": "{rhif} cudd {rhif, lluosog,\n  un {endid}\n  {endidau} eraill}\n}",
+                            "hidden_entities": "{number} hidden {number, plural,\n  one {entity}\n  other {entities}\n}",
                             "show_all": "Dangos popeth"
                         },
                         "header": "Gofrestrfa Endid",
@@ -892,7 +915,8 @@
                     },
                     "select_instance": {
                         "header": "Dewiswch Enghraifft OpenZWave",
-                        "introduction": "Mae gennych fwy nag un enghraifft OpenZWave yn rhedeg. Pa enghraifft hoffech chi ei rheoli?"
+                        "introduction": "Mae gennych fwy nag un enghraifft OpenZWave yn rhedeg. Pa enghraifft hoffech chi ei rheoli?",
+                        "none_found": "Ni allem ddod o hyd i enghraifft OpenZWave. Os ydych chi'n credu bod hyn yn anghywir, gwiriwch eich setiau OpenZWave a MQTT a sicrhau y gall Home Assistant gyfathrebu â'ch brocer MQTT."
                     },
                     "services": {
                         "add_node": "Ychwanegu Nod",
@@ -903,6 +927,7 @@
                     "caption": "Pobl",
                     "description": "Rheoli'r pobl mae Home Assistant yn tracio.",
                     "detail": {
+                        "allow_login": "Caniatáu'r person i fewngofnodi",
                         "device_tracker_intro": "Dewiswch y dyfeisiau sy'n perthyn i'r person hwn.",
                         "device_tracker_pick": "Dewiswch dyfeis i'w dracio",
                         "device_tracker_picked": "Tracio Dyfeis",
@@ -945,10 +970,15 @@
                 "script": {
                     "caption": "Sgript",
                     "description": "Creu a golygu sgriptiau",
+                    "editor": {
+                        "save_script": "Arbed sgript"
+                    },
                     "picker": {
+                        "add_script": "Creu sgript newydd",
                         "headers": {
                             "name": "Enw"
                         },
+                        "run_script": "Rhedeg sgript",
                         "show_info": "Dangos gwybodaeth am y sgript"
                     }
                 },
@@ -984,7 +1014,8 @@
                 },
                 "tags": {
                     "detail": {
-                        "companion_apps": "apiau cydymaith"
+                        "companion_apps": "apiau cydymaith",
+                        "usage": "Gall tag sbarduno awtomeiddiad wrth ei sganio, gallwch ddefnyddio tagiau NFC, codau QR neu unrhyw fath arall o dag. Defnyddiwch ein {companion_link} i ysgrifennu'r tag hwn i dag NFC rhaglenadwy neu i greu cod QR isod."
                     },
                     "learn_more": "Dysgu mwy am dagiau"
                 },
@@ -1145,9 +1176,18 @@
                         },
                         "entities": {
                             "description": "Y cerdyn Endidau yw'r math mwyaf cyffredin o gerdyn. Mae'n grwpio eitemau gyda'i gilydd fewn i restrau.",
+                            "edit_special_row": "Gweld manylion y rhes yma drwy glicio ar y botwm golygu",
+                            "entity_row_editor": "Golygydd Rhes endid",
                             "name": "Endidau",
                             "secondary_info_values": {
-                                "last-updated": "Diweddarwyd Ddiwethaf"
+                                "brightness": "Disgleirdeb",
+                                "entity-id": "ID Endid",
+                                "last-changed": "Newidiwyd Ddiwethaf",
+                                "last-triggered": "Sbardunwyd Ddiwethaf",
+                                "last-updated": "Diweddarwyd Ddiwethaf",
+                                "none": "Dim Gwybodaeth Eilaidd",
+                                "position": "Safle",
+                                "tilt-position": "Safle Tilt"
                             }
                         },
                         "entity-filter": {
@@ -1258,6 +1298,8 @@
                         "edit": "Golygu",
                         "header": "Ffurfweddu Cerdyn",
                         "move": "Symud",
+                        "move_after": "Symud cerdyn ar ôl",
+                        "move_before": "Symud cerdyn cyn",
                         "pick_card": "Dewiswch y cerdyn rydych eisiau ychwanegu",
                         "show_code_editor": "Dangos Golygydd Cod",
                         "show_visual_editor": "Dangos Golygydd Gweledol",

@@ -54,6 +54,8 @@ export class HuiDialogEditCard extends LitElement
   implements HassDialog<EditCardDialogParams> {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean, reflect: true }) public large = false;
+
   @internalProperty() private _params?: EditCardDialogParams;
 
   @internalProperty() private _cardConfig?: LovelaceCardConfig;
@@ -82,6 +84,7 @@ export class HuiDialogEditCard extends LitElement
     this._viewConfig = params.lovelaceConfig.views[view];
     this._cardConfig =
       card !== undefined ? this._viewConfig.cards![card] : params.cardConfig;
+    this.large = false;
     if (this._cardConfig && !Object.isFrozen(this._cardConfig)) {
       this._cardConfig = deepFreeze(this._cardConfig);
     }
@@ -162,7 +165,7 @@ export class HuiDialogEditCard extends LitElement
       >
         <div slot="heading">
           <ha-header-bar>
-            <div slot="title">${heading}</div>
+            <div slot="title" @click=${this._enlarge}>${heading}</div>
             ${this._documentationURL !== undefined
               ? html`
                   <a
@@ -252,6 +255,10 @@ export class HuiDialogEditCard extends LitElement
         </div>
       </ha-dialog>
     `;
+  }
+
+  private _enlarge() {
+    this.large = !this.large;
   }
 
   private _ignoreKeydown(ev: KeyboardEvent) {
@@ -372,6 +379,15 @@ export class HuiDialogEditCard extends LitElement
         ha-dialog {
           --mdc-dialog-max-width: 845px;
           --dialog-z-index: 5;
+        }
+
+        @media all and (min-width: 451px) and (min-height: 501px) {
+          ha-dialog {
+            --mdc-dialog-max-width: 90vw;
+          }
+          :host([large]) .content {
+            width: calc(90vw - 48px);
+          }
         }
 
         ha-header-bar {

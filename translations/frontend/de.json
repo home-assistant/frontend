@@ -577,6 +577,7 @@
                 "messages": {
                     "became_unavailable": "nicht mehr verfügbar",
                     "changed_to_state": "wechselte zu {state}",
+                    "cleared_device_class": "gelöscht (keine {device_class} erkannt)",
                     "detected_device_class": "erkannt {device_class}",
                     "rose": "gestiegen",
                     "set": "einstellen",
@@ -858,19 +859,25 @@
                     "reload": {
                         "automation": "Automationen neu laden",
                         "filesize": "Dateigröße-Entitäten neu laden",
-                        "filter": "Filter-Entitäten neu laden",
+                        "filter": "Filter Entitäten neu laden",
+                        "generic": "Allgemeine IP Kamera Entitäten neu laden",
+                        "generic_thermostat": "Allgemeine Thermostat Entitäte neu laden",
                         "homekit": "HomeKit neu laden",
                         "input_boolean": "Input-Booleans neu laden",
                         "input_datetime": "Input-Datum/Zeit neu laden",
                         "input_number": "Input-Numern neu laden",
                         "input_select": "Input-Selektionen neu laden",
                         "input_text": "Input-Texte neu laden",
+                        "min_max": "Min/Max-Entitäten neu laden",
                         "mqtt": "MQTT-Entitäten neu laden",
                         "person": "Personen neu laden",
+                        "ping": "Binäre-Ping-Entitäten neu laden",
                         "reload": "{domain} neu laden",
+                        "rpi_gpio": "Raspberry Pi GPIO Entitäten neu laden",
                         "scene": "Szenen neu laden",
                         "script": "Skripte neu laden",
                         "smtp": "SMTP-Benachrichtigungsdienst neu laden",
+                        "statistics": "Statistik Entitäten neu laden",
                         "telegram": "Telegram-Benachrichtigungsdienst neu laden",
                         "template": "Templates neu laden",
                         "zone": "Zonen neu laden"
@@ -1123,6 +1130,7 @@
                                     "after": "Nach",
                                     "before": "Vor",
                                     "label": "Zeit",
+                                    "type_input": "Wert eines Datum/Zeit-Helfers",
                                     "type_value": "Feste Zeit",
                                     "weekdays": {
                                         "fri": "Freitag",
@@ -1253,6 +1261,7 @@
                                 "time": {
                                     "at": "Um",
                                     "label": "Zeit",
+                                    "type_input": "Wert eines Datum/Zeit-Helfers",
                                     "type_value": "Feste Zeit"
                                 },
                                 "webhook": {
@@ -1409,6 +1418,7 @@
                         "expose_entity": "Entität verfügbar machen",
                         "exposed": "{selected} verfügbar gemacht",
                         "exposed_entities": "Exponierte Entitäten",
+                        "follow_domain": "Domain folgen",
                         "manage_domains": "Domains verwalten",
                         "not_exposed": "{selected} wird nicht verfügbar gemacht",
                         "not_exposed_entities": "Nicht angezeigte Entitäten",
@@ -1540,6 +1550,7 @@
                     "caption": "Geräte",
                     "confirm_delete": "Möchtest du dieses Gerät wirklich löschen?",
                     "confirm_rename_entity_ids": "Möchten Sie auch die Entitäts-IDs Ihrer Entitäten umbenennen?",
+                    "confirm_rename_entity_ids_warning": "Dies ändert keine Konfiguration (wie Automatisierungen, Skripte, Szenen, Dashboards), die derzeit diese Entitäten verwendet! Sie müssen sie selbst aktualisieren, um die neuen Entitäts-IDs zu verwenden!",
                     "data_table": {
                         "area": "Bereich",
                         "battery": "Batterie",
@@ -1874,23 +1885,35 @@
                     "common": {
                         "instance": "Instanz",
                         "network": "Netzwerk",
+                        "node_id": "Knoten-ID",
+                        "ozw_instance": "OpenZWave-Instanz",
+                        "query_stage": "Abfragephase",
+                        "wakeup_instructions": "Weckanleitung",
                         "zwave": "Z-Wave"
                     },
                     "device_info": {
+                        "node_failed": "Knoten fehlgeschlagen",
                         "zwave_info": "Z-Wave Infos"
                     },
                     "navigation": {
                         "network": "Netzwerk",
                         "node": {
-                            "config": "Konfig",
+                            "config": "Konfiguration",
                             "dashboard": "Dashboard"
                         },
+                        "nodes": "Knoten",
                         "select_instance": "Instanz auswählen"
                     },
                     "network_status": {
                         "details": {
+                            "driverallnodesqueried": "Alle Knoten wurden abgefragt",
+                            "driverallnodesqueriedsomedead": "Alle Knoten wurden abgefragt. Einige Knoten wurden tot aufgefunden",
+                            "driverawakenodesqueries": "Alle wachen Knoten wurden abgefragt",
+                            "driverfailed": "Verbindung zum Z-Wave-Controller fehlgeschlagen",
+                            "driverready": "Initialisierung des Z-Wave Controllers",
                             "driverremoved": "Der Treiber wurde entfernt",
                             "driverreset": "Der Treiber wurde zurückgesetzt",
+                            "offline": "OZWDaemon offline",
                             "ready": "Bereit zum Verbinden",
                             "started": "Verbunden mit MQTT",
                             "starting": "Verbinde zu MQTT"
@@ -1901,10 +1924,15 @@
                         "unknown": "Unbekannt"
                     },
                     "network": {
-                        "header": "Netzwerkverwaltung"
+                        "header": "Netzwerkverwaltung",
+                        "introduction": "Verwalten Sie netzwerkweite Funktionen.",
+                        "node_count": "{count} Knoten"
                     },
                     "node_config": {
-                        "help_source": "Konfigurationsparameterbeschreibungen und Hilfstext werden vom OpenZWave-Projekt bereitgestellt."
+                        "header": "Knotenkonfiguration",
+                        "help_source": "Konfigurationsparameterbeschreibungen und Hilfetexte werden vom OpenZWave-Projekt bereitgestellt.",
+                        "introduction": "Verwalten Sie die verschiedenen Konfigurationsparameter für einen Z-Wave Knoten.",
+                        "wakeup_help": "Batteriebetriebene Knoten müssen wach sein, um ihre Konfiguration zu ändern. Wenn der Knoten nicht aktiv ist, versucht OpenZWave beim nächsten Aufwachen, die Konfiguration des Knotens zu aktualisieren. Dies kann mehrere Stunden (oder Tage) später sein. Führen Sie die folgenden Schritte aus, um Ihr Gerät zu aktivieren:"
                     },
                     "node_metadata": {
                         "product_manual": "Produkthandbuch"
@@ -1927,7 +1955,14 @@
                     },
                     "refresh_node": {
                         "button": "Geräte aktualisieren",
-                        "start_refresh_button": "Aktualisierung starten"
+                        "start_refresh_button": "Aktualisierung starten",
+                        "step": "Schritt",
+                        "title": "Knoteninformationen aktualisieren",
+                        "wakeup_header": "Weckanleitung für"
+                    },
+                    "select_instance": {
+                        "introduction": "Sie haben mehr als eine OpenZWave-Instanz ausgeführt. Welche Instanz möchten Sie verwalten?",
+                        "none_found": "Wir haben keine OpenZWave-Instanz gefunden. Wenn Sie der Meinung sind, dass dies nicht korrekt ist, überprüfen Sie Ihre OpenZWave- und MQTT-Setups und stellen Sie sicher, dass der Home Assistant mit Ihrem MQTT-Broker kommunizieren kann."
                     },
                     "services": {
                         "add_node": "Knoten hinzufügen",
@@ -2065,11 +2100,14 @@
                     "section": {
                         "reloading": {
                             "automation": "Automatisierungen neu laden",
+                            "command_line": "Kommandozeilen-Entitäten neu laden",
                             "core": "Ort & Anpassungen neu laden",
                             "filesize": "Dateigröße-Entitäten neu laden",
                             "filter": "Filter-Entitäten neu laden",
+                            "generic": "Allgemeine IP-Kamera Entitäten neu laden",
                             "group": "Gruppen, Gruppenentitäten und Benachrichtigungsdienste neu laden",
                             "heading": "Neuladen der YAML-Konfiguration",
+                            "history_stats": "Verlaufsstatistik-Entitäten neu laden",
                             "homekit": "HomeKit neu laden",
                             "input_boolean": "Eingabe-Booleans neu laden",
                             "input_datetime": "Eingabe-Datums- und Zeitfelder neu laden",
@@ -2124,7 +2162,7 @@
                         "tag_id": "NFC Tag ID",
                         "tag_id_placeholder": "Automatisch generiert, wenn leer gelassen",
                         "update": "Aktualisieren",
-                        "usage": "Ein Tag kann eine Automatisierung auslösen, wenn es gescannt wird, Sie können NFC-Tags, QR-Codes oder jede andere Art von Tag verwenden. Verwenden Sie unsere \"companion_link\", um dieses Tag in ein programmierbares NFC-Tag zu schreiben oder unten einen QR-Code zu erstellen."
+                        "usage": "Ein Tag kann eine Automatisierung auslösen, wenn er gescannt wird. Sie können NFC-Tags, QR-Codes oder jede andere Art von Tags verwenden. Verwenden Sie unsere {companion_link}, um diesen Tag in ein programmierbares NFC-Tag zu schreiben oder einen QR-Code zu erstellen."
                     },
                     "edit": "Bearbeiten",
                     "headers": {
@@ -2176,7 +2214,7 @@
                             "system": "System"
                         }
                     },
-                    "users_privileges_note": "Benutzergruppen sind derzeit noch nicht fertig entwickelt. Der Benutzer wird nicht in der Lage sein Änderungen an der Instanz über das UI vorzunehmen. Derzeit überprüfen wir noch alle API Endpunkte um sicherzustellen dass diese nur von Administratoren genutzt werden können."
+                    "users_privileges_note": "Benutzergruppen sind derzeit noch in Entwicklung. Der Benutzer wird nicht in der Lage sein, Änderungen an der Instanz über das UI vorzunehmen. Derzeit überprüfen wir noch alle API Endpunkte um sicherzustellen dass diese nur von Administratoren genutzt werden können."
                 },
                 "zha": {
                     "add_device_page": {
@@ -2467,6 +2505,7 @@
                         "listeners": "Diese Vorlage überwacht die folgenden Statusänderungsereignisse:",
                         "no_listeners": "Diese Vorlage überwacht keine Ereignisse und wird nicht automatisch aktualisiert.",
                         "reset": "Zurücksetzen auf Demo-Vorlage",
+                        "result_type": "Ergebnistyp",
                         "template_extensions": "Home Assistant-Vorlagenerweiterungen",
                         "time": "Diese Vorlage wird zu Beginn jeder Minute aktualisiert.",
                         "title": "Vorlage",
@@ -2612,7 +2651,7 @@
                                 "last-changed": "Zuletzt geändert",
                                 "last-triggered": "Zuletzt ausgelöst",
                                 "last-updated": "Zuletzt aktualisiert",
-                                "none": "Keine Sekundärinfo",
+                                "none": "Keine Sekundärinformatrionen",
                                 "position": "Position",
                                 "tilt-position": "Neigungsposition"
                             },
@@ -3209,7 +3248,7 @@
             },
             "shopping-list": {
                 "add_item": "Artikel hinzufügen",
-                "clear_completed": "Erledigte entfernen",
+                "clear_completed": "Abgehakte entfernen",
                 "microphone_tip": "Tippe oben rechts auf das Mikrofon und sage oder schreibe “Süßigkeiten zu meiner Einkaufsliste hinzufügen”"
             }
         },

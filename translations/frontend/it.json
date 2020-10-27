@@ -695,6 +695,11 @@
             },
             "service-picker": {
                 "service": "Servizio"
+            },
+            "user-picker": {
+                "add_user": "Aggiungi utente",
+                "no_user": "Nessun utente",
+                "remove_user": "Rimuovi utente"
             }
         },
         "dialogs": {
@@ -718,9 +723,9 @@
                     "enabled_description": "Le entità disabilitate non saranno aggiunte a Home Assistant",
                     "enabled_label": "Abilita entità",
                     "entity_id": "ID entità",
-                    "icon": "Sostituzione icona",
+                    "icon": "Icona",
                     "icon_error": "Le icone dovrebbero essere nel formato 'prefisso:nome_icona', ad esempio 'mdi:home'.",
-                    "name": "Sostituzione nome",
+                    "name": "Nome",
                     "note": "Nota: questo potrebbe non funzionare ancora con tutte le integrazioni.",
                     "unavailable": "Questa entità non è attualmente disponibile.",
                     "update": "Aggiorna"
@@ -737,6 +742,13 @@
                 "ok": "OK"
             },
             "helper_settings": {
+                "counter": {
+                    "initial": "Valore iniziale",
+                    "maximum": "Valore massimo",
+                    "minimum": "Valore minimo",
+                    "restore": "Ripristina l'ultimo valore noto all'avvio di Home Assistant",
+                    "step": "Dimensione del passo"
+                },
                 "generic": {
                     "icon": "Icona",
                     "name": "Nome"
@@ -772,6 +784,9 @@
                 },
                 "platform_not_loaded": "L'integrazione {platform} non è stata caricata. Si prega di aggiungerla alla propria configurazione, aggiungendo 'default_config:' o ''{platform}:''.",
                 "required_error_msg": "Questo campo è obbligatorio",
+                "timer": {
+                    "duration": "Durata"
+                },
                 "yaml_not_editable": "Le impostazioni di questa entità non possono essere modificate dall'Interfaccia Utente. Solo le entità impostate dall'Interfaccia Utente sono configurabili dall'Interfaccia Utente."
             },
             "image_cropper": {
@@ -931,11 +946,13 @@
         "notification_drawer": {
             "click_to_configure": "Fare clic sul pulsante per configurare {entity}",
             "close": "Chiudi",
+            "dismiss_all": "Rimuovi tutto",
             "empty": "Nessuna notifica",
             "title": "Notifiche"
         },
         "notification_toast": {
             "connection_lost": "Connessione persa. Riconnessione…",
+            "dismiss": "Rimuovi",
             "service_call_failed": "Fallita chiamata a servizio {service} .",
             "started": "Home Assistant si è avviato!",
             "starting": "Home Assistant si sta avviando, non tutto sarà disponibile fino a quando non avrà completato l'avvio.",
@@ -1189,6 +1206,9 @@
                                     "trigger": "Attivazione"
                                 },
                                 "event": {
+                                    "context_user_pick": "Aggiungi utente",
+                                    "context_user_picked": "Evento di attivazione dell'utente",
+                                    "context_users": "Limita agli eventi attivati da",
                                     "event_data": "Dati dell'Evento",
                                     "event_type": "Tipo di Evento",
                                     "label": "Evento"
@@ -1513,24 +1533,31 @@
                     "add_prompt": "Nessun {name} è stato ancora aggiunto utilizzando questo dispositivo. Puoi aggiungerne uno facendo clic sul pulsante + sopra.",
                     "automation": {
                         "actions": {
-                            "caption": "Quando qualcosa si attiva..."
+                            "caption": "Quando qualcosa si attiva...",
+                            "no_actions": "Nessuna azione",
+                            "unknown_action": "Azione sconosciuta"
                         },
                         "automations": "Automazioni",
                         "conditions": {
-                            "caption": "Fai qualcosa solo se..."
+                            "caption": "Fai qualcosa solo se...",
+                            "no_conditions": "Nessuna condizione",
+                            "unknown_condition": "Condizione sconosciuta"
                         },
                         "create": "Crea l'automazione con il dispositivo",
                         "no_automations": "Nessuna automazione",
                         "no_device_automations": "Non ci sono Automazioni disponibili per questo dispositivo.",
                         "triggers": {
-                            "caption": "Fai qualcosa quando..."
-                        }
+                            "caption": "Fai qualcosa quando...",
+                            "no_triggers": "Nessuna attivazione",
+                            "unknown_trigger": "Attivazione sconosciuta"
+                        },
+                        "unknown_automation": "Automazione sconosciuta"
                     },
                     "cant_edit": "È possibile modificare solo gli elementi creati nell'Interfaccia Utente.",
                     "caption": "Dispositivi",
                     "confirm_delete": "Sei sicuro di voler eliminare questo dispositivo?",
                     "confirm_rename_entity_ids": "Vuoi anche rinominare gli ID entità delle tue entità?",
-                    "confirm_rename_entity_ids_warning": "Questo non cambierà alcuna configurazione (come automazioni, script, scene, Lovelace) che attualmente utilizza queste entità, dovrai aggiornarle tu stesso.",
+                    "confirm_rename_entity_ids_warning": "Questo non cambierà alcuna configurazione (come automazioni, script, scene, plance) che sta attualmente utilizzando queste entità, dovrai aggiornarle tu stesso per utilizzare i nuovi ID entità!",
                     "data_table": {
                         "area": "Area",
                         "battery": "Batteria",
@@ -1643,11 +1670,13 @@
                         "no_helpers": "Sembra che tu non abbia ancora nessun aiutante!"
                     },
                     "types": {
+                        "counter": "Contatore",
                         "input_boolean": "Commutatore",
                         "input_datetime": "Data e/o ora",
                         "input_number": "Numero",
                         "input_select": "A discesa",
-                        "input_text": "Testo"
+                        "input_text": "Testo",
+                        "timer": "Timer"
                     }
                 },
                 "info": {
@@ -1866,6 +1895,8 @@
                         "network": "Rete",
                         "node_id": "ID del nodo",
                         "ozw_instance": "Istanza OpenZWave",
+                        "query_stage": "Fase di richiesta",
+                        "wakeup_instructions": "Istruzioni di riattivazione",
                         "zwave": "Z-Wave"
                     },
                     "device_info": {
@@ -1875,6 +1906,10 @@
                     },
                     "navigation": {
                         "network": "Rete",
+                        "node": {
+                            "config": "Configurazione",
+                            "dashboard": "Plancia"
+                        },
                         "nodes": "Nodi",
                         "select_instance": "Seleziona istanza"
                     },
@@ -1902,6 +1937,15 @@
                         "header": "Gestione della rete",
                         "introduction": "Gestisci le funzioni a livello di rete.",
                         "node_count": "{count} nodi"
+                    },
+                    "node_config": {
+                        "header": "Configurazione del nodo",
+                        "help_source": "Le descrizioni dei parametri di configurazione e il testo della guida sono forniti dal progetto OpenZWave.",
+                        "introduction": "Gestisci i diversi parametri di configurazione per un nodo Z-Wave.",
+                        "wakeup_help": "I nodi alimentati a batteria devono essere attivi per modificare la loro configurazione. Se il nodo non è attivo, OpenZWave tenterà di aggiornare la configurazione del nodo la prossima volta che si riattiva, il che potrebbe essere più ore (o giorni) dopo. Segui questi passaggi per riattivare il tuo dispositivo:"
+                    },
+                    "node_metadata": {
+                        "product_manual": "Manuale del prodotto"
                     },
                     "node_query_stages": {
                         "associations": "Aggiornamento dell'associazione gruppi e appartenenze",
@@ -2162,6 +2206,7 @@
                         "last_scanned": "Ultima scansione",
                         "name": "Nome"
                     },
+                    "learn_more": "Ulteriori informazioni sui tag",
                     "never_scanned": "Mai scansionato",
                     "no_tags": "Nessuna etichetta",
                     "write": "Scrivi"
@@ -2495,9 +2540,11 @@
                         "entity": "Entità",
                         "jinja_documentation": "Documentazione del modello Jinja2",
                         "listeners": "Questo modello è in ascolto dei seguenti eventi di modifica dello stato:",
-                        "no_listeners": "Questo modello non è in ascolto di alcun evento di modifica dello stato e non verrà aggiornato automaticamente.",
+                        "no_listeners": "Questo modello non è in ascolto di alcun evento e non verrà aggiornato automaticamente.",
                         "reset": "Ripristina il modello di esempio",
+                        "result_type": "Tipo di risultato",
                         "template_extensions": "Estensioni del modello Home Assistant",
+                        "time": "Questo modello si aggiorna all'inizio di ogni minuto.",
                         "title": "Modelli",
                         "unknown_error_template": "Errore sconosciuto nel rendering del modello"
                     }
@@ -2640,6 +2687,7 @@
                                 "entity-id": "ID Entità",
                                 "last-changed": "Ultima modifica",
                                 "last-triggered": "Ultima attivazione",
+                                "last-updated": "Ultimo aggiornamento",
                                 "none": "Nessuna informazione secondaria",
                                 "position": "Posizione",
                                 "tilt-position": "Posizione di inclinazione"
@@ -2848,7 +2896,7 @@
                     "migrate": {
                         "header": "Configurazione incompatibile",
                         "migrate": "Esporta Configurazione",
-                        "para_migrate": "Home Assistant può aggiungere automaticamente gli ID a tutte le tue schede e viste in maniera automatica premendo il pulsante \"Esporta Configurazione\".",
+                        "para_migrate": "Home Assistant può aggiungere automaticamente gli ID a tutte le tue schede e viste in maniera automatica premendo il pulsante \"Migra Configurazione\".",
                         "para_no_id": "Questo elemento non ha un ID. Aggiungi un ID a questo elemento in 'ui-lovelace.yaml'."
                     },
                     "move_card": {
@@ -2904,7 +2952,8 @@
                     "exit_edit_mode": "Esci dalla modalità di modifica dell'Interfaccia Utente",
                     "help": "Aiuto",
                     "refresh": "Aggiorna",
-                    "reload_resources": "Ricarica le risorse"
+                    "reload_resources": "Ricarica le risorse",
+                    "start_conversation": "Inizia la conversazione"
                 },
                 "reload_lovelace": "Ricaricare l'Interfaccia Utente",
                 "reload_resources": {
