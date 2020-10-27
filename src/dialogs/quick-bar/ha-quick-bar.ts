@@ -315,10 +315,10 @@ export class QuickBar extends LitElement {
               `ui.dialogs.quick-bar.commands.server_control.${action}`
             )
           ),
-          icon: "hass:robot",
+          icon: "hass:server",
           action: () => this.hass.callService("homeassistant", action),
         },
-        this.hass.localize("ui.dialogs.generic.default_confirmation_title")
+        this.hass.localize("ui.dialogs.generic.ok")
       )
     );
   }
