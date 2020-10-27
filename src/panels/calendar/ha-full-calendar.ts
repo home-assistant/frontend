@@ -273,6 +273,7 @@ class HAFullCalendar extends LitElement {
         
         :host {
           display: flex;
+          flex-grow: 1;
           flex-direction: column;
           --fc-theme-standard-border-color: var(--divider-color);
         }
