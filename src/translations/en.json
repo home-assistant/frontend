@@ -2665,9 +2665,9 @@
           "header": "Vibrate",
           "description": "Enable or disable vibration on this device when controlling devices."
         },
-        "enable_quick_bar": {
-          "header": "Enable Quick Bar Shortcuts",
-          "description": "Enable or disable shortcuts for launching quick bar"
+        "enable_shortcuts": {
+          "header": "Keyboard Shortcuts",
+          "description": "Enable or disable keyboard shortcuts for performing various actions in the UI."
         },
         "suspend": {
           "header": "Automatically close connection",

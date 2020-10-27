@@ -21,10 +21,10 @@ class HaEnableQuickBarRow extends LitElement {
     return html`
       <ha-settings-row .narrow=${this.narrow}>
         <span slot="heading">
-          ${this.hass.localize("ui.panel.profile.enable_quick_bar.header")}
+          ${this.hass.localize("ui.panel.profile.enable_shortcuts.header")}
         </span>
         <span slot="description">
-          ${this.hass.localize("ui.panel.profile.enable_quick_bar.description")}
+          ${this.hass.localize("ui.panel.profile.enable_shortcuts.description")}
         </span>
         <ha-switch
           .checked=${this.hass.enableQuickBar}
