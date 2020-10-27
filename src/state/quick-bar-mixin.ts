@@ -5,10 +5,13 @@ import {
   showQuickBar,
 } from "../dialogs/quick-bar/show-dialog-quick-bar";
 import tinykeys from "tinykeys";
+import { storeState } from "../util/ha-pref-storage";
+import { HomeAssistant } from "../types";
 
 declare global {
   interface HASSDomEvents {
     "hass-quick-bar": QuickBarParams;
+    "hass-enable-shortcuts": HomeAssistant["enableShortcuts"];
   }
 }
 
@@ -16,6 +19,11 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
   class extends superClass {
     protected firstUpdated(changedProps: PropertyValues) {
       super.firstUpdated(changedProps);
+
+      this.addEventListener("hass-enable-shortcuts", (ev) => {
+        this._updateHass({ enableShortcuts: ev.detail });
+        storeState(this.hass!);
+      });
 
       this._registerShortcut();
     }
@@ -28,7 +36,11 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     }
 
     private _showQuickBar(e: KeyboardEvent, commandMode = false) {
-      if (!this.hass?.user?.is_admin || this.inInputField(e)) {
+      if (
+        !this.hass?.user?.is_admin ||
+        !this.hass.enableShortcuts ||
+        this.inInputField(e)
+      ) {
         return;
       }
 
