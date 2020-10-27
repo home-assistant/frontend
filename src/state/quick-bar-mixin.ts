@@ -22,8 +22,8 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
 
     private _registerShortcut() {
       tinykeys(window, {
-        "q e": (ev) => this._showQuickBar(ev),
-        "q c": (ev) => this._showQuickBar(ev, true),
+        e: (ev) => this._showQuickBar(ev),
+        c: (ev) => this._showQuickBar(ev, true),
       });
     }
 
@@ -35,7 +35,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       showQuickBar(this, { commandMode });
     }
 
-    private inInputField(element: HTMLElement) {
+    private inInputField(e: KeyboardEvent) {
       return ["INPUT", "TEXTAREA"].includes(
         (e.composedPath()[0] as HTMLElement).tagName
       );
