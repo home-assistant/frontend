@@ -2666,6 +2666,10 @@
           "header": "Vibrate",
           "description": "Enable or disable vibration on this device when controlling devices."
         },
+        "enable_shortcuts": {
+          "header": "Keyboard Shortcuts",
+          "description": "Enable or disable keyboard shortcuts for performing various actions in the UI."
+        },
         "suspend": {
           "header": "Automatically close connection",
           "description": "Should we close the connection to the server after being hidden for 5 minutes?"
