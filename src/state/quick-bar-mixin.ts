@@ -1,10 +1,10 @@
+import tinykeys from "tinykeys";
 import type { Constructor, PropertyValues } from "lit-element";
 import { HassElement } from "./hass-element";
 import {
   QuickBarParams,
   showQuickBar,
 } from "../dialogs/quick-bar/show-dialog-quick-bar";
-import tinykeys from "tinykeys";
 import { storeState } from "../util/ha-pref-storage";
 import { HomeAssistant } from "../types";
 
@@ -39,7 +39,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       if (
         !this.hass?.user?.is_admin ||
         !this.hass.enableShortcuts ||
-        this.inInputField(e)
+        this._inInputField(e)
       ) {
         return;
       }
@@ -47,7 +47,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       showQuickBar(this, { commandMode });
     }
 
-    private inInputField(e: KeyboardEvent) {
+    private _inInputField(e: KeyboardEvent) {
       return ["INPUT", "TEXTAREA"].includes(
         (e.composedPath()[0] as HTMLElement).tagName
       );
