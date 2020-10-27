@@ -66,9 +66,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
     return html`
       <ha-dialog
         open
-        scrimClickAction
-        escapeKeyAction
-        @close=${this.closeDialog}
+        @closed=${this.closeDialog}
         .heading=${this.hass.localize(
           "ui.dialogs.config_entry_system_options.title",
           "integration",
