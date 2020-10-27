@@ -3,6 +3,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { getAppKey } from "../data/notify_html5";
 import { EventsMixin } from "../mixins/events-mixin";
+import { showPromptDialog } from "../dialogs/generic/show-dialog-box";
 import "./ha-switch";
 
 export const pushSupported =
@@ -88,7 +89,10 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
         browserName = "chrome";
       }
 
-      const name = prompt("What should this device be called ?");
+      const name = await showPromptDialog(this, {
+        title: this.hass.localize("ui.panel.profile.push_notifications.add_device_prompt.title"),
+        inputLabel: this.hass.localize("ui.panel.profile.push_notifications.add_device_prompt.input_label"),
+      });
       if (name == null) {
         this.pushChecked = false;
         return;
