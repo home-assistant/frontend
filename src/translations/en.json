@@ -485,6 +485,11 @@
             "smtp": "[%key:ui::panel::config::server_control::section::reloading::smtp%]",
             "mqtt": "[%key:ui::panel::config::server_control::section::reloading::mqtt%]",
             "rpi_gpio": "[%key:ui::panel::config::server_control::section::reloading::rpi_gpio%]"
+          },
+          "server_control": {
+            "perform_action": "{action} Server",
+            "restart": "[%key:ui::panel::config::server_control::section::server_management::restart%]",
+            "stop": "[%key:ui::panel::config::server_control::section::server_management::stop%]"
           }
         },
         "filter_placeholder": "Entity Filter"
@@ -2664,6 +2669,10 @@
         "vibrate": {
           "header": "Vibrate",
           "description": "Enable or disable vibration on this device when controlling devices."
+        },
+        "enable_quick_bar": {
+          "header": "Enable Quick Bar Shortcuts",
+          "description": "Enable or disable shortcuts for launching quick bar"
         },
         "suspend": {
           "header": "Automatically close connection",

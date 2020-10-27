@@ -4,10 +4,13 @@ import {
   QuickBarParams,
   showQuickBar,
 } from "../dialogs/quick-bar/show-dialog-quick-bar";
+import { HomeAssistant } from "../types";
+import { storeState } from "../util/ha-pref-storage";
 
 declare global {
   interface HASSDomEvents {
     "hass-quick-bar": QuickBarParams;
+    "hass-enable-quick-bar": HomeAssistant["enableQuickBar"];
   }
 }
 
@@ -18,12 +21,17 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     protected firstUpdated(changedProps: PropertyValues) {
       super.firstUpdated(changedProps);
 
+      this.addEventListener("hass-enable-quick-bar", (ev) => {
+        this._updateHass({ enableQuickBar: ev.detail });
+        storeState(this.hass!);
+      });
+
       this._registerShortcut();
     }
 
     private _registerShortcut() {
       document.addEventListener("keydown", (e: KeyboardEvent) => {
-        if (!this.hass?.user?.is_admin) {
+        if (!this.hass?.user?.is_admin || !this.hass.enableQuickBar) {
           return;
         }
         if (this.isOSCtrlKey(e) && e.code === "KeyP") {
