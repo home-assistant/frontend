@@ -575,8 +575,8 @@
                 "by_service": "службой",
                 "entries_not_found": "В журнале нет записей.",
                 "messages": {
-                    "became_unavailable": "недоступно",
-                    "changed_to_state": "изменяется на \"{state}\"",
+                    "became_unavailable": "изменяет состояние на \"Недоступно\"",
+                    "changed_to_state": "изменяет состояние на \"{state}\"",
                     "cleared_device_class": "не обнаруживает {device_class}",
                     "detected_device_class": "обнаруживает {device_class}",
                     "rose": "всходит",

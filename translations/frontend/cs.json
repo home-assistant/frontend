@@ -1530,7 +1530,7 @@
                     }
                 },
                 "devices": {
-                    "add_prompt": "Pomocí tohoto zařízení dosud nebyl přidán žádný {name}. Můžete ho přidat kliknutím na tlačítko + výše.",
+                    "add_prompt": "Pomocí tohoto zařízení dosud nebyly přidány žádné {name}. Můžete je přidat kliknutím na tlačítko + výše.",
                     "automation": {
                         "actions": {
                             "caption": "Když je něco spuštěno ...",
@@ -2710,7 +2710,7 @@
                             "severity": {
                                 "define": "Definovat závažnost?",
                                 "green": "Zelená",
-                                "red": "Červaná",
+                                "red": "Červená",
                                 "yellow": "Žlutá"
                             }
                         },
