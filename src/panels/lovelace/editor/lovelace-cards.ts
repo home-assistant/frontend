@@ -30,6 +30,10 @@ export const coreCards: Card[] = [
     showElement: true,
   },
   {
+    type: "grid",
+    showElement: true,
+  },
+  {
     type: "history-graph",
     showElement: true,
   },
