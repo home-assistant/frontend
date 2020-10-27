@@ -237,6 +237,7 @@ export interface HomeAssistant {
   localize: LocalizeFunc;
   translationMetadata: TranslationMetadata;
   suspendWhenHidden: boolean;
+  enableShortcuts: boolean;
   vibrate: boolean;
   dockedSidebar: "docked" | "always_hidden" | "auto";
   defaultPanel: string;
