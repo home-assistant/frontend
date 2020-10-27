@@ -116,7 +116,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
         <mwc-button
           slot="secondaryAction"
           @click=${this.closeDialog}
-          .disabled=${this._submitting || this._loading}
+          .disabled=${this._submitting}
         >
           ${this.hass.localize("ui.common.cancel")}
         </mwc-button>
