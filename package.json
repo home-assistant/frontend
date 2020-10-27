@@ -119,6 +119,7 @@
     "roboto-fontface": "^0.10.0",
     "sortablejs": "^1.10.2",
     "superstruct": "^0.10.12",
+    "tinykeys": "^1.1.1",
     "unfetch": "^4.1.0",
     "vue": "^2.6.11",
     "vue2-daterange-picker": "^0.5.1",
