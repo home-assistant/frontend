@@ -11,8 +11,8 @@ import type { HaSwitch } from "../../components/ha-switch";
 import type { HomeAssistant } from "../../types";
 import "../../components/ha-settings-row";
 
-@customElement("ha-enable-quick-bar-row")
-class HaEnableQuickBarRow extends LitElement {
+@customElement("ha-enable-shortcuts-row")
+class HaEnableShortcutsRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
@@ -27,7 +27,7 @@ class HaEnableQuickBarRow extends LitElement {
           ${this.hass.localize("ui.panel.profile.enable_shortcuts.description")}
         </span>
         <ha-switch
-          .checked=${this.hass.enableQuickBar}
+          .checked=${this.hass.enableShortcuts}
           @change=${this._checkedChanged}
         ></ha-switch>
       </ha-settings-row>
@@ -36,16 +36,16 @@ class HaEnableQuickBarRow extends LitElement {
 
   private async _checkedChanged(ev: Event) {
     const enabled = (ev.target as HaSwitch).checked;
-    if (enabled === this.hass.enableQuickBar) {
+    if (enabled === this.hass.enableShortcuts) {
       return;
     }
 
-    fireEvent(this, "hass-enable-quick-bar", enabled);
+    fireEvent(this, "hass-enable-shortcuts", enabled);
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-enable-quick-bar-row": HaEnableQuickBarRow;
+    "ha-enable-shortcuts-row": HaEnableShortcutsRow;
   }
 }
