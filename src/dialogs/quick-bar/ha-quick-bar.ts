@@ -36,6 +36,10 @@ import "../../components/ha-header-bar";
 import { domainToName } from "../../data/integration";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
+import {
+  ConfirmationDialogParams,
+  showConfirmationDialog,
+} from "../generic/show-dialog-box";
 import { QuickBarParams } from "./show-dialog-quick-bar";
 
 interface QuickBarItem extends ScorableTextItem {
@@ -276,9 +280,10 @@ export class QuickBar extends LitElement {
   }
 
   private _generateCommandItems(): QuickBarItem[] {
-    return [...this._generateReloadCommands()].sort((a, b) =>
-      compare(a.text.toLowerCase(), b.text.toLowerCase())
-    );
+    return [
+      ...this._generateReloadCommands(),
+      ...this._generateServerControlCommands(),
+    ].sort((a, b) => compare(a.text.toLowerCase(), b.text.toLowerCase()));
   }
 
   private _generateReloadCommands(): QuickBarItem[] {
@@ -295,6 +300,41 @@ export class QuickBar extends LitElement {
       icon: domainIcon(domain),
       action: () => this.hass.callService(domain, "reload"),
     }));
+  }
+
+  private _generateServerControlCommands(): QuickBarItem[] {
+    const serverActions = ["restart", "stop"];
+
+    return serverActions.map((action) =>
+      this._generateConfirmationCommand(
+        {
+          text: this.hass.localize(
+            "ui.dialogs.quick-bar.commands.server_control.perform_action",
+            "action",
+            this.hass.localize(
+              `ui.dialogs.quick-bar.commands.server_control.${action}`
+            )
+          ),
+          icon: "hass:server",
+          action: () => this.hass.callService("homeassistant", action),
+        },
+        this.hass.localize("ui.dialogs.generic.ok")
+      )
+    );
+  }
+
+  private _generateConfirmationCommand(
+    item: QuickBarItem,
+    confirmText: ConfirmationDialogParams["confirmText"]
+  ): QuickBarItem {
+    return {
+      ...item,
+      action: () =>
+        showConfirmationDialog(this, {
+          confirmText,
+          confirm: item.action,
+        }),
+    };
   }
 
   private _generateEntityItems(): QuickBarItem[] {
