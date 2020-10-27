@@ -1,3 +1,4 @@
+import tinykeys from "tinykeys";
 import type { Constructor, PropertyValues } from "lit-element";
 import { HassElement } from "./hass-element";
 import {
@@ -14,8 +15,6 @@ declare global {
   }
 }
 
-const isMacOS = /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform);
-
 export default <T extends Constructor<HassElement>>(superClass: T) =>
   class extends superClass {
     protected firstUpdated(changedProps: PropertyValues) {
@@ -30,23 +29,27 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     }
 
     private _registerShortcut() {
-      document.addEventListener("keydown", (e: KeyboardEvent) => {
-        if (!this.hass?.user?.is_admin || !this.hass.enableShortcuts) {
-          return;
-        }
-        if (this.isOSCtrlKey(e) && e.code === "KeyP") {
-          e.preventDefault();
-          const eventParams: QuickBarParams = {};
-          if (e.shiftKey) {
-            eventParams.commandMode = true;
-          }
-
-          showQuickBar(this, eventParams);
-        }
+      tinykeys(window, {
+        e: (ev) => this._showQuickBar(ev),
+        c: (ev) => this._showQuickBar(ev, true),
       });
     }
 
-    private isOSCtrlKey(e: KeyboardEvent) {
-      return isMacOS ? e.metaKey : e.ctrlKey;
+    private _showQuickBar(e: KeyboardEvent, commandMode = false) {
+      if (
+        !this.hass?.user?.is_admin ||
+        !this.hass.enableShortcuts ||
+        this._inInputField(e)
+      ) {
+        return;
+      }
+
+      showQuickBar(this, { commandMode });
+    }
+
+    private _inInputField(e: KeyboardEvent) {
+      return ["INPUT", "TEXTAREA"].includes(
+        (e.composedPath()[0] as HTMLElement).tagName
+      );
     }
   };
