@@ -4,6 +4,7 @@ import {
   QuickBarParams,
   showQuickBar,
 } from "../dialogs/quick-bar/show-dialog-quick-bar";
+import { deepActiveElement } from "../common/dom/deep-active-element";
 
 declare global {
   interface HASSDomEvents {
@@ -11,10 +12,10 @@ declare global {
   }
 }
 
-const isMacOS = /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform);
-
 export default <T extends Constructor<HassElement>>(superClass: T) =>
   class extends superClass {
+    private firstKeyPressedAt;
+
     protected firstUpdated(changedProps: PropertyValues) {
       super.firstUpdated(changedProps);
 
@@ -23,22 +24,50 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
 
     private _registerShortcut() {
       document.addEventListener("keydown", (e: KeyboardEvent) => {
-        if (!this.hass?.user?.is_admin) {
+        const currentTime = +new Date();
+
+        if (
+          !this.hass?.user?.is_admin ||
+          this.isModified(e) ||
+          this.inInputField()
+        ) {
           return;
         }
-        if (this.isOSCtrlKey(e) && e.code === "KeyP") {
-          e.preventDefault();
-          const eventParams: QuickBarParams = {};
-          if (e.shiftKey) {
-            eventParams.commandMode = true;
-          }
 
-          showQuickBar(this, eventParams);
+        if (
+          this.firstKeyPressedAt &&
+          currentTime - this.firstKeyPressedAt <= 3000
+        ) {
+          switch (e.code) {
+            case "KeyE":
+              this._showQuickBar(e, false);
+              break;
+            case "KeyC":
+              this._showQuickBar(e, true);
+              break;
+            default:
+              this.firstKeyPressedAt = undefined;
+          }
+        } else {
+          this.firstKeyPressedAt = e.code === "KeyQ" ? +new Date() : undefined;
         }
       });
     }
 
-    private isOSCtrlKey(e: KeyboardEvent) {
-      return isMacOS ? e.metaKey : e.ctrlKey;
+    private _showQuickBar(e: KeyboardEvent, commandMode: boolean) {
+      e.preventDefault();
+      showQuickBar(this, { commandMode });
+      this.firstKeyPressedAt = undefined;
+    }
+
+    private inInputField() {
+      const d = deepActiveElement();
+      return d && d.tagName === "INPUT";
+    }
+
+    private isModified(e: KeyboardEvent) {
+      return ["Alt", "AltGraph", "Control", "Meta", "Shift"].some((meta) =>
+        e.getModifierState(meta)
+      );
     }
   };
