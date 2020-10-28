@@ -16,6 +16,7 @@ import {
 import { classMap } from "lit-html/directives/class-map";
 import { repeat } from "lit-html/directives/repeat";
 import { guard } from "lit-html/directives/guard";
+import { mdiDrag, mdiSort, mdiPlus, mdiNotificationClearAll } from "@mdi/js";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
@@ -31,7 +32,6 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { SensorCardConfig, ShoppingListCardConfig } from "./types";
-import { mdiDrag, mdiSort, mdiPlus, mdiNotificationClearAll } from "@mdi/js";
 
 let Sortable;
 
