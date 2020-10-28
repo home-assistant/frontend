@@ -25,10 +25,7 @@ class HuiGridCard extends HuiStackCard<GridCardConfig> {
   }
 
   get columns() {
-    if (this._config!.columns !== undefined) {
-      return this._config!.columns;
-    }
-    return Math.min(this._cards!.length, DEFAULT_COLUMNS);
+    return this._config!.columns || DEFAULT_COLUMNS;
   }
 
   setConfig(config: GridCardConfig) {
