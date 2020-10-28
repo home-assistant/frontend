@@ -124,18 +124,20 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
       return;
     }
 
+    const configChanged = changedProperties.has("_config");
+    const hassChanged = changedProperties.has("hass");
     const oldHass = changedProperties.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProperties.get("_config") as LogbookCardConfig;
 
     if (
-      (oldHass && oldHass.themes !== this.hass.themes) ||
-      (oldConfig && oldConfig.theme !== this._config.theme)
+      (hassChanged && oldHass?.themes !== this.hass.themes) ||
+      (configChanged && oldConfig?.theme !== this._config.theme)
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
 
     if (
-      changedProperties.has("_config") &&
+      configChanged &&
       (oldConfig?.entities !== this._config.entities ||
         oldConfig?.hours_to_show !== this._config!.hours_to_show)
     ) {
