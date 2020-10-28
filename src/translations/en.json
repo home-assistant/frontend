@@ -1363,7 +1363,9 @@
             "edit_script": "Edit script",
             "headers": {
               "name": "Name"
-            }
+            },
+            "duplicate_script": "Duplicate script",
+            "duplicate": "duplicate"
           },
           "editor": {
             "alias": "Name",
