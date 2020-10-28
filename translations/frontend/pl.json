@@ -2727,8 +2727,8 @@
                             "icon": "Ikona",
                             "icon_height": "Wysokość ikony",
                             "image": "Ścieżka obrazu",
-                            "manual": "Manualny edytor konfiguracji",
-                            "manual_description": "Chcesz dodać niestandardową kartę lub po prostu manualnie edytować konfiguracji?",
+                            "manual": "Edytor konfiguracji YAML",
+                            "manual_description": "Chcesz dodać niestandardową kartę lub po prostu edytować konfigurację YAML?",
                             "maximum": "Maksimum",
                             "minimum": "Minimum",
                             "name": "Nazwa",
@@ -2861,7 +2861,7 @@
                         "pick_card": "Którą kartę chcesz dodać?",
                         "pick_card_view_title": "Którą kartę chcesz dodać do widoku {name}?",
                         "search_cards": "Szukaj kart",
-                        "show_code_editor": "Edytor kodu",
+                        "show_code_editor": "Edytor YAML",
                         "show_visual_editor": "Edytor wizualny",
                         "toggle_editor": "Przełącz edytor",
                         "typed_header": "Konfiguracja karty {type}",
@@ -2891,7 +2891,7 @@
                     "header": "Edycja interfejsu użytkownika",
                     "menu": {
                         "open": "Otwórz menu interfejsu użytkownika Lovelace",
-                        "raw_editor": "Manualny edytor konfiguracji"
+                        "raw_editor": "Edytor konfiguracji YAML"
                     },
                     "migrate": {
                         "header": "Konfiguracja niekompatybilna",
