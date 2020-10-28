@@ -103,10 +103,6 @@ class OZWNodeConfig extends LitElement {
                 )}
               </em>
             </p>
-            <p>
-              Note: This panel is currently read-only. The ability to change
-              values will come in a later update.
-            </p>
           </div>
           ${this._node
             ? html`
@@ -179,7 +175,6 @@ class OZWNodeConfig extends LitElement {
   }
 
   private _generate_config_block(item) {
-    console.log(item);
     return html` <ha-card class="content" .value=${item.value}>
       <div class="card-content">
         <b>${item.label}</b><br />
@@ -229,6 +224,11 @@ class OZWNodeConfig extends LitElement {
                   </p>
                 `
               )}
+              <p>
+                <em
+                  >This configuration option can't be edited from the UI yet</em
+                >
+              </p>
             `
           : ``}
         ${!["Byte", "Short", "Int", "List", "BitSet"].includes(item.type)
@@ -301,30 +301,42 @@ class OZWNodeConfig extends LitElement {
     }
   }
 
-  private _updateTextConfigOption(ev: Event) {
+  private async _updateTextConfigOption(ev: Event) {
     const el = ev.target!.closest("ha-card").querySelector("paper-input");
-    console.log(el.parameter + "::" + el.value);
-    this.hass.callWS({
-      type: "ozw/set_config_parameter",
-      node_id: this.nodeId,
-      ozw_instance: this.ozwInstance,
-      parameter: el.parameter,
-      value: el.value,
-    });
+    el.errorMessage = undefined;
+    el.invalid = false;
+    try {
+      await this.hass.callWS({
+        type: "ozw/set_config_parameter",
+        node_id: this.nodeId,
+        ozw_instance: this.ozwInstance,
+        parameter: el.parameter,
+        value: el.value,
+      });
+    } catch (e) {
+      el.errorMessage = e.message;
+      el.invalid = true;
+    }
   }
 
-  private _updateListConfigOption(ev: Event) {
+  private async _updateListConfigOption(ev: Event) {
     const el = ev
       .target!.closest("ha-card")
       .querySelector("paper-dropdown-menu");
-    console.log(el.parameter + "::" + el.selectedItem.value);
-    /*  this.hass.callWS({
-      type: "ozw/set_config_parameter",
-      node_id: this.nodeId,
-      ozw_instance: this.ozwInstance,
-      parameter: el.parameter,
-      value: el.value
-    }); */
+    el.errorMessage = undefined;
+    el.invalid = false;
+    try {
+      await this.hass.callWS({
+        type: "ozw/set_config_parameter",
+        node_id: this.nodeId,
+        ozw_instance: this.ozwInstance,
+        parameter: el.parameter,
+        value: el.value,
+      });
+    } catch (e) {
+      el.errorMessage = e.message;
+      el.invalid = true;
+    }
   }
 
   private async _refreshNodeClicked() {
