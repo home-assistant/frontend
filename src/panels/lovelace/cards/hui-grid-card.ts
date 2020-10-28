@@ -37,6 +37,7 @@ class HuiGridCard extends HuiStackCard<GridCardConfig> {
     } else {
       this.style.removeProperty("--grid-card-column-count");
     }
+    this.toggleAttribute("square", config.square !== false);
   }
 
   static get styles(): CSSResult[] {
@@ -50,6 +51,19 @@ class HuiGridCard extends HuiStackCard<GridCardConfig> {
             minmax(0, 1fr)
           );
           grid-gap: var(--grid-card-gap, 8px);
+          grid-auto-rows: 1fr;
+        }
+        :host([square]) #root::before {
+          content: "";
+          width: 0;
+          padding-bottom: 100%;
+          grid-row: 1 / 1;
+          grid-column: 1 / 1;
+        }
+
+        :host([square]) #root > *:first-child {
+          grid-row: 1 / 1;
+          grid-column: 1 / 1;
         }
       `,
     ];

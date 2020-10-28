@@ -290,6 +290,7 @@ export interface StackCardConfig extends LovelaceCardConfig {
 
 export interface GridCardConfig extends StackCardConfig {
   columns?: number;
+  square?: boolean;
 }
 
 export interface ThermostatCardConfig extends LovelaceCardConfig {
