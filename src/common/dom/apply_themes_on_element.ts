@@ -6,6 +6,7 @@ import {
   lab2rgb,
   rgb2hex,
   rgb2lab,
+  blend,
 } from "../color/convert-color";
 import { labBrighten, labDarken } from "../color/lab";
 import { rgbContrast } from "../color/rgb";
@@ -37,6 +38,11 @@ export const applyThemesOnElement = (
     if (themeOptions.dark) {
       cacheKey = `${cacheKey}__dark`;
       themeRules = darkStyles;
+      themeRules["dark-app-header-background-color"] = blend(
+        themeOptions.primaryColor || "#03a9f4",
+        "#111",
+        15
+      );
     }
     if (themeOptions.primaryColor) {
       cacheKey = `${cacheKey}__primary_${themeOptions.primaryColor}`;
