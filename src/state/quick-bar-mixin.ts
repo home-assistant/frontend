@@ -36,27 +36,41 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     }
 
     private _showQuickBar(e: KeyboardEvent, commandMode = false) {
-      if (
-        !this.hass?.user?.is_admin ||
-        !this.hass.enableShortcuts ||
-        this._inInputField(e)
-      ) {
+      if (!this._canShowQuickBar(e)) {
         return;
       }
 
       showQuickBar(this, { commandMode });
     }
 
-    private _inInputField(e: KeyboardEvent) {
-      const el = e.composedPath()[0] as any;
+    private _canShowQuickBar(e: KeyboardEvent) {
       return (
-        el.tagName === "TEXTAREA" ||
-        (el.tagName === "INPUT" &&
-          ["TEXT", "NUMBER"].includes(this._getInputType(el)))
+        this.hass?.user?.is_admin &&
+        this.hass.enableShortcuts &&
+        this._canOverrideAlphanumericInput(e)
       );
     }
 
-    private _getInputType(el) {
-      return el.type && el.type.toUpperCase();
+    private _canOverrideAlphanumericInput(e: KeyboardEvent) {
+      const el = e.composedPath()[0] as any;
+
+      if (el.tagName === "TEXTAREA") {
+        return false;
+      }
+
+      if (el.tagName !== "INPUT") {
+        return true;
+      }
+
+      switch (el.type) {
+        case "button":
+        case "checkbox":
+        case "hidden":
+        case "radio":
+        case "range":
+          return true;
+        default:
+          return false;
+      }
     }
   };
