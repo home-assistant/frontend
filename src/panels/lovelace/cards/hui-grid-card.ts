@@ -51,6 +51,8 @@ class HuiGridCard extends HuiStackCard<GridCardConfig> {
             minmax(0, 1fr)
           );
           grid-gap: var(--grid-card-gap, 8px);
+        }
+        :host([square]) #root {
           grid-auto-rows: 1fr;
         }
         :host([square]) #root::before {
