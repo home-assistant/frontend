@@ -48,8 +48,15 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     }
 
     private _inInputField(e: KeyboardEvent) {
-      return ["INPUT", "TEXTAREA"].includes(
-        (e.composedPath()[0] as HTMLElement).tagName
+      const el = e.composedPath()[0] as any;
+      return (
+        el.tagName === "TEXTAREA" ||
+        (el.tagName === "INPUT" &&
+          ["TEXT", "NUMBER"].includes(this._getInputType(el)))
       );
+    }
+
+    private _getInputType(el) {
+      return el.type && el.type.toUpperCase();
     }
   };
