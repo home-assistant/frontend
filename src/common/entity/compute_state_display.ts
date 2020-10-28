@@ -19,6 +19,11 @@ export const computeStateDisplay = (
   }
 
   if (stateObj.attributes.unit_of_measurement) {
+    if (!Number.isNaN(Number(compareState))) {
+      return `${new Intl.NumberFormat(language).format(Number(compareState))} ${
+        stateObj.attributes.unit_of_measurement
+      }`;
+    }
     return `${compareState} ${stateObj.attributes.unit_of_measurement}`;
   }
 
