@@ -42,7 +42,7 @@ class DialogAreaDetail extends LitElement {
       return html``;
     }
     const entry = this._params.entry;
-    const nameInvalid = this._name.trim() === "";
+    const nameInvalid = !this._isNameValid();
     return html`
       <ha-paper-dialog
         with-backdrop
@@ -71,6 +71,7 @@ class DialogAreaDetail extends LitElement {
             <paper-input
               .value=${this._name}
               @value-changed=${this._nameChanged}
+              @keyup=${this._handleKeyup}
               .label=${this.hass.localize("ui.panel.config.areas.editor.name")}
               .errorMessage=${this.hass.localize(
                 "ui.panel.config.areas.editor.name_required"
@@ -102,6 +103,16 @@ class DialogAreaDetail extends LitElement {
         </div>
       </ha-paper-dialog>
     `;
+  }
+
+  private _isNameValid() {
+    return this._name.trim() !== "";
+  }
+
+  private _handleKeyup(ev: KeyboardEvent) {
+    if (ev.keyCode === 13 && this._isNameValid() && !this._submitting) {
+      this._updateEntry();
+    }
   }
 
   private _nameChanged(ev: PolymerChangedEvent<string>) {
