@@ -38,7 +38,7 @@ export const applyThemesOnElement = (
     if (themeOptions.dark) {
       cacheKey = `${cacheKey}__dark`;
       themeRules = darkStyles;
-      themeRules["dark-app-header-background-color"] = blend(
+      themeRules["app-header-background-color"] = blend(
         themeOptions.primaryColor || "#03a9f4",
         "#111",
         15
