@@ -21,22 +21,19 @@ class HuiGridCard extends HuiStackCard<GridCardConfig> {
 
     const maxCardSize = Math.max(...results);
 
-    return (
-      maxCardSize *
-      (this._cards.length / (this._config.columns || DEFAULT_COLUMNS))
-    );
+    return maxCardSize * (this._cards.length / this.columns);
+  }
+
+  get columns() {
+    if (this._config!.columns !== undefined) {
+      return this._config!.columns;
+    }
+    return Math.min(this._cards!.length, DEFAULT_COLUMNS);
   }
 
   setConfig(config: GridCardConfig) {
     super.setConfig(config);
-    if ("columns" in config) {
-      this.style.setProperty(
-        "--grid-card-column-count",
-        String(config.columns)
-      );
-    } else {
-      this.style.removeProperty("--grid-card-column-count");
-    }
+    this.style.setProperty("--grid-card-column-count", String(this.columns));
     this.toggleAttribute("square", config.square !== false);
   }
 
