@@ -8,7 +8,7 @@ export const darkStyles = {
   "secondary-text-color": "#9b9b9b",
   "disabled-text-color": "#6f6f6f",
   "app-header-text-color": "#e1e1e1",
-  "app-header-background-color": "var(--dark-app-header-background-color)",
+  "app-header-background-color": "#blueanddarkgreyblend",
   "switch-unchecked-button-color": "#999999",
   "switch-unchecked-track-color": "#9b9b9b",
   "divider-color": "rgba(225, 225, 225, .12)",
