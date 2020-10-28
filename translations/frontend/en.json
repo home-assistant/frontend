@@ -888,6 +888,11 @@
                         "trend": "Reload trend entities",
                         "universal": "Reload universal media player entities",
                         "zone": "Reload zones"
+                    },
+                    "server_control": {
+                        "perform_action": "{action} Server",
+                        "restart": "Restart",
+                        "stop": "Stop"
                     }
                 },
                 "filter_placeholder": "Entity Filter"
@@ -1998,6 +2003,7 @@
                     },
                     "services": {
                         "add_node": "Add Node",
+                        "cancel_command": "Cancel Command",
                         "remove_node": "Remove Node"
                     }
                 },
@@ -3198,6 +3204,10 @@
                     "dropdown_label": "Dashboard",
                     "header": "Dashboard"
                 },
+                "enable_shortcuts": {
+                    "description": "Enable or disable keyboard shortcuts for performing various actions in the UI.",
+                    "header": "Keyboard Shortcuts"
+                },
                 "force_narrow": {
                     "description": "This will hide the sidebar by default, similar to the mobile experience.",
                     "header": "Always hide the sidebar"
@@ -3242,6 +3252,10 @@
                     "header": "Multi-factor Authentication Modules"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "Device name",
+                        "title": "What should this device be called?"
+                    },
                     "description": "Send notifications to this device.",
                     "error_load_platform": "Configure notify.html5.",
                     "error_use_https": "Requires SSL enabled for frontend.",

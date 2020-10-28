@@ -2149,7 +2149,7 @@
                             "input_text": "Herlaad input texts",
                             "introduction": "Sommige delen van Home Assistant kunnen opnieuw worden geladen zonder dat een herstart vereist is. Als je herladen gebruikt, wordt de huidige configuratie leeggemaakt en wordt de nieuwe geladen.",
                             "min_max": "Herlaad min/max entiteiten",
-                            "mqtt": "Herlaad mqtt entiteiten",
+                            "mqtt": "Herlaad handmatig geconfigureerde mqtt-entiteiten",
                             "person": "Herlaad personen",
                             "ping": "Herlaad ping binaire sensor entiteiten",
                             "reload": "Herlaad {domain}",

@@ -393,6 +393,12 @@
                     "was_unsafe": "yn anniogel"
                 }
             },
+            "relative_time": {
+                "future_duration": {
+                    "day": "Mewn {count} {count, plural,\n  one {day}\n  other {days}\n}",
+                    "week": "Mewn {count} {count, plural,\n  one {week}\n  other {weeks}\n}"
+                }
+            },
             "service-picker": {
                 "service": "Gwasanaeth"
             },
