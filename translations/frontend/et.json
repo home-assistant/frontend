@@ -888,6 +888,11 @@
                         "trend": "Taaslae trendide olemid",
                         "universal": "Taaslae meediumimängija olemid",
                         "zone": "Tasslae tsoonid"
+                    },
+                    "server_control": {
+                        "perform_action": "{action} server",
+                        "restart": "Taaskäivita",
+                        "stop": "Peata"
                     }
                 },
                 "filter_placeholder": "Olemite filter"
@@ -1998,6 +2003,7 @@
                     },
                     "services": {
                         "add_node": "Lisa sõlm",
+                        "cancel_command": "Tühista käsk",
                         "remove_node": "Eemalda sõlm"
                     }
                 },
@@ -2149,7 +2155,7 @@
                             "input_text": "TAASLAE TEKSTISISESTUS",
                             "introduction": "Mõned Home Assistant'i komponendid on taaslaetavad ilma taaskäivituseta. Taaslaadimise klõpsamisel tühistatakse nende praegused seaded ja laetakse uued.",
                             "min_max": "TAASLAE MIN/MAX OLEMID",
-                            "mqtt": "TAASLAE MQTT OLEMID",
+                            "mqtt": "TAASLAE KÄSITSI SEADISTATUD MQTT OLEMID",
                             "person": "Taaslae isikud",
                             "ping": "TAASLAE PING BINAARANDURI OLEMID",
                             "reload": "Laadi {domain} uuesti",
@@ -3198,6 +3204,10 @@
                     "dropdown_label": "Kasutajaliidese vaade",
                     "header": "Kasutajaliidese vaade"
                 },
+                "enable_shortcuts": {
+                    "description": "Luba või keela kasutajaliidese erinevate toimingute tegemise kiirklahvid.",
+                    "header": "Kiirklahvid"
+                },
                 "force_narrow": {
                     "description": "See peidab vaikimisi külgriba, sarnaselt mobiilikogemusega.",
                     "header": "Peida alati külgriba"
@@ -3242,6 +3252,10 @@
                     "header": "Mitmeastmelise autentimise moodulid"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "Seadme nimi",
+                        "title": "Kuidas peaks seda seadet nimetama?"
+                    },
                     "description": "Saada teatisi sellele seadmele.",
                     "error_load_platform": "Seadista notify.html5.",
                     "error_use_https": "Nõuab kasutajaliidese jaoks SSL lubamist.",

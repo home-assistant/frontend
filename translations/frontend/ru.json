@@ -888,6 +888,11 @@
                         "trend": "Перезагрузить объекты интеграции \"Trend\"",
                         "universal": "Перезагрузить объекты интеграции \"Universal Media Player\"",
                         "zone": "Перезагрузить зоны"
+                    },
+                    "server_control": {
+                        "perform_action": "{action} сервер",
+                        "restart": "Перезапустить",
+                        "stop": "Остановить"
                     }
                 },
                 "filter_placeholder": "Фильтр объектов"
@@ -1998,6 +2003,7 @@
                     },
                     "services": {
                         "add_node": "Добавить узел",
+                        "cancel_command": "Отменить команду",
                         "remove_node": "Удалить узел"
                     }
                 },
@@ -3198,6 +3204,10 @@
                     "dropdown_label": "Панель",
                     "header": "Панель Lovelace UI"
                 },
+                "enable_shortcuts": {
+                    "description": "Сочетания клавиш для выполнения различных действий в пользовательском интерфейсе.",
+                    "header": "Горячие клавиши"
+                },
                 "force_narrow": {
                     "description": "Боковая панель будет скрыта, аналогично мобильному интерфейсу",
                     "header": "Скрывать боковую панель"
@@ -3242,6 +3252,10 @@
                     "header": "Модули многофакторной аутентификации"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "Название устройства",
+                        "title": "Как следует называть это устройство?"
+                    },
                     "description": "Отправлять уведомления на это устройство",
                     "error_load_platform": "Настроить notify.html5.",
                     "error_use_https": "Требуется SSL для веб-интерфейса.",

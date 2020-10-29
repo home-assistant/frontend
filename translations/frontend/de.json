@@ -881,6 +881,9 @@
                         "telegram": "Telegram-Benachrichtigungsdienst neu laden",
                         "template": "Templates neu laden",
                         "zone": "Zonen neu laden"
+                    },
+                    "server_control": {
+                        "perform_action": "{action} Server"
                     }
                 },
                 "filter_placeholder": "Entitätsfilter"
@@ -1966,6 +1969,7 @@
                     },
                     "services": {
                         "add_node": "Knoten hinzufügen",
+                        "cancel_command": "Befehl abbrechen",
                         "remove_node": "Knoten entfernen"
                     }
                 },
@@ -2116,7 +2120,7 @@
                             "input_text": "Eingabetexte neu laden",
                             "introduction": "Einige Komponenten von Home Assistant können ohne einen Neustart neu geladen werden. \"Neu laden\" entlädt dabei die aktuelle Konfiguration und lädt die neue Konfiguration.",
                             "min_max": "Min/Max-Entitäten neu laden",
-                            "mqtt": "MQTT-Entitäten neu laden",
+                            "mqtt": "Lade manuell konfigurierte MQTT-Entitäten neu",
                             "person": "Personen neu laden",
                             "reload": "Neu laden {domain}",
                             "rest": "Rest Entitäten und Benachrichtigungsdienste neu laden",
@@ -3161,6 +3165,10 @@
                     "dropdown_label": "Dashboard",
                     "header": "Dashboard"
                 },
+                "enable_shortcuts": {
+                    "description": "Aktiviere oder deaktiviere Tastaturkürzel, um verschiedene Aktionen in der Benutzeroberfläche auszuführen.",
+                    "header": "Tastatürkürzel"
+                },
                 "force_narrow": {
                     "description": "Dies blendet die Seitenleiste standardmäßig aus, ähnlich der Nutzung auf Mobilgeräten.",
                     "header": "Verstecke die Seitenleiste immer"
@@ -3205,6 +3213,10 @@
                     "header": "2-Faktor-Authentifizierung-Module"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "Gerätename",
+                        "title": "Wie sollte dieses Gerät genannt werden?"
+                    },
                     "description": "Sende Benachrichtigungen an dieses Gerät.",
                     "error_load_platform": "Konfiguriere notify.html5.",
                     "error_use_https": "Erfordert aktiviertes SSL/TLS für das Frontend.",

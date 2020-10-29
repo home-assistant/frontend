@@ -888,6 +888,11 @@
                         "trend": "Encje komponentu trend",
                         "universal": "Encje komponentu uniwersalny odtwarzacz mediów",
                         "zone": "Strefy"
+                    },
+                    "server_control": {
+                        "perform_action": "{action} serwer",
+                        "restart": "Uruchom ponownie",
+                        "stop": "Zatrzymaj"
                     }
                 },
                 "filter_placeholder": "Filtr encji"
@@ -1078,7 +1083,7 @@
                                     "wait_template": "Szablon czekania"
                                 }
                             },
-                            "unsupported_action": "Nieobsługiwane działanie: {action}"
+                            "unsupported_action": "Brak w interfejsie użytkownika wsparcia dla akcji: {action}"
                         },
                         "alias": "Nazwa",
                         "conditions": {
@@ -1155,7 +1160,7 @@
                                     "zone": "Strefa"
                                 }
                             },
-                            "unsupported_condition": "Nieobsługiwany warunek: {condition}"
+                            "unsupported_condition": "Brak w interfejsie użytkownika wsparcia dla warunku: {condition}"
                         },
                         "copy_to_clipboard": "Skopiuj do schowka",
                         "default_name": "Nowa automatyzacja",
@@ -1284,7 +1289,7 @@
                                     "zone": "Strefa"
                                 }
                             },
-                            "unsupported_platform": "Nieobsługiwana platforma: {platform}"
+                            "unsupported_platform": "Brak w interfejsie użytkownika wsparcia dla platformy: {platform}"
                         },
                         "unsaved_confirm": "Masz niezapisane zmiany. Na pewno chcesz wyjść?"
                     },
@@ -1557,7 +1562,7 @@
                     "caption": "Urządzenia",
                     "confirm_delete": "Czy na pewno chcesz usunąć to urządzenie?",
                     "confirm_rename_entity_ids": "Czy chcesz także zmienić identyfikatory encji?",
-                    "confirm_rename_entity_ids_warning": "Nie zmieni to żadnej konfiguracji (jak automatyzacje, skrypty, sceny, dashboardy), która obecnie używa tych encji. Będziesz musiał je zaktualizować samemu, by używać nowych identyfikatorów encji!",
+                    "confirm_rename_entity_ids_warning": "Nie zmieni to konfiguracji (automatyzacji, skryptów, scen, dashboardów), które obecnie używają tych encji. Będziesz musiał je zaktualizować samemu, by używać nowych identyfikatorów encji!",
                     "data_table": {
                         "area": "Obszar",
                         "battery": "Bateria",
@@ -1998,6 +2003,7 @@
                     },
                     "services": {
                         "add_node": "Dodaj węzeł",
+                        "cancel_command": "Anuluj polecenie",
                         "remove_node": "Usuń węzeł"
                     }
                 },
@@ -2643,7 +2649,7 @@
                         "calendar": {
                             "calendar_entities": "Encje kalendarza",
                             "description": "Karta kalendarza wyświetla kalendarz zawierający widoki dnia, tygodnia i listy",
-                            "inital_view": "Wstępny widok",
+                            "inital_view": "Widok początkowy",
                             "name": "Kalendarz",
                             "views": {
                                 "dayGridDay": "Dzień",
@@ -2896,7 +2902,7 @@
                     "migrate": {
                         "header": "Konfiguracja niekompatybilna",
                         "migrate": "Migracja konfiguracji",
-                        "para_migrate": "Home Assistant może automatycznie dodać ID do wszystkich twoich kart i widoków, po kliknięciu przycisku \"Migracja konfiguracji\".",
+                        "para_migrate": "Home Assistant może automatycznie dodać identyfikatory do wszystkich twoich kart i widoków, po kliknięciu przycisku 'Migracja konfiguracji'.",
                         "para_no_id": "Ten element nie ma ID. Dodaj ID do tego elementu w \"ui-lovelace.yaml\"."
                     },
                     "move_card": {
@@ -3198,6 +3204,10 @@
                     "dropdown_label": "Dashboard",
                     "header": "Dashboard"
                 },
+                "enable_shortcuts": {
+                    "description": "Włącz lub wyłącz skróty klawiszowe do wykonywania różnych czynności w interfejsie użytkownika.",
+                    "header": "Skróty klawiszowe"
+                },
                 "force_narrow": {
                     "description": "Spowoduje to domyślne ukrycie paska bocznego, podobnie jak w przypadku urządzeń przenośnych.",
                     "header": "Zawsze ukrywaj pasek boczny"
@@ -3242,6 +3252,10 @@
                     "header": "Moduły uwierzytelniania wieloskładnikowego"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "Nazwa urządzenia",
+                        "title": "Jak powinno nazywać się to urządzenie?"
+                    },
                     "description": "Wysyłaj powiadomienia na to urządzenie.",
                     "error_load_platform": "Skonfiguruj notify.html5",
                     "error_use_https": "Wymagany protokół SSL dla interfejsu użytkownika",
