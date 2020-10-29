@@ -1,4 +1,4 @@
-import { expand_hex } from "./hex"
+import { expandHex } from "./hex"
 
 const rgb_hex = (component: number): string => {
   const hex = Math.round(Math.min(Math.max(component, 0), 255)).toString(16);
