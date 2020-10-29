@@ -1,4 +1,4 @@
-const expand_hex = (hex: string): string => {
+export const expand_hex = (hex: string): string => {
   hex = hex.replace("#", "");
   if (hex.length === 6) return hex;
   let result = "";
