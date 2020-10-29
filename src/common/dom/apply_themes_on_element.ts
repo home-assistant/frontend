@@ -6,8 +6,8 @@ import {
   lab2rgb,
   rgb2hex,
   rgb2lab,
-  blend,
 } from "../color/convert-color";
+import { hexBlend } from "../color/hex";
 import { labBrighten, labDarken } from "../color/lab";
 import { rgbContrast } from "../color/rgb";
 
