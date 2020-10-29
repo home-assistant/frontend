@@ -38,11 +38,13 @@ export const applyThemesOnElement = (
     if (themeOptions.dark) {
       cacheKey = `${cacheKey}__dark`;
       themeRules = darkStyles;
-      themeRules["app-header-background-color"] = blend(
-        themeOptions.primaryColor || "#03a9f4",
-        "#111",
-        15
-      );
+      if (themeOptions.primaryColor) {
+        themeRules["app-header-background-color"] = blend(
+          themeOptions.primaryColor,
+          "#111",
+          15
+        );
+      }
     }
     if (themeOptions.primaryColor) {
       cacheKey = `${cacheKey}__primary_${themeOptions.primaryColor}`;
