@@ -141,7 +141,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
           <mwc-list-item
             .disabled=${!this.scriptEntityId}
-            aria-label=${this.hass.localize(
+            .label=${this.hass.localize(
               "ui.panel.config.script.picker.duplicate_script"
             )}
             graphic="icon"
