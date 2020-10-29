@@ -66,7 +66,11 @@ class StateInfo extends LocalizeMixin(PolymerElement) {
           flex-wrap: no-wrap;
           width: 100%;
           justify-content: space-between;
-          margin-right: 2px;
+          margin: 0 2px 4px 0;
+        }
+
+        .row:last-child {
+          margin-bottom: 0px;
         }
       </style>
     `;
@@ -91,7 +95,7 @@ class StateInfo extends LocalizeMixin(PolymerElement) {
             ></ha-relative-time>
             <paper-tooltip animation-delay="0" for="last_changed">
               <div>
-                <div class="row" style="margin-bottom: 2px">
+                <div class="row">
                   <span class="column-name">
                     [[localize('ui.dialogs.more_info_control.last_changed')]]:
                   </span>
