@@ -10,6 +10,10 @@ export const coreCards: Card[] = [
     showElement: true,
   },
   {
+    type: "calendar",
+    showElement: true,
+  },
+  {
     type: "entities",
     showElement: true,
   },
@@ -23,6 +27,10 @@ export const coreCards: Card[] = [
   },
   {
     type: "glance",
+    showElement: true,
+  },
+  {
+    type: "grid",
     showElement: true,
   },
   {

@@ -55,7 +55,7 @@ export const provideHass = (
 
   function updateTranslations(fragment: null | string, language?: string) {
     const lang = language || getLocalLanguage();
-    getTranslation(fragment, lang).then((translation) => {
+    getTranslation(fragment, lang).then(async (translation) => {
       const resources = {
         [lang]: {
           ...(hass().resources && hass().resources[lang]),
@@ -64,7 +64,7 @@ export const provideHass = (
       };
       hass().updateHass({
         resources,
-        localize: computeLocalize(elements[0], lang, resources),
+        localize: await computeLocalize(elements[0], lang, resources),
       });
     });
   }
@@ -180,7 +180,9 @@ export const provideHass = (
     config: demoConfig,
     themes: {
       default_theme: "default",
+      default_dark_theme: null,
       themes: {},
+      darkMode: false,
     },
     panels: demoPanels,
     services: demoServices,
@@ -253,7 +255,7 @@ export const provideHass = (
     mockTheme(theme) {
       invalidateThemeCache();
       hass().updateHass({
-        selectedTheme: theme ? "mock" : "default",
+        selectedTheme: { theme: theme ? "mock" : "default" },
         themes: {
           ...hass().themes,
           themes: {
@@ -265,7 +267,7 @@ export const provideHass = (
       applyThemesOnElement(
         document.documentElement,
         themes,
-        selectedTheme as string
+        selectedTheme!.theme
       );
     },
 

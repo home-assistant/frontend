@@ -60,6 +60,11 @@ class HassSubpage extends LitElement {
         background-color: var(--primary-background-color);
       }
 
+      :host([narrow]) {
+        width: 100%;
+        position: fixed;
+      }
+
       .toolbar {
         display: flex;
         align-items: center;
@@ -92,7 +97,7 @@ class HassSubpage extends LitElement {
       .content {
         position: relative;
         width: 100%;
-        height: calc(100% - 65px);
+        height: calc(100% - 1px - var(--header-height));
         overflow-y: auto;
         overflow: auto;
         -webkit-overflow-scrolling: touch;

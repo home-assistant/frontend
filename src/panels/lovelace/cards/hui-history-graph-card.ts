@@ -3,18 +3,21 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
+import { throttle } from "../../../common/util/throttle";
 import "../../../components/ha-card";
 import "../../../components/state-history-charts";
 import { CacheConfig, getRecentWithCache } from "../../../data/cached-history";
+import { HistoryResult } from "../../../data/history";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entites";
+import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
 import { EntityConfig } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
@@ -49,7 +52,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _stateHistory?: any;
+  @internalProperty() private _stateHistory?: HistoryResult;
 
   @internalProperty() private _config?: HistoryGraphCardConfig;
 
@@ -59,12 +62,14 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   private _cacheConfig?: CacheConfig;
 
-  private _interval?: number;
-
   private _fetching = false;
 
+  private _throttleGetStateHistory?: () => void;
+
   public getCardSize(): number {
-    return 4;
+    return this._config?.title
+      ? 2
+      : 0 + 2 * (this._configEntities?.length || 1);
   }
 
   public setConfig(config: HistoryGraphCardConfig): void {
@@ -90,39 +95,48 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       }
     });
 
+    this._throttleGetStateHistory = throttle(() => {
+      this._getStateHistory();
+    }, config.refresh_interval || 10 * 1000);
+
     this._cacheConfig = {
       cacheKey: _entities.join(),
       hoursToShow: config.hours_to_show || 24,
-      refresh: config.refresh_interval || 0,
     };
   }
 
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this._clearInterval();
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigOrEntitiesChanged(this, changedProps);
   }
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
-    if (!this._config || !this.hass || !this._cacheConfig) {
+    if (
+      !this._config ||
+      !this.hass ||
+      !this._throttleGetStateHistory ||
+      !this._cacheConfig
+    ) {
       return;
     }
 
-    if (!changedProps.has("_config")) {
+    if (!changedProps.has("_config") && !changedProps.has("hass")) {
       return;
     }
 
-    const oldConfig = changedProps.get("_config") as HistoryGraphCardConfig;
+    const oldConfig = changedProps.get("_config") as
+      | HistoryGraphCardConfig
+      | undefined;
 
-    if (oldConfig !== this._config) {
-      this._getStateHistory();
-      this._clearInterval();
-
-      if (!this._interval && this._cacheConfig.refresh) {
-        this._interval = window.setInterval(() => {
-          this._getStateHistory();
-        }, this._cacheConfig.refresh * 1000);
-      }
+    if (
+      changedProps.has("_config") &&
+      (oldConfig?.entities !== this._config.entities ||
+        oldConfig?.hours_to_show !== this._config.hours_to_show)
+    ) {
+      this._throttleGetStateHistory();
+    } else if (changedProps.has("hass")) {
+      // wait for commit of data (we only account for the default setting of 1 sec)
+      setTimeout(this._throttleGetStateHistory, 1000);
     }
   }
 
@@ -157,27 +171,25 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     }
     this._fetching = true;
     try {
-      this._stateHistory = await getRecentWithCache(
-        this.hass!,
-        this._cacheConfig!.cacheKey,
-        this._cacheConfig!,
-        this.hass!.localize,
-        this.hass!.language
-      );
+      this._stateHistory = {
+        ...(await getRecentWithCache(
+          this.hass!,
+          this._cacheConfig!.cacheKey,
+          this._cacheConfig!,
+          this.hass!.localize,
+          this.hass!.language
+        )),
+      };
     } finally {
       this._fetching = false;
     }
   }
 
-  private _clearInterval(): void {
-    if (this._interval) {
-      window.clearInterval(this._interval);
-      this._interval = undefined;
-    }
-  }
-
   static get styles(): CSSResult {
     return css`
+      ha-card {
+        height: 100%;
+      }
       .content {
         padding: 16px;
       }

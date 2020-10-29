@@ -1,13 +1,12 @@
 import "@material/mwc-fab";
+import { mdiPlus } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
-  css,
-  CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -20,6 +19,7 @@ import {
 } from "../../../../components/data-table/ha-data-table";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-svg-icon";
 import {
   createDashboard,
   deleteDashboard,
@@ -35,9 +35,6 @@ import "../../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../../types";
 import { lovelaceTabs } from "../ha-config-lovelace";
 import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
-import "../../../../components/ha-svg-icon";
-import { mdiPlus } from "@mdi/js";
-import { computeRTL } from "../../../../common/util/compute_rtl";
 
 @customElement("ha-config-lovelace-dashboards")
 export class HaConfigLovelaceDashboards extends LitElement {
@@ -79,7 +76,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
                       style="padding-left: 10px;"
                       icon="hass:check-circle-outline"
                     ></ha-icon>
-                    <paper-tooltip>
+                    <paper-tooltip animation-delay="0">
                       ${this.hass.localize(
                         `ui.panel.config.lovelace.dashboards.default_dashboard`
                       )}
@@ -224,19 +221,18 @@ export class HaConfigLovelaceDashboards extends LitElement {
         @row-click=${this._editDashboard}
         id="url_path"
         hasFab
+        clickable
       >
+        <mwc-fab
+          slot="fab"
+          title="${this.hass.localize(
+            "ui.panel.config.lovelace.dashboards.picker.add_dashboard"
+          )}"
+          @click=${this._addDashboard}
+        >
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+        </mwc-fab>
       </hass-tabs-subpage-data-table>
-      <mwc-fab
-        ?is-wide=${this.isWide}
-        ?narrow=${this.narrow}
-        ?rtl=${computeRTL(this.hass)}
-        title="${this.hass.localize(
-          "ui.panel.config.lovelace.dashboards.picker.add_dashboard"
-        )}"
-        @click=${this._addDashboard}
-      >
-        <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
-      </mwc-fab>
     `;
   }
 
@@ -310,27 +306,5 @@ export class HaConfigLovelaceDashboards extends LitElement {
         }
       },
     });
-  }
-
-  static get styles(): CSSResult {
-    return css`
-      mwc-fab {
-        position: fixed;
-        bottom: 16px;
-        right: 16px;
-        z-index: 1;
-      }
-      mwc-fab[is-wide] {
-        bottom: 24px;
-        right: 24px;
-      }
-      mwc-fab[narrow] {
-        bottom: 84px;
-      }
-      mwc-fab[rtl] {
-        left: 16px;
-        right: auto;
-      }
-    `;
   }
 }

@@ -15,7 +15,7 @@ export class HaConditionAction extends LitElement implements ActionElement {
     return { condition: "state" };
   }
 
-  public render() {
+  protected render() {
     return html`
       <ha-automation-condition-editor
         .condition=${this.action}

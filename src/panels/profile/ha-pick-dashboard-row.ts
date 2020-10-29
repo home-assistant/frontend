@@ -13,7 +13,7 @@ import "../../components/ha-paper-dropdown-menu";
 import { fetchDashboards, LovelaceDashboard } from "../../data/lovelace";
 import { setDefaultPanel } from "../../data/panel";
 import { HomeAssistant } from "../../types";
-import "./ha-settings-row";
+import "../../components/ha-settings-row";
 
 @customElement("ha-pick-dashboard-row")
 class HaPickDashboardRow extends LitElement {

@@ -51,11 +51,15 @@
         },
         "humidifier": {
             "mode": {
-                "auto": "Auto",
-                "comfort": "Confortável",
+                "auto": "Automático",
+                "away": "Ausente",
+                "baby": "Bebê",
+                "boost": "Turbo",
+                "comfort": "Conforto",
                 "eco": "Econômico",
+                "home": "Casa",
                 "normal": "Normal",
-                "sleep": "Suspender"
+                "sleep": "Sono"
             }
         }
     },
@@ -398,8 +402,10 @@
                 "speed": "Velocidade"
             },
             "humidifier": {
+                "humidity": "Umidade desejada",
                 "mode": "Modo",
-                "on_entity": "{name} ligado"
+                "on_entity": "{name} ligado",
+                "target_humidity_entity": "umidade desejada em {name}"
             },
             "light": {
                 "brightness": "Brilho",
@@ -413,9 +419,16 @@
                 "unlock": "Destrancar"
             },
             "media_player": {
+                "browse_media": "Navegar mídias",
+                "media_next_track": "Próximo",
+                "media_play": "Tocar",
+                "media_play_pause": "Tocar/pausar",
+                "media_previous_track": "Anterior",
                 "sound_mode": "Modo de som",
                 "source": "Fonte",
-                "text_to_speak": "Texto para falar"
+                "text_to_speak": "Texto para falar",
+                "turn_off": "Desligar",
+                "turn_on": "Ligar"
             },
             "persistent_notification": {
                 "dismiss": "Dispensar"
@@ -425,6 +438,7 @@
             },
             "script": {
                 "cancel": "Cancelar",
+                "cancel_multiple": "Cancelar {number}",
                 "execute": "Executar"
             },
             "service": {
@@ -481,9 +495,11 @@
                     "wnw": "ONO",
                     "wsw": "OSO"
                 },
+                "day": "Dia",
                 "forecast": "Previsão",
                 "high": "Alto",
-                "low": "Fraco"
+                "low": "Fraco",
+                "night": "Noite"
             }
         },
         "common": {
@@ -491,12 +507,15 @@
             "back": "Voltar",
             "cancel": "Cancelar",
             "close": "Fechar",
+            "continue": "Continuar",
+            "copied": "Copiado",
             "delete": "Eliminar",
             "error_required": "Obrigatório",
             "loading": "Carregando",
             "menu": "Menu",
             "next": "Próximo",
             "no": "Não",
+            "overflow_menu": "Menu expansível",
             "previous": "Anterior",
             "refresh": "Atualizar",
             "save": "Salvar",
@@ -520,6 +539,7 @@
                 "show_areas": "Mostrar áreas"
             },
             "data-table": {
+                "no-data": "Sem dados",
                 "search": "Procurar"
             },
             "date-range-picker": {
@@ -535,6 +555,10 @@
                 "toggle": "Alternar"
             },
             "entity": {
+                "entity-attribute-picker": {
+                    "attribute": "Atributo",
+                    "show_attributes": "Mostrar atributos"
+                },
                 "entity-picker": {
                     "clear": "Limpar",
                     "entity": "Entidade",
@@ -544,6 +568,65 @@
             "history_charts": {
                 "loading_history": "Carregando histórico do estado ...",
                 "no_history_found": "Histórico de estado não encontrado."
+            },
+            "logbook": {
+                "by": "por",
+                "by_service": "por serviço",
+                "entries_not_found": "Não foram encontradas entradas no registro",
+                "messages": {
+                    "turned_off": "desligou",
+                    "turned_on": "ligou",
+                    "was_at_home": "estava em casa",
+                    "was_closed": "foi fechado",
+                    "was_connected": "foi conectado",
+                    "was_disconnected": "foi desconectado",
+                    "was_locked": "foi trancada",
+                    "was_opened": "foi aberto",
+                    "was_safe": "estava seguro",
+                    "was_unlocked": "foi destrancada",
+                    "was_unsafe": "estava inseguro"
+                }
+            },
+            "media-browser": {
+                "choose-source": "Escolha a fonte",
+                "class": {
+                    "album": "Álbum",
+                    "artist": "Artista",
+                    "channel": "Canal",
+                    "composer": "Compositor",
+                    "contributing_artist": "Artista Contribuinte",
+                    "directory": "Biblioteca",
+                    "episode": "Episódio",
+                    "game": "Jogo",
+                    "genre": "Gênero",
+                    "image": "Imagem",
+                    "movie": "Filme",
+                    "music": "Música",
+                    "playlist": "Lista de reprodução",
+                    "podcast": "Podcast",
+                    "season": "Temporada",
+                    "url": "Url",
+                    "video": "Vídeo"
+                },
+                "content-type": {
+                    "album": "Álbum",
+                    "artist": "Artista",
+                    "library": "Biblioteca",
+                    "playlist": "Lista de reprodução",
+                    "server": "Servidor"
+                },
+                "documentation": "Documentação",
+                "media_player": "Reprodutor de Mídia",
+                "media-player-browser": "Navegador do Reprodutor de Mídia",
+                "no_items": "Sem itens",
+                "pick": "Escolher",
+                "pick-media": "Escolher mídia",
+                "play": "Tocar",
+                "play-media": "Reproduzir Mídia"
+            },
+            "picture-upload": {
+                "label": "Imagem",
+                "unsupported_format": "Formato não suportado, por favor escolha uma imagem JPEG, PNG ou GIF."
             },
             "related-items": {
                 "area": "Área",
@@ -565,6 +648,7 @@
                     "week": "{count} {count, plural,\n  one {semana}\n  other {semanas}\n}"
                 },
                 "future": "Em {time}",
+                "just_now": "Agora",
                 "never": "Nunca",
                 "past": "{time} atrás"
             },
@@ -580,6 +664,7 @@
                 "update": "Atualizar"
             },
             "domain_toggler": {
+                "reset_entities": "Reiniciar Entidades",
                 "title": "Alternar Domínios"
             },
             "entity_registry": {
@@ -599,6 +684,7 @@
                     "unavailable": "Esta entidade não está disponível no momento.",
                     "update": "Atualizar"
                 },
+                "faq": "documentação",
                 "no_unique_id": "Essa entidade não possui um ID exclusivo; portanto, suas configurações não podem ser gerenciadas a partir da interface do usuário.",
                 "related": "Relacionado",
                 "settings": "Configurações"
@@ -643,13 +729,20 @@
                     "pattern": "Padrão Regex para validação do lado do cliente",
                     "text": "Texto"
                 },
-                "platform_not_loaded": "A integração {plataforma} não está carregada. Por favor adicione-a em sua configuração adicionando 'default_config:' ou ''{platform}:''.",
+                "platform_not_loaded": "A integração {platform} não está carregada. Por favor adicione-a em sua configuração adicionando 'default_config:' ou ''{platform}:''.",
                 "required_error_msg": "Este campo é obrigatório",
                 "yaml_not_editable": "As configurações desta entidade não podem ser editadas a partir da interface do usuário. Somente entidades configuradas a partir da interface do usuário são configuráveis a partir da interface do usuário."
             },
+            "image_cropper": {
+                "crop": "Recortar"
+            },
             "more_info_control": {
+                "controls": "Controles",
+                "details": "Detalhes",
                 "dismiss": "Dispensar diálogo",
                 "edit": "Editar entidade",
+                "history": "Histórico",
+                "last_updated": "Última atualização",
                 "person": {
                     "create_zone": "Criar zona a partir da localização atual"
                 },
@@ -694,7 +787,7 @@
                 "payload_display": "Exibição de carga",
                 "recent_messages": "{n} mensagem(ns) recebida(s) mais recentemente",
                 "show_as_yaml": "Mostrar como YAML",
-                "title": "Informação de depuração do {device}",
+                "title": "Informação de depuração de {device}",
                 "triggers": "Gatilhos"
             },
             "options_flow": {
@@ -704,6 +797,9 @@
                 "success": {
                     "description": "Opções salvas com sucesso."
                 }
+            },
+            "quick-bar": {
+                "filter_placeholder": "Filtro de Entidades"
             },
             "voice_command": {
                 "did_not_hear": "Home Assistant não ouviu nada",
@@ -716,6 +812,7 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Adicionar dispositivos através deste dispositivo",
+                    "clusters": "Gerenciar Grupos",
                     "reconfigure": "Reconfigurar O Dispositivo",
                     "remove": "Remover dispositivo",
                     "zigbee_information": "Assinatura de dispositivo Zigbee"
@@ -764,8 +861,8 @@
         "notification_toast": {
             "connection_lost": "Conexão perdida. Reconectando…",
             "service_call_failed": "Falha ao chamar o serviço {service}.",
-            "started": "Home Assistant foi iniciado!",
-            "starting": "Home Assistant está iniciando, algumas funcionalidades podem estar indisponíveis até que esteja iniciado.",
+            "started": "O Home Assistant foi iniciado!",
+            "starting": "O Home Assistant está iniciando, algumas funcionalidades podem estar indisponíveis até que esteja iniciado.",
             "triggered": "{name} disparado"
         },
         "panel": {
@@ -823,6 +920,15 @@
                             "name": "Açao",
                             "type_select": "Tipo de acão",
                             "type": {
+                                "choose": {
+                                    "add_option": "Adicionar opção",
+                                    "conditions": "Condições",
+                                    "default": "Ações padrão",
+                                    "label": "Selecione",
+                                    "option": "Opção {number}",
+                                    "remove_option": "Remover opção",
+                                    "sequence": "Ações"
+                                },
                                 "condition": {
                                     "label": "Condição"
                                 },
@@ -841,6 +947,24 @@
                                     "event": "Evento:",
                                     "label": "Iniciar evento",
                                     "service_data": "Dados do Serviço"
+                                },
+                                "repeat": {
+                                    "label": "Repetir",
+                                    "sequence": "Ações",
+                                    "type_select": "Tipo de repetição",
+                                    "type": {
+                                        "count": {
+                                            "label": "Contagem"
+                                        },
+                                        "until": {
+                                            "conditions": "Condições (até que...)",
+                                            "label": "Até que"
+                                        },
+                                        "while": {
+                                            "conditions": "Condições (enquanto...)",
+                                            "label": "Enquanto"
+                                        }
+                                    }
                                 },
                                 "scene": {
                                     "label": "Ativar cena"
@@ -913,7 +1037,17 @@
                                 "time": {
                                     "after": "Depois",
                                     "before": "Antes",
-                                    "label": "Temporal"
+                                    "label": "Temporal",
+                                    "type_value": "Horário fixo",
+                                    "weekdays": {
+                                        "fri": "Sexta-feira",
+                                        "mon": "Segunda-feira",
+                                        "sat": "Sábado",
+                                        "sun": "Domingo",
+                                        "thu": "Quinta-feira",
+                                        "tue": "Terça-feira",
+                                        "wed": "Quarta-feira"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Entidade com localização",
@@ -935,12 +1069,15 @@
                         "load_error_not_editable": "Somente automações em automations.yaml são editáveis.",
                         "load_error_unknown": "Erro ao carregar a automação ({err_no}).",
                         "max": {
-                            "parallel": "Número máximo de execuções paralelas"
+                            "parallel": "Número máximo de execuções paralelas",
+                            "queued": "Comprimento máximo da fila"
                         },
                         "modes": {
+                            "description": "O modo controla o que acontece quando a automação é acionada enquanto as ações ainda estão rodando a partir de um acionamento anterior. Consulte o {documentation_link} para mais informações.",
                             "documentation": "documentação da automação",
                             "label": "Modo",
                             "parallel": "Paralelo",
+                            "queued": "Enfileirado",
                             "restart": "Reiniciar",
                             "single": "Único (padrão)"
                         },
@@ -953,7 +1090,7 @@
                             "delete_confirm": "Tem certeza que deseja excluir?",
                             "duplicate": "Duplicar",
                             "header": "Gatilhos",
-                            "introduction": "Gatilhos são responsáveis por iniciar o processamento de uma regra de automação. É possível especificar vários gatilhos para a mesma regra. Quando o gatilho é iniciado, o Assistente Inicial validará as condições, se houver, e chamará a ação.",
+                            "introduction": "Gatilhos são responsáveis por iniciar o processamento de uma regra de automação. É possível especificar vários gatilhos para a mesma regra. Quando o gatilho é iniciado, o Home Assistant validará as condições, se houver, e chamará a ação.",
                             "learn_more": "Saiba mais sobre gatilhos",
                             "name": "Gatilho",
                             "type_select": "Tipo de gatilho",
@@ -998,6 +1135,7 @@
                                     "value_template": "Valor de exemplo (opcional)"
                                 },
                                 "state": {
+                                    "attribute": "Atributo (Opcional)",
                                     "for": "Por",
                                     "from": "De",
                                     "label": "Estado",
@@ -1009,6 +1147,9 @@
                                     "offset": "Diferença de tempo (opcional)",
                                     "sunrise": "Nascer do sol",
                                     "sunset": "Pôr do Sol"
+                                },
+                                "tag": {
+                                    "label": "Etiqueta"
                                 },
                                 "template": {
                                     "label": "Modelo",
@@ -1022,7 +1163,8 @@
                                 },
                                 "time": {
                                     "at": "Em",
-                                    "label": "Tempo"
+                                    "label": "Tempo",
+                                    "type_value": "Horário fixo"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -1045,6 +1187,8 @@
                         "add_automation": "Adicionar automação",
                         "delete_automation": "Excluir automação",
                         "delete_confirm": "Tem certeza de que deseja excluir essa automação?",
+                        "duplicate": "Duplicar",
+                        "duplicate_automation": "Duplicar automação",
                         "edit_automation": "Editar automação",
                         "header": "Editor de automação",
                         "headers": {
@@ -1126,13 +1270,17 @@
                     },
                     "alexa": {
                         "banner": "A edição de quais entidades são expostas por meio dessa interface do usuário está desabilitada porque você configurou filtros de entidade em configuration.yaml.",
+                        "dont_expose_entity": "Não expor entidade",
                         "expose": "Expor para Alexa",
+                        "expose_entity": "Expor entidade",
                         "exposed_entities": "Entidades expostas",
+                        "follow_domain": "Seguir domínio",
+                        "manage_domains": "Gerenciar domínios",
                         "not_exposed_entities": "Nenhuma entidade exposta",
                         "title": "Alexa"
                     },
                     "caption": "Home Assistant Cloud",
-                    "description_features": "Controle mesmo longe de casa, integrar com Alexa e Google Assistant.",
+                    "description_features": "Controle mesmo longe de casa, integre com a Alexa e o Google Assistant.",
                     "description_login": "Conectado como {email}",
                     "description_not_login": "Não logado",
                     "dialog_certificate": {
@@ -1165,8 +1313,12 @@
                     "google": {
                         "banner": "A edição de quais entidades são expostas por meio dessa interface do usuário está desabilitada porque você configurou filtros de entidade em configuration.yaml.",
                         "disable_2FA": "Desabilitar a autenticação de dois fatores",
+                        "dont_expose_entity": "Não expor entidade",
                         "expose": "Expor ao Google Assistant",
+                        "expose_entity": "Expor entidade",
                         "exposed_entities": "Entidades expostas",
+                        "follow_domain": "Seguir domínio",
+                        "manage_domains": "Gerenciar domínios",
                         "not_exposed_entities": "Nenhuma entidade exposta",
                         "sync_to_google": "Sincronizando alterações com o Google.",
                         "title": "Google Assistant"
@@ -1287,6 +1439,7 @@
                     "caption": "Dispositivos",
                     "confirm_delete": "Tem certeza de que deseja excluir este dispositivo?",
                     "confirm_rename_entity_ids": "Você também deseja renomear os IDs das entidades?",
+                    "confirm_rename_entity_ids_warning": "Isto não mudará nenhuma configuração (como automações, scripts, cenas, Lovelace) que esteja usando essas entidades, você mesmo terá que atualizá-las.",
                     "data_table": {
                         "area": "Área",
                         "battery": "Bateria",
@@ -1303,7 +1456,7 @@
                     "device_not_found": "Dispositivo não encontrado.",
                     "entities": {
                         "add_entities_lovelace": "Adicionar ao Lovelace",
-                        "disabled_entities": "+{count} {count, plural,\n  one {disabled entity}\n  other {disabled entities}\n}",
+                        "disabled_entities": "+{count} {count, plural,\n  one {entidade desabilitada}\n  other {entidades desabilitadas}\n}",
                         "entities": "Entidades",
                         "hide_disabled": "Ocultar desativado(s)",
                         "none": "Este dispositivo não possui entidades"
@@ -1362,6 +1515,7 @@
                             "confirm_text": "Você deve removê-los de sua configuração Lovelace e automatizações se eles contiverem essas entidades.",
                             "confirm_title": "Deseja remover {number} entidades?"
                         },
+                        "search": "Procurar entidades",
                         "selected": "{number} selecionado",
                         "status": {
                             "disabled": "Desativado",
@@ -1382,7 +1536,7 @@
                     "description": "Elementos que podem ajudar a construir automações.",
                     "dialog": {
                         "add_helper": "Adicionar ajudante",
-                        "add_platform": "Adicionar {plataform}",
+                        "add_platform": "Adicionar {platform}",
                         "create": "Criar"
                     },
                     "picker": {
@@ -1392,7 +1546,8 @@
                             "entity_id": "ID da entidade",
                             "name": "Nome",
                             "type": "Tipo"
-                        }
+                        },
+                        "no_helpers": "Parece que você ainda não tem ajudantes!"
                     },
                     "types": {
                         "input_boolean": "Alternar",
@@ -1423,10 +1578,13 @@
                     "title": "Info"
                 },
                 "integration_panel_move": {
-                    "link_integration_page": "Página de integrações"
+                    "link_integration_page": "Página de integrações",
+                    "missing_zha": "Procurando o painel de configuração do ZHA? Ele foi movido para a entrada ZHA em {integrations_page}.",
+                    "missing_zwave": "Procurando o painel de configuração do Z-Wave? Ele foi movido para a entrada Z-Wave em {integrations_page}."
                 },
                 "integrations": {
                     "add_integration": "Adicionar integração",
+                    "attention": "Requer atenção",
                     "caption": "Integrações",
                     "config_entry": {
                         "area": "Em {area}",
@@ -1445,6 +1603,9 @@
                         "no_device": "Entidades sem dispositivos",
                         "no_devices": "Esta integração não possui dispositivos.",
                         "options": "Opções",
+                        "reload": "Recarregar",
+                        "reload_confirm": "A integração foi recarregada",
+                        "reload_restart_confirm": "Reinicie o Home Assistant para terminar o carregamento dessa integração",
                         "rename": "Renomear",
                         "restart_confirm": "Reinicie o Home Assistant para concluir a remoção dessa integração",
                         "settings_button": "Editar configurações para {integration}",
@@ -1493,15 +1654,17 @@
                     "none_found_detail": "Ajuste seu critério de pesquisa.",
                     "note_about_integrations": "Nem todas as integrações podem ser configuradas via interface do usuário ainda.",
                     "note_about_website_reference": "Existem mais disponíveis no ",
+                    "reconfigure": "Reconfigurar",
                     "rename_dialog": "Edite o nome desta entrada de configuração",
-                    "rename_input_label": "Nome da entrada"
+                    "rename_input_label": "Nome da entrada",
+                    "search": "Procurar integrações"
                 },
                 "introduction": "Aqui é possível configurar seus componentes e Home Assistant. Nem tudo é possível configurar via UI, mas estamos trabalhando nisso.",
                 "logs": {
                     "caption": "Logs",
                     "clear": "Limpar",
                     "description": "Exibir os logs do Home Assistant",
-                    "details": "Detalhes do log ({Level})",
+                    "details": "Detalhes do log ({level})",
                     "load_full_log": "Carregar todos os logs do Home Assistant",
                     "loading_log": "Carregando log de erros…",
                     "multiple_messages": "a mensagem ocorreu pela primeira às {time} e apareceu {counter} vezes",
@@ -1601,6 +1764,60 @@
                     "title": "",
                     "topic": "tópico"
                 },
+                "ozw": {
+                    "button": "Configurar",
+                    "common": {
+                        "controller": "Controlador",
+                        "instance": "Instância",
+                        "network": "Rede",
+                        "node_id": "ID do Nó",
+                        "ozw_instance": "Instância OpenZWave",
+                        "zwave": "Z-Wave"
+                    },
+                    "device_info": {
+                        "node_failed": "Falha no nó",
+                        "stage": "Estágio",
+                        "zwave_info": "Informações de Z-Wave"
+                    },
+                    "navigation": {
+                        "network": "Rede",
+                        "nodes": "Nós",
+                        "select_instance": "Selecione a instância"
+                    },
+                    "network_status": {
+                        "details": {
+                            "driverreset": "O driver foi reiniciado",
+                            "ready": "Pronto para conectar",
+                            "started": "Conectado ao MQTT",
+                            "starting": "Conectando-se ao MQTT",
+                            "stopped": "OpenZWave parado"
+                        },
+                        "online": "Conectado",
+                        "starting": "Iniciando",
+                        "unknown": "Desconhecido"
+                    },
+                    "network": {
+                        "header": "Gerenciamento de Rede"
+                    },
+                    "node": {
+                        "not_found": "Nó não encontrado"
+                    },
+                    "nodes_table": {
+                        "failed": "Falhou",
+                        "id": "ID",
+                        "manufacturer": "Fabricante",
+                        "model": "Modelo"
+                    },
+                    "refresh_node": {
+                        "button": "Atualizar Nó",
+                        "node_status": "Estado do Nó",
+                        "refreshing_description": "Atualizando informações do nó ..."
+                    },
+                    "services": {
+                        "add_node": "Adicionar Nó",
+                        "remove_node": "Remover Nó"
+                    }
+                },
                 "person": {
                     "add_person": "Adicionar pessoa",
                     "caption": "Pessoas",
@@ -1609,6 +1826,8 @@
                     "create_person": "Criar Pessoa",
                     "description": "Gerencie as pessoas que o Home Assistant acompanha.",
                     "detail": {
+                        "admin": "Administrador",
+                        "allow_login": "Permitir que a pessoa faça login",
                         "create": "Criar",
                         "delete": "Excluir",
                         "device_tracker_intro": "Selecione os dispositivos que pertencem a essa pessoa.",
@@ -1625,7 +1844,9 @@
                     },
                     "introduction": "Aqui você pode definir cada pessoa de interesse no Home Assistant.",
                     "no_persons_created_yet": "Parece que você ainda não criou nenhuma pessoa.",
-                    "note_about_persons_configured_in_yaml": "Nota: as pessoas configuradas via configuration.yaml não podem ser editadas via UI."
+                    "note_about_persons_configured_in_yaml": "Nota: as pessoas configuradas via configuration.yaml não podem ser editadas via UI.",
+                    "person_not_found": "Não foi possível encontrar a pessoa que você estava tentando editar.",
+                    "person_not_found_title": "Pessoa Não Encontrada"
                 },
                 "scene": {
                     "activated": "Cena ativada {name}.",
@@ -1682,17 +1903,26 @@
                         "delete_script": "Excluir script",
                         "header": "Script: {name}",
                         "icon": "Ícone",
+                        "id": "ID da entidade",
                         "id_already_exists": "Este ID já existe",
+                        "id_already_exists_save_error": "Você não pode salvar este script porque o ID não é único, escolha outro ID ou deixe em branco para gerar um automaticamente.",
                         "introduction": "Use scripts para executar uma sequência de ações.",
                         "link_available_actions": "Saiba mais sobre as ações disponíveis.",
                         "load_error_not_editable": "Apenas scripts dentro scripts.yaml são editáveis.",
+                        "max": {
+                            "parallel": "Número máximo de execuções paralelas",
+                            "queued": "Comprimento máximo da fila"
+                        },
                         "modes": {
+                            "description": "O modo controla o que acontece quando o script é chamado enquanto ainda está executando de uma ou mais chamadas anteriores. Consulte o {documentation_link} para mais informações.",
                             "documentation": "documentação do script",
                             "label": "Modo",
                             "parallel": "Paralelo",
                             "queued": "Enfileirado",
-                            "restart": "Reiniciar"
+                            "restart": "Reiniciar",
+                            "single": "Único (padrão)"
                         },
+                        "save_script": "Salvar script",
                         "sequence": "Seqüência",
                         "sequence_sentence": "A sequência de ações deste script."
                     },
@@ -1706,6 +1936,7 @@
                         "introduction": "O editor de scripts permite criar e editar scripts. Por favor, siga o link abaixo para ler as instruções e garantir que você configurou o Home Assistant corretamente.",
                         "learn_more": "Saiba mais sobre scripts",
                         "no_scripts": "Não foi possível encontrar nenhum script editável",
+                        "run_script": "Executar script",
                         "show_info": "Mostrar informações sobre a cena",
                         "trigger_script": "Disparar o script"
                     }
@@ -1716,13 +1947,31 @@
                     "section": {
                         "reloading": {
                             "automation": "Recarregar as automações",
+                            "command_line": "Recarregar entidades de linha de comando",
                             "core": "Recarregar localização & customizações",
+                            "filesize": "Recarregar entidades de tamanho de arquivo",
+                            "filter": "Recarregar entidades de filtro",
+                            "generic": "Recarregar entidades genéricas de câmeras IP",
+                            "generic_thermostat": "Recarregar entidades genéricas do termostato",
                             "group": "Recarregar os grupos",
                             "heading": "Recarregando a configuração YAML",
-                            "introduction": "Algumas partes do Home Assistant podem ser recarregadas sem a necessidade de reiniciar. Pressionar recarregar, descarregará sua configuração YAML atual e carregará a nova.",
+                            "homekit": "Recarregar Homekit",
+                            "input_boolean": "Recarregar entradas de booleanos",
+                            "input_datetime": "Recarregar entradas de data",
+                            "input_number": "Recarregar entradas numéricas",
+                            "input_select": "Recarregar entradas de seleção",
+                            "input_text": "Recarregar entradas de texto",
+                            "introduction": "Algumas partes do Home Assistant podem ser recarregadas sem precisar reiniciar. Pressionar recarregar descarregará sua configuração YAML atual e carregará a nova.",
                             "person": "Recarregar pessoas",
+                            "ping": "Recarregar entidades de sensores binários ping",
+                            "rest": "Recarregar entidades rest e serviços de notificação",
+                            "rpi_gpio": "Recarregar entidades GPIO do Raspberry PI",
                             "scene": "Recarregar cenas",
                             "script": "Recarregar os scripts",
+                            "smtp": "Recarregar serviços de notificação de SMTP",
+                            "statistics": "Recarregar estatísticas de entidades",
+                            "template": "Recarregar entidades de modelo",
+                            "universal": "Recarregar entidades universais de media players",
                             "zone": "Recarregar zonas"
                         },
                         "server_management": {
@@ -1736,11 +1985,36 @@
                         "validation": {
                             "check_config": "Verificar a configuração",
                             "heading": "Validação da configuração",
-                            "introduction": "Valide sua configuração se você recentemente fez algumas mudanças na sua configuração e quiser certificar-se de que tudo é válido.",
+                            "introduction": "Valide sua configuração se você recentemente fez algumas mudanças na sua configuração e quer ter certeza de que tudo é valido",
                             "invalid": "Configuração inválida",
                             "valid": "Configuração válida!"
                         }
                     }
+                },
+                "tags": {
+                    "add_tag": "Adicionar etiqueta",
+                    "caption": "Etiquetas",
+                    "create_automation": "Criar automação com a etiqueta",
+                    "description": "Gerenciar etiquetas",
+                    "detail": {
+                        "create": "Criar",
+                        "create_and_write": "Criar e Escrever",
+                        "delete": "Excluir",
+                        "description": "Descrição",
+                        "name": "Nome",
+                        "new_tag": "Nova etiqueta",
+                        "tag_id": "Id da etiqueta",
+                        "tag_id_placeholder": "Autogerado quando deixado vazio",
+                        "update": "Atualizar"
+                    },
+                    "edit": "Editar",
+                    "headers": {
+                        "last_scanned": "Último escaneamento",
+                        "name": "Nome"
+                    },
+                    "never_scanned": "Nunca escaneada",
+                    "no_tags": "Sem etiquetas",
+                    "write": "Escrever"
                 },
                 "users": {
                     "add_user": {
@@ -1748,6 +2022,8 @@
                         "create": "Criar",
                         "name": "Nome",
                         "password": "Senha",
+                        "password_confirm": "Confirmar Senha",
+                        "password_not_match": "As senhas não coincidem",
                         "username": "Usuário"
                     },
                     "caption": "Usuários",
@@ -1764,7 +2040,9 @@
                         "group": "Grupo",
                         "id": "ID",
                         "name": "Nome",
+                        "new_password": "Nova Senha",
                         "owner": "Proprietário",
+                        "password_changed": "A senha foi alterada com sucesso",
                         "system_generated": "Gerado pelo sistema",
                         "system_generated_users_not_editable": "Não é possível remover utilizadores gerados pelo sistema.",
                         "system_generated_users_not_removable": "Não foi possível remover usuários gerados pelo sistema.",
@@ -1777,13 +2055,15 @@
                             "name": "Nome",
                             "system": "Sistema"
                         }
-                    }
+                    },
+                    "users_privileges_note": "Grupos de Usuários ainda é um recurso experimental. O usuário será incapaz de administrar através da interface grática. Nós ainda estamos auditando todos os endponts da API de gerenciamento para se certificar que eles limitam o acesso para administradores da maneira correta."
                 },
                 "zha": {
                     "add_device_page": {
                         "discovered_text": "Os dispositivos descobertos aparecerão aqui.",
                         "discovery_text": "Dispositivos descobertos serão exibidos aqui. Siga as instruções para o(s) seu(s) dispositivo(s) e coloque o(s) dispositivo(s) no modo de emparelhamento.",
                         "header": "Zigbee Home Automation - Adicionar dispositivos",
+                        "no_devices_found": "Nenhum dispositivo encontrado, verifique se eles estão em modo de pareamento e os mantenha acordados enquanto a descoberta estiver ativa.",
                         "pairing_mode": "Certifique-se de que seus dispositivos estão em modo de pareamento. Verifique as instruções do seu dispositivo para saber como fazer isso.",
                         "search_again": "Pesquisar novamente",
                         "spinner": "Procurando por dispositivos ZHA Zigbee…"
@@ -1949,13 +2229,21 @@
                     "node_management": {
                         "add_to_group": "Adicionar ao Grupo",
                         "entities": "Entidades deste nó",
+                        "entity_info": "Informações da Entidade",
                         "exclude_entity": "Excluir esta entidade do Home Assistant",
                         "group": "Grupo",
                         "header": "Gerenciamento de nó Z-Wave",
+                        "introduction": "Executar comandos Z-Wave que afetam um único nó. Seleciona um nó para ver a lista de comandos disponíveis",
+                        "max_associations": "Máximo de Associações",
                         "node_group_associations": "Associações de grupos de nós",
                         "node_protection": "Proteção dos nós",
+                        "node_to_control": "Nó para controlar",
                         "nodes": "Nós",
+                        "nodes_hint": "Selecione um nó para ver opções específicas",
+                        "nodes_in_group": "Outros nós neste grupo",
+                        "pooling_intensity": "Frequência da consulta",
                         "protection": "Proteção",
+                        "remove_broadcast": "Remover Broadcast",
                         "remove_from_group": "Remover do Grupo",
                         "set_protection": "Definir proteção"
                     },
@@ -1963,7 +2251,8 @@
                         "header": "OZW Log",
                         "introduction": "Veja o log. 0 é o mínimo (carrega o log inteiro) e 1000 é o máximo. A carga mostrará um log estático e tail será atualizada automaticamente com o último número especificado de linhas do log.",
                         "last_log_lines": "Número da última linhas de log",
-                        "load": "Carregar"
+                        "load": "Carregar",
+                        "tail": "Ver últimas linhas"
                     },
                     "services": {
                         "add_node": "Adicionar Nó",
@@ -1974,6 +2263,8 @@
                         "node_info": "Informações do Nó",
                         "print_node": "Imprimir nó",
                         "refresh_entity": "Atualizar Entidade",
+                        "refresh_node": "Atualizar Nó",
+                        "remove_failed_node": "Remover Nó com Falha",
                         "remove_node": "Remover Nó",
                         "replace_failed_node": "Substituir Nó com Falha",
                         "save_config": "Salvar Configuração",
@@ -2034,7 +2325,7 @@
                         "attributes": "Atributos",
                         "current_entities": "Entidades atuais",
                         "description1": "Definir a representação de um dispositivo no Home Assistant.",
-                        "description2": "Isso não se comunicará com o dispositivo atual.",
+                        "description2": "Isso não se comunicará com o dispositivo real.",
                         "entity": "Entidade",
                         "filter_attributes": "Filtro de atributos",
                         "filter_entities": "Filtro de entidades",
@@ -2070,8 +2361,10 @@
                 "entries_not_found": "Não foram encontradas registros no diário de bordo.",
                 "period": "Período",
                 "ranges": {
+                    "last_week": "Semana anterior",
                     "this_week": "Esta semana",
-                    "today": "Hoje"
+                    "today": "Hoje",
+                    "yesterday": "Ontem"
                 },
                 "showing_entries": "Exibindo registros de"
             },
@@ -2110,8 +2403,8 @@
                         "clear_items": "Limpar itens marcados"
                     },
                     "starting": {
-                        "description": "Home Assistant está iniciando, por favor aguarde...",
-                        "header": "Home Assistant está iniciando..."
+                        "description": "O Home Assistant está iniciando, por favor aguarde...",
+                        "header": "O Home Assistant está iniciando..."
                     }
                 },
                 "changed_toast": {
@@ -2119,6 +2412,18 @@
                     "refresh": "Atualizar"
                 },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "call-service": "Iniciar Serviço",
+                            "default_action": "Ação Padrão",
+                            "more-info": "Mais Informações",
+                            "navigate": "Navegar",
+                            "none": "Sem Ação",
+                            "toggle": "Alternar",
+                            "url": "URL"
+                        },
+                        "url_path": "Caminho de Url"
+                    },
                     "card": {
                         "alarm-panel": {
                             "available_states": "Estados Disponíveis",
@@ -2128,6 +2433,14 @@
                         "button": {
                             "description": "O cartão Botão permite adicionar botões para executar tarefas.",
                             "name": "Botão"
+                        },
+                        "calendar": {
+                            "name": "Calendário",
+                            "views": {
+                                "dayGridDay": "Dia",
+                                "dayGridMonth": "Mês",
+                                "listWeek": "Lista"
+                            }
                         },
                         "conditional": {
                             "card": "Cartão",
@@ -2146,7 +2459,24 @@
                         },
                         "entities": {
                             "description": "O cartão das Entidades é o tipo de cartão mais comum. Ele agrupa os itens em listas.",
+                            "edit_special_row": "Veja os detalhes desta linha clicando no botão editar",
+                            "entity_row": {
+                                "attribute": "Atributo",
+                                "button": "Botão",
+                                "buttons": "Botões",
+                                "call-service": "Serviço de chamada",
+                                "conditional": "Condicional",
+                                "divider": "Divisor",
+                                "section": "Seção"
+                            },
                             "name": "Entidades",
+                            "secondary_info_values": {
+                                "brightness": "Brilho",
+                                "entity-id": "ID da entidade",
+                                "last-triggered": "Último Disparo",
+                                "position": "Posição",
+                                "tilt-position": "Posição de inclinação"
+                            },
                             "show_header_toggle": "Mostrar Alternador do Cabeçalho?",
                             "toggle": "Alternar entidades."
                         },
@@ -2194,6 +2524,7 @@
                             "show_name": "Mostrar nome?",
                             "show_state": "Mostrar Estado?",
                             "state": "Estado",
+                            "state_color": "Colorir ícones baseado no estado?",
                             "tap_action": "Ação de toque",
                             "theme": "Tema",
                             "title": "Título",
@@ -2214,6 +2545,7 @@
                             "name": "Pilha horizontal"
                         },
                         "humidifier": {
+                            "description": "O cartão Umidificador fornece controle da sua entidade de umidificador. Permite alterar a umidade e o modo da entidade.",
                             "name": "Umidificador"
                         },
                         "iframe": {
@@ -2266,7 +2598,8 @@
                             "description": "O cartão Sensor oferece uma visão rápida do estado de seus sensores com um gráfico opcional para visualizar a mudança ao longo do tempo.",
                             "graph_detail": "Detalhe do gráfico",
                             "graph_type": "Tipo de gráfico",
-                            "name": "Sensor"
+                            "name": "Sensor",
+                            "show_more_detail": "Mostrar mais detalhes"
                         },
                         "shopping-list": {
                             "description": "O cartão da Lista de Compras permite adicionar, editar, fazer check-off e limpar itens da sua lista de compras.",
@@ -2288,11 +2621,16 @@
                         }
                     },
                     "cardpicker": {
+                        "by_card": "Por Cartão",
+                        "by_entity": "Por Entidade",
                         "custom_card": "Personalizado",
+                        "domain": "Domínio",
+                        "entity": "Entidade",
                         "no_description": "Nenhuma descrição disponível"
                     },
                     "edit_card": {
                         "add": "Adicionar Cartão",
+                        "confirm_cancel": "Tem certeza de que deseja cancelar?",
                         "delete": "Excluir Cartão",
                         "duplicate": "Duplicar",
                         "edit": "Editar",
@@ -2303,7 +2641,9 @@
                         "pick_card_view_title": "Qual cartão você gostaria de adicionar à sua visualização {name} ?",
                         "show_code_editor": "Mostrar Editor de Código",
                         "show_visual_editor": "Mostrar Editor Visual",
-                        "toggle_editor": "Alternar Editor"
+                        "toggle_editor": "Alternar Editor",
+                        "typed_header": "Configuração do cartão {type}",
+                        "unsaved_changes": "Você tem alterações não salvas"
                     },
                     "edit_lovelace": {
                         "edit_title": "Editar título",
@@ -2316,7 +2656,7 @@
                         "delete": "Excluir visualização",
                         "edit": "Editar visualização",
                         "header": "Configurações",
-                        "header_name": "Configuração da visualização {nome}",
+                        "header_name": "Configuração da Visualização {name}",
                         "move_left": "Mover à esquerda",
                         "move_right": "Mover à direita",
                         "tab_badges": "Distintivos",
@@ -2336,6 +2676,9 @@
                         "migrate": "Migrar configuração",
                         "para_migrate": "O Home Assistant pode adicionar IDs a todos os seus cards e visualizações automaticamente clicando no botão 'Migrar configuração'.",
                         "para_no_id": "Este elemento não possui um ID. Por favor adicione um ID a este elemento em 'ui-lovelace.yaml'."
+                    },
+                    "move_card": {
+                        "header": "Selecione uma tela para onde mover este cartão"
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "Geraremos automaticamente suas visualizações da interface do usuário do Lovelace com suas áreas e dispositivos se você remover a configuração da interface do usuário do Lovelace.",
@@ -2363,6 +2706,10 @@
                         "yaml_config": "Para ajudá-lo a começar, aqui está a configuração atual deste painel:",
                         "yaml_control": "Para assumir o controle no modo YAML, crie um arquivo YAML com o nome que você especificou na sua configuração para este painel ou arquivo padrão 'ui-lovelace.yaml'.",
                         "yaml_mode": "Você está usando o modo YAML para este painel, o que significa que não é possível alterar a configuração do Lovelace na interface. Se você deseja gerenciar esse painel na interface do usuário, remova 'mode: yaml' da configuração do Lovelace em 'configuration.yaml.'"
+                    },
+                    "select_view": {
+                        "dashboard_label": "Painel de controle",
+                        "header": "Selecione uma tela"
                     },
                     "suggest_card": {
                         "add": "Adicionar a UI do Lovelace",
@@ -2396,6 +2743,8 @@
                     "entity": "Entidade",
                     "entity_id": "ID da entidade",
                     "last_changed": "Última alteração",
+                    "no_data": "Nenhuma entidade não utilizada encontrada",
+                    "search": "Procurar entidades",
                     "select_to_add": "Selecione as entidades que você deseja adicionar a um cartão e clique no botão Adicionar cartão.",
                     "title": "Entidades não utilizadas"
                 },
@@ -2410,7 +2759,7 @@
                     "entity_non_numeric": "Entidade não é numérica: {entity}",
                     "entity_not_found": "Entidade não disponível: {entity}",
                     "entity_unavailable": "{entity} não está disponível",
-                    "starting": "Home Assistant está iniciando, algumas funcionalidades podem estar indisponíveis"
+                    "starting": "O Home Assistant está iniciando, algumas funcionalidades podem estar temporariamente indisponíveis"
                 }
             },
             "mailbox": {
@@ -2498,6 +2847,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
+                                "not_allowed": "Seu computador não tem permissão.",
                                 "not_whitelisted": "Seu computador não está na lista de permissões."
                             },
                             "step": {
@@ -2569,6 +2919,7 @@
                     "intro": "Olá {name}, seja bem-vindo ao Home Assistant. Como você gostaria de nomear sua casa?",
                     "intro_location": "Nós gostaríamos de saber onde você mora. Essa informação ajudará na exibição de informações e na configuração de automações baseadas no sol. Esses dados nunca são compartilhados fora da sua rede.",
                     "intro_location_detect": "Podemos ajudá-lo a preencher essas informações fazendo uma solicitação única para um serviço externo.",
+                    "location_name": "Nome da instalação do Home Assistant",
                     "location_name_default": "Casa"
                 },
                 "integration": {
@@ -2577,6 +2928,11 @@
                     "more_integrations": "Mais"
                 },
                 "intro": "Você está pronto para despertar sua casa, recuperar sua privacidade e se juntar a uma comunidade mundial de consertadores?",
+                "restore": {
+                    "hide_log": "Ocultar registo completo",
+                    "in_progress": "Restauração em andamento",
+                    "show_log": "Mostrar registo completo"
+                },
                 "user": {
                     "create_account": "Criar Conta",
                     "data": {
@@ -2608,6 +2964,9 @@
                     "submit": "Enviar"
                 },
                 "current_user": "Você está logado como {fullName}.",
+                "customize_sidebar": {
+                    "button": "Editar"
+                },
                 "dashboard": {
                     "description": "Escolha um painel padrão para este dispositivo.",
                     "dropdown_label": "Painel de controle",
@@ -2630,13 +2989,15 @@
                     "confirm_delete": "Tem certeza de que deseja excluir o token de acesso para {name} ?",
                     "create": "Criar token",
                     "create_failed": "Falha ao criar o token de acesso.",
+                    "created": "Criado em {date}",
                     "created_at": "Criado em {date}",
                     "delete_failed": "Falha ao excluir o token de acesso.",
                     "description": "Crie tokens de acesso de longa duração para permitir que seus scripts interajam com sua instância do Home Assistant. Cada token será válido por 10 anos a partir da criação. Os seguintes tokens de acesso de longa duração estão atualmente ativos.",
                     "empty_state": "Você ainda não tem tokens de acesso de longa duração.",
                     "header": "Tokens de acesso de longa duração",
-                    "last_used": "Usado pela última vez em {date} em {location}",
+                    "last_used": "Usado pela última vez em {date} de {location}",
                     "learn_auth_requests": "Aprenda como fazer solicitações autenticadas.",
+                    "name": "Nome",
                     "not_used": "Nunca foi usado",
                     "prompt_copy_token": "Copie seu token de acesso. Ele não será mostrado novamente.",
                     "prompt_name": "Nome?"
@@ -2668,20 +3029,28 @@
                     "current_token_tooltip": "Não é possível excluir o token de atualização atual",
                     "delete_failed": "Falha ao excluir o token de acesso.",
                     "description": "Cada token de atualização representa uma sessão de login. Os tokens de atualização serão removidos automaticamente quando você clicar em efetuar logout. Os tokens de atualização a seguir estão ativos na sua conta no momento.",
-                    "header": "Atualizar tokens",
-                    "last_used": "Usado pela última vez em {date} em {location}",
+                    "header": "Tokens de atualização",
+                    "last_used": "Usado pela última vez em {date} de {location}",
                     "not_used": "Nunca foi usado",
-                    "token_title": "Atualizar o token para {clientId}"
+                    "token_title": "Token de atualização para {clientId}"
                 },
                 "suspend": {
-                    "description": "A conexão com o servidor deverá ser fechada depois de ficar oculto por 5 minutos inativa?",
+                    "description": "Devemos fechar a conexão com o servidor depois de ficar oculto por 5 minutos?",
                     "header": "Fechar a conexão automaticamente"
                 },
                 "themes": {
+                    "accent_color": "Cor de detalhe",
+                    "dark_mode": {
+                        "auto": "Automático",
+                        "dark": "Escuro",
+                        "light": "Claro"
+                    },
                     "dropdown_label": "Tema",
                     "error_no_theme": "Não há temas disponíveis.",
                     "header": "Tema",
-                    "link_promo": "Aprenda sobre temas"
+                    "link_promo": "Aprenda sobre temas",
+                    "primary_color": "Cor Principal",
+                    "reset": "Redefinir"
                 },
                 "vibrate": {
                     "description": "Ative ou desative a vibração neste dispositivo ao controlar dispositivos.",
@@ -2695,6 +3064,7 @@
             }
         },
         "sidebar": {
+            "done": "Feito",
             "external_app_configuration": "Configuração do aplicativo",
             "sidebar_toggle": "Alternar barra lateral"
         }

@@ -22,10 +22,6 @@ export class HuiServiceButtonElement extends LitElement
 
   private _service?: string;
 
-  static get properties() {
-    return { _config: {} };
-  }
-
   public setConfig(config: ServiceButtonElementConfig): void {
     if (!config || !config.service) {
       throw Error("Invalid Configuration: 'service' required");

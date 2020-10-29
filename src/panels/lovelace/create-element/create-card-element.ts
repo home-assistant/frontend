@@ -1,5 +1,6 @@
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import "../cards/hui-button-card";
+import "../cards/hui-calendar-card";
 import "../cards/hui-entities-card";
 import "../cards/hui-entity-button-card";
 import "../cards/hui-entity-card";
@@ -36,6 +37,7 @@ const LAZY_LOAD_TYPES = {
   "alarm-panel": () => import("../cards/hui-alarm-panel-card"),
   error: () => import("../cards/hui-error-card"),
   "empty-state": () => import("../cards/hui-empty-state-card"),
+  grid: () => import("../cards/hui-grid-card"),
   starting: () => import("../cards/hui-starting-card"),
   "entity-filter": () => import("../cards/hui-entity-filter-card"),
   humidifier: () => import("../cards/hui-humidifier-card"),
@@ -52,6 +54,7 @@ const LAZY_LOAD_TYPES = {
   map: () => import("../cards/hui-map-card"),
   markdown: () => import("../cards/hui-markdown-card"),
   picture: () => import("../cards/hui-picture-card"),
+  calendar: () => import("../cards/hui-calendar-card"),
 };
 
 // This will not return an error card but will throw the error

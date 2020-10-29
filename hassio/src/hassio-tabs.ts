@@ -8,7 +8,7 @@ export const supervisorTabs: PageNavigation[] = [
     iconPath: mdiViewDashboard,
   },
   {
-    name: "Add-on store",
+    name: "Add-on Store",
     path: `/hassio/store`,
     iconPath: mdiStore,
   },

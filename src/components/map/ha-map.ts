@@ -1,5 +1,5 @@
 import "../ha-icon-button";
-import { Circle, Layer, Map, Marker } from "leaflet";
+import { Circle, Layer, Map, Marker, TileLayer } from "leaflet";
 import {
   css,
   CSSResult,
@@ -13,6 +13,7 @@ import {
 import {
   LeafletModuleType,
   setupLeafletMap,
+  replaceTileLayer,
 } from "../../common/dom/setup-leaflet-map";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
@@ -22,11 +23,11 @@ import { HomeAssistant } from "../../types";
 
 @customElement("ha-map")
 class HaMap extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public entities?: string[];
 
-  @property() public darkMode = false;
+  @property() public darkMode?: boolean;
 
   @property() public zoom?: number;
 
@@ -34,6 +35,8 @@ class HaMap extends LitElement {
   private Leaflet?: LeafletModuleType;
 
   private _leafletMap?: Map;
+
+  private _tileLayer?: TileLayer;
 
   // @ts-ignore
   private _resizeObserver?: ResizeObserver;
@@ -122,6 +125,20 @@ class HaMap extends LitElement {
     if (changedProps.has("hass")) {
       this._drawEntities();
       this._fitMap();
+
+      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+      if (!oldHass || oldHass.themes.darkMode === this.hass.themes.darkMode) {
+        return;
+      }
+      if (!this.Leaflet || !this._leafletMap || !this._tileLayer) {
+        return;
+      }
+      this._tileLayer = replaceTileLayer(
+        this.Leaflet,
+        this._leafletMap,
+        this._tileLayer,
+        this.hass.themes.darkMode
+      );
     }
   }
 
@@ -130,9 +147,9 @@ class HaMap extends LitElement {
   }
 
   private async loadMap(): Promise<void> {
-    [this._leafletMap, this.Leaflet] = await setupLeafletMap(
+    [this._leafletMap, this.Leaflet, this._tileLayer] = await setupLeafletMap(
       this._mapEl,
-      this.darkMode
+      this.darkMode ?? this.hass.themes.darkMode
     );
     this._drawEntities();
     this._leafletMap.invalidateSize();
@@ -229,7 +246,8 @@ class HaMap extends LitElement {
             icon: Leaflet.divIcon({
               html: iconHTML,
               iconSize: [24, 24],
-              className: this.darkMode ? "dark" : "light",
+              className:
+                this.darkMode ?? this.hass.themes.darkMode ? "dark" : "light",
             }),
             interactive: false,
             title,

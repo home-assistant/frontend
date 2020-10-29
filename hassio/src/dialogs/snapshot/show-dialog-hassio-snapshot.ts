@@ -2,7 +2,8 @@ import { fireEvent } from "../../../../src/common/dom/fire_event";
 
 export interface HassioSnapshotDialogParams {
   slug: string;
-  onDelete: () => void;
+  onDelete?: () => void;
+  onboarding?: boolean;
 }
 
 export const showHassioSnapshotDialog = (

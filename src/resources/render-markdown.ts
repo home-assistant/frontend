@@ -13,7 +13,7 @@ export const renderMarkdown = async (
   hassOptions?: renderMarkdownParamTypes[2]
 ): Promise<ReturnType<RenderMarkdownType>> => {
   if (!worker) {
-    worker = wrap(new Worker("./markdown_worker", { type: "module" }));
+    worker = wrap(new Worker(new URL("./markdown_worker", import.meta.url)));
   }
 
   return await worker.renderMarkdown(content, markedOptions, hassOptions);

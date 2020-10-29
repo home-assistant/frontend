@@ -5,7 +5,7 @@ import {
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { navigate } from "../common/navigate";
 import { HomeAssistant } from "../types";
-import { Condition } from "./automation";
+import { Condition, Trigger } from "./automation";
 
 export const MODES = ["single", "restart", "queued", "parallel"];
 export const MODES_MAX = ["queued", "parallel"];
@@ -56,6 +56,38 @@ export interface SceneAction {
 export interface WaitAction {
   wait_template: string;
   timeout?: number;
+  continue_on_timeout?: boolean;
+}
+
+export interface WaitForTriggerAction {
+  wait_for_trigger: Trigger[];
+  timeout?: number;
+  continue_on_timeout?: boolean;
+}
+
+export interface RepeatAction {
+  repeat: CountRepeat | WhileRepeat | UntilRepeat;
+}
+
+interface BaseRepeat {
+  sequence: Action[];
+}
+
+export interface CountRepeat extends BaseRepeat {
+  count: number;
+}
+
+export interface WhileRepeat extends BaseRepeat {
+  while: Condition[];
+}
+
+export interface UntilRepeat extends BaseRepeat {
+  until: Condition[];
+}
+
+export interface ChooseAction {
+  choose: [{ conditions: Condition[]; sequence: Action[] }];
+  default?: Action[];
 }
 
 export type Action =
@@ -65,12 +97,15 @@ export type Action =
   | Condition
   | DelayAction
   | SceneAction
-  | WaitAction;
+  | WaitAction
+  | WaitForTriggerAction
+  | RepeatAction
+  | ChooseAction;
 
 export const triggerScript = (
   hass: HomeAssistant,
   entityId: string,
-  variables?: {}
+  variables?: Record<string, unknown>
 ) => hass.callService("script", computeObjectId(entityId), variables);
 
 export const canExcecute = (state: ScriptEntity) => {

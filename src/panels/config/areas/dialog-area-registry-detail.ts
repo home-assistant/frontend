@@ -10,7 +10,8 @@ import {
   internalProperty,
   TemplateResult,
 } from "lit-element";
-import "../../../components/dialog/ha-paper-dialog";
+import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-dialog";
 import { AreaRegistryEntryMutableParams } from "../../../data/area_registry";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
@@ -37,24 +38,27 @@ class DialogAreaDetail extends LitElement {
     await this.updateComplete;
   }
 
+  public closeDialog(): void {
+    this._error = "";
+    this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
   protected render(): TemplateResult {
     if (!this._params) {
       return html``;
     }
     const entry = this._params.entry;
-    const nameInvalid = this._name.trim() === "";
+    const nameInvalid = !this._isNameValid();
     return html`
-      <ha-paper-dialog
-        with-backdrop
-        opened
-        @opened-changed="${this._openedChanged}"
+      <ha-dialog
+        open
+        @closed=${this.closeDialog}
+        .heading=${entry
+          ? entry.name
+          : this.hass.localize("ui.panel.config.areas.editor.default_name")}
       >
-        <h2>
-          ${entry
-            ? entry.name
-            : this.hass.localize("ui.panel.config.areas.editor.default_name")}
-        </h2>
-        <paper-dialog-scrollable>
+        <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           <div class="form">
             ${entry
@@ -71,6 +75,7 @@ class DialogAreaDetail extends LitElement {
             <paper-input
               .value=${this._name}
               @value-changed=${this._nameChanged}
+              @keyup=${this._handleKeyup}
               .label=${this.hass.localize("ui.panel.config.areas.editor.name")}
               .errorMessage=${this.hass.localize(
                 "ui.panel.config.areas.editor.name_required"
@@ -78,30 +83,40 @@ class DialogAreaDetail extends LitElement {
               .invalid=${nameInvalid}
             ></paper-input>
           </div>
-        </paper-dialog-scrollable>
-        <div class="paper-dialog-buttons">
-          ${entry
-            ? html`
-                <mwc-button
-                  class="warning"
-                  @click="${this._deleteEntry}"
-                  .disabled=${this._submitting}
-                >
-                  ${this.hass.localize("ui.panel.config.areas.editor.delete")}
-                </mwc-button>
-              `
-            : html``}
-          <mwc-button
-            @click="${this._updateEntry}"
-            .disabled=${nameInvalid || this._submitting}
-          >
-            ${entry
-              ? this.hass.localize("ui.panel.config.areas.editor.update")
-              : this.hass.localize("ui.panel.config.areas.editor.create")}
-          </mwc-button>
         </div>
-      </ha-paper-dialog>
+        ${entry
+          ? html`
+              <mwc-button
+                slot="secondaryAction"
+                class="warning"
+                @click="${this._deleteEntry}"
+                .disabled=${this._submitting}
+              >
+                ${this.hass.localize("ui.panel.config.areas.editor.delete")}
+              </mwc-button>
+            `
+          : html``}
+        <mwc-button
+          slot="primaryAction"
+          @click="${this._updateEntry}"
+          .disabled=${nameInvalid || this._submitting}
+        >
+          ${entry
+            ? this.hass.localize("ui.panel.config.areas.editor.update")
+            : this.hass.localize("ui.panel.config.areas.editor.create")}
+        </mwc-button>
+      </ha-dialog>
     `;
+  }
+
+  private _isNameValid() {
+    return this._name.trim() !== "";
+  }
+
+  private _handleKeyup(ev: KeyboardEvent) {
+    if (ev.keyCode === 13 && this._isNameValid() && !this._submitting) {
+      this._updateEntry();
+    }
   }
 
   private _nameChanged(ev: PolymerChangedEvent<string>) {
@@ -141,21 +156,12 @@ class DialogAreaDetail extends LitElement {
     }
   }
 
-  private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
-    if (!(ev.detail as any).value) {
-      this._params = undefined;
-    }
-  }
-
   static get styles(): CSSResult[] {
     return [
       haStyleDialog,
       css`
         .form {
           padding-bottom: 24px;
-        }
-        mwc-button.warning {
-          margin-right: auto;
         }
         .error {
           color: var(--error-color);

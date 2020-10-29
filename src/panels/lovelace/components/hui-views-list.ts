@@ -43,7 +43,7 @@ class HuiViewsList extends LitElement {
                     <ha-icon .icon=${view.icon} slot="item-icon"></ha-icon>
                   `
                 : ""}
-              ${view.title || view.path}
+              ${view.title || view.path || "Unnamed view"}
             </paper-icon-item>
           `
         )}

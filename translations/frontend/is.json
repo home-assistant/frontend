@@ -125,7 +125,7 @@
                 "on": "Opin"
             },
             "gas": {
-                "off": "Hreinsa",
+                "off": "Hreint",
                 "on": "Uppgötvað"
             },
             "heat": {
@@ -161,7 +161,7 @@
                 "on": "Óöruggt"
             },
             "smoke": {
-                "off": "Hreinsa",
+                "off": "Hreint",
                 "on": "Uppgötvað"
             },
             "sound": {
@@ -461,7 +461,9 @@
                     "wnw": "VNV",
                     "wsw": "VSV"
                 },
-                "forecast": "Spá"
+                "day": "Dagur",
+                "forecast": "Spá",
+                "night": "Nótt"
             }
         },
         "common": {
@@ -515,6 +517,12 @@
             "history_charts": {
                 "loading_history": "Hleð stöðusögu...",
                 "no_history_found": "Engin stöðusaga fannst."
+            },
+            "media-browser": {
+                "choose_player": "Veldu spilara",
+                "class": {
+                    "music": "Tónlist"
+                }
             },
             "related-items": {
                 "area": "Svæði",
@@ -596,6 +604,7 @@
             },
             "more_info_control": {
                 "edit": "Breyta einingu",
+                "history": "Saga",
                 "restored": {
                     "confirm_remove_title": "Fjarlægja einingu?",
                     "remove_action": "Fjarlægja einingu"
@@ -812,7 +821,16 @@
                                 "time": {
                                     "after": "Eftir",
                                     "before": "Fyrir",
-                                    "label": "Tími"
+                                    "label": "Tími",
+                                    "weekdays": {
+                                        "fri": "Föstudagur",
+                                        "mon": "Mánudagur",
+                                        "sat": "Laugardag",
+                                        "sun": "Sunnudagur",
+                                        "thu": "Fimmtudagur",
+                                        "tue": "Þriðjudagur",
+                                        "wed": "Miðvikudagur"
+                                    }
                                 },
                                 "zone": {
                                     "entity": "Eining með staðsetningu",
@@ -931,6 +949,8 @@
                     "picker": {
                         "add_automation": "Bæta við sjálfvirkni",
                         "delete_automation": "Eyða sjálfvirkni",
+                        "duplicate": "Fjölfalda",
+                        "duplicate_automation": "Fjölfalda sjálfvirkni",
                         "edit_automation": "Breyta sjálfvirkni",
                         "header": "Sjálfvirkniritill",
                         "headers": {
@@ -1206,6 +1226,7 @@
                         "no_device": "Einingar án tækja",
                         "no_devices": "Þessi samþætting hefur engin tæki.",
                         "options": "Valkostir",
+                        "reload": "Endurhlaða",
                         "rename": "Endurnefna",
                         "restart_confirm": "Endurræsa Home Assitant til að klára að fjarlægja þessa samþættingu",
                         "settings_button": "Breyta stillingum fyrir {integration}",
@@ -1307,6 +1328,11 @@
                     "listening_to": "Hlusta á",
                     "title": "MQTT"
                 },
+                "ozw": {
+                    "common": {
+                        "zwave": "Z-Wave"
+                    }
+                },
                 "person": {
                     "add_person": "Bæta við persónu",
                     "caption": "Persónur",
@@ -1395,6 +1421,7 @@
                             "core": "Endurhlaða kjarna",
                             "group": "Endurhlaða hópa",
                             "heading": "Endurhleðsla stillinga",
+                            "homekit": "Endurhlaða HomeKit",
                             "introduction": "Sumir hlutar af Home Assistant er hægt að hlaða inn að nýju án þess að það krefjist endurræsingar. Með því að velja að endurhlaða þá mun sú aðgerð hlaða inn nýjum stillingum.",
                             "scene": "Endurhlaða senum",
                             "script": "Endurhlaða skriftum"
@@ -1416,12 +1443,18 @@
                         }
                     }
                 },
+                "tags": {
+                    "detail": {
+                        "description": "Lýsing"
+                    }
+                },
                 "users": {
                     "add_user": {
                         "caption": "Bæta við notanda",
                         "create": "Stofna",
                         "name": "Nafn",
                         "password": "Lykilorð",
+                        "password_confirm": "Staðfesta lykilorð",
                         "username": "Notandanafn"
                     },
                     "caption": "Notendur",
@@ -1437,6 +1470,7 @@
                         "group": "Hópur",
                         "id": "ID",
                         "name": "Nafn",
+                        "new_password": "Nýtt lykilorð",
                         "owner": "Eigandi",
                         "unnamed_user": "Ónefndur notandi",
                         "update_user": "Uppfæra"
@@ -1587,6 +1621,7 @@
                         "title": "Stöður"
                     },
                     "templates": {
+                        "domain": "Lén",
                         "title": "Skapalón"
                     }
                 }
@@ -1644,6 +1679,13 @@
                         },
                         "button": {
                             "name": "Hnappur"
+                        },
+                        "calendar": {
+                            "name": "Dagatal",
+                            "views": {
+                                "dayGridDay": "Dagur",
+                                "dayGridMonth": "Mánuður"
+                            }
                         },
                         "conditional": {
                             "card": "Spjald",
@@ -1752,6 +1794,7 @@
                     },
                     "cardpicker": {
                         "custom_card": "Sérsniðið",
+                        "domain": "Lén",
                         "no_description": "Engin lýsing tiltæk."
                     },
                     "edit_card": {
@@ -1802,6 +1845,9 @@
                         "para": "Home Assistant mun sjálfgefið halda utan um notendaviðmótið og uppfæra það þegar nýjar einingar eða Lovlace íhlutir verða aðgengilegir. Ef þú tekur yfir stjórn á viðmótinu þá mun þetta ekki gerast sjálfkrafa fyrir þig.",
                         "para_sure": "Ertu viss um að þú viljir taka yfir stjórn á notendaviðmótinu þínu?",
                         "save": "Taka stjórnina"
+                    },
+                    "select_view": {
+                        "dashboard_label": "Mælaborð"
                     },
                     "suggest_card": {
                         "add": "Bæta við í Lovelace viðmót",
@@ -2013,6 +2059,9 @@
                     "submit": "Senda"
                 },
                 "current_user": "Þú ert skráð(ur) inn sem {fullName}.",
+                "customize_sidebar": {
+                    "button": "Breyta"
+                },
                 "dashboard": {
                     "dropdown_label": "Mælaborð",
                     "header": "Mælaborð"
@@ -2081,7 +2130,8 @@
                     "dropdown_label": "Þema",
                     "error_no_theme": "Engar þemu í boði.",
                     "header": "Þema",
-                    "link_promo": "Lærðu um þemu"
+                    "link_promo": "Lærðu um þemu",
+                    "reset": "Endurstilla"
                 },
                 "vibrate": {
                     "description": "Kveikja eða slökkva á titringi í þessu tæki þegar þú stjórnar tækjum.",

@@ -21,7 +21,7 @@ interface State {
 class HassioAnsiToHtml extends LitElement {
   @property() public content!: string;
 
-  public render(): TemplateResult | void {
+  protected render(): TemplateResult | void {
     return html`${this._parseTextToColoredPre(this.content)}`;
   }
 

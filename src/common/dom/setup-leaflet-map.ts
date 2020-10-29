@@ -1,4 +1,4 @@
-import type { Map } from "leaflet";
+import type { Map, TileLayer } from "leaflet";
 
 // Sets up a Leaflet map on the provided DOM element
 export type LeafletModuleType = typeof import("leaflet");
@@ -6,9 +6,9 @@ export type LeafletDrawModuleType = typeof import("leaflet-draw");
 
 export const setupLeafletMap = async (
   mapElement: HTMLElement,
-  darkMode = false,
+  darkMode?: boolean,
   draw = false
-): Promise<[Map, LeafletModuleType]> => {
+): Promise<[Map, LeafletModuleType, TileLayer]> => {
   if (!mapElement.parentNode) {
     throw new Error("Cannot setup Leaflet map on disconnected element");
   }
@@ -28,15 +28,28 @@ export const setupLeafletMap = async (
   style.setAttribute("rel", "stylesheet");
   mapElement.parentNode.appendChild(style);
   map.setView([52.3731339, 4.8903147], 13);
-  createTileLayer(Leaflet, darkMode).addTo(map);
 
-  return [map, Leaflet];
+  const tileLayer = createTileLayer(Leaflet, Boolean(darkMode)).addTo(map);
+
+  return [map, Leaflet, tileLayer];
 };
 
-export const createTileLayer = (
+export const replaceTileLayer = (
+  leaflet: LeafletModuleType,
+  map: Map,
+  tileLayer: TileLayer,
+  darkMode: boolean
+): TileLayer => {
+  map.removeLayer(tileLayer);
+  tileLayer = createTileLayer(leaflet, darkMode);
+  tileLayer.addTo(map);
+  return tileLayer;
+};
+
+const createTileLayer = (
   leaflet: LeafletModuleType,
   darkMode: boolean
-) => {
+): TileLayer => {
   return leaflet.tileLayer(
     `https://{s}.basemaps.cartocdn.com/${
       darkMode ? "dark_all" : "light_all"

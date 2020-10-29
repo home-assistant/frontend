@@ -64,6 +64,10 @@ class MoreInfoCover extends LocalizeMixin(PolymerElement) {
           </ha-labeled-slider>
         </div>
       </div>
+      <ha-attributes
+        state-obj="[[stateObj]]"
+        extra-filters="current_position,current_tilt_position"
+      ></ha-attributes>
     `;
   }
 
@@ -97,7 +101,7 @@ class MoreInfoCover extends LocalizeMixin(PolymerElement) {
   }
 
   computeClassNames(stateObj) {
-    var classes = [
+    const classes = [
       attributeClassNames(stateObj, [
         "current_position",
         "current_tilt_position",

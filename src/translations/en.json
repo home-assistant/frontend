@@ -9,6 +9,7 @@
     "mailbox": "Mailbox",
     "shopping_list": "Shopping list",
     "developer_tools": "Developer Tools",
+    "media_browser": "Media Browser",
     "profile": "Profile"
   },
   "state": {
@@ -179,6 +180,13 @@
       "media_player": {
         "source": "Source",
         "sound_mode": "Sound mode",
+        "browse_media": "Browse media",
+        "turn_on": "Turn on",
+        "turn_off": "Turn off",
+        "media_play": "Play",
+        "media_play_pause": "Play/pause",
+        "media_next_track": "Next",
+        "media_previous_track": "Previous",
         "text_to_speak": "Text to speak"
       },
       "persistent_notification": {
@@ -246,6 +254,8 @@
           "wnw": "WNW",
           "wsw": "WSW"
         },
+        "day": "Day",
+        "night": "Night",
         "forecast": "Forecast",
         "high": "High",
         "low": "Low"
@@ -253,6 +263,7 @@
     },
     "common": {
       "and": "and",
+      "continue": "Continue",
       "previous": "Previous",
       "loading": "Loading",
       "refresh": "Refresh",
@@ -269,15 +280,55 @@
       "successfully_saved": "Successfully saved",
       "successfully_deleted": "Successfully deleted",
       "back": "Back",
-      "error_required": "Required"
+      "error_required": "Required",
+      "copied": "Copied"
     },
     "components": {
+      "logbook": {
+        "entries_not_found": "No logbook entries found.",
+        "by": "by",
+        "by_service": "by service",
+        "messages": {
+          "was_away": "was away",
+          "was_at_state": "was at {state}",
+          "rose": "rose",
+          "set": "set",
+          "was_low": "was low",
+          "was_normal": "was normal",
+          "was_connected": "was connected",
+          "was_disconnected": "was disconnected",
+          "was_opened": "was opened",
+          "was_closed": "was closed",
+          "was_unlocked": "was unlocked",
+          "was_locked": "was locked",
+          "was_plugged_in": "was plugged in",
+          "was_unplugged": "was unplugged",
+          "was_at_home": "was at home",
+          "was_unsafe": "was unsafe",
+          "was_safe": "was safe",
+          "detected_device_class": "detected {device_class}",
+          "cleared_device_class": "cleared (no {device_class} detected)",
+          "turned_off": "turned off",
+          "turned_on": "turned on",
+          "changed_to_state": "changed to {state}",
+          "became_unavailable": "became unavailable"
+        }
+      },
       "entity": {
         "entity-picker": {
           "entity": "Entity",
           "clear": "Clear",
           "show_entities": "Show entities"
+        },
+        "entity-attribute-picker": {
+          "attribute": "Attribute",
+          "show_attributes": "Show attributes"
         }
+      },
+      "user-picker": {
+        "no_user": "No user",
+        "add_user": "Add user",
+        "remove_user": "Remove user"
       },
       "device-picker": {
         "clear": "Clear",
@@ -299,21 +350,38 @@
           "failed_create_area": "Failed to create area."
         }
       },
+      "picture-upload": {
+        "label": "Picture",
+        "unsupported_format": "Unsupported format, please choose a JPEG, PNG or GIF image."
+      },
       "date-range-picker": {
         "start_date": "Start date",
         "end_date": "End date",
         "select": "Select"
       },
       "relative_time": {
-        "past": "{time} ago",
-        "future": "In {time}",
         "never": "Never",
+        "just_now": "Just now",
         "duration": {
           "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n}",
           "minute": "{count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
           "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n}",
           "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
           "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
+        },
+        "past_duration": {
+          "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n} ago",
+          "minute": "{count} {count, plural,\n  one {minute}\n  other {minutes}\n} ago",
+          "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n} ago",
+          "day": "{count} {count, plural,\n  one {day}\n  other {days}\n} ago",
+          "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n} ago"
+        },
+        "future_duration": {
+          "second": "In {count} {count, plural,\n  one {second}\n  other {seconds}\n}",
+          "minute": "In {count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
+          "hour": "In {count} {count, plural,\n  one {hour}\n  other {hours}\n}",
+          "day": "In {count} {count, plural,\n  one {day}\n  other {days}\n}",
+          "week": "In {count} {count, plural,\n  one {week}\n  other {weeks}\n}"
         }
       },
       "history_charts": {
@@ -337,9 +405,95 @@
       "data-table": {
         "search": "Search",
         "no-data": "No data"
+      },
+      "media-browser": {
+        "pick": "Pick",
+        "play": "Play",
+        "play-media": "Play Media",
+        "pick-media": "Pick Media",
+        "no_items": "No items",
+        "choose_player": "Choose Player",
+        "media-player-browser": "Media Player Browser",
+        "web-browser": "Web Browser",
+        "media_player": "Media Player",
+        "audio_not_supported": "Your browser does not support the audio element.",
+        "video_not_supported": "Your browser does not support the video element.",
+        "media_not_supported": "The Browser Media Player does not support this type of media",
+        "media_browsing_error": "Media Browsing Error",
+        "learn_adding_local_media": "Learn more about adding media in the {documentation}.",
+        "local_media_files": "Place your video, audio and image files in the media directory to be able to browse and play them in the browser or on supported media players.",
+        "documentation": "documentation",
+        "no_local_media_found": "No local media found",
+        "no_media_folder": "It looks like you have not yet created a media directory.",
+        "setup_local_help": "Check the {documentation} on how to setup local media.",
+        "class": {
+          "album": "Album",
+          "app": "App",
+          "artist": "Artist",
+          "channel": "Channel",
+          "composer": "Composer",
+          "contributing_artist": "Contributing Artist",
+          "directory": "Library",
+          "episode": "Episode",
+          "game": "Game",
+          "genre": "Genre",
+          "image": "Image",
+          "movie": "Movie",
+          "music": "Music",
+          "playlist": "Playlist",
+          "podcast": "Podcast",
+          "season": "Season",
+          "track": "Track",
+          "tv_show": "TV Show",
+          "url": "Url",
+          "video": "Video"
+        }
       }
     },
     "dialogs": {
+      "quick-bar": {
+        "commands": {
+          "reload": {
+            "reload": "[%key:ui::panel::config::server_control::section::reloading::reload%]",
+            "core": "[%key:ui::panel::config::server_control::section::reloading::core%]",
+            "group": "[%key:ui::panel::config::server_control::section::reloading::group%]",
+            "automation": "[%key:ui::panel::config::server_control::section::reloading::automation%]",
+            "script": "[%key:ui::panel::config::server_control::section::reloading::script%]",
+            "scene": "[%key:ui::panel::config::server_control::section::reloading::scene%]",
+            "person": "[%key:ui::panel::config::server_control::section::reloading::person%]",
+            "zone": "[%key:ui::panel::config::server_control::section::reloading::zone%]",
+            "input_boolean": "[%key:ui::panel::config::server_control::section::reloading::input_boolean%]",
+            "input_text": "[%key:ui::panel::config::server_control::section::reloading::input_text%]",
+            "input_number": "[%key:ui::panel::config::server_control::section::reloading::input_number%]",
+            "input_datetime": "[%key:ui::panel::config::server_control::section::reloading::input_datetime%]",
+            "input_select": "[%key:ui::panel::config::server_control::section::reloading::input_select%]",
+            "template": "[%key:ui::panel::config::server_control::section::reloading::template%]",
+            "universal": "[%key:ui::panel::config::server_control::section::reloading::universal%]",
+            "rest": "[%key:ui::panel::config::server_control::section::reloading::rest%]",
+            "command_line": "[%key:ui::panel::config::server_control::section::reloading::command_line%]",
+            "filter": "[%key:ui::panel::config::server_control::section::reloading::filter%]",
+            "statistics": "[%key:ui::panel::config::server_control::section::reloading::statistics%]",
+            "generic": "[%key:ui::panel::config::server_control::section::reloading::generic%]",
+            "generic_thermostat": "[%key:ui::panel::config::server_control::section::reloading::generic_thermostat%]",
+            "homekit": "[%key:ui::panel::config::server_control::section::reloading::homekit%]",
+            "min_max": "[%key:ui::panel::config::server_control::section::reloading::min_max%]",
+            "history_stats": "[%key:ui::panel::config::server_control::section::reloading::history_stats%]",
+            "trend": "[%key:ui::panel::config::server_control::section::reloading::trend%]",
+            "ping": "[%key:ui::panel::config::server_control::section::reloading::ping%]",
+            "filesize": "[%key:ui::panel::config::server_control::section::reloading::filesize%]",
+            "telegram": "[%key:ui::panel::config::server_control::section::reloading::telegram%]",
+            "smtp": "[%key:ui::panel::config::server_control::section::reloading::smtp%]",
+            "mqtt": "[%key:ui::panel::config::server_control::section::reloading::mqtt%]",
+            "rpi_gpio": "[%key:ui::panel::config::server_control::section::reloading::rpi_gpio%]"
+          },
+          "server_control": {
+            "perform_action": "{action} Server",
+            "restart": "[%key:ui::panel::config::server_control::section::server_management::restart%]",
+            "stop": "[%key:ui::panel::config::server_control::section::server_management::stop%]"
+          }
+        },
+        "filter_placeholder": "Entity Filter"
+      },
       "voice_command": {
         "did_not_hear": "Home Assistant did not hear anything",
         "found": "I found the following for you:",
@@ -354,10 +508,16 @@
         "default_confirmation_title": "Are you sure?",
         "close": "close"
       },
+      "image_cropper": {
+        "crop": "Crop"
+      },
       "more_info_control": {
         "dismiss": "Dismiss dialog",
         "settings": "Entity settings",
         "edit": "Edit entity",
+        "details": "Details",
+        "history": "History",
+        "last_updated": "Last updated",
         "script": {
           "last_action": "Last Action",
           "last_triggered": "Last Triggered"
@@ -398,10 +558,11 @@
         "control": "Control",
         "related": "Related",
         "dismiss": "Dismiss",
-        "no_unique_id": "This entity does not have a unique ID, therefore its settings cannot be managed from the UI.",
+        "no_unique_id": "This entity does not have a unique ID, therefore its settings cannot be managed from the UI. See the {faq_link} for more detail.",
+        "faq": "documentation",
         "editor": {
-          "name": "Name Override",
-          "icon": "Icon Override",
+          "name": "Name",
+          "icon": "Icon",
           "icon_error": "Icons should be in the format 'prefix:iconname', e.g. 'mdi:home'",
           "entity_id": "Entity ID",
           "unavailable": "This entity is not currently available.",
@@ -411,7 +572,7 @@
           "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this entry?",
           "update": "Update",
-          "note": "Note: this might not work yet with all integrations."
+          "note": "Note: This might not work yet with all integrations."
         }
       },
       "helper_settings": {
@@ -450,6 +611,16 @@
           "add_option": "Add option",
           "no_options": "There are no options yet.",
           "add": "Add"
+        },
+        "counter": {
+          "minimum": "Minimum value",
+          "maximum": "Maximum value",
+          "initial": "Initial value",
+          "restore": "Restore the last known value when Home Assistant starts",
+          "step": "Step size"
+        },
+        "timer": {
+          "duration": "Duration"
         }
       },
       "options_flow": {
@@ -495,7 +666,8 @@
         }
       },
       "domain_toggler": {
-        "title": "Toggle Domains"
+        "title": "Toggle Domains",
+        "reset_entities": "Reset Entities"
       },
       "mqtt_device_debug_info": {
         "title": "{device} debug info",
@@ -525,24 +697,30 @@
       "click_to_configure": "Click button to configure {entity}",
       "empty": "No Notifications",
       "title": "Notifications",
-      "close": "Close"
+      "close": "Close",
+      "dismiss_all": "Dismiss all"
     },
     "notification_toast": {
       "service_call_failed": "Failed to call service {service}.",
       "connection_lost": "Connection lost. Reconnecting…",
       "started": "Home Assistant has started!",
       "starting": "Home Assistant is starting, not everything will be available until it is finished.",
-      "triggered": "Triggered {name}"
+      "triggered": "Triggered {name}",
+      "dismiss": "Dismiss"
     },
     "sidebar": {
       "external_app_configuration": "App Configuration",
-      "sidebar_toggle": "Sidebar Toggle"
+      "sidebar_toggle": "Sidebar Toggle",
+      "done": "Done"
     },
     "panel": {
-      "calendar": { "my_calendars": "My Calendars", "today": "Today" },
+      "calendar": {
+        "my_calendars": "My Calendars",
+        "today": "Today"
+      },
       "config": {
         "header": "Configure Home Assistant",
-        "introduction": "Here it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
+        "introduction": "In this view it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
         "filtering": {
           "filtering_by": "Filtering by",
           "clear": "Clear"
@@ -563,7 +741,7 @@
         },
         "areas": {
           "caption": "Areas",
-          "description": "Overview of all areas in your home.",
+          "description": "Manage areas in your home",
           "data_table": {
             "area": "Area",
             "devices": "Devices"
@@ -591,15 +769,46 @@
             "confirmation_text": "All devices in this area will become unassigned."
           }
         },
+        "tags": {
+          "caption": "Tags",
+          "description": "Manage tags",
+          "learn_more": "Learn more about tags",
+          "no_tags": "No tags",
+          "add_tag": "Add tag",
+          "write": "Write",
+          "edit": "Edit",
+          "never_scanned": "Never scanned",
+          "create_automation": "Create automation with tag",
+          "automation_title": "Tag {name} is scanned",
+          "headers": {
+            "name": "Name",
+            "last_scanned": "Last scanned"
+          },
+          "detail": {
+            "new_tag": "New tag",
+            "name": "Name",
+            "description": "Description",
+            "tag_id": "Tag id",
+            "tag_id_placeholder": "Autogenerated when left empty",
+            "delete": "Delete",
+            "update": "Update",
+            "create": "Create",
+            "create_and_write": "Create and Write",
+            "usage": "A tag can trigger an automation when scanned, you can use NFC tags, QR codes or any other kind of tag. Use our {companion_link} to write this tag to a programmable NFC tag or create a QR code below.",
+            "companion_apps": "companion apps"
+          }
+        },
         "helpers": {
           "caption": "Helpers",
-          "description": "Elements that can help build automations.",
+          "description": "Manage elements that help build automations",
           "types": {
             "input_text": "Text",
             "input_number": "Number",
             "input_select": "Dropdown",
             "input_boolean": "Toggle",
-            "input_datetime": "Date and/or time"
+            "input_datetime": "Date and/or time",
+            "counter": "Counter",
+            "timer": "Timer"
           },
           "picker": {
             "headers": {
@@ -646,7 +855,7 @@
         },
         "info": {
           "caption": "Info",
-          "description": "Info about your Home Assistant installation",
+          "description": "View info about your Home Assistant installation",
           "home_assistant_logo": "Home Assistant logo",
           "path_configuration": "Path to configuration.yaml: {path}",
           "developed_by": "Developed by a bunch of awesome people.",
@@ -677,7 +886,7 @@
         },
         "lovelace": {
           "caption": "Lovelace Dashboards",
-          "description": "Configure your Lovelace Dashboards",
+          "description": "Manage your Lovelace Dashboards",
           "dashboards": {
             "default_dashboard": "This is the default dashboard",
             "caption": "Dashboards",
@@ -766,18 +975,37 @@
             "reloading": {
               "heading": "YAML configuration reloading",
               "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current YAML configuration and load the new one.",
+              "reload": "Reload {domain}",
               "core": "Reload location & customizations",
-              "group": "Reload groups",
+              "group": "Reload groups, group entities, and notify services",
               "automation": "Reload automations",
               "script": "Reload scripts",
               "scene": "Reload scenes",
-              "person": "Reload persons",
+              "person": "Reload people",
               "zone": "Reload zones",
               "input_boolean": "Reload input booleans",
               "input_text": "Reload input texts",
               "input_number": "Reload input numbers",
               "input_datetime": "Reload input date times",
-              "input_select": "Reload input selects"
+              "input_select": "Reload input selects",
+              "template": "Reload template entities",
+              "universal": "Reload universal media player entities",
+              "rest": "Reload rest entities and notify services",
+              "command_line": "Reload command line entities",
+              "filter": "Reload filter entities",
+              "statistics": "Reload statistics entities",
+              "generic": "Reload generic IP camera entities",
+              "generic_thermostat": "Reload generic thermostat entities",
+              "homekit": "Reload HomeKit",
+              "min_max": "Reload min/max entities",
+              "history_stats": "Reload history stats entities",
+              "trend": "Reload trend entities",
+              "ping": "Reload ping binary sensor entities",
+              "filesize": "Reload file size entities",
+              "telegram": "Reload telegram notify services",
+              "smtp": "Reload smtp notify services",
+              "mqtt": "Reload manually configured mqtt entities",
+              "rpi_gpio": "Reload Raspberry Pi GPIO entities"
             },
             "server_management": {
               "heading": "Server management",
@@ -795,6 +1023,7 @@
           "picker": {
             "header": "Customizations",
             "introduction": "Tweak per-entity attributes. Added/edited customizations will take effect immediately. Removed customizations will take effect when the entity is updated.",
+            "documentation": "Customization documentation",
             "entity": "Entity"
           },
           "warning": {
@@ -812,7 +1041,7 @@
         },
         "automation": {
           "caption": "Automations",
-          "description": "Create and edit automations",
+          "description": "Manage automations",
           "picker": {
             "header": "Automation Editor",
             "introduction": "The automation editor allows you to create and edit automations. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
@@ -825,6 +1054,8 @@
             "show_info_automation": "Show info about automation",
             "delete_automation": "Delete automation",
             "delete_confirm": "Are you sure you want to delete this automation?",
+            "duplicate_automation": "Duplicate automation",
+            "duplicate": "Duplicate",
             "headers": {
               "name": "Name"
             }
@@ -859,6 +1090,7 @@
             },
             "edit_yaml": "Edit as YAML",
             "edit_ui": "Edit with UI",
+            "copy_to_clipboard": "Copy to Clipboard",
             "triggers": {
               "name": "Trigger",
               "header": "Triggers",
@@ -868,7 +1100,7 @@
               "duplicate": "Duplicate",
               "delete": "[%key:ui::panel::mailbox::delete_button%]",
               "delete_confirm": "Are you sure you want to delete this?",
-              "unsupported_platform": "Unsupported platform: {platform}",
+              "unsupported_platform": "No UI support for platform: {platform}",
               "type_select": "Trigger type",
               "type": {
                 "device": {
@@ -883,7 +1115,10 @@
                 "event": {
                   "label": "Event",
                   "event_type": "Event type",
-                  "event_data": "Event data"
+                  "event_data": "Event data",
+                  "context_users": "Limit to events triggered by",
+                  "context_user_picked": "User firing event",
+                  "context_user_pick": "Add user"
                 },
                 "geo_location": {
                   "label": "Geolocation",
@@ -895,6 +1130,7 @@
                 },
                 "state": {
                   "label": "State",
+                  "attribute": "Attribute (Optional)",
                   "from": "From",
                   "for": "For",
                   "to": "To"
@@ -923,13 +1159,18 @@
                   "sunset": "Sunset",
                   "offset": "Offset (optional)"
                 },
+                "tag": {
+                  "label": "Tag"
+                },
                 "template": {
                   "label": "Template",
                   "value_template": "Value template"
                 },
                 "time": {
+                  "type_value": "Fixed time",
+                  "type_input": "Value of a date/time helper",
                   "label": "Time",
-                  "at": "At"
+                  "at": "At time"
                 },
                 "time_pattern": {
                   "label": "Time Pattern",
@@ -960,7 +1201,7 @@
               "duplicate": "[%key:ui::panel::config::automation::editor::triggers::duplicate%]",
               "delete": "[%key:ui::panel::mailbox::delete_button%]",
               "delete_confirm": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm%]",
-              "unsupported_condition": "Unsupported condition: {condition}",
+              "unsupported_condition": "No UI support for condition: {condition}",
               "type_select": "Condition type",
               "type": {
                 "and": {
@@ -1005,9 +1246,20 @@
                   "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::template::value_template%]"
                 },
                 "time": {
+                  "type_value": "[%key:ui::panel::config::automation::editor::triggers::type::time::type_value%]",
+                  "type_input": "[%key:ui::panel::config::automation::editor::triggers::type::time::type_input%]",
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::time::label%]",
                   "after": "After",
-                  "before": "Before"
+                  "before": "Before",
+                  "weekdays": {
+                    "mon": "Monday",
+                    "tue": "Tuesday",
+                    "wed": "Wednesday",
+                    "thu": "Thursday",
+                    "fri": "Friday",
+                    "sat": "Saturday",
+                    "sun": "Sunday"
+                  }
                 },
                 "zone": {
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]",
@@ -1025,7 +1277,7 @@
               "duplicate": "[%key:ui::panel::config::automation::editor::triggers::duplicate%]",
               "delete": "[%key:ui::panel::mailbox::delete_button%]",
               "delete_confirm": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm%]",
-              "unsupported_action": "Unsupported action: {action}",
+              "unsupported_action": "No UI support for action: {action}",
               "type_select": "Action type",
               "type": {
                 "service": {
@@ -1039,7 +1291,13 @@
                 "wait_template": {
                   "label": "Wait",
                   "wait_template": "Wait Template",
-                  "timeout": "Timeout (optional)"
+                  "timeout": "Timeout (optional)",
+                  "continue_timeout": "Continue on timeout"
+                },
+                "wait_for_trigger": {
+                  "label": "Wait for trigger",
+                  "timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::timeout%]",
+                  "continue_timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::continue_timeout%]"
                 },
                 "condition": {
                   "label": "Condition"
@@ -1058,6 +1316,33 @@
                 },
                 "scene": {
                   "label": "Activate scene"
+                },
+                "repeat": {
+                  "label": "Repeat",
+                  "type_select": "Repeat type",
+                  "type": {
+                    "count": {
+                      "label": "Count"
+                    },
+                    "while": {
+                      "label": "While",
+                      "conditions": "While conditions"
+                    },
+                    "until": {
+                      "label": "Until",
+                      "conditions": "Until conditions"
+                    }
+                  },
+                  "sequence": "Actions"
+                },
+                "choose": {
+                  "label": "Choose",
+                  "default": "Default actions",
+                  "option": "Option {number}",
+                  "add_option": "Add option",
+                  "remove_option": "Remove option",
+                  "conditions": "Conditions",
+                  "sequence": "Actions"
                 }
               }
             }
@@ -1065,15 +1350,16 @@
         },
         "script": {
           "caption": "Scripts",
-          "description": "Create and edit scripts",
+          "description": "Manage scripts",
           "picker": {
             "header": "Script Editor",
             "introduction": "The script editor allows you to create and edit scripts. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
             "learn_more": "Learn more about scripts",
             "no_scripts": "We couldn’t find any editable scripts",
-            "add_script": "Add script",
+            "add_script": "Create new script",
             "show_info": "Show info about script",
             "trigger_script": "Trigger script",
+            "run_script": "Run script",
             "edit_script": "Edit script",
             "headers": {
               "name": "Name"
@@ -1104,6 +1390,7 @@
             "load_error_not_editable": "Only scripts inside scripts.yaml are editable.",
             "delete_confirm": "Are you sure you want to delete this script?",
             "delete_script": "Delete script",
+            "save_script": "Save script",
             "sequence": "Sequence",
             "sequence_sentence": "The sequence of actions of this script.",
             "link_available_actions": "Learn more about available actions."
@@ -1111,7 +1398,7 @@
         },
         "scene": {
           "caption": "Scenes",
-          "description": "Create and edit scenes",
+          "description": "Manage scenes",
           "activated": "Activated scene {name}.",
           "picker": {
             "header": "Scene Editor",
@@ -1279,7 +1566,13 @@
             "title": "Alexa",
             "banner": "Editing which entities are exposed via this UI is disabled because you have configured entity filters in configuration.yaml.",
             "exposed_entities": "Exposed entities",
-            "not_exposed_entities": "Not Exposed entities",
+            "not_exposed_entities": "Not exposed entities",
+            "manage_domains": "Manage domains",
+            "expose_entity": "Expose entity",
+            "dont_expose_entity": "Don't expose entity",
+            "follow_domain": "Follow domain",
+            "exposed": "{selected} exposed",
+            "not_exposed": "{selected} not exposed",
             "expose": "Expose to Alexa"
           },
           "dialog_certificate": {
@@ -1295,7 +1588,13 @@
             "disable_2FA": "Disable two factor authentication",
             "banner": "Editing which entities are exposed via this UI is disabled because you have configured entity filters in configuration.yaml.",
             "exposed_entities": "Exposed entities",
-            "not_exposed_entities": "Not Exposed entities",
+            "not_exposed_entities": "Not exposed entities",
+            "manage_domains": "Manage domains",
+            "expose_entity": "Expose entity",
+            "dont_expose_entity": "Don't expose entity",
+            "follow_domain": "Follow domain",
+            "exposed": "{selected} exposed",
+            "not_exposed": "{selected} not exposed",
             "sync_to_google": "Synchronizing changes to Google."
           },
           "dialog_cloudhook": {
@@ -1311,6 +1610,7 @@
           }
         },
         "devices": {
+          "add_prompt": "No {name} have been added using this device yet. You can add one by clicking the + button above.",
           "caption": "Devices",
           "description": "Manage connected devices",
           "device_info": "Device info",
@@ -1322,15 +1622,22 @@
           "automation": {
             "automations": "Automations",
             "no_automations": "No automations",
+            "unknown_automation": "Unknown automation",
             "create": "Create automation with device",
             "triggers": {
-              "caption": "Do something when..."
+              "caption": "Do something when...",
+              "no_triggers": "No triggers",
+              "unknown_trigger": "Unknown trigger"
             },
             "conditions": {
-              "caption": "Only do something if..."
+              "caption": "Only do something if...",
+              "no_conditions": "No conditions",
+              "unknown_condition": "Unknown condition"
             },
             "actions": {
-              "caption": "When something is triggered..."
+              "caption": "When something is triggered...",
+              "no_actions": "No actions",
+              "unknown_action": "Unknown action"
             },
             "no_device_automations": "There are no automations available for this device."
           },
@@ -1355,7 +1662,8 @@
           },
           "scripts": "Scripts",
           "scenes": "Scenes",
-          "confirm_rename_entity_ids": "Do you also want to rename the entity id's of your entities?",
+          "confirm_rename_entity_ids": "Do you also want to rename the entity IDs of your entities?",
+          "confirm_rename_entity_ids_warning": "This will not change any configuration (like automations, scripts, scenes, dashboards) that is currently using these entities! You will have to update them yourself to use the new entity IDs!",
           "data_table": {
             "device": "Device",
             "manufacturer": "Manufacturer",
@@ -1371,7 +1679,7 @@
         },
         "entities": {
           "caption": "Entities",
-          "description": "Overview of all known entities.",
+          "description": "Manage known entities",
           "picker": {
             "header": "Entities",
             "introduction": "Home Assistant keeps a registry of every entity it has ever seen that can be uniquely identified. Each of these entities will have an entity ID assigned which will be reserved for just this entity.",
@@ -1381,7 +1689,9 @@
               "filter": "Filter",
               "show_disabled": "Show disabled entities",
               "show_unavailable": "Show unavailable entities",
-              "show_readonly": "Show read-only entities"
+              "show_readonly": "Show read-only entities",
+              "hidden_entities": "{number} hidden {number, plural,\n  one {entity}\n  other {entities}\n}",
+              "show_all": "Show all"
             },
             "status": {
               "restored": "Restored",
@@ -1417,15 +1727,18 @@
           }
         },
         "person": {
-          "caption": "Persons",
-          "description": "Manage the persons that Home Assistant tracks.",
+          "caption": "People",
+          "description": "Manage the people that Home Assistant tracks",
           "introduction": "Here you can define each person of interest in Home Assistant.",
-          "note_about_persons_configured_in_yaml": "Note: persons configured via configuration.yaml cannot be edited via the UI.",
-          "no_persons_created_yet": "Looks like you have not created any persons yet.",
+          "note_about_persons_configured_in_yaml": "Note: people configured via configuration.yaml cannot be edited via the UI.",
+          "learn_more": "Learn more about people",
+          "no_persons_created_yet": "Looks like you have not created any people yet.",
           "create_person": "Create Person",
           "add_person": "Add Person",
           "confirm_delete": "Are you sure you want to delete this person?",
           "confirm_delete2": "All devices belonging to this person will become unassigned.",
+          "person_not_found_title": "Person Not Found",
+          "person_not_found": "We couldn't find the person you were trying to edit.",
           "detail": {
             "new_person": "New Person",
             "name": "Name",
@@ -1439,12 +1752,15 @@
             "device_tracker_pick": "Pick device to track",
             "delete": "Delete",
             "create": "Create",
-            "update": "Update"
+            "update": "Update",
+            "confirm_delete_user": "Are you sure you want to delete the user account for {name}? You can still track the user, but the person will no longer be able to login.",
+            "admin": "[%key:ui::panel::config::users::editor::admin%]",
+            "allow_login": "Allow person to login"
           }
         },
         "zone": {
           "caption": "Zones",
-          "description": "Manage the zones you want to track persons in.",
+          "description": "Manage the zones you want to track people in",
           "introduction": "Zones allow you to specify certain regions on earth. When a person is within a zone, the state will take the name from the zone. Zones can also be used as a trigger or condition inside automation setups.",
           "no_zones_created_yet": "Looks like you have not created any zones yet.",
           "create_zone": "Create Zone",
@@ -1459,7 +1775,7 @@
             "new_zone": "New Zone",
             "name": "Name",
             "icon": "Icon",
-            "icon_error_msg": "Icon should be in the format prefix:iconname, for example: mdi:home",
+            "icon_error_msg": "Icon should be in the format ''prefix:iconname'', for example: ''mdi:home''",
             "radius": "Radius",
             "latitude": "Latitude",
             "longitude": "Longitude",
@@ -1473,9 +1789,10 @@
         },
         "integrations": {
           "caption": "Integrations",
-          "description": "Manage and set up integrations",
+          "description": "Manage integrations",
           "integration": "integration",
           "discovered": "Discovered",
+          "attention": "Attention required",
           "configured": "Configured",
           "new": "Set up a new integration",
           "add_integration": "Add integration",
@@ -1484,6 +1801,7 @@
           "note_about_website_reference": "More are available on the ",
           "home_assistant_website": "Home Assistant website",
           "configure": "Configure",
+          "reconfigure": "Reconfigure",
           "none": "Nothing configured yet",
           "none_found": "No integrations found",
           "none_found_detail": "Adjust your search criteria.",
@@ -1506,13 +1824,17 @@
           "config_entry": {
             "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
             "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
+            "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
             "rename": "Rename",
             "options": "Options",
             "system_options": "System options",
             "documentation": "Documentation",
             "delete": "Delete",
             "delete_confirm": "Are you sure you want to delete this integration?",
+            "reload": "Reload",
             "restart_confirm": "Restart Home Assistant to finish removing this integration",
+            "reload_confirm": "The integration was reloaded",
+            "reload_restart_confirm": "Restart Home Assistant to finish reloading this integration",
             "manuf": "by {manufacturer}",
             "hub": "Connected via",
             "firmware": "Firmware: {version}",
@@ -1541,14 +1863,20 @@
         "users": {
           "caption": "Users",
           "description": "Manage users",
-          "users_privileges_note": "The users group is a work in progress. The user will be unable to administer the instance via the UI. We're still auditing all management API endpoints to ensure that they correctly limit access to administrators.",
+          "users_privileges_note": "The user group feature is a work in progress. The user will be unable to administer the instance via the UI. We're still auditing all management API endpoints to ensure that they correctly limit access to administrators.",
           "picker": {
-            "headers": { "name": "Name", "group": "Group", "system": "System" }
+            "headers": {
+              "name": "Name",
+              "group": "Group",
+              "system": "System"
+            }
           },
           "editor": {
             "caption": "View user",
             "name": "Name",
             "change_password": "Change password",
+            "new_password": "New Password",
+            "password_changed": "Password was changed successfully",
             "activate_user": "Activate user",
             "deactivate_user": "Deactivate user",
             "delete_user": "Delete user",
@@ -1569,6 +1897,8 @@
             "name": "Name",
             "username": "Username",
             "password": "Password",
+            "password_confirm": "Confirm Password",
+            "password_not_match": "Passwords don't match",
             "create": "Create"
           }
         },
@@ -1585,6 +1915,121 @@
           "start_listening": "Start listening",
           "stop_listening": "Stop listening",
           "message_received": "Message {id} received on {topic} at {time}:"
+        },
+        "ozw": {
+          "button": "Configure",
+          "common": {
+            "zwave": "Z-Wave",
+            "node_id": "Node ID",
+            "ozw_instance": "OpenZWave Instance",
+            "instance": "Instance",
+            "controller": "Controller",
+            "network": "Network",
+            "wakeup_instructions": "Wake-up Instructions",
+            "query_stage": "Query Stage"
+          },
+          "device_info": {
+            "zwave_info": "Z-Wave Info",
+            "stage": "Stage",
+            "node_failed": "Node Failed"
+          },
+          "node_query_stages": {
+            "protocolinfo": "Obtaining basic Z-Wave capabilities of this node from the controller",
+            "probe": "Checking if the node is awake/alive",
+            "wakeup": "Setting up support for wakeup queues and messages",
+            "manufacturerspecific1": "Obtaining manufacturer and product ID codes from the node",
+            "nodeinfo": "Obtaining supported command classes from the node",
+            "nodeplusinfo": "Obtaining Z-Wave+ information from the node",
+            "manufacturerspecific2": "Obtaining additional manufacturer and product ID codes from the node",
+            "versions": "Obtaining information about firmware and command class versions",
+            "instances": "Obtaining details about what instances or channels a device supports",
+            "static": "Obtaining static values from the device",
+            "cacheload": "Loading information from the OpenZWave cache file. Battery nodes will stay at this stage until the node wakes up.",
+            "associations": "Refreshing association groups and memberships",
+            "neighbors": "Obtaining a list of the node's neighbors",
+            "session": "Obtaining infrequently changing values from the node",
+            "dynamic": "Obtaining frequently changing values from the node",
+            "configuration": "Obtaining configuration values from the node",
+            "complete": "Interview process is complete"
+          },
+          "refresh_node": {
+            "button": "Refresh Node",
+            "title": "Refresh Node Information",
+            "complete": "Node Refresh Complete",
+            "description": "This will tell OpenZWave to re-interview a node and update the node's command classes, capabilities, and values.",
+            "battery_note": "If the node is battery powered, be sure to wake it before proceeding",
+            "wakeup_header": "Wakeup Instructions for",
+            "wakeup_instructions_source": "Wakeup instructions are sourced from the OpenZWave community device database.",
+            "start_refresh_button": "Start Refresh",
+            "refreshing_description": "Refreshing node information...",
+            "node_status": "Node Status",
+            "step": "Step"
+          },
+          "network_status": {
+            "online": "Online",
+            "offline": "Offline",
+            "starting": "Starting",
+            "unknown": "Unknown",
+            "details": {
+              "driverallnodesqueried": "All nodes have been queried",
+              "driverallnodesqueriedsomedead": "All nodes have been queried. Some nodes were found dead",
+              "driverawakenodesqueries": "All awake nodes have been queried",
+              "driverremoved": "The driver has been removed",
+              "driverreset": "The driver has been reset",
+              "driverfailed": "Failed to connect to Z-Wave controller",
+              "driverready": "Initializing the Z-Wave controller",
+              "ready": "Ready to connect",
+              "stopped": "OpenZWave stopped",
+              "started": "Connected to MQTT",
+              "starting": "Connecting to MQTT",
+              "offline": "OZWDaemon offline"
+            }
+          },
+          "navigation": {
+            "select_instance": "Select Instance",
+            "network": "Network",
+            "nodes": "Nodes",
+            "node": {
+              "dashboard": "Dashboard",
+              "config": "Config"
+            }
+          },
+          "select_instance": {
+            "header": "Select an OpenZWave Instance",
+            "introduction": "You have more than one OpenZWave instance running. Which instance would you like to manage?",
+            "none_found": "We couldn't find an OpenZWave instance. If you believe this is incorrect, check your OpenZWave and MQTT setups and ensure that Home Assistant can communicate with your MQTT broker."
+          },
+          "network": {
+            "header": "Network Management",
+            "introduction": "Manage network-wide functions.",
+            "node_count": "{count} nodes"
+          },
+          "nodes_table": {
+            "id": "ID",
+            "manufacturer": "Manufacturer",
+            "model": "Model",
+            "query_stage": "Query Stage",
+            "zwave_plus": "Z-Wave Plus",
+            "failed": "Failed"
+          },
+          "node": {
+            "button": "Node Details",
+            "not_found": "Node not found"
+          },
+          "node_config": {
+            "header": "Node Configuration",
+            "introduction": "Manage the different configuration parameters for a Z-Wave node.",
+            "help_source": "Config parameter descriptions and help text are provided by the OpenZWave project.",
+            "wakeup_help": "Battery powered nodes must be awake to change their configuration. If the node is not awake, OpenZWave will attempt to update the node's configuration the next time it wakes up, which could be multiple hours (or days) later. Follow these steps to wake up your device:"
+          },
+          "node_metadata": {
+            "product_manual": "Product Manual"
+          },
+          "services": {
+            "add_node": "Add Node",
+            "remove_node": "Remove Node",
+            "cancel_command": "Cancel Command"
+          }
         },
         "zha": {
           "button": "Configure",
@@ -1626,7 +2071,7 @@
           "clusters": {
             "header": "Clusters",
             "help_cluster_dropdown": "Select a cluster to view attributes and commands.",
-            "introduction": "Clusters are the building blocks for Zigbee functionality. They seperate functionality into logical units. There are client and server types and that are comprised of attributes and commands."
+            "introduction": "Clusters are the building blocks for Zigbee functionality. They separate functionality into logical units. There are client and server types and that are comprised of attributes and commands."
           },
           "cluster_attributes": {
             "header": "Cluster Attributes",
@@ -1650,7 +2095,7 @@
           },
           "groups": {
             "caption": "Groups",
-            "description": "Create and modify Zigbee groups",
+            "description": "Manage Zigbee groups",
             "zha_zigbee_groups": "ZHA Zigbee Groups",
             "manage_groups": "Manage Zigbee Groups",
             "groups": "Groups",
@@ -1717,10 +2162,10 @@
             "node_group_associations": "Node group associations",
             "group": "Group",
             "node_to_control": "Node to control",
-            "nodes_in_group": "Other Nodes in this group:",
+            "nodes_in_group": "Other nodes in this group:",
             "max_associations": "Max Associations:",
-            "add_to_group": "Add To Group",
-            "remove_from_group": "Remove From Group",
+            "add_to_group": "Add to Group",
+            "remove_from_group": "Remove from Group",
             "remove_broadcast": "Remove Broadcast"
           },
           "ozw_log": {
@@ -1782,7 +2227,6 @@
         }
       },
       "logbook": {
-        "entries_not_found": "No logbook entries found.",
         "ranges": {
           "today": "Today",
           "yesterday": "Yesterday",
@@ -1846,9 +2290,10 @@
           "confirm_delete_existing_cards_text": "Are you sure you want to delete your ''{name}'' view? The view contains {number} cards that will be deleted. This action cannot be undone."
         },
         "menu": {
-          "configure_ui": "Configure UI",
+          "configure_ui": "Edit Dashboard",
           "help": "Help",
           "refresh": "Refresh",
+          "start_conversation": "Start conversation",
           "reload_resources": "Reload resources",
           "exit_edit_mode": "Exit UI edit mode",
           "close": "Close"
@@ -1868,7 +2313,7 @@
             "save": "Save",
             "unsaved_changes": "Unsaved changes",
             "saved": "Saved",
-            "confirm_remove_config_title": "Are you sure you want to remove your Lovelace UI configuration? We will automatically generate your Lovelace UI views with your areas and devices.",
+            "confirm_remove_config_title": "Are you sure you want to remove your Lovelace UI configuration?",
             "confirm_remove_config_text": "We will automatically generate your Lovelace UI views with your areas and devices if you remove your Lovelace UI configuration.",
             "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
             "confirm_unsaved_comments": "Your configuration contains comment(s), these will not be saved. Do you want to continue?",
@@ -1899,6 +2344,9 @@
               "select_users": "Select which users should see this view in the navigation"
             }
           },
+          "edit_badges": {
+            "panel_mode": "These badges will not be displayed because this view is in \"Panel Mode\"."
+          },
           "edit_card": {
             "header": "Card Configuration",
             "typed_header": "{type} Card Configuration",
@@ -1911,10 +2359,20 @@
             "show_code_editor": "Show Code Editor",
             "add": "Add Card",
             "edit": "Edit",
-            "delete": "Delete Card",
-            "duplicate": "Duplicate Card",
+            "delete": "Delete card",
+            "duplicate": "Duplicate card",
             "move": "Move to View",
-            "options": "More options"
+            "move_before": "Move card before",
+            "move_after": "Move card after",
+            "options": "More options",
+            "search_cards": "Search cards"
+          },
+          "move_card": {
+            "header": "Choose a view to move the card to"
+          },
+          "select_view": {
+            "header": "Choose a view",
+            "dashboard_label": "Dashboard"
           },
           "suggest_card": {
             "header": "We created a suggestion for you",
@@ -1936,14 +2394,39 @@
           "migrate": {
             "header": "Configuration Incompatible",
             "para_no_id": "This element doesn't have an ID. Please add an ID to this element in 'ui-lovelace.yaml'.",
-            "para_migrate": "Home Assistant can add ID's to all your cards and views automatically for you by pressing the 'Migrate configuration' button.",
+            "para_migrate": "Home Assistant can add IDs to all your cards and views automatically for you by pressing the 'Migrate configuration' button.",
             "migrate": "Migrate configuration"
+          },
+          "action-editor": {
+            "navigation_path": "Navigation Path",
+            "url_path": "Url Path",
+            "editor_service_data": "Service data can only be entered in the code editor",
+            "actions": {
+              "default_action": "Default Action",
+              "call-service": "Call Service",
+              "more-info": "More Info",
+              "toggle": "Toggle",
+              "navigate": "Navigate",
+              "url": "Url",
+              "none": "No Action"
+            }
           },
           "card": {
             "alarm-panel": {
               "name": "Alarm Panel",
               "available_states": "Available States",
               "description": "The Alarm Panel card allows you to Arm and Disarm your alarm control panel integrations."
+            },
+            "calendar": {
+              "name": "Calendar",
+              "description": "The Calendar card displays a calendar including day, week and list views",
+              "inital_view": "Initial View",
+              "calendar_entities": "Calendar Entities",
+              "views": {
+                "dayGridMonth": "Month",
+                "dayGridDay": "Day",
+                "listWeek": "List"
+              }
             },
             "conditional": {
               "name": "Conditional",
@@ -1964,7 +2447,31 @@
               "name": "Entities",
               "show_header_toggle": "Show Header Toggle?",
               "toggle": "Toggle entities.",
-              "description": "The Entities card is the most common type of card. It groups items together into lists."
+              "description": "The Entities card is the most common type of card. It groups items together into lists.",
+              "special_row": "special row",
+              "edit_special_row": "View the details of this row by clicking the edit button",
+              "entity_row_editor": "Entity Row Editor",
+              "secondary_info_values": {
+                "none": "No Secondary Info",
+                "entity-id": "Entity ID",
+                "last-changed": "Last Changed",
+                "last-triggered": "Last Triggered",
+                "position": "Position",
+                "tilt-position": "Tilt Position",
+                "brightness": "Brightness",
+                "last-updated": "Last Updated"
+              },
+              "entity_row": {
+                "divider": "Divider",
+                "call-service": "Call Service",
+                "section": "Section",
+                "weblink": "Web Link",
+                "attribute": "Attribute",
+                "buttons": "Buttons",
+                "conditional": "Conditional",
+                "cast": "Cast",
+                "button": "Button"
+              }
             },
             "entity": {
               "name": "Entity",
@@ -1972,7 +2479,8 @@
             },
             "button": {
               "name": "Button",
-              "description": "The Button card allows you to add buttons to perform tasks."
+              "description": "The Button card allows you to add buttons to perform tasks.",
+              "default_action_help": "The default action depends on the entity's capabilities, it will either be toggled or the more info will be shown."
             },
             "entity-filter": {
               "name": "Entity Filter",
@@ -2043,7 +2551,8 @@
               "url": "Url",
               "state": "State",
               "secondary_info_attribute": "Secondary Info Attribute",
-              "search": "Search"
+              "search": "Search",
+              "state_color": "Color icons based on state?"
             },
             "map": {
               "name": "Map",
@@ -2085,7 +2594,7 @@
             },
             "sensor": {
               "name": "Sensor",
-              "graph_detail": "Graph Detail",
+              "show_more_detail": "Show more detail",
               "graph_type": "Graph Type",
               "description": "The Sensor card gives you a quick overview of your sensors state with an optional graph to visualize change over time."
             },
@@ -2111,13 +2620,17 @@
           "view": {
             "panel_mode": {
               "title": "Panel Mode?",
-              "description": "This renders the first card at full width; other cards in this view will not be rendered.",
+              "description": "This renders the first card at full width. Other cards in this view as well as badges will not be rendered.",
               "warning_multiple_cards": "This view contains more than one card, but a panel view can only show 1 card."
             }
           },
           "cardpicker": {
             "no_description": "No description available.",
-            "custom_card": "Custom"
+            "custom_card": "Custom",
+            "domain": "Domain",
+            "entity": "Entity",
+            "by_entity": "By Entity",
+            "by_card": "By Card"
           }
         },
         "warning": {
@@ -2149,9 +2662,18 @@
           "header": "Always hide the sidebar",
           "description": "This will hide the sidebar by default, similar to the mobile experience."
         },
+        "customize_sidebar": {
+          "header": "Change the order and hide items from the sidebar",
+          "description": "You can also press and hold the header of the sidebar to activate edit mode.",
+          "button": "Edit"
+        },
         "vibrate": {
           "header": "Vibrate",
           "description": "Enable or disable vibration on this device when controlling devices."
+        },
+        "enable_shortcuts": {
+          "header": "Keyboard Shortcuts",
+          "description": "Enable or disable keyboard shortcuts for performing various actions in the UI."
         },
         "suspend": {
           "header": "Automatically close connection",
@@ -2163,7 +2685,11 @@
           "error_load_platform": "Configure notify.html5.",
           "error_use_https": "Requires SSL enabled for frontend.",
           "push_notifications": "Push notifications",
-          "link_promo": "Learn more"
+          "link_promo": "Learn more",
+          "add_device_prompt": {
+            "title": "What should this device be called?",
+            "input_label": "Device name"
+          }
         },
         "language": {
           "header": "Language",
@@ -2174,7 +2700,15 @@
           "header": "Theme",
           "error_no_theme": "No themes available.",
           "link_promo": "Learn about themes",
-          "dropdown_label": "Theme"
+          "dropdown_label": "Theme",
+          "dark_mode": {
+            "auto": "Auto",
+            "light": "Light",
+            "dark": "Dark"
+          },
+          "primary_color": "Primary color",
+          "accent_color": "Accent color",
+          "reset": "Reset"
         },
         "dashboard": {
           "header": "Dashboard",
@@ -2222,14 +2756,13 @@
           "header": "Long-Lived Access Tokens",
           "description": "Create long-lived access tokens to allow your scripts to interact with your Home Assistant instance. Each token will be valid for 10 years from creation. The following long-lived access tokens are currently active.",
           "learn_auth_requests": "Learn how to make authenticated requests.",
-          "created_at": "Created at {date}",
-          "last_used": "Last used at {date} from {location}",
-          "not_used": "Has never been used",
+          "created": "Created {date}",
           "confirm_delete": "Are you sure you want to delete the access token for {name}?",
           "delete_failed": "Failed to delete the access token.",
           "create": "Create Token",
           "create_failed": "Failed to create the access token.",
-          "prompt_name": "Name?",
+          "name": "Name",
+          "prompt_name": "Give the token a name",
           "prompt_copy_token": "Copy your access token. It will not be shown again.",
           "empty_state": "You have no long-lived access tokens yet."
         }
@@ -2437,9 +2970,17 @@
             "title": "Template",
             "description": "Templates are rendered using the Jinja2 template engine with some Home Assistant specific extensions.",
             "editor": "Template editor",
+            "reset": "Reset to demo template",
+            "result_type": "Result type",
             "jinja_documentation": "Jinja2 template documentation",
             "template_extensions": "Home Assistant template extensions",
-            "unknown_error_template": "Unknown error rendering template"
+            "unknown_error_template": "Unknown error rendering template",
+            "time": "This template updates at the start of each minute.",
+            "all_listeners": "This template listens for all state changed events.",
+            "no_listeners": "This template does not listen for any events and will not update automatically.",
+            "listeners": "This template listens for the following state changed events:",
+            "entity": "Entity",
+            "domain": "Domain"
           }
         }
       },
@@ -2464,6 +3005,7 @@
           "intro": "Hello {name}, welcome to Home Assistant. How would you like to name your home?",
           "intro_location": "We would like to know where you live. This information will help with displaying information and setting up sun-based automations. This data is never shared outside of your network.",
           "intro_location_detect": "We can help you fill in this information by making a one-time request to an external service.",
+          "location_name": "Name of your Home Assistant installation",
           "location_name_default": "Home",
           "button_detect": "Detect",
           "finish": "Next"
@@ -2472,6 +3014,12 @@
           "intro": "Devices and services are represented in Home Assistant as integrations. You can set them up now, or do it later from the configuration screen.",
           "more_integrations": "More",
           "finish": "Finish"
+        },
+        "restore": {
+          "description": "Alternatively you can restore from a previous snapshot.",
+          "in_progress": "Restore in progress",
+          "show_log": "Show full log",
+          "hide_log": "Hide full log"
         }
       },
       "custom": {

@@ -1,17 +1,18 @@
-import "@material/mwc-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { safeDump, safeLoad } from "js-yaml";
+import { computeRTL } from "../../../common/util/compute_rtl";
+import "../../../components/buttons/ha-progress-button";
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-code-editor";
 import "../../../components/ha-service-picker";
+import "../../../components/ha-card";
 import { ENTITY_COMPONENT_DOMAINS } from "../../../data/entity";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import "../../../styles/polymer-ha-style";
 import "../../../util/app-localstorage-document";
-import { computeRTL } from "../../../common/util/compute_rtl";
 
 const ERROR_SENTINEL = {};
 /*
@@ -34,21 +35,23 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
           max-width: 400px;
         }
 
-        mwc-button {
+        ha-progress-button {
           margin-top: 8px;
         }
 
-        .description {
-          margin-top: 24px;
-          white-space: pre-wrap;
+        ha-card {
+          margin-top: 12px;
         }
 
-        .header {
-          @apply --paper-font-title;
+        .description {
+          margin-top: 12px;
+          white-space: pre-wrap;
         }
 
         .attributes th {
           text-align: left;
+          background-color: var(--card-background-color);
+          border-bottom: 1px solid var(--primary-text-color);
         }
 
         :host([rtl]) .attributes th {
@@ -75,10 +78,7 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
 
         pre {
           margin: 0;
-        }
-
-        h1 {
-          white-space: normal;
+          font-family: var(--code-font-family, monospace);
         }
 
         td {
@@ -104,7 +104,7 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
       >
       </app-localstorage-document>
       <app-localstorage-document
-        key="[[_computeServicedataKey(domainService)]]"
+        key="[[_computeServiceDataKey(domainService)]]"
         data="{{serviceData}}"
       >
       </app-localstorage-document>
@@ -136,63 +136,68 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
             error="[[!validJSON]]"
             on-value-changed="_yamlChanged"
           ></ha-code-editor>
-          <mwc-button on-click="_callService" raised disabled="[[!validJSON]]">
+          <ha-progress-button
+            on-click="_callService"
+            raised
+            disabled="[[!validJSON]]"
+          >
             [[localize('ui.panel.developer-tools.tabs.services.call_service')]]
-          </mwc-button>
+          </ha-progress-button>
         </div>
 
-        <template is="dom-if" if="[[!domainService]]">
-          <h1>
-            [[localize('ui.panel.developer-tools.tabs.services.select_service')]]
-          </h1>
-        </template>
+        <ha-card>
+          <div class="card-header">
+            <template is="dom-if" if="[[!domainService]]">
+                [[localize('ui.panel.developer-tools.tabs.services.select_service')]]
+            </template>
 
-        <template is="dom-if" if="[[domainService]]">
-          <template is="dom-if" if="[[!_description]]">
-            <h1>
-              [[localize('ui.panel.developer-tools.tabs.services.no_description')]]
-            </h1>
-          </template>
-          <template is="dom-if" if="[[_description]]">
-            <div class="desc-container">
-              <h3>[[_description]]</h3>
-            </div>
-
-            <table class="attributes">
-              <tr>
-                <th>
-                  [[localize('ui.panel.developer-tools.tabs.services.column_parameter')]]
-                </th>
-                <th>
-                  [[localize('ui.panel.developer-tools.tabs.services.column_description')]]
-                </th>
-                <th>
-                  [[localize('ui.panel.developer-tools.tabs.services.column_example')]]
-                </th>
-              </tr>
+            <template is="dom-if" if="[[domainService]]">
+              <template is="dom-if" if="[[!_description]]">
+                [[localize('ui.panel.developer-tools.tabs.services.no_description')]]
+              </template>
+              <template is="dom-if" if="[[_description]]">
+                [[_description]]
+              </template>
+            </template>
+          </div>
+          <div class="card-content">
+            <template is="dom-if" if="[[_description]]">
               <template is="dom-if" if="[[!_attributes.length]]">
-                <tr>
-                  <td colspan="3">
-                    [[localize('ui.panel.developer-tools.tabs.services.no_parameters')]]
-                  </td>
-                </tr>
+                [[localize('ui.panel.developer-tools.tabs.services.no_parameters')]]
               </template>
-              <template is="dom-repeat" items="[[_attributes]]" as="attribute">
-                <tr>
-                  <td><pre>[[attribute.key]]</pre></td>
-                  <td>[[attribute.description]]</td>
-                  <td>[[attribute.example]]</td>
-                </tr>
-              </template>
-            </table>
 
-            <template is="dom-if" if="[[_attributes.length]]">
-              <mwc-button on-click="_fillExampleData">
-                [[localize('ui.panel.developer-tools.tabs.services.fill_example_data')]]
-              </mwc-button>
+              <template is="dom-if" if="[[_attributes.length]]">
+                <table class="attributes">
+                  <tr>
+                    <th>
+                      [[localize('ui.panel.developer-tools.tabs.services.column_parameter')]]
+                    </th>
+                    <th>
+                      [[localize('ui.panel.developer-tools.tabs.services.column_description')]]
+                    </th>
+                    <th>
+                      [[localize('ui.panel.developer-tools.tabs.services.column_example')]]
+                    </th>
+                  </tr>
+                  <template is="dom-repeat" items="[[_attributes]]" as="attribute">
+                    <tr>
+                      <td><pre>[[attribute.key]]</pre></td>
+                      <td>[[attribute.description]]</td>
+                      <td>[[attribute.example]]</td>
+                    </tr>
+                  </template>
+                </table>
+              </template>
+
+              <template is="dom-if" if="[[_attributes.length]]">
+                <mwc-button on-click="_fillExampleData">
+                  [[localize('ui.panel.developer-tools.tabs.services.fill_example_data')]]
+                </mwc-button>
+              </template>
             </template>
           </template>
-        </template>
+          </div>
+        </ha-card>
       </div>
     `;
   }
@@ -242,6 +247,7 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
         type: String,
         computed: "_computeDescription(hass, _domain, _service)",
       },
+
       rtl: {
         reflectToAttribute: true,
         computed: "_computeRTL(hass)",
@@ -271,7 +277,7 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
     return serviceDomains[domain][service].description;
   }
 
-  _computeServicedataKey(domainService) {
+  _computeServiceDataKey(domainService) {
     return `panel-dev-service-state-servicedata.${domainService}`;
   }
 
@@ -307,7 +313,8 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
     return ENTITY_COMPONENT_DOMAINS.includes(domain) ? [domain] : null;
   }
 
-  _callService() {
+  _callService(ev) {
+    const button = ev.target;
     if (this.parsedJSON === ERROR_SENTINEL) {
       showAlertDialog(this, {
         text: this.hass.localize(
@@ -316,10 +323,17 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
           this.serviceData
         ),
       });
+      button.actionError();
       return;
     }
-
-    this.hass.callService(this._domain, this._service, this.parsedJSON);
+    this.hass
+      .callService(this._domain, this._service, this.parsedJSON)
+      .then(() => {
+        button.actionSuccess();
+      })
+      .catch(() => {
+        button.actionError();
+      });
   }
 
   _fillExampleData() {

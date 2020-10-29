@@ -2,76 +2,71 @@ import { HomeAssistant } from "../../types";
 import { hassioApiResultExtractor, HassioResponse } from "./common";
 
 export interface HassioAddonInfo {
-  name: string;
-  slug: string;
-  description: string;
-  repository: "core" | "local" | string;
-  version: string;
-  state: "none" | "started" | "stopped";
-  installed: string | undefined;
-  detached: boolean;
+  advanced: boolean;
   available: boolean;
   build: boolean;
-  advanced: boolean;
-  url: string | null;
+  description: string;
+  detached: boolean;
   icon: boolean;
+  installed: boolean;
   logo: boolean;
+  name: string;
+  repository: "core" | "local" | string;
+  slug: string;
+  stage: "stable" | "experimental" | "deprecated";
+  state: "started" | "stopped" | null;
+  update_available: boolean;
+  url: string | null;
+  version_latest: string;
+  version: string;
 }
 
 export interface HassioAddonDetails extends HassioAddonInfo {
-  name: string;
-  slug: string;
-  description: string;
-  long_description: null | string;
-  auto_update: boolean;
-  url: null | string;
-  detached: boolean;
-  documentation: boolean;
-  available: boolean;
-  arch: "armhf" | "aarch64" | "i386" | "amd64";
-  machine: any;
-  homeassistant: string;
-  version_latest: string;
-  boot: "auto" | "manual";
-  build: boolean;
-  options: object;
-  network: null | object;
-  network_description: null | object;
-  host_network: boolean;
-  host_pid: boolean;
-  host_ipc: boolean;
-  host_dbus: boolean;
-  privileged: any;
   apparmor: "disable" | "default" | "profile";
-  devices: string[];
+  arch: "armhf" | "aarch64" | "i386" | "amd64";
+  audio_input: null | string;
+  audio_output: null | string;
+  audio: boolean;
+  auth_api: boolean;
   auto_uart: boolean;
-  icon: boolean;
-  logo: boolean;
-  stage: "stable" | "experimental" | "deprecated";
+  auto_update: boolean;
+  boot: "auto" | "manual";
   changelog: boolean;
+  devices: string[];
+  devicetree: boolean;
+  discovery: string[];
+  docker_api: boolean;
+  documentation: boolean;
+  full_access: boolean;
+  gpio: boolean;
   hassio_api: boolean;
   hassio_role: "default" | "homeassistant" | "manager" | "admin";
   homeassistant_api: boolean;
-  auth_api: boolean;
-  full_access: boolean;
+  homeassistant: string;
+  host_dbus: boolean;
+  host_ipc: boolean;
+  host_network: boolean;
+  host_pid: boolean;
+  ingress_entry: null | string;
+  ingress_panel: boolean;
+  ingress_url: null | string;
+  ingress: boolean;
+  ip_address: string;
+  kernel_modules: boolean;
+  long_description: null | string;
+  machine: any;
+  network_description: null | Record<string, string>;
+  network: null | Record<string, number>;
+  options: Record<string, unknown>;
+  privileged: any;
   protected: boolean;
   rating: "1-6";
-  stdin: boolean;
-  webui: null | string;
-  gpio: boolean;
-  kernel_modules: boolean;
-  devicetree: boolean;
-  docker_api: boolean;
-  audio: boolean;
-  audio_input: null | string;
-  audio_output: null | string;
   services_role: string[];
-  discovery: string[];
-  ip_address: string;
-  ingress: boolean;
-  ingress_panel: boolean;
-  ingress_entry: null | string;
-  ingress_url: null | string;
+  slug: string;
+  startup: "initialize" | "system" | "services" | "application" | "once";
+  stdin: boolean;
+  watchdog: null | boolean;
+  webui: null | string;
 }
 
 export interface HassioAddonsInfo {
@@ -94,11 +89,12 @@ export interface HassioAddonRepository {
 export interface HassioAddonSetOptionParams {
   audio_input?: string | null;
   audio_output?: string | null;
-  options?: object | null;
+  options?: Record<string, unknown> | null;
   boot?: "auto" | "manual";
   auto_update?: boolean;
   ingress_panel?: boolean;
-  network?: object | null;
+  network?: Record<string, unknown> | null;
+  watchdog?: boolean;
 }
 
 export const reloadHassioAddons = async (hass: HomeAssistant) => {
@@ -154,6 +150,19 @@ export const setHassioAddonOption = async (
     `hassio/addons/${slug}/options`,
     data
   );
+};
+
+export const validateHassioAddonOption = async (
+  hass: HomeAssistant,
+  slug: string
+) => {
+  return await hass.callApi<
+    HassioResponse<{ message: string; valid: boolean }>
+  >("POST", `hassio/addons/${slug}/options/validate`);
+};
+
+export const startHassioAddon = async (hass: HomeAssistant, slug: string) => {
+  return hass.callApi<string>("POST", `hassio/addons/${slug}/start`);
 };
 
 export const setHassioAddonSecurity = async (

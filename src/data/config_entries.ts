@@ -8,6 +8,7 @@ export interface ConfigEntry {
   state: string;
   connection_class: string;
   supports_options: boolean;
+  supports_unload: boolean;
 }
 
 export interface ConfigEntryMutableParams {
@@ -36,6 +37,11 @@ export const deleteConfigEntry = (hass: HomeAssistant, configEntryId: string) =>
   hass.callApi<{
     require_restart: boolean;
   }>("DELETE", `config/config_entries/entry/${configEntryId}`);
+
+export const reloadConfigEntry = (hass: HomeAssistant, configEntryId: string) =>
+  hass.callApi<{
+    require_restart: boolean;
+  }>("POST", `config/config_entries/entry/${configEntryId}/reload`);
 
 export const getConfigEntrySystemOptions = (
   hass: HomeAssistant,

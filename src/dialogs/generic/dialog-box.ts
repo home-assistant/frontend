@@ -5,19 +5,19 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
+import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-dialog";
 import "../../components/ha-switch";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { DialogParams } from "./show-dialog-box";
-import { fireEvent } from "../../common/dom/fire_event";
 
 @customElement("dialog-box")
 class DialogBox extends LitElement {
@@ -55,9 +55,10 @@ class DialogBox extends LitElement {
     return html`
       <ha-dialog
         open
-        scrimClickAction
-        escapeKeyAction
-        @close=${this._close}
+        ?scrimClickAction=${this._params.prompt}
+        ?escapeKeyAction=${this._params.prompt}
+        @closed=${this._dialogClosed}
+        defaultAction="ignore"
         .heading=${this._params.title
           ? this._params.title
           : this._params.confirmation &&
@@ -69,6 +70,7 @@ class DialogBox extends LitElement {
                 <p
                   class=${classMap({
                     "no-bottom-padding": Boolean(this._params.prompt),
+                    warning: Boolean(this._params.warning),
                   })}
                 >
                   ${this._params.text}
@@ -78,10 +80,10 @@ class DialogBox extends LitElement {
           ${this._params.prompt
             ? html`
                 <paper-input
-                  autofocus
+                  dialogInitialFocus
                   .value=${this._value}
-                  @value-changed=${this._valueChanged}
                   @keyup=${this._handleKeyUp}
+                  @value-changed=${this._valueChanged}
                   .label=${this._params.inputLabel
                     ? this._params.inputLabel
                     : ""}
@@ -100,7 +102,11 @@ class DialogBox extends LitElement {
               : this.hass.localize("ui.dialogs.generic.cancel")}
           </mwc-button>
         `}
-        <mwc-button @click=${this._confirm} slot="primaryAction">
+        <mwc-button
+          @click=${this._confirm}
+          ?dialogInitialFocus=${!this._params.prompt}
+          slot="primaryAction"
+        >
           ${this._params.confirmText
             ? this._params.confirmText
             : this.hass.localize("ui.dialogs.generic.ok")}
@@ -114,8 +120,8 @@ class DialogBox extends LitElement {
   }
 
   private _dismiss(): void {
-    if (this._params!.cancel) {
-      this._params!.cancel();
+    if (this._params?.cancel) {
+      this._params.cancel();
     }
     this._close();
   }
@@ -133,7 +139,17 @@ class DialogBox extends LitElement {
     this._close();
   }
 
+  private _dialogClosed(ev) {
+    if (ev.detail.action === "ignore") {
+      return;
+    }
+    this.closeDialog();
+  }
+
   private _close(): void {
+    if (!this._params) {
+      return;
+    }
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -164,6 +180,9 @@ class DialogBox extends LitElement {
         ha-dialog {
           /* Place above other dialogs */
           --dialog-z-index: 104;
+        }
+        .warning {
+          color: var(--warning-color);
         }
       `,
     ];

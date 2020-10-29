@@ -57,7 +57,9 @@ import { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "../../../components/ha-svg-icon";
+import { showToast } from "../../../util/toast";
 import { mdiContentSave } from "@mdi/js";
+import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 
 interface DeviceEntities {
   id: string;
@@ -70,7 +72,9 @@ interface DeviceEntitiesLookup {
 }
 
 @customElement("ha-scene-editor")
-export class HaSceneEditor extends SubscribeMixin(LitElement) {
+export class HaSceneEditor extends SubscribeMixin(
+  KeyboardShortcutMixin(LitElement)
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
@@ -198,6 +202,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
           ? ""
           : html`
               <ha-icon-button
+                class="warning"
                 slot="toolbar-icon"
                 title="${this.hass.localize(
                   "ui.panel.config.scene.picker.delete_scene"
@@ -264,7 +269,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
                     (device) =>
                       html`
                         <ha-card>
-                          <div class="card-header">
+                          <h1 class="card-header">
                             ${device.name}
                             <ha-icon-button
                               icon="hass:delete"
@@ -274,7 +279,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
                               .device=${device.id}
                               @click=${this._deleteDevice}
                             ></ha-icon-button>
-                          </div>
+                          </h1>
                           ${device.entities.map((entityId) => {
                             const entityStateObj = this.hass.states[entityId];
                             if (!entityStateObj) {
@@ -399,16 +404,12 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
             : ""}
         </div>
         <mwc-fab
-          ?is-wide=${this.isWide}
-          ?narrow=${this.narrow}
-          ?dirty=${this._dirty}
+          slot="fab"
           .title=${this.hass.localize("ui.panel.config.scene.editor.save")}
           @click=${this._saveScene}
-          class=${classMap({
-            rtl: computeRTL(this.hass),
-          })}
+          class=${classMap({ dirty: this._dirty })}
         >
-          <ha-svg-icon slot="icon" path=${mdiContentSave}></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
         </mwc-fab>
       </hass-tabs-subpage>
     `;
@@ -715,8 +716,15 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
       }
     } catch (err) {
       this._errors = err.body.message || err.message;
+      showToast(this, {
+        message: err.body.message || err.message,
+      });
       throw err;
     }
+  }
+
+  protected handleKeyboardSave() {
+    this._saveScene();
   }
 
   static get styles(): CSSResult[] {
@@ -731,7 +739,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
           font-weight: bold;
           color: var(--error-color);
         }
-        .content {
+        ha-config-section:last-child {
           padding-bottom: 20px;
         }
         .triggers,
@@ -778,35 +786,12 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
           color: var(--primary-color);
         }
         mwc-fab {
-          position: fixed;
-          bottom: 16px;
-          right: 16px;
-          z-index: 1;
-          margin-bottom: -80px;
-          transition: margin-bottom 0.3s;
+          position: relative;
+          bottom: calc(-80px - env(safe-area-inset-bottom));
+          transition: bottom 0.3s;
         }
-
-        mwc-fab[is-wide] {
-          bottom: 24px;
-          right: 24px;
-        }
-        mwc-fab[narrow] {
-          bottom: 84px;
-          margin-bottom: -140px;
-        }
-        mwc-fab[dirty] {
-          margin-bottom: 0;
-        }
-
-        mwc-fab.rtl {
-          right: auto;
-          left: 16px;
-        }
-
-        mwc-fab[is-wide].rtl {
-          bottom: 24px;
-          right: auto;
-          left: 24px;
+        mwc-fab.dirty {
+          bottom: 0;
         }
       `,
     ];

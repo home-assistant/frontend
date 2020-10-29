@@ -1,33 +1,33 @@
-import "@polymer/app-layout/app-header-layout/app-header-layout";
+import { mdiRefresh } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "../../components/ha-icon-button";
-import "../../components/ha-circular-progress";
-import { computeRTL } from "../../common/util/compute_rtl";
-import "../../components/entity/ha-entity-picker";
-import "../../components/ha-menu-button";
-import "./ha-logbook";
 import {
-  LitElement,
-  property,
-  internalProperty,
+  css,
   customElement,
   html,
-  css,
+  internalProperty,
+  LitElement,
+  property,
   PropertyValues,
 } from "lit-element";
-import { HomeAssistant } from "../../types";
-import { haStyle } from "../../resources/styles";
-import { fetchUsers } from "../../data/user";
-import { fetchPersons } from "../../data/person";
+import { computeRTL } from "../../common/util/compute_rtl";
+import "../../components/entity/ha-entity-picker";
+import "../../components/ha-circular-progress";
+import "../../components/ha-date-range-picker";
+import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
+import "../../components/ha-icon-button";
+import "../../components/ha-menu-button";
 import {
   clearLogbookCache,
   getLogbookData,
   LogbookEntry,
 } from "../../data/logbook";
-import { mdiRefresh } from "@mdi/js";
-import "../../components/ha-date-range-picker";
-import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
+import { fetchPersons } from "../../data/person";
+import { fetchUsers } from "../../data/user";
+import "../../layouts/ha-app-layout";
+import { haStyle } from "../../resources/styles";
+import { HomeAssistant } from "../../types";
+import "./ha-logbook";
 
 @customElement("ha-panel-logbook")
 export class HaPanelLogbook extends LitElement {
@@ -74,7 +74,7 @@ export class HaPanelLogbook extends LitElement {
 
   protected render() {
     return html`
-      <app-header-layout>
+      <ha-app-layout>
         <app-header slot="header" fixed>
           <app-toolbar>
             <ha-menu-button
@@ -86,7 +86,7 @@ export class HaPanelLogbook extends LitElement {
               @click=${this._refreshLogbook}
               .disabled=${this._isLoading}
             >
-              <ha-svg-icon path=${mdiRefresh}></ha-svg-icon>
+              <ha-svg-icon .path=${mdiRefresh}></ha-svg-icon>
             </mwc-icon-button>
           </app-toolbar>
         </app-header>
@@ -115,18 +115,23 @@ export class HaPanelLogbook extends LitElement {
         </div>
 
         ${this._isLoading
-          ? html`<div class="progress-wrapper">
-              <ha-circular-progress
-                active
-                alt=${this.hass.localize("ui.common.loading")}
-              ></ha-circular-progress>
-            </div>`
-          : html`<ha-logbook
-              .hass=${this.hass}
-              .entries=${this._entries}
-              .userIdToName=${this._userIdToName}
-            ></ha-logbook>`}
-      </app-header-layout>
+          ? html`
+              <div class="progress-wrapper">
+                <ha-circular-progress
+                  active
+                  alt=${this.hass.localize("ui.common.loading")}
+                ></ha-circular-progress>
+              </div>
+            `
+          : html`
+              <ha-logbook
+                .hass=${this.hass}
+                .entries=${this._entries}
+                .userIdToName=${this._userIdToName}
+                virtualize
+              ></ha-logbook>
+            `}
+      </ha-app-layout>
     `;
   }
 
@@ -267,6 +272,7 @@ export class HaPanelLogbook extends LitElement {
       ),
       this._fetchUserDone,
     ]);
+
     // Fixed in TS 3.9 but upgrade out of scope for this PR.
     // @ts-ignore
     this._entries = entries;
@@ -321,9 +327,6 @@ export class HaPanelLogbook extends LitElement {
           display: inline-block;
           flex-grow: 1;
           max-width: 400px;
-          --paper-input-suffix: {
-            height: 24px;
-          }
         }
 
         :host([narrow]) ha-entity-picker {

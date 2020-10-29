@@ -140,8 +140,8 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   speedChanged(ev) {
-    var oldVal = this.stateObj.attributes.speed;
-    var newVal = ev.detail.value;
+    const oldVal = this.stateObj.attributes.speed;
+    const newVal = ev.detail.value;
 
     if (!newVal || oldVal === newVal) return;
 
@@ -152,8 +152,8 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   oscillationToggleChanged(ev) {
-    var oldVal = this.stateObj.attributes.oscillating;
-    var newVal = ev.target.checked;
+    const oldVal = this.stateObj.attributes.oscillating;
+    const newVal = ev.target.checked;
 
     if (oldVal === newVal) return;
 

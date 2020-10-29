@@ -97,6 +97,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
               </h3>
               <a
                 href=${`/config/integrations#config_entry=${relatedConfigEntryId}`}
+                @click=${this._navigateAwayClose}
               >
                 ${this.hass.localize(`component.${entry.domain}.title`)}:
                 ${entry.title}
@@ -116,7 +117,10 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
               <h3>
                 ${this.hass.localize("ui.components.related-items.device")}:
               </h3>
-              <a href="/config/devices/device/${relatedDeviceId}">
+              <a
+                href="/config/devices/device/${relatedDeviceId}"
+                @click=${this._navigateAwayClose}
+              >
                 ${device.name_by_user || device.name}
               </a>
             `;
@@ -134,7 +138,10 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
               <h3>
                 ${this.hass.localize("ui.components.related-items.area")}:
               </h3>
-              <a href="/config/areas/area/${relatedAreaId}">
+              <a
+                href="/config/areas/area/${relatedAreaId}"
+                @click=${this._navigateAwayClose}
+              >
                 ${area.name}
               </a>
             `;
@@ -276,6 +283,12 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
           `
         : ""}
     `;
+  }
+
+  private async _navigateAwayClose() {
+    // allow new page to open before closing dialog
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    fireEvent(this, "close-dialog");
   }
 
   private async _findRelated() {

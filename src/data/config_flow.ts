@@ -11,7 +11,10 @@ export const DISCOVERY_SOURCES = [
   "ssdp",
   "zeroconf",
   "discovery",
+  "mqtt",
 ];
+
+export const ATTENTION_SOURCES = ["reauth"];
 
 export const createConfigFlow = (hass: HomeAssistant, handler: string) =>
   hass.callApi<DataEntryFlowStep>("POST", "config/config_entries/flow", {

@@ -182,9 +182,9 @@ class HaEntityConfig extends PolymerElement {
       return;
     }
 
-    var oldEntityId = oldEntities[this.selectedEntity].entity_id;
+    const oldEntityId = oldEntities[this.selectedEntity].entity_id;
 
-    var newIndex = entities.findIndex(function (ent) {
+    const newIndex = entities.findIndex(function (ent) {
       return ent.entity_id === oldEntityId;
     });
 
@@ -198,12 +198,12 @@ class HaEntityConfig extends PolymerElement {
 
   entityChanged(index) {
     if (!this.entities || !this.formEl) return;
-    var entity = this.entities[index];
+    const entity = this.entities[index];
     if (!entity) return;
 
     this.formState = "loading";
     // eslint-disable-next-line @typescript-eslint/no-this-alias
-    var el = this;
+    const el = this;
     this.formEl.loadEntity(entity).then(function () {
       el.formState = "editing";
     });
@@ -212,7 +212,7 @@ class HaEntityConfig extends PolymerElement {
   saveEntity() {
     this.formState = "saving";
     // eslint-disable-next-line @typescript-eslint/no-this-alias
-    var el = this;
+    const el = this;
     this.formEl.saveEntity().then(function () {
       el.formState = "editing";
     });

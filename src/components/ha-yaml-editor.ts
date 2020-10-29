@@ -20,7 +20,7 @@ declare global {
   }
 }
 
-const isEmpty = (obj: object): boolean => {
+const isEmpty = (obj: Record<string, unknown>): boolean => {
   if (typeof obj !== "object") {
     return false;
   }
@@ -44,12 +44,14 @@ export class HaYamlEditor extends LitElement {
 
   @internalProperty() private _yaml = "";
 
-  @query("ha-code-editor") private _editor?: HaCodeEditor;
+  @query("ha-code-editor", true) private _editor?: HaCodeEditor;
 
   public setValue(value): void {
     try {
       this._yaml = value && !isEmpty(value) ? safeDump(value) : "";
     } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
       alert(`There was an error converting to YAML: ${err}`);
     }
     afterNextRender(() => {
@@ -102,6 +104,10 @@ export class HaYamlEditor extends LitElement {
     this.isValid = isValid;
 
     fireEvent(this, "value-changed", { value: parsed, isValid } as any);
+  }
+
+  get yaml() {
+    return this._editor?.value;
   }
 }
 

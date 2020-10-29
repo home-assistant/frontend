@@ -84,7 +84,7 @@ function initPushNotifications() {
   }
 
   self.addEventListener("push", function (event) {
-    var data;
+    let data;
     if (event.data) {
       data = event.data.json();
       if (data.dismiss) {
@@ -113,8 +113,6 @@ function initPushNotifications() {
   });
 
   self.addEventListener("notificationclick", function (event) {
-    var url;
-
     notificationEventCallback("clicked", event);
 
     event.notification.close();
@@ -127,7 +125,7 @@ function initPushNotifications() {
       return;
     }
 
-    url = event.notification.data.url;
+    const url = event.notification.data.url;
 
     if (!url) return;
 
@@ -137,8 +135,8 @@ function initPushNotifications() {
           type: "window",
         })
         .then(function (windowClients) {
-          var i;
-          var client;
+          let i;
+          let client;
           for (i = 0; i < windowClients.length; i++) {
             client = windowClients[i];
             if (client.url === url && "focus" in client) {

@@ -21,6 +21,11 @@ export default function relativeTime(
   const tense = delta >= 0 ? "past" : "future";
   delta = Math.abs(delta);
   let roundedDelta = Math.round(delta);
+
+  if (roundedDelta === 0) {
+    return localize("ui.components.relative_time.just_now");
+  }
+
   let unit = "week";
 
   for (let i = 0; i < tests.length; i++) {
@@ -33,13 +38,11 @@ export default function relativeTime(
     roundedDelta = Math.round(delta);
   }
 
-  const timeDesc = localize(
-    `ui.components.relative_time.duration.${unit}`,
+  return localize(
+    options.includeTense === false
+      ? `ui.components.relative_time.duration.${unit}`
+      : `ui.components.relative_time.${tense}_duration.${unit}`,
     "count",
     roundedDelta
   );
-
-  return options.includeTense === false
-    ? timeDesc
-    : localize(`ui.components.relative_time.${tense}`, "time", timeDesc);
 }

@@ -61,6 +61,7 @@ class ConfigCoreForm extends LitElement {
           <div class="row">
             <ha-location-editor
               class="flex"
+              .hass=${this.hass}
               .location=${this._locationValue}
               @change=${this._locationChanged}
             ></ha-location-editor>

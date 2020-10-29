@@ -27,6 +27,7 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import type { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { domainIcon } from "../../../common/entity/domain_icon";
 
 @customElement("entity-registry-settings")
 export class EntityRegistrySettings extends LitElement {
@@ -73,7 +74,7 @@ export class EntityRegistrySettings extends LitElement {
     return html`
       ${!stateObj
         ? html`
-            <div>
+            <div class="container">
               ${this.hass!.localize(
                 "ui.dialogs.entity_registry.editor.unavailable"
               )}
@@ -81,7 +82,7 @@ export class EntityRegistrySettings extends LitElement {
           `
         : ""}
       ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
-      <div class="form">
+      <div class="form container">
         <paper-input
           .value=${this._name}
           @value-changed=${this._nameChanged}
@@ -93,7 +94,11 @@ export class EntityRegistrySettings extends LitElement {
           .value=${this._icon}
           @value-changed=${this._iconChanged}
           .label=${this.hass.localize("ui.dialogs.entity_registry.editor.icon")}
-          .placeholder=${this.entry.original_icon}
+          .placeholder=${this.entry.original_icon ||
+          domainIcon(
+            computeDomain(this.entry.entity_id),
+            this.hass.states[this.entry.entity_id]
+          )}
           .disabled=${this._submitting}
           .errorMessage=${this.hass.localize(
             "ui.dialogs.entity_registry.editor.icon_error"
@@ -227,8 +232,10 @@ export class EntityRegistrySettings extends LitElement {
         :host {
           display: block;
         }
-        .form {
+        .container {
           padding: 20px 24px;
+        }
+        .form {
           margin-bottom: 53px;
         }
         .buttons {
@@ -241,6 +248,7 @@ export class EntityRegistrySettings extends LitElement {
           display: flex;
           justify-content: space-between;
           padding: 8px;
+          padding-bottom: max(env(safe-area-inset-bottom), 8px);
           background-color: var(--mdc-theme-surface, #fff);
         }
         ha-switch {

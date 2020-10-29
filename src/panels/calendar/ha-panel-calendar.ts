@@ -11,7 +11,7 @@ import {
 } from "lit-element";
 import { styleMap } from "lit-html/directives/style-map";
 
-import "@polymer/app-layout/app-header-layout/app-header-layout";
+import "../../layouts/ha-app-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@material/mwc-checkbox";
@@ -53,17 +53,11 @@ class PanelCalendar extends LitElement {
       selected: true,
       calendar,
     }));
-
-    if (!this._start || !this._end) {
-      return;
-    }
-
-    this._fetchEvents(this._start, this._end, this._selectedCalendars);
   }
 
   protected render(): TemplateResult {
     return html`
-      <app-header-layout>
+      <ha-app-layout>
         <app-header fixed slot="header">
           <app-toolbar>
             <ha-menu-button
@@ -88,8 +82,8 @@ class PanelCalendar extends LitElement {
                   <mwc-formfield .label=${selCal.calendar.name}>
                     <mwc-checkbox
                       style=${styleMap({
-                        "--mdc-theme-secondary":
-                          selCal.calendar.backgroundColor,
+                        "--mdc-theme-secondary": selCal.calendar
+                          .backgroundColor!,
                       })}
                       .value=${selCal.calendar.entity_id}
                       .checked=${selCal.selected}
@@ -106,7 +100,7 @@ class PanelCalendar extends LitElement {
             @view-changed=${this._handleViewChanged}
           ></ha-full-calendar>
         </div>
-      </app-header-layout>
+      </ha-app-layout>
     `;
   }
 
@@ -185,7 +179,7 @@ class PanelCalendar extends LitElement {
         }
 
         :host(:not([narrow])) .content {
-          height: calc(100vh - 64px);
+          height: calc(100vh - var(--header-height);
         }
 
         .calendar-list {

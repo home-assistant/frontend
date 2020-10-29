@@ -56,7 +56,7 @@ export default class MediaPlayerEntity {
   }
 
   get currentProgress() {
-    var progress = this._attr.media_position;
+    let progress = this._attr.media_position;
     if (this.isPlaying) {
       progress +=
         (Date.now() -
@@ -123,7 +123,7 @@ export default class MediaPlayerEntity {
       return this._attr.media_artist;
     }
     if (this.isTVShow) {
-      var text = this._attr.media_series_title;
+      let text = this._attr.media_series_title;
 
       if (this._attr.media_season) {
         text += " S" + this._attr.media_season;

@@ -95,7 +95,7 @@ class HaCoverControls extends PolymerElement {
     if (stateObj.state === UNAVAILABLE) {
       return true;
     }
-    var assumedState = stateObj.attributes.assumed_state === true;
+    const assumedState = stateObj.attributes.assumed_state === true;
     return (entityObj.isFullyOpen || entityObj.isOpening) && !assumedState;
   }
 
@@ -103,7 +103,7 @@ class HaCoverControls extends PolymerElement {
     if (stateObj.state === UNAVAILABLE) {
       return true;
     }
-    var assumedState = stateObj.attributes.assumed_state === true;
+    const assumedState = stateObj.attributes.assumed_state === true;
     return (entityObj.isFullyClosed || entityObj.isClosing) && !assumedState;
   }
 

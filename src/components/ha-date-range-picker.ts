@@ -60,7 +60,7 @@ export class HaDateRangePicker extends LitElement {
         ?ranges=${this.ranges !== undefined}
       >
         <div slot="input" class="date-range-inputs">
-          <ha-svg-icon path=${mdiCalendar}></ha-svg-icon>
+          <ha-svg-icon .path=${mdiCalendar}></ha-svg-icon>
           <paper-input
             .value=${formatDateTime(this.startDate, this.hass.language)}
             .label=${this.hass.localize(
@@ -163,13 +163,6 @@ export class HaDateRangePicker extends LitElement {
         border-right: 1px solid var(--divider-color);
       }
 
-      @media only screen and (max-width: 800px) {
-        .date-range-ranges {
-          border-right: none;
-          border-bottom: 1px solid var(--divider-color);
-        }
-      }
-
       .date-range-footer {
         display: flex;
         justify-content: flex-end;
@@ -179,11 +172,29 @@ export class HaDateRangePicker extends LitElement {
 
       paper-input {
         display: inline-block;
-        max-width: 200px;
+        max-width: 250px;
+        min-width: 200px;
       }
 
       paper-input:last-child {
         margin-left: 8px;
+      }
+
+      @media only screen and (max-width: 800px) {
+        .date-range-ranges {
+          border-right: none;
+          border-bottom: 1px solid var(--divider-color);
+        }
+      }
+
+      @media only screen and (max-width: 500px) {
+        paper-input {
+          min-width: inherit;
+        }
+
+        ha-svg-icon {
+          display: none;
+        }
       }
     `;
   }

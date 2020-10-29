@@ -1,13 +1,13 @@
-import "../../../components/ha-icon-button";
+import { mdiDotsVertical } from "@mdi/js";
 import "@thomasloven/round-slider";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -20,7 +20,8 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-card";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import "../../../components/ha-icon-button";
+import { UNAVAILABLE, UNAVAILABLE_STATES } from "../../../data/entity";
 import { SUPPORT_BRIGHTNESS } from "../../../data/light";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant, LightEntity } from "../../../types";
@@ -67,7 +68,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
   private _brightnessTimout?: number;
 
   public getCardSize(): number {
-    return 4;
+    return 5;
   }
 
   public setConfig(config: LightCardConfig): void {
@@ -76,8 +77,9 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     }
 
     this._config = {
-      ...config,
       tap_action: { action: "toggle" },
+      hold_action: { action: "more-info" },
+      ...config,
     };
   }
 
@@ -97,22 +99,25 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     }
 
     const brightness =
-      Math.round((stateObj.attributes.brightness / 254) * 100) || 0;
+      Math.round((stateObj.attributes.brightness / 255) * 100) || 0;
 
     return html`
       <ha-card>
-        <ha-icon-button
-          icon="hass:dots-vertical"
+        <mwc-icon-button
           class="more-info"
+          label="Open more info"
           @click=${this._handleMoreInfo}
           tabindex="0"
-        ></ha-icon-button>
+        >
+          <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
+        </mwc-icon-button>
 
         <div class="content">
           <div id="controls">
             <div id="slider">
               <round-slider
-                min="0"
+                min="1"
+                max="100"
                 .value=${brightness}
                 .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
                 @value-changing=${this._dragEvent}
@@ -130,7 +135,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                     SUPPORT_BRIGHTNESS
                   ),
                   "state-on": stateObj.state === "on",
-                  "state-unavailable": stateObj.state === "unavailable",
+                  "state-unavailable": stateObj.state === UNAVAILABLE,
                 })}"
                 .icon=${this._config.icon || stateIcon(stateObj)}
                 .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
@@ -263,10 +268,6 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
-      :host {
-        display: block;
-      }
-
       ha-card {
         height: 100%;
         box-sizing: border-box;
@@ -284,7 +285,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
         right: 0;
         border-radius: 100%;
         color: var(--secondary-text-color);
-        z-index: 25;
+        z-index: 1;
       }
 
       .content {

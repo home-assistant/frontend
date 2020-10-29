@@ -1,9 +1,8 @@
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
-import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-icon-button";
-import "../../../../components/ha-button-menu";
-import "../../../../components/ha-svg-icon";
-import { mdiDotsVertical, mdiArrowUp, mdiArrowDown } from "@mdi/js";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import "@material/mwc-list/mwc-list-item";
+import { mdiArrowDown, mdiArrowUp, mdiDotsVertical } from "@mdi/js";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
@@ -12,26 +11,31 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
+  PropertyValues,
 } from "lit-element";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
+import "../../../../components/ha-svg-icon";
 import type { Action } from "../../../../data/script";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
+import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import { handleStructError } from "../../../lovelace/common/structs/handle-errors";
+import "./types/ha-automation-action-choose";
 import "./types/ha-automation-action-condition";
 import "./types/ha-automation-action-delay";
 import "./types/ha-automation-action-device_id";
 import "./types/ha-automation-action-event";
+import "./types/ha-automation-action-repeat";
 import "./types/ha-automation-action-scene";
 import "./types/ha-automation-action-service";
+import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
-import { handleStructError } from "../../../lovelace/common/structs/handle-errors";
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
-import { haStyle } from "../../../../resources/styles";
 
 const OPTIONS = [
   "condition",
@@ -41,6 +45,9 @@ const OPTIONS = [
   "scene",
   "service",
   "wait_template",
+  "wait_for_trigger",
+  "repeat",
+  "choose",
 ];
 
 const getType = (action: Action) => {
@@ -96,6 +103,16 @@ export default class HaAutomationActionRow extends LitElement {
 
   @internalProperty() private _yamlMode = false;
 
+  protected updated(changedProperties: PropertyValues) {
+    if (!changedProperties.has("action")) {
+      return;
+    }
+    this._uiModeAvailable = Boolean(getType(this.action));
+    if (!this._uiModeAvailable && !this._yamlMode) {
+      this._yamlMode = true;
+    }
+  }
+
   protected render() {
     const type = getType(this.action);
     const selected = type ? OPTIONS.indexOf(type) : -1;
@@ -116,7 +133,7 @@ export default class HaAutomationActionRow extends LitElement {
                     )}
                     @click=${this._moveUp}
                   >
-                    <ha-svg-icon path=${mdiArrowUp}></ha-svg-icon>
+                    <ha-svg-icon .path=${mdiArrowUp}></ha-svg-icon>
                   </mwc-icon-button>
                 `
               : ""}
@@ -131,7 +148,7 @@ export default class HaAutomationActionRow extends LitElement {
                     )}
                     @click=${this._moveDown}
                   >
-                    <ha-svg-icon path=${mdiArrowDown}></ha-svg-icon>
+                    <ha-svg-icon .path=${mdiArrowDown}></ha-svg-icon>
                   </mwc-icon-button>
                 `
               : ""}
@@ -140,7 +157,7 @@ export default class HaAutomationActionRow extends LitElement {
                 slot="trigger"
                 .title=${this.hass.localize("ui.common.menu")}
                 .label=${this.hass.localize("ui.common.overflow_menu")}
-                ><ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+                ><ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
               </mwc-icon-button>
               <mwc-list-item .disabled=${!this._uiModeAvailable}>
                 ${yamlMode
@@ -151,12 +168,12 @@ export default class HaAutomationActionRow extends LitElement {
                       "ui.panel.config.automation.editor.edit_yaml"
                     )}
               </mwc-list-item>
-              <mwc-list-item disabled>
+              <mwc-list-item>
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.actions.duplicate"
                 )}
               </mwc-list-item>
-              <mwc-list-item>
+              <mwc-list-item class="warning">
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.actions.delete"
                 )}
@@ -246,6 +263,7 @@ export default class HaAutomationActionRow extends LitElement {
         this._switchYamlMode();
         break;
       case 1:
+        fireEvent(this, "duplicate");
         break;
       case 2:
         this._onDelete();
@@ -318,7 +336,6 @@ export default class HaAutomationActionRow extends LitElement {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
         }
         .warning {
-          color: var(--warning-color);
           margin-bottom: 8px;
         }
         .warning ul {

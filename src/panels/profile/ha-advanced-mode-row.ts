@@ -14,7 +14,7 @@ import {
   getOptimisticFrontendUserDataCollection,
 } from "../../data/frontend";
 import { HomeAssistant } from "../../types";
-import "./ha-settings-row";
+import "../../components/ha-settings-row";
 
 @customElement("ha-advanced-mode-row")
 class AdvancedModeRow extends LitElement {

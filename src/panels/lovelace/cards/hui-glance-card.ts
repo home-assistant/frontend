@@ -3,9 +3,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -20,18 +20,22 @@ import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
-import { ActionHandlerEvent } from "../../../data/lovelace";
+import {
+  ActionHandlerEvent,
+  CallServiceActionConfig,
+  MoreInfoActionConfig,
+} from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entites";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { processConfigEntities } from "../common/process-config-entities";
+import "../components/hui-timestamp-display";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 import "../components/hui-warning-element";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
-import "../components/hui-timestamp-display";
 import { GlanceCardConfig, GlanceConfigEntity } from "./types";
-import { createEntityNotFoundWarning } from "../components/hui-warning";
 
 @customElement("hui-glance-card")
 export class HuiGlanceCard extends LitElement implements LovelaceCard {
@@ -69,13 +73,14 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
   public getCardSize(): number {
     const rowHeight =
       (this._config!.show_icon ? 1 : 0) +
-        (this._config!.show_name && this._config!.show_state ? 1 : 0) || 1;
+      (this._config!.show_name ? 1 : 0) +
+      (this._config!.show_state ? 1 : 0);
 
     const numRows = Math.ceil(
       this._configEntities!.length / (this._config!.columns || 5)
     );
 
-    return (this._config!.title ? 1 : 0) + rowHeight * numRows;
+    return (this._config!.title ? 2 : 0) + rowHeight * numRows;
   }
 
   public setConfig(config: GlanceCardConfig): void {
@@ -86,7 +91,14 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
       state_color: true,
       ...config,
     };
-    const entities = processConfigEntities<GlanceConfigEntity>(config.entities);
+    const entities = processConfigEntities<GlanceConfigEntity>(
+      config.entities
+    ).map((entityConf) => {
+      return {
+        hold_action: { action: "more-info" } as MoreInfoActionConfig,
+        ...entityConf,
+      };
+    });
 
     for (const entity of entities) {
       if (
@@ -95,7 +107,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
           !entity.tap_action.service) ||
         (entity.hold_action &&
           entity.hold_action.action === "call-service" &&
-          !entity.hold_action.service)
+          !(entity.hold_action as CallServiceActionConfig).service)
       ) {
         throw new Error(
           'Missing required property "service" when tap_action or hold_action is call-service'
@@ -178,10 +190,15 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
+      ha-card {
+        height: 100%;
+      }
       .entities {
         display: flex;
         padding: 0 16px 4px;
         flex-wrap: wrap;
+        box-sizing: border-box;
+        align-content: center;
       }
       .entities.no-header {
         padding-top: 16px;

@@ -1,4 +1,4 @@
-import "@polymer/app-layout/app-header-layout/app-header-layout";
+import "../../layouts/ha-app-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { computeRTL } from "../../common/util/compute_rtl";
@@ -16,6 +16,7 @@ import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
 import "../../components/ha-date-range-picker";
+import "../../components/entity/ha-entity-picker";
 import { fetchDate, computeHistory } from "../../data/history";
 import "../../components/ha-circular-progress";
 
@@ -56,7 +57,7 @@ class HaPanelHistory extends LitElement {
 
   protected render() {
     return html`
-      <app-header-layout>
+      <ha-app-layout>
         <app-header slot="header" fixed>
           <app-toolbar>
             <ha-menu-button
@@ -77,12 +78,24 @@ class HaPanelHistory extends LitElement {
               .ranges=${this._ranges}
               @change=${this._dateRangeChanged}
             ></ha-date-range-picker>
+
+            <ha-entity-picker
+              .hass=${this.hass}
+              .value=${this._entityId}
+              .label=${this.hass.localize(
+                "ui.components.entity.entity-picker.entity"
+              )}
+              .disabled=${this._isLoading}
+              @change=${this._entityPicked}
+            ></ha-entity-picker>
           </div>
           ${this._isLoading
-            ? html`<ha-circular-progress
-                active
-                alt=${this.hass.localize("ui.common.loading")}
-              ></ha-circular-progress>`
+            ? html`<div class="progress-wrapper">
+                <ha-circular-progress
+                  active
+                  alt=${this.hass.localize("ui.common.loading")}
+                ></ha-circular-progress>
+              </div>`
             : html`
                 <state-history-charts
                   .hass=${this.hass}
@@ -93,7 +106,7 @@ class HaPanelHistory extends LitElement {
                 </state-history-charts>
               `}
         </div>
-      </app-header-layout>
+      </ha-app-layout>
     `;
   }
 
@@ -168,7 +181,8 @@ class HaPanelHistory extends LitElement {
     const dateHistory = await fetchDate(
       this.hass,
       this._startDate,
-      this._endDate
+      this._endDate,
+      this._entityId
     );
     this._stateHistory = computeHistory(
       this.hass,
@@ -189,6 +203,10 @@ class HaPanelHistory extends LitElement {
     this._endDate = endDate;
   }
 
+  private _entityPicked(ev) {
+    this._entityId = ev.target.value;
+  }
+
   static get styles() {
     return [
       haStyle,
@@ -196,11 +214,44 @@ class HaPanelHistory extends LitElement {
         .content {
           padding: 0 16px 16px;
         }
+
+        .progress-wrapper {
+          height: calc(100vh - 136px);
+        }
+
+        :host([narrow]) .progress-wrapper {
+          height: calc(100vh - 198px);
+        }
+
+        .progress-wrapper {
+          position: relative;
+        }
+
+        ha-date-range-picker {
+          margin-right: 16px;
+          max-width: 100%;
+        }
+
+        :host([narrow]) ha-date-range-picker {
+          margin-right: 0;
+        }
+
         ha-circular-progress {
           position: absolute;
           left: 50%;
           top: 50%;
           transform: translate(-50%, -50%);
+        }
+
+        ha-entity-picker {
+          display: inline-block;
+          flex-grow: 1;
+          max-width: 400px;
+        }
+
+        :host([narrow]) ha-entity-picker {
+          max-width: none;
+          width: 100%;
         }
       `,
     ];

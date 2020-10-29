@@ -11,9 +11,17 @@ import { HaDeviceAutomationPicker } from "./ha-device-automation-picker";
 class HaDeviceConditionPicker extends HaDeviceAutomationPicker<
   DeviceCondition
 > {
-  protected NO_AUTOMATION_TEXT = "No conditions";
+  protected get NO_AUTOMATION_TEXT() {
+    return this.hass.localize(
+      "ui.panel.config.devices.automation.conditions.no_conditions"
+    );
+  }
 
-  protected UNKNOWN_AUTOMATION_TEXT = "Unknown condition";
+  protected get UNKNOWN_AUTOMATION_TEXT() {
+    return this.hass.localize(
+      "ui.panel.config.devices.automation.conditions.unknown_condition"
+    );
+  }
 
   constructor() {
     super(

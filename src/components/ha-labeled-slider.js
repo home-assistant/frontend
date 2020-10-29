@@ -2,7 +2,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "./ha-icon";
-import "./ha-paper-slider";
+import "./ha-slider";
 
 class HaLabeledSlider extends PolymerElement {
   static get template() {
@@ -14,8 +14,8 @@ class HaLabeledSlider extends PolymerElement {
         }
 
         .title {
-          margin-bottom: 16px;
-          color: var(--secondary-text-color);
+          margin-bottom: 8px;
+          color: var(--primary-text-color);
         }
 
         .slider-container {
@@ -27,7 +27,7 @@ class HaLabeledSlider extends PolymerElement {
           color: var(--secondary-text-color);
         }
 
-        ha-paper-slider {
+        ha-slider {
           flex-grow: 1;
           background-image: var(--ha-slider-background);
         }
@@ -37,15 +37,14 @@ class HaLabeledSlider extends PolymerElement {
       <div class="extra-container"><slot name="extra"></slot></div>
       <div class="slider-container">
         <ha-icon icon="[[icon]]" hidden$="[[!icon]]"></ha-icon>
-        <ha-paper-slider
+        <ha-slider
           min="[[min]]"
           max="[[max]]"
           step="[[step]]"
           pin="[[pin]]"
           disabled="[[disabled]]"
-          disabled="[[disabled]]"
           value="{{value}}"
-        ></ha-paper-slider>
+        ></ha-slider>
       </div>
     `;
   }

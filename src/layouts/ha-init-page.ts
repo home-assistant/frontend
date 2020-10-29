@@ -60,6 +60,7 @@ class HaInitPage extends LitElement {
       }
       p {
         max-width: 350px;
+        color: var(--text-primary-color);
       }
     `;
   }

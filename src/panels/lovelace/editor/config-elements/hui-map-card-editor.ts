@@ -1,15 +1,27 @@
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultArray,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
+import {
+  array,
+  assert,
+  boolean,
+  number,
+  object,
+  optional,
+  string,
+} from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import "../../../../components/ha-formfield";
+import "../../../../components/ha-switch";
 import { PolymerChangedEvent } from "../../../../polymer-types";
 import { HomeAssistant } from "../../../../types";
 import { MapCardConfig } from "../../cards/types";
@@ -23,19 +35,7 @@ import {
   entitiesConfigStruct,
   EntitiesEditorEvent,
 } from "../types";
-import "../../../../components/ha-switch";
-import "../../../../components/ha-formfield";
 import { configElementStyle } from "./config-elements-style";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
-import {
-  string,
-  optional,
-  object,
-  number,
-  boolean,
-  array,
-  assert,
-} from "superstruct";
 
 const cardConfigStruct = object({
   type: string(),
@@ -94,7 +94,6 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     }
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <paper-input
           .label="${this.hass.localize(
@@ -216,12 +215,15 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
-    return css`
-      .geo_location_sources {
-        padding-left: 20px;
-      }
-    `;
+  static get styles(): CSSResultArray {
+    return [
+      configElementStyle,
+      css`
+        .geo_location_sources {
+          padding-left: 20px;
+        }
+      `,
+    ];
   }
 }
 

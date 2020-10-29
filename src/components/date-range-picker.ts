@@ -1,7 +1,7 @@
+// @ts-nocheck
 import Vue from "vue";
 import wrap from "@vue/web-component-wrapper";
 import DateRangePicker from "vue2-daterange-picker";
-// @ts-ignore
 import dateRangePickerStyles from "vue2-daterange-picker/dist/vue2-daterange-picker.css";
 import { fireEvent } from "../common/dom/fire_event";
 import { Constructor } from "../types";
@@ -35,7 +35,6 @@ const Component = Vue.extend({
     },
   },
   render(createElement) {
-    // @ts-ignore
     return createElement(DateRangePicker, {
       props: {
         "time-picker": true,
@@ -52,7 +51,6 @@ const Component = Vue.extend({
           endDate: this.endDate,
         },
         callback: (value) => {
-          // @ts-ignore
           fireEvent(this.$el as HTMLElement, "change", value);
         },
         expression: "dateRange",
@@ -135,7 +133,7 @@ class DateRangePickerElement extends WrappedElement {
           }
           .daterangepicker td.in-range {
             background-color: var(--light-primary-color);
-            color: var(--primary-text-color);
+            color: var(--text-light-primary-color, var(--primary-text-color));
           }
           .daterangepicker td.active,
           .daterangepicker td.active:hover {

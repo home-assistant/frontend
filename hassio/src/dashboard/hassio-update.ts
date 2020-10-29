@@ -7,17 +7,26 @@ import {
   html,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
-import "../../../src/components/buttons/ha-call-api-button";
+import memoizeOne from "memoize-one";
+import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-svg-icon";
+import {
+  extractApiErrorMessage,
+  HassioResponse,
+  ignoredStatusCodes,
+} from "../../../src/data/hassio/common";
 import { HassioHassOSInfo } from "../../../src/data/hassio/host";
 import {
   HassioHomeAssistantInfo,
   HassioSupervisorInfo,
 } from "../../../src/data/hassio/supervisor";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import { hassioStyle } from "../resources/hassio-style";
@@ -26,29 +35,30 @@ import { hassioStyle } from "../resources/hassio-style";
 export class HassioUpdate extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public hassInfo: HassioHomeAssistantInfo;
+  @property({ attribute: false }) public hassInfo?: HassioHomeAssistantInfo;
 
   @property({ attribute: false }) public hassOsInfo?: HassioHassOSInfo;
 
-  @property() public supervisorInfo: HassioSupervisorInfo;
+  @property({ attribute: false }) public supervisorInfo?: HassioSupervisorInfo;
 
-  @internalProperty() private _error?: string;
+  private _pendingUpdates = memoizeOne(
+    (
+      core?: HassioHomeAssistantInfo,
+      supervisor?: HassioSupervisorInfo,
+      os?: HassioHassOSInfo
+    ): number => {
+      return [core, supervisor, os].filter(
+        (value) => !!value && value?.update_available
+      ).length;
+    }
+  );
 
   protected render(): TemplateResult {
-    const updatesAvailable: number = [
+    const updatesAvailable = this._pendingUpdates(
       this.hassInfo,
       this.supervisorInfo,
-      this.hassOsInfo,
-    ].filter((value) => {
-      return (
-        !!value &&
-        (value.version_latest
-          ? value.version !== value.version_latest
-          : value.version_latest
-          ? value.version !== value.version_latest
-          : false)
-      );
-    }).length;
+      this.hassOsInfo
+    );
 
     if (!updatesAvailable) {
       return html``;
@@ -56,9 +66,6 @@ export class HassioUpdate extends LitElement {
 
     return html`
       <div class="content">
-        ${this._error
-          ? html` <div class="error">Error: ${this._error}</div> `
-          : ""}
         <h1>
           ${updatesAvailable > 1
             ? "Updates Available 🎉"
@@ -67,26 +74,24 @@ export class HassioUpdate extends LitElement {
         <div class="card-group">
           ${this._renderUpdateCard(
             "Home Assistant Core",
-            this.hassInfo.version,
-            this.hassInfo.version_latest,
+            this.hassInfo!,
             "hassio/homeassistant/update",
             `https://${
-              this.hassInfo.version_latest.includes("b") ? "rc" : "www"
-            }.home-assistant.io/latest-release-notes/`,
-            mdiHomeAssistant
+              this.hassInfo?.version_latest.includes("b") ? "rc" : "www"
+            }.home-assistant.io/latest-release-notes/`
           )}
           ${this._renderUpdateCard(
             "Supervisor",
-            this.supervisorInfo.version,
-            this.supervisorInfo.version_latest,
+            this.supervisorInfo!,
             "hassio/supervisor/update",
-            `https://github.com//home-assistant/hassio/releases/tag/${this.supervisorInfo.version_latest}`
+            `https://github.com//home-assistant/hassio/releases/tag/${
+              this.supervisorInfo!.version_latest
+            }`
           )}
           ${this.hassOsInfo
             ? this._renderUpdateCard(
                 "Operating System",
-                this.hassOsInfo.version,
-                this.hassOsInfo.version_latest,
+                this.hassOsInfo,
                 "hassio/os/update",
                 `https://github.com//home-assistant/hassos/releases/tag/${this.hassOsInfo.version_latest}`
               )
@@ -98,59 +103,68 @@ export class HassioUpdate extends LitElement {
 
   private _renderUpdateCard(
     name: string,
-    curVersion: string,
-    lastVersion: string,
+    object: HassioHomeAssistantInfo | HassioSupervisorInfo | HassioHassOSInfo,
     apiPath: string,
-    releaseNotesUrl: string,
-    icon?: string
+    releaseNotesUrl: string
   ): TemplateResult {
-    if (!lastVersion || lastVersion === curVersion) {
+    if (!object.update_available) {
       return html``;
     }
     return html`
       <ha-card>
         <div class="card-content">
-          ${icon
-            ? html`
-                <div class="icon">
-                  <ha-svg-icon .path=${icon}></ha-svg-icon>
-                </div>
-              `
-            : ""}
-          <div class="update-heading">${name} ${lastVersion}</div>
+          <div class="icon">
+            <ha-svg-icon .path=${mdiHomeAssistant}></ha-svg-icon>
+          </div>
+          <div class="update-heading">${name} ${object.version_latest}</div>
           <div class="warning">
-            You are currently running version ${curVersion}
+            You are currently running version ${object.version}
           </div>
         </div>
         <div class="card-actions">
           <a href="${releaseNotesUrl}" target="_blank" rel="noreferrer">
             <mwc-button>Release notes</mwc-button>
           </a>
-          <ha-call-api-button
-            .hass=${this.hass}
-            .path=${apiPath}
-            @hass-api-called=${this._apiCalled}
+          <ha-progress-button
+            .apiPath=${apiPath}
+            .name=${name}
+            .version=${object.version_latest}
+            @click=${this._confirmUpdate}
           >
             Update
-          </ha-call-api-button>
+          </ha-progress-button>
         </div>
       </ha-card>
     `;
   }
 
-  private _apiCalled(ev): void {
-    if (ev.detail.success) {
-      this._error = "";
+  private async _confirmUpdate(ev): Promise<void> {
+    const item = ev.currentTarget;
+    item.progress = true;
+    const confirmed = await showConfirmationDialog(this, {
+      title: `Update ${item.name}`,
+      text: `Are you sure you want to update ${item.name} to version ${item.version}?`,
+      confirmText: "update",
+      dismissText: "cancel",
+    });
+
+    if (!confirmed) {
+      item.progress = false;
       return;
     }
-
-    const response = ev.detail.response;
-
-    if (typeof response.body === "object") {
-      this._error = response.body.message || "Unknown error";
-    } else {
-      this._error = response.body;
+    try {
+      await this.hass.callApi<HassioResponse<void>>("POST", item.apiPath);
+    } catch (err) {
+      // Only show an error if the status code was not expected (user behind proxy)
+      // or no status at all(connection terminated)
+      if (err.status_code && !ignoredStatusCodes.has(err.status_code)) {
+        showAlertDialog(this, {
+          title: "Update failed",
+          text: extractApiErrorMessage(err),
+        });
+      }
     }
+    item.progress = false;
   }
 
   static get styles(): CSSResult[] {

@@ -1,36 +1,54 @@
 import "@material/mwc-button";
 import "@material/mwc-icon-button";
-import "../../components/ha-header-bar";
-import "../../components/ha-dialog";
-import "../../components/ha-svg-icon";
-import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { DOMAINS_MORE_INFO_NO_HISTORY } from "../../common/const";
-import { computeStateName } from "../../common/entity/compute_state_name";
-import { navigate } from "../../common/navigate";
-import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/state-history-charts";
-import { removeEntityRegistryEntry } from "../../data/entity_registry";
-import { showEntityEditorDialog } from "../../panels/config/entities/show-dialog-entity-editor";
-import "../../state-summary/state-card-content";
-import { showConfirmationDialog } from "../generic/show-dialog-box";
-import "./more-info-content";
+import "@material/mwc-tab";
+import "@material/mwc-tab-bar";
+import { mdiClose, mdiCog, mdiPencil } from "@mdi/js";
 import {
+  css,
   customElement,
+  html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
-  css,
-  html,
 } from "lit-element";
-import { haStyleDialog } from "../../resources/styles";
-import { HomeAssistant } from "../../types";
-import { getRecentWithCache } from "../../data/cached-history";
+import { cache } from "lit-html/directives/cache";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import {
+  DOMAINS_MORE_INFO_NO_HISTORY,
+  DOMAINS_WITH_MORE_INFO,
+} from "../../common/const";
+import { dynamicElement } from "../../common/dom/dynamic-element-directive";
+import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { mdiClose, mdiCog, mdiPencil } from "@mdi/js";
-import { HistoryResult } from "../../data/history";
+import { computeStateName } from "../../common/entity/compute_state_name";
+import {
+  stateMoreInfoType,
+  importMoreInfoControl,
+} from "./state_more_info_control";
+import { navigate } from "../../common/navigate";
+import "../../components/ha-dialog";
+import "../../components/ha-header-bar";
+import "../../components/ha-svg-icon";
+import { removeEntityRegistryEntry } from "../../data/entity_registry";
+import { showEntityEditorDialog } from "../../panels/config/entities/show-dialog-entity-editor";
+import { haStyleDialog } from "../../resources/styles";
+import "../../state-summary/state-card-content";
+import { HomeAssistant } from "../../types";
+import { showConfirmationDialog } from "../generic/show-dialog-box";
+import "./ha-more-info-history";
+import "./ha-more-info-logbook";
+import "./controls/more-info-default";
+import { CONTINUOUS_DOMAINS } from "../../data/logbook";
 
 const DOMAINS_NO_INFO = ["camera", "configurator"];
+/**
+ * Entity domains that should be editable *if* they have an id present;
+ * {@see shouldShowEditIcon}.
+ * */
 const EDITABLE_DOMAINS_WITH_ID = ["scene", "automation"];
+/**
+ * Entity Domains that should always be editable; {@see shouldShowEditIcon}.
+ * */
 const EDITABLE_DOMAINS = ["script"];
 
 export interface MoreInfoDialogParams {
@@ -43,34 +61,51 @@ export class MoreInfoDialog extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public large = false;
 
-  @internalProperty() private _stateHistory?: HistoryResult;
-
   @internalProperty() private _entityId?: string | null;
 
-  private _historyRefreshInterval?: number;
+  @internalProperty() private _moreInfoType?: string;
+
+  @internalProperty() private _currTabIndex = 0;
 
   public showDialog(params: MoreInfoDialogParams) {
     this._entityId = params.entityId;
     if (!this._entityId) {
       this.closeDialog();
+      return;
     }
     this.large = false;
-    this._stateHistory = undefined;
-    if (this._computeShowHistoryComponent(this._entityId)) {
-      this._getStateHistory();
-      clearInterval(this._historyRefreshInterval);
-      this._historyRefreshInterval = window.setInterval(() => {
-        this._getStateHistory();
-      }, 60 * 1000);
+
+    const stateObj = this.hass.states[this._entityId];
+    if (!stateObj) {
+      return;
+    }
+    if (stateObj.attributes && "custom_ui_more_info" in stateObj.attributes) {
+      this._moreInfoType = stateObj.attributes.custom_ui_more_info;
+    } else {
+      const type = stateMoreInfoType(stateObj);
+      importMoreInfoControl(type);
+      this._moreInfoType = type === "hidden" ? undefined : `more-info-${type}`;
     }
   }
 
   public closeDialog() {
     this._entityId = undefined;
-    this._stateHistory = undefined;
-    clearInterval(this._historyRefreshInterval);
-    this._historyRefreshInterval = undefined;
+    this._currTabIndex = 0;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  protected shouldShowEditIcon(domain, stateObj): boolean {
+    if (EDITABLE_DOMAINS_WITH_ID.includes(domain) && stateObj.attributes.id) {
+      return true;
+    }
+    if (EDITABLE_DOMAINS.includes(domain)) {
+      return true;
+    }
+    if (domain === "person" && stateObj.attributes.editable !== "false") {
+      return true;
+    }
+
+    return false;
   }
 
   protected render() {
@@ -93,85 +128,136 @@ export class MoreInfoDialog extends LitElement {
         hideActions
         data-domain=${domain}
       >
-        <ha-header-bar slot="heading">
-          <mwc-icon-button
-            slot="navigationIcon"
-            .label=${this.hass.localize("ui.dialogs.more_info_control.dismiss")}
-            dialogAction="cancel"
-          >
-            <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-          </mwc-icon-button>
-          <div slot="title" class="main-title" @click=${this._enlarge}>
-            ${computeStateName(stateObj)}
-          </div>
-          ${this.hass.user!.is_admin
-            ? html`<mwc-icon-button
-                slot="actionItems"
-                .label=${this.hass.localize(
-                  "ui.dialogs.more_info_control.settings"
-                )}
-                @click=${this._gotoSettings}
-              >
-                <ha-svg-icon .path=${mdiCog}></ha-svg-icon>
-              </mwc-icon-button>`
-            : ""}
-          ${this.hass.user!.is_admin &&
-          ((EDITABLE_DOMAINS_WITH_ID.includes(domain) &&
-            stateObj.attributes.id) ||
-            EDITABLE_DOMAINS.includes(domain))
-            ? html` <mwc-icon-button
-                slot="actionItems"
-                .label=${this.hass.localize(
-                  "ui.dialogs.more_info_control.edit"
-                )}
-                @click=${this._gotoEdit}
-              >
-                <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-              </mwc-icon-button>`
-            : ""}
-        </ha-header-bar>
-        <div class="content">
-          ${DOMAINS_NO_INFO.includes(domain)
-            ? ""
-            : html`
-                <state-card-content
-                  .stateObj=${stateObj}
-                  .hass=${this.hass}
-                  in-dialog
-                ></state-card-content>
-              `}
-          ${this._computeShowHistoryComponent(entityId)
+        <div slot="heading" class="heading">
+          <ha-header-bar>
+            <mwc-icon-button
+              slot="navigationIcon"
+              dialogAction="cancel"
+              .label=${this.hass.localize(
+                "ui.dialogs.more_info_control.dismiss"
+              )}
+            >
+              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+            </mwc-icon-button>
+            <div slot="title" class="main-title" @click=${this._enlarge}>
+              ${computeStateName(stateObj)}
+            </div>
+            ${this.hass.user!.is_admin
+              ? html`
+                  <mwc-icon-button
+                    slot="actionItems"
+                    .label=${this.hass.localize(
+                      "ui.dialogs.more_info_control.settings"
+                    )}
+                    @click=${this._gotoSettings}
+                  >
+                    <ha-svg-icon .path=${mdiCog}></ha-svg-icon>
+                  </mwc-icon-button>
+                `
+              : ""}
+            ${this.shouldShowEditIcon(domain, stateObj)
+              ? html`
+                  <mwc-icon-button
+                    slot="actionItems"
+                    .label=${this.hass.localize(
+                      "ui.dialogs.more_info_control.edit"
+                    )}
+                    @click=${this._gotoEdit}
+                  >
+                    <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
+                  </mwc-icon-button>
+                `
+              : ""}
+          </ha-header-bar>
+          ${DOMAINS_WITH_MORE_INFO.includes(domain) &&
+          (this._computeShowHistoryComponent(entityId) ||
+            this._computeShowLogBookComponent(entityId))
             ? html`
-                <state-history-charts
-                  .hass=${this.hass}
-                  .historyData=${this._stateHistory}
-                  up-to-now
-                  .isLoadingData=${!this._stateHistory}
-                ></state-history-charts>
+                <mwc-tab-bar
+                  .activeIndex=${this._currTabIndex}
+                  @MDCTabBar:activated=${this._handleTabChanged}
+                >
+                  <mwc-tab
+                    .label=${this.hass.localize(
+                      "ui.dialogs.more_info_control.details"
+                    )}
+                  ></mwc-tab>
+                  <mwc-tab
+                    .label=${this.hass.localize(
+                      "ui.dialogs.more_info_control.history"
+                    )}
+                  ></mwc-tab>
+                </mwc-tab-bar>
               `
             : ""}
-          <more-info-content
-            .stateObj=${stateObj}
-            .hass=${this.hass}
-          ></more-info-content>
-
-          ${stateObj.attributes.restored
-            ? html`<p>
-                  ${this.hass.localize(
-                    "ui.dialogs.more_info_control.restored.not_provided"
-                  )}
-                </p>
-                <p>
-                  ${this.hass.localize(
-                    "ui.dialogs.more_info_control.restored.remove_intro"
-                  )}
-                </p>
-                <mwc-button class="warning" @click=${this._removeEntity}>
-                  ${this.hass.localize(
-                    "ui.dialogs.more_info_control.restored.remove_action"
-                  )}
-                </mwc-button>`
-            : ""}
+        </div>
+        <div class="content">
+          ${cache(
+            this._currTabIndex === 0
+              ? html`
+                  ${DOMAINS_NO_INFO.includes(domain)
+                    ? ""
+                    : html`
+                        <state-card-content
+                          in-dialog
+                          .stateObj=${stateObj}
+                          .hass=${this.hass}
+                        ></state-card-content>
+                      `}
+                  ${DOMAINS_WITH_MORE_INFO.includes(domain) ||
+                  !this._computeShowHistoryComponent(entityId)
+                    ? ""
+                    : html`<ha-more-info-history
+                        .hass=${this.hass}
+                        .entityId=${this._entityId}
+                      ></ha-more-info-history>`}
+                  ${DOMAINS_WITH_MORE_INFO.includes(domain) ||
+                  !this._computeShowLogBookComponent(entityId)
+                    ? ""
+                    : html`<ha-more-info-logbook
+                        .hass=${this.hass}
+                        .entityId=${this._entityId}
+                      ></ha-more-info-logbook>`}
+                  ${this._moreInfoType
+                    ? dynamicElement(this._moreInfoType, {
+                        hass: this.hass,
+                        stateObj,
+                      })
+                    : ""}
+                  ${stateObj.attributes.restored
+                    ? html`
+                        <p>
+                          ${this.hass.localize(
+                            "ui.dialogs.more_info_control.restored.not_provided"
+                          )}
+                        </p>
+                        <p>
+                          ${this.hass.localize(
+                            "ui.dialogs.more_info_control.restored.remove_intro"
+                          )}
+                        </p>
+                        <mwc-button
+                          class="warning"
+                          @click=${this._removeEntity}
+                        >
+                          ${this.hass.localize(
+                            "ui.dialogs.more_info_control.restored.remove_action"
+                          )}
+                        </mwc-button>
+                      `
+                    : ""}
+                `
+              : html`
+                  <ha-more-info-history
+                    .hass=${this.hass}
+                    .entityId=${this._entityId}
+                  ></ha-more-info-history>
+                  <ha-more-info-logbook
+                    .hass=${this.hass}
+                    .entityId=${this._entityId}
+                  ></ha-more-info-logbook>
+                `
+          )}
         </div>
       </ha-dialog>
     `;
@@ -181,28 +267,32 @@ export class MoreInfoDialog extends LitElement {
     this.large = !this.large;
   }
 
-  private async _getStateHistory(): Promise<void> {
-    if (!this._entityId) {
-      return;
-    }
-    this._stateHistory = await getRecentWithCache(
-      this.hass!,
-      this._entityId,
-      {
-        refresh: 60,
-        cacheKey: `more_info.${this._entityId}`,
-        hoursToShow: 24,
-      },
-      this.hass!.localize,
-      this.hass!.language
-    );
-  }
-
   private _computeShowHistoryComponent(entityId) {
     return (
       isComponentLoaded(this.hass, "history") &&
       !DOMAINS_MORE_INFO_NO_HISTORY.includes(computeDomain(entityId))
     );
+  }
+
+  private _computeShowLogBookComponent(entityId): boolean {
+    if (!isComponentLoaded(this.hass, "logbook")) {
+      return false;
+    }
+
+    const stateObj = this.hass.states[entityId];
+    if (!stateObj || stateObj.attributes.unit_of_measurement) {
+      return false;
+    }
+
+    const domain = computeDomain(entityId);
+    if (
+      CONTINUOUS_DOMAINS.includes(domain) ||
+      DOMAINS_MORE_INFO_NO_HISTORY.includes(domain)
+    ) {
+      return false;
+    }
+
+    return true;
   }
 
   private _removeEntity() {
@@ -232,15 +322,22 @@ export class MoreInfoDialog extends LitElement {
   private _gotoEdit() {
     const stateObj = this.hass.states[this._entityId!];
     const domain = computeDomain(this._entityId!);
-    navigate(
-      this,
-      `/config/${domain}/edit/${
-        EDITABLE_DOMAINS_WITH_ID.includes(domain)
-          ? stateObj.attributes.id
-          : stateObj.entity_id
-      }`
-    );
+    let idToPassThroughUrl = stateObj.entity_id;
+    if (EDITABLE_DOMAINS_WITH_ID.includes(domain) || domain === "person") {
+      idToPassThroughUrl = stateObj.attributes.id;
+    }
+
+    navigate(this, `/config/${domain}/edit/${idToPassThroughUrl}`);
     this.closeDialog();
+  }
+
+  private _handleTabChanged(ev: CustomEvent): void {
+    const newTab = ev.detail.index;
+    if (newTab === this._currTabIndex) {
+      return;
+    }
+
+    this._currTabIndex = ev.detail.index;
   }
 
   static get styles() {
@@ -254,10 +351,9 @@ export class MoreInfoDialog extends LitElement {
 
         ha-header-bar {
           --mdc-theme-on-primary: var(--primary-text-color);
-          --mdc-theme-primary: var(--card-background-color);
+          --mdc-theme-primary: var(--mdc-theme-surface);
           flex-shrink: 0;
-          border-bottom: 1px solid
-            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
+          display: block;
         }
 
         @media all and (max-width: 450px), all and (max-height: 500px) {
@@ -266,6 +362,11 @@ export class MoreInfoDialog extends LitElement {
             --mdc-theme-on-primary: var(--app-header-text-color, white);
             border-bottom: none;
           }
+        }
+
+        .heading {
+          border-bottom: 1px solid
+            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
         }
 
         @media all and (min-width: 451px) and (min-height: 501px) {
@@ -307,11 +408,18 @@ export class MoreInfoDialog extends LitElement {
         }
 
         state-card-content,
-        state-history-charts {
+        ha-more-info-history,
+        ha-more-info-logbook:not(:last-child) {
           display: block;
           margin-bottom: 16px;
         }
       `,
     ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-more-info-dialog": MoreInfoDialog;
   }
 }

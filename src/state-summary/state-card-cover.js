@@ -61,7 +61,7 @@ class StateCardCover extends PolymerElement {
   }
 
   computeEntityObj(hass, stateObj) {
-    var entity = new CoverEntity(hass, stateObj);
+    const entity = new CoverEntity(hass, stateObj);
     return entity;
   }
 }

@@ -1,4 +1,4 @@
-import "@polymer/app-layout/app-header-layout/app-header-layout";
+import "../../layouts/ha-app-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-checkbox/paper-checkbox";
@@ -68,7 +68,7 @@ class HaPanelShoppingList extends LocalizeMixin(PolymerElement) {
         }
       </style>
 
-      <app-header-layout>
+      <ha-app-layout>
         <app-header slot="header" fixed>
           <app-toolbar>
             <ha-menu-button
@@ -138,7 +138,7 @@ class HaPanelShoppingList extends LocalizeMixin(PolymerElement) {
             [[localize('ui.panel.shopping-list.microphone_tip')]]
           </div>
         </div>
-      </app-header-layout>
+      </ha-app-layout>
     `;
   }
 

@@ -9,7 +9,6 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { featureClassNames } from "../../../common/entity/feature_class_names";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-paper-dropdown-menu";
-import "../../../components/ha-paper-slider";
 import "../../../components/ha-switch";
 import "../../../components/ha-water_heater-control";
 import { EventsMixin } from "../../../mixins/events-mixin";
@@ -34,10 +33,6 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
         paper-item {
           cursor: pointer;
-        }
-
-        ha-paper-slider {
-          width: 100%;
         }
 
         ha-water_heater-control.range-control-left,
@@ -193,7 +188,7 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
       4: "has-away_mode",
     };
 
-    var classes = [featureClassNames(stateObj, _featureClassNames)];
+    const classes = [featureClassNames(stateObj, _featureClassNames)];
 
     classes.push("more-info-water_heater");
 

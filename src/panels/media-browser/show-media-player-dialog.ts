@@ -1,0 +1,21 @@
+import { fireEvent } from "../../common/dom/fire_event";
+
+export interface WebBrowserPlayMediaDialogParams {
+  sourceUrl: string;
+  sourceType: string;
+  title?: string;
+}
+
+export const showWebBrowserPlayMediaDialog = (
+  element: HTMLElement,
+  webBrowserPlayMediaDialogParams: WebBrowserPlayMediaDialogParams
+): void => {
+  fireEvent(element, "show-dialog", {
+    dialogTag: "hui-dialog-web-browser-play-media",
+    dialogImport: () =>
+      import(
+        /* webpackChunkName: "hui-dialog-media-player" */ "./hui-dialog-web-browser-play-media"
+      ),
+    dialogParams: webBrowserPlayMediaDialogParams,
+  });
+};
