@@ -41,7 +41,7 @@ export const applyThemesOnElement = (
       if (themeOptions.primaryColor) {
         themeRules["app-header-background-color"] = blend(
           themeOptions.primaryColor,
-          "#111",
+          "#111111",
           15
         );
       }
