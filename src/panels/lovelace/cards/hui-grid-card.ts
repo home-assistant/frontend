@@ -11,6 +11,11 @@ class HuiGridCard extends HuiStackCard<GridCardConfig> {
       return 0;
     }
 
+    if (this.square) {
+      // When we're square, each row is size 2.
+      return (this._cards.length / this.columns) * 2;
+    }
+
     const promises: Array<Promise<number> | number> = [];
 
     for (const element of this._cards) {
@@ -25,13 +30,17 @@ class HuiGridCard extends HuiStackCard<GridCardConfig> {
   }
 
   get columns() {
-    return this._config!.columns || DEFAULT_COLUMNS;
+    return this._config?.columns || DEFAULT_COLUMNS;
+  }
+
+  get square() {
+    return this._config?.square !== false;
   }
 
   setConfig(config: GridCardConfig) {
     super.setConfig(config);
     this.style.setProperty("--grid-card-column-count", String(this.columns));
-    this.toggleAttribute("square", config.square !== false);
+    this.toggleAttribute("square", this.square);
   }
 
   static get styles(): CSSResult[] {
