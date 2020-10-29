@@ -8,7 +8,7 @@ const rgb_hex = (component: number): string => {
 // Conversion between HEX and RGB
 
 export const hex2rgb = (hex: string): [number, number, number] => {
-  hex = expand_hex(hex);
+  hex = expandHex(hex);
 
   return [
     parseInt(hex.substring(0, 2), 16),
