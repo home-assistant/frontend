@@ -59,6 +59,19 @@ class StateInfo extends LocalizeMixin(PolymerElement) {
           @apply --paper-font-common-nowrap;
           color: var(--secondary-text-color);
         }
+
+        .row {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: no-wrap;
+          width: 100%;
+          justify-content: space-between;
+          margin: 0 2px 4px 0;
+        }
+
+        .row:last-child {
+          margin-bottom: 0px;
+        }
       </style>
     `;
   }
@@ -81,11 +94,26 @@ class StateInfo extends LocalizeMixin(PolymerElement) {
               datetime="[[stateObj.last_changed]]"
             ></ha-relative-time>
             <paper-tooltip animation-delay="0" for="last_changed">
-              [[localize('ui.dialogs.more_info_control.last_updated')]]:
-              <ha-relative-time
-                hass="[[hass]]"
-                datetime="[[stateObj.last_updated]]"
-              ></ha-relative-time>
+              <div>
+                <div class="row">
+                  <span class="column-name">
+                    [[localize('ui.dialogs.more_info_control.last_changed')]]:
+                  </span>
+                  <ha-relative-time
+                    hass="[[hass]]"
+                    datetime="[[stateObj.last_changed]]"
+                  ></ha-relative-time>
+                </div>
+                <div class="row">
+                  <span>
+                    [[localize('ui.dialogs.more_info_control.last_updated')]]:
+                  </span>
+                  <ha-relative-time
+                    hass="[[hass]]"
+                    datetime="[[stateObj.last_updated]]"
+                  ></ha-relative-time>
+                </div>
+              </div>
             </paper-tooltip>
           </div>
         </template>
