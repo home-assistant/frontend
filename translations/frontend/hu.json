@@ -571,27 +571,31 @@
                 "no_history_found": "Nem található előzmény."
             },
             "logbook": {
+                "by": "által",
+                "by_service": "szolgáltatás szerint",
                 "entries_not_found": "Nincsenek naplóbejegyzések.",
                 "messages": {
                     "became_unavailable": "elérhetetlenné vált",
-                    "changed_to_state": "megváltozott: {state}",
+                    "changed_to_state": "állapota megváltozott: {state}",
                     "cleared_device_class": "{device_class} érzékelés befejeződött",
                     "detected_device_class": "{device_class}-t érzékelt",
-                    "rose": "emelkedett",
-                    "set": "beállít",
-                    "turned_off": "kikapcsolt",
-                    "turned_on": "bekapcsolt",
+                    "rose": "felkelt",
+                    "set": "lenyugodott",
+                    "turned_off": "ki lett kapcsolva",
+                    "turned_on": "be lett kapcsolva",
                     "was_at_home": "hazaért",
                     "was_at_state": "{state} állapotban volt",
                     "was_away": "távol volt",
                     "was_closed": "be lett zárva",
                     "was_connected": "csatlakozott",
                     "was_disconnected": "lecsatlakozott",
+                    "was_locked": "zárolva lett",
                     "was_low": "alacsony volt",
                     "was_normal": "normális volt",
                     "was_opened": "ki lett nyitva",
                     "was_plugged_in": "be lett dugva",
                     "was_safe": "biztonságos volt",
+                    "was_unlocked": "fel lett oldva",
                     "was_unplugged": "ki lett húzva",
                     "was_unsafe": "nem volt biztonságos"
                 }
@@ -630,14 +634,20 @@
                     "server": "Szerver"
                 },
                 "documentation": "dokumentáció",
+                "learn_adding_local_media": "További információ a média hozzáadásáról a {documentation} .",
+                "local_media_files": "Helyezze el a video-, audio- és képfájljait a média könyvtárba, hogy böngészhessen és lejátszhassa őket a böngészőben vagy a támogatott médialejátszókon.",
+                "media_browsing_error": "Média böngészési hiba",
+                "media_not_supported": "A böngésző médialejátszó nem támogatja az ilyen típusú médiafájlokat",
                 "media_player": "Médialejátszó",
                 "media-player-browser": "Médialejátszó böngésző",
                 "no_items": "Nincsenek elemek",
                 "no_local_media_found": "Nem található helyi média",
+                "no_media_folder": "Úgy tűnik, hogy még nem hozott létre média könyvtárat.",
                 "pick": "Kiválasztás",
                 "pick-media": "Média kiválasztása",
                 "play": "Lejátszás",
                 "play-media": "Média lejátszása",
+                "setup_local_help": "Ellenőrizze a {documentation} a helyi adathordozók beállításáról.",
                 "video_not_supported": "A böngésződ nem támogatja a video elemet.",
                 "web-browser": "Böngésző"
             },
@@ -783,6 +793,7 @@
                 "crop": "Kivágás"
             },
             "more_info_control": {
+                "controls": "Vezérlők",
                 "details": "Részletek",
                 "dismiss": "Párbeszédpanel elvetése",
                 "edit": "Entitás szerkesztése",
@@ -877,6 +888,11 @@
                         "trend": "Trend entitások újratöltése",
                         "universal": "Univerzális médialejátszó entitások újratöltése",
                         "zone": "Zónák újratöltése"
+                    },
+                    "server_control": {
+                        "perform_action": "{action} Szerver",
+                        "restart": "Újraindítás",
+                        "stop": "Leállítás"
                     }
                 },
                 "filter_placeholder": "Entitásszűrő"
@@ -1037,6 +1053,14 @@
                                     "type": {
                                         "count": {
                                             "label": "Számláló"
+                                        },
+                                        "until": {
+                                            "conditions": "Amíg a feltételek",
+                                            "label": "Addig"
+                                        },
+                                        "while": {
+                                            "conditions": "Míg a feltételek",
+                                            "label": "Míg"
                                         }
                                     }
                                 },
@@ -1155,6 +1179,7 @@
                             "queued": "Várólista hossza"
                         },
                         "modes": {
+                            "description": "A mód vezérli, hogy mi történik, ha az automatizálás elindul, miközben a műveletek még futnak egy korábbi indításból. További információk a {documentation_link} oldalon.",
                             "documentation": "automatizálási dokumentáció",
                             "label": "Mód",
                             "parallel": "Párhuzamos",
@@ -1187,6 +1212,8 @@
                                 },
                                 "event": {
                                     "context_user_pick": "Felhasználó hozzáadása",
+                                    "context_user_picked": "Esemény elküldése",
+                                    "context_users": "Korlátozás az által kiváltott eseményekre",
                                     "event_data": "Esemény adatai",
                                     "event_type": "Esemény típusa",
                                     "label": "Esemény"
@@ -1508,6 +1535,7 @@
                     }
                 },
                 "devices": {
+                    "add_prompt": "Az eszköz használatával még nem adtak hozzá {name} nevet. A fenti + gombra kattintva hozzá adhat egyet.",
                     "automation": {
                         "actions": {
                             "caption": "Ha valami triggerelődik, akkor...",
@@ -1677,7 +1705,9 @@
                     "title": "Infó"
                 },
                 "integration_panel_move": {
-                    "link_integration_page": "integrációk oldal"
+                    "link_integration_page": "integrációk oldal",
+                    "missing_zha": "Nem találod a ZHA konfigurációs panelt? Át lett helyezve az {integrations_page} a ZHA bejegyzéséhez.",
+                    "missing_zwave": "Nem találod a Z-Wave konfigurációs panelt? Át lett helyezve az {integrations_page} a Z-Wave bejegyzéséhez."
                 },
                 "integrations": {
                     "add_integration": "Integráció hozzáadása",
@@ -1875,6 +1905,8 @@
                         "zwave": "Z-Wave"
                     },
                     "device_info": {
+                        "node_failed": "Sikertelen csomópont",
+                        "stage": "Szakasz",
                         "zwave_info": "Z-Wave infó"
                     },
                     "navigation": {
@@ -1893,6 +1925,8 @@
                             "driverawakenodesqueries": "Minden éber csomópont lekérdezésre került",
                             "driverfailed": "Nem sikerült csatlakozni a Z-Wave vezérlőhöz",
                             "driverready": "A Z-Wave vezérlő inicializálása",
+                            "driverremoved": "A meghajtót eltávolították",
+                            "driverreset": "Az illesztőprogram vissza lett állítva",
                             "offline": "OZWDaemon offline",
                             "ready": "Csatlakozásra kész",
                             "started": "Csatlakoztatva az MQTT-hez",
@@ -1906,15 +1940,36 @@
                     },
                     "network": {
                         "header": "Hálózat menedzsment",
+                        "introduction": "Az egész hálózatra kiterjedő funkciók kezelése.",
                         "node_count": "{count} csomópont"
                     },
                     "node_config": {
                         "header": "Csomópont konfigurációja",
+                        "help_source": "A konfigurációs paraméterek leírását és a súgószöveget az OpenZWave projekt biztosítja.",
                         "introduction": "Z-Wave csomópont különböző konfigurációs paramétereinek kezelése.",
                         "wakeup_help": "Az akkumulátorról megtáplált csomópontoknak ébren kell lenniük a konfiguráció módosításához. Ha a csomópont nincs ébren, akkor az OpenZWave megpróbálja frissíteni a csomópont konfigurációját a következő ébredéskor, ami akár órákba (vagy napokba) is beletelhet. Az eszköz felébresztéséhez kövesd az alábbi lépéseket:"
                     },
                     "node_metadata": {
                         "product_manual": "Termék kézikönyve"
+                    },
+                    "node_query_stages": {
+                        "associations": "Társítási csoportok és tagságok frissítése",
+                        "cacheload": "Adatok betöltése az OpenZWave gyorsítótárfájlból. Az akkumulátoros csomópontok ebben a szakaszban maradnak, amíg a csomópont fel nem ébred.",
+                        "complete": "Az interjú folyamata befejeződött",
+                        "configuration": "Konfigurációs értékek beszerzése a csomóponttól",
+                        "dynamic": "Gyakran változó értékek beszerzése a csomóponttól",
+                        "instances": "Részletek beszerzése arról, hogy az eszköz milyen példányokat vagy csatornákat támogat",
+                        "manufacturerspecific1": "Gyártói és termékazonosító kódok beszerzése a csomóponttól",
+                        "manufacturerspecific2": "További gyártói és termék-azonosító kódok beszerzése a csomóponttól",
+                        "neighbors": "A csomópont szomszéd listájának beszerzése",
+                        "nodeinfo": "Támogatott parancsosztályok megszerzése a csomóponttól",
+                        "nodeplusinfo": "Z-Wave+ információk beszerzése a csomóponttól",
+                        "probe": "Annak ellenőrzése, hogy a csomópont ébren van / él-e",
+                        "protocolinfo": "Ennek a csomópontnak az alapvető Z-Wave képességeinek beszerzése a vezérlőtől",
+                        "session": "Ritkán változó értékek beszerzése a csomóponttól",
+                        "static": "Statikai értékek beszerzése az eszköztől",
+                        "versions": "Információk beszerzése a firmware-ről és a parancsosztály verzióiról",
+                        "wakeup": "Ébresztési várólisták és üzenetek támogatásának beállítása"
                     },
                     "node": {
                         "button": "Csomópont részletei",
@@ -1929,16 +1984,26 @@
                         "zwave_plus": "Z-Wave Plus"
                     },
                     "refresh_node": {
+                        "battery_note": "Ha a csomópont akkumulátorról működik, a folytatás előtt feltétlenül ébreszd fel",
                         "button": "Csomópont frissítése",
+                        "complete": "Csomópont frissítés befejeződött",
+                        "description": "Ez megmondja az OpenZWave-nek, hogy készítsen újra egy csomópontot, és frissítse a csomópont parancsosztályait, képességeit és értékeit.",
                         "node_status": "Csomópont állapota",
+                        "refreshing_description": "Csomópont információk frissítése...",
                         "start_refresh_button": "Frissítés indítása",
-                        "step": "Lépés"
+                        "step": "Lépés",
+                        "title": "Csomópont adatainak frissítése",
+                        "wakeup_header": "Ébresztési utasítások:",
+                        "wakeup_instructions_source": "Az ébresztési utasítások az OpenZWave közösségi eszköz adatbázisból származnak."
                     },
                     "select_instance": {
-                        "header": "OpenZWave példány kiválasztása"
+                        "header": "OpenZWave példány kiválasztása",
+                        "introduction": "Egynél több OpenZWave példány fut. Melyik példányt szeretnéd kezelni?",
+                        "none_found": "Nem található OpenZWave példány. Ha úgy gondolod, hogy ez helytelen, akkor ellenőrizd az OpenZWave és az MQTT beállításait, és győződj meg arról, hogy a Home Assistant képes kommunikálni az MQTT közvetítővel."
                     },
                     "services": {
                         "add_node": "Csomópont hozzáadása",
+                        "cancel_command": "Parancs visszavonása",
                         "remove_node": "Csomópont eltávolítása"
                     }
                 },
@@ -1952,7 +2017,7 @@
                     "detail": {
                         "admin": "Adminisztrátor",
                         "allow_login": "Személy bejelentkezésének engedélyezése",
-                        "confirm_delete_user": "Biztos benne, hogy törölni szeretné a(z) {name} felhasználói fiókját? Továbbra is képes lesz nyomonkövetni a felhasználót, viszont a személy nem fog tudni bejelentkezni.",
+                        "confirm_delete_user": "Biztos törölni szeretnéd {name} felhasználói fiókját? Továbbra is képes leszel nyomonkövetni a felhasználót, viszont ő mostantól nem fog tudni bejelentkezni.",
                         "create": "Létrehozás",
                         "delete": "Törlés",
                         "device_tracker_intro": "Válaszd ki azokat az eszközöket, amelyek ehhez a felhasználóhoz tartoznak.",
@@ -2031,6 +2096,7 @@
                         "icon": "Ikon",
                         "id": "Entitás ID",
                         "id_already_exists": "Ez az ID már létezik",
+                        "id_already_exists_save_error": "Nem mentheted ezt a szkriptet, mert az azonosító nem egyedi, válassz másik azonosítót, vagy hagyd üresen, hogy automatikusan létrejöjjön egy.",
                         "introduction": "Használj szkripteket műveletsorozatok végrehajtásához.",
                         "link_available_actions": "Tudj meg többet az elérhető műveletekről.",
                         "load_error_not_editable": "Csak a scripts.yaml fájlban megadott szkriptek szerkeszthetők.",
@@ -2039,6 +2105,7 @@
                             "queued": "Várólista hossza"
                         },
                         "modes": {
+                            "description": "A mód vezérli, hogy mi történik, ha a szkriptet meghívják, miközben egy vagy több korábbi meghívásbólmég fut. További információk a {documentation_link} oldalon.",
                             "documentation": "szkript dokumentáció",
                             "label": "Mód",
                             "parallel": "Párhuzamos",
@@ -2197,6 +2264,8 @@
                         "discovered_text": "Az eszközök itt fognak megjelenni, ha felfedezésre kerültek.",
                         "discovery_text": "A felfedezett eszközök itt fognak megjelenni. A készülékek használati utasításai alapján állítsd őket párosítási módba.",
                         "header": "Zigbee Home Automation - Eszközök hozzáadása",
+                        "no_devices_found": "Nem találhatóak eszközök. Győződj meg arról, hogy párosítási módban vannak, és tartsd őket ébren, miközben a felfedezés fut.",
+                        "pairing_mode": "Győződj meg arról, hogy az eszközeid párosítási módban vannak. Ellenőrizd a készüléked utasításait arról, hogy hogyan kell ezt megtenni.",
                         "search_again": "Keresés Újra",
                         "spinner": "ZHA Zigbee eszközök keresése..."
                     },
@@ -2360,24 +2429,45 @@
                     },
                     "node_management": {
                         "add_to_group": "Hozzáadás a csoporthoz",
+                        "entities": "A csomópont entitásai",
+                        "entity_info": "Entitás adatai",
+                        "exclude_entity": "Kizárja ezt az entitást a Home Assistantból",
+                        "group": "Csoport",
                         "header": "Z-Wave csomópontkezelés",
+                        "introduction": "Futtasson egyetlen csomópontot érintő Z-Wave parancsokat. Válasszon egy csomópontot az elérhető parancsok listájának megtekintéséhez.",
+                        "max_associations": "Egyesületek száma:",
+                        "node_group_associations": "Csomópontcsoport-társítások",
+                        "node_protection": "Csomópont védelem",
+                        "node_to_control": "A vezérlőhöz képest csomópont",
                         "nodes": "Csomópontok",
+                        "nodes_hint": "Válassz csomópontot a csomópontonkénti opciók megtekintéséhez",
                         "nodes_in_group": "További csomópontok ebben a csoportban:",
-                        "remove_from_group": "Eltávolítás a csoportból"
+                        "pooling_intensity": "Lekérdezés gyakoirsága",
+                        "protection": "Védelem",
+                        "remove_broadcast": "A Broadcast eltávolítása",
+                        "remove_from_group": "Eltávolítás a csoportból",
+                        "set_protection": "Védelem beállítása"
                     },
                     "ozw_log": {
                         "header": "OZW Log",
-                        "introduction": "Napló megtekintése. 0 a minimum (a teljes naplót betölti) és 1000 a maximum. A betöltés statikus naplót jelenít meg, és a vége automatikusan frissül a napló utolsó meghatározott számú sorával."
+                        "introduction": "Napló megtekintése. 0 a minimum (a teljes naplót betölti) és 1000 a maximum. A betöltés statikus naplót jelenít meg, és a vége automatikusan frissül a napló utolsó meghatározott számú sorával.",
+                        "last_log_lines": "Az utolsó naplósorok száma",
+                        "load": "Betöltés",
+                        "tail": "Vége"
                     },
                     "services": {
                         "add_node": "Csomópont hozzáadása",
                         "add_node_secure": "Biztonságos csomópont hozzáadása",
                         "cancel_command": "Parancs megszakítása",
                         "heal_network": "Hálózati struktúra feltérképezése",
+                        "heal_node": "Csomópont élesztése",
                         "node_info": "Csomópont információ",
+                        "print_node": "Nyomtatási csomópont",
                         "refresh_entity": "Entitás frissítése",
                         "refresh_node": "Csomópont frissítése",
+                        "remove_failed_node": "Sikertelen csomópont eltávolítása",
                         "remove_node": "Csomópont eltávolítása",
+                        "replace_failed_node": "Sikertelen csomópont cseréje",
                         "save_config": "Konfiguráció mentése",
                         "soft_reset": "Soft Reset",
                         "start_network": "Hálózat indítása",
@@ -2541,6 +2631,7 @@
                             "toggle": "Váltás",
                             "url": "URL"
                         },
+                        "editor_service_data": "A szolgáltatási adatokat csak a kódszerkesztőben lehet megadni",
                         "navigation_path": "Navigációs útvonal",
                         "url_path": "URL elérési út"
                     },
@@ -2676,6 +2767,7 @@
                             "name": "Vízszintes Készlet"
                         },
                         "humidifier": {
+                            "description": "A Páratartalom kártyával a páramntesitő/párásitó berendezés entitások vezérelhetők. Lehetővé teszi a páratartalom, illetve a mód megváltoztatását.",
                             "name": "Párásító"
                         },
                         "iframe": {
@@ -2814,7 +2906,7 @@
                         "para_no_id": "Ez az elem nem rendelkezik ID-val. Kérlek, adj hozzá egyet az 'ui-lovelace.yaml' fájlban!"
                     },
                     "move_card": {
-                        "header": "Válaszd ki azt a nézetet, ahová a kártyát szeretnéd áthelyezni"
+                        "header": "Válaszd ki azt a nézetet, ahova át szeretnéd helyezni a kártyát"
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "Automatikusan létrehozzuk a Lovelace felhasználói felületed nézeteit a területeiddel és eszközeiddel, ha eltávolítod a Lovelace konfigurációját.",
@@ -3112,6 +3204,10 @@
                     "dropdown_label": "Irányítópult",
                     "header": "Irányítópult"
                 },
+                "enable_shortcuts": {
+                    "description": "A felhasználói felület különböző műveletekvégrehajtásához engedélyezze vagy tiltsa le a billentyűparancsokat.",
+                    "header": "Billentyűparancsok"
+                },
                 "force_narrow": {
                     "description": "Ez alapértelmezés szerint elrejti az oldalsávot, hasonlóan a mobil verzióhoz.",
                     "header": "Mindig rejtse el az oldalsávot"
@@ -3156,6 +3252,10 @@
                     "header": "Többfaktoros Hitelesítési Modulok"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "Eszköz neve",
+                        "title": "Mi legyen ennek az eszköznek a neve?"
+                    },
                     "description": "Értesítések küldése erre az eszközre.",
                     "error_load_platform": "Állítsd be a notify.html5-t.",
                     "error_use_https": "Szükséges az SSL engedélyezése a felülethez.",

@@ -888,6 +888,11 @@
                         "trend": "Recargar entidades de tendencia",
                         "universal": "Recargar entidades de reproductor multimedia universal",
                         "zone": "Recargar zonas"
+                    },
+                    "server_control": {
+                        "perform_action": "{action} Servidor",
+                        "restart": "Reiniciar",
+                        "stop": "Detener"
                     }
                 },
                 "filter_placeholder": "Filtro de entidad"
@@ -1998,6 +2003,7 @@
                     },
                     "services": {
                         "add_node": "Añadir Nodo",
+                        "cancel_command": "Cancelar comando",
                         "remove_node": "Eliminar Nodo"
                     }
                 },
@@ -3198,6 +3204,10 @@
                     "dropdown_label": "Panel de control",
                     "header": "Panel de control"
                 },
+                "enable_shortcuts": {
+                    "description": "Habilita o deshabilita los atajos de teclado para realizar varias acciones en la interfaz de usuario.",
+                    "header": "Atajos de teclado"
+                },
                 "force_narrow": {
                     "description": "Esto ocultará la barra lateral de forma predeterminada, similar a la experiencia móvil.",
                     "header": "Ocultar siempre la barra lateral"
@@ -3242,6 +3252,10 @@
                     "header": "Módulos de autenticación multifactor"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "Nombre del dispositivo",
+                        "title": "¿Cómo debería llamarse este dispositivo?"
+                    },
                     "description": "Enviar notificaciones a este dispositivo",
                     "error_load_platform": "Configurar notify.html5.",
                     "error_use_https": "Requiere SSL activado para frontend.",

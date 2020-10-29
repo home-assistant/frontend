@@ -888,6 +888,11 @@
                         "trend": "Nově načíst entity integrace Trend",
                         "universal": "Nově načíst entity integrace Universal media player",
                         "zone": "Nově načíst zóny"
+                    },
+                    "server_control": {
+                        "perform_action": "{action} server",
+                        "restart": "Restartovat",
+                        "stop": "Zastavit"
                     }
                 },
                 "filter_placeholder": "Filtr entit"
@@ -1998,6 +2003,7 @@
                     },
                     "services": {
                         "add_node": "Přidat uzel",
+                        "cancel_command": "Zrušit příkaz",
                         "remove_node": "Odebrat uzel"
                     }
                 },
@@ -2024,7 +2030,7 @@
                         "name_error_msg": "Jméno je povinné",
                         "new_person": "Nová osoba",
                         "no_device_tracker_available_intro": "Pokud máte zařízení, která indikují přítomnost osoby, budete je moci zde přiřadit osobě. První zařízení můžete přidat přidáním integrace detekce přítomnosti ze stránky integrace.",
-                        "update": "Aktualizace"
+                        "update": "Aktualizovat"
                     },
                     "introduction": "Zde můžete definovat každou osobu v Home Assistant.",
                     "learn_more": "Další informace o osobách",
@@ -3198,6 +3204,10 @@
                     "dropdown_label": "Dashboard",
                     "header": "Dashboard"
                 },
+                "enable_shortcuts": {
+                    "description": "Povolte nebo zakažte klávesové zkratky pro provádění různých akcí v uživatelském rozhraní.",
+                    "header": "Klávesové zkratky"
+                },
                 "force_narrow": {
                     "description": "Tato volba skryje postranním panelu jako výchozí nastavení, podobně jako na mobilním zažízení.",
                     "header": "Vždy skrýt postranní panel"
@@ -3242,6 +3252,10 @@
                     "header": "Multifaktorové autentizační moduly"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "Jméno zařízení",
+                        "title": "Jak by se toto zařízení mělo jmenovat?"
+                    },
                     "description": "Posílat oznámení na toto zařízení",
                     "error_load_platform": "Konfigurovat notify.html5.",
                     "error_use_https": "Vyžaduje SSL pro frontend.",

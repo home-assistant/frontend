@@ -888,6 +888,11 @@
                         "trend": "Last inn trend entiteter på nytt",
                         "universal": "Laste inn universelle mediespiller entiteter på nytt",
                         "zone": "Last inn soner på nytt"
+                    },
+                    "server_control": {
+                        "perform_action": "{action} Server",
+                        "restart": "Omstart",
+                        "stop": "Stopp"
                     }
                 },
                 "filter_placeholder": "Entitetsfilter"
@@ -1998,6 +2003,7 @@
                     },
                     "services": {
                         "add_node": "Legg til node",
+                        "cancel_command": "Avbryt kommando",
                         "remove_node": "Fjern node"
                     }
                 },
@@ -3198,6 +3204,10 @@
                     "dropdown_label": "",
                     "header": ""
                 },
+                "enable_shortcuts": {
+                    "description": "Aktiver eller deaktiver hurtigtaster for å utføre forskjellige handlinger i brukergrensesnittet",
+                    "header": "Hurtigtaster"
+                },
                 "force_narrow": {
                     "description": "Dette vil skjule sidepanelet som standard, tilsvarende opplevelsen på en mobil.",
                     "header": "Skjul alltid sidepanelet"
@@ -3242,6 +3252,10 @@
                     "header": "Flerfaktor godkjenningsmoduler"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "Enhetsnavn",
+                        "title": "Hva skal denne enheten hete?"
+                    },
                     "description": "Send varsler til denne enheten.",
                     "error_load_platform": "Konfigurer notify.html5.",
                     "error_use_https": "Krever SSL aktivert for grensesnitt.",
