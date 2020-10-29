@@ -60,10 +60,6 @@ const COMPONENTS = {
     import(
       /* webpackChunkName: "panel-profile" */ "../panels/profile/ha-panel-profile"
     ),
-  "shopping-list": () =>
-    import(
-      /* webpackChunkName: "panel-shopping-list" */ "../panels/shopping-list/ha-panel-shopping-list"
-    ),
   "media-browser": () =>
     import(
       /* webpackChunkName: "panel-media-browser" */ "../panels/media-browser/ha-panel-media-browser"
