@@ -39,7 +39,7 @@ export const applyThemesOnElement = (
       cacheKey = `${cacheKey}__dark`;
       themeRules = darkStyles;
       if (themeOptions.primaryColor) {
-        themeRules["app-header-background-color"] = blend(
+        themeRules["app-header-background-color"] = hexBlend(
           themeOptions.primaryColor,
           "#111111",
           15
