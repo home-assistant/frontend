@@ -115,7 +115,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
     this._config = config;
     this._configEntities = entities;
-    if (config.show_header_toggle === undefined) {
+    if (config.title !== undefined && config.show_header_toggle === undefined) {
       // Default value is show toggle if we can at least toggle 2 entities.
       let toggleable = 0;
       for (const rowConf of entities) {
