@@ -189,7 +189,6 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     return css`
       ha-card {
         height: 100%;
-        overflow-y: auto;
       }
       .content {
         padding: 16px;
