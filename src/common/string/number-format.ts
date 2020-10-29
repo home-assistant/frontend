@@ -15,7 +15,7 @@ export const numberFormat = (
       return typeof input === "number" && isNaN(input);
     };
 
-  if (!Number.isNaN(Number(num)) && window.Intl) {
+  if (!Number.isNaN(Number(num)) && Intl) {
     return new Intl.NumberFormat(language).format(Number(num));
   }
   return num.toString();
