@@ -288,6 +288,11 @@ export interface StackCardConfig extends LovelaceCardConfig {
   title?: string;
 }
 
+export interface GridCardConfig extends StackCardConfig {
+  columns?: number;
+  square?: boolean;
+}
+
 export interface ThermostatCardConfig extends LovelaceCardConfig {
   entity: string;
   theme?: string;
