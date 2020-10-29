@@ -1,12 +1,4 @@
-const expand_hex = (hex: string): string => {
-  hex = hex.replace("#", "");
-  if (hex.length === 6) return hex;
-  let result = "";
-  for (const val of hex) {
-    result += val + val;
-  }
-  return result;
-};
+import { expand_hex } from "./hex"
 
 const rgb_hex = (component: number): string => {
   const hex = Math.round(Math.min(Math.max(component, 0), 255)).toString(16);
