@@ -12,7 +12,7 @@ export const numberFormat = (
   Number.isNaN =
     Number.isNaN ||
     function isNaN(input) {
-      return typeof input === "number" && input !== input;
+      return typeof input === "number" && isNaN(input);
     };
 
   if (!Number.isNaN(Number(num)) && window.Intl) {
