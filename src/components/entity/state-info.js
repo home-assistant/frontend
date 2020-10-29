@@ -65,20 +65,8 @@ class StateInfo extends LocalizeMixin(PolymerElement) {
           flex-direction: row;
           flex-wrap: no-wrap;
           width: 100%;
-        }
-        .column-name,
-        .column-value {
-          display: flex;
-          flex-direction: column;
-          flex-basis: 100%;
-          flex: 1;
-          padding: 2px;
-        }
-        .column-name {
-          align-items: flex-start;
-        }
-        .column-value {
-          align-items: flex-end;
+          justify-content: space-between;
+          margin-right: 2px;
         }
       </style>
     `;
@@ -103,27 +91,23 @@ class StateInfo extends LocalizeMixin(PolymerElement) {
             ></ha-relative-time>
             <paper-tooltip animation-delay="0" for="last_changed">
               <div>
-                <div class="row">
-                  <div class="column-name">
+                <div class="row" style="margin-bottom: 2px">
+                  <span class="column-name">
                     [[localize('ui.dialogs.more_info_control.last_changed')]]:
-                  </div>
-                  <div class="column-value">
-                    <ha-relative-time
-                      hass="[[hass]]"
-                      datetime="[[stateObj.last_changed]]"
-                    ></ha-relative-time>
-                  </div>
+                  </span>
+                  <ha-relative-time
+                    hass="[[hass]]"
+                    datetime="[[stateObj.last_changed]]"
+                  ></ha-relative-time>
                 </div>
                 <div class="row">
-                  <div class="column-name">
+                  <span>
                     [[localize('ui.dialogs.more_info_control.last_updated')]]:
-                  </div>
-                  <div class="column-value">
-                    <ha-relative-time
-                      hass="[[hass]]"
-                      datetime="[[stateObj.last_updated]]"
-                    ></ha-relative-time>
-                  </div>
+                  </span>
+                  <ha-relative-time
+                    hass="[[hass]]"
+                    datetime="[[stateObj.last_updated]]"
+                  ></ha-relative-time>
                 </div>
               </div>
             </paper-tooltip>
