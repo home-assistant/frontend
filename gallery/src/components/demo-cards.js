@@ -5,12 +5,13 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../../src/components/ha-switch";
 import "../../../src/components/ha-formfield";
 import "./demo-card";
+import { applyThemesOnElement } from "../../../src/common/dom/apply_themes_on_element";
 
 class DemoCards extends PolymerElement {
   static get template() {
     return html`
       <style>
-        .cards {
+        #cards {
           display: flex;
           flex-wrap: wrap;
           justify-content: center;
@@ -24,6 +25,9 @@ class DemoCards extends PolymerElement {
         .filters {
           margin-left: 60px;
         }
+        ha-formfield {
+          margin-right: 16px;
+        }
       </style>
       <app-toolbar>
         <div class="filters">
@@ -31,9 +35,12 @@ class DemoCards extends PolymerElement {
             <ha-switch checked="[[_showConfig]]" on-change="_showConfigToggled">
             </ha-switch>
           </ha-formfield>
+          <ha-formfield label="Dark theme">
+            <ha-switch on-change="_darkThemeToggled"> </ha-switch>
+          </ha-formfield>
         </div>
       </app-toolbar>
-      <div class="cards">
+      <div id="cards">
         <template is="dom-repeat" items="[[configs]]">
           <demo-card
             config="[[item]]"
@@ -58,6 +65,12 @@ class DemoCards extends PolymerElement {
 
   _showConfigToggled(ev) {
     this._showConfig = ev.target.checked;
+  }
+
+  _darkThemeToggled(ev) {
+    applyThemesOnElement(this.$.cards, { themes: {} }, "default", {
+      dark: ev.target.checked,
+    });
   }
 }
 
