@@ -8,10 +8,14 @@ export const expandHex = (hex: string): string => {
   return result;
 };
 
-export const hexBlend = (color_1: string, color_2: string, blend = 50): string => {
+export const hexBlend = (
+  color_1: string,
+  color_2: string,
+  blend = 50
+): string => {
   let color = "";
-  color_1 = expand_hex(color_1);
-  color_2 = expand_hex(color_2);
+  color_1 = expandHex(color_1);
+  color_2 = expandHex(color_2);
   for (let i = 0; i <= 5; i += 2) {
     const c1 = parseInt(color_1.substr(i, 2), 16);
     const c2 = parseInt(color_2.substr(i, 2), 16);
