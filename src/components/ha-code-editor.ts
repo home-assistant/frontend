@@ -81,6 +81,7 @@ export class HaCodeEditor extends UpdatingElement {
 
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
+    this._blockKeyboardShortcuts();
     this._load();
   }
 
@@ -230,6 +231,10 @@ export class HaCodeEditor extends UpdatingElement {
     });
     this._setScrollBarDirection();
     this.codemirror!.on("changes", () => this._onChange());
+  }
+
+  private _blockKeyboardShortcuts() {
+    this.addEventListener("keydown", (ev) => ev.stopPropagation());
   }
 
   private _onChange(): void {
