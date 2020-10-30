@@ -1,36 +1,33 @@
-import {
-  customElement,
-  LitElement,
-  property,
-  internalProperty,
-  CSSResultArray,
-  css,
-  TemplateResult,
-  html,
-  PropertyValues,
-} from "lit-element";
-import { styleMap } from "lit-html/directives/style-map";
-
-import "../../layouts/ha-app-layout";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@material/mwc-checkbox";
 import "@material/mwc-formfield";
-
-import "../../components/ha-menu-button";
+import "@polymer/app-layout/app-header/app-header";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import {
+  css,
+  CSSResultArray,
+  customElement,
+  html,
+  internalProperty,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
+} from "lit-element";
+import { styleMap } from "lit-html/directives/style-map";
+import { HASSDomEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
-import "./ha-full-calendar";
-
+import "../../components/ha-menu-button";
+import { fetchCalendarEvents, getCalendars } from "../../data/calendar";
+import "../../layouts/ha-app-layout";
+import { haStyle } from "../../resources/styles";
 import type {
-  HomeAssistant,
-  SelectedCalendar,
+  Calendar,
   CalendarEvent,
   CalendarViewChanged,
-  Calendar,
+  HomeAssistant,
+  SelectedCalendar,
 } from "../../types";
-import { haStyle } from "../../resources/styles";
-import { HASSDomEvent } from "../../common/dom/fire_event";
-import { getCalendars, fetchCalendarEvents } from "../../data/calendar";
+import "./ha-full-calendar";
 
 @customElement("ha-panel-calendar")
 class PanelCalendar extends LitElement {
@@ -179,7 +176,7 @@ class PanelCalendar extends LitElement {
         }
 
         :host(:not([narrow])) .content {
-          height: calc(100vh - var(--header-height);
+          height: calc(100vh - var(--header-height));
         }
 
         .calendar-list {
