@@ -324,10 +324,19 @@ class HAFullCalendar extends LitElement {
 
         #calendar {
           flex-grow: 1;
-          background-color: var(--card-background-color);
+          background-color: var(
+            --ha-card-background,
+            var(--card-background-color, white)
+          );
           min-height: 400px;
-          --fc-neutral-bg-color: var(--card-background-color);
-          --fc-list-event-hover-bg-color: var(--card-background-color);
+          --fc-neutral-bg-color: var(
+            --ha-card-background,
+            var(--card-background-color, white)
+          );
+          --fc-list-event-hover-bg-color: var(
+            --ha-card-background,
+            var(--card-background-color, white)
+          );
           --fc-theme-standard-border-color: var(--divider-color);
           --fc-border-color: var(--divider-color);
         }
