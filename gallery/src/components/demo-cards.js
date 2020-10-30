@@ -11,7 +11,11 @@ class DemoCards extends PolymerElement {
   static get template() {
     return html`
       <style>
-        #cards {
+        #container {
+          min-height: calc(100vh - 128px);
+          background: var(--primary-background-color);
+        }
+        .cards {
           display: flex;
           flex-wrap: wrap;
           justify-content: center;
@@ -40,14 +44,16 @@ class DemoCards extends PolymerElement {
           </ha-formfield>
         </div>
       </app-toolbar>
-      <div id="cards">
-        <template is="dom-repeat" items="[[configs]]">
-          <demo-card
-            config="[[item]]"
-            show-config="[[_showConfig]]"
-            hass="[[hass]]"
-          ></demo-card>
-        </template>
+      <div id="container">
+        <div class="cards">
+          <template is="dom-repeat" items="[[configs]]">
+            <demo-card
+              config="[[item]]"
+              show-config="[[_showConfig]]"
+              hass="[[hass]]"
+            ></demo-card>
+          </template>
+        </div>
       </div>
     `;
   }
@@ -68,7 +74,7 @@ class DemoCards extends PolymerElement {
   }
 
   _darkThemeToggled(ev) {
-    applyThemesOnElement(this.$.cards, { themes: {} }, "default", {
+    applyThemesOnElement(this.$.container, { themes: {} }, "default", {
       dark: ev.target.checked,
     });
   }
