@@ -41,7 +41,7 @@ class HaCoverControls extends LitElement {
           class=${classMap({
             invisible: !this._entityObj.supportsOpen,
           })}
-          label=${this.hass.localize("ui.dialogs.more_info_control.open_cover")}
+          .title=${this.hass.localize("ui.dialogs.more_info_control.open_cover")}
           .icon=${this._computeOpenIcon()}
           @click=${this._onOpenTap}
           .disabled=${this._computeOpenDisabled()}
