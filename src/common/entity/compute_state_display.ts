@@ -5,6 +5,7 @@ import { formatDateTime } from "../datetime/format_date_time";
 import { formatTime } from "../datetime/format_time";
 import { LocalizeFunc } from "../translations/localize";
 import { computeStateDomain } from "./compute_state_domain";
+import { numberFormat } from "../string/number-format";
 
 export const computeStateDisplay = (
   localize: LocalizeFunc,
@@ -19,7 +20,9 @@ export const computeStateDisplay = (
   }
 
   if (stateObj.attributes.unit_of_measurement) {
-    return `${compareState} ${stateObj.attributes.unit_of_measurement}`;
+    return `${numberFormat(compareState, language)} ${
+      stateObj.attributes.unit_of_measurement
+    }`;
   }
 
   const domain = computeStateDomain(stateObj);
