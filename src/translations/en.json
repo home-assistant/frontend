@@ -1365,7 +1365,7 @@
               "name": "Name"
             },
             "duplicate_script": "Duplicate script",
-            "duplicate": "duplicate"
+            "duplicate": "[%key:ui::panel::config::automation::picker::duplicate%]"
           },
           "editor": {
             "alias": "Name",
