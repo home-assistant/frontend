@@ -75,13 +75,13 @@
             "disarmed": "Disattivo",
             "disarming": "Disattivando",
             "pending": "Sospeso",
-            "triggered": "Attiv."
+            "triggered": "Attivato"
         },
         "default": {
             "entity_not_found": "Entità non trovata!",
             "error": "Errore",
-            "unavailable": "Non disp.",
-            "unknown": "Ignoto"
+            "unavailable": "Non disponibile",
+            "unknown": "Sconosciuto"
         },
         "device_tracker": {
             "home": "A casa",
