@@ -10,7 +10,7 @@ import {
 import { HassEntity } from "home-assistant-js-websocket";
 
 import { CLIMATE_PRESET_NONE } from "../data/climate";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 
 @customElement("ha-climate-state")
 class HaClimateState extends LitElement {
