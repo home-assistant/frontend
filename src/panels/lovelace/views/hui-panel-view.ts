@@ -52,6 +52,10 @@ export class PanelView extends LitElement implements LovelaceViewElement {
       );
     }
 
+    if (changedProperties.has("cards")) {
+      this._createCard();
+    }
+
     if (!changedProperties.has("lovelace")) {
       return;
     }
