@@ -888,6 +888,11 @@
                         "trend": "Ricarica le entità di tendenza",
                         "universal": "Ricarica le entità del lettore multimediale universale",
                         "zone": "Ricarica le Zone"
+                    },
+                    "server_control": {
+                        "perform_action": "{action} Server",
+                        "restart": "Riavvia",
+                        "stop": "Ferma"
                     }
                 },
                 "filter_placeholder": "Filtro Entità"
@@ -1998,6 +2003,7 @@
                     },
                     "services": {
                         "add_node": "Aggiungi Nodo",
+                        "cancel_command": "Annulla Comando",
                         "remove_node": "Rimuovi nodo"
                     }
                 },
@@ -3198,6 +3204,10 @@
                     "dropdown_label": "Plancia",
                     "header": "Plancia"
                 },
+                "enable_shortcuts": {
+                    "description": "Abilita o disabilita le scorciatoie da tastiera per eseguire varie azioni nell'interfaccia utente.",
+                    "header": "Scorciatoie da tastiera"
+                },
                 "force_narrow": {
                     "description": "Questo nasconderà la barra laterale per impostazione predefinita, in modo simile all'esperienza mobile",
                     "header": "Nascondi sempre la barra laterale"
@@ -3242,6 +3252,10 @@
                     "header": "Codice di autenticazione a più fattori"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "Nome del dispositivo",
+                        "title": "Come dovrebbe essere chiamato questo dispositivo?"
+                    },
                     "description": "Invia notifiche a questo dispositivo.",
                     "error_load_platform": "Configura notify.html5.",
                     "error_use_https": "Richiede SSL abilitato per il frontend.",

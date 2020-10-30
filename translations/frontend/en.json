@@ -798,6 +798,7 @@
                 "dismiss": "Dismiss dialog",
                 "edit": "Edit entity",
                 "history": "History",
+                "last_changed": "Last changed",
                 "last_updated": "Last updated",
                 "person": {
                     "create_zone": "Create zone from current location"

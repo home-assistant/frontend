@@ -151,7 +151,7 @@
                 "on": "Húmedo"
             },
             "motion": {
-                "off": "Sin movimiento",
+                "off": "No detectado",
                 "on": "Detectado"
             },
             "occupancy": {
@@ -577,7 +577,7 @@
                 "messages": {
                     "became_unavailable": "dejó de estar disponible",
                     "changed_to_state": "cambiado a {state}",
-                    "cleared_device_class": "despejado (no se detecta {device_class})",
+                    "cleared_device_class": "no detectado (no se detecta {device_class})",
                     "detected_device_class": "detectado {device_class}",
                     "rose": "salió",
                     "set": "Establecer",
@@ -2205,7 +2205,7 @@
                         "tag_id": "ID de etiqueta",
                         "tag_id_placeholder": "Autogenerado cuando se deja vacío",
                         "update": "Actualizar",
-                        "usage": "Una etiqueta puede activar una automatización cuando se escanea, puedes usar etiquetas NFC, códigos QR o cualquier otro tipo de etiqueta. Utiliza nuestra {companion_link} para escribir esta etiqueta en una etiqueta NFC programable o crea un código QR a continuación."
+                        "usage": "Una etiqueta puede activar una automatización cuando se escanea, puedes usar etiquetas NFC, códigos QR o cualquier otro tipo de etiqueta. Utiliza nuestras {companion_link} para escribir esta etiqueta en una etiqueta NFC programable o crea un código QR a continuación."
                     },
                     "edit": "Editar",
                     "headers": {

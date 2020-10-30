@@ -873,7 +873,7 @@
                         "input_select": "重载多项选择器",
                         "input_text": "重载文字输入",
                         "min_max": "重载最小值/最大值实体",
-                        "mqtt": "重载 mqtt 实体",
+                        "mqtt": "重载手动配置的 mqtt 实体",
                         "person": "重载人员",
                         "ping": "重载 ping 二元传感器实体",
                         "reload": "重载{domain}",
@@ -888,6 +888,11 @@
                         "trend": "重载 trend 实体",
                         "universal": "重载通用媒体播放器实体",
                         "zone": "重载地点"
+                    },
+                    "server_control": {
+                        "perform_action": "{action}服务",
+                        "restart": "重启",
+                        "stop": "停止"
                     }
                 },
                 "filter_placeholder": "实体筛选"
@@ -1998,6 +2003,7 @@
                     },
                     "services": {
                         "add_node": "添加节点",
+                        "cancel_command": "取消命令",
                         "remove_node": "删除节点"
                     }
                 },
@@ -2149,7 +2155,7 @@
                             "input_text": "重载文字输入",
                             "introduction": "Home Assistant 中的部分配置可以直接重载，而无需重启服务。点击重载按钮将重新载入新的配置。",
                             "min_max": "重载最小值/最大值实体",
-                            "mqtt": "重载 mqtt 实体",
+                            "mqtt": "重载手动配置的 mqtt 实体",
                             "person": "重载人员",
                             "ping": "重载 ping 二元传感器实体",
                             "reload": "重载{domain}",
@@ -3198,6 +3204,10 @@
                     "dropdown_label": "仪表盘",
                     "header": "仪表盘"
                 },
+                "enable_shortcuts": {
+                    "description": "启用或禁用可在 UI 中执行各种操作的键盘快捷键。",
+                    "header": "键盘快捷键"
+                },
                 "force_narrow": {
                     "description": "这将默认隐藏侧边栏，体验与手机版类似。",
                     "header": "始终隐藏侧边栏"
@@ -3242,6 +3252,10 @@
                     "header": "多因素身份验证模块"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "设备名称",
+                        "title": "如何称呼这台设备？"
+                    },
                     "description": "向本设备发送通知",
                     "error_load_platform": "请配置 notify.html5。",
                     "error_use_https": "需要为前端启用 SSL。",
