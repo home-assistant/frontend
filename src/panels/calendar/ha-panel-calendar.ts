@@ -14,6 +14,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { styleMap } from "lit-html/directives/style-map";
+import { LocalStorage } from "../../common/decorators/local-storage";
 import { HASSDomEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
 import "../../components/ha-menu-button";
@@ -25,7 +26,6 @@ import type {
   CalendarEvent,
   CalendarViewChanged,
   HomeAssistant,
-  SelectedCalendar,
 } from "../../types";
 import "./ha-full-calendar";
 
@@ -36,9 +36,12 @@ class PanelCalendar extends LitElement {
   @property({ type: Boolean, reflect: true })
   public narrow!: boolean;
 
-  @internalProperty() private _calendars: SelectedCalendar[] = [];
+  @internalProperty() private _calendars: Calendar[] = [];
 
   @internalProperty() private _events: CalendarEvent[] = [];
+
+  @LocalStorage("deSelectedCalendars", true)
+  private _deSelectedCalendars: string[] = [];
 
   private _start?: Date;
 
@@ -46,10 +49,7 @@ class PanelCalendar extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
-    this._calendars = getCalendars(this.hass).map((calendar) => ({
-      selected: true,
-      calendar,
-    }));
+    this._calendars = getCalendars(this.hass);
   }
 
   protected render(): TemplateResult {
@@ -75,19 +75,22 @@ class PanelCalendar extends LitElement {
             </div>
             ${this._calendars.map(
               (selCal) =>
-                html`<div>
-                  <mwc-formfield .label=${selCal.calendar.name}>
-                    <mwc-checkbox
-                      style=${styleMap({
-                        "--mdc-theme-secondary": selCal.calendar
-                          .backgroundColor!,
-                      })}
-                      .value=${selCal.calendar.entity_id}
-                      .checked=${selCal.selected}
-                      @change=${this._handleToggle}
-                    ></mwc-checkbox>
-                  </mwc-formfield>
-                </div>`
+                html`
+                  <div>
+                    <mwc-formfield .label=${selCal.name}>
+                      <mwc-checkbox
+                        style=${styleMap({
+                          "--mdc-theme-secondary": selCal.backgroundColor!,
+                        })}
+                        .value=${selCal.entity_id}
+                        .checked=${!this._deSelectedCalendars.includes(
+                          selCal.entity_id
+                        )}
+                        @change=${this._handleToggle}
+                      ></mwc-checkbox>
+                    </mwc-formfield>
+                  </div>
+                `
             )}
           </div>
           <ha-full-calendar
@@ -103,8 +106,8 @@ class PanelCalendar extends LitElement {
 
   private get _selectedCalendars(): Calendar[] {
     return this._calendars
-      .filter((selCal) => selCal.selected)
-      .map((cal) => cal.calendar);
+      .filter((selCal) => !this._deSelectedCalendars.includes(selCal.entity_id))
+      .map((cal) => cal);
   }
 
   private async _fetchEvents(
@@ -121,24 +124,28 @@ class PanelCalendar extends LitElement {
 
   private async _handleToggle(ev): Promise<void> {
     const results = this._calendars.map(async (cal) => {
-      if (ev.target.value !== cal.calendar.entity_id) {
+      if (ev.target.value !== cal.entity_id) {
         return cal;
       }
 
       const checked = ev.target.checked;
 
       if (checked) {
-        const events = await this._fetchEvents(this._start!, this._end!, [
-          cal.calendar,
-        ]);
+        const events = await this._fetchEvents(this._start!, this._end!, [cal]);
         this._events = [...this._events, ...events];
+        this._deSelectedCalendars = this._deSelectedCalendars.filter(
+          (deCal) => deCal !== cal.entity_id
+        );
       } else {
         this._events = this._events.filter(
-          (event) => event.calendar !== cal.calendar.entity_id
+          (event) => event.calendar !== cal.entity_id
         );
+        this._deSelectedCalendars = [
+          ...this._deSelectedCalendars,
+          cal.entity_id,
+        ];
       }
 
-      cal.selected = checked;
       return cal;
     });
 
