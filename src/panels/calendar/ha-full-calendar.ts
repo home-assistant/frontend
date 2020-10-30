@@ -2,6 +2,7 @@
 import fullcalendarStyle from "@fullcalendar/common/main.css";
 import type { CalendarOptions } from "@fullcalendar/core";
 import { Calendar } from "@fullcalendar/core";
+import allLocales from "@fullcalendar/core/locales-all";
 import dayGridPlugin from "@fullcalendar/daygrid";
 // @ts-ignore
 import daygridStyle from "@fullcalendar/daygrid/main.css";
@@ -60,6 +61,7 @@ const defaultFullCalendarConfig: CalendarOptions = {
   dayMaxEventRows: true,
   height: "parent",
   eventDisplay: "list-item",
+  locales: allLocales,
   views: {
     list: {
       visibleRange: getListWeekRange,
