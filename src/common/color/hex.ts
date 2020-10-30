@@ -8,18 +8,15 @@ export const expandHex = (hex: string): string => {
   return result;
 };
 
-export const hexBlend = (
-  color_1: string,
-  color_2: string,
-  blend = 50
-): string => {
+// Blend two hex colors together with a percentage.
+export const hexBlend = (c1: string, c2: string, blend = 50): string => {
   let color = "";
-  color_1 = expandHex(color_1);
-  color_2 = expandHex(color_2);
+  c1 = expandHex(c1);
+  c2 = expandHex(c2);
   for (let i = 0; i <= 5; i += 2) {
-    const c1 = parseInt(color_1.substr(i, 2), 16);
-    const c2 = parseInt(color_2.substr(i, 2), 16);
-    let hex = Math.floor(c2 + (c1 - c2) * (blend / 100)).toString(16);
+    const h1 = parseInt(c1.substr(i, 2), 16);
+    const h2 = parseInt(c2.substr(i, 2), 16);
+    let hex = Math.floor(h2 + (h1 - h2) * (blend / 100)).toString(16);
     while (hex.length < 2) hex = "0" + hex;
     color += hex;
   }
