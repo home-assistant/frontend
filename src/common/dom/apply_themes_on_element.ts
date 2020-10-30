@@ -41,8 +41,8 @@ export const applyThemesOnElement = (
       if (themeOptions.primaryColor) {
         themeRules["app-header-background-color"] = hexBlend(
           themeOptions.primaryColor,
-          "#111111",
-          15
+          "#121212",
+          8
         );
       }
     }
