@@ -62,7 +62,9 @@ class HaClimateState extends LitElement {
   }
 
   private _computeTarget(): string {
-    if (!this.hass || !this.stateObj) return "";
+    if (!this.hass || !this.stateObj) {
+    	return "";
+    }
 
     if (
       this.stateObj.attributes.target_temp_low != null &&
