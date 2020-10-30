@@ -23,7 +23,6 @@ import "../../../common/search/search-input";
 import { caseInsensitiveCompare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import { nextRender } from "../../../common/util/render-status";
-import "../../../components/entity/ha-state-icon";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";

@@ -15,7 +15,6 @@ import type {
   HaDataTable,
   DataTableRowData,
 } from "../../../../../components/data-table/ha-data-table";
-import "../../../../../components/entity/ha-state-icon";
 import type {
   ZHADeviceEndpoint,
   ZHAEntityReference,
