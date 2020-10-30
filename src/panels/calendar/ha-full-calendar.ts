@@ -206,6 +206,12 @@ export class HAFullCalendar extends LitElement {
       this.calendar!.changeView(this._activeView);
       this._fireViewChanged();
     }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant;
+
+    if (oldHass && oldHass.language !== this.hass.language) {
+      this.calendar.setOption("locale", this.hass.language);
+    }
   }
 
   protected firstUpdated(): void {
