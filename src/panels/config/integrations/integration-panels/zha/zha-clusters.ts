@@ -15,7 +15,6 @@ import {
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-service-description";
 import {
   Cluster,
   fetchClustersForZhaNode,

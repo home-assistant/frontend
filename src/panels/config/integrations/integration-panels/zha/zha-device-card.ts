@@ -16,7 +16,6 @@ import { computeStateName } from "../../../../../common/entity/compute_state_nam
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/entity/state-badge";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-service-description";
 import { updateDeviceRegistryEntry } from "../../../../../data/device_registry";
 import { ZHADevice } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";

@@ -16,7 +16,6 @@ import {
 } from "lit-element";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-service-description";
 import { bindDevices, unbindDevices, ZHADevice } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";

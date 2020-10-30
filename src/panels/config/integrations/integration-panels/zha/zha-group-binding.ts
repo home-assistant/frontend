@@ -19,7 +19,6 @@ import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/buttons/ha-call-service-button";
 import { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-service-description";
 import {
   bindDeviceToGroup,
   Cluster,

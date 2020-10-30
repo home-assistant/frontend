@@ -12,7 +12,6 @@ import {
   TemplateResult,
   PropertyValues,
 } from "lit-element";
-import "../../../../../components/ha-service-description";
 import "@polymer/paper-input/paper-textarea";
 import { ZHADevice } from "../../../../../data/zha";
 import "../../../../../layouts/hass-tabs-subpage";
