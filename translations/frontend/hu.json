@@ -634,20 +634,20 @@
                     "server": "Szerver"
                 },
                 "documentation": "dokumentáció",
-                "learn_adding_local_media": "További információ a média hozzáadásáról a {documentation} .",
-                "local_media_files": "Helyezze el a video-, audio- és képfájljait a média könyvtárba, hogy böngészhessen és lejátszhassa őket a böngészőben vagy a támogatott médialejátszókon.",
+                "learn_adding_local_media": "Tudj meg többet a média hozzáadásról a {documentation}ban.",
+                "local_media_files": "Helyezd el a videó-, hang- és képfájljaidat a média könyvtárban ahhoz, hogy tallózhasd és lejátszhasd őket a böngészőben vagy a támogatott médialejátszókon.",
                 "media_browsing_error": "Média böngészési hiba",
                 "media_not_supported": "A böngésző médialejátszó nem támogatja az ilyen típusú médiafájlokat",
                 "media_player": "Médialejátszó",
                 "media-player-browser": "Médialejátszó böngésző",
                 "no_items": "Nincsenek elemek",
                 "no_local_media_found": "Nem található helyi média",
-                "no_media_folder": "Úgy tűnik, hogy még nem hozott létre média könyvtárat.",
+                "no_media_folder": "Úgy tűnik, még nem hoztál létre média könyvtárat.",
                 "pick": "Kiválasztás",
                 "pick-media": "Média kiválasztása",
                 "play": "Lejátszás",
                 "play-media": "Média lejátszása",
-                "setup_local_help": "Ellenőrizze a {documentation} a helyi adathordozók beállításáról.",
+                "setup_local_help": "Ellenőrizd a {documentation}t a helyi adathordozó beállításáról.",
                 "video_not_supported": "A böngésződ nem támogatja a video elemet.",
                 "web-browser": "Böngésző"
             },
@@ -1013,7 +1013,7 @@
                             "delete_confirm": "Biztos, hogy ezt törölni szeretnéd?",
                             "duplicate": "Duplikálás",
                             "header": "Műveletek",
-                            "introduction": "A műveleteket hajtja végre a Home Assistant, ha egy automatizálás triggerelődik. Kattints az alábbi linkre, ha többet szeretnél megtudni a műveletekről.",
+                            "introduction": "A műveleteket hajtja végre a Home Assistant, ha egy automatizálás elindul. Kattints az alábbi linkre, ha többet szeretnél megtudni a műveletekről.",
                             "learn_more": "Tudj meg többet a műveletekről",
                             "name": "Művelet",
                             "type_select": "Művelet típusa",
@@ -1055,12 +1055,12 @@
                                             "label": "Számláló"
                                         },
                                         "until": {
-                                            "conditions": "Amíg a feltételek",
-                                            "label": "Addig"
+                                            "conditions": "Amíg nem teljesülnek a feltételek",
+                                            "label": "Amíg nem"
                                         },
                                         "while": {
-                                            "conditions": "Míg a feltételek",
-                                            "label": "Míg"
+                                            "conditions": "Amíg teljesülnek a feltételek",
+                                            "label": "Amíg"
                                         }
                                     }
                                 },
@@ -1073,7 +1073,7 @@
                                 },
                                 "wait_for_trigger": {
                                     "continue_timeout": "Folytatás időtúllépéskor",
-                                    "label": "Várakozás az eseményindítóra",
+                                    "label": "Várakozás eseményindítóra",
                                     "timeout": "Időtúllépés (opcionális)"
                                 },
                                 "wait_template": {
@@ -1191,15 +1191,15 @@
                         "move_up": "Fel",
                         "save": "Mentés",
                         "triggers": {
-                            "add": "Trigger hozzáadása",
+                            "add": "Eseményindító hozzáadása",
                             "delete": "Törlés",
                             "delete_confirm": "Biztos, hogy ezt törölni szeretnéd?",
                             "duplicate": "Duplikálás",
-                            "header": "Triggerek",
-                            "introduction": "Az eseményindítók (triggerek) indítják el az automatizálási szabályok feldolgozását. Több triggert is meg lehet adni egy szabályhoz. Ha egy trigger elindul, akkor a Home Assistant ellenőrzi a feltételeket - ha vannak -, majd meghívja a műveletet. Kattints az alábbi linkre, ha többet szeretnél megtudni a triggerekről.",
-                            "learn_more": "Tudj meg többet a triggerekről",
-                            "name": "Trigger",
-                            "type_select": "Trigger típusa",
+                            "header": "Eseményindítók",
+                            "introduction": "Az eseményindítók indítják el az automatizálási szabályok feldolgozását. Több eseményindítót is meg lehet adni egy szabályhoz. Ha egy eseményindító elindul, akkor a Home Assistant ellenőrzi a feltételeket - ha vannak -, majd meghívja a műveletet.",
+                            "learn_more": "Tudj meg többet az eseményindítókról",
+                            "name": "Eseményindító",
+                            "type_select": "Eseményindító típusa",
                             "type": {
                                 "device": {
                                     "extra_fields": {
@@ -1212,8 +1212,8 @@
                                 },
                                 "event": {
                                     "context_user_pick": "Felhasználó hozzáadása",
-                                    "context_user_picked": "Esemény elküldése",
-                                    "context_users": "Korlátozás az által kiváltott eseményekre",
+                                    "context_user_picked": "Eseményt kiváltó felhasználó",
+                                    "context_users": "Korlátozás felhasználó(k) által indított eseményekre",
                                     "event_data": "Esemény adatai",
                                     "event_type": "Esemény típusa",
                                     "label": "Esemény"
@@ -1535,10 +1535,10 @@
                     }
                 },
                 "devices": {
-                    "add_prompt": "Az eszköz használatával még nem adtak hozzá {name} nevet. A fenti + gombra kattintva hozzá adhat egyet.",
+                    "add_prompt": "Még nem lettek létrehozva {name} ennek az eszköznek a használatával. Hozzáadhatsz egyet a fenti + gombra kattintva.",
                     "automation": {
                         "actions": {
-                            "caption": "Ha valami triggerelődik, akkor...",
+                            "caption": "Ha egy esemény elindul, akkor...",
                             "no_actions": "Nincsenek műveletek",
                             "unknown_action": "Ismeretlen művelet"
                         },
@@ -1548,7 +1548,7 @@
                             "no_conditions": "Nincsenek feltételek",
                             "unknown_condition": "Ismeretlen feltétel"
                         },
-                        "create": "Eszköz automatizálás létrehozása",
+                        "create": "Automatizálás létrehozása eszközzel",
                         "no_automations": "Nincsenek automatizálások",
                         "no_device_automations": "Ehhez az eszközhöz nem állnak rendelkezésre automatizálások.",
                         "triggers": {
@@ -1593,7 +1593,7 @@
                     },
                     "scenes": "Jelenetek",
                     "script": {
-                        "create": "Szkript létrehozása eszköz alapján",
+                        "create": "Szkript létrehozása eszközzel",
                         "no_scripts": "Nincsenek szkriptek",
                         "scripts": "Szkriptek"
                     },
@@ -1925,7 +1925,7 @@
                             "driverawakenodesqueries": "Minden éber csomópont lekérdezésre került",
                             "driverfailed": "Nem sikerült csatlakozni a Z-Wave vezérlőhöz",
                             "driverready": "A Z-Wave vezérlő inicializálása",
-                            "driverremoved": "A meghajtót eltávolították",
+                            "driverremoved": "Az illesztőprogram el lett távolítva",
                             "driverreset": "Az illesztőprogram vissza lett állítva",
                             "offline": "OZWDaemon offline",
                             "ready": "Csatlakozásra kész",
@@ -2431,14 +2431,14 @@
                         "add_to_group": "Hozzáadás a csoporthoz",
                         "entities": "A csomópont entitásai",
                         "entity_info": "Entitás adatai",
-                        "exclude_entity": "Kizárja ezt az entitást a Home Assistantból",
+                        "exclude_entity": "Entitás kizárása a Home Assistant-ból",
                         "group": "Csoport",
                         "header": "Z-Wave csomópontkezelés",
-                        "introduction": "Futtasson egyetlen csomópontot érintő Z-Wave parancsokat. Válasszon egy csomópontot az elérhető parancsok listájának megtekintéséhez.",
-                        "max_associations": "Egyesületek száma:",
+                        "introduction": "Futtass egyetlen csomópontot érintő Z-Wave parancsokat. Válassz egy csomópontot az elérhető parancsok listájának megtekintéséhez.",
+                        "max_associations": "Társítások maximális száma:",
                         "node_group_associations": "Csomópontcsoport-társítások",
                         "node_protection": "Csomópont védelem",
-                        "node_to_control": "A vezérlőhöz képest csomópont",
+                        "node_to_control": "Vezérelni kívánt csomópont",
                         "nodes": "Csomópontok",
                         "nodes_hint": "Válassz csomópontot a csomópontonkénti opciók megtekintéséhez",
                         "nodes_in_group": "További csomópontok ebben a csoportban:",
@@ -2449,7 +2449,7 @@
                         "set_protection": "Védelem beállítása"
                     },
                     "ozw_log": {
-                        "header": "OZW Log",
+                        "header": "OZW napló",
                         "introduction": "Napló megtekintése. 0 a minimum (a teljes naplót betölti) és 1000 a maximum. A betöltés statikus naplót jelenít meg, és a vége automatikusan frissül a napló utolsó meghatározott számú sorával.",
                         "last_log_lines": "Az utolsó naplósorok száma",
                         "load": "Betöltés",
@@ -2767,7 +2767,7 @@
                             "name": "Vízszintes Készlet"
                         },
                         "humidifier": {
-                            "description": "A Páratartalom kártyával a páramntesitő/párásitó berendezés entitások vezérelhetők. Lehetővé teszi a páratartalom, illetve a mód megváltoztatását.",
+                            "description": "A Párásító kártyával a párásító berendezés entitások vezérelhetők. Lehetővé teszi a páratartalom, illetve a mód megváltoztatását.",
                             "name": "Párásító"
                         },
                         "iframe": {
@@ -3205,7 +3205,7 @@
                     "header": "Irányítópult"
                 },
                 "enable_shortcuts": {
-                    "description": "A felhasználói felület különböző műveletekvégrehajtásához engedélyezze vagy tiltsa le a billentyűparancsokat.",
+                    "description": "Engedélyezheted vagy letilthatod a felhasználói felület billentyűparancsait különböző műveletek végrehajtásához.",
                     "header": "Billentyűparancsok"
                 },
                 "force_narrow": {

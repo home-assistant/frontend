@@ -571,7 +571,7 @@
                 "no_history_found": "История не найдена."
             },
             "logbook": {
-                "by": "пользователем",
+                "by": "от",
                 "by_service": "службой",
                 "entries_not_found": "В журнале нет записей.",
                 "messages": {

@@ -585,7 +585,7 @@
                     "turned_on": "zapnuto",
                     "was_at_home": "byl doma",
                     "was_at_state": "bylo v {state}",
-                    "was_away": "byl pryč",
+                    "was_away": "bylo pryč",
                     "was_closed": "bylo zavřeno",
                     "was_connected": "bylo připojeno",
                     "was_disconnected": "bylo odpojeno",
@@ -2956,7 +2956,7 @@
                     "close": "Zavřít",
                     "configure_ui": "Upravit Dashboard",
                     "exit_edit_mode": "Ukončit režim úprav uživatelského rozhraní",
-                    "help": "Pomoc",
+                    "help": "Nápověda",
                     "refresh": "Obnovit",
                     "reload_resources": "Nově načíst zdroje",
                     "start_conversation": "Zahájit konverzaci"

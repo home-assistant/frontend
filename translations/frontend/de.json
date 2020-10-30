@@ -883,7 +883,9 @@
                         "zone": "Zonen neu laden"
                     },
                     "server_control": {
-                        "perform_action": "{action} Server"
+                        "perform_action": "{action} Server",
+                        "restart": "Neustarten",
+                        "stop": "Stoppen"
                     }
                 },
                 "filter_placeholder": "Entitätsfilter"

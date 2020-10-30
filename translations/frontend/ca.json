@@ -888,6 +888,11 @@
                         "trend": "Actualitza entitats de tendència",
                         "universal": "Actualitza entitats del reproductor universal",
                         "zone": "Actualitza zones"
+                    },
+                    "server_control": {
+                        "perform_action": "{action} Servidor",
+                        "restart": "Reinicia",
+                        "stop": "Atura"
                     }
                 },
                 "filter_placeholder": "Filtre d'entitats"
@@ -1998,6 +2003,7 @@
                     },
                     "services": {
                         "add_node": "Afegeix node",
+                        "cancel_command": "Cancel·la ordre",
                         "remove_node": "Elimina node"
                     }
                 },
@@ -3198,6 +3204,10 @@
                     "dropdown_label": "Panell",
                     "header": "Panell"
                 },
+                "enable_shortcuts": {
+                    "description": "Activa o desactiva dreceres de teclat. Poden dur a terme diverses accions a la IU.",
+                    "header": "Dreceres de teclat"
+                },
                 "force_narrow": {
                     "description": "Això ocultarà la barra lateral de manera similar als mòbils i tablets.",
                     "header": "Amaga sempre la barra lateral"
@@ -3242,6 +3252,10 @@
                     "header": "Mòduls d'autenticació amb múltiples passos"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "Nom del dispositiu",
+                        "title": "Com s'ha d'anomenar aquest dispositiu?"
+                    },
                     "description": "Envia notificacions a aquest dispositiu.",
                     "error_load_platform": "Configurar notify.html5.",
                     "error_use_https": "Requereix tenir SSL habilitat per a la interfície (frontend).",
