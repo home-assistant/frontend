@@ -182,7 +182,7 @@ export class HAFullCalendar extends LitElement {
             </div>
           `
         : ""}
-      <div id="calendar" class="ha-scrollbar"></div>
+      <div id="calendar"></div>
     `;
   }
 
