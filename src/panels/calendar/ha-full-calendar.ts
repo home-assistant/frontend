@@ -44,6 +44,15 @@ declare global {
   }
 }
 
+const getListWeekRange = (currentDate: Date): { start: Date; end: Date } => {
+  const startDate = new Date(currentDate.valueOf());
+  const endDate = new Date(currentDate.valueOf());
+
+  endDate.setDate(endDate.getDate() + 7);
+
+  return { start: startDate, end: endDate };
+};
+
 const defaultFullCalendarConfig: CalendarOptions = {
   headerToolbar: false,
   plugins: [dayGridPlugin, listPlugin, interactionPlugin],
@@ -51,16 +60,21 @@ const defaultFullCalendarConfig: CalendarOptions = {
   dayMaxEventRows: true,
   height: "parent",
   eventDisplay: "list-item",
+  views: {
+    list: {
+      visibleRange: getListWeekRange,
+    },
+  },
 };
 
 const viewButtons: ToggleButton[] = [
   { label: "Month View", value: "dayGridMonth", iconPath: mdiViewModule },
   { label: "Week View", value: "dayGridWeek", iconPath: mdiViewWeek },
   { label: "Day View", value: "dayGridDay", iconPath: mdiViewDay },
-  { label: "List View", value: "listWeek", iconPath: mdiViewAgenda },
+  { label: "List View", value: "list", iconPath: mdiViewAgenda },
 ];
 
-class HAFullCalendar extends LitElement {
+export class HAFullCalendar extends LitElement {
   public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
@@ -78,6 +92,10 @@ class HAFullCalendar extends LitElement {
   @internalProperty() private calendar?: Calendar;
 
   @internalProperty() private _activeView?: FullCalendarView;
+
+  public updateSize(): void {
+    this.calendar?.updateSize();
+  }
 
   protected render(): TemplateResult {
     const viewToggleButtons = this._viewToggleButtons(this.views);
@@ -243,7 +261,7 @@ class HAFullCalendar extends LitElement {
     this._fireViewChanged();
   }
 
-  private _handleView(ev): void {
+  private _handleView(ev: CustomEvent): void {
     this._activeView = ev.detail.value;
     this.calendar!.changeView(this._activeView!);
     this._fireViewChanged();

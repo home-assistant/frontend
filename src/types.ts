@@ -153,7 +153,7 @@ export type FullCalendarView =
   | "dayGridMonth"
   | "dayGridWeek"
   | "dayGridDay"
-  | "listWeek";
+  | "list";
 
 export interface ToggleButton {
   label: string;
