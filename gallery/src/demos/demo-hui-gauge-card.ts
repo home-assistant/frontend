@@ -8,6 +8,7 @@ import "../components/demo-cards";
 const ENTITIES = [
   getEntity("sensor", "brightness", "12", {}),
   getEntity("plant", "bonsai", "ok", {}),
+  getEntity("sensor", "not_working", "unavailable", {}),
   getEntity("sensor", "outside_humidity", "54", {
     unit_of_measurement: "%",
   }),
@@ -72,6 +73,13 @@ const CONFIGS = [
     config: `
 - type: gauge
   entity: plant.bonsai
+    `,
+  },
+  {
+    heading: "Unavailable entity",
+    config: `
+- type: gauge
+  entity: sensor.not_working
     `,
   },
 ];
