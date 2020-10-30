@@ -41,7 +41,7 @@ class HaCoverControls extends LitElement {
           class=${classMap({
             invisible: !this._entityObj.supportsOpen,
           })}
-          .title=${this.hass.localize("ui.dialogs.more_info_control.open_cover")}
+          .label=${this.hass.localize("ui.dialogs.more_info_control.open_cover")}
           .icon=${this._computeOpenIcon()}
           @click=${this._onOpenTap}
           .disabled=${this._computeOpenDisabled()}
@@ -50,7 +50,7 @@ class HaCoverControls extends LitElement {
           class=${classMap({
             invisible: !this._entityObj.supportsStop,
           })}
-          label=${this.hass.localize("ui.dialogs.more_info_control.stop_cover")}
+          .label=${this.hass.localize("ui.dialogs.more_info_control.stop_cover")}
           icon="hass:stop"
           @click=${this._onStopTap}
           .disabled=${this._stateObj.state === UNAVAILABLE}
@@ -59,7 +59,7 @@ class HaCoverControls extends LitElement {
           class=${classMap({
             invisible: !this._entityObj.supportsClose,
           })}
-          label=${this.hass.localize(
+          .label=${this.hass.localize(
             "ui.dialogs.more_info_control.close_cover"
           )}
           .icon=${this._computeCloseIcon()}
