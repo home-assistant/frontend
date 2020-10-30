@@ -27,7 +27,7 @@ import memoize from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button-toggle-group";
 import "../../components/ha-icon-button";
-import { haStyle } from "../../resources/styles";
+import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import type {
   CalendarEvent,
   CalendarViewChanged,
@@ -182,7 +182,7 @@ export class HAFullCalendar extends LitElement {
             </div>
           `
         : ""}
-      <div id="calendar"></div>
+      <div id="calendar" class="ha-scrollbar"></div>
     `;
   }
 
@@ -292,6 +292,7 @@ export class HAFullCalendar extends LitElement {
   static get styles(): CSSResult[] {
     return [
       haStyle,
+      haStyleScrollbar,
       css`
         ${unsafeCSS(fullcalendarStyle)}
         ${unsafeCSS(daygridStyle)}
@@ -512,6 +513,23 @@ export class HAFullCalendar extends LitElement {
 
         :host([narrow]) .fc-dayGridMonth-view .fc-scrollgrid-sync-table {
           overflow: hidden;
+        }
+
+        .fc-scroller::-webkit-scrollbar {
+          width: 0.4rem;
+          height: 0.4rem;
+        }
+
+        .fc-scroller::-webkit-scrollbar-thumb {
+          -webkit-border-radius: 4px;
+          border-radius: 4px;
+          background: var(--scrollbar-thumb-color);
+        }
+
+        .fc-scroller {
+          overflow-y: auto;
+          scrollbar-color: var(--scrollbar-thumb-color) transparent;
+          scrollbar-width: thin;
         }
       `,
     ];
