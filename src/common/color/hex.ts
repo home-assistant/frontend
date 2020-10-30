@@ -8,7 +8,7 @@ export const expandHex = (hex: string): string => {
   return result;
 };
 
-// Blend two hex colors together with a percentage.
+// Blend 2 hex colors: c1 is placed over c2, blend is c1's opacity.
 export const hexBlend = (c1: string, c2: string, blend = 50): string => {
   let color = "";
   c1 = expandHex(c1);
