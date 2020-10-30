@@ -60,8 +60,6 @@ export class MoreInfoDialog extends LitElement {
 
   @internalProperty() private _entityId?: string | null;
 
-  @internalProperty() private _moreInfoType?: string;
-
   @internalProperty() private _currTabIndex = 0;
 
   public showDialog(params: MoreInfoDialogParams) {
