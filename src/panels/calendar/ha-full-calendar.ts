@@ -27,7 +27,7 @@ import memoize from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button-toggle-group";
 import "../../components/ha-icon-button";
-import { haStyle, haStyleScrollbar } from "../../resources/styles";
+import { haStyle } from "../../resources/styles";
 import type {
   CalendarEvent,
   CalendarViewChanged,
@@ -292,7 +292,6 @@ export class HAFullCalendar extends LitElement {
   static get styles(): CSSResult[] {
     return [
       haStyle,
-      haStyleScrollbar,
       css`
         ${unsafeCSS(fullcalendarStyle)}
         ${unsafeCSS(daygridStyle)}
