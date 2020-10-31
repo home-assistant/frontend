@@ -577,7 +577,7 @@
                 "messages": {
                     "became_unavailable": "non è più disponibile",
                     "changed_to_state": "cambiato in {state}",
-                    "cleared_device_class": "cancellato (nessun {device_class} rilevato)",
+                    "cleared_device_class": "sgombro (nessun {device_class} rilevato)",
                     "detected_device_class": "rilevato {device_class}",
                     "rose": "sorto",
                     "set": "impostato",
@@ -798,6 +798,7 @@
                 "dismiss": "Chiudi finestra di dialogo",
                 "edit": "Modifica entità",
                 "history": "Storico",
+                "last_changed": "Ultima modifica",
                 "last_updated": "Ultimo aggiornamento",
                 "person": {
                     "create_zone": "Crea zona dalla posizione corrente"
@@ -873,7 +874,7 @@
                         "input_select": "Ricarica input a discesa",
                         "input_text": "Ricarica input testuali",
                         "min_max": "Ricarica le entità min/max",
-                        "mqtt": "Ricarica le entità MQTT",
+                        "mqtt": "Ricarica entità mqtt configurate manualmente",
                         "person": "Ricarica le persone",
                         "ping": "Ricarica le entità del sensore binario Ping",
                         "reload": "Ricarica {domain}",
@@ -2155,7 +2156,7 @@
                             "input_text": "Ricarica input testuali",
                             "introduction": "Alcune parti di Home Assistant possono essere ricaricate senza richiedere un riavvio. Premendo su Ricarica si rimuoverà la loro Configurazione YAML attuale e si caricherà la versione aggiornata.",
                             "min_max": "Ricarica le entità min/max",
-                            "mqtt": "Ricarica le entità MQTT",
+                            "mqtt": "Ricarica entità mqtt configurate manualmente",
                             "person": "Ricarica le persone",
                             "ping": "Ricarica le entità del sensore binario Ping",
                             "reload": "Ricarica {domain}",
@@ -3294,7 +3295,7 @@
                 },
                 "vibrate": {
                     "description": "Abilitare o disabilitare la vibrazione su questo dispositivo durante il controllo dei dispositivi.",
-                    "header": "Vibrare"
+                    "header": "Vibrazione"
                 }
             },
             "shopping-list": {

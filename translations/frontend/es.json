@@ -798,6 +798,7 @@
                 "dismiss": "Descartar diálogo",
                 "edit": "Editar entidad",
                 "history": "Historial",
+                "last_changed": "Último cambio",
                 "last_updated": "Última actualización",
                 "person": {
                     "create_zone": "Crear zona a partir de la ubicación actual"

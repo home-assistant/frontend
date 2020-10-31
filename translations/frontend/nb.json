@@ -798,6 +798,7 @@
                 "dismiss": "Avvis dialogboksen",
                 "edit": "Redigér entitet",
                 "history": "Historie",
+                "last_changed": "Sist endret",
                 "last_updated": "Sist oppdatert",
                 "person": {
                     "create_zone": "Opprett sone fra gjeldende plassering"
@@ -890,7 +891,7 @@
                         "zone": "Last inn soner på nytt"
                     },
                     "server_control": {
-                        "perform_action": "{action} Server",
+                        "perform_action": "{action} server",
                         "restart": "Omstart",
                         "stop": "Stopp"
                     }

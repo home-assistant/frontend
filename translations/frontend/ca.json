@@ -798,6 +798,7 @@
                 "dismiss": "Desestimar el diàleg",
                 "edit": "Edita entitat",
                 "history": "Historial",
+                "last_changed": "Darrera canvi",
                 "last_updated": "Última actualització",
                 "person": {
                     "create_zone": "Crea una zona a partir de la ubicació actual"
@@ -1637,7 +1638,7 @@
                             "button": "Elimina seleccionada/es",
                             "confirm_partly_text": "Només pots eliminar {removable} de les {selected} entitats seleccionades. Les entitats només es poden eliminar quan la integració ja no les està proporcionant.\nA vegades pot ser que hagis de reiniciar Home Assistant per poder eliminar les entitats d'una antiga integració eliminada. Segur que vols eliminar les entitats?",
                             "confirm_partly_title": "Només es poden eliminar {number} entitats seleccionades.",
-                            "confirm_text": "Les hauries d'eliminar de la configuració Lovelace i de les automatitzacions si contenen aquestes entitats.",
+                            "confirm_text": "Hauries d'eliminar aquestes entitats de les configuracions de Lovelace i de les automatitzacions que les continguin.",
                             "confirm_title": "Vols eliminar {number} entitat/s?"
                         },
                         "search": "Cerca entitats",
@@ -1731,7 +1732,7 @@
                         "no_devices": "Aquesta integració no té dispositius.",
                         "options": "Opcions",
                         "reload": "Torna a carregar",
-                        "reload_confirm": "La integració s'ha tornar a carregar",
+                        "reload_confirm": "La integració s'ha tornat a carregar",
                         "reload_restart_confirm": "Reinicia Home Assistant per acabar de carregar aquesta integració",
                         "rename": "Canvia el nom",
                         "restart_confirm": "Reinicia Home Assistant per acabar d'eliminar aquesta integració",

@@ -798,6 +798,7 @@
                 "dismiss": "关闭对话框",
                 "edit": "编辑实体",
                 "history": "历史",
+                "last_changed": "上次变化",
                 "last_updated": "上次更新",
                 "person": {
                     "create_zone": "从当前位置创建地点"

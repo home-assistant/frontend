@@ -798,6 +798,7 @@
                 "dismiss": "Zavřít dialog",
                 "edit": "Upravit entitu",
                 "history": "Historie",
+                "last_changed": "Naposledy změněno",
                 "last_updated": "Poslední aktualizace",
                 "person": {
                     "create_zone": "Vytvořit zónu z aktuálního umístění"
