@@ -391,7 +391,7 @@
             "humidifier": {
                 "humidity": "目標湿度",
                 "mode": "モード",
-                "on_entity": "{名前} オン",
+                "on_entity": "{name} オン",
                 "target_humidity_entity": "目標湿度"
             },
             "light": {
@@ -784,6 +784,7 @@
                 "dismiss": "ダイアログを閉じる",
                 "edit": "エンティティを編集",
                 "history": "履歴",
+                "last_changed": "最終変更日",
                 "last_updated": "最終更新",
                 "person": {
                     "create_zone": "現在地からゾーンを作成"
@@ -874,6 +875,11 @@
                         "trend": "トレンドエンティティをリロードします",
                         "universal": "ユニバーサルメディアプレーヤーエンティティをリロードします",
                         "zone": "ゾーンの再読込"
+                    },
+                    "server_control": {
+                        "perform_action": "{action}サーバー",
+                        "restart": "再起動",
+                        "stop": "停止"
                     }
                 },
                 "filter_placeholder": "エンティティフィルター"
@@ -1984,6 +1990,7 @@
                     },
                     "services": {
                         "add_node": "ノードを追加",
+                        "cancel_command": "コマンドのキャンセル",
                         "remove_node": "ノードを削除"
                     }
                 },
@@ -2170,7 +2177,7 @@
                 },
                 "tags": {
                     "add_tag": "タグを追加する",
-                    "automation_title": "タグ {名前} がスキャンされます",
+                    "automation_title": "{name}タグのスキャン",
                     "caption": "タグ",
                     "create_automation": "タグを使用したオートメーションの作成",
                     "description": "タグの管理",
@@ -3125,7 +3132,7 @@
                 "core-config": {
                     "button_detect": "検出",
                     "finish": "次",
-                    "intro": "こんにちは {名前}, ホーム アシスタントへようこそ.あなたの家に名前を付けますか?",
+                    "intro": "こんにちは {name}, ホーム アシスタントへようこそ.あなたの家に名前を付けますか?",
                     "intro_location": "どこに住んでいるか知りたいです。 この情報は、他の情報の表示および太陽の位置に関する自動化の設定に役立ちます。 これらの情報がインターネットで外部と共有されることがありません。",
                     "intro_location_detect": "外部サービスに対してワンタイムリクエストを行うことで、この情報を入力することができます。",
                     "location_name": "ホーム アシスタントの名前",
@@ -3184,6 +3191,9 @@
                     "dropdown_label": "ダッシュボード",
                     "header": "ダッシュボード"
                 },
+                "enable_shortcuts": {
+                    "header": "キーボード ショートカット"
+                },
                 "force_narrow": {
                     "description": "これにより、モバイルエクスペリエンスと同様に、サイドバーがデフォルトで非表示になります。",
                     "header": "サイドバーを常に非表示にする"
@@ -3228,6 +3238,10 @@
                     "header": "多要素認証モジュール"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "デバイス名",
+                        "title": "このデバイスは何を呼び出す必要がありますか?"
+                    },
                     "description": "このデバイスに通知を送信します。",
                     "error_load_platform": "notify.html5を設定",
                     "error_use_https": "Frontend で SSL を有効になっている必要があります。",

@@ -798,6 +798,7 @@
                 "dismiss": "忽略對話",
                 "edit": "編輯實體",
                 "history": "歷史",
+                "last_changed": "上次變更",
                 "last_updated": "最後更新",
                 "person": {
                     "create_zone": "使用目前位置新增區域"
@@ -1732,7 +1733,7 @@
                         "options": "選項",
                         "reload": "重新載入",
                         "reload_confirm": "整合已重新載入",
-                        "reload_restart_confirm": "重啟 Home Assistant 以為重整合重新載入",
+                        "reload_restart_confirm": "重啟 Home Assistant 以完成整合重新載入",
                         "rename": "重新命名",
                         "restart_confirm": "重啟 Home Assistant 以完成此整合移動",
                         "services": "{count} {count, plural,\n  one {項服務}\n  other {項服務}\n}",

@@ -669,28 +669,28 @@
             "relative_time": {
                 "duration": {
                     "day": "{count} {count, plural,\n  one {päev}\n  other {päeva}\n}",
-                    "hour": "{count} {count, plural,\n  one {tund}\n  other {tunni}\n}",
+                    "hour": "{count} {count, plural,\n  one {tund}\n  other {tundi}\n}",
                     "minute": "{count} {count, plural,\n  one {minut}\n  other {minutit}\n}",
                     "second": "{count} {count, plural,\n  one {sekund}\n  other {sekundit}\n}",
                     "week": "{count} {count, plural,\n  one {nädal}\n  other {nädalat}\n}"
                 },
                 "future": "{time} pärast",
                 "future_duration": {
-                    "day": "{count} {count, plural,\n  one {päev}\n  other {päeva}\n} pärast",
-                    "hour": "{count} {count, plural,\n  one {tund}\n  other {tunni}\n} pärast",
-                    "minute": "{count} {count, plural,\n  one {minut}\n  other {minutit}\n} pärast",
-                    "second": "{count} {count, plural,\n  one {sekund}\n  other {sekundi}\n} pärast",
-                    "week": "{count} {count, plural,\n  one {nädal}\n  other {nädala}\n} pärast"
+                    "day": "{count} {count, plural,\n  one {päeva}\n  other {päeva}\n} pärast",
+                    "hour": "{count} {count, plural,\n  one {tunni}\n  other {tunni}\n} pärast",
+                    "minute": "{count} {count, plural,\n  one {minuti}\n  other {minuti}\n} pärast",
+                    "second": "{count} {count, plural,\n  one {sekundi}\n  other {sekundi}\n} pärast",
+                    "week": "{count} {count, plural,\n  one {nädala}\n  other {nädala}\n} pärast"
                 },
                 "just_now": "Just praegu",
                 "never": "Iial",
                 "past": "{time} tagasi",
                 "past_duration": {
-                    "day": "{count} {count, plural,\n  one {päev}\n  other {päeva}\n} eest",
-                    "hour": "{count} {count, plural,\n  one {tund}\n  other {tunni}\n} eest",
-                    "minute": "{count} {count, plural,\n  one {minut}\n  other {minuti}\n} eest",
-                    "second": "{count} {count, plural,\n  one {sekund}\n  other {sekundi}\n} eest",
-                    "week": "{count} {count, plural,\n  one {nädal}\n  other {nädala}\n} eest"
+                    "day": "{count} {count, plural,\n  one {päeva}\n  other {päeva}\n} eest",
+                    "hour": "{count} {count, plural,\n  one {tunni}\n  other {tunni}\n} eest",
+                    "minute": "{count} {count, plural,\n  one {minuti}\n  other {minuti}\n} eest",
+                    "second": "{count} {count, plural,\n  one {sekundi}\n  other {sekundi}\n} eest",
+                    "week": "{count} {count, plural,\n  one {nädala}\n  other {nädala}\n} eest"
                 }
             },
             "service-picker": {
@@ -798,6 +798,7 @@
                 "dismiss": "Loobu dialoogist",
                 "edit": "Muuda olemit",
                 "history": "Ajalugu",
+                "last_changed": "Viimati muudetud",
                 "last_updated": "Viimati uuendatud",
                 "person": {
                     "create_zone": "Loo tsoon praegusest asukohast"
@@ -938,7 +939,7 @@
         },
         "duration": {
             "day": "{count} {count, plural,\n  one {päev}\n  other {päeva}\n}",
-            "hour": "{count} {count, plural,\n  one {tund}\n  other {tunni}\n}",
+            "hour": "{count} {count, plural,\n  one {tund}\n  other {tundi}\n}",
             "minute": "{count} {count, plural,\n  one {minut}\n  other {minutit}\n}",
             "second": "{count} {count, plural,\n  one {sekund}\n  other {sekundit}\n}",
             "week": "{count} {count, plural,\n  one {nädal}\n  other {nädalat}\n}"
@@ -1579,7 +1580,7 @@
                     "device_not_found": "Seadet ei leitud.",
                     "entities": {
                         "add_entities_lovelace": "Lisa Lovelace'i",
-                        "disabled_entities": "{count} {count, plural,\n  one {keelatudolem}\n  other {keelatudolemit}\n}",
+                        "disabled_entities": "{count} {count, plural,\n  one {keelatud olem}\n  other {keelatud olemit}\n}",
                         "entities": "Olemid",
                         "hide_disabled": "Peida keelatud",
                         "none": "Sellel seadmel pole olemeid"
@@ -1721,7 +1722,7 @@
                         "device_unavailable": "seade pole saadaval",
                         "devices": "{count} {count, plural,\n  one {seade}\n  other {seadet}\n}",
                         "documentation": "Vaata dokumentatsiooni",
-                        "entities": "{count} {count, plural,\n  one {olemid}\n  other{olemit}\n}",
+                        "entities": "{count} {count, plural,\n  one {olem}\n  other{olemit}\n}",
                         "entity_unavailable": "olem pole saadaval",
                         "firmware": "Püsivara: {version}",
                         "hub": "Ühendatud",

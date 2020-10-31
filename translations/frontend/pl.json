@@ -576,28 +576,28 @@
                 "entries_not_found": "Nie znaleziono wpisów w dzienniku.",
                 "messages": {
                     "became_unavailable": "encja stała się niedostępna",
-                    "changed_to_state": "stan encji zmienił się na {state}",
-                    "cleared_device_class": "encja przestała wykrywać",
-                    "detected_device_class": "encja wykryła",
+                    "changed_to_state": "nastąpiła zmiana stanu na {state}",
+                    "cleared_device_class": "brak",
+                    "detected_device_class": "wykryto",
                     "rose": "wzeszło",
                     "set": "zaszło",
-                    "turned_off": "encja została wyłączona",
-                    "turned_on": "encja została włączona",
-                    "was_at_home": "stan encji zmienił się na \"w domu\"",
-                    "was_at_state": "stan encji zmienił się na {state}",
-                    "was_away": "stan encji zmienił się na \"poza domem\"",
+                    "turned_off": "nastąpiło wyłączenie",
+                    "turned_on": "nastąpiło włączenie",
+                    "was_at_home": "nastąpiła zmiana stanu na \"w domu\"",
+                    "was_at_state": "nastąpiła zmiana stanu na {state}",
+                    "was_away": "nastąpiła zmiana stanu na \"poza domem\"",
                     "was_closed": "nastąpiło zamknięcie",
                     "was_connected": "nastąpiło podłączenie",
                     "was_disconnected": "nastąpiło odłączenie",
                     "was_locked": "nastąpiło zamknięcie",
-                    "was_low": "stan encji zmienił się na niski",
-                    "was_normal": "stan encji zmienił się na normalny",
+                    "was_low": "nastąpiła zmiana stanu na niski",
+                    "was_normal": "nastąpiła zmiana stanu na normalny",
                     "was_opened": "nastąpiło otwarcie",
                     "was_plugged_in": "nastąpiło podłączenie",
-                    "was_safe": "encja przestała wykrywać zagrożenie",
+                    "was_safe": "brak zagrożenia",
                     "was_unlocked": "nastąpiło otwarcie",
                     "was_unplugged": "nastąpiło odłączenie",
-                    "was_unsafe": "encja wykryła zagrożenie"
+                    "was_unsafe": "wykryto zagrożenie"
                 }
             },
             "media-browser": {
@@ -798,6 +798,7 @@
                 "dismiss": "Zamknij okno dialogowe",
                 "edit": "Edytuj encję",
                 "history": "Historia",
+                "last_changed": "Ostatnia zmiana",
                 "last_updated": "Ostatnio zaktualizowano",
                 "person": {
                     "create_zone": "Utwórz strefę z bieżącej lokalizacji"
