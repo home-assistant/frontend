@@ -96,7 +96,8 @@ class HaSidebar extends LitElement {
         @scroll=${this._listboxScroll}
         @keydown=${this._listboxKeydown}
       >
-        ${this._renderNotifications()} ${this._renderUserItem()}
+        ${this._renderNotifications()} 
+        ${this._renderUserItem()}
       </mwc-list>
       ${this._renderSpacer()}
       <div class="tooltip"></div>
@@ -446,7 +447,8 @@ class HaSidebar extends LitElement {
       haStyleScrollbar,
       css`
         :host {
-          height: calc(100% - var(--header-height));
+          /* height: calc(100% - var(--header-height)); */
+          height: 100%;
           display: block;
           overflow: hidden;
           -ms-user-select: none;

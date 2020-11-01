@@ -1,3 +1,4 @@
+import "../components/ha-sidebar-combined";
 import "@polymer/app-layout/app-drawer-layout/app-drawer-layout";
 import type { AppDrawerLayoutElement } from "@polymer/app-layout/app-drawer-layout/app-drawer-layout";
 import "@polymer/app-layout/app-drawer/app-drawer";
@@ -85,13 +86,13 @@ class HomeAssistantMain extends LitElement {
           .persistent=${!this.narrow &&
           this.hass.dockedSidebar !== "always_hidden"}
         >
-          <ha-sidebar
+          <ha-sidebar-combined
             .hass=${hass}
             .narrow=${sidebarNarrow}
             .editMode=${this._sidebarEditMode}
             .alwaysExpand=${sidebarNarrow ||
             this.hass.dockedSidebar === "docked"}
-          ></ha-sidebar>
+          ></ha-sidebar-combined>
         </app-drawer>
 
         <partial-panel-resolver

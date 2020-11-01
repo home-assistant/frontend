@@ -91,8 +91,7 @@ export const sortableStyles = css`
   }
 
   ha-clickable-list-item.hidden-panel,
-  ha-clickable-list-item.hidden-panel span,
-  ha-clickable-list-item.hidden-panel ha-icon[slot="item-icon"] {
+  ha-clickable-list-item.hidden-panel span {
     color: var(--secondary-text-color);
     cursor: pointer;
   }
