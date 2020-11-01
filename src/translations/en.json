@@ -2504,7 +2504,7 @@
             },
             "grid": {
               "name": "Grid",
-              "description": "The Grid card is allows you to show multiple cards in a grid."
+              "description": "The Grid card allows you to show multiple cards in a grid."
             },
             "history-graph": {
               "name": "History Graph",
