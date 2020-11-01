@@ -2004,7 +2004,7 @@
                     },
                     "services": {
                         "add_node": "Aggiungi Nodo",
-                        "cancel_command": "Annulla Comando",
+                        "cancel_command": "Annulla comando",
                         "remove_node": "Rimuovi nodo"
                     }
                 },
@@ -2627,9 +2627,9 @@
                             "call-service": "Chiama il Servizio",
                             "default_action": "Azione predefinita",
                             "more-info": "Ulteriori informazioni",
-                            "navigate": "Navigare",
+                            "navigate": "Vai a",
                             "none": "Nessuna Azione",
-                            "toggle": "Commutatore",
+                            "toggle": "Commuta",
                             "url": "Url"
                         },
                         "editor_service_data": "I dati di servizio possono essere inseriti solo nell'editor del codice",

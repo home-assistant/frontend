@@ -378,7 +378,7 @@
                 "messages": {
                     "became_unavailable": "Daeth anargael",
                     "changed_to_state": "wedi newid i {state}",
-                    "cleared_device_class": "clirio (ni ganfuwyd {device_class}",
+                    "cleared_device_class": "clirio (ni ganfuwyd {device_class})",
                     "detected_device_class": "canfodwyd {device_class}",
                     "turned_off": "i ffwrdd",
                     "turned_on": "troi ymlaen",
@@ -448,6 +448,7 @@
             },
             "more_info_control": {
                 "dismiss": "Gwrthod deialog",
+                "last_changed": "Newidiwyd ddiwethaf",
                 "script": {
                     "last_action": "Gweithrediad diwethaf"
                 },
@@ -462,6 +463,21 @@
                 }
             },
             "quick-bar": {
+                "commands": {
+                    "reload": {
+                        "filesize": "Ailgychwyn endidau maint ffeil",
+                        "mqtt": "Ailgychwyn endidau mqtt wedi'u ffurfweddu",
+                        "ping": "Ailgychwyn endidau sensor ping binary",
+                        "rpi_gpio": "Ailgychwyn endidau GPIO Raspberry Pi",
+                        "smtp": "Ailgychwyn gwasanaethau hysbysu smtp",
+                        "telegram": "Ailgychwyn gwasanaethau hysbysu telegram"
+                    },
+                    "server_control": {
+                        "perform_action": "{action} Gweinydd",
+                        "restart": "Ailgychwyn",
+                        "stop": "Stop"
+                    }
+                },
                 "filter_placeholder": "Hidlo Endid"
             },
             "voice_command": {
@@ -926,6 +942,7 @@
                     },
                     "services": {
                         "add_node": "Ychwanegu Nod",
+                        "cancel_command": "Canslo Gorchymyn",
                         "remove_node": "Tynnu Nod"
                     }
                 },
@@ -999,6 +1016,7 @@
                             "group": "Ail-lwytho grwpiau",
                             "heading": "Ffurfweddiad yn ail-lwytho",
                             "introduction": "Gall rhai rhannau o Home Assistant ail-lwytho heb orfod ailgychwyn. Bydd taro ail-lwytho yn dadlwytho eu cyfluniad cyfredol a llwytho'r un newydd.",
+                            "mqtt": "Ail-lwytho endidau mqtt wedi'u ffurfweddu",
                             "rest": "Ail-lwytho endidau gorffwys",
                             "script": "Ail-lwytho sgriptiau",
                             "statistics": "Ail-lwytho endidau ystadegau",
@@ -1501,6 +1519,16 @@
                     "description": "Dewiswch ddangosfwrdd diofyn ar gyfer y ddyfais hon.",
                     "dropdown_label": "Dangosfwrdd",
                     "header": "Dangosfwrdd"
+                },
+                "enable_shortcuts": {
+                    "description": "Galluogi neu analluogi llwybrau byr bysellfwrdd ar gyfer perfformio gweithredoedd amrywiol yn yr UI.",
+                    "header": "Llwybrau byr bysellfwrdd"
+                },
+                "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "Enw dyfais",
+                        "title": "Beth ddylid galw'r ddyfais yma?"
+                    }
                 }
             },
             "shopping-list": {
