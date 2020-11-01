@@ -793,6 +793,7 @@ class HUIRoot extends LitElement {
           margin-left: 4px;
         }
         paper-tabs {
+          margin-left: 12px;
           margin-left: max(env(safe-area-inset-left), 12px);
           margin-right: env(safe-area-inset-right);
         }
