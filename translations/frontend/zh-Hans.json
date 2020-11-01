@@ -1654,7 +1654,7 @@
                 },
                 "filtering": {
                     "clear": "清除",
-                    "filtering_by": "筛选方式"
+                    "filtering_by": "正在筛选:"
                 },
                 "header": "配置 Home Assistant",
                 "helpers": {
@@ -1774,7 +1774,7 @@
                         "show_ignored": "显示忽略的集成",
                         "stop_ignore": "不再忽略"
                     },
-                    "integration": "个集成",
+                    "integration": "集成",
                     "integration_not_found": "未找到集成。",
                     "new": "设置新集成",
                     "no_integrations": "您好像还没有配置任何集成。点击下面的按钮来添加第一个集成！",

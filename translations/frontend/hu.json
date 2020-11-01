@@ -798,6 +798,7 @@
                 "dismiss": "Párbeszédpanel elvetése",
                 "edit": "Entitás szerkesztése",
                 "history": "Előzmények",
+                "last_changed": "Utoljára módosult",
                 "last_updated": "Utoljára frissítve",
                 "person": {
                     "create_zone": "Zóna létrehozása az aktuális helyről"
