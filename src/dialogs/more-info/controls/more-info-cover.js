@@ -21,7 +21,6 @@ class MoreInfoCover extends LocalizeMixin(PolymerElement) {
         .current_position,
         .tilt {
           max-height: 0px;
-          overflow: hidden;
         }
 
         .has-set_position .current_position,
