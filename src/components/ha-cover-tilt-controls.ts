@@ -8,6 +8,7 @@ import {
   customElement,
   TemplateResult,
   html,
+  PropertyValues,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 
@@ -21,13 +22,14 @@ import "./ha-icon-button";
 class HaCoverTiltControls extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _stateObj!: HassEntity;
+  @property({ attribute: false }) stateObj!: HassEntity;
 
-  private _entityObj?: CoverEntity;
+  @internalProperty() private _entityObj?: CoverEntity;
 
-  public set stateObj(stateObj: HassEntity) {
-    this._entityObj = new CoverEntity(this.hass, stateObj);
-    this._stateObj = stateObj;
+  protected updated(changedProps: PropertyValues): void {
+    if (changedProps.has("stateObj")) {
+      this._entityObj = new CoverEntity(this.hass, this.stateObj);
+    }
   }
 
   protected render(): TemplateResult {
@@ -53,7 +55,7 @@ class HaCoverTiltControls extends LitElement {
         label=${this.hass.localize("ui.dialogs.more_info_control.stop_cover")}
         icon="hass:stop"
         @click=${this._onStopTiltTap}
-        .disabled=${this._stateObj.state === UNAVAILABLE}
+        .disabled=${this.stateObj.state === UNAVAILABLE}
       ></ha-icon-button>
       <ha-icon-button
         class=${classMap({
@@ -69,18 +71,18 @@ class HaCoverTiltControls extends LitElement {
   }
 
   private _computeOpenDisabled(): boolean {
-    if (this._stateObj.state === UNAVAILABLE) {
+    if (this.stateObj.state === UNAVAILABLE) {
       return true;
     }
-    const assumedState = this._stateObj.attributes.assumed_state === true;
+    const assumedState = this.stateObj.attributes.assumed_state === true;
     return this._entityObj.isFullyOpenTilt && !assumedState;
   }
 
   private _computeClosedDisabled(): boolean {
-    if (this._stateObj.state === UNAVAILABLE) {
+    if (this.stateObj.state === UNAVAILABLE) {
       return true;
     }
-    const assumedState = this._stateObj.attributes.assumed_state === true;
+    const assumedState = this.stateObj.attributes.assumed_state === true;
     return this._entityObj.isFullyClosedTilt && !assumedState;
   }
 
