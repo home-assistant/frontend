@@ -53,10 +53,7 @@ class PanelShoppingList extends LitElement {
               .hass=${this.hass}
               .narrow=${this.narrow}
             ></ha-menu-button>
-            <div main-title class="heading">
-              <div>
-                ${this.hass.localize("panel.shoping_list")}
-              </div>
+            <div main-title>${this.hass.localize("panel.shopping_list")}</div>
             </div>
           </app-toolbar>
         </app-header>
