@@ -27,6 +27,8 @@ class HaCoverTiltControls extends LitElement {
   @internalProperty() private _entityObj?: CoverEntity;
 
   protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProperties);
+
     if (changedProps.has("stateObj")) {
       this._entityObj = new CoverEntity(this.hass, this.stateObj);
     }
