@@ -1,6 +1,8 @@
 import { HomeAssistant } from "../types";
 import type { HaFormSchema } from "../components/ha-form/ha-form";
 import { Prop } from "vue/types/options";
+import { Schema } from "js-yaml";
+import { boolean, string } from "superstruct";
 
 export interface InsteonDevice {
   name: string;
@@ -9,8 +11,15 @@ export interface InsteonDevice {
   aldb_status: string;
 }
 
-export interface Properties {
-  [key: string]: boolean | number;
+export interface Property {
+  name: string;
+  value: number | boolean;
+  modified: boolean;
+}
+
+export interface PropertiesInfo {
+  properties: Property[];
+  schema: { [key: string]: HaFormSchema };
 }
 
 export const AddressRegex = RegExp(
@@ -70,7 +79,7 @@ export const fetchInsteonProperties = (
 export const fetchInsteonProperties = (
   hass: HomeAssistant,
   id: string
-): Promise<Properties[]> =>
+): Promise<PropertiesInfo> =>
   hass.callWS({
     type: "insteon/properties/get",
     device_id: id,
