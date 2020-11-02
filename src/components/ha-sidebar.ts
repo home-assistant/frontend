@@ -958,8 +958,12 @@ class HaSidebar extends LitElement {
           position: relative;
           outline: 0;
         }
+        ha-clickable-list-item {
+          --mdc-list-side-padding: 20px;
+        }
 
         mwc-list-item {
+          --mdc-list-side-padding: 20px;
           box-sizing: border-box;
           margin: 4px;
           border-radius: 4px;
@@ -1065,8 +1069,8 @@ class HaSidebar extends LitElement {
         .profile {
           margin-left: env(safe-area-inset-left);
           --mdc-list-item-graphic-size: 40px;
-          --mdc-list-item-graphic-margin: 15px;
-          --mdc-list-side-padding: 9px;
+          --mdc-list-item-graphic-margin: 16px;
+          --mdc-list-side-padding: 12px;
         }
         :host([rtl]) .profile {
           margin-left: initial;
