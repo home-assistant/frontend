@@ -53,19 +53,21 @@ export const provideHass = (
   } = {};
   const entities = {};
 
-  function updateTranslations(fragment: null | string, language?: string) {
+  async function updateTranslations(
+    fragment: null | string,
+    language?: string
+  ) {
     const lang = language || getLocalLanguage();
-    getTranslation(fragment, lang).then(async (translation) => {
-      const resources = {
-        [lang]: {
-          ...(hass().resources && hass().resources[lang]),
-          ...translation.data,
-        },
-      };
-      hass().updateHass({
-        resources,
-        localize: await computeLocalize(elements[0], lang, resources),
-      });
+    const translation = await getTranslation(fragment, lang);
+    const resources = {
+      [lang]: {
+        ...(hass().resources && hass().resources[lang]),
+        ...translation.data,
+      },
+    };
+    hass().updateHass({
+      resources,
+      localize: await computeLocalize(elements[0], lang, resources),
     });
   }
 
