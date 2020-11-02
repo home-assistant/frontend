@@ -486,7 +486,7 @@ class HaSidebar extends LitElement {
         <ha-svg-icon slot="graphic" .path=${mdiBell}></ha-svg-icon>
         ${!this.expanded && notificationCount > 0
           ? html`
-              <span slot="graphic" class="notification-badge">
+              <span class="notification-badge">
                 ${notificationCount}
               </span>
             `
@@ -1064,6 +1064,9 @@ class HaSidebar extends LitElement {
         }
         .profile {
           margin-left: env(safe-area-inset-left);
+          --mdc-list-item-graphic-size: 40px;
+          --mdc-list-item-graphic-margin: 15px;
+          --mdc-list-side-padding: 9px;
         }
         :host([rtl]) .profile {
           margin-left: initial;
@@ -1089,17 +1092,17 @@ class HaSidebar extends LitElement {
           border-radius: 50%;
           font-weight: 400;
           background-color: var(--accent-color);
-          line-height: 30px;
+          line-height: 1.5rem;
           text-align: center;
-          padding: 0px 4px;
+          padding: 2px 6px;
           color: var(--text-accent-color, var(--text-primary-color));
           font-size: 14px;
         }
         ha-svg-icon + .notification-badge {
           position: absolute;
-          bottom: 14px;
-          left: 26px;
-          font-size: 0.65em;
+          bottom: 18px;
+          left: 30px;
+          padding: 0px 0px;
         }
 
         .spacer {
