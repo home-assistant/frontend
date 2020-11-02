@@ -231,8 +231,8 @@ class HaSidebar extends LitElement {
       >
         ${this._renderNotifications()} 
         ${this._renderUserItem()}
+        ${this._renderSpacer()}
       </mwc-list>
-      ${this._renderSpacer()}
       <div class="tooltip"></div>
     `;
   }
@@ -403,6 +403,7 @@ class HaSidebar extends LitElement {
             class="hidden-panel"
             .panel=${url}
             graphic="icon"
+            .rtl=${this.rtl}
           >
             <ha-icon
               slot="graphic"
@@ -455,7 +456,6 @@ class HaSidebar extends LitElement {
           )
         )}
         ${this._renderExternalConfiguration()}
-        <li divider role="separator" class="spacer"></li>
       </mwc-list>
     `;
   }
@@ -482,6 +482,7 @@ class HaSidebar extends LitElement {
         hasMeta
         @mouseenter=${this._itemMouseEnter}
         @mouseleave=${this._itemMouseLeave}
+        .rtl=${this.rtl}
       >
         <ha-svg-icon slot="graphic" .path=${mdiBell}></ha-svg-icon>
         ${!this.expanded && notificationCount > 0
@@ -519,6 +520,7 @@ class HaSidebar extends LitElement {
       @mouseleave=${this._itemMouseLeave}
       graphic="icon"
       .activated=${this.hass.panelUrl === "profile"}
+      .rtl=${this.rtl}
     >
       <ha-user-badge
         slot="graphic"
@@ -546,6 +548,7 @@ class HaSidebar extends LitElement {
             @mouseenter=${this._itemMouseEnter}
             @mouseleave=${this._itemMouseLeave}
             graphic="icon"
+            .rtl=${this.rtl}
           >
             <ha-svg-icon slot="graphic" .path=${mdiCellphoneCog}></ha-svg-icon>
             <span class="item-text">
@@ -553,7 +556,8 @@ class HaSidebar extends LitElement {
             </span>
           </ha-clickable-list-item>
         `
-      : ""}`;
+      : ""}
+    ${this._renderSpacer()} `;
   }
 
   private get _tooltip() {
@@ -825,6 +829,7 @@ class HaSidebar extends LitElement {
         @mouseenter=${this._itemMouseEnter}
         @mouseleave=${this._itemMouseLeave}
         graphic="icon"
+        .rtl=${this.rtl}
       >
         ${iconPath
           ? html`<ha-svg-icon slot="graphic" .path=${iconPath}></ha-svg-icon>`
@@ -947,37 +952,12 @@ class HaSidebar extends LitElement {
         }
         :host([rtl]) mwc-list {
           border-right: 0;
-          border-left: 1px solid var(--divider-color);
+          /* border-left: 1px solid var(--divider-color); */
         }
 
-        a {
-          text-decoration: none;
-          color: var(--sidebar-text-color);
-          font-weight: 500;
-          font-size: 14px;
-          position: relative;
-          outline: 0;
-        }
-        ha-clickable-list-item {
-          --mdc-list-side-padding: 20px;
-        }
-
-        mwc-list-item {
-          --mdc-list-side-padding: 20px;
-          box-sizing: border-box;
-          margin: 4px;
-          border-radius: 4px;
-          width: 48px;
-          --mdc-list-item-graphic-margin: 16px;
-          --mdc-list-item-meta-size: 32px;
-        }
-        :host([expanded]) paper-icon-item {
-          width: 248px;
-        }
-
-        :host([rtl]) mwc-list-item {
-          padding-left: auto;
-          padding-right: 12px;
+        :host([expanded]) mwc-list {
+          width: 256px;
+          width: calc(256px + env(safe-area-inset-left));
         }
 
         ha-icon[slot="graphic"],
@@ -994,62 +974,15 @@ class HaSidebar extends LitElement {
           margin-right: env(safe-area-inset-right);
         }
 
-        .iron-selected mwc-list-item::before,
-        a:not(.iron-selected):focus::before {
-          border-radius: 4px;
-          position: absolute;
-          top: 0;
-          right: 2px;
-          bottom: 0;
-          left: 2px;
-          pointer-events: none;
-          content: "";
-          transition: opacity 15ms linear;
-          will-change: opacity;
-        }
-        .iron-selected mwc-list-item::before {
-          background-color: var(--sidebar-selected-icon-color);
-          opacity: 0.12;
-        }
-        a:not(.iron-selected):focus::before {
-          background-color: currentColor;
-          opacity: var(--dark-divider-opacity);
-          margin: 4px 8px;
-        }
-        .iron-selected mwc-list-item:focus::before,
-        .iron-selected:focus mwc-list-item::before {
-          opacity: 0.2;
-        }
-
-        .iron-selected mwc-list-item[pressed]:before {
-          opacity: 0.37;
-        }
-
-        mwc-list-item span {
-          color: var(--sidebar-text-color);
-          font-weight: 500;
-          font-size: 14px;
-          width: 100%;
-        }
-
         a.iron-selected ha-icon,
         a.iron-selected ha-svg-icon,
-        a.iron-selected mwc-list-item ha-icon,
-        a.iron-selected mwc-list-item ha-svg-icon {
+        a.iron-selected ha-clickable-list-item ha-icon,
+        a.iron-selected ha-clickable-list-item ha-svg-icon {
           color: var(--sidebar-selected-icon-color);
         }
 
         a.iron-selected .item-text {
           color: var(--sidebar-selected-text-color);
-        }
-
-        mwc-list-item mwc-list-item .item-text,
-        mwc-list-item .item-text {
-          display: none;
-          max-width: calc(100% - 56px);
-        }
-        :host([expanded]) mwc-list-item .item-text {
-          display: block;
         }
 
         .notifications-container {
@@ -1075,17 +1008,15 @@ class HaSidebar extends LitElement {
         :host([rtl]) .profile {
           margin-left: initial;
           margin-right: env(safe-area-inset-right);
+          --mdc-list-item-graphic-size: 40px;
+          --mdc-list-item-graphic-margin: 5px;
+          --mdc-list-side-padding: 6px;
         }
-        .profile mwc-list-item {
-          padding-left: 4px;
-        }
-        :host([rtl]) .profile mwc-list-item {
-          padding-left: auto;
-          padding-right: 4px;
-        }
+
         .profile .item-text {
           margin-left: 8px;
         }
+
         :host([rtl]) .profile .item-text {
           margin-right: 8px;
         }
@@ -1102,6 +1033,7 @@ class HaSidebar extends LitElement {
           color: var(--text-accent-color, var(--text-primary-color));
           font-size: 14px;
         }
+
         ha-svg-icon + .notification-badge {
           position: absolute;
           bottom: 18px;
@@ -1120,19 +1052,6 @@ class HaSidebar extends LitElement {
           font-size: 14px;
           padding: 16px;
           white-space: nowrap;
-        }
-
-        .dev-tools {
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          padding: 0 8px;
-          width: 256px;
-          box-sizing: border-box;
-        }
-
-        .dev-tools a {
-          color: var(--sidebar-icon-color);
         }
 
         .tooltip {
