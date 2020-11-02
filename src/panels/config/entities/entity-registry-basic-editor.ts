@@ -44,7 +44,7 @@ export class HaEntityRegistryBasicEditor extends LitElement {
       params.disabled_by = this._disabledBy;
     }
     try {
-      let result = await updateEntityRegistryEntry(
+      const result = await updateEntityRegistryEntry(
         this.hass!,
         this._origEntityId,
         params
