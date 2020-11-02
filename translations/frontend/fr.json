@@ -798,6 +798,7 @@
                 "dismiss": "Fermer la fenêtre de dialogue",
                 "edit": "Modifier l'entité",
                 "history": "Historique",
+                "last_changed": "Dernière modification",
                 "last_updated": "Dernière mise à jour",
                 "person": {
                     "create_zone": "Créer une zone à partir de l'emplacement actuel"
