@@ -2128,7 +2128,7 @@
                             "mqtt": "Ročno osveži konfigurirane entitete MQTT",
                             "person": "Ponovno naloži osebe",
                             "ping": "Znova naloži entitete binarnega senzorja PING",
-                            "reload": "Ponovno naloži {domain}",
+                            "reload": "Znova naloži {domain}",
                             "rest": "Znova naloži entitete REST in storitve obveščanja",
                             "rpi_gpio": "Znova naloži entitete GPIO z Raspberry Pi",
                             "scene": "Ponovno naloži scene",
@@ -2152,7 +2152,7 @@
                         "validation": {
                             "check_config": "Preverite konfiguracijo",
                             "heading": "Preverjanje konfiguracije",
-                            "introduction": "Potrdite svojo konfiguracijo, če ste nedavno spremenili svojo konfiguracijo in se prepričajte, da je vse veljavno",
+                            "introduction": "Potrdite svojo konfiguracijo, če ste nedavno spremenili svojo konfiguracijo in se prepričajte, da je vse veljavno.",
                             "invalid": "Nastavitve niso veljavne",
                             "valid": "Nastavitve so veljavne!"
                         }

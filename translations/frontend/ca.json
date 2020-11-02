@@ -798,7 +798,7 @@
                 "dismiss": "Desestimar el diàleg",
                 "edit": "Edita entitat",
                 "history": "Historial",
-                "last_changed": "Darrera canvi",
+                "last_changed": "Darrer canvi",
                 "last_updated": "Última actualització",
                 "person": {
                     "create_zone": "Crea una zona a partir de la ubicació actual"
@@ -3255,7 +3255,7 @@
                 "push_notifications": {
                     "add_device_prompt": {
                         "input_label": "Nom del dispositiu",
-                        "title": "Com s'ha d'anomenar aquest dispositiu?"
+                        "title": "Com vols anomenar aquest dispositiu?"
                     },
                     "description": "Envia notificacions a aquest dispositiu.",
                     "error_load_platform": "Configurar notify.html5.",
