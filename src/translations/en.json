@@ -151,7 +151,7 @@
       },
       "cover": {
         "position": "Position",
-        "tilt_position": "Tilt"
+        "tilt_position": "Tilt position"
       },
       "fan": {
         "speed": "Speed",
