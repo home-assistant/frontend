@@ -11,12 +11,16 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import memoizeOne from "memoize-one";
+import { mdiMicrophone } from "@mdi/js";
 
 import { HomeAssistant } from "../../types";
 import { haStyle } from "../../resources/styles";
 import { createCardElement } from "../lovelace/create-element/create-card-element";
 import { LovelaceCard } from "../lovelace/types";
 import { HuiErrorCard } from "../lovelace/cards/hui-error-card";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 
 import "../../components/ha-menu-button";
 import "../../layouts/ha-app-layout";
@@ -28,6 +32,10 @@ class PanelShoppingList extends LitElement {
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
 
   @internalProperty() private _card!: LovelaceCard | HuiErrorCard;
+
+  private _conversation = memoizeOne((_components) =>
+    isComponentLoaded(this.hass, "conversation")
+  );
 
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
@@ -54,7 +62,18 @@ class PanelShoppingList extends LitElement {
               .narrow=${this.narrow}
             ></ha-menu-button>
             <div main-title>${this.hass.localize("panel.shopping_list")}</div>
-            </div>
+            ${this._conversation(this.hass.config.components)
+              ? html`
+                  <mwc-icon-button
+                    .label=${this.hass!.localize(
+                      "ui.panel.lovelace.menu.start_conversation"
+                    )}
+                    @click=${this._showVoiceCommandDialog}
+                  >
+                    <ha-svg-icon .path=${mdiMicrophone}></ha-svg-icon>
+                  </mwc-icon-button>
+                `
+              : ""}
           </app-toolbar>
         </app-header>
         <div id="columns">
@@ -64,6 +83,10 @@ class PanelShoppingList extends LitElement {
         </div>
       </ha-app-layout>
     `;
+  }
+
+  private _showVoiceCommandDialog(): void {
+    showVoiceCommandDialog(this);
   }
 
   static get styles(): CSSResultArray {
