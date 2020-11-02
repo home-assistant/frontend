@@ -22,7 +22,7 @@ export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
 
 export interface UpdateEntityRegistryEntryResult {
   entity_entry: ExtEntityRegistryEntry;
-  reload_delay?: int;
+  reload_delay?: number;
   require_restart?: boolean;
 }
 
@@ -78,7 +78,7 @@ export const updateEntityRegistryEntry = (
   hass: HomeAssistant,
   entityId: string,
   updates: Partial<EntityRegistryEntryUpdateParams>
-): Promise<ExtEntityRegistryEntry> =>
+): Promise<UpdateEntityRegistryEntryResult> =>
   hass.callWS({
     type: "config/entity_registry/update",
     entity_id: entityId,

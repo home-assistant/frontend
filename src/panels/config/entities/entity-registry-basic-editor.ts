@@ -52,14 +52,14 @@ export class HaEntityRegistryBasicEditor extends LitElement {
       if (result.require_restart) {
         showAlertDialog(this, {
           text: this.hass.localize(
-            ui.dialogs.entity_registry.editor.enabled_restart_confirm
+            "ui.dialogs.entity_registry.editor.enabled_restart_confirm"
           ),
         });
       }
       if (result.reload_delay) {
         showAlertDialog(this, {
           text: this.hass.localize(
-            ui.dialogs.entity_registry.editor.enabled_delay_confirm,
+            "ui.dialogs.entity_registry.editor.enabled_delay_confirm",
             "delay",
             result.reload_delay
           ),
