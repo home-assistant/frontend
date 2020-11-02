@@ -74,7 +74,7 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
           location.reload();
         }
       } catch (err) {
-        // We fully expected issues with fetching logs.
+        // We fully expected issues with fetching info untill restore is complete.
       }
     }
   }
