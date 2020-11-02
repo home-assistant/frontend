@@ -5,8 +5,8 @@ export interface Condition {
   entity?: string;
   state?: string;
   state_not?: string;
-  minWidth?: number;
-  maxWidth?: number;
+  user?: string;
+  user_not?: string;
 }
 
 export function checkConditionsMet(
@@ -14,12 +14,8 @@ export function checkConditionsMet(
   hass: HomeAssistant
 ): boolean {
   return conditions.every((c) => {
-    if (c.minWidth || c.maxWidth) {
-      return c.minWidth
-        ? window.matchMedia(`(min-width: ${c.minWidth}px)`).matches
-        : true && c.maxWidth
-        ? window.matchMedia(`(max-width: ${c.maxWidth}px)`).matches
-        : true;
+    if (c.user || c.user_not) {
+      return c.user ? hass.user!.id === c.user : hass.user!.id !== c.user_not;
     }
 
     const state = hass.states[c.entity!]
@@ -34,7 +30,7 @@ export function validateConditionalConfig(conditions: Condition[]): boolean {
   return conditions.every(
     (c) =>
       (((c.entity && (c.state || c.state_not)) ||
-        c.minWidth ||
-        c.maxWidth) as unknown) as boolean
+        c.user ||
+        c.user_not) as unknown) as boolean
   );
 }

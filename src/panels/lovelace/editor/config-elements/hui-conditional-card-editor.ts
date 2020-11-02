@@ -11,15 +11,7 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
-import {
-  any,
-  array,
-  assert,
-  object,
-  optional,
-  string,
-  number,
-} from "superstruct";
+import { any, array, assert, object, optional, string } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
@@ -39,8 +31,8 @@ const conditionStruct = object({
   entity: optional(string()),
   state: optional(string()),
   state_not: optional(string()),
-  minWidth: optional(number()),
-  maxWidth: optional(number()),
+  user: optional(string()),
+  user_not: optional(string()),
 });
 const cardConfigStruct = object({
   type: string(),
