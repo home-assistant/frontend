@@ -81,10 +81,6 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         .entities a {
           color: var(--primary-color);
         }
-
-        .secondary {
-          color: var(--secondary-text-color);
-        }
       </style>
 
       <div class="inputs">
