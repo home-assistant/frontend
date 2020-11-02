@@ -71,7 +71,7 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
         if (response.status === 401) {
           // If we get a unauthorized response, the restore is done
           navigate(this, "/", true);
-          //location.reload();
+          location.reload();
         }
       } catch (err) {
         // We fully expected issues with fetching logs.
