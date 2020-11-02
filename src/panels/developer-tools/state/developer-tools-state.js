@@ -177,12 +177,10 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
             </td>
             <td>
               [[entity.state]]<br /><br />
-              <span class="secondary"
-                >last_changed: [[lastChangedString(entity)]]</span
-              ><br />
-              <span class="secondary"
-                >last_updated: [[lastUpdatedString(entity)]]</span
-              >
+              <span class="secondary">
+                last_changed: [[lastChangedString(entity)]]<br />
+                last_updated: [[lastUpdatedString(entity)]]
+              </span>
             </td>
             <template
               is="dom-if"
