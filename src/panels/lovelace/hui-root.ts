@@ -610,6 +610,8 @@ class HUIRoot extends LitElement {
       text: this.hass!.localize(
         "ui.panel.lovelace.reload_resources.refresh_body"
       ),
+      confirmText: this.hass.localize("ui.common.yes"),
+      dismissText: this.hass.localize("ui.common.no"),
       confirm: () => location.reload(),
     });
   }
@@ -805,7 +807,8 @@ class HUIRoot extends LitElement {
           margin-left: max(env(safe-area-inset-left), 12px);
           margin-right: env(safe-area-inset-right);
         }
-        ha-tabs, paper-tabs {
+        ha-tabs,
+        paper-tabs {
           --paper-tabs-selection-bar-color: var(--text-primary-color, #fff);
           text-transform: uppercase;
         }

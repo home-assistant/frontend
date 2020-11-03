@@ -189,6 +189,8 @@ export class HaConfigLovelaceRescources extends LitElement {
             text: this.hass!.localize(
               "ui.panel.config.lovelace.resources.refresh_body"
             ),
+            confirmText: this.hass.localize("ui.common.yes"),
+            dismissText: this.hass.localize("ui.common.no"),
             confirm: () => location.reload(),
           });
           return true;
