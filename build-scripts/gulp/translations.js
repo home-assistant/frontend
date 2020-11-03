@@ -43,6 +43,7 @@ const TRANSLATION_FRAGMENTS = [
   "logbook",
   "mailbox",
   "profile",
+  "shopping-list",
   "page-authorize",
   "page-demo",
   "page-onboarding",

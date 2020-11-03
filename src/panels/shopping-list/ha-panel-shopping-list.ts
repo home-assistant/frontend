@@ -66,7 +66,7 @@ class PanelShoppingList extends LitElement {
               ? html`
                   <mwc-icon-button
                     .label=${this.hass!.localize(
-                      "ui.panel.lovelace.menu.start_conversation"
+                      "ui.panel.shopping_list.start_conversation"
                     )}
                     @click=${this._showVoiceCommandDialog}
                   >
