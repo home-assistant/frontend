@@ -68,6 +68,7 @@ class OZWNodeConfig extends LitElement {
     if (this._error) {
       return html`
         <hass-error-screen
+          .hass=${this.hass}
           .error="${this.hass.localize(
             "ui.panel.config.ozw.node." + this._error
           )}"

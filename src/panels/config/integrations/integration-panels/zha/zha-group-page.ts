@@ -94,6 +94,7 @@ export class ZHAGroupPage extends LitElement {
     if (!this.group) {
       return html`
         <hass-error-screen
+          .hass=${this.hass}
           error="${this.hass.localize(
             "ui.panel.config.zha.groups.group_not_found"
           )}"

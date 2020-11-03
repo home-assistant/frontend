@@ -143,6 +143,7 @@ export class HaConfigDevicePage extends LitElement {
     if (!device) {
       return html`
         <hass-error-screen
+          .hass=${this.hass}
           error="${this.hass.localize(
             "ui.panel.config.devices.device_not_found"
           )}"

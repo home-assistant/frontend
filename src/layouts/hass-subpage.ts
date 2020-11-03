@@ -31,7 +31,7 @@ class HassSubpage extends LitElement {
     return html`
       <div class="toolbar">
         <ha-icon-button-arrow-prev
-          aria-label="Back"
+          .hass="${this.hass}"
           @click=${this._backTapped}
           class=${classMap({ hidden: !this.showBackButton })}
         ></ha-icon-button-arrow-prev>

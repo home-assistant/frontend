@@ -407,6 +407,7 @@ class HUIRoot extends LitElement {
                           ${this._editMode
                             ? html`
                                 <ha-icon-button-arrow-prev
+                                  .hass="${this.hass}"
                                   title="${this.hass!.localize(
                                     "ui.panel.lovelace.editor.edit_view.move_left"
                                   )}"
@@ -435,6 +436,7 @@ class HUIRoot extends LitElement {
                                   @click="${this._editView}"
                                 ></ha-svg-icon>
                                 <ha-icon-button-arrow-next
+                                  .hass="${this.hass}"
                                   title="${this.hass!.localize(
                                     "ui.panel.lovelace.editor.edit_view.move_right"
                                   )}"
@@ -805,7 +807,8 @@ class HUIRoot extends LitElement {
           margin-left: max(env(safe-area-inset-left), 12px);
           margin-right: env(safe-area-inset-right);
         }
-        ha-tabs, paper-tabs {
+        ha-tabs,
+        paper-tabs {
           --paper-tabs-selection-bar-color: var(--text-primary-color, #fff);
           text-transform: uppercase;
         }
