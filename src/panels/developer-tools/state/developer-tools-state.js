@@ -304,14 +304,13 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
       })
       .filter(function (value) {
         // If we have a match for the entity ID, we do not have to look further
-        if (!value.entity_id.includes(_entityFilter.toLowerCase())) {
+        const entityFilter = _entityFilter.toLowerCase();
+        if (!value.entity_id.includes(entityFilter)) {
           // Entity ID does not match => check the friendly_name => if there is none,
           // this entity is not relevant for rendering => return false
           if (
             value.attributes.friendly_name === undefined ||
-            !value.attributes.friendly_name
-              .toLowerCase()
-              .includes(_entityFilter.toLowerCase())
+            !value.attributes.friendly_name.toLowerCase().includes(entityFilter)
           ) {
             return false;
           }
