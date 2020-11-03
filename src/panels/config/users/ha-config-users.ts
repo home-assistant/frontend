@@ -101,6 +101,7 @@ export class HaConfigUsers extends LitElement {
         <mwc-fab
           slot="fab"
           .title=${this.hass.localize("ui.panel.config.users.picker.add_user")}
+          label=${this.hass.localize("ui.panel.config.users.picker.add_user")}
           @click=${this._addUser}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>

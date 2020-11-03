@@ -163,6 +163,9 @@ export class HaConfigHelpers extends LitElement {
           title="${this.hass.localize(
             "ui.panel.config.helpers.picker.add_helper"
           )}"
+          label="${this.hass.localize(
+            "ui.panel.config.helpers.picker.add_helper"
+          )}"
           @click=${this._createHelpler}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>

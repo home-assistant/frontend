@@ -129,6 +129,7 @@ export class ZHAGroupsDashboard extends LitElement {
         <a href="/config/zha/group-add" slot="fab">
           <mwc-fab
             title=${this.hass!.localize("ui.panel.config.zha.groups.add_group")}
+            label=${this.hass!.localize("ui.panel.config.zha.groups.add_group")}
           >
             <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
           </mwc-fab>

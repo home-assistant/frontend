@@ -129,6 +129,9 @@ export class HaConfigAreasDashboard extends LitElement {
           title="${this.hass.localize(
             "ui.panel.config.areas.picker.create_area"
           )}"
+          label="${this.hass.localize(
+            "ui.panel.config.areas.picker.create_area"
+          )}"
           @click=${this._createArea}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>

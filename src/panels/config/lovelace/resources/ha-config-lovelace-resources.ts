@@ -108,6 +108,9 @@ export class HaConfigLovelaceRescources extends LitElement {
           title=${this.hass.localize(
             "ui.panel.config.lovelace.resources.picker.add_resource"
           )}
+          label=${this.hass.localize(
+            "ui.panel.config.lovelace.resources.picker.add_resource"
+          )}
           @click=${this._addResource}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>

@@ -475,7 +475,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         </div>
         <mwc-fab
           slot="fab"
-          aria-label=${this.hass.localize("ui.panel.config.integrations.new")}
+          label=${this.hass.localize("ui.panel.config.integrations.new")}
           title=${this.hass.localize("ui.panel.config.integrations.new")}
           @click=${this._createFlow}
         >
