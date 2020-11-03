@@ -267,6 +267,7 @@ class HaPanelDevTemplate extends LitElement {
           clear: both;
           white-space: pre-wrap;
           background-color: var(--secondary-background-color);
+          border-radius: var(--ha-card-border-radius, 4px);
           padding: 8px;
           margin-top: 0;
         }
