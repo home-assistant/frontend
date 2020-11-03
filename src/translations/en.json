@@ -487,7 +487,7 @@
             "rpi_gpio": "[%key:ui::panel::config::server_control::section::reloading::rpi_gpio%]"
           },
           "server_control": {
-            "perform_action": "{action} Server",
+            "perform_action": "{action} server",
             "restart": "[%key:ui::panel::config::server_control::section::server_management::restart%]",
             "stop": "[%key:ui::panel::config::server_control::section::server_management::stop%]"
           }
@@ -1004,8 +1004,8 @@
               "ping": "Reload ping binary sensor entities",
               "filesize": "Reload file size entities",
               "telegram": "Reload telegram notify services",
-              "smtp": "Reload smtp notify services",
-              "mqtt": "Reload manually configured mqtt entities",
+              "smtp": "Reload SMTP notify services",
+              "mqtt": "Reload manually configured MQTT entities",
               "rpi_gpio": "Reload Raspberry Pi GPIO entities"
             },
             "server_management": {
