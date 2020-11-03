@@ -1751,7 +1751,7 @@
                     },
                     "configure": "Konfigurieren",
                     "configured": "Konfiguriert",
-                    "description": "Verwalte verbundene Integrationen",
+                    "description": "Verbundene Integrationen verwalten",
                     "details": "Details zur Integration",
                     "discovered": "Entdeckt",
                     "home_assistant_website": "Home Assistant Website",
@@ -1981,7 +1981,7 @@
                     "confirm_delete": "Möchtest du diese Person wirklich löschen?",
                     "confirm_delete2": "Alle Geräte, die zu dieser Person gehören, werden nicht mehr zugeordnet.",
                     "create_person": "Person erstellen",
-                    "description": "Verwalte die Personen, denen Home Assistant folgt.",
+                    "description": "Personen verwalten, denen Home Assistant folgt.",
                     "detail": {
                         "admin": "Administrator",
                         "allow_login": "Erlauben Sie dieser Person, sich einzuloggen.",

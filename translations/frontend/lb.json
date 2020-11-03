@@ -681,6 +681,11 @@
             },
             "service-picker": {
                 "service": "Service"
+            },
+            "user-picker": {
+                "add_user": "Benotzer erstellen",
+                "no_user": "Kee Benotzer",
+                "remove_user": "Benotzer läschen"
             }
         },
         "dialogs": {
@@ -723,6 +728,12 @@
                 "ok": "OK"
             },
             "helper_settings": {
+                "counter": {
+                    "initial": "Initial Wäert",
+                    "maximum": "Maximale Wäert",
+                    "minimum": "Minimale Wäert",
+                    "step": "Schrëtt Gréisst"
+                },
                 "generic": {
                     "icon": "Ikon",
                     "name": "Numm"
@@ -769,6 +780,7 @@
                 "dismiss": "Dialog ofbriechen",
                 "edit": "Entitéit änneren",
                 "history": "Verlaf",
+                "last_changed": "Läscht Ännerung",
                 "last_updated": "Läscht mise à jour",
                 "person": {
                     "create_zone": "Zone erstellen vun der aktueller Positioun"
@@ -826,6 +838,13 @@
                 }
             },
             "quick-bar": {
+                "commands": {
+                    "server_control": {
+                        "perform_action": "{action} Server",
+                        "restart": "Restart",
+                        "stop": "Stop"
+                    }
+                },
                 "filter_placeholder": "Entitéite Filter"
             },
             "voice_command": {
@@ -1140,6 +1159,7 @@
                                     "trigger": "Ausléiser"
                                 },
                                 "event": {
+                                    "context_user_pick": "Benotzer erstellen",
                                     "event_data": "Evenement Donnée",
                                     "event_type": "Typ vun Evenement",
                                     "label": "Evenement"
@@ -1464,7 +1484,8 @@
                     "add_prompt": "Nach keen {name} gouf mat dësem Apparat dobäigesat. Du kanns een dobäisetzen mat engem Klick op de + Knäppchen hei uewen.",
                     "automation": {
                         "actions": {
-                            "caption": "Wann eppes ausgeléist gëtt"
+                            "caption": "Wann eppes ausgeléist gëtt",
+                            "unknown_action": "Onbekannten Aktioun"
                         },
                         "automations": "Automatismen",
                         "conditions": {
@@ -1824,6 +1845,9 @@
                     },
                     "navigation": {
                         "network": "Netzwierk",
+                        "node": {
+                            "dashboard": "Tableau de Bord"
+                        },
                         "nodes": "Nodes",
                         "select_instance": "Instanz auswielen"
                     },
@@ -2107,6 +2131,7 @@
                         "last_scanned": "Läscht duerchsicht",
                         "name": "Numm"
                     },
+                    "learn_more": "Méi iwwert Tags liesen",
                     "never_scanned": "Niemols gescannt",
                     "no_tags": "Keng Tags",
                     "write": "Schréiwen"
@@ -2585,6 +2610,7 @@
                                 "entity-id": "Entitéit ID",
                                 "last-changed": "Läscht Ännerung",
                                 "last-triggered": "Läscht ausgeléist",
+                                "last-updated": "Läscht mise à jour",
                                 "none": "Keng Sekundär Informatioun",
                                 "position": "Positioun",
                                 "tilt-position": "Kippstellung"
@@ -3091,6 +3117,9 @@
                     "dropdown_label": "Tableau de Bord",
                     "header": "Tableau de Bord"
                 },
+                "enable_shortcuts": {
+                    "header": "Tastatur Ofkierzungen"
+                },
                 "force_narrow": {
                     "description": "Dës Optioun verstoppt d'Säite Läischt esou wéi op engem mobillen Apparat.",
                     "header": "Säite Läischt ëmmer verstoppen"
@@ -3135,6 +3164,10 @@
                     "header": "Multi-Faktor Authentifikatioun's Module"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "Numm vum Apparat",
+                        "title": "Wéi soll dësen Apparat genannt ginn?"
+                    },
                     "description": "Noriichten op dësen Apparat schécken",
                     "error_load_platform": "Notifiy.html5 konfiguréieren.",
                     "error_use_https": "Benéidegt SSL fir de Frontend",

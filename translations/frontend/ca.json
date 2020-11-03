@@ -2493,7 +2493,7 @@
                     "events": {
                         "alert_event_type": "El tipus d'esdeveniment és un camp obligatori",
                         "available_events": "Esdeveniments disponibles",
-                        "count_listeners": " ({count} oients)",
+                        "count_listeners": " ({count} oient/s)",
                         "data": "Dades de l'esdeveniment (en YAML, opcionals)",
                         "description": "Crida un esdeveniment al bus d'esdeveniments.",
                         "documentation": "Documentació d'esdeveniments.",
