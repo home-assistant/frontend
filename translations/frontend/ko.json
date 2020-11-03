@@ -654,6 +654,11 @@
             },
             "service-picker": {
                 "service": "서비스"
+            },
+            "user-picker": {
+                "add_user": "사용자 추가",
+                "no_user": "사용자 없음",
+                "remove_user": "사용자 제거"
             }
         },
         "dialogs": {
@@ -741,6 +746,7 @@
                 "dismiss": "대화창 닫기",
                 "edit": "구성요소 편집",
                 "history": "기록 내용",
+                "last_changed": "최근 변경 됨",
                 "person": {
                     "create_zone": "현재 위치로 지역 만들기"
                 },
@@ -794,6 +800,15 @@
                 },
                 "success": {
                     "description": "옵션이 성공적으로 저장되었습니다."
+                }
+            },
+            "quick-bar": {
+                "commands": {
+                    "server_control": {
+                        "perform_action": "서버 {action}",
+                        "restart": "재시작",
+                        "stop": "중지"
+                    }
                 }
             },
             "voice_command": {
@@ -855,6 +870,7 @@
         },
         "notification_toast": {
             "connection_lost": "서버와 연결이 끊어졌습니다. 다시 연결 중...",
+            "dismiss": "해제",
             "service_call_failed": "{service} 서비스를 호출하지 못했습니다.",
             "started": "Home Assistant 가 시작되었습니다!",
             "starting": "Home Assistant 가 시작됩니다. 완료될 때까지 모든 기능을 사용할 수 있는 것은 아닙니다.",
@@ -940,7 +956,7 @@
                                 },
                                 "event": {
                                     "event": "이벤트:",
-                                    "label": "이벤트 발생",
+                                    "label": "이벤트 발행",
                                     "service_data": "서비스 데이터"
                                 },
                                 "repeat": {
@@ -1098,6 +1114,9 @@
                                     "trigger": "트리거"
                                 },
                                 "event": {
+                                    "context_user_pick": "사용자 추가",
+                                    "context_user_picked": "사용자 발행 이벤트",
+                                    "context_users": "트리거된 이벤트로 제한",
                                     "event_data": "이벤트 데이터",
                                     "event_type": "이벤트 유형",
                                     "label": "이벤트"
@@ -1809,6 +1828,13 @@
                         "introduction": "네트워크 전체 기능을 관리합니다.",
                         "node_count": "{count} 개 노드"
                     },
+                    "node_config": {
+                        "help_source": "구성 매개변수 설명 및 도움말 텍스트는 OpenZWave 프로젝트에서 제공합니다.",
+                        "wakeup_help": "배터리 전원을 사용하는 노드는 구성을 변경하려면 반드시 절전 해제된 상태이어야 합니다. 노드가 절전 생태인 경우 Openzwave 는 절전 해제될 때 노드의 구성 업데이트를 시도합니다. 이 과정은 몇 시간 (또는 며칠) 후에 이루어질 수 있습니다. 기기를 절전 해제하려면 다음 단계를 따라주세요."
+                    },
+                    "node_metadata": {
+                        "product_manual": "제품 설명서"
+                    },
                     "node_query_stages": {
                         "associations": "연결 그룹 및 구성원 자격 새로고침",
                         "cacheload": "OpenZWave 캐시 파일에서 정보를 읽어오기. 배터리 노드는 노드가 절전 해제 상태가 될 때까지 이 단계를 유지합니다.",
@@ -1859,6 +1885,7 @@
                     },
                     "services": {
                         "add_node": "노드 추가",
+                        "cancel_command": "명령 취소",
                         "remove_node": "노드 제거"
                     }
                 },
@@ -2393,7 +2420,9 @@
                         "listeners": "이 템플릿은 다음의 상태 변경 이벤트를 수신합니다.",
                         "no_listeners": "이 템플릿은 상태 변경 이벤트를 수신하지 않으며 자동으로 업데이트되지 않습니다.",
                         "reset": "데모 템플릿으로 재설정",
+                        "result_type": "결과 유형",
                         "template_extensions": "Home Assistant 템플릿 확장기능 문서 보기",
+                        "time": "이 템플릿은 매 분마다 업데이트됩니다.",
                         "title": "템플릿",
                         "unknown_error_template": "템플릿 구성 중 알 수 없는 오류가 발생했습니다"
                     }
@@ -2508,6 +2537,9 @@
                                 "weblink": "웹 링크"
                             },
                             "name": "구성요소 모음",
+                            "secondary_info_values": {
+                                "last-updated": "최근 업데이트 됨"
+                            },
                             "show_header_toggle": "헤더 토글 표시",
                             "special_row": "특별 행",
                             "toggle": "구성요소 토글"
@@ -2763,7 +2795,8 @@
                     "exit_edit_mode": "UI 편집 모드 종료",
                     "help": "도움말",
                     "refresh": "새로고침",
-                    "reload_resources": "리소스 다시 읽어오기"
+                    "reload_resources": "리소스 다시 읽어오기",
+                    "start_conversation": "대화 시작"
                 },
                 "reload_lovelace": "UI 다시 읽어오기",
                 "reload_resources": {
@@ -3002,6 +3035,10 @@
                     "dropdown_label": "대시보드",
                     "header": "대시보드"
                 },
+                "enable_shortcuts": {
+                    "description": "UI 에서 다양한 작업을 수행하기 위한 단축키를 활성화하거나 비활성화합니다.",
+                    "header": "키보드 단축키"
+                },
                 "force_narrow": {
                     "description": "모바일 환경과 마찬가지로 기본적으로 사이드바가 숨겨집니다.",
                     "header": "항상 사이드바 숨기기"
@@ -3046,6 +3083,10 @@
                     "header": "다단계 인증 모듈"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "기기 이름",
+                        "title": "이 기기의 이름을 지어주세요"
+                    },
                     "description": "이 기기에 알림을 보냅니다.",
                     "error_load_platform": "notify.html5 를 구성해주세요.",
                     "error_use_https": "SSL 을 통한 보안 연결된 환경이 필요합니다.",

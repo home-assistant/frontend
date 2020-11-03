@@ -1793,7 +1793,7 @@
                     "caption": "Napló",
                     "clear": "Törlés",
                     "description": "A Home Assistant naplófájlok megtekintése",
-                    "details": "Naplózás részletessége ({level})",
+                    "details": "Naplóbejegyzés részletei ({level})",
                     "load_full_log": "Teljes Home Assistant napló betöltése",
                     "loading_log": "Hibanapló betöltése...",
                     "multiple_messages": "az üzenet először a következő időpontban fordult elő: {time}, majd később {counter} alkalommal ismétlődött",
