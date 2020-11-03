@@ -183,7 +183,7 @@ export class QuickBar extends LitElement {
         .item=${item}
         index=${ifDefined(index)}
         hasMeta
-        graphic=${item.altText ? "avatar" : "icon"}
+        graphic="avatar"
       >
         <ha-icon .icon=${item.icon} slot="graphic"></ha-icon>
         <span>${item.text}</span>
@@ -385,6 +385,10 @@ export class QuickBar extends LitElement {
             --dialog-surface-top: 40px;
             --mdc-dialog-max-height: calc(100% - 72px);
           }
+        }
+
+        ha-svg-icon {
+          color: var(--primary-text-color);
         }
 
         ha-svg-icon.prefix {
