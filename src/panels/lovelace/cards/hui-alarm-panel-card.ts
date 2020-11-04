@@ -78,14 +78,14 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
   public async getCardSize(): Promise<number> {
     if (!this._config || !this.hass) {
-      return 18;
+      return 5;
     }
 
     const stateObj = this.hass.states[this._config.entity];
 
     return !stateObj || stateObj.attributes.code_format !== FORMAT_NUMBER
-      ? 6
-      : 18;
+      ? 3
+      : 8;
   }
 
   public setConfig(config: AlarmPanelCardConfig): void {
@@ -269,10 +269,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     return css`
       ha-card {
         padding-bottom: 16px;
-        height: 100%;
-        box-sizing: border-box;
         position: relative;
-        overflow-y: auto;
         --alarm-color-disarmed: var(--label-badge-green);
         --alarm-color-pending: var(--label-badge-yellow);
         --alarm-color-triggered: var(--label-badge-red);
