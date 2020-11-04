@@ -25,7 +25,6 @@ class HuiHorizontalStackCard extends HuiStackCard {
       css`
         #root {
           display: flex;
-          height: 100%;
         }
         #root > * {
           flex: 1 1 0;
