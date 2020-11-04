@@ -82,7 +82,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
   @query("ha-card") private _card?: HaCard;
 
   public getCardSize(): number {
-    return 14;
+    return 5;
   }
 
   public setConfig(config: ThermostatCardConfig): void {
@@ -405,6 +405,10 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
+      :host {
+        display: block;
+      }
+
       ha-card {
         height: 100%;
         position: relative;
