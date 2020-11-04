@@ -2,7 +2,6 @@ const webpack = require("webpack");
 const path = require("path");
 const TerserPlugin = require("terser-webpack-plugin");
 const ManifestPlugin = require("webpack-manifest-plugin");
-const WorkerPlugin = require("worker-plugin");
 const paths = require("./paths.js");
 const bundle = require("./bundle");
 
@@ -30,7 +29,7 @@ const createWebpackConfig = ({
     module: {
       rules: [
         {
-          test: /\.js$|\.ts$/,
+          test: /\.m?js$|\.ts$/,
           exclude: bundle.babelExclude(),
           use: {
             loader: "babel-loader",
@@ -46,16 +45,13 @@ const createWebpackConfig = ({
     optimization: {
       minimizer: [
         new TerserPlugin({
-          cache: true,
           parallel: true,
           extractComments: true,
-          sourceMap: true,
           terserOptions: bundle.terserOptions(latestBuild),
         }),
       ],
     },
     plugins: [
-      new WorkerPlugin(),
       new ManifestPlugin({
         // Only include the JS of entrypoints
         filter: (file) => file.isInitial && !file.name.endsWith(".map"),
@@ -99,6 +95,15 @@ const createWebpackConfig = ({
         new RegExp(bundle.emptyPackages({ latestBuild }).join("|")),
         path.resolve(paths.polymer_dir, "src/util/empty.js")
       ),
+      // We need to change the import of the polyfill for EventTarget, so we replace the polyfill file with our customized one
+      new webpack.NormalModuleReplacementPlugin(
+        new RegExp(
+          require.resolve(
+            "lit-virtualizer/lib/uni-virtualizer/lib/polyfillLoaders/EventTarget.js"
+          )
+        ),
+        path.resolve(paths.polymer_dir, "src/resources/EventTarget-ponyfill.js")
+      ),
     ],
     resolve: {
       extensions: [".ts", ".js", ".json"],
@@ -109,6 +114,22 @@ const createWebpackConfig = ({
           return `${chunk.name}.js`;
         }
         return `${chunk.name}.${chunk.hash.substr(0, 8)}.js`;
+      },
+      environment: {
+        // The environment supports arrow functions ('() => { ... }').
+        arrowFunction: latestBuild,
+        // The environment supports BigInt as literal (123n).
+        bigIntLiteral: false,
+        // The environment supports const and let for variable declarations.
+        const: latestBuild,
+        // The environment supports destructuring ('{ a, b } = obj').
+        destructuring: latestBuild,
+        // The environment supports an async import() function to import EcmaScript modules.
+        dynamicImport: latestBuild,
+        // The environment supports 'for of' iteration ('for (const x of array) { ... }').
+        forOf: latestBuild,
+        // The environment supports ECMAScript Module syntax to import ECMAScript modules (import ... from '...').
+        module: latestBuild,
       },
       chunkFilename:
         isProdBuild && !isStatsBuild

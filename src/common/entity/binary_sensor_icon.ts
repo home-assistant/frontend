@@ -18,12 +18,12 @@ export const binarySensorIcon = (state?: string, stateObj?: HassEntity) => {
     case "garage_door":
       return is_off ? "hass:garage" : "hass:garage-open";
     case "power":
-      return is_off ? "hass:power-off" : "hass:power-on";
+      return is_off ? "hass:power-plug-off" : "hass:power-plug";
     case "gas":
     case "problem":
     case "safety":
     case "smoke":
-      return is_off ? "hass:shield-check" : "hass:alert";
+      return is_off ? "hass:check-circle" : "hass:alert-circle";
     case "heat":
       return is_off ? "hass:thermometer" : "hass:fire";
     case "light":

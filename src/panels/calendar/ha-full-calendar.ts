@@ -2,6 +2,7 @@
 import fullcalendarStyle from "@fullcalendar/common/main.css";
 import type { CalendarOptions } from "@fullcalendar/core";
 import { Calendar } from "@fullcalendar/core";
+import allLocales from "@fullcalendar/core/locales-all";
 import dayGridPlugin from "@fullcalendar/daygrid";
 // @ts-ignore
 import daygridStyle from "@fullcalendar/daygrid/main.css";
@@ -44,6 +45,15 @@ declare global {
   }
 }
 
+const getListWeekRange = (currentDate: Date): { start: Date; end: Date } => {
+  const startDate = new Date(currentDate.valueOf());
+  const endDate = new Date(currentDate.valueOf());
+
+  endDate.setDate(endDate.getDate() + 7);
+
+  return { start: startDate, end: endDate };
+};
+
 const defaultFullCalendarConfig: CalendarOptions = {
   headerToolbar: false,
   plugins: [dayGridPlugin, listPlugin, interactionPlugin],
@@ -51,16 +61,22 @@ const defaultFullCalendarConfig: CalendarOptions = {
   dayMaxEventRows: true,
   height: "parent",
   eventDisplay: "list-item",
+  locales: allLocales,
+  views: {
+    list: {
+      visibleRange: getListWeekRange,
+    },
+  },
 };
 
 const viewButtons: ToggleButton[] = [
   { label: "Month View", value: "dayGridMonth", iconPath: mdiViewModule },
   { label: "Week View", value: "dayGridWeek", iconPath: mdiViewWeek },
   { label: "Day View", value: "dayGridDay", iconPath: mdiViewDay },
-  { label: "List View", value: "listWeek", iconPath: mdiViewAgenda },
+  { label: "List View", value: "list", iconPath: mdiViewAgenda },
 ];
 
-class HAFullCalendar extends LitElement {
+export class HAFullCalendar extends LitElement {
   public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
@@ -78,6 +94,10 @@ class HAFullCalendar extends LitElement {
   @internalProperty() private calendar?: Calendar;
 
   @internalProperty() private _activeView?: FullCalendarView;
+
+  public updateSize(): void {
+    this.calendar?.updateSize();
+  }
 
   protected render(): TemplateResult {
     const viewToggleButtons = this._viewToggleButtons(this.views);
@@ -186,6 +206,12 @@ class HAFullCalendar extends LitElement {
       this.calendar!.changeView(this._activeView);
       this._fireViewChanged();
     }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant;
+
+    if (oldHass && oldHass.language !== this.hass.language) {
+      this.calendar.setOption("locale", this.hass.language);
+    }
   }
 
   protected firstUpdated(): void {
@@ -243,7 +269,7 @@ class HAFullCalendar extends LitElement {
     this._fireViewChanged();
   }
 
-  private _handleView(ev): void {
+  private _handleView(ev: CustomEvent): void {
     this._activeView = ev.detail.value;
     this.calendar!.changeView(this._activeView!);
     this._fireViewChanged();
@@ -324,10 +350,19 @@ class HAFullCalendar extends LitElement {
 
         #calendar {
           flex-grow: 1;
-          background-color: var(--card-background-color);
+          background-color: var(
+            --ha-card-background,
+            var(--card-background-color, white)
+          );
           min-height: 400px;
-          --fc-neutral-bg-color: var(--card-background-color);
-          --fc-list-event-hover-bg-color: var(--card-background-color);
+          --fc-neutral-bg-color: var(
+            --ha-card-background,
+            var(--card-background-color, white)
+          );
+          --fc-list-event-hover-bg-color: var(
+            --ha-card-background,
+            var(--card-background-color, white)
+          );
           --fc-theme-standard-border-color: var(--divider-color);
           --fc-border-color: var(--divider-color);
         }
@@ -486,6 +521,23 @@ class HAFullCalendar extends LitElement {
 
         :host([narrow]) .fc-dayGridMonth-view .fc-scrollgrid-sync-table {
           overflow: hidden;
+        }
+
+        .fc-scroller::-webkit-scrollbar {
+          width: 0.4rem;
+          height: 0.4rem;
+        }
+
+        .fc-scroller::-webkit-scrollbar-thumb {
+          -webkit-border-radius: 4px;
+          border-radius: 4px;
+          background: var(--scrollbar-thumb-color);
+        }
+
+        .fc-scroller {
+          overflow-y: auto;
+          scrollbar-color: var(--scrollbar-thumb-color) transparent;
+          scrollbar-width: thin;
         }
       `,
     ];

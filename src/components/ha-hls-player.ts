@@ -38,6 +38,7 @@ class HaHLSPlayer extends LitElement {
   @property({ type: Boolean, attribute: "allow-exoplayer" })
   public allowExoPlayer = false;
 
+  // don't cache this, as we remove it on disconnects
   @query("video") private _videoEl!: HTMLVideoElement;
 
   @internalProperty() private _attached = false;
@@ -154,6 +155,9 @@ class HaHLSPlayer extends LitElement {
   }
 
   private _resizeExoPlayer = () => {
+    if (!this._videoEl) {
+      return;
+    }
     const rect = this._videoEl.getBoundingClientRect();
     this.hass!.auth.external!.fireMessage({
       type: "exoplayer/resize",

@@ -39,7 +39,8 @@ import type { HomeAssistant } from "../../../../src/types";
 import { HassioNetworkDialogParams } from "./show-dialog-network";
 
 @customElement("dialog-hassio-network")
-export class DialogHassioNetwork extends LitElement implements HassDialog {
+export class DialogHassioNetwork extends LitElement
+  implements HassDialog<HassioNetworkDialogParams> {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @internalProperty() private _prosessing = false;

@@ -43,15 +43,20 @@ declare global {
     };
     change: undefined;
   }
+
+  // For loading workers in webpack
+  interface ImportMeta {
+    url: string;
+  }
 }
 
-export type Constructor<T = {}> = new (...args: any[]) => T;
+export type Constructor<T = any> = new (...args: any[]) => T;
 
 export interface ClassElement {
   kind: "field" | "method";
   key: PropertyKey;
   placement: "static" | "prototype" | "own";
-  initializer?: Function;
+  initializer?: (...args) => unknown;
   extras?: ClassElement[];
   finisher?: <T>(cls: Constructor<T>) => undefined | Constructor<T>;
   descriptor?: PropertyDescriptor;
@@ -104,7 +109,7 @@ export interface ThemeSettings {
   accentColor?: string;
 }
 
-export interface PanelInfo<T = {} | null> {
+export interface PanelInfo<T = Record<string, any> | null> {
   component_name: string;
   config: T;
   icon: string | null;
@@ -120,11 +125,6 @@ export interface Calendar {
   entity_id: string;
   name?: string;
   backgroundColor?: string;
-}
-
-export interface SelectedCalendar {
-  selected: boolean;
-  calendar: Calendar;
 }
 
 export interface CalendarEvent {
@@ -148,7 +148,7 @@ export type FullCalendarView =
   | "dayGridMonth"
   | "dayGridWeek"
   | "dayGridDay"
-  | "listWeek";
+  | "list";
 
 export interface ToggleButton {
   label: string;
@@ -201,6 +201,12 @@ export interface ServiceCallResponse {
   context: Context;
 }
 
+export interface ServiceCallRequest {
+  domain: string;
+  service: string;
+  serviceData?: { [key: string]: any };
+}
+
 export interface HomeAssistant {
   auth: Auth & { external?: ExternalMessaging };
   connection: Connection;
@@ -226,6 +232,7 @@ export interface HomeAssistant {
   localize: LocalizeFunc;
   translationMetadata: TranslationMetadata;
   suspendWhenHidden: boolean;
+  enableShortcuts: boolean;
   vibrate: boolean;
   dockedSidebar: "docked" | "always_hidden" | "auto";
   defaultPanel: string;
@@ -234,9 +241,9 @@ export interface HomeAssistant {
   userData?: CoreFrontendUserData | null;
   hassUrl(path?): string;
   callService(
-    domain: string,
-    service: string,
-    serviceData?: { [key: string]: any }
+    domain: ServiceCallRequest["domain"],
+    service: ServiceCallRequest["service"],
+    serviceData?: ServiceCallRequest["serviceData"]
   ): Promise<ServiceCallResponse>;
   callApi<T>(
     method: "GET" | "POST" | "PUT" | "DELETE",
@@ -349,5 +356,7 @@ export type WeatherEntity = HassEntityBase & {
     temperature: number;
     humidity?: number;
     forecast?: ForecastAttribute[];
+    wind_speed: string;
+    wind_bearing: string;
   };
 };

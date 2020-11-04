@@ -134,7 +134,8 @@ class HaLogbook extends LitElement {
             ${!this.noIcon
               ? html`
                   <ha-icon
-                    .icon=${domainIcon(
+                    .icon=${item.icon ??
+                    domainIcon(
                       item.entity_id
                         ? computeDomain(item.entity_id)
                         : item.domain,

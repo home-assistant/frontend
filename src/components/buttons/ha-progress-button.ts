@@ -21,7 +21,7 @@ class HaProgressButton extends LitElement {
 
   @property({ type: Boolean }) public raised = false;
 
-  @query("mwc-button") private _button?: Button;
+  @query("mwc-button", true) private _button?: Button;
 
   public render(): TemplateResult {
     return html`

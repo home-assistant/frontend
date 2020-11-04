@@ -67,9 +67,10 @@ class MoreInfoLight extends LitElement {
                 caption=${this.hass.localize("ui.card.light.brightness")}
                 icon="hass:brightness-5"
                 min="1"
-                max="255"
+                max="100"
                 value=${this._brightnessSliderValue}
                 @change=${this._brightnessSliderChanged}
+                pin
               ></ha-labeled-slider>
             `
           : ""}
@@ -87,6 +88,7 @@ class MoreInfoLight extends LitElement {
                       .max=${this.stateObj.attributes.max_mireds}
                       .value=${this._ctSliderValue}
                       @change=${this._ctSliderChanged}
+                      pin
                     ></ha-labeled-slider>
                   `
                 : ""}
@@ -98,6 +100,7 @@ class MoreInfoLight extends LitElement {
                       max="255"
                       .value=${this._wvSliderValue}
                       @change=${this._wvSliderChanged}
+                      pin
                     ></ha-labeled-slider>
                   `
                 : ""}
@@ -155,16 +158,22 @@ class MoreInfoLight extends LitElement {
 
   protected updated(changedProps: PropertyValues): void {
     const stateObj = this.stateObj! as LightEntity;
-    if (changedProps.has("stateObj") && stateObj.state === "on") {
-      this._brightnessSliderValue = stateObj.attributes.brightness;
-      this._ctSliderValue = stateObj.attributes.color_temp;
-      this._wvSliderValue = stateObj.attributes.white_value;
+    if (changedProps.has("stateObj")) {
+      if (stateObj.state === "on") {
+        this._brightnessSliderValue = Math.round(
+          (stateObj.attributes.brightness * 100) / 255
+        );
+        this._ctSliderValue = stateObj.attributes.color_temp;
+        this._wvSliderValue = stateObj.attributes.white_value;
 
-      if (stateObj.attributes.hs_color) {
-        this._colorPickerColor = {
-          h: stateObj.attributes.hs_color[0],
-          s: stateObj.attributes.hs_color[1] / 100,
-        };
+        if (stateObj.attributes.hs_color) {
+          this._colorPickerColor = {
+            h: stateObj.attributes.hs_color[0],
+            s: stateObj.attributes.hs_color[1] / 100,
+          };
+        }
+      } else {
+        this._brightnessSliderValue = 0;
       }
     }
   }
@@ -191,7 +200,7 @@ class MoreInfoLight extends LitElement {
 
     this.hass.callService("light", "turn_on", {
       entity_id: this.stateObj!.entity_id,
-      brightness: bri,
+      brightness_pct: bri,
     });
   }
 
@@ -250,15 +259,10 @@ class MoreInfoLight extends LitElement {
         align-items: center;
       }
 
-      .content.is-on {
-        margin-top: -16px;
-      }
-
       .content > * {
         width: 100%;
         max-height: 84px;
         overflow: hidden;
-        padding-top: 16px;
       }
 
       .color_temp {

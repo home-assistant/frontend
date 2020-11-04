@@ -1,6 +1,8 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { mockTemplate } from "../../../demo/src/stubs/template";
+import { provideHass } from "../../../src/fake_data/provide_hass";
 import "../components/demo-cards";
 
 const CONFIGS = [
@@ -254,7 +256,7 @@ const CONFIGS = [
 
 class DemoMarkdown extends PolymerElement {
   static get template() {
-    return html` <demo-cards configs="[[_configs]]"></demo-cards> `;
+    return html` <demo-cards id="demos" configs="[[_configs]]"></demo-cards> `;
   }
 
   static get properties() {
@@ -264,6 +266,12 @@ class DemoMarkdown extends PolymerElement {
         value: CONFIGS,
       },
     };
+  }
+
+  public ready() {
+    super.ready();
+    const hass = provideHass(this.$.demos);
+    mockTemplate(hass);
   }
 }
 

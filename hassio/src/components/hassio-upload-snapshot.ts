@@ -1,4 +1,3 @@
-import "../../../src/components/ha-file-upload";
 import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiFolderUpload } from "@mdi/js";
 import "@polymer/iron-input/iron-input";
@@ -12,13 +11,15 @@ import {
 } from "lit-element";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/ha-circular-progress";
+import "../../../src/components/ha-file-upload";
 import "../../../src/components/ha-svg-icon";
+import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import {
   HassioSnapshot,
   uploadSnapshot,
 } from "../../../src/data/hassio/snapshot";
-import { HomeAssistant } from "../../../src/types";
 import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
+import { HomeAssistant } from "../../../src/types";
 
 declare global {
   interface HASSDomEvents {
@@ -65,7 +66,7 @@ export class HassioUploadSnapshot extends LitElement {
     } catch (err) {
       showAlertDialog(this, {
         title: "Upload failed",
-        text: err.toString(),
+        text: extractApiErrorMessage(err),
         confirmText: "ok",
       });
     } finally {

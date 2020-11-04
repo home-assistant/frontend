@@ -1,6 +1,7 @@
 import "@material/mwc-button";
 import { mdiClose, mdiDelete, mdiDownload, mdiHistory } from "@mdi/js";
-import { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
+import "@polymer/paper-checkbox/paper-checkbox";
+import type { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
 import {
   css,
@@ -196,7 +197,7 @@ class HassioSnapshotDialog extends LitElement {
               @click=${this._downloadClicked}
               slot="primaryAction"
             >
-              <ha-svg-icon path=${mdiDownload} class="icon"></ha-svg-icon>
+              <ha-svg-icon .path=${mdiDownload} class="icon"></ha-svg-icon>
               Download Snapshot
             </mwc-button>`
           : ""}
@@ -205,7 +206,7 @@ class HassioSnapshotDialog extends LitElement {
           @click=${this._partialRestoreClicked}
           slot="secondaryAction"
         >
-          <ha-svg-icon path=${mdiHistory} class="icon"></ha-svg-icon>
+          <ha-svg-icon .path=${mdiHistory} class="icon"></ha-svg-icon>
           Restore Selected
         </mwc-button>
         ${this._snapshot.type === "full"
@@ -214,7 +215,7 @@ class HassioSnapshotDialog extends LitElement {
                 @click=${this._fullRestoreClicked}
                 slot="secondaryAction"
               >
-                <ha-svg-icon path=${mdiHistory} class="icon"></ha-svg-icon>
+                <ha-svg-icon .path=${mdiHistory} class="icon"></ha-svg-icon>
                 Wipe &amp; restore
               </mwc-button>
             `
@@ -224,7 +225,10 @@ class HassioSnapshotDialog extends LitElement {
               @click=${this._deleteClicked}
               slot="secondaryAction"
             >
-              <ha-svg-icon path=${mdiDelete} class="icon warning"></ha-svg-icon>
+              <ha-svg-icon
+                .path=${mdiDelete}
+                class="icon warning"
+              ></ha-svg-icon>
               <span class="warning">Delete Snapshot</span>
             </mwc-button>`
           : ""}
@@ -438,6 +442,19 @@ class HassioSnapshotDialog extends LitElement {
     } catch (err) {
       alert(`Error: ${extractApiErrorMessage(err)}`);
       return;
+    }
+
+    if (window.location.href.includes("ui.nabu.casa")) {
+      const confirm = await showConfirmationDialog(this, {
+        title: "Potential slow download",
+        text:
+          "Downloading snapshots over the Nabu Casa URL will take some time, it is recomended to use your local URL instead, do you want to continue?",
+        confirmText: "continue",
+        dismissText: "cancel",
+      });
+      if (!confirm) {
+        return;
+      }
     }
 
     const name = this._computeName.replace(/[^a-z0-9]+/gi, "_");

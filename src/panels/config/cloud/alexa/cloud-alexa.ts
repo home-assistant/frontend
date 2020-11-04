@@ -131,7 +131,7 @@ class CloudAlexa extends LitElement {
           "not-exposed": !isExposed,
         })}
         .disabled=${!emptyFilter}
-        .title=${this.hass!.localize("ui.panel.config.cloud.google.expose")}
+        .title=${this.hass!.localize("ui.panel.config.cloud.alexa.expose")}
       >
         <ha-svg-icon
           .path=${config.should_expose !== null
@@ -169,7 +169,7 @@ class CloudAlexa extends LitElement {
                     ${iconButton}
                     <mwc-list-item hasMeta>
                       ${this.hass!.localize(
-                        "ui.panel.config.cloud.google.expose_entity"
+                        "ui.panel.config.cloud.alexa.expose_entity"
                       )}
                       <ha-svg-icon
                         class="exposed"
@@ -179,7 +179,7 @@ class CloudAlexa extends LitElement {
                     </mwc-list-item>
                     <mwc-list-item hasMeta>
                       ${this.hass!.localize(
-                        "ui.panel.config.cloud.google.dont_expose_entity"
+                        "ui.panel.config.cloud.alexa.dont_expose_entity"
                       )}
                       <ha-svg-icon
                         class="not-exposed"
@@ -189,7 +189,7 @@ class CloudAlexa extends LitElement {
                     </mwc-list-item>
                     <mwc-list-item hasMeta>
                       ${this.hass!.localize(
-                        "ui.panel.config.cloud.google.follow_domain"
+                        "ui.panel.config.cloud.alexa.follow_domain"
                       )}
                       <ha-svg-icon
                         class=${classMap({

@@ -17,14 +17,10 @@ import {
   DOMAINS_MORE_INFO_NO_HISTORY,
   DOMAINS_WITH_MORE_INFO,
 } from "../../common/const";
-import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import {
-  stateMoreInfoType,
-  importMoreInfoControl,
-} from "./state_more_info_control";
+
 import { navigate } from "../../common/navigate";
 import "../../components/ha-dialog";
 import "../../components/ha-header-bar";
@@ -38,9 +34,18 @@ import { showConfirmationDialog } from "../generic/show-dialog-box";
 import "./ha-more-info-history";
 import "./ha-more-info-logbook";
 import "./controls/more-info-default";
+import { CONTINUOUS_DOMAINS } from "../../data/logbook";
+import "./more-info-content";
 
 const DOMAINS_NO_INFO = ["camera", "configurator"];
+/**
+ * Entity domains that should be editable *if* they have an id present;
+ * {@see shouldShowEditIcon}.
+ * */
 const EDITABLE_DOMAINS_WITH_ID = ["scene", "automation"];
+/**
+ * Entity Domains that should always be editable; {@see shouldShowEditIcon}.
+ * */
 const EDITABLE_DOMAINS = ["script"];
 
 export interface MoreInfoDialogParams {
@@ -55,14 +60,13 @@ export class MoreInfoDialog extends LitElement {
 
   @internalProperty() private _entityId?: string | null;
 
-  @internalProperty() private _moreInfoType?: string;
-
   @internalProperty() private _currTabIndex = 0;
 
   public showDialog(params: MoreInfoDialogParams) {
     this._entityId = params.entityId;
     if (!this._entityId) {
       this.closeDialog();
+      return;
     }
     this.large = false;
   }
@@ -73,21 +77,18 @@ export class MoreInfoDialog extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected updated(changedProperties) {
-    if (!this.hass || !this._entityId || !changedProperties.has("_entityId")) {
-      return;
+  protected shouldShowEditIcon(domain, stateObj): boolean {
+    if (EDITABLE_DOMAINS_WITH_ID.includes(domain) && stateObj.attributes.id) {
+      return true;
     }
-    const stateObj = this.hass.states[this._entityId];
-    if (!stateObj) {
-      return;
+    if (EDITABLE_DOMAINS.includes(domain)) {
+      return true;
     }
-    if (stateObj.attributes && "custom_ui_more_info" in stateObj.attributes) {
-      this._moreInfoType = stateObj.attributes.custom_ui_more_info;
-    } else {
-      const type = stateMoreInfoType(stateObj);
-      importMoreInfoControl(type);
-      this._moreInfoType = type === "hidden" ? undefined : `more-info-${type}`;
+    if (domain === "person" && stateObj.attributes.editable !== "false") {
+      return true;
     }
+
+    return false;
   }
 
   protected render() {
@@ -137,10 +138,7 @@ export class MoreInfoDialog extends LitElement {
                   </mwc-icon-button>
                 `
               : ""}
-            ${this.hass.user!.is_admin &&
-            ((EDITABLE_DOMAINS_WITH_ID.includes(domain) &&
-              stateObj.attributes.id) ||
-              EDITABLE_DOMAINS.includes(domain))
+            ${this.shouldShowEditIcon(domain, stateObj)
               ? html`
                   <mwc-icon-button
                     slot="actionItems"
@@ -155,7 +153,8 @@ export class MoreInfoDialog extends LitElement {
               : ""}
           </ha-header-bar>
           ${DOMAINS_WITH_MORE_INFO.includes(domain) &&
-          this._computeShowHistoryComponent(entityId)
+          (this._computeShowHistoryComponent(entityId) ||
+            this._computeShowLogBookComponent(entityId))
             ? html`
                 <mwc-tab-bar
                   .activeIndex=${this._currTabIndex}
@@ -192,19 +191,20 @@ export class MoreInfoDialog extends LitElement {
                   !this._computeShowHistoryComponent(entityId)
                     ? ""
                     : html`<ha-more-info-history
-                          .hass=${this.hass}
-                          .entityId=${this._entityId}
-                        ></ha-more-info-history>
-                        <ha-more-info-logbook
-                          .hass=${this.hass}
-                          .entityId=${this._entityId}
-                        ></ha-more-info-logbook>`}
-                  ${this._moreInfoType
-                    ? dynamicElement(this._moreInfoType, {
-                        hass: this.hass,
-                        stateObj,
-                      })
-                    : ""}
+                        .hass=${this.hass}
+                        .entityId=${this._entityId}
+                      ></ha-more-info-history>`}
+                  ${DOMAINS_WITH_MORE_INFO.includes(domain) ||
+                  !this._computeShowLogBookComponent(entityId)
+                    ? ""
+                    : html`<ha-more-info-logbook
+                        .hass=${this.hass}
+                        .entityId=${this._entityId}
+                      ></ha-more-info-logbook>`}
+                  <more-info-content
+                    .stateObj=${stateObj}
+                    .hass=${this.hass}
+                  ></more-info-content>
                   ${stateObj.attributes.restored
                     ? html`
                         <p>
@@ -250,10 +250,30 @@ export class MoreInfoDialog extends LitElement {
 
   private _computeShowHistoryComponent(entityId) {
     return (
-      (isComponentLoaded(this.hass, "history") ||
-        isComponentLoaded(this.hass, "logbook")) &&
+      isComponentLoaded(this.hass, "history") &&
       !DOMAINS_MORE_INFO_NO_HISTORY.includes(computeDomain(entityId))
     );
+  }
+
+  private _computeShowLogBookComponent(entityId): boolean {
+    if (!isComponentLoaded(this.hass, "logbook")) {
+      return false;
+    }
+
+    const stateObj = this.hass.states[entityId];
+    if (!stateObj || stateObj.attributes.unit_of_measurement) {
+      return false;
+    }
+
+    const domain = computeDomain(entityId);
+    if (
+      CONTINUOUS_DOMAINS.includes(domain) ||
+      DOMAINS_MORE_INFO_NO_HISTORY.includes(domain)
+    ) {
+      return false;
+    }
+
+    return true;
   }
 
   private _removeEntity() {
@@ -283,14 +303,12 @@ export class MoreInfoDialog extends LitElement {
   private _gotoEdit() {
     const stateObj = this.hass.states[this._entityId!];
     const domain = computeDomain(this._entityId!);
-    navigate(
-      this,
-      `/config/${domain}/edit/${
-        EDITABLE_DOMAINS_WITH_ID.includes(domain)
-          ? stateObj.attributes.id
-          : stateObj.entity_id
-      }`
-    );
+    let idToPassThroughUrl = stateObj.entity_id;
+    if (EDITABLE_DOMAINS_WITH_ID.includes(domain) || domain === "person") {
+      idToPassThroughUrl = stateObj.attributes.id;
+    }
+
+    navigate(this, `/config/${domain}/edit/${idToPassThroughUrl}`);
     this.closeDialog();
   }
 

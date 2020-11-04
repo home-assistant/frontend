@@ -617,6 +617,11 @@
             },
             "service-picker": {
                 "service": "Tjeneste"
+            },
+            "user-picker": {
+                "add_user": "Tilføj bruger",
+                "no_user": "Ingen bruger",
+                "remove_user": "Fjern bruger"
             }
         },
         "dialogs": {
@@ -813,6 +818,7 @@
         },
         "notification_toast": {
             "connection_lost": "Forbindelse afbrudt. Opretter forbindelse igen...",
+            "dismiss": "Afvis",
             "service_call_failed": "Kunne ikke kalde tjenesten {service}.",
             "started": "Home Assistant er startet!",
             "starting": "Home Assistant starter. Nogle funktioner er måske ikke tilgængelige før opstarten er færdig.",
@@ -1048,6 +1054,7 @@
                                     "trigger": "Udløser"
                                 },
                                 "event": {
+                                    "context_user_pick": "Tilføj bruger",
                                     "event_data": "Hændelsesdata",
                                     "event_type": "Hændelsestype",
                                     "label": "Hændelse"
@@ -1702,12 +1709,21 @@
                         "stage": "Fase",
                         "zwave_info": "Z-Wave-info"
                     },
+                    "navigation": {
+                        "node": {
+                            "config": "Konfiguration",
+                            "dashboard": "Betjeningspanel"
+                        }
+                    },
                     "network_status": {
                         "details": {
                             "ready": "Klar til at oprette forbindelse",
                             "started": "Forbundet til MQTT",
                             "stopped": "OpenZWave stoppet"
                         }
+                    },
+                    "node_metadata": {
+                        "product_manual": "Brugervejledning"
                     },
                     "nodes_table": {
                         "failed": "Mislykkedes",
@@ -1893,7 +1909,7 @@
                         "name": "Navn",
                         "new_password": "Ny Adgangskode",
                         "owner": "Ejer",
-                        "password_changed": "Adgangskoden er ændret!",
+                        "password_changed": "Adgangskoden er ændret",
                         "system_generated": "Systemgenereret",
                         "system_generated_users_not_editable": "Systemoprettede brugere kan ikke opdateres.",
                         "system_generated_users_not_removable": "Kan ikke fjerne systemgenererede brugere.",
@@ -1914,7 +1930,7 @@
                         "discovered_text": "Enheder vil dukke op her, når de er fundet.",
                         "discovery_text": "Fundne enheder vil dukke op her. Følg instruktionerne for din enhed(er) og sæt enhed(erne) i parringstilstand.",
                         "header": "Zigbee Home Automation - Tilføj enheder",
-                        "no_devices_found": "Ingen enheder blev fundet. Sørg for at de er i paringtilstand, og hold dem vågne, mens opdagelsen kører.",
+                        "no_devices_found": "Ingen enheder blev fundet. Sørg for at de er i parringstilstand og hold dem vågne mens der søges.",
                         "pairing_mode": "Sørg for, at dine enheder er i parringstilstand. Se enhedens vejledning i, hvordan du gør dette.",
                         "search_again": "Søg igen",
                         "spinner": "Søger efter ZHA Zigbee-enheder..."
@@ -2192,7 +2208,9 @@
                         "description": "Skabeloner gengives ved hjælp af Jinja2-skabelonmotoren med nogle Home Assistant-specifikke udvidelser.",
                         "editor": "Skabelonredigering",
                         "jinja_documentation": "Jinja2-skabelon-dokumentation",
+                        "result_type": "Resultattype",
                         "template_extensions": "Skabelon-udvidelser til Home Assistant",
+                        "time": "Denne skabelon opdateres hvert minut",
                         "title": "Skabelon",
                         "unknown_error_template": "Ukendt fejl ved gengivelse af skabelon"
                     }
@@ -2294,6 +2312,9 @@
                         "entities": {
                             "description": "Entiteter-kortet er det mest almindelige type kort. Det grupperer elementer på lister.",
                             "name": "Entiteter",
+                            "secondary_info_values": {
+                                "last-updated": "Sidst opdateret %@"
+                            },
                             "show_header_toggle": "Vis omskifter ved overskrift?",
                             "toggle": "Til/fra entiteter."
                         },
@@ -2541,7 +2562,8 @@
                     "exit_edit_mode": "Afslut brugerflade-redigeringstilstand",
                     "help": "Hjælp",
                     "refresh": "Opdater",
-                    "reload_resources": "Genindlæs ressourcer"
+                    "reload_resources": "Genindlæs ressourcer",
+                    "start_conversation": "Start samtale"
                 },
                 "reload_lovelace": "Genindlæs brugerflade",
                 "reload_resources": {

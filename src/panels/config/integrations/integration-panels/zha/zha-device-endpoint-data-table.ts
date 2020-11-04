@@ -15,7 +15,6 @@ import type {
   HaDataTable,
   DataTableRowData,
 } from "../../../../../components/data-table/ha-data-table";
-import "../../../../../components/entity/ha-state-icon";
 import type {
   ZHADeviceEndpoint,
   ZHAEntityReference,
@@ -42,7 +41,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
 
   @property({ type: Array }) public deviceEndpoints: ZHADeviceEndpoint[] = [];
 
-  @query("ha-data-table") private _dataTable!: HaDataTable;
+  @query("ha-data-table", true) private _dataTable!: HaDataTable;
 
   private _deviceEndpoints = memoizeOne(
     (deviceEndpoints: ZHADeviceEndpoint[]) => {

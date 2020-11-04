@@ -92,6 +92,9 @@ export const coreCards: Card[] = [
     type: "entity-filter",
   },
   {
+    type: "grid",
+  },
+  {
     type: "horizontal-stack",
   },
   {

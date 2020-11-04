@@ -50,8 +50,11 @@ declare global {
 }
 
 @customElement("hui-dialog-edit-card")
-export class HuiDialogEditCard extends LitElement implements HassDialog {
+export class HuiDialogEditCard extends LitElement
+  implements HassDialog<EditCardDialogParams> {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ type: Boolean, reflect: true }) public large = false;
 
   @internalProperty() private _params?: EditCardDialogParams;
 
@@ -81,6 +84,7 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
     this._viewConfig = params.lovelaceConfig.views[view];
     this._cardConfig =
       card !== undefined ? this._viewConfig.cards![card] : params.cardConfig;
+    this.large = false;
     if (this._cardConfig && !Object.isFrozen(this._cardConfig)) {
       this._cardConfig = deepFreeze(this._cardConfig);
     }
@@ -161,7 +165,7 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
       >
         <div slot="heading">
           <ha-header-bar>
-            <div slot="title">${heading}</div>
+            <div slot="title" @click=${this._enlarge}>${heading}</div>
             ${this._documentationURL !== undefined
               ? html`
                   <a
@@ -174,7 +178,7 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
                     dir=${computeRTLDirection(this.hass)}
                   >
                     <mwc-icon-button>
-                      <ha-svg-icon path=${mdiHelpCircle}></ha-svg-icon>
+                      <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
                     </mwc-icon-button>
                   </a>
                 `
@@ -238,7 +242,7 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
                     ? html`
                         <ha-circular-progress
                           active
-                          alt="Saving"
+                          title="Saving"
                           size="small"
                         ></ha-circular-progress>
                       `
@@ -251,6 +255,10 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
         </div>
       </ha-dialog>
     `;
+  }
+
+  private _enlarge() {
+    this.large = !this.large;
   }
 
   private _ignoreKeydown(ev: KeyboardEvent) {
@@ -364,7 +372,6 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
         @media all and (min-width: 850px) {
           ha-dialog {
             --mdc-dialog-min-width: 845px;
-            --dialog-surface-top: 40px;
             --mdc-dialog-max-height: calc(100% - 72px);
           }
         }
@@ -372,6 +379,15 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
         ha-dialog {
           --mdc-dialog-max-width: 845px;
           --dialog-z-index: 5;
+        }
+
+        @media all and (min-width: 451px) and (min-height: 501px) {
+          ha-dialog {
+            --mdc-dialog-max-width: 90vw;
+          }
+          :host([large]) .content {
+            width: calc(90vw - 48px);
+          }
         }
 
         ha-header-bar {
@@ -423,10 +439,6 @@ export class HuiDialogEditCard extends LitElement implements HassDialog {
             margin: auto 0px;
             max-width: 500px;
           }
-        }
-
-        mwc-button ha-circular-progress {
-          margin-right: 20px;
         }
         .hidden {
           display: none;

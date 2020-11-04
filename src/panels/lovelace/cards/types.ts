@@ -45,12 +45,13 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
     | "entity-id"
     | "last-changed"
     | "last-triggered"
+    | "last-updated"
     | "position"
     | "tilt-position"
     | "brightness";
   action_name?: string;
   service?: string;
-  service_data?: object;
+  service_data?: Record<string, unknown>;
   url?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
@@ -212,12 +213,14 @@ export interface PictureElementsCardConfig extends LovelaceCardConfig {
   image?: string;
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
-  state_image?: {};
+  state_image?: Record<string, unknown>;
   state_filter?: string[];
   aspect_ratio?: string;
   entity?: string;
   elements: LovelaceElementConfig[];
   theme?: string;
+  dark_mode_image?: string;
+  dark_mode_filter?: string;
 }
 
 export interface PictureEntityCardConfig extends LovelaceCardConfig {
@@ -226,7 +229,7 @@ export interface PictureEntityCardConfig extends LovelaceCardConfig {
   image?: string;
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
-  state_image?: {};
+  state_image?: Record<string, unknown>;
   state_filter?: string[];
   aspect_ratio?: string;
   tap_action?: ActionConfig;
@@ -243,7 +246,7 @@ export interface PictureGlanceCardConfig extends LovelaceCardConfig {
   image?: string;
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
-  state_image?: {};
+  state_image?: Record<string, unknown>;
   state_filter?: string[];
   aspect_ratio?: string;
   entity?: string;
@@ -283,6 +286,11 @@ export interface ShoppingListCardConfig extends LovelaceCardConfig {
 export interface StackCardConfig extends LovelaceCardConfig {
   cards: LovelaceCardConfig[];
   title?: string;
+}
+
+export interface GridCardConfig extends StackCardConfig {
+  columns?: number;
+  square?: boolean;
 }
 
 export interface ThermostatCardConfig extends LovelaceCardConfig {

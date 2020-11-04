@@ -69,7 +69,7 @@ const STAGE_ICON = {
 const PERMIS_DESC = {
   stage: {
     title: "Add-on Stage",
-    description: `Add-ons can have one of three stages:\n\n<ha-svg-icon path='${STAGE_ICON.stable}'></ha-svg-icon> **Stable**: These are add-ons ready to be used in production.\n\n<ha-svg-icon path='${STAGE_ICON.experimental}'></ha-svg-icon> **Experimental**: These may contain bugs, and may be unfinished.\n\n<ha-svg-icon path='${STAGE_ICON.deprecated}'></ha-svg-icon> **Deprecated**: These add-ons will no longer receive any updates.`,
+    description: `Add-ons can have one of three stages:\n\n<ha-svg-icon .path='${STAGE_ICON.stable}'></ha-svg-icon> **Stable**: These are add-ons ready to be used in production.\n\n<ha-svg-icon .path='${STAGE_ICON.experimental}'></ha-svg-icon> **Experimental**: These may contain bugs, and may be unfinished.\n\n<ha-svg-icon .path='${STAGE_ICON.deprecated}'></ha-svg-icon> **Deprecated**: These add-ons will no longer receive any updates.`,
   },
   rating: {
     title: "Add-on Security Rating",
@@ -135,7 +135,7 @@ class HassioAddonInfo extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      ${this._computeUpdateAvailable
+      ${this.addon.update_available
         ? html`
             <ha-card header="Update available! 🎉">
               <div class="card-content">
@@ -178,7 +178,7 @@ class HassioAddonInfo extends LitElement {
       ${!this.addon.protected
         ? html`
         <ha-card class="warning">
-          <div class="card-header">Warning: Protection mode is disabled!</div>
+          <h1 class="card-header">Warning: Protection mode is disabled!</h1>
           <div class="card-content">
             Protection mode on this add-on is disabled! This gives the add-on full access to the entire system, which adds security risks, and could damage your system when used incorrectly. Only disable the protection mode if you know, need AND trust the source of this add-on.
           </div>
@@ -202,14 +202,14 @@ class HassioAddonInfo extends LitElement {
                           <ha-svg-icon
                             title="Add-on is running"
                             class="running"
-                            path=${mdiCircle}
+                            .path=${mdiCircle}
                           ></ha-svg-icon>
                         `
                       : html`
                           <ha-svg-icon
                             title="Add-on is stopped"
                             class="stopped"
-                            path=${mdiCircle}
+                            .path=${mdiCircle}
                           ></ha-svg-icon>
                         `}
                   `
@@ -283,7 +283,7 @@ class HassioAddonInfo extends LitElement {
                     label="host"
                     description=""
                   >
-                    <ha-svg-icon path=${mdiNetwork}></ha-svg-icon>
+                    <ha-svg-icon .path=${mdiNetwork}></ha-svg-icon>
                   </ha-label-badge>
                 `
               : ""}
@@ -295,7 +295,7 @@ class HassioAddonInfo extends LitElement {
                     label="hardware"
                     description=""
                   >
-                    <ha-svg-icon path=${mdiChip}></ha-svg-icon>
+                    <ha-svg-icon .path=${mdiChip}></ha-svg-icon>
                   </ha-label-badge>
                 `
               : ""}
@@ -307,7 +307,7 @@ class HassioAddonInfo extends LitElement {
                     label="hass"
                     description=""
                   >
-                    <ha-svg-icon path=${mdiHomeAssistant}></ha-svg-icon>
+                    <ha-svg-icon .path=${mdiHomeAssistant}></ha-svg-icon>
                   </ha-label-badge>
                 `
               : ""}
@@ -319,7 +319,7 @@ class HassioAddonInfo extends LitElement {
                     label="hassio"
                     .description=${this.addon.hassio_role}
                   >
-                    <ha-svg-icon path=${mdiHomeAssistant}></ha-svg-icon>
+                    <ha-svg-icon .path=${mdiHomeAssistant}></ha-svg-icon>
                   </ha-label-badge>
                 `
               : ""}
@@ -331,7 +331,7 @@ class HassioAddonInfo extends LitElement {
                     label="docker"
                     description=""
                   >
-                    <ha-svg-icon path=${mdiDocker}></ha-svg-icon>
+                    <ha-svg-icon .path=${mdiDocker}></ha-svg-icon>
                   </ha-label-badge>
                 `
               : ""}
@@ -343,7 +343,7 @@ class HassioAddonInfo extends LitElement {
                     label="host pid"
                     description=""
                   >
-                    <ha-svg-icon path=${mdiPound}></ha-svg-icon>
+                    <ha-svg-icon .path=${mdiPound}></ha-svg-icon>
                   </ha-label-badge>
                 `
               : ""}
@@ -356,7 +356,7 @@ class HassioAddonInfo extends LitElement {
                     label="apparmor"
                     description=""
                   >
-                    <ha-svg-icon path=${mdiShield}></ha-svg-icon>
+                    <ha-svg-icon .path=${mdiShield}></ha-svg-icon>
                   </ha-label-badge>
                 `
               : ""}
@@ -368,7 +368,7 @@ class HassioAddonInfo extends LitElement {
                     label="auth"
                     description=""
                   >
-                    <ha-svg-icon path=${mdiKey}></ha-svg-icon>
+                    <ha-svg-icon .path=${mdiKey}></ha-svg-icon>
                   </ha-label-badge>
                 `
               : ""}
@@ -381,7 +381,7 @@ class HassioAddonInfo extends LitElement {
                     description=""
                   >
                     <ha-svg-icon
-                      path=${mdiCursorDefaultClickOutline}
+                      .path=${mdiCursorDefaultClickOutline}
                     ></ha-svg-icon>
                   </ha-label-badge>
                 `
@@ -609,15 +609,6 @@ class HassioAddonInfo extends LitElement {
     return this.addon?.state === "started";
   }
 
-  private get _computeUpdateAvailable(): boolean | "" {
-    return (
-      this.addon &&
-      !this.addon.detached &&
-      this.addon.version &&
-      this.addon.version !== this.addon.version_latest
-    );
-  }
-
   private get _pathWebui(): string | null {
     return (
       this.addon.webui &&
@@ -798,10 +789,10 @@ class HassioAddonInfo extends LitElement {
       );
       if (!validate.data.valid) {
         await showConfirmationDialog(this, {
-          title: "Failed to start addon - configruation validation faled!",
+          title: "Failed to start addon - configuration validation failed!",
           text: validate.data.message.split(" Got ")[0],
           confirm: () => this._openConfiguration(),
-          confirmText: "Go to configruation",
+          confirmText: "Go to configuration",
           dismissText: "Cancel",
         });
         button.progress = false;

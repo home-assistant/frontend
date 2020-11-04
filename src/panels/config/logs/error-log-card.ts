@@ -15,25 +15,29 @@ import { HomeAssistant } from "../../../types";
 class ErrorLogCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _errorLog?: string;
+  @internalProperty() private _errorHTML!: TemplateResult[] | string;
 
   protected render(): TemplateResult {
     return html`
-      <p class="error-log-intro">
-        ${this._errorLog
+      <div class="error-log-intro">
+        ${this._errorHTML
           ? html`
-              <ha-icon-button
-                icon="hass:refresh"
-                @click=${this._refreshErrorLog}
-              ></ha-icon-button>
+              <ha-card>
+                <ha-icon-button
+                  icon="hass:refresh"
+                  @click=${this._refreshErrorLog}
+                ></ha-icon-button>
+                <div class="card-content error-log">
+                  ${this._errorHTML}
+                </div>
+              </ha-card>
             `
           : html`
               <mwc-button raised @click=${this._refreshErrorLog}>
                 ${this.hass.localize("ui.panel.config.logs.load_full_log")}
               </mwc-button>
             `}
-      </p>
-      <div class="error-log">${this._errorLog}</div>
+      </div>
     `;
   }
 
@@ -59,17 +63,42 @@ class ErrorLogCard extends LitElement {
       .error-log {
         @apply --paper-font-code)
           clear: both;
-        white-space: pre-wrap;
-        margin: 16px;
+        text-align: left;
+        padding-top: 12px;
+      }
+
+      .error {
+        color: var(--error-color);
+      }
+
+      .warning {
+        color: var(--warning-color);
       }
     `;
   }
 
   private async _refreshErrorLog(): Promise<void> {
-    this._errorLog = this.hass.localize("ui.panel.config.logs.loading_log");
+    this._errorHTML = this.hass.localize("ui.panel.config.logs.loading_log");
     const log = await fetchErrorLog(this.hass!);
-    this._errorLog =
-      log || this.hass.localize("ui.panel.config.logs.no_errors");
+
+    this._errorHTML = log
+      ? log.split("\n").map((entry) => {
+          if (entry.includes("INFO"))
+            return html`<div class="info">${entry}</div>`;
+
+          if (entry.includes("WARNING"))
+            return html`<div class="warning">${entry}</div>`;
+
+          if (
+            entry.includes("ERROR") ||
+            entry.includes("FATAL") ||
+            entry.includes("CRITICAL")
+          )
+            return html`<div class="error">${entry}</div>`;
+
+          return html`<div>${entry}</div>`;
+        })
+      : this.hass.localize("ui.panel.config.logs.no_errors");
   }
 }
 

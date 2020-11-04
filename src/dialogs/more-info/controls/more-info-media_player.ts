@@ -104,18 +104,7 @@ class MoreInfoMediaPlayer extends LitElement {
                     ></ha-icon-button>
                   `
                 : ""}
-              ${supportsFeature(stateObj, SUPPORT_VOLUME_SET)
-                ? html`
-                    <ha-slider
-                      id="input"
-                      pin
-                      ignore-bar-touch
-                      .dir=${computeRTLDirection(this.hass!)}
-                      .value=${Number(stateObj.attributes.volume_level) * 100}
-                      @change=${this._selectedValueChanged}
-                    ></ha-slider>
-                  `
-                : supportsFeature(stateObj, SUPPORT_VOLUME_BUTTONS)
+              ${supportsFeature(stateObj, SUPPORT_VOLUME_BUTTONS)
                 ? html`
                     <ha-icon-button
                       action="volume_down"
@@ -127,6 +116,18 @@ class MoreInfoMediaPlayer extends LitElement {
                       icon="hass:volume-plus"
                       @click=${this._handleClick}
                     ></ha-icon-button>
+                  `
+                : ""}
+              ${supportsFeature(stateObj, SUPPORT_VOLUME_SET)
+                ? html`
+                    <ha-slider
+                      id="input"
+                      pin
+                      ignore-bar-touch
+                      .dir=${computeRTLDirection(this.hass!)}
+                      .value=${Number(stateObj.attributes.volume_level) * 100}
+                      @change=${this._selectedValueChanged}
+                    ></ha-slider>
                   `
                 : ""}
             </div>
@@ -196,8 +197,8 @@ class MoreInfoMediaPlayer extends LitElement {
                 )}
                 @keydown=${this._ttsCheckForEnter}
               ></paper-input>
-              <ha-icon-button 
-                icon="hass:send"                 
+              <ha-icon-button
+                icon="hass:send"
                 .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
                 @click=${this._sendTTS}
               ></ha-icon-button>

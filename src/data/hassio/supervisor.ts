@@ -1,19 +1,56 @@
 import { HomeAssistant, PanelInfo } from "../../types";
+import { HassioAddonInfo, HassioAddonRepository } from "./addon";
 import { hassioApiResultExtractor, HassioResponse } from "./common";
 
-export type HassioHomeAssistantInfo = any;
-export type HassioSupervisorInfo = any;
+export type HassioHomeAssistantInfo = {
+  arch: string;
+  audio_input: string | null;
+  audio_output: string | null;
+  boot: boolean;
+  image: string;
+  ip_address: string;
+  machine: string;
+  port: number;
+  ssl: boolean;
+  update_available: boolean;
+  version_latest: string;
+  version: string;
+  wait_boot: number;
+  watchdog: boolean;
+};
+
+export type HassioSupervisorInfo = {
+  addons: HassioAddonInfo[];
+  addons_repositories: HassioAddonRepository[];
+  arch: string;
+  channel: string;
+  debug: boolean;
+  debug_block: boolean;
+  diagnostics: boolean | null;
+  healthy: boolean;
+  ip_address: string;
+  logging: string;
+  supported: boolean;
+  timezone: string;
+  update_available: boolean;
+  version: string;
+  version_latest: string;
+  wait_boot: number;
+};
 
 export type HassioInfo = {
   arch: string;
   channel: string;
   docker: string;
-  hassos?: string;
+  features: string[];
+  hassos: null;
   homeassistant: string;
   hostname: string;
   logging: string;
-  maching: string;
+  machine: string;
+  operating_system: string;
   supervisor: string;
+  supported: boolean;
   supported_arch: string[];
   timezone: string;
 };

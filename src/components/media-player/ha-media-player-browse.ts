@@ -378,6 +378,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           : html`
               <div class="container">
                 ${this.hass.localize("ui.components.media-browser.no_items")}
+                <br />
                 ${currentItem.media_content_id ===
                 "media-source://media_source/local/."
                   ? html`<br />${this.hass.localize(
@@ -398,7 +399,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                       <br />
                       ${this.hass.localize(
                         "ui.components.media-browser.local_media_files"
-                      )}.`
+                      )}`
                   : ""}
               </div>
             `}
@@ -539,17 +540,20 @@ export class HaMediaPlayerBrowse extends LitElement {
     mediaContentType?: string
   ): Promise<MediaPlayerItem> {
     this._loading = true;
-    const itemData =
-      this.entityId !== BROWSER_PLAYER
-        ? await browseMediaPlayer(
-            this.hass,
-            this.entityId,
-            mediaContentId,
-            mediaContentType
-          )
-        : await browseLocalMediaPlayer(this.hass, mediaContentId);
-
-    this._loading = false;
+    let itemData: any;
+    try {
+      itemData =
+        this.entityId !== BROWSER_PLAYER
+          ? await browseMediaPlayer(
+              this.hass,
+              this.entityId,
+              mediaContentId,
+              mediaContentType
+            )
+          : await browseLocalMediaPlayer(this.hass, mediaContentId);
+    } finally {
+      this._loading = false;
+    }
     return itemData;
   }
 

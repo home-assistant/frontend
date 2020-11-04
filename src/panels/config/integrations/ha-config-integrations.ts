@@ -23,7 +23,6 @@ import "../../../common/search/search-input";
 import { caseInsensitiveCompare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import { nextRender } from "../../../common/util/render-status";
-import "../../../components/entity/ha-state-icon";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
@@ -287,7 +286,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
             .label=${this.hass.localize("ui.common.overflow_menu")}
             slot="trigger"
           >
-            <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+            <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
           </mwc-icon-button>
           <mwc-list-item>
             ${this.hass.localize(
@@ -480,7 +479,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           title=${this.hass.localize("ui.panel.config.integrations.new")}
           @click=${this._createFlow}
         >
-          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </mwc-fab>
       </hass-tabs-subpage>
     `;
@@ -739,6 +738,13 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         }
         h2 {
           margin-top: 0;
+          word-wrap: break-word;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 3;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: normal;
         }
       `,
     ];

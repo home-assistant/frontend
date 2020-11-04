@@ -1,10 +1,10 @@
 import {
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
   TemplateResult,
-  internalProperty,
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { processConfigEntities } from "../common/process-config-entities";
@@ -16,7 +16,7 @@ import { ButtonsHeaderFooterConfig } from "./types";
 @customElement("hui-buttons-header-footer")
 export class HuiButtonsHeaderFooter extends LitElement
   implements LovelaceHeaderFooter {
-  public static getStubConfig(): object {
+  public static getStubConfig(): Record<string, unknown> {
     return { entities: [] };
   }
 

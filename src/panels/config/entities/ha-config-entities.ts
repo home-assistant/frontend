@@ -97,13 +97,15 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   @internalProperty() private _filter = "";
 
+  @internalProperty() private _numHiddenEntities = 0;
+
   @internalProperty() private _searchParms = new URLSearchParams(
     window.location.search
   );
 
   @internalProperty() private _selectedEntities: string[] = [];
 
-  @query("hass-tabs-subpage-data-table")
+  @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
 
   private getDialog?: () => DialogEntityEditor | undefined;
@@ -118,6 +120,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       filters.forEach((value, key) => {
         switch (key) {
           case "config_entry": {
+            // If we are requested to show the entities for a given config entry,
+            // also show the disabled ones by default.
+            this._showDisabled = true;
+
             if (!entries) {
               this._loadConfigEntries();
               break;
@@ -132,11 +138,11 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             filterTexts.push(
               `${this.hass.localize(
                 "ui.panel.config.integrations.integration"
-              )} ${integrationName}${
+              )} "${integrationName}${
                 integrationName !== configEntry.title
                   ? `: ${configEntry.title}`
                   : ""
-              }`
+              }"`
             );
             break;
           }
@@ -262,11 +268,9 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       showUnavailable: boolean,
       showReadOnly: boolean
     ): EntityRow[] => {
-      if (!showDisabled) {
-        entities = entities.filter((entity) => !entity.disabled_by);
-      }
-
       const result: EntityRow[] = [];
+      // If nothing gets filtered, this is our correct count of entities
+      let startLength = entities.length + stateEntities.length;
 
       entities = showReadOnly ? entities.concat(stateEntities) : entities;
 
@@ -276,9 +280,22 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             entities = entities.filter(
               (entity) => entity.config_entry_id === value
             );
+            // If we have an active filter and `showReadOnly` is true, the length of `entities` is correct.
+            // If however, the read-only entities were not added before, we need to check how many would
+            // have matched the active filter and add that number to the count.
+            startLength = entities.length;
+            if (!showReadOnly) {
+              startLength += stateEntities.filter(
+                (entity) => entity.config_entry_id === value
+              ).length;
+            }
             break;
         }
       });
+
+      if (!showDisabled) {
+        entities = entities.filter((entity) => !entity.disabled_by);
+      }
 
       for (const entry of entities) {
         const entity = this.hass.states[entry.entity_id];
@@ -315,6 +332,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         });
       }
 
+      this._numHiddenEntities = startLength - result.length;
       return result;
     }
   );
@@ -358,6 +376,16 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       this.hass.localize,
       this._entries
     );
+
+    const entityData = this._filteredEntities(
+      this._entities,
+      this._stateEntities,
+      this._searchParms,
+      this._showDisabled,
+      this._showUnavailable,
+      this._showReadOnly
+    );
+
     const headerToolbar = this._selectedEntities.length
       ? html`
           <p class="selected-txt">
@@ -441,14 +469,60 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                           "ui.panel.config.filtering.filtering_by"
                         )}
                         ${activeFilters.join(", ")}
+                        ${this._numHiddenEntities
+                          ? "(" +
+                            this.hass.localize(
+                              "ui.panel.config.entities.picker.filter.hidden_entities",
+                              "number",
+                              this._numHiddenEntities
+                            ) +
+                            ")"
+                          : ""}
                       </paper-tooltip>
                     </div>`
                   : `${this.hass.localize(
                       "ui.panel.config.filtering.filtering_by"
-                    )} ${activeFilters.join(", ")}`}
+                    )} ${activeFilters.join(", ")}
+                    ${
+                      this._numHiddenEntities
+                        ? "(" +
+                          this.hass.localize(
+                            "ui.panel.config.entities.picker.filter.hidden_entities",
+                            "number",
+                            this._numHiddenEntities
+                          ) +
+                          ")"
+                        : ""
+                    }
+                    `}
                 <mwc-button @click=${this._clearFilter}
                   >${this.hass.localize(
                     "ui.panel.config.filtering.clear"
+                  )}</mwc-button
+                >
+              </div>`
+            : ""}
+          ${this._numHiddenEntities && !activeFilters
+            ? html`<div class="active-filters">
+                ${this.narrow
+                  ? html` <div>
+                      <ha-icon icon="hass:filter-variant"></ha-icon>
+                      <paper-tooltip animation-delay="0" position="left">
+                        ${this.hass.localize(
+                          "ui.panel.config.entities.picker.filter.hidden_entities",
+                          "number",
+                          this._numHiddenEntities
+                        )}
+                      </paper-tooltip>
+                    </div>`
+                  : `${this.hass.localize(
+                      "ui.panel.config.entities.picker.filter.hidden_entities",
+                      "number",
+                      this._numHiddenEntities
+                    )}`}
+                <mwc-button @click=${this._showAll}
+                  >${this.hass.localize(
+                    "ui.panel.config.entities.picker.filter.show_all"
                   )}</mwc-button
                 >
               </div>`
@@ -463,7 +537,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                 "ui.panel.config.entities.picker.filter.filter"
               )}
             >
-              <ha-svg-icon path=${mdiFilterVariant}></ha-svg-icon>
+              <ha-svg-icon .path=${mdiFilterVariant}></ha-svg-icon>
             </mwc-icon-button>
             <mwc-list-item
               @request-selected="${this._showDisabledChanged}"
@@ -517,16 +591,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         .route=${this.route}
         .tabs=${configSections.integrations}
         .columns=${this._columns(this.narrow, this.hass.language)}
-        .data=${this._filteredEntities(
-          this._entities,
-          this._stateEntities,
-          this._searchParms,
-          this._showDisabled,
-          this._showUnavailable,
-          this._showReadOnly
-        )}
+        .data=${entityData}
         .filter=${this._filter}
         selectable
+        clickable
         @selection-changed=${this._handleSelectionChanged}
         @row-click=${this._openEditEntry}
         id="entity_id"
@@ -724,6 +792,12 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     navigate(this, window.location.pathname, true);
   }
 
+  private _showAll() {
+    this._showDisabled = true;
+    this._showReadOnly = true;
+    this._showUnavailable = true;
+  }
+
   static get styles(): CSSResult[] {
     return [
       haStyle,
@@ -760,7 +834,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           --data-table-border-width: 0;
         }
         :host(:not([narrow])) ha-data-table {
-          height: calc(100vh - 65px);
+          height: calc(100vh - 1px - var(--header-height));
           display: block;
         }
         ha-button-menu {

@@ -200,7 +200,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
 
   private _redirect(authCode: string) {
     // OAuth 2: 3.1.2 we need to retain query component of a redirect URI
-    let url = this.redirectUri!!;
+    let url = this.redirectUri!;
     if (!url.includes("?")) {
       url += "?";
     } else if (!url.endsWith("&")) {

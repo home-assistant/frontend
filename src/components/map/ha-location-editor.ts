@@ -61,8 +61,8 @@ class LocationEditor extends LitElement {
     if (!this._leafletMap || !this.location) {
       return;
     }
-    if ((this._locationMarker as Circle).getBounds) {
-      this._leafletMap.fitBounds((this._locationMarker as Circle).getBounds());
+    if (this._locationMarker && "getBounds" in this._locationMarker) {
+      this._leafletMap.fitBounds(this._locationMarker.getBounds());
     } else {
       this._leafletMap.setView(this.location, this.fitZoom);
     }

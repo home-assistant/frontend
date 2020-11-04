@@ -31,6 +31,8 @@ export class HUIView extends UpdatingElement {
 
   @property({ attribute: false }) public lovelace?: Lovelace;
 
+  @property({ type: Boolean }) public narrow!: boolean;
+
   @property({ type: Number }) public index?: number;
 
   @internalProperty() private _cards: Array<LovelaceCard | HuiErrorCard> = [];
@@ -111,6 +113,7 @@ export class HUIView extends UpdatingElement {
       this._createCards(viewConfig!);
 
       this._layoutElement!.hass = this.hass;
+      this._layoutElement!.narrow = this.narrow;
       this._layoutElement!.lovelace = lovelace;
       this._layoutElement!.index = this.index;
     }
@@ -127,11 +130,21 @@ export class HUIView extends UpdatingElement {
       this._layoutElement!.hass = this.hass;
     }
 
+    if (changedProperties.has("narrow")) {
+      this._layoutElement!.narrow = this.narrow;
+    }
+
     if (editModeChanged) {
       this._layoutElement!.lovelace = lovelace;
     }
 
-    if (configChanged || hassChanged || editModeChanged) {
+    if (
+      configChanged ||
+      hassChanged ||
+      editModeChanged ||
+      changedProperties.has("_cards") ||
+      changedProperties.has("_badges")
+    ) {
       this._layoutElement!.cards = this._cards;
       this._layoutElement!.badges = this._badges;
     }
@@ -164,14 +177,12 @@ export class HUIView extends UpdatingElement {
       return;
     }
 
-    const elements: HUIView["_badges"] = [];
     const badges = processConfigEntities(config.badges as any);
-    badges.forEach((badge) => {
+    this._badges = badges.map((badge) => {
       const element = createBadgeElement(badge);
       element.hass = this.hass;
-      elements.push(element);
+      return element;
     });
-    this._badges = elements;
   }
 
   private _createCards(config: LovelaceViewConfig): void {
@@ -180,9 +191,11 @@ export class HUIView extends UpdatingElement {
       return;
     }
 
-    this._cards = config.cards.map((cardConfig) =>
-      this.createCardElement(cardConfig)
-    );
+    this._cards = config.cards.map((cardConfig) => {
+      const element = this.createCardElement(cardConfig);
+      element.hass = this.hass;
+      return element;
+    });
   }
 
   private _rebuildCard(
@@ -190,6 +203,7 @@ export class HUIView extends UpdatingElement {
     config: LovelaceCardConfig
   ): void {
     const newCardEl = this.createCardElement(config);
+    newCardEl.hass = this.hass;
     if (cardElToReplace.parentElement) {
       cardElToReplace.parentElement!.replaceChild(newCardEl, cardElToReplace);
     }
@@ -203,8 +217,14 @@ export class HUIView extends UpdatingElement {
     config: LovelaceBadgeConfig
   ): void {
     const newBadgeEl = this.createBadgeElement(config);
-    badgeElToReplace.parentElement!.replaceChild(newBadgeEl, badgeElToReplace);
-    this._badges = this._cards!.map((curBadgeEl) =>
+    newBadgeEl.hass = this.hass;
+    if (badgeElToReplace.parentElement) {
+      badgeElToReplace.parentElement!.replaceChild(
+        newBadgeEl,
+        badgeElToReplace
+      );
+    }
+    this._badges = this._badges!.map((curBadgeEl) =>
       curBadgeEl === badgeElToReplace ? newBadgeEl : curBadgeEl
     );
   }

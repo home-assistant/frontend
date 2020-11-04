@@ -96,13 +96,14 @@ export class HaConfigUsers extends LitElement {
         .data=${this._users}
         @row-click=${this._editUser}
         hasFab
+        clickable
       >
         <mwc-fab
           slot="fab"
           .title=${this.hass.localize("ui.panel.config.users.picker.add_user")}
           @click=${this._addUser}
         >
-          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </mwc-fab>
       </hass-tabs-subpage-data-table>
     `;
