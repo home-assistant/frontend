@@ -69,7 +69,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   @internalProperty() private _config?: GaugeCardConfig;
 
   public getCardSize(): number {
-    return 8;
+    return 2;
   }
 
   public setConfig(config: GaugeCardConfig): void {
@@ -195,6 +195,10 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
+      :host {
+        display: block;
+      }
+
       ha-card {
         cursor: pointer;
         height: 100%;
