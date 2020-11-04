@@ -32,7 +32,6 @@ export class HaCard extends LitElement {
         display: block;
         transition: all 0.3s ease-out;
         position: relative;
-        overflow-x: hidden;
       }
 
       :host([outlined]) {
@@ -69,24 +68,6 @@ export class HaCard extends LitElement {
       :host ::slotted(.card-actions) {
         border-top: 1px solid var(--divider-color, #e8e8e8);
         padding: 5px 16px;
-      }
-
-      :host::-webkit-scrollbar {
-        width: 8px;
-      }
-
-      :host::-webkit-scrollbar-track {
-        background: var(--secondary-background-color);
-        border-radius: 8px;
-      }
-
-      :host::-webkit-scrollbar-thumb {
-        background: var(--divider-color);
-        border-radius: 8px;
-      }
-
-      :host::-webkit-scrollbar-thumb:hover {
-        background: var(--disabled-text-color);
       }
     `;
   }
