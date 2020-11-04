@@ -66,7 +66,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   private _date?: Date;
 
   public getCardSize(): number {
-    return 3 + 2 * (this._configEntities?.length || 1);
+    return 4;
   }
 
   public setConfig(config: HistoryGraphCardConfig): void {
@@ -173,10 +173,6 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
-      ha-card {
-        height: 100%;
-        overflow-y: auto;
-      }
       .content {
         padding: 16px;
       }
