@@ -30,6 +30,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { debounce } from "../../../common/util/debounce";
+import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import { fetchRecent } from "../../../data/history";
 import { HomeAssistant } from "../../../types";
 import "../../map/ha-entity-marker";
@@ -160,7 +161,16 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    return 10;
+    if (!this._config?.aspect_ratio) {
+      return 5;
+    }
+
+    const ratio = parseAspectRatio(this._config.aspect_ratio);
+    const ar =
+      ratio && ratio.w > 0 && ratio.h > 0
+        ? `${((100 * ratio.h) / ratio.w).toFixed(2)}`
+        : "100";
+    return 1 + Math.floor(Number(ar) / 25) || 3;
   }
 
   public connectedCallback(): void {
@@ -244,6 +254,18 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
 
     this._attachObserver();
+
+    if (!this._config.aspect_ratio) {
+      root.style.paddingBottom = "100%";
+      return;
+    }
+
+    const ratio = parseAspectRatio(this._config.aspect_ratio);
+
+    root.style.paddingBottom =
+      ratio && ratio.w > 0 && ratio.h > 0
+        ? `${((100 * ratio.h) / ratio.w).toFixed(2)}%`
+        : (root.style.paddingBottom = "100%");
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -638,14 +660,17 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
+      :host([ispanel]) ha-card {
+        width: 100%;
+        height: 100%;
+      }
+
       :host([ispanel][editMode]) ha-card {
         height: calc(100% - 51px);
       }
 
       ha-card {
         overflow: hidden;
-        height: 100%;
-        width: 100%;
       }
 
       #map {
