@@ -46,13 +46,15 @@ interface LovelaceGridCard extends LovelaceCard, HuiGridCardOptions {
 const RESIZE_HANDLE = document.createElement("div") as HTMLElement;
 RESIZE_HANDLE.style.cssText =
   "width: 100%; height: 100%; cursor: se-resize; fill: var(--primary-text-color)";
-RESIZE_HANDLE.innerHTML = `<svg 
-viewBox="0 0 24 24"
-preserveAspectRatio="xMidYMid meet"
-focusable="false">
-<g><path d=${mdiResizeBottomRight}></path>
-</g>
-</svg>`;
+RESIZE_HANDLE.innerHTML = `
+  <svg
+    viewBox="0 0 24 24"
+    preserveAspectRatio="xMidYMid meet"
+    focusable="false"
+  >
+    <g><path d=${mdiResizeBottomRight}></path></g>
+  </svg>
+`;
 
 @customElement("hui-grid-view")
 export class GridView extends LitElement implements LovelaceViewElement {
@@ -76,7 +78,9 @@ export class GridView extends LitElement implements LovelaceViewElement {
     key: string;
   }>;
 
-  @internalProperty() public _cards: Array<LovelaceCard | HuiCardOptions> = [];
+  @internalProperty() public _cards: {
+    [key: string]: LovelaceCard | HuiCardOptions;
+  } = {};
 
   private _config?: LovelaceViewConfig;
 
@@ -95,12 +99,16 @@ export class GridView extends LitElement implements LovelaceViewElement {
 
   protected render(): TemplateResult {
     return html`
-      <div id="badges"></div>
+      <div
+        id="badges"
+        style=${this.badges.length > 0 ? "display: block" : "display: none"}
+      >
+        ${this.badges.map((badge) => html`${badge}`)}
+      </div>
       <lit-grid-layout
-        .rowHeight=${15}
-        .dragHandle=${".overlay"}
+        rowHeight="15"
         .resizeHandle=${RESIZE_HANDLE}
-        .items=${this._cards}
+        .itemRenderer=${this._itemRenderer}
         .layout=${this._layout}
         .columns=${this._columns}
         .dragDisabled=${!this.lovelace?.editMode}
@@ -110,13 +118,13 @@ export class GridView extends LitElement implements LovelaceViewElement {
       ${this.lovelace?.editMode
         ? html`
             <mwc-fab
-              title=${this.hass!.localize(
-                "ui.panel.lovelace.editor.edit_card.add"
-              )}
-              @click=${this._addCard}
               class=${classMap({
                 rtl: computeRTL(this.hass!),
               })}
+              .title=${this.hass!.localize(
+                "ui.panel.lovelace.editor.edit_card.add"
+              )}
+              @click=${this._addCard}
             >
               <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
             </mwc-fab>
@@ -175,6 +183,14 @@ export class GridView extends LitElement implements LovelaceViewElement {
     }
   }
 
+  private _itemRenderer = (key: string): TemplateResult => {
+    if (!this._cards) {
+      return html``;
+    }
+
+    return html`${this._cards[key]}`;
+  };
+
   private _addCard(): void {
     showCreateCardDialog(this, {
       lovelaceConfig: this.lovelace!.config,
@@ -190,6 +206,8 @@ export class GridView extends LitElement implements LovelaceViewElement {
     if (this._layout?.length) {
       return;
     }
+
+    const cards = {};
 
     const newLayout: Array<{
       width: number;
@@ -238,22 +256,19 @@ export class GridView extends LitElement implements LovelaceViewElement {
       const layout = {
         width: 3,
         height: cardSize,
-        // posX: 3 * (index % 4),
-        // posY: Math.floor(index / 6) * y,
-        // Random unique Id
         key: uuidv4(),
         minHeight: 4,
         ...cardConfig.layout,
       };
 
-      newLayout.push(layout);
+      cards[layout.key] = { card, index };
 
-      // this._config!.cards![index].layout = layout;
+      newLayout.push(layout);
     }
 
-    const cards = this._config!.cards!.map((conf, idx) => {
-      return { ...conf, layout: newLayout[idx] };
-    });
+    // const cards = this._config!.cards!.map((conf, idx) => {
+    //   return { ...conf, layout: newLayout[idx] };
+    // });
 
     // this.lovelace?.saveConfig(
     //   replaceView(this.lovelace.config, this.index!, {
@@ -267,7 +282,7 @@ export class GridView extends LitElement implements LovelaceViewElement {
   }
 
   private _createCards(): void {
-    const elements: Array<LovelaceGridCard> = [];
+    const elements = {};
     this.cards.forEach((card: LovelaceGridCard, index) => {
       const layout = this._layout![index];
 
@@ -281,14 +296,11 @@ export class GridView extends LitElement implements LovelaceViewElement {
         wrapper.hass = this.hass;
         wrapper.lovelace = this.lovelace;
         wrapper.path = [this.index!, index];
-        wrapper.grid = layout;
         wrapper.appendChild(card);
         element = wrapper;
       }
 
-      element.grid = layout;
-      element.key = layout.key;
-      elements.push(element);
+      elements[layout.key] = element;
     });
 
     this._cards = elements;
@@ -329,23 +341,6 @@ export class GridView extends LitElement implements LovelaceViewElement {
         text-align: center;
       }
 
-      #columns {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-      }
-
-      .column {
-        flex: 1 0 0;
-        max-width: 500px;
-        min-width: 0;
-      }
-
-      .column > * {
-        display: block;
-        margin: 4px 4px 8px;
-      }
-
       mwc-fab {
         position: sticky;
         float: right;
@@ -358,24 +353,6 @@ export class GridView extends LitElement implements LovelaceViewElement {
         float: left;
         right: auto;
         left: calc(16px + env(safe-area-inset-left));
-      }
-
-      @media (max-width: 500px) {
-        :host {
-          padding-left: 0;
-          padding-right: 0;
-        }
-
-        .column > * {
-          margin-left: 0;
-          margin-right: 0;
-        }
-      }
-
-      @media (max-width: 599px) {
-        .column {
-          max-width: 600px;
-        }
       }
     `;
   }
