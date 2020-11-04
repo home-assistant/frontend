@@ -213,13 +213,7 @@ class SystemHealthCard extends LitElement {
           value = domainInfo.info[key];
         }
 
-        parts.push(
-          `${
-            this.hass.localize(
-              `ui.panel.config.info.system_health.checks.${domain}.${key}`
-            ) || key
-          }: ${value}`
-        );
+        parts.push(`${key}: ${value}`);
       }
 
       if (domain === "homeassistant") {
