@@ -84,7 +84,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    return this._config?.show_forecast !== false ? 10 : 4;
+    return this._config?.show_forecast !== false ? 4 : 2;
   }
 
   public setConfig(config: WeatherForecastCardConfig): void {
@@ -330,44 +330,38 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   }
 
   private _measureCard() {
-    const card = this.shadowRoot!.querySelector("ha-card");
-    // If we show an error or warning there is no ha-card
-    if (!card) {
-      return;
-    }
-
     if (!this.isConnected) {
       return;
     }
 
-    if (card.offsetWidth < 375) {
+    if (this.offsetWidth < 375) {
       this.setAttribute("narrow", "");
     } else {
       this.removeAttribute("narrow");
     }
-    if (card.offsetWidth < 300) {
+    if (this.offsetWidth < 300) {
       this.setAttribute("verynarrow", "");
     } else {
       this.removeAttribute("verynarrow");
     }
-    this._veryVeryNarrow = card.offsetWidth < 245;
+    this._veryVeryNarrow = this.offsetWidth < 245;
   }
 
   static get styles(): CSSResult[] {
     return [
       weatherSVGStyles,
       css`
+        :host {
+          display: block;
+        }
+
         ha-card {
           cursor: pointer;
+          padding: 16px;
           outline: none;
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
         }
 
         .content {
-          padding: 16px;
           display: flex;
           flex-wrap: nowrap;
           justify-content: space-between;
