@@ -44,6 +44,7 @@ class HassioIngressView extends LitElement {
 
     if (!this.ingressPanel) {
       return html`<hass-subpage
+        .hass=${this.hass}
         .header=${this._addon.name}
         .narrow=${this.narrow}
       >

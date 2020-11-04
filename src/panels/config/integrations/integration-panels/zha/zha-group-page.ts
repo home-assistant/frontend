@@ -103,7 +103,7 @@ export class ZHAGroupPage extends LitElement {
     }
 
     return html`
-      <hass-subpage .header=${this.group.name}>
+      <hass-subpage .hass=${this.hass} .header=${this.group.name}>
         <ha-icon-button
           slot="toolbar-icon"
           icon="hass:delete"
