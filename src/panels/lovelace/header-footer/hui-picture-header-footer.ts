@@ -36,7 +36,7 @@ export class HuiPictureHeaderFooter extends LitElement
   @property() protected _config?: PictureHeaderFooterConfig;
 
   public getCardSize(): number {
-    return 5;
+    return 3;
   }
 
   public setConfig(config: PictureHeaderFooterConfig): void {
