@@ -26,7 +26,6 @@ class HuiVerticalStackCard extends HuiStackCard {
         #root {
           display: flex;
           flex-direction: column;
-          height: 100%;
         }
         #root > * {
           margin: 4px 0 4px 0;
