@@ -31,7 +31,7 @@ class EntityFilterCard extends UpdatingElement implements LovelaceCard {
 
   private _oldEntities?: EntityFilterEntityConfig[];
 
-  public getCardSize(): Promise<number> | number {
+  public getCardSize(): number | Promise<number> {
     return this._element ? computeCardSize(this._element) : 1;
   }
 
@@ -56,7 +56,7 @@ class EntityFilterCard extends UpdatingElement implements LovelaceCard {
     this._config = config;
     this._baseCardConfig = {
       type: "entities",
-      entities: this._configEntities,
+      entities: [],
       ...this._config.card,
     };
 
@@ -150,6 +150,8 @@ class EntityFilterCard extends UpdatingElement implements LovelaceCard {
     if (!this.lastChild) {
       this.appendChild(this._element);
     }
+
+    this.style.display = "block";
   }
 
   private _haveEntitiesChanged(oldHass: HomeAssistant | null): boolean {
