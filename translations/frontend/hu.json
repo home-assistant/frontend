@@ -2759,6 +2759,10 @@
                             "description": "A Pillantás kártyával több érzékelő csoportosítható egy kompakt áttekintő nézetbe.",
                             "name": "Pillantás"
                         },
+                        "grid": {
+                            "description": "A Rács kártya lehetővé teszi több kártya megjelenítését egy rácsban.",
+                            "name": "Rács"
+                        },
                         "history-graph": {
                             "description": "Az Előzmény grafikon kártya lehetővé teszi az entitások múltbeli értékeinek grafikus megjelenítését.",
                             "name": "Előzmény grafikon"

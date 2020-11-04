@@ -2759,6 +2759,10 @@
                             "description": "La targeta visualització és útil per agrupar diversos sensors de forma general i compacta.",
                             "name": "Visualització"
                         },
+                        "grid": {
+                            "description": "La targeta quadrícula et permet mostrar diferents targetes dins d'una quadrícula.",
+                            "name": "Quadrícula"
+                        },
                         "history-graph": {
                             "description": "La targeta gràfic històric et permet mostrar un gràfic per a cadascuna de les entitats establertes.",
                             "name": "Gràfic històric"

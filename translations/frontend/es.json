@@ -2759,6 +2759,10 @@
                             "description": "La tarjeta Vistazo es útil para agrupar varios sensores en una visión general compacta.",
                             "name": "Vistazo"
                         },
+                        "grid": {
+                            "description": "La tarjeta Cuadrícula te permite mostrar varias tarjetas en una cuadrícula.",
+                            "name": "Cuadrícula"
+                        },
                         "history-graph": {
                             "description": "La tarjeta Historial Gráfico te permite mostrar un gráfico para cada una de las entidades enumeradas.",
                             "name": "Gráfico histórico"

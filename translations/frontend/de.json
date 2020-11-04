@@ -2677,7 +2677,7 @@
                             "description": "Die Messkarte ist eine Basiskarte, mit der Sensordaten visuell angezeigt werden können.",
                             "name": "Gauge",
                             "severity": {
-                                "define": "Schweregrad definieren?",
+                                "define": "Schwellenwerte definieren?",
                                 "green": "Grün",
                                 "red": "Rot",
                                 "yellow": "Gelb"

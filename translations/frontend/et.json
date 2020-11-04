@@ -2041,7 +2041,7 @@
                     "person_not_found_title": "Isikuid ei leitud"
                 },
                 "scene": {
-                    "activated": "Aktiveeritud stseen {name} .",
+                    "activated": "Stseen {name} on käivitatud.",
                     "caption": "Stseenid",
                     "description": "Loo ja muuda stseene",
                     "editor": {
@@ -2758,6 +2758,10 @@
                             "columns": "Veerud",
                             "description": "Kaart Pilk on kasulik mitme sensori rühmitamiseks kompaktse ülevaatena.",
                             "name": "Pilk"
+                        },
+                        "grid": {
+                            "description": "GRID kaart võimaldab kuvada võrgustikus mitut kaarti.",
+                            "name": ""
                         },
                         "history-graph": {
                             "description": "Ajaloograafiku kaart võimaldab kuvada graafiku iga loetletud olemi kohta.",

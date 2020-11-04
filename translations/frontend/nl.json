@@ -798,6 +798,7 @@
                 "dismiss": "Dialoogvenster sluiten",
                 "edit": "Entiteit bewerken",
                 "history": "Geschiedenis",
+                "last_changed": "Laatst gewijzigd",
                 "last_updated": "Laatst bijgewerkt",
                 "person": {
                     "create_zone": "Creëer zone van huidige locatie"
@@ -888,6 +889,10 @@
                         "trend": "Herlaad trend entiteiten",
                         "universal": "Herlaad universele mediaplayer entiteiten",
                         "zone": "Herlaad zones"
+                    },
+                    "server_control": {
+                        "restart": "Herstarten",
+                        "stop": "Stop"
                     }
                 },
                 "filter_placeholder": "Entiteitsfilter"
@@ -1998,6 +2003,7 @@
                     },
                     "services": {
                         "add_node": "Knooppunt toevoegen",
+                        "cancel_command": "Opdracht annuleren",
                         "remove_node": "Knooppunt verwijderen"
                     }
                 },
@@ -2752,6 +2758,10 @@
                             "description": "De Glance-kaart is handig om meerdere sensoren in een compact overzicht te groeperen.",
                             "name": "Oogopslag"
                         },
+                        "grid": {
+                            "description": "Met de rasterkaart kun je meerdere kaarten in een raster tonen.",
+                            "name": "Raster"
+                        },
                         "history-graph": {
                             "description": "Met de History Graph-kaart kunt u een grafiek weergeven voor elk van de vermelde entiteiten.",
                             "name": "Geschiedenis grafiek"
@@ -3198,6 +3208,10 @@
                     "dropdown_label": "Dashboard",
                     "header": "Dashboard"
                 },
+                "enable_shortcuts": {
+                    "description": "Schakel sneltoetsen in of uit voor het uitvoeren van verschillende acties in de UI.",
+                    "header": "Toetsenbord sneltoetsen"
+                },
                 "force_narrow": {
                     "description": "De zijbalk standaard verbergen, vergelijkbaar met de mobiele ervaring.",
                     "header": "Zijbalk altijd verbergen"
@@ -3242,6 +3256,10 @@
                     "header": "Twee-factor-authenticatie modules"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "Apparaatnaam",
+                        "title": "Hoe moet dit apparaat genoemd worden?"
+                    },
                     "description": "Verstuur meldingen naar dit apparaat.",
                     "error_load_platform": "Configureer notify.html5.",
                     "error_use_https": "Vereist SSL voor de frontend",
