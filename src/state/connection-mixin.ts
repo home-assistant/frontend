@@ -42,7 +42,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         language: getLocalLanguage(),
         selectedLanguage: null,
         resources: null as any,
-        localize: () => "",
+        localize: () => "???",
 
         translationMetadata,
         dockedSidebar: "docked",
