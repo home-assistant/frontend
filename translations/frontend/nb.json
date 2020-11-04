@@ -2759,6 +2759,10 @@
                             "description": "Glance-kortet er nyttig for å gruppere flere sensorer i en kompakt oversikt.",
                             "name": "Blikk"
                         },
+                        "grid": {
+                            "description": "Med Rutenett-kortet kan du vise flere kort i et rutenett.",
+                            "name": "Rutenettet"
+                        },
                         "history-graph": {
                             "description": "Med History Graph-kortet kan du vise en graf for hver av enhetene som er oppført.",
                             "name": "Historikk graf"

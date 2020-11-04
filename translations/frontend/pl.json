@@ -2759,6 +2759,10 @@
                             "description": "Karta glance umożliwia grupowanie wielu sensorów w kompaktowym przeglądzie.",
                             "name": "Glance"
                         },
+                        "grid": {
+                            "description": "Karta siatka umożliwia wyświetlanie wielu kart w siatce.",
+                            "name": "Siatka"
+                        },
                         "history-graph": {
                             "description": "Karta wykres historii umożliwia wyświetlenie wykresu dla każdej z wymienionych encji.",
                             "name": "Wykres historii"

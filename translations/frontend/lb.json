@@ -732,6 +732,7 @@
                     "initial": "Initial Wäert",
                     "maximum": "Maximale Wäert",
                     "minimum": "Minimale Wäert",
+                    "restore": "Restauréiert de leschte bekannte Wäert wann Home Assistant start",
                     "step": "Schrëtt Gréisst"
                 },
                 "generic": {
@@ -769,6 +770,9 @@
                 },
                 "platform_not_loaded": "{platform} Integratioun ass net gelueden. Setz et an deng Konfiguration dobäi mat  'default_config:' oder ''{platform}:''.",
                 "required_error_msg": "Dëst Feld ass erfuerderlech",
+                "timer": {
+                    "duration": "Dauer"
+                },
                 "yaml_not_editable": "D'Astellunge vun dëser Entitéit kënnen net vun vum Benotzer Interface as  geännert ginn. Nëmmen Entitéiten déi iwwer den Benotzer Interface aus konfiguréiert sinn kënnen vun do aus geännert ginn."
             },
             "image_cropper": {
@@ -839,6 +843,31 @@
             },
             "quick-bar": {
                 "commands": {
+                    "reload": {
+                        "automation": "Automatisme frësch lueden",
+                        "command_line": "Kommando Zeilen Entitéite frësch lueden",
+                        "filter": "Filter Entitéite frësch lueden",
+                        "generic": "Generesch IP Kamera Entitéite frësch lueden",
+                        "generic_thermostat": "Generesch Thermostat Entitéite frësch lueden",
+                        "homekit": "HomeKit frësch lueden",
+                        "input_datetime": "Agab Zäit-Datum frësch lueden",
+                        "input_number": "Agab Zuelen frësch lueden",
+                        "input_text": "Agab Text  frësch lueden",
+                        "min_max": "Min/Max Entitéite frësch lueden",
+                        "mqtt": "Manuell konfiguréiert MQTT Entitéite frësch lueden",
+                        "person": "Persoune frësch lueden",
+                        "reload": "{domain} frësch lueden",
+                        "rest": "Rest Entitéiten an Notifikatioun Servicer frësch lueden",
+                        "rpi_gpio": "Raspberry Pi GPIO Entitéite frësch lueden",
+                        "scene": "Zeene frësch lueden",
+                        "script": "Skripte frësch lueden",
+                        "smtp": "SMTP Notifikatioun Servicer frësch lueden",
+                        "statistics": "Statistik Entitéite frësch lueden",
+                        "telegram": "Telegram Notifikatioun Servicer frësch lueden",
+                        "template": "Virlag Entitéite frësch lueden",
+                        "universal": "Universell Medie Spiller Entitéite frësch lueden",
+                        "zone": "Zone frësch lueden"
+                    },
                     "server_control": {
                         "perform_action": "{action} Server",
                         "restart": "Restart",
@@ -901,11 +930,13 @@
         "notification_drawer": {
             "click_to_configure": "Dréck de Knäppchen fir {entity} ze konfiguréieren",
             "close": "Zoumaachen",
+            "dismiss_all": "Alles verwerfen",
             "empty": "Keng Notifikatioune",
             "title": "Notifikatioune"
         },
         "notification_toast": {
             "connection_lost": "Verbindung verluer. Verbindung gëtt nees opgebaut...",
+            "dismiss": "Verwerfen",
             "service_call_failed": "Feeler beim opruffen vun {service}",
             "started": "Home Assistant ass gestart!",
             "starting": "Home Assistant start, et wäert nach net alles prett sinn bis et fäerdeg gestart ass.",
@@ -1160,6 +1191,8 @@
                                 },
                                 "event": {
                                     "context_user_pick": "Benotzer erstellen",
+                                    "context_user_picked": "Benotzer deen den Evenement gestart huet",
+                                    "context_users": "Op Evenementer limitéieren déi ausgeléist goufen duerch ",
                                     "event_data": "Evenement Donnée",
                                     "event_type": "Typ vun Evenement",
                                     "label": "Evenement"
@@ -1485,18 +1518,24 @@
                     "automation": {
                         "actions": {
                             "caption": "Wann eppes ausgeléist gëtt",
+                            "no_actions": "Keng Aktiounen",
                             "unknown_action": "Onbekannten Aktioun"
                         },
                         "automations": "Automatismen",
                         "conditions": {
-                            "caption": "Nëmmen eppes maachen wann..."
+                            "caption": "Nëmmen eppes maachen wann...",
+                            "no_conditions": "Keng Konditiounen",
+                            "unknown_condition": "Onbekannte Konditioun"
                         },
                         "create": "Automatisme mat Apparat erstellen",
                         "no_automations": "Keng Automatismen",
                         "no_device_automations": "Et gi keng Automatisme fir dësen Apparat.",
                         "triggers": {
-                            "caption": "Maach eppes wann..."
-                        }
+                            "caption": "Maach eppes wann...",
+                            "no_triggers": "Keng Ausléiser",
+                            "unknown_trigger": "Onbekannten Ausléiser"
+                        },
+                        "unknown_automation": "Onbekannten Automatisme"
                     },
                     "cant_edit": "Dir kënnt nëmmen Elementer änneren déi an der UI erstallt goufen.",
                     "caption": "Apparater",
@@ -1614,11 +1653,13 @@
                         "no_helpers": "Et gesäit sou aus wéi wann nach keng Helpers erstallt goufen."
                     },
                     "types": {
+                        "counter": "Compteur",
                         "input_boolean": "Ëmschalten",
                         "input_datetime": "Datum an/oder Zäit",
                         "input_number": "Nummer",
                         "input_select": "Auswiellëscht",
-                        "input_text": "Text"
+                        "input_text": "Text",
+                        "timer": "Timer"
                     }
                 },
                 "info": {
@@ -1836,6 +1877,7 @@
                         "network": "Netzwierk",
                         "node_id": "Node ID",
                         "ozw_instance": "OpenZWave Instanz",
+                        "wakeup_instructions": "Instruktioune fir d'erwächen",
                         "zwave": "Z-Wave"
                     },
                     "device_info": {
@@ -1846,6 +1888,7 @@
                     "navigation": {
                         "network": "Netzwierk",
                         "node": {
+                            "config": "Konfiguratioun",
                             "dashboard": "Tableau de Bord"
                         },
                         "nodes": "Nodes",
@@ -1875,6 +1918,14 @@
                         "header": "Verwaltung vum Netzwierk",
                         "introduction": "Netzwierk wäit Funktioune verwalten",
                         "node_count": "{count} nodes"
+                    },
+                    "node_config": {
+                        "header": "Konfiguratioun vum Node",
+                        "introduction": "Verwalt déi verschidde Konfiguratioun Parameter fir ee Z-Wave Node.",
+                        "wakeup_help": "Batterie bedriwwen Nodes mussen un si fir hier Konfiguratioun ze veränneren. Falls den Node net un ass, probéiert OpenZWave dem Node seng Konfiguratioun ze veränneren déi nächste Kéier wann de Node aktiv gëtt, dëst ka méi Stonnen (oder Deeg) daueren. \nFolleg dëse Schrëtt fir den Apparat unzeschalten:"
+                    },
+                    "node_metadata": {
+                        "product_manual": "Produkt Gebrauchsanweisung"
                     },
                     "node_query_stages": {
                         "associations": "Associatiounsgruppen a Memberen aktualiséieren",
@@ -1925,6 +1976,7 @@
                     },
                     "services": {
                         "add_node": "Node dobäisetzen",
+                        "cancel_command": "Commande ofbriechen",
                         "remove_node": "Node läschen"
                     }
                 },
@@ -2116,6 +2168,7 @@
                     "create_automation": "Erstell Automatisme mam Tag",
                     "description": "Tags verwalten",
                     "detail": {
+                        "companion_apps": "Begleeder Apps",
                         "create": "Erstellen",
                         "create_and_write": "Erstellen a schréiwen",
                         "delete": "Läschen",
@@ -2124,7 +2177,8 @@
                         "new_tag": "Neien tag",
                         "tag_id": "Tag id",
                         "tag_id_placeholder": "Automatesch erstallt falls eidel geloss",
-                        "update": "Aktualiséieren"
+                        "update": "Aktualiséieren",
+                        "usage": "Een Tag kann een Automatisme ausléise wann e gescannt gëtt, du kanns NFC Tage, QR Code oder iergendeng Zort vun Tags benotzen. Benotz ons {companion_link} fir dësen Tag op eng programméierbar NFC Tag ze schreiwen oder erstell ee QR Code hei ënnen."
                     },
                     "edit": "Änneren",
                     "headers": {
@@ -2467,7 +2521,9 @@
                         "listeners": "Dës Virlag lauschtert fir déi folgend geännert Evenementer:",
                         "no_listeners": "Dës Virlag lauschtert net fir geännert Zoustänn Evenementer a gëtt net automatesch aktualiséiert.",
                         "reset": "Op Demo Modell zeréck setzen",
+                        "result_type": "Typ vum Resultat",
                         "template_extensions": "Home Assistant Modell Erweiderungen",
+                        "time": "Dës Virlag aktualiséiert sech am Ufank vun all Minutt.",
                         "title": "Modeller",
                         "unknown_error_template": "Onbekannte Feeler beim duerstelle vum Modell"
                     }
@@ -2675,6 +2731,10 @@
                             "description": "D'Glance Kaart ass nëtzlech fir verschidde Sensoren an enger kompakter Iwwersiicht ze gruppéieren.",
                             "name": "Usiicht"
                         },
+                        "grid": {
+                            "description": "Gitter Kaart erlaabt et multiple Kaarten als Gitter unzeweisen.",
+                            "name": "Gitter"
+                        },
                         "history-graph": {
                             "description": "D'Verlaf's Grafik Kaart erlaabt Iech eng Grafik fir all eenzel opgelëschten Entitéiten unzeweisen.",
                             "name": "Verlaf Diagramm"
@@ -2872,7 +2932,8 @@
                     "exit_edit_mode": "Benotzer Interface Editéierungsmodus verloossen",
                     "help": "Hëllef",
                     "refresh": "Erneieren",
-                    "reload_resources": "Ressource frësch lueden"
+                    "reload_resources": "Ressource frësch lueden",
+                    "start_conversation": "Ënnerhalung starten"
                 },
                 "reload_lovelace": "Benotzer frësch lueden",
                 "reload_resources": {
@@ -3118,6 +3179,7 @@
                     "header": "Tableau de Bord"
                 },
                 "enable_shortcuts": {
+                    "description": "Tastatur Ofkierzungen aktivéieren oder déaktivéieren fir verschidde Aktiounen am Interface auszeféieren.",
                     "header": "Tastatur Ofkierzungen"
                 },
                 "force_narrow": {

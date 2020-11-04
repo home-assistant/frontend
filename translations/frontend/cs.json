@@ -2759,6 +2759,10 @@
                             "description": "Karta Náhled je užitečná pro seskupení více senzorů v kompaktním přehledu.",
                             "name": "Rychlý náhled"
                         },
+                        "grid": {
+                            "description": "Karta Mřížka umožňuje zobrazit více karet v mřížce.",
+                            "name": "Mřížka"
+                        },
                         "history-graph": {
                             "description": "Karta Graf historie umožňuje zobrazit graf pro každou z uvedených entit.",
                             "name": "Graf historie"
