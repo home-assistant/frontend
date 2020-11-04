@@ -1,8 +1,7 @@
 import "@material/mwc-button";
-import "@material/mwc-icon-button";
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
-import { mdiArrowDown, mdiArrowUp, mdiDotsVertical } from "@mdi/js";
+import "@material/mwc-icon-button";
+import "../../../components/ha-button-menu";
 import {
   css,
   CSSResult,
@@ -10,20 +9,21 @@ import {
   html,
   LitElement,
   property,
-  queryAssignedNodes,
   TemplateResult,
+  queryAssignedNodes,
 } from "lit-element";
-import "../../../components/ha-button-menu";
+import { HomeAssistant } from "../../../types";
+import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
+import { swapCard, moveCard, addCard, deleteCard } from "../editor/config-util";
+import { confDeleteCard } from "../editor/delete-card";
+import { Lovelace, LovelaceCard } from "../types";
+import { computeCardSize } from "../common/compute-card-size";
+import { mdiDotsVertical, mdiArrowDown, mdiArrowUp } from "@mdi/js";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import { showSelectViewDialog } from "../editor/select-view/show-select-view-dialog";
 import { saveConfig } from "../../../data/lovelace";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
-import { HomeAssistant } from "../../../types";
 import { showSaveSuccessToast } from "../../../util/toast-saved-success";
-import { computeCardSize } from "../common/compute-card-size";
-import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-import { addCard, deleteCard, moveCard, swapCard } from "../editor/config-util";
-import { confDeleteCard } from "../editor/delete-card";
-import { showSelectViewDialog } from "../editor/select-view/show-select-view-dialog";
-import { Lovelace, LovelaceCard } from "../types";
 
 @customElement("hui-card-options")
 export class HuiCardOptions extends LitElement {
@@ -42,7 +42,7 @@ export class HuiCardOptions extends LitElement {
   protected render(): TemplateResult {
     return html`
       <slot></slot>
-      <div>
+      <ha-card>
         <div class="card-actions">
           <mwc-button @click=${this._editCard}
             >${this.hass!.localize(
@@ -98,7 +98,7 @@ export class HuiCardOptions extends LitElement {
             </ha-button-menu>
           </div>
         </div>
-      </div>
+      </ha-card>
     `;
   }
 
@@ -108,20 +108,13 @@ export class HuiCardOptions extends LitElement {
         outline: 2px solid var(--primary-color);
       }
 
-      .card-options {
-        border-radius: var(--ha-card-border-radius, 4px);
+      ::slotted(*) {
+        display: block;
+      }
+
+      ha-card {
         border-top-right-radius: 0;
         border-top-left-radius: 0;
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: var(
-          --ha-card-background,
-          var(--card-background-color, white)
-        );
-
-        --mdc-icon-button-size: 24px;
       }
 
       .card-actions {
