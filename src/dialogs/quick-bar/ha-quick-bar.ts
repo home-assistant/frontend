@@ -35,7 +35,7 @@ import "../../components/ha-dialog";
 import "../../components/ha-header-bar";
 import { domainToName } from "../../data/integration";
 import { haStyleDialog } from "../../resources/styles";
-import { HomeAssistant, Panels } from "../../types";
+import { HomeAssistant } from "../../types";
 import {
   ConfirmationDialogParams,
   showConfirmationDialog,
@@ -43,12 +43,16 @@ import {
 import { QuickBarParams } from "./show-dialog-quick-bar";
 import { navigate } from "../../common/navigate";
 import { configSections } from "../../panels/config/ha-panel-config";
-import { toTitleCase } from "../../common/string/helpers";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
 import { canShowPage } from "../../common/config/can_show_page";
+import { getPanelIcon, getPanelText } from "../../data/panel";
+
+const DEFAULT_NAVIGATION_ICON = "hass:arrow-right-circle";
+const DEFAULT_SERVER_ICON = "hass:server";
 
 interface QuickBarItem extends ScorableTextItem {
-  icon: string;
+  icon?: string;
+  iconPath?: string;
   action(data?: any): void;
 }
 
@@ -172,9 +176,9 @@ export class QuickBar extends LitElement {
 
   private _initializeItemsIfNeeded() {
     if (this._commandMode) {
-      this._commandItems = this._generateCommandItemsIfEmpty();
+      this._commandItems = this._commandItems || this._generateCommandItems();
     } else {
-      this._entityItems = this._generateEntityItemsIfEmpty();
+      this._entityItems = this._entityItems || this._generateEntityItems();
     }
   }
 
@@ -204,8 +208,15 @@ export class QuickBar extends LitElement {
         index=${ifDefined(index)}
         graphic="avatar"
       >
-        <ha-icon .icon=${item.icon} slot="graphic"></ha-icon>
+        ${item.iconPath
+          ? html`<ha-svg-icon
+              .path=${item.iconPath}
+              slot="graphic"
+            ></ha-svg-icon>`
+          : html`<ha-icon .icon=${item.icon} slot="graphic"></ha-icon>`}
+
         <span class="item-text">${item.text}</span>
+
         ${item.altText
           ? html`
               <span slot="secondary" class="item-text secondary"
@@ -302,44 +313,36 @@ export class QuickBar extends LitElement {
     }
   }
 
-  private _generateEntityItemsIfEmpty(): QuickBarItem[] {
-    return this._entityItems
-      ? this._entityItems
-      : Object.keys(this.hass.states)
-          .map((entityId) => ({
-            text: computeStateName(this.hass.states[entityId]),
-            altText: entityId,
-            icon: domainIcon(
-              computeDomain(entityId),
-              this.hass.states[entityId]
-            ),
-            action: () => fireEvent(this, "hass-more-info", { entityId }),
-          }))
-          .sort((a, b) => compare(a.text.toLowerCase(), b.text.toLowerCase()));
+  private _generateEntityItems(): QuickBarItem[] {
+    return Object.keys(this.hass.states)
+      .map((entityId) => ({
+        text: computeStateName(this.hass.states[entityId]),
+        altText: entityId,
+        icon: domainIcon(computeDomain(entityId), this.hass.states[entityId]),
+        action: () => fireEvent(this, "hass-more-info", { entityId }),
+      }))
+      .sort((a, b) => compare(a.text.toLowerCase(), b.text.toLowerCase()));
   }
 
-  private _generateCommandItemsIfEmpty(): QuickBarItem[] {
-    return this._commandItems
-      ? this._commandItems
-      : [
-          ...this._generateReloadCommands(),
-          ...this._generateServerControlCommands(),
-          ...this._generateNavigationCommands(),
-        ].sort((a, b) => compare(a.text.toLowerCase(), b.text.toLowerCase()));
+  private _generateCommandItems(): QuickBarItem[] {
+    return [
+      ...this._generateReloadCommands(),
+      ...this._generateServerControlCommands(),
+      ...this._generateNavigationCommands(),
+    ].sort((a, b) => compare(a.text.toLowerCase(), b.text.toLowerCase()));
   }
 
   private _generateReloadCommands(): QuickBarItem[] {
     const reloadableDomains = componentsWithService(this.hass, "reload").sort();
 
     return reloadableDomains.map((domain) => ({
-      text: toTitleCase(
+      text:
         this.hass.localize(`ui.dialogs.quick-bar.commands.reload.${domain}`) ||
-          this.hass.localize(
-            "ui.dialogs.quick-bar.commands.reload.reload",
-            "domain",
-            domainToName(this.hass.localize, domain)
-          )
-      ),
+        this.hass.localize(
+          "ui.dialogs.quick-bar.commands.reload.reload",
+          "domain",
+          domainToName(this.hass.localize, domain)
+        ),
       icon: domainIcon(domain),
       action: () => this.hass.callService(domain, "reload"),
     }));
@@ -358,7 +361,7 @@ export class QuickBar extends LitElement {
               `ui.dialogs.quick-bar.commands.server_control.${action}`
             )
           ),
-          icon: "hass:server",
+          icon: DEFAULT_SERVER_ICON,
           action: () => this.hass.callService("homeassistant", action),
         },
         this.hass.localize("ui.dialogs.generic.ok")
@@ -381,8 +384,8 @@ export class QuickBar extends LitElement {
       const panel = this.hass.panels[panelKey];
 
       return {
-        text: this._getPanelText(panel),
-        icon: "hass:robot",
+        text: getPanelText(this.hass, panel),
+        icon: getPanelIcon(panel) || DEFAULT_NAVIGATION_ICON,
         path: `/${panel.url_path}`,
       };
     });
@@ -397,10 +400,7 @@ export class QuickBar extends LitElement {
       for (const page of configSections[sectionKey]) {
         if (canShowPage(this.hass, page)) {
           if (page.component) {
-            const info = this._getNavigationInfoFromConfig(
-              sectionKey,
-              page.component
-            );
+            const info = this._getNavigationInfoFromConfig(page);
 
             if (info) {
               items.push(info);
@@ -414,51 +414,23 @@ export class QuickBar extends LitElement {
   }
 
   private _getNavigationInfoFromConfig(
-    sectionKey: string,
-    component: string
+    page: PageNavigation
   ): NavigationInfo | undefined {
-    const panel = configSections[sectionKey].find(
-      (section) => section.component === component
-    );
-
     const shortCaption = this.hass.localize(
-      `ui.dialogs.quick-bar.commands.navigation.${component}`
+      `ui.dialogs.quick-bar.commands.navigation.${page.component}`
     );
 
-    if (panel && panel.translationKey && shortCaption) {
+    if (page && page.translationKey && shortCaption) {
       const caption = this.hass.localize(
         "ui.dialogs.quick-bar.commands.navigation.navigate_to",
         "panel",
         shortCaption
       );
 
-      return { ...panel, text: caption };
+      return { ...page, text: caption };
     }
 
     return undefined;
-  }
-
-  private _getPanelText(panel: Panels["panel"]) {
-    let translationKey = "";
-
-    if (!panel.title) {
-      switch (panel.component_name) {
-        case "profile":
-          translationKey = "panel.profile";
-          break;
-        case "lovelace":
-          translationKey = "panel.states";
-          break;
-      }
-    } else {
-      translationKey = `panel.${panel.title}`;
-    }
-
-    return this.hass.localize(
-      "ui.dialogs.quick-bar.commands.navigation.navigate_to",
-      "panel",
-      toTitleCase(this.hass.localize(translationKey))
-    );
   }
 
   private _generateConfirmationCommand(
@@ -476,13 +448,12 @@ export class QuickBar extends LitElement {
   }
 
   private _withNavigationActions(items) {
-    return items.map(({ text, icon, path }) => {
-      return {
-        text,
-        icon: icon || "hass:robot",
-        action: () => navigate(this, path),
-      };
-    });
+    return items.map(({ text, icon, iconPath, path }) => ({
+      text,
+      icon,
+      iconPath,
+      action: () => navigate(this, path),
+    }));
   }
 
   private _toggleIfAlreadyOpened() {
@@ -550,6 +521,7 @@ export class QuickBar extends LitElement {
 
         mwc-list-item {
           width: 100%;
+          text-transform: capitalize;
         }
 
         .item-text {

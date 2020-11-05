@@ -1,5 +1,5 @@
 import { fireEvent } from "../common/dom/fire_event";
-import { HomeAssistant, PanelInfo } from "../types";
+import { HomeAssistant, PanelInfo, Panels } from "../types";
 
 /** Panel to show when no panel is picked. */
 export const DEFAULT_PANEL = "lovelace";
@@ -43,4 +43,40 @@ export const getPanelTitle = (hass: HomeAssistant): string | undefined => {
   }
 
   return hass.localize(`panel.${panel.title}`) || panel.title || undefined;
+};
+
+export const getPanelText = (hass: HomeAssistant, panel: Panels["panel"]) => {
+  let translationKey = "";
+
+  if (!panel.title) {
+    switch (panel.component_name) {
+      case "profile":
+        translationKey = "panel.profile";
+        break;
+      case "lovelace":
+        translationKey = "panel.states";
+        break;
+    }
+  } else {
+    translationKey = `panel.${panel.title}`;
+  }
+
+  return hass.localize(
+    "ui.dialogs.quick-bar.commands.navigation.navigate_to",
+    "panel",
+    hass.localize(translationKey)
+  );
+};
+
+export const getPanelIcon = (panel: Panels["panel"]): string | null => {
+  if (!panel.icon) {
+    switch (panel.component_name) {
+      case "profile":
+        return "hass:account";
+      case "lovelace":
+        return "hass:view-dashboard";
+    }
+  }
+
+  return panel.icon;
 };
