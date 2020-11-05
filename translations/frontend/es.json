@@ -1536,7 +1536,7 @@
                     }
                 },
                 "devices": {
-                    "add_prompt": "Todavía no se ha añadido ningún {name} usando este dispositivo. Puedes añadir uno pulsando en el botón + de arriba.",
+                    "add_prompt": "Todavía no se han añadido {name} usando este dispositivo. Puedes añadir pulsando en el botón + de arriba.",
                     "automation": {
                         "actions": {
                             "caption": "Cuando algo se activa....",
