@@ -221,9 +221,15 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       // loaded resources. This merges the new data on top of the old data for
       // this language, so that the full translation set can be loaded across
       // multiple fragments.
+      //
+      // Beware of a subtle race condition: it is possible to get here twice
+      // before this.hass is even created. In this case our base state comes
+      // from this._pendingHass instead. Otherwise the first set of strings is
+      // overwritten when we call _updateHass the second time!
+      const baseHass = this.hass ?? this._pendingHass;
       const resources = {
         [language]: {
-          ...this.hass?.resources?.[language],
+          ...baseHass?.resources?.[language],
           ...data,
         },
       };
