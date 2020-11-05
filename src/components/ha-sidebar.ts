@@ -27,7 +27,6 @@ import {
   PropertyValues,
   query,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
 import { guard } from "lit-html/directives/guard";
 import memoizeOne from "memoize-one";
 import { LocalStorage } from "../common/decorators/local-storage";
@@ -1011,6 +1010,7 @@ class HaSidebar extends LitElement {
           flex: 1;
         }
         .profile {
+          --mdc-list-item-graphic-margin: 16px;
           --mdc-list-item-graphic-size: 40px;
           --mdc-list-side-padding: 4px;
         }
