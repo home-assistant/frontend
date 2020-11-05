@@ -275,6 +275,7 @@
       "save": "Save",
       "yes": "Yes",
       "no": "No",
+      "skip": "Skip",
       "menu": "Menu",
       "overflow_menu": "Overflow menu",
       "successfully_saved": "Successfully saved",
@@ -1119,7 +1120,7 @@
                   "event_data": "Event data",
                   "context_users": "Limit to events triggered by",
                   "context_user_picked": "User firing event",
-                  "context_user_pick": "Add user"
+                  "context_user_pick": "Select user"
                 },
                 "geo_location": {
                   "label": "Geolocation",
@@ -1346,6 +1347,22 @@
                   "sequence": "Actions"
                 }
               }
+            }
+          },
+          "thingtalk": {
+            "create": "Create automation",
+            "task_selection": {
+              "header": "Create a new automation",
+              "introduction": "Type below what this automation should do, and we will try to convert it into a Home Assistant automation.",
+              "language_note": "Note: Only English is supported for now.",
+              "for_example": "For example:",
+              "error_empty": "Enter a command or tap skip.",
+              "error_unsupported": "We couldn't create an automation for that (yet?)."
+            },
+            "link_devices": {
+              "header": "Great! Now we need to link some devices",
+              "ambiguous_entities": "One or more devices have more than one matching entity, please pick the one you want to use.",
+              "unknown_placeholder": "Unknown placeholder"
             }
           }
         },
