@@ -54,7 +54,7 @@ export class HuiConditionalBase extends UpdatingElement {
     this._element.editMode = this.editMode;
 
     const visible =
-      this.editMode || checkConditionsMet(this._config.conditions, this.hass);
+      this.editMode || checkConditionsMet(this.hass, this._config.conditions);
 
     this.style.setProperty("display", visible ? "" : "none");
 

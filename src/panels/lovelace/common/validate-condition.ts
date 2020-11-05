@@ -1,57 +1,37 @@
 import { HomeAssistant } from "../../../types";
-import { UNAVAILABLE } from "../../../data/entity";
+import { evaluateFilter } from "./evaluate-filter";
 
 export interface Condition {
   entity: string;
   state?: string;
   state_not?: string;
-  value?: string;
   operator?: string;
+  value?: unknown;
+  attribute?: string;
 }
 
 export function checkConditionsMet(
-  conditions: Condition[],
-  hass: HomeAssistant
+  hass: HomeAssistant,
+  conditions: Condition[]
 ): boolean {
-  return conditions.every((c) => {
-    const state = hass.states[c.entity]
-      ? hass!.states[c.entity].state
-      : UNAVAILABLE;
-    if (!c.operator) {
-      if (c.state && state !== c.state) {
+  return conditions.every((condition) => {
+    const stateObj = hass.states[condition.entity];
+    if (!stateObj) {
+      return false;
+    }
+
+    // for backward compability
+    if (!condition.operator) {
+      if (condition.state && stateObj.state !== condition.state) {
         return false;
       }
-      if (c.state_not && state === c.state_not) {
+      if (condition.state_not && stateObj.state === condition.state_not) {
         return false;
       }
       return true;
     }
 
-    if (!c.value) {
-      // error state must be defined when operator is defined too
-      return false;
-    }
-
-    if (c.operator === "==") {
-      return state === c.value;
-    }
-    if (c.operator === "!=") {
-      return state !== c.value;
-    }
-    if (c.operator === ">") {
-      return Number(state) > Number(c.value);
-    }
-    if (c.operator === "<") {
-      return Number(state) < Number(c.value);
-    }
-    if (c.operator === ">=") {
-      return Number(state) >= Number(c.value);
-    }
-    if (c.operator === "<=") {
-      return Number(state) <= Number(c.value);
-    }
-    // unknown operator
-    return false;
+    return evaluateFilter(stateObj, condition);
   });
 }
 

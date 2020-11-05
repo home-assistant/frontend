@@ -119,8 +119,6 @@ const conditionalEntitiesRowConfigStruct = object({
       entity: string(),
       state: optional(string()),
       state_not: optional(string()),
-      value: optional(string()),
-      operator: optional(string()),
     })
   ),
 });
