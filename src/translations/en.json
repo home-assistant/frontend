@@ -1814,6 +1814,7 @@
           "attention": "Attention required",
           "configured": "Configured",
           "new": "Set up a new integration",
+          "new_label": "Add Integration",
           "add_integration": "Add integration",
           "no_integrations": "Seems like you don't have any integations configured yet. Click on the button below to add your first integration!",
           "note_about_integrations": "Not all integrations can be configured via the UI yet.",
