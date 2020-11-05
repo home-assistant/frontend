@@ -571,7 +571,7 @@
                 "no_history_found": "Historie stavu chybí."
             },
             "logbook": {
-                "by": "přes",
+                "by": "prostřednictvím",
                 "by_service": "službou",
                 "entries_not_found": "Nenalezeny žádné záznamy.",
                 "messages": {

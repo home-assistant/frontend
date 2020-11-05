@@ -577,8 +577,8 @@
                 "messages": {
                     "became_unavailable": "μετετράπη σε μη διαθέσιμο",
                     "changed_to_state": "άλλαξε σε {state}",
-                    "cleared_device_class": "διαγράφηκε (δεν εντοπίστηκε {device_class} )",
-                    "detected_device_class": "εντοπίστηκε {device_class}",
+                    "cleared_device_class": "παραγράφηκε (δεν εντοπίστηκε {device_class} )",
+                    "detected_device_class": "εντόπισε {device_class}",
                     "rose": "αυξήθηκε",
                     "set": "ορίστηκε",
                     "turned_off": "απενεργοποιήθηκε",

@@ -432,7 +432,7 @@
                 "turn_on": "Engega"
             },
             "persistent_notification": {
-                "dismiss": "Desestimar"
+                "dismiss": "Omet"
             },
             "scene": {
                 "activate": "Activar"
@@ -715,7 +715,7 @@
             },
             "entity_registry": {
                 "control": "Control",
-                "dismiss": "Desestimar",
+                "dismiss": "Omet",
                 "editor": {
                     "confirm_delete": "Estàs segur que vols eliminar aquesta entrada?",
                     "delete": "Elimina",
@@ -795,7 +795,7 @@
             "more_info_control": {
                 "controls": "Controls",
                 "details": "Detalls",
-                "dismiss": "Desestimar el diàleg",
+                "dismiss": "Omet el diàleg",
                 "edit": "Edita entitat",
                 "history": "Historial",
                 "last_changed": "Darrer canvi",
@@ -952,13 +952,13 @@
         "notification_drawer": {
             "click_to_configure": "Prem el botó per configurar {entity}",
             "close": "Tanca",
-            "dismiss_all": "Descarta-ho tot",
+            "dismiss_all": "Omet tot",
             "empty": "No hi ha notificacions",
             "title": "Notificacions"
         },
         "notification_toast": {
             "connection_lost": "Connexió perduda. Tornant a connectar...",
-            "dismiss": "Desestimar",
+            "dismiss": "Omet",
             "service_call_failed": "Ha fallat la crida al servei {service}.",
             "started": "Home Assistant s'ha iniciat!",
             "starting": "Home Assistant està iniciant-se, no estarà tot disponible fins que acabi",
@@ -1084,7 +1084,7 @@
                                     "wait_template": "Plantilla d'espera"
                                 }
                             },
-                            "unsupported_action": "Acció no suportada per la UI: {action}"
+                            "unsupported_action": "La UI no és compatible amb l'acció: {action}"
                         },
                         "alias": "Nom",
                         "conditions": {
@@ -1161,7 +1161,7 @@
                                     "zone": "Zona"
                                 }
                             },
-                            "unsupported_condition": "Condició no suportada per la UI: {condition}"
+                            "unsupported_condition": "La UI no és compatible amb la condició: {condition}"
                         },
                         "copy_to_clipboard": "Copia al porta-retalls",
                         "default_name": "Nova automatització",
@@ -1290,7 +1290,7 @@
                                     "zone": "Zona"
                                 }
                             },
-                            "unsupported_platform": "Plataforma no suportada per la UI: {platform}"
+                            "unsupported_platform": "La UI no és compatible amb la plataforma: {platform}"
                         },
                         "unsaved_confirm": "Hi ha canvis no desats. Segur que vols sortir?"
                     },
@@ -1441,7 +1441,7 @@
                     "login": {
                         "alert_email_confirm_necessary": "Has de confirmar el teu correu electrònic abans d'iniciar sessió.",
                         "alert_password_change_required": "Has de canviar la teva contrasenya abans d'iniciar sessió.",
-                        "dismiss": "Desestimar",
+                        "dismiss": "Omet",
                         "email": "Correu electrònic",
                         "email_error_msg": "Correu electrònic invàlid",
                         "forgot_password": "has oblidat la contrasenya?",
@@ -1746,7 +1746,7 @@
                         "aborted": "Avortat",
                         "close": "Tanca",
                         "created_config": "S'ha creat configuració per a {name}.",
-                        "dismiss": "Desestima el diàleg",
+                        "dismiss": "Omet el diàleg",
                         "error_saving_area": "Error desant àrea: {error}",
                         "external_step": {
                             "description": "Aquest pas requereix que visitis un lloc web extern per completar-lo.",
