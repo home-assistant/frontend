@@ -221,7 +221,9 @@ class HaSidebar extends LitElement {
     // prettier-ignore
     return html`
       ${this._renderHeader()}
+      <div class="ha-scrollbar">
       ${this._renderAllPanels()}
+      </div>
       <mwc-list
         attr-for-selected="data-panel"
         @focusin=${this._listboxFocusIn}
@@ -229,6 +231,7 @@ class HaSidebar extends LitElement {
         @scroll=${this._listboxScroll}
         @keydown=${this._listboxKeydown}
       >
+        <li divider role="separator"></li>
         ${this._renderNotifications()} 
         ${this._renderUserItem()}
         ${this._renderSpacer()}
@@ -308,7 +311,9 @@ class HaSidebar extends LitElement {
       return;
     }
     if (!oldHass || oldHass.panelUrl !== this.hass.panelUrl) {
-      const selectedEl = this.shadowRoot!.querySelector(".iron-selected");
+      const selectedEl = this.shadowRoot!.querySelector(
+        "ha-clickable-list-item[activated]"
+      );
       if (selectedEl) {
         // @ts-ignore
         selectedEl.scrollIntoViewIfNeeded();
@@ -367,7 +372,6 @@ class HaSidebar extends LitElement {
     return html`
       <mwc-list
         attr-for-selected="data-panel"
-        class="ha-scrollbar"
         @focusin=${this._listboxFocusIn}
         @focusout=${this._listboxFocusOut}
         @scroll=${this._listboxScroll}
@@ -512,10 +516,7 @@ class HaSidebar extends LitElement {
 
   private _renderUserItem() {
     return html`<ha-clickable-list-item
-      class=${classMap({
-        profile: true,
-        "iron-selected": this.hass.panelUrl === "profile",
-      })}
+      class="profile"
       .href=${"profile"}
       data-panel="panel"
       tabindex="-1"
@@ -907,6 +908,28 @@ class HaSidebar extends LitElement {
         .menu mwc-icon-button {
           color: var(--sidebar-icon-color);
         }
+        :host([expanded]) .menu mwc-icon-button {
+          margin-right: 23px;
+        }
+        :host([expanded][rtl]) .menu mwc-icon-button {
+          margin-right: 0px;
+          margin-left: 23px;
+        }
+
+        ha-clickable-list-item {
+          margin: 4px 8px;
+          border-radius: 4px;
+          height: 40px;
+          --mdc-list-side-padding: 12px;
+          --mdc-theme-text-icon-on-background: var(--sidebar-icon-color);
+        }
+
+        ha-clickable-list-item[activated] {
+          --mdc-theme-text-icon-on-background: var(
+            --sidebar-selected-icon-color
+          );
+        }
+
         .title {
           margin-left: 19px;
           width: 100%;
@@ -933,27 +956,27 @@ class HaSidebar extends LitElement {
           display: none;
         }
 
-        mwc-list.ha-scrollbar {
-          --mdc-list-vertical-padding: 4px 0;
-          padding: 4px 0;
+        .ha-scrollbar {
+          height: calc(100% - var(--header-height) - 105px);
+          height: calc(
+            100% - var(--header-height) - 105px - env(safe-area-inset-bottom)
+          );
+          overflow-x: hidden;
           display: flex;
           justify-content: space-between;
           flex-direction: column;
-          box-sizing: border-box;
-          height: calc(100% - var(--header-height) - 232px);
-          height: calc(
-            100% - var(--header-height) - 232px - env(safe-area-inset-bottom)
-          );
-          overflow-x: hidden;
-          background: none;
+        }
+
+        mwc-list {
+          width: var(--app-drawer-width);
+          --mdc-list-vertical-padding: 4px 0;
           margin-left: env(safe-area-inset-left);
           -ms-user-select: none;
           -webkit-user-select: none;
           -moz-user-select: none;
-          border-right: 1px solid var(--divider-color);
           background-color: var(--sidebar-background-color);
-          width: 64px;
         }
+
         :host([rtl]) mwc-list {
           border-right: 0;
           /* border-left: 1px solid var(--divider-color); */
@@ -964,11 +987,6 @@ class HaSidebar extends LitElement {
           width: calc(256px + env(safe-area-inset-left));
         }
 
-        ha-icon[slot="graphic"],
-        ha-svg-icon[slot="graphic"] {
-          color: var(--sidebar-icon-color);
-        }
-
         [slot="graphic"] {
           width: 100%;
         }
@@ -976,17 +994,6 @@ class HaSidebar extends LitElement {
         :host([rtl]) mwc-list {
           margin-left: initial;
           margin-right: env(safe-area-inset-right);
-        }
-
-        a.iron-selected ha-icon,
-        a.iron-selected ha-svg-icon,
-        a.iron-selected ha-clickable-list-item ha-icon,
-        a.iron-selected ha-clickable-list-item ha-svg-icon {
-          color: var(--sidebar-selected-icon-color);
-        }
-
-        a.iron-selected .item-text {
-          color: var(--sidebar-selected-text-color);
         }
 
         .notifications-container {
@@ -1004,17 +1011,12 @@ class HaSidebar extends LitElement {
           flex: 1;
         }
         .profile {
-          margin-left: env(safe-area-inset-left);
           --mdc-list-item-graphic-size: 40px;
-          --mdc-list-item-graphic-margin: 16px;
-          --mdc-list-side-padding: 12px;
+          --mdc-list-side-padding: 4px;
         }
         :host([rtl]) .profile {
-          margin-left: initial;
-          margin-right: env(safe-area-inset-right);
           --mdc-list-item-graphic-size: 40px;
-          --mdc-list-item-graphic-margin: 5px;
-          --mdc-list-side-padding: 6px;
+          --mdc-list-side-padding: 4px;
         }
 
         .profile .item-text {
@@ -1041,7 +1043,7 @@ class HaSidebar extends LitElement {
         ha-svg-icon + .notification-badge {
           position: absolute;
           bottom: 18px;
-          left: 30px;
+          left: 25px;
           padding: 0px 0px;
         }
 
