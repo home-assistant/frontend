@@ -407,7 +407,7 @@ class HUIRoot extends LitElement {
                           ${this._editMode
                             ? html`
                                 <ha-icon-button-arrow-prev
-                                  .hass="${this.hass}"
+                                  .hass=${this.hass}
                                   title="${this.hass!.localize(
                                     "ui.panel.lovelace.editor.edit_view.move_left"
                                   )}"
@@ -436,7 +436,7 @@ class HUIRoot extends LitElement {
                                   @click="${this._editView}"
                                 ></ha-svg-icon>
                                 <ha-icon-button-arrow-next
-                                  .hass="${this.hass}"
+                                  .hass=${this.hass}
                                   title="${this.hass!.localize(
                                     "ui.panel.lovelace.editor.edit_view.move_right"
                                   )}"

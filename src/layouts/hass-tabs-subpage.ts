@@ -145,7 +145,7 @@ class HassTabsSubpage extends LitElement {
             `
           : html`
               <ha-icon-button-arrow-prev
-                .hass="${this.hass}"
+                .hass=${this.hass}
                 @click=${this._backTapped}
               ></ha-icon-button-arrow-prev>
             `}
