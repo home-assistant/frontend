@@ -24,7 +24,7 @@ class HassErrorScreen extends LitElement {
       ${this.toolbar
         ? html`<div class="toolbar">
             <ha-icon-button-arrow-prev
-              .hass="${this.hass}"
+              .hass=${this.hass}
               @click=${this._handleBack}
             ></ha-icon-button-arrow-prev>
           </div>`
