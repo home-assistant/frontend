@@ -2651,6 +2651,7 @@
                                 "button": "Gumb",
                                 "buttons": "Gumbi",
                                 "call-service": "Kliči Storitev",
+                                "cast": "Zasedba",
                                 "conditional": "Pogojno",
                                 "divider": "Razdelilnik",
                                 "section": "Sekcija",
@@ -2726,6 +2727,10 @@
                             "columns": "Stolpci",
                             "description": "Kartica Glance je uporabna za združevanje več senzorjev v kompaktnem pregledu.",
                             "name": "Pregled"
+                        },
+                        "grid": {
+                            "description": "Kartica Mreža omogoča prikaz več kartic v mreži.",
+                            "name": "Mreža"
                         },
                         "history-graph": {
                             "description": "Kartica Zgodovinski grafikon omogoča prikaz grafa za vsako od naštetih entitet.",

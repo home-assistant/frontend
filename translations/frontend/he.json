@@ -590,7 +590,7 @@
                     "video": "וידאו"
                 },
                 "documentation": "תיעוד",
-                "learn_adding_local_media": "למד עוד אודות הוספת מדיה ב{תיעוד}."
+                "learn_adding_local_media": "למד עוד אודות הוספת מדיה ב-{documentation}."
             },
             "picture-upload": {
                 "label": "תמונה",
@@ -615,9 +615,16 @@
                     "second": "{count} {count, plural,\n  one {שנייה}\n  other {שניות}\n}",
                     "week": "{count} {count, plural,\n  one {שבוע}\n  other {שבועות}\n}"
                 },
-                "future": "ב{time}",
+                "future": "בעוד {time}",
                 "never": "אף פעם לא",
-                "past": "מלפני {time}"
+                "past": "לפני {time}",
+                "past_duration": {
+                    "day": "לפני {count} {count, plural,\n  one {day}\n  other {days}\n}",
+                    "hour": "לפני {count} {count, plural,\n  one {hour}\n  other {hours}\n}",
+                    "minute": "לפני {count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
+                    "second": "לפני {count} {count, plural,\n  one {second}\n  other {seconds}\n}",
+                    "week": "לפני {count} {count, plural,\n  one {week}\n  other {weeks}\n}"
+                }
             },
             "service-picker": {
                 "service": "שירות"
@@ -707,6 +714,7 @@
                 "dismiss": "סגור",
                 "edit": "ערוך יישות",
                 "history": "היסטוריה",
+                "last_changed": "שונה לאחרונה",
                 "person": {
                     "create_zone": "צור אזור מהמיקום הנוכחי"
                 },
@@ -763,6 +771,13 @@
                 }
             },
             "quick-bar": {
+                "commands": {
+                    "server_control": {
+                        "perform_action": "{action} שרת",
+                        "restart": "הפעל מחדש",
+                        "stop": "עצור"
+                    }
+                },
                 "filter_placeholder": "מסנן ישויות"
             },
             "voice_command": {
@@ -2467,6 +2482,9 @@
                             "description": "כרטיס ה־Glance שימושי עבור קיבוץ מספר חיישנים לסקירה קומפקטית.",
                             "name": "Glance"
                         },
+                        "grid": {
+                            "name": "רשת"
+                        },
                         "history-graph": {
                             "description": "הכרטיס History Graph מאפשר לך להציג גרף עבור כל אחת מהישויות המפורטות.",
                             "name": "גרף ההיסטוריה"
@@ -2942,6 +2960,10 @@
                     "header": "מודלי אימות מרובה גורמים"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "שם התקן",
+                        "title": "איך לקרוא להתקן זה?"
+                    },
                     "description": "שלח התראות למכשיר זה.",
                     "error_load_platform": "הגדר את notify.html5.",
                     "error_use_https": "נדרש SSL מופעל עבור הממשק.",

@@ -960,7 +960,7 @@
             "connection_lost": "Ühendus kadunud. Taasühendamine...",
             "dismiss": "Loobu",
             "service_call_failed": "Teenuse {service} väljakutsumine ebaõnnestus.",
-            "started": "Koduabiline on käivitunud!",
+            "started": "Home Assistant on käivitunud!",
             "starting": "Home Assistant  käivitub, kõik elemendid ei pruugi veel saadaval olla",
             "triggered": "Käivitati {name}"
         },
