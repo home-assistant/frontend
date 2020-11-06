@@ -65,7 +65,7 @@ class OZWNodeDashboard extends LitElement {
       return html`
         <hass-error-screen
           .hass=${this.hass}
-          .error="${this.hass.localize("ui.panel.config.ozw.node.not_found")}"
+          .error=${this.hass.localize("ui.panel.config.ozw.node.not_found")}
         ></hass-error-screen>
       `;
     }

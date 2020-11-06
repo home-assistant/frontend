@@ -69,9 +69,9 @@ class OZWNodeConfig extends LitElement {
       return html`
         <hass-error-screen
           .hass=${this.hass}
-          .error="${this.hass.localize(
+          .error=${this.hass.localize(
             "ui.panel.config.ozw.node." + this._error
-          )}"
+          )}
         ></hass-error-screen>
       `;
     }

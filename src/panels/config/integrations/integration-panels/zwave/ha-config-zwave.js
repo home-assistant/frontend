@@ -93,7 +93,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
         <app-header slot="header" fixed="">
           <app-toolbar>
             <ha-icon-button-arrow-prev
-              .hass=${this.hass}
+              hass="[[hass]]"
               on-click="_backTapped"
             ></ha-icon-button-arrow-prev>
             <div main-title="">

@@ -82,7 +82,7 @@ class HaConfigAreaPage extends LitElement {
       return html`
         <hass-error-screen
           .hass=${this.hass}
-          error="${this.hass.localize("ui.panel.config.areas.area_not_found")}"
+          .error=${this.hass.localize("ui.panel.config.areas.area_not_found")}
         ></hass-error-screen>
       `;
     }

@@ -215,7 +215,7 @@ class CloudAlexa extends LitElement {
 
     return html`
       <hass-subpage .hass=${this.hass} header="${this.hass!.localize(
-      " ui.panel.config.cloud.alexa.title"
+      "ui.panel.config.cloud.alexa.title"
     )}">
         ${
           emptyFilter

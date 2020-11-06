@@ -59,9 +59,9 @@ class OZWConfigDashboard extends LitElement {
     if (this._instances.length === 0) {
       return html`<hass-error-screen
         .hass=${this.hass}
-        .error="${this.hass.localize(
+        .error=${this.hass.localize(
           "ui.panel.config.ozw.select_instance.none_found"
-        )}"
+        )}
       ></hass-error-screen>`;
     }
 
