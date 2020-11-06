@@ -2759,6 +2759,10 @@
                             "description": "La scheda Occhiata è utile per raggruppare più sensori in una panoramica compatta.",
                             "name": "Vista"
                         },
+                        "grid": {
+                            "description": "La scheda Griglia consente di mostrare più schede in una griglia.",
+                            "name": "Griglia"
+                        },
                         "history-graph": {
                             "description": "La scheda Grafico Storico consente di visualizzare un grafico per ciascuna delle entità elencate.",
                             "name": "Grafico cronologico"

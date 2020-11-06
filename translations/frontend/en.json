@@ -21,7 +21,7 @@
         "map": "Map",
         "media_browser": "Media Browser",
         "profile": "Profile",
-        "shopping_list": "Shopping list",
+        "shopping_list": "Shopping List",
         "states": "Overview"
     },
     "state_attributes": {
@@ -520,6 +520,7 @@
             "previous": "Previous",
             "refresh": "Refresh",
             "save": "Save",
+            "skip": "Skip",
             "successfully_deleted": "Successfully deleted",
             "successfully_saved": "Successfully saved",
             "undo": "Undo",
@@ -1212,7 +1213,7 @@
                                     "trigger": "Trigger"
                                 },
                                 "event": {
-                                    "context_user_pick": "Add user",
+                                    "context_user_pick": "Select user",
                                     "context_user_picked": "User firing event",
                                     "context_users": "Limit to events triggered by",
                                     "event_data": "Event data",
@@ -1311,6 +1312,22 @@
                         "only_editable": "Only automations defined in automations.yaml are editable.",
                         "pick_automation": "Pick automation to edit",
                         "show_info_automation": "Show info about automation"
+                    },
+                    "thingtalk": {
+                        "create": "Create automation",
+                        "link_devices": {
+                            "ambiguous_entities": "One or more devices have more than one matching entity, please pick the one you want to use.",
+                            "header": "Great! Now we need to link some devices",
+                            "unknown_placeholder": "Unknown placeholder"
+                        },
+                        "task_selection": {
+                            "error_empty": "Enter a command or tap skip.",
+                            "error_unsupported": "We couldn't create an automation for that (yet?).",
+                            "for_example": "For example:",
+                            "header": "Create a new automation",
+                            "introduction": "Type below what this automation should do, and we will try to convert it into a Home Assistant automation.",
+                            "language_note": "Note: Only English is supported for now."
+                        }
                     }
                 },
                 "cloud": {
@@ -3301,6 +3318,9 @@
                     "description": "Enable or disable vibration on this device when controlling devices.",
                     "header": "Vibrate"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "Start conversation"
             },
             "shopping-list": {
                 "add_item": "Add item",
