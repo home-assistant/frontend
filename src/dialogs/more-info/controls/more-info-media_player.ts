@@ -309,11 +309,16 @@ class MoreInfoMediaPlayer extends LitElement {
       (state === "playing" &&
         (supportsFeature(stateObj, SUPPORT_PAUSE) ||
           supportsFeature(stateObj, SUPPORT_STOP))) ||
-      (state === "paused" && supportsFeature(stateObj, SUPPORTS_PLAY))
+      (state === "paused" && supportsFeature(stateObj, SUPPORTS_PLAY)) ||
+      (state === "on" &&
+        supportsFeature(stateObj, SUPPORTS_PLAY) &&
+        supportsFeature(stateObj, SUPPORT_PAUSE))
     ) {
       buttons.push({
         icon:
-          state !== "playing"
+          state === "on"
+            ? "hass:play-pause"
+            : state !== "playing"
             ? "hass:play"
             : supportsFeature(stateObj, SUPPORT_PAUSE)
             ? "hass:pause"
