@@ -13,7 +13,10 @@ import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import "../../../styles/polymer-ha-style";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
-import { mdiInformationOutline } from "@mdi/js";
+import {
+  mdiInformationOutline,
+  mdiClipboardTextMultipleOutline,
+} from "@mdi/js";
 import { computeRTL } from "../../../common/util/compute_rtl";
 
 const ERROR_SENTINEL = {};
@@ -205,6 +208,12 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
                   title="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
                   path="[[informationOutlineIcon()]]"
                 ></ha-svg-icon>
+                <ha-svg-icon
+                  on-click="copyEntity"
+                  alt="[[localize('ui.panel.developer-tools.tabs.states.copy_id')]]"
+                  title="[[localize('ui.panel.developer-tools.tabs.states.copy_id')]]"
+                  path="[[clipboardOutlineIcon()]]"
+                ></ha-svg-icon>
                 <a href="#" on-click="entitySelected">[[entity.entity_id]]</a>
               </td>
               <td>
@@ -296,6 +305,11 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
     };
   }
 
+  copyEntity(ev) {
+    ev.preventDefault();
+    navigator.clipboard.writeText(ev.model.entity.entity_id);
+  }
+
   entitySelected(ev) {
     const state = ev.model.entity;
     this._entityId = state.entity_id;
@@ -343,6 +357,10 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   informationOutlineIcon() {
     return mdiInformationOutline;
+  }
+
+  clipboardOutlineIcon() {
+    return mdiClipboardTextMultipleOutline;
   }
 
   computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter) {
