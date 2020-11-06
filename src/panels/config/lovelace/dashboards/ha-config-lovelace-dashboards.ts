@@ -225,9 +225,9 @@ export class HaConfigLovelaceDashboards extends LitElement {
       >
         <mwc-fab
           slot="fab"
-          .label="${this.hass.localize(
+          .label=${this.hass.localize(
             "ui.panel.config.lovelace.dashboards.picker.add_dashboard"
-          )}"
+          )}
           extended
           @click=${this._addDashboard}
         >

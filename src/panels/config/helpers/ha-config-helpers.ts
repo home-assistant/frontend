@@ -160,9 +160,9 @@ export class HaConfigHelpers extends LitElement {
       >
         <mwc-fab
           slot="fab"
-          .label="${this.hass.localize(
+          .label=${this.hass.localize(
             "ui.panel.config.helpers.picker.add_helper"
-          )}"
+          )}
           extended
           @click=${this._createHelpler}
         >
