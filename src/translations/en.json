@@ -797,7 +797,7 @@
         },
         "areas": {
           "caption": "Areas",
-          "description": "Manage areas in your home",
+          "description": "Group devices into areas",
           "data_table": {
             "area": "Area",
             "devices": "Devices"
@@ -827,7 +827,7 @@
         },
         "tags": {
           "caption": "Tags",
-          "description": "Manage tags",
+          "description": "Trigger automations when a NFC tag, QR code, etc. is scanned",
           "learn_more": "Learn more about tags",
           "no_tags": "No tags",
           "add_tag": "Add tag",
@@ -858,7 +858,7 @@
         },
         "helpers": {
           "caption": "Helpers",
-          "description": "Manage elements that help build automations",
+          "description": "Elements that help build automations",
           "types": {
             "input_text": "Text",
             "input_number": "Number",
@@ -886,7 +886,7 @@
         },
         "core": {
           "caption": "General",
-          "description": "Change your general Home Assistant configuration",
+          "description": "Unit system, location, time zone & other general parameters",
           "section": {
             "core": {
               "header": "General Configuration",
@@ -915,7 +915,7 @@
           "caption": "Info",
           "copy_raw": "Raw Text",
           "copy_github": "For GitHub",
-          "description": "View info about your Home Assistant installation",
+          "description": "Version, system health and links to documentation",
           "home_assistant_logo": "Home Assistant logo",
           "path_configuration": "Path to configuration.yaml: {path}",
           "developed_by": "Developed by a bunch of awesome people.",
@@ -950,7 +950,7 @@
         },
         "lovelace": {
           "caption": "Lovelace Dashboards",
-          "description": "Manage your Lovelace Dashboards",
+          "description": "Create customized sets of cards to control your home",
           "dashboards": {
             "default_dashboard": "This is the default dashboard",
             "caption": "Dashboards",
@@ -1105,7 +1105,7 @@
         },
         "automation": {
           "caption": "Automations",
-          "description": "Manage automations",
+          "description": "Create custom behavior rules for your home",
           "picker": {
             "header": "Automation Editor",
             "introduction": "The automation editor allows you to create and edit automations. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
@@ -1485,7 +1485,7 @@
         },
         "script": {
           "caption": "Scripts",
-          "description": "Manage scripts",
+          "description": "Execute a sequence of actions",
           "picker": {
             "header": "Script Editor",
             "introduction": "The script editor allows you to create and edit scripts. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
@@ -1535,7 +1535,7 @@
         },
         "scene": {
           "caption": "Scenes",
-          "description": "Manage scenes",
+          "description": "Capture device states and easily recall them later",
           "activated": "Activated scene {name}.",
           "picker": {
             "header": "Scene Editor",
@@ -1581,7 +1581,7 @@
         "cloud": {
           "description_login": "Logged in as {email}",
           "description_not_login": "Not logged in",
-          "description_features": "Control away from home, integrate with Alexa and Google Assistant.",
+          "description_features": "Control home when away and integrate with Alexa and Google Assistant",
           "login": {
             "title": "Cloud Login",
             "introduction": "Home Assistant Cloud provides you with a secure remote connection to your instance while away from home. It also allows you to connect with cloud-only services: Amazon Alexa and Google Assistant.",
@@ -1748,7 +1748,7 @@
         "devices": {
           "add_prompt": "No {name} have been added using this device yet. You can add one by clicking the + button above.",
           "caption": "Devices",
-          "description": "Manage connected devices",
+          "description": "Manage configured devices",
           "device_info": "Device info",
           "unnamed_device": "Unnamed device",
           "unknown_error": "Unknown error",
@@ -1941,7 +1941,7 @@
         },
         "integrations": {
           "caption": "Integrations",
-          "description": "Manage integrations",
+          "description": "Manage integrations with services, devices, ...",
           "integration": "integration",
           "discovered": "Discovered",
           "attention": "Attention required",
