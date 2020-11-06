@@ -126,9 +126,9 @@ export class HaConfigAreasDashboard extends LitElement {
         ></ha-icon-button>
         <mwc-fab
           slot="fab"
-          .label="${this.hass.localize(
+          .label=${this.hass.localize(
             "ui.panel.config.areas.picker.create_area"
-          )}"
+          )}
           extended
           @click=${this._createArea}
         >
