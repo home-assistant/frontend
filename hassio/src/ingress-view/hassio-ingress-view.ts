@@ -45,6 +45,7 @@ class HassioIngressView extends LitElement {
 
     if (this._sessionKeepAlive) {
       clearInterval(this._sessionKeepAlive);
+      this._sessionKeepAlive = undefined;
     }
   }
 
