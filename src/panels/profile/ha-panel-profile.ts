@@ -29,9 +29,9 @@ import { HomeAssistant } from "../../types";
 import "./ha-advanced-mode-row";
 import "./ha-change-password-card";
 import "./ha-force-narrow-row";
+import "./ha-kiosk-mode-row";
 import "./ha-long-lived-access-tokens-card";
 import "./ha-mfa-modules-card";
-import "./ha-overflow-menu-row";
 import "./ha-pick-dashboard-row";
 import "./ha-pick-language-row";
 import "./ha-pick-theme-row";
@@ -159,10 +159,9 @@ class HaPanelProfile extends LitElement {
                   ></ha-advanced-mode-row>
                 `
               : ""}
-            <ha-overflow-menu-row
-              .hass=${this.hass}
+            <ha-kiosk-mode-row
               .narrow=${this.narrow}
-              .coreUserData=${this._coreUserData}
+              .hass=${this.hass}
             ></ha-overflow-menu-row>
             <ha-set-suspend-row
               .narrow=${this.narrow}
