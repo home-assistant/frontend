@@ -367,9 +367,10 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         </div>
         <mwc-fab
           slot="fab"
-          .title=${this.hass.localize(
+          .label=${this.hass.localize(
             "ui.panel.config.script.editor.save_script"
           )}
+          extended
           @click=${this._saveScript}
           class=${classMap({
             dirty: this._dirty,

@@ -475,8 +475,10 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         </div>
         <mwc-fab
           slot="fab"
-          aria-label=${this.hass.localize("ui.panel.config.integrations.new")}
-          title=${this.hass.localize("ui.panel.config.integrations.new")}
+          .label=${this.hass.localize(
+            "ui.panel.config.integrations.add_integration"
+          )}
+          extended
           @click=${this._createFlow}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>

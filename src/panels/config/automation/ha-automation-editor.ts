@@ -472,7 +472,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         <mwc-fab
           slot="fab"
           class=${classMap({ dirty: this._dirty })}
-          .title=${this.hass.localize("ui.panel.config.automation.editor.save")}
+          .label=${this.hass.localize("ui.panel.config.automation.editor.save")}
+          extended
           @click=${this._saveAutomation}
         >
           <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
