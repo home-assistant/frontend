@@ -11,6 +11,7 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
+import { HomeAssistant } from "../types";
 import "./ha-icon-button";
 
 @customElement("ha-button-menu")
@@ -23,6 +24,8 @@ export class HaButtonMenu extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
   @query("mwc-menu", true) private _menu?: Menu;
 
   public get items() {
@@ -34,6 +37,7 @@ export class HaButtonMenu extends LitElement {
   }
 
   protected render(): TemplateResult {
+    this.style.display = this.hass.enableKioskMode ? "none" : "inline-block";
     return html`
       <div @click=${this._handleClick}>
         <slot name="trigger"></slot>
