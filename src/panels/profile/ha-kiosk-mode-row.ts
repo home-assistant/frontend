@@ -10,8 +10,8 @@ import type { HaSwitch } from "../../components/ha-switch";
 import type { HomeAssistant } from "../../types";
 import "../../components/ha-settings-row";
 
-@customElement("ha-overflow-menu-row")
-class HaOverflowMenuRow extends LitElement {
+@customElement("ha-kiosk-mode-row")
+class HaKioskModeRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
@@ -20,13 +20,13 @@ class HaOverflowMenuRow extends LitElement {
     return html`
       <ha-settings-row .narrow=${this.narrow}>
         <span slot="heading">
-          ${this.hass.localize("ui.panel.profile.overflow_menu.header")}
+          ${this.hass.localize("ui.panel.profile.kiosk_mode.header")}
         </span>
         <span slot="description">
-          ${this.hass.localize("ui.panel.profile.overflow_menu.description")}
+          ${this.hass.localize("ui.panel.profile.kiosk_mode.description")}
         </span>
         <ha-switch
-          .checked=${this.hass.enableOverflowMenu}
+          .checked=${this.hass.enableKioskMode}
           @change=${this._checkedChanged}
         ></ha-switch>
       </ha-settings-row>
@@ -40,6 +40,6 @@ class HaOverflowMenuRow extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-overflow-menu-row": HaOverflowMenuRow;
+    "ha-kiosk-mode-row": HaKioskModeRow;
   }
 }
