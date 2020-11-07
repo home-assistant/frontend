@@ -2806,6 +2806,7 @@
                             "description": "The Map card that allows you to display entities on a map.",
                             "geo_location_sources": "Geolocation Sources",
                             "hours_to_show": "Hours to Show",
+                            "max_gps_accuracy": "Max GPS Accuracy Threshold",
                             "name": "Map",
                             "source": "Source"
                         },

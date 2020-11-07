@@ -436,7 +436,13 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             const latitude = state.attributes.latitude;
             const longitude = state.attributes.longitude;
             if (latitude && longitude) {
-              accumulator.push([latitude, longitude] as LatLngTuple);
+              let accurateEnough = true;
+              if (state.attributes.gps_accuracy && this._config!.max_gps_accuracy) {
+                accurateEnough = state.attributes.gps_accuracy < this._config!.max_gps_accuracy;
+              }
+              if (accurateEnough) {
+                accumulator.push([latitude, longitude] as LatLngTuple);
+              }
             }
             return accumulator;
           },

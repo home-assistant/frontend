@@ -45,6 +45,7 @@ const cardConfigStruct = object({
   dark_mode: optional(boolean()),
   entities: array(entitiesConfigStruct),
   hours_to_show: optional(number()),
+  max_gps_accuracy: optional(number()),
   geo_location_sources: optional(array()),
 });
 
@@ -82,6 +83,10 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
 
   get _hours_to_show(): number {
     return this._config!.hours_to_show || 0;
+  }
+
+  get _max_gps_accuracy(): number {
+    return this._config!.max_gps_accuracy || 0;
   }
 
   get _dark_mode(): boolean {
@@ -150,6 +155,17 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
             type="number"
             .value="${this._hours_to_show}"
             .configValue="${"hours_to_show"}"
+            @value-changed="${this._valueChanged}"
+          ></paper-input>
+          <paper-input
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.map.max_gps_accuracy"
+            )} (${this.hass.localize(
+              "ui.panel.lovelace.editor.card.config.optional"
+            )})"
+            type="number"
+            .value="${this._max_gps_accuracy}"
+            .configValue="${"max_gps_accuracy"}"
             @value-changed="${this._valueChanged}"
           ></paper-input>
         </div>
