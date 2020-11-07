@@ -98,7 +98,7 @@ class HaMenuButton extends LitElement {
       return;
     }
 
-    this.style.display = newNarrow || this._alwaysVisible ? "initial" : "none";
+    this.style.display = (newNarrow || this._alwaysVisible) && !this.hass.enableKioskMode ? "initial" : "none";
 
     if (!newNarrow) {
       this._hasNotifications = false;
