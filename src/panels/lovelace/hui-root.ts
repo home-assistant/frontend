@@ -609,7 +609,7 @@ class HUIRoot extends LitElement {
         "ui.panel.lovelace.reload_resources.refresh_body"
       ),
       confirmText: this.hass.localize("ui.common.refresh"),
-      dismissText: this.hass.localize("ui.common.no"),
+      dismissText: this.hass.localize("ui.common.not_now"),
       confirm: () => location.reload(),
     });
   }
