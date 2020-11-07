@@ -520,6 +520,7 @@
             "previous": "Précédent",
             "refresh": "Rafraîchir",
             "save": "Enregistrer",
+            "skip": "Passer",
             "successfully_deleted": "Supprimé avec succès",
             "successfully_saved": "Enregistré avec succès",
             "undo": "Annuler",
@@ -1311,6 +1312,16 @@
                         "only_editable": "Seules les automatisations définies dans automations.yaml sont modifiables.",
                         "pick_automation": "Choisissez l'automatisation à modifier",
                         "show_info_automation": "Afficher des informations sur l'automatisation"
+                    },
+                    "thingtalk": {
+                        "link_devices": {
+                            "header": "Super ! Maintenant nous allons lier quelques appareils",
+                            "unknown_placeholder": "Espace réservé introuvable"
+                        },
+                        "task_selection": {
+                            "for_example": "Par exemple : ",
+                            "language_note": "Remarque: pour l'instant, seul l'anglais est pris en charge."
+                        }
                     }
                 },
                 "cloud": {
@@ -3297,6 +3308,9 @@
                     "description": "Activer ou désactiver les vibrations sur cet appareil lors du contrôle des périphériques.",
                     "header": "Vibrer"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "Démarrer la conversation"
             },
             "shopping-list": {
                 "add_item": "Ajouter un élément",

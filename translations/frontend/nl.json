@@ -520,6 +520,7 @@
             "previous": "Vorige",
             "refresh": "Vernieuwen",
             "save": "Opslaan",
+            "skip": "Overslaan",
             "successfully_deleted": "Succesvol verwijderd",
             "successfully_saved": "Succesvol opgeslagen",
             "undo": "Ongedaan maken",
@@ -891,6 +892,7 @@
                         "zone": "Herlaad zones"
                     },
                     "server_control": {
+                        "perform_action": "{action} Server",
                         "restart": "Herstarten",
                         "stop": "Stop"
                     }
@@ -1211,7 +1213,7 @@
                                     "trigger": "Trigger"
                                 },
                                 "event": {
-                                    "context_user_pick": "Gebruiker toevoegen",
+                                    "context_user_pick": "Selecteer gebruiker",
                                     "context_user_picked": "Gebeurtenis door gebruiker",
                                     "context_users": "Limiet voor gebeurtenissen die zijn geactiveerd door",
                                     "event_data": "Gebeurtenisdata",
@@ -1310,6 +1312,22 @@
                         "only_editable": "Alleen automatiseringen in automations.yaml kunnen worden bewerkt.",
                         "pick_automation": "Kies te bewerken automatisering",
                         "show_info_automation": "Informatie weergeven over automatisering"
+                    },
+                    "thingtalk": {
+                        "create": "Creëer automatisering",
+                        "link_devices": {
+                            "ambiguous_entities": "Een of meer apparaten hebben meer dan één overeenkomende entiteit. Kies het apparaat dat u wilt gebruiken.",
+                            "header": "Geweldig! Nu moeten we enkele apparaten koppelen",
+                            "unknown_placeholder": "Onbekende tijdelijke aanduiding"
+                        },
+                        "task_selection": {
+                            "error_empty": "Voer een commando in of druk op overslaan.",
+                            "error_unsupported": "Daar konden we (nog) geen automatisering voor maken.",
+                            "for_example": "Bijvoorbeeld:",
+                            "header": "Creëer een nieuwe automatisering",
+                            "introduction": "Typ hieronder wat deze automatisering zou moeten doen, en we zullen proberen om het om te zetten in een Home Assistant automatisering.",
+                            "language_note": "Opmerking: voorlopig wordt alleen Engels ondersteund."
+                        }
                     }
                 },
                 "cloud": {
@@ -3300,6 +3318,9 @@
                     "description": "Schakel trillingen op dit apparaat in of uit wanneer u apparaten bestuurt.",
                     "header": "Trillen"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "Gesprek starten"
             },
             "shopping-list": {
                 "add_item": "Item toevoegen",

@@ -520,6 +520,7 @@
             "previous": "Eelmine",
             "refresh": "Värskenda",
             "save": "Salvesta",
+            "skip": "Jäta vahele",
             "successfully_deleted": "Edukalt kustutatud",
             "successfully_saved": "Edukalt salvestatud",
             "undo": "Ennista",
@@ -571,7 +572,7 @@
                 "no_history_found": "Oleku ajalugu ei leitud"
             },
             "logbook": {
-                "by": "poolt",
+                "by": "allikas:",
                 "by_service": "teenuse poolt",
                 "entries_not_found": "Logiraamatu kandeid ei leitud.",
                 "messages": {
@@ -670,9 +671,9 @@
                 "duration": {
                     "day": "{count} {count, plural,\n  one {päev}\n  other {päeva}\n}",
                     "hour": "{count} {count, plural,\n  one {tund}\n  other {tunni}\n}",
-                    "minute": "{count} {count, plural,\n  one {minut}\n  other {minutit}\n}",
+                    "minute": "{count} {count, plural,\n  one {minut}\n  other {minuti}\n}",
                     "second": "{count} {count, plural,\n  one {sekund}\n  other {sekundit}\n}",
-                    "week": "{count} {count, plural,\n  one {nädal}\n  other {nädalat}\n}"
+                    "week": "{count} {count, plural,\n  one {nädala}\n  other {nädala}\n}"
                 },
                 "future": "{time} pärast",
                 "future_duration": {
@@ -939,8 +940,8 @@
         },
         "duration": {
             "day": "{count} {count, plural,\n  one {päev}\n  other {päeva}\n}",
-            "hour": "{count} {count, plural,\n  one {tund}\n  other {tundi}\n}",
-            "minute": "{count} {count, plural,\n  one {minut}\n  other {minutit}\n}",
+            "hour": "{count} {count, plural,\n  one {tund}\n  other {tunni}\n}",
+            "minute": "{count} {count, plural,\n  one {minut}\n  other {minuti}\n}",
             "second": "{count} {count, plural,\n  one {sekund}\n  other {sekundit}\n}",
             "week": "{count} {count, plural,\n  one {nädal}\n  other {nädalat}\n}"
         },
@@ -1212,7 +1213,7 @@
                                     "trigger": "Päästik"
                                 },
                                 "event": {
-                                    "context_user_pick": "Lisa kasutaja",
+                                    "context_user_pick": "Vali kasutaja",
                                     "context_user_picked": "Kasutaja kes vallandas sündmuse",
                                     "context_users": "Piira sündmustega mille on käivitanud",
                                     "event_data": "Sündmuse andmed",
@@ -1311,6 +1312,22 @@
                         "only_editable": "Ainult automations.yaml failis defineeritud automatiseeringud on muudetavad.",
                         "pick_automation": "Vali muudetav automatiseering",
                         "show_info_automation": "Kuva automatiseeringu teave"
+                    },
+                    "thingtalk": {
+                        "create": "Loo automatiseering",
+                        "link_devices": {
+                            "ambiguous_entities": "Ühel või mitmel seadmel on mitu sobivat olemit, palun vali see, mida soovid kasutada.",
+                            "header": "Suurepärane! Nüüd peame lisama mõned seadmed",
+                            "unknown_placeholder": "Tundmatu kohatäide"
+                        },
+                        "task_selection": {
+                            "error_empty": "Sisesta käsk või vajuta Jäta vahele.",
+                            "error_unsupported": "Me ei saanud selle jaoks (veel?) automaatiseeringut luua .",
+                            "for_example": "Näiteks:",
+                            "header": "Loo uus automatiseering",
+                            "introduction": "Sisesta allpool, mida see automaatiseering peaks tegema, ja proovime selle teisendada Home Assistanti automaatiseeringuks.",
+                            "language_note": "Märkus. Praegu toetatakse ainult inglise keelt."
+                        }
                     }
                 },
                 "cloud": {
@@ -3280,7 +3297,7 @@
                     "token_title": "Ajutine juurdepääsutõend {clientId} jaoks"
                 },
                 "suspend": {
-                    "description": "Kas sulgeda ühenduse serveriga pärast 5-minutilist jõudeolekut ?",
+                    "description": "Kas sulgeda ühendus serveriga pärast 5-minutilist jõudeolekut ?",
                     "header": "Sule ühendus automaatselt"
                 },
                 "themes": {
@@ -3301,6 +3318,9 @@
                     "description": "Seadmete juhtimisel lubage või keelake vibratsioon.",
                     "header": "Vibreeri"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "Alusta vestlust"
             },
             "shopping-list": {
                 "add_item": "Lisa toode",

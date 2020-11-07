@@ -520,6 +520,7 @@
             "previous": "Forrige",
             "refresh": "Oppdater",
             "save": "Lagre",
+            "skip": "Hopp over",
             "successfully_deleted": "Sletting vellykket",
             "successfully_saved": "Lagring vellykket",
             "undo": "Angre",
@@ -1212,7 +1213,7 @@
                                     "trigger": "Utløser"
                                 },
                                 "event": {
-                                    "context_user_pick": "Legg til bruker",
+                                    "context_user_pick": "Velg bruker",
                                     "context_user_picked": "Bruker avfyrer hendelse",
                                     "context_users": "Begrens til hendelser utløst av",
                                     "event_data": "Hendelse data",
@@ -1311,6 +1312,22 @@
                         "only_editable": "Bare automasjoner definert i automations.yaml kan redigeres.",
                         "pick_automation": "Velg automasjon for å redigere",
                         "show_info_automation": "Vis informasjon om automasjon"
+                    },
+                    "thingtalk": {
+                        "create": "Opprett automatisering",
+                        "link_devices": {
+                            "ambiguous_entities": "En eller flere enheter har mer enn en samsvarende entitet. Velg den du vil bruke.",
+                            "header": "Flott! Nå må vi koble til noen enheter",
+                            "unknown_placeholder": "Ukjent plassholder"
+                        },
+                        "task_selection": {
+                            "error_empty": "Skriv inn en kommando, eller trykk hopp over.",
+                            "error_unsupported": "Vi kunne ikke lage en automatisering for det (ennå?)",
+                            "for_example": "For eksempel:",
+                            "header": "Opprette en ny automatisering",
+                            "introduction": "Skriv nedenfor hva denne automasjonen skal gjøre, og vi vil prøve å konvertere den til en Home Assistant-automatisering.",
+                            "language_note": "Merk: Bare engelsk støttes foreløpig."
+                        }
                     }
                 },
                 "cloud": {
@@ -3301,6 +3318,9 @@
                     "description": "Aktiver eller deaktiver vibrasjoner på denne enheten når du kontrollerer enheter.",
                     "header": "Vibrere"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "Start samtale"
             },
             "shopping-list": {
                 "add_item": "Legg til",

@@ -520,6 +520,7 @@
             "previous": "Prejšnji",
             "refresh": "Osveži",
             "save": "Shrani",
+            "skip": "Preskoči",
             "successfully_deleted": "Uspešno odstranjeno",
             "successfully_saved": "Shranjeno",
             "undo": "Razveljavi",
@@ -1311,6 +1312,14 @@
                         "only_editable": "Urejajo se lahko samo avtomatizacije, definirane v automations.yaml.",
                         "pick_automation": "Izberite avtomatizacijo za urejanje",
                         "show_info_automation": "Prikaži informacije o avtomatizaciji"
+                    },
+                    "thingtalk": {
+                        "create": "Ustvari avtomatizacijo",
+                        "task_selection": {
+                            "error_empty": "Vnesite ukaz ali tapnite preskoči.",
+                            "for_example": "Na primer:",
+                            "header": "Ustvari novo avtomatizacijo"
+                        }
                     }
                 },
                 "cloud": {
@@ -1922,8 +1931,15 @@
                     "network_status": {
                         "details": {
                             "driverallnodesqueried": "Poizvedena so bila vsa vozlišča",
+                            "driverfailed": "Povezava s krmilnikom Z-Wave ni uspela",
+                            "driverready": "Inicializacija krmilnika Z-Wave",
+                            "driverremoved": "Gonilnik je odstranjen",
+                            "driverreset": "Gonilnik je bil ponastavljen",
+                            "offline": "OZWDaemon nedosegljiv",
+                            "ready": "Pripravljen za povezavo",
                             "started": "Povezan z MQTT",
-                            "starting": "Povezovanje z MQTT"
+                            "starting": "Povezovanje z MQTT",
+                            "stopped": "Omrežje Z-Wave ustavljen"
                         },
                         "offline": "Brez povezave",
                         "online": "Povezan",
@@ -1936,7 +1952,9 @@
                         "node_count": "{count} vozlišč"
                     },
                     "node_config": {
-                        "header": "Konfiguracija vozlišča"
+                        "header": "Konfiguracija vozlišča",
+                        "help_source": "Opisi konfiguracijskih parametrov in besedilo pomoči zagotavlja projekt OpenZWave.",
+                        "introduction": "Upravljajte različne konfiguracijske parametre za vozlišče Z-Wave."
                     },
                     "node_metadata": {
                         "product_manual": "Priročnik za izdelek"
@@ -1952,6 +1970,8 @@
                         "not_found": "Vozlišča ni mogoče najti"
                     },
                     "nodes_table": {
+                        "failed": "Neuspešno",
+                        "id": "ID",
                         "manufacturer": "Proizvajalec",
                         "model": "Model",
                         "zwave_plus": "Z-Wave Plus"
@@ -3270,6 +3290,9 @@
                     "description": "V tej napravi omogočite ali onemogočite vibracije pri krmiljenju naprav.",
                     "header": "Vibriraj"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "Začni pogovor"
             },
             "shopping-list": {
                 "add_item": "Dodaj potrebščino",
