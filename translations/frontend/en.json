@@ -3234,6 +3234,10 @@
                     "description": "This will hide the sidebar by default, similar to the mobile experience.",
                     "header": "Always hide the sidebar"
                 },
+                "kiosk_mode": {
+                    "description": "Hide the overflow menu (3 dots) and the sidebar button (you can still open it by pulling from the left).",
+                    "header": "Kiosk Mode"
+                }
                 "is_owner": "You are an owner.",
                 "language": {
                     "dropdown_label": "Language",
