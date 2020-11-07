@@ -156,7 +156,10 @@ class HUIRoot extends LitElement {
                       <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
                     </mwc-icon-button>
                   </a>
-                  <ha-button-menu corner="BOTTOM_START">
+                  <ha-button-menu
+                    corner="BOTTOM_START"
+                    .hass=${this.hass}
+                  >
                     <mwc-icon-button
                       slot="trigger"
                       .title="${this.hass!.localize(
