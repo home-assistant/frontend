@@ -5,7 +5,6 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-switch";
 import type { HaSwitch } from "../../components/ha-switch";
 import type { HomeAssistant } from "../../types";
@@ -35,12 +34,7 @@ class HaOverflowMenuRow extends LitElement {
   }
 
   private async _checkedChanged(ev: Event) {
-    const enabled = (ev.target as HaSwitch).checked;
-    if (enabled === this.hass.enableOverflowMenu) {
-      return;
-    }
-
-    fireEvent(this, "hass-enable-overflow-menu", enabled);
+    this.hass.enableOverflowMenu = (ev.target as HaSwitch).checked;
   }
 }
 
