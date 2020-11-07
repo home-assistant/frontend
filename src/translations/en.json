@@ -2698,6 +2698,10 @@
           "header": "Keyboard Shortcuts",
           "description": "Enable or disable keyboard shortcuts for performing various actions in the UI."
         },
+        "kiosk_mode": {
+            "description": "Hide the overflow menu (3 dots) and the sidebar button (you can still open it by pulling from the left).",
+            "header": "Kiosk Mode"
+        },
         "suspend": {
           "header": "Automatically close connection",
           "description": "Should we close the connection to the server after being hidden for 5 minutes?"
