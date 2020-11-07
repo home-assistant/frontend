@@ -3138,7 +3138,7 @@
                     "intro": "Geräte und Dienste werden in Home Assistant als Integrationen dargestellt. Sie können jetzt oder später über die Konfigurationsseite eingerichtet werden.",
                     "more_integrations": "Mehr"
                 },
-                "intro": "Sind Sie bereit, dein Zuhause zu wecken, Ihre Privatsphäre zurückzugewinnen und einer weltweiten Gemeinschaft von Tüftlern beizutreten?",
+                "intro": "Sind Sie bereit, Ihr Zuhause zu wecken, Ihre Privatsphäre zurückzugewinnen und einer weltweiten Gemeinschaft von Tüftlern beizutreten?",
                 "restore": {
                     "description": "Alternativ kannst du von einem vorherigen Snapshot wiederherstellen.",
                     "hide_log": "Vollständiges Log verstecken",
@@ -3157,7 +3157,7 @@
                         "password_not_match": "Passwörter stimmen nicht überein",
                         "required_fields": "Fülle alle Pflichtfelder aus."
                     },
-                    "intro": "Beginnen wir mit dem Erstellen eines Benutzerkontos.",
+                    "intro": "Beginnen wir mit dem Erstellen eines lokalen Benutzerkontos.",
                     "required_field": "Erforderlich"
                 }
             },
