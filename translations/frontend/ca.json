@@ -21,7 +21,7 @@
         "map": "Mapa",
         "media_browser": "Navegador multimèdia",
         "profile": "Perfil",
-        "shopping_list": "Llista de compres",
+        "shopping_list": "Llista de la compra",
         "states": "Visualització general"
     },
     "state_attributes": {
@@ -520,6 +520,7 @@
             "previous": "Anterior",
             "refresh": "Actualitza",
             "save": "Desa",
+            "skip": "Omet",
             "successfully_deleted": "S'ha eliminat correctament",
             "successfully_saved": "S'ha desat correctament",
             "undo": "Desfés",
@@ -1212,7 +1213,7 @@
                                     "trigger": "Disparador"
                                 },
                                 "event": {
-                                    "context_user_pick": "Afegeix usuari",
+                                    "context_user_pick": "Selecciona usuari",
                                     "context_user_picked": "Esdeveniment cridat per usuari",
                                     "context_users": "Limita-ho als esdeveniments disparats per",
                                     "event_data": "Dades de l'esdeveniment",
@@ -1311,6 +1312,22 @@
                         "only_editable": "Només es poden editar les automatitzacions definides dins l'arxiu automations.yaml.",
                         "pick_automation": "Selecciona l'automatització a editar",
                         "show_info_automation": "Mostra informació sobre l'automatització"
+                    },
+                    "thingtalk": {
+                        "create": "Crea automatització",
+                        "link_devices": {
+                            "ambiguous_entities": "Un o més dispositius tenen més d'una entitat coincident. Escull la que vulguis utilitzar.",
+                            "header": "Genial! Ara hem d'enllaçar alguns dispositius",
+                            "unknown_placeholder": "Marcador desconegut"
+                        },
+                        "task_selection": {
+                            "error_empty": "Introdueix alguna ordre o prem a omet.",
+                            "error_unsupported": "No hem pogut crear una automatització per a això (encara?).",
+                            "for_example": "Per exemple:",
+                            "header": "Crea una nova automatització",
+                            "introduction": "Escriu a continuació el que hauria de fer l'automatització i intentarem convertir-ho en una automatització de Home Assistant.",
+                            "language_note": "Nota: ara per are només s'admet en anglès"
+                        }
                     }
                 },
                 "cloud": {
@@ -3301,6 +3318,9 @@
                     "description": "Activa o desactiva la vibració en d'aquest dispositiu.",
                     "header": "Vibra"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "Inicia conversa"
             },
             "shopping-list": {
                 "add_item": "Afegir article",

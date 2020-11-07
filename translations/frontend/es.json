@@ -520,6 +520,7 @@
             "previous": "Anterior",
             "refresh": "Actualizar",
             "save": "Guardar",
+            "skip": "Omitir",
             "successfully_deleted": "Eliminado correctamente",
             "successfully_saved": "Guardado correctamente",
             "undo": "Deshacer",
@@ -1212,7 +1213,7 @@
                                     "trigger": "Desencadenante"
                                 },
                                 "event": {
-                                    "context_user_pick": "Añadir usuario",
+                                    "context_user_pick": "Seleccionar usuario",
                                     "context_user_picked": "Evento desencadenado por usuario",
                                     "context_users": "Límite a eventos desencadenados por",
                                     "event_data": "Datos del evento",
@@ -1311,6 +1312,22 @@
                         "only_editable": "Solo las automatizaciones definidas en automations.yaml son editables.",
                         "pick_automation": "Elije la automatización para editar",
                         "show_info_automation": "Mostrar información sobre la automatización"
+                    },
+                    "thingtalk": {
+                        "create": "Crear automatización",
+                        "link_devices": {
+                            "ambiguous_entities": "Uno o más dispositivos tienen más de una entidad coincidente, selecciona la que deseas utilizar.",
+                            "header": "¡Excelente! Ahora necesitamos vincular algunos dispositivos",
+                            "unknown_placeholder": "Marcador de posición desconocido"
+                        },
+                        "task_selection": {
+                            "error_empty": "Introduce un comando o pulsa omitir.",
+                            "error_unsupported": "No hemos podido crear una automatización para eso (¿todavía?).",
+                            "for_example": "Por ejemplo:",
+                            "header": "Crear una nueva automatización",
+                            "introduction": "Escribe a continuación lo que debe hacer esta automatización, e intentaremos convertirlo en una automatización de Home Assistant.",
+                            "language_note": "Nota: Solo se admite Inglés por ahora."
+                        }
                     }
                 },
                 "cloud": {
@@ -3301,6 +3318,9 @@
                     "description": "Activar o deshabilitar la vibración en este dispositivo al controlar dispositivos.",
                     "header": "Vibrar"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "Iniciar conversación"
             },
             "shopping-list": {
                 "add_item": "Añadir artículo",

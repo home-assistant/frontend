@@ -520,6 +520,7 @@
             "previous": "Vorher",
             "refresh": "Aktualisieren",
             "save": "Speichern",
+            "skip": "Überspringen",
             "successfully_deleted": "Erfolgreich gelöscht",
             "successfully_saved": "Erfolgreich gespeichert",
             "undo": "Rückgängig machen",
@@ -798,6 +799,7 @@
                 "dismiss": "Dialog ausblenden",
                 "edit": "Entität bearbeiten",
                 "history": "Verlauf",
+                "last_changed": "Zuletzt geändert",
                 "last_updated": "Letztes Update",
                 "person": {
                     "create_zone": "Zone vom aktuellen Standort erstellen"
@@ -1303,6 +1305,20 @@
                         "only_editable": "Nur Automatisierungen in automations.yaml sind editierbar.",
                         "pick_automation": "Wähle eine Automatisierung zum Bearbeiten",
                         "show_info_automation": "Informationen über die Automatisierung anzeigen"
+                    },
+                    "thingtalk": {
+                        "create": "Automatisierung erstellen",
+                        "link_devices": {
+                            "header": "Großartig! Jetzt müssen wir einige Geräte verknüpfen",
+                            "unknown_placeholder": "Unbekannter Platzhalter"
+                        },
+                        "task_selection": {
+                            "error_empty": "Gib einen Befehl ein oder tippe auf Überspringen.",
+                            "error_unsupported": "Dafür konnten wir (noch?) keine Automatisierung erstellen.",
+                            "for_example": "Zum Beispiel:",
+                            "header": "Eine neue Automatisierung erstellen",
+                            "language_note": "Hinweis: Im Moment wird nur Englisch unterstützt."
+                        }
                     }
                 },
                 "cloud": {
@@ -2721,6 +2737,9 @@
                             "description": "Die Glance-Karte ist nützlich, um mehrere Sensoren in einer kompakten Übersicht zu gruppieren.",
                             "name": "Glance"
                         },
+                        "grid": {
+                            "name": "Raster"
+                        },
                         "history-graph": {
                             "description": "Mit der Verlaufsdiagramm-Karte kannst du für jedes der aufgelisteten Objekte ein Diagramm anzeigen.",
                             "name": "History Graph"
@@ -3259,6 +3278,9 @@
                     "description": "Aktiviere oder deaktiviere die Vibration an diesem Gerät, wenn du Geräte steuerst.",
                     "header": "Vibrieren"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "Konversation starten"
             },
             "shopping-list": {
                 "add_item": "Artikel hinzufügen",

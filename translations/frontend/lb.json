@@ -520,6 +520,7 @@
             "previous": "Virdrun",
             "refresh": "Aktualiséieren",
             "save": "Späicheren",
+            "skip": "Iwwersprangen",
             "successfully_deleted": "Erfollegräich geläscht.",
             "successfully_saved": "Erfollegräich gespäichert.",
             "undo": "Réckgängeg maachen",
@@ -709,9 +710,9 @@
                     "enabled_description": "Deaktivéiert Entitéiten ginn net am Home Assistant bäigesat.",
                     "enabled_label": "Entitéit aktivéieren",
                     "entity_id": "ID vun der Entitéit",
-                    "icon": "Ikon iwwerschreiwen",
+                    "icon": "Ikon",
                     "icon_error": "Ikonen sollten am format 'prefix:numm' sinn, Beispill: 'mdi:home'",
-                    "name": "Numm iwwerschreiwen",
+                    "name": "Numm",
                     "note": "Note: dëst funktionéiert villäicht nach net mat all Integratioun.",
                     "unavailable": "Dës Entitéit ass net erreechbar fir de Moment.",
                     "update": "Aktualiséieren"
@@ -1190,7 +1191,7 @@
                                     "trigger": "Ausléiser"
                                 },
                                 "event": {
-                                    "context_user_pick": "Benotzer erstellen",
+                                    "context_user_pick": "Benotzer auswielen",
                                     "context_user_picked": "Benotzer deen den Evenement gestart huet",
                                     "context_users": "Op Evenementer limitéieren déi ausgeléist goufen duerch ",
                                     "event_data": "Evenement Donnée",
@@ -1289,6 +1290,22 @@
                         "only_editable": "Nëmmen Automatiounen déi am automations.yaml séfinéiert sinn kënnen editéiert ginn.",
                         "pick_automation": "Automatismus fir ze änneren auswielen",
                         "show_info_automation": "Informatiounen vum Automatisme uweisen"
+                    },
+                    "thingtalk": {
+                        "create": "Automatisme erstellen",
+                        "link_devices": {
+                            "ambiguous_entities": "Een oder méi Apparater hunn méi wéi eng passend Entitéit, Wiel déi aus déi soll benotzt ginn.",
+                            "header": "Super! Elo musse nach e puer Apparater verbonne ginn",
+                            "unknown_placeholder": "Onbekannte Plazhaler"
+                        },
+                        "task_selection": {
+                            "error_empty": "Gëff ee Kommando an oder klick op Iwwersprangen.",
+                            "error_unsupported": "Mir konnten (nach?) keen Automatisme fir dëst erstellen.",
+                            "for_example": "Zum Beispill:",
+                            "header": "Nei Automatisme erstellen",
+                            "introduction": "Gëff ënnendran an wat déi Automatisme maache sollt, a mir probéieren et an eng Home Assistant Automatisme ëmzewandelen.",
+                            "language_note": "Nott: Nëmmen Englesch gëtt fir de Moment ënnerstëtzt."
+                        }
                     }
                 },
                 "cloud": {
@@ -1541,7 +1558,7 @@
                     "caption": "Apparater",
                     "confirm_delete": "Sécher fir dësen Appara ze läsche?",
                     "confirm_rename_entity_ids": "Wëllt Dir och d'Entitéiten-ID vun Ären Entitéiten ëmbenennen?",
-                    "confirm_rename_entity_ids_warning": "Dëst ännert keng Konfiguratioun (wéi Automatisatisme, Skripte, Szene, Lovelace) déi aktuell dës Entitéite benotzt, du muss se selwer aktualiséieren.",
+                    "confirm_rename_entity_ids_warning": "Dëst ännert keng Konfiguratioun (wéi Automatisatisme, Skripte, Szene, Tableau de Bord) déi aktuell dës Entitéite benotzt, du muss se selwer aktualiséieren fir dass sie déi nei Entitéiten ID's benotzen.",
                     "data_table": {
                         "area": "Beräich",
                         "battery": "Batterie",
@@ -2128,7 +2145,7 @@
                             "input_text": "Agab Text frësch lueden",
                             "introduction": "E puer Deeler vum Home Assistant kënne frësch geluede ginn ouni datt een Neistart néideg ass. Klick op nei luede fir di aktuell Konfiguratioun z'entlueden an di nei Konfiguratioun ze lueden.",
                             "min_max": "Min/Max Entitéite frësch lueden",
-                            "mqtt": "MQTT Entitéiten frësch lueden",
+                            "mqtt": "Manuell konfiguréiert MQTT Entitéiten frësch lueden",
                             "person": "Persoune frësch lueden",
                             "ping": "Ping Binär Sensor Entitéite frësch lueden",
                             "reload": "{domain} frësh lueden",
@@ -2920,7 +2937,7 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "Dëst stellt déi éischt Kaart op voller Breet duer; aner Kaarte ginn net duergestallt.",
+                            "description": "Dëst stellt déi éischt Kaart op voller Breet duer. Aner Kaarte oder Badge ginn net duergestallt.",
                             "title": "Panel Modus?",
                             "warning_multiple_cards": "Dës Usiicht enthält méi wéi eng Kaart, mee eng Panneau Usiicht kann nëmmen 1 Kaart uweisen."
                         }
@@ -3270,6 +3287,9 @@
                     "description": "Vibratioun op dësem Apparat un oder ausschalte wann aner Apparater gesteiert ginn.",
                     "header": "Vibréieren"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "Ënnerhalung starten"
             },
             "shopping-list": {
                 "add_item": "Objet dobäisetze",

@@ -520,6 +520,7 @@
             "previous": "Indietro",
             "refresh": "Aggiorna",
             "save": "Salva",
+            "skip": "Salta",
             "successfully_deleted": "Cancellato con successo",
             "successfully_saved": "Salvataggio riuscito",
             "undo": "Annulla",
@@ -1212,7 +1213,7 @@
                                     "trigger": "Attivazione"
                                 },
                                 "event": {
-                                    "context_user_pick": "Aggiungi utente",
+                                    "context_user_pick": "Seleziona utente",
                                     "context_user_picked": "Evento di attivazione dell'utente",
                                     "context_users": "Limita agli eventi attivati da",
                                     "event_data": "Dati dell'Evento",
@@ -1311,6 +1312,22 @@
                         "only_editable": "Solo le automazioni definite in automations.yaml sono modificabili.",
                         "pick_automation": "Scegli l'Automazione da modificare",
                         "show_info_automation": "Mostra informazioni sull'automazione"
+                    },
+                    "thingtalk": {
+                        "create": "Crea automazione",
+                        "link_devices": {
+                            "ambiguous_entities": "Uno o più dispositivi hanno più di un'entità corrispondente, scegliere quello che si desidera utilizzare.",
+                            "header": "Fantastico! Ora dobbiamo collegare alcuni dispositivi",
+                            "unknown_placeholder": "Segnaposto sconosciuto"
+                        },
+                        "task_selection": {
+                            "error_empty": "Immettere un comando o toccare Salta.",
+                            "error_unsupported": "Non siamo riusciti a creare un'automazione per questo (ancora?).",
+                            "for_example": "Per esempio:",
+                            "header": "Crea una nuova automazione",
+                            "introduction": "Digitare sotto ciò che questa automazione dovrebbe fare, e proveremo a convertirlo in un'automazione Home Assistant.",
+                            "language_note": "Nota: per il momento è supportato solo l'inglese."
+                        }
                     }
                 },
                 "cloud": {
@@ -3301,6 +3318,9 @@
                     "description": "Abilitare o disabilitare la vibrazione su questo dispositivo durante il controllo dei dispositivi.",
                     "header": "Vibrazione"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "Avvia conversazione"
             },
             "shopping-list": {
                 "add_item": "Aggiungi articolo",

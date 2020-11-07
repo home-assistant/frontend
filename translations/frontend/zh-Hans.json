@@ -520,6 +520,7 @@
             "previous": "上一步",
             "refresh": "刷新",
             "save": "保存",
+            "skip": "跳过",
             "successfully_deleted": "已成功删除",
             "successfully_saved": "保存成功",
             "undo": "撤消",
@@ -1212,7 +1213,7 @@
                                     "trigger": "触发条件"
                                 },
                                 "event": {
-                                    "context_user_pick": "添加用户",
+                                    "context_user_pick": "选择用户",
                                     "context_user_picked": "用户触发事件",
                                     "context_users": "仅限以下用户触发事件",
                                     "event_data": "事件数据",
@@ -1311,6 +1312,22 @@
                         "only_editable": "只能编辑 automations.yaml 中的自动化。",
                         "pick_automation": "选择要编辑的自动化",
                         "show_info_automation": "显示有关自动化的信息"
+                    },
+                    "thingtalk": {
+                        "create": "创建自动化",
+                        "link_devices": {
+                            "ambiguous_entities": "有些设备有多个匹配的实体，请选择要使用的实体。",
+                            "header": "很好！现在我们需要链接设备",
+                            "unknown_placeholder": "未知占位符"
+                        },
+                        "task_selection": {
+                            "error_empty": "请输入命令或点击“跳过”。",
+                            "error_unsupported": "目前无法创建这样的自动化。",
+                            "for_example": "例如：",
+                            "header": "创建新的自动化",
+                            "introduction": "请在下方输入这个自动化要实现什么功能，Home Assistant 会尝试将其转换为自动化。",
+                            "language_note": "注意：目前只支持英文。"
+                        }
                     }
                 },
                 "cloud": {
@@ -3301,6 +3318,9 @@
                     "description": "控制设备时，在此设备上启用或禁用振动。",
                     "header": "振动"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "开始对话"
             },
             "shopping-list": {
                 "add_item": "添加项目",

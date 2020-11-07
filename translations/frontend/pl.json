@@ -520,6 +520,7 @@
             "previous": "Poprzedni",
             "refresh": "Odśwież",
             "save": "Zapisz",
+            "skip": "Pomiń",
             "successfully_deleted": "Pomyślnie usunięto",
             "successfully_saved": "Pomyślnie zapisano",
             "undo": "Cofnij",
@@ -1212,7 +1213,7 @@
                                     "trigger": "Wyzwalacz"
                                 },
                                 "event": {
-                                    "context_user_pick": "Dodaj użytkownika",
+                                    "context_user_pick": "Wybierz użytkownika",
                                     "context_user_picked": "Użytkownik wywołujący zdarzenie",
                                     "context_users": "Tylko zdarzenia wywołane przez",
                                     "event_data": "Dane zdarzenia",
@@ -1311,6 +1312,22 @@
                         "only_editable": "Tylko automatyzacje zdefiniowane w pliku automations.yaml są edytowalne.",
                         "pick_automation": "Wybierz automatyzację do edycji",
                         "show_info_automation": "Pokaż informacje o automatyzacji"
+                    },
+                    "thingtalk": {
+                        "create": "Utwórz automatyzację",
+                        "link_devices": {
+                            "ambiguous_entities": "Co najmniej jedno urządzenie ma więcej niż jedną pasującą encję. Wybierz tę, której chcesz użyć.",
+                            "header": "Wspaniale! Teraz musimy podłączyć jakieś urządzenia",
+                            "unknown_placeholder": "Nieznany symbol zastępczy"
+                        },
+                        "task_selection": {
+                            "error_empty": "Wprowadź polecenie lub naciśnij \"Pomiń\"",
+                            "error_unsupported": "Nie mogliśmy (jeszcze?) utworzyć takiej automatyzacji",
+                            "for_example": "Na przykład:",
+                            "header": "Utwórz nową automatyzację",
+                            "introduction": "Wpisz poniżej, co ma robić ta automatyzacja, a my spróbujemy przekształcić ją w automatyzację Home Assistant.",
+                            "language_note": "Uwaga: obecnie obsługiwany jest tylko język angielski."
+                        }
                     }
                 },
                 "cloud": {
@@ -3301,6 +3318,9 @@
                     "description": "Włącz lub wyłącz wibracje na tym urządzeniu podczas sterowania urządzeniami.",
                     "header": "Wibracja"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "Rozpocznij rozmowę"
             },
             "shopping-list": {
                 "add_item": "Dodaj element",

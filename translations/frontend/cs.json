@@ -520,6 +520,7 @@
             "previous": "Předchozí",
             "refresh": "Obnovit",
             "save": "Uložit",
+            "skip": "Přeskočit",
             "successfully_deleted": "Úspěšně smazáno",
             "successfully_saved": "Úspěšně uloženo",
             "undo": "Zpět",
@@ -1212,7 +1213,7 @@
                                     "trigger": "Spouštěč"
                                 },
                                 "event": {
-                                    "context_user_pick": "Přidat uživatele",
+                                    "context_user_pick": "Vyberte uživatele",
                                     "context_user_picked": "Uživatel, který spustil událost",
                                     "context_users": "Omezit na události spuštěné",
                                     "event_data": "Data události",
@@ -1311,6 +1312,22 @@
                         "only_editable": "Upravitelné mohou být pouze automatizace definované v automations.yaml.",
                         "pick_automation": "Vyberte automatizaci, kterou chcete upravit",
                         "show_info_automation": "Zobrazit informace o automatizaci"
+                    },
+                    "thingtalk": {
+                        "create": "Vytvořit automatizaci",
+                        "link_devices": {
+                            "ambiguous_entities": "Jedno nebo více zařízení má více než jednu odpovídající entitu, prosím vyberte tu, kterou chcete použít.",
+                            "header": "Skvěle! Nyní musíme propojit některá zařízení",
+                            "unknown_placeholder": "Neznámý zástupný symbol"
+                        },
+                        "task_selection": {
+                            "error_empty": "Zadejte příkaz nebo klepněte na Přeskočit.",
+                            "error_unsupported": "Nedokázali jsme vytvořit automatizaci (zatím?).",
+                            "for_example": "Například:",
+                            "header": "Vytvoření nové automatizace",
+                            "introduction": "Zadejte níže, co by tato automatizace měla dělat, a my se ji pokusíme převést na automatizaci Home Assistant.",
+                            "language_note": "Poznámka: Prozatím je podporována pouze angličtina."
+                        }
                     }
                 },
                 "cloud": {
@@ -3301,6 +3318,9 @@
                     "description": "Povolit nebo zakázat vibrace na tomto zařízení při ovládání ostatních zařízení.",
                     "header": "Vibrovat"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "Zahájit konverzaci"
             },
             "shopping-list": {
                 "add_item": "Přidat položku",
