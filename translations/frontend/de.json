@@ -1078,7 +1078,7 @@
                                     "wait_template": "Warte-Template"
                                 }
                             },
-                            "unsupported_action": "Nicht unterstützte Aktion: {action}"
+                            "unsupported_action": "Keine UI-Unterstützung für Aktion: {action}"
                         },
                         "alias": "Name",
                         "conditions": {
@@ -1206,7 +1206,7 @@
                                     "trigger": "Auslöser"
                                 },
                                 "event": {
-                                    "context_user_pick": "Benutzer hinzufügen",
+                                    "context_user_pick": "Benutzer auswählen",
                                     "context_user_picked": "Ereignis auslösender Benutzer",
                                     "context_users": "Auf Ereignisse beschränken, die ausgelöst wurden durch",
                                     "event_data": "Ereignisdaten",

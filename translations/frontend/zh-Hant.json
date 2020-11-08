@@ -520,6 +520,7 @@
             "previous": "上一步",
             "refresh": "更新",
             "save": "儲存",
+            "skip": "略過",
             "successfully_deleted": "成功刪除",
             "successfully_saved": "成功儲存",
             "undo": "撤消",
@@ -1212,7 +1213,7 @@
                                     "trigger": "觸發自動化"
                                 },
                                 "event": {
-                                    "context_user_pick": "新增用戶",
+                                    "context_user_pick": "選擇用戶",
                                     "context_user_picked": "用戶觸發事件",
                                     "context_users": "限制觸發事件",
                                     "event_data": "事件資料",
@@ -1311,6 +1312,22 @@
                         "only_editable": "僅有於 automations.yaml 內定義的自動化、方能進行編輯。",
                         "pick_automation": "選擇欲編輯的自動化",
                         "show_info_automation": "顯示關於自動化資訊"
+                    },
+                    "thingtalk": {
+                        "create": "新增自動化",
+                        "link_devices": {
+                            "ambiguous_entities": "相符的實體具有一個以上的實體，請選擇所要使用的實體。",
+                            "header": "太好了！現在我們需要連結一些設備",
+                            "unknown_placeholder": "未知 Placeholder"
+                        },
+                        "task_selection": {
+                            "error_empty": "輸入命令或點選忽略。",
+                            "error_unsupported": "（尚）無法為此新增自動化。",
+                            "for_example": "範例；",
+                            "header": "新增自動化",
+                            "introduction": "於下方輸入自動化內容，Home Assistant 將會試著將其轉換成自動化。",
+                            "language_note": "注意：目前僅支援英文。"
+                        }
                     }
                 },
                 "cloud": {
@@ -3301,6 +3318,9 @@
                     "description": "當控制裝置時、開啟或關閉此裝置震動。",
                     "header": "震動"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "開始對話"
             },
             "shopping-list": {
                 "add_item": "新加入清單",
