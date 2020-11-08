@@ -30,6 +30,9 @@ export const handleChangeEvent = (
   ev: CustomEvent
 ) => {
   ev.stopPropagation();
+  if (ev.detail.isValid === false) {
+    return;
+  }
   const name = (ev.target as any)?.name;
   if (!name) {
     return;

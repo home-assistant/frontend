@@ -41,14 +41,27 @@ export class HaStateCondition extends LitElement implements ConditionElement {
         @value-changed=${this._valueChanged}
         allow-custom-value
       ></ha-entity-attribute-picker>
-      <paper-input
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.conditions.type.state.state"
-        )}
-        .name=${"state"}
-        .value=${state}
-        @value-changed=${this._valueChanged}
-      ></paper-input>
+      ${Array.isArray(state)
+        ? html`
+            <ha-yaml-editor
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.conditions.type.state.state"
+              ) + " (YAML)"}
+              .defaultValue=${state}
+              .name=${"state"}
+              @value-changed=${this._valueChanged}
+            ></ha-yaml-editor>
+          `
+        : html`
+            <paper-input
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.conditions.type.state.state"
+              )}
+              .name=${"state"}
+              .value=${state}
+              @value-changed=${this._valueChanged}
+            ></paper-input>
+          `}
     `;
   }
 
