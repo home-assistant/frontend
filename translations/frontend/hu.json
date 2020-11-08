@@ -520,6 +520,7 @@
             "previous": "Előző",
             "refresh": "Frissítés",
             "save": "Mentés",
+            "skip": "Kihagyás",
             "successfully_deleted": "Sikeresen törölve",
             "successfully_saved": "Sikeresen elmentve",
             "undo": "Visszavonás",
@@ -1311,6 +1312,15 @@
                         "only_editable": "Csak az automations.yaml fájlban megadott automatizálások szerkeszthetők.",
                         "pick_automation": "Válassz ki egy automatizálást szerkesztésre",
                         "show_info_automation": "Információk megjelenítése az automatizálásról"
+                    },
+                    "thingtalk": {
+                        "create": "Automatizálás létrehozása",
+                        "task_selection": {
+                            "error_empty": "Írj be egy parancsot, vagy koppints a kihagyásra.",
+                            "for_example": "Például:",
+                            "header": "Új automatizálás létrehozása",
+                            "language_note": "Megjegyzés: Egyelőre csak az angol nyelv támogatott."
+                        }
                     }
                 },
                 "cloud": {
@@ -3301,6 +3311,9 @@
                     "description": "Rezgés engedélyezése vagy tiltása ezen az eszközön az eszközök vezérlésekor.",
                     "header": "Rezgés"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "Beszélgetés indítása"
             },
             "shopping-list": {
                 "add_item": "Tétel hozzáadása",

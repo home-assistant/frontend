@@ -799,7 +799,7 @@
                 "confirmations": {
                     "remove": "האם אתה בטוח שברצונך למחוק מכשיר זה?"
                 },
-                "device_signature": "חתימת מכשיר Zigbee",
+                "device_signature": "חתימת התקן Zigbee",
                 "last_seen": "נראה לאחרונה",
                 "manuf": "לפי {manufacturer}",
                 "no_area": "ללא אזור",
@@ -809,7 +809,7 @@
                     "reconfigure": "הגדר מחדש את המכשיר ה- ZHA (ריפוי מכשיר). השתמש בזה אם אתה נתקל בבעיות במכשיר. אם המכשיר המדובר הוא מכשיר המונע על ידי סוללה, אנא וודא שהוא דלוק ומקבל פקודות בעת השימוש בשירות זה.",
                     "remove": "הסר מכשיר מרשת ה-Zigbee",
                     "updateDeviceName": "הגדר שם מותאם אישית עבור מכשיר זה במאגר ההתקנים.",
-                    "zigbee_information": "הצגת מידע Zigbee עבור המכשיר."
+                    "zigbee_information": "הצגת מידע Zigbee עבור ההתקן."
                 },
                 "unknown": "לא ידוע",
                 "zha_device_card": {
@@ -1408,7 +1408,7 @@
                     },
                     "cant_edit": "באפשרותך לערוך פריטים שנוצרו בממשק המשתמש בלבד.",
                     "caption": "התקנים",
-                    "confirm_delete": "האם אתה בטוח שברצונך למחוק מכשיר זה?",
+                    "confirm_delete": "האם אתה בטוח שברצונך למחוק התקן זה?",
                     "confirm_rename_entity_ids": "האם אתה רוצה גם לשנות את המזהים של הישויות שלך?",
                     "confirm_rename_entity_ids_warning": "שינוי זה לא ישפיע על התצורה (כמו אוטומציות, קבצי Script, סצנות, Lovelace) המשתמשת כעת בישויות אלה, יהיה עליך לעדכן אותן בעצמך.",
                     "data_table": {
@@ -1423,7 +1423,7 @@
                     },
                     "delete": "מחיקה",
                     "description": "ניהול התקנים מחוברים",
-                    "device_info": "פרטי מכשיר",
+                    "device_info": "פרטי התקן",
                     "device_not_found": "המכשיר לא נמצא.",
                     "entities": {
                         "add_entities_lovelace": "הוסף לממשק Lovelace",
@@ -1627,7 +1627,7 @@
                     "rename_input_label": "שם ישות",
                     "search": "חיפוש אינטגרציות"
                 },
-                "introduction": "כאן ניתן להגדיר את הרכיבים ואת ה Home Assistant. לא הכל ניתן להגדיר את ממשק המשתמש עדיין, אבל אנחנו עובדים על זה.",
+                "introduction": "כאן ניתן להגדיר את הרכיבים ואת ה-Home Assistant. לא הכל ניתן להגדיר עם ממשק המשתמש עדיין, אבל אנחנו עובדים על זה.",
                 "logs": {
                     "caption": "יומנים",
                     "clear": "נקה",
@@ -1927,7 +1927,7 @@
                             "confirm_restart": "האם אתה בטוח שברצונך להפעיל מחדש את Home Assistant?",
                             "confirm_stop": "האם אתה בטוח שברצונך לעצור את Home Assistant?",
                             "heading": "ניהול שרת",
-                            "introduction": "לשלוט על שרת הHome Assistant שלך... מHome Assistant.",
+                            "introduction": "לשלוט על שרת Home Assistant שלך... מ-Home Assistant.",
                             "restart": "אתחל",
                             "stop": "עצור"
                         },
@@ -1998,7 +1998,7 @@
                     },
                     "picker": {
                         "headers": {
-                            "group": "קְבוּצָה",
+                            "group": "קבוצה",
                             "name": "שם",
                             "system": "מערכת"
                         }
@@ -2007,11 +2007,11 @@
                 },
                 "zha": {
                     "add_device_page": {
-                        "discovered_text": "מכשירים יופיעו כאן לאחר שהתגלו.",
+                        "discovered_text": "התקנים יופיעו כאן לאחר שהתגלו.",
                         "discovery_text": ". המכשירים שהתגלו יופיעו כאן. עקוב אחר ההוראות עבור ההתקנים שלך והצב את ההתקנים במצב תיאום.",
                         "header": "אוטומציית Zigbee - הוספת התקנים",
                         "no_devices_found": "לא נמצאו התקנים כלשהם, וודא שהם במצב צימוד והקפד שיהיו פעילים בזמן החיפוש.",
-                        "pairing_mode": "ודא שהמכשירים שלך במצב צימוד. בדוק את הוראות המכשיר שלך כיצד לבצע זאת.",
+                        "pairing_mode": "ודא שההתקנים שלך נמצאים במצב צימוד. בדוק את הוראות ההתקן כיצד לבצע זאת.",
                         "search_again": "חפש שוב",
                         "spinner": "מחפש מכשירי ZHA Zigbee..."
                     },
@@ -2178,7 +2178,7 @@
                         "entities": "ישויות היחידה",
                         "entity_info": "מידע על הישות",
                         "exclude_entity": "אל תכלול ישות זו ב Home Assistant",
-                        "group": "קְבוּצָה",
+                        "group": "קבוצה",
                         "header": "ניהול יחידות Z-Wave",
                         "introduction": "הפעל פקודות Z-Wave המשפיעות על יחידה בודדת. בחר יחידה כדי לראות רשימה של פקודות זמינות.",
                         "max_associations": "כמות קישורים מקסימלי:",
@@ -2384,6 +2384,7 @@
                         "calendar": {
                             "calendar_entities": "ישויות לוח שנה",
                             "inital_view": "תצוגה ראשונית",
+                            "name": "לוח שנה",
                             "views": {
                                 "dayGridDay": "יום",
                                 "dayGridMonth": "חודש",
@@ -2914,7 +2915,7 @@
                 },
                 "current_user": "אתה מחובר כעת כ- {fullName} .",
                 "dashboard": {
-                    "description": "בחר לוח בקרה ברירת מחדל עבור מכשיר זה.",
+                    "description": "בחר לוח בקרה ברירת מחדל עבור התקן זה.",
                     "dropdown_label": "לוח בקרה",
                     "header": "לוח בקרה"
                 },
