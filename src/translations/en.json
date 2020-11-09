@@ -577,6 +577,8 @@
           "enabled_label": "Enable entity",
           "enabled_cause": "Disabled by {cause}.",
           "enabled_description": "Disabled entities will not be added to Home Assistant.",
+          "enabled_delay_confirm": "The enabled entities will be added to Home Assistant in {delay} seconds",
+          "enabled_restart_confirm": "Restart Home Assistant to finish enabling the entities",
           "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this entry?",
           "update": "Update",
