@@ -87,8 +87,6 @@ export class HuiEntitiesCardEditor extends LitElement
       return html``;
     }
 
-    console.log("render editor", this._subElementEditorConfig);
-
     if (this._subElementEditorConfig) {
       return html`
         <hui-sub-element-editor
