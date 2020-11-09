@@ -2369,6 +2369,12 @@
             "open": "Open Lovelace UI menu",
             "raw_editor": "Raw configuration editor"
           },
+          "common": {
+            "edit": "Edit",
+            "clear": "Clear",
+            "add": "Add",
+            "none": "None"
+          },
           "raw_editor": {
             "header": "Edit Configuration",
             "save": "Save",
@@ -2420,6 +2426,7 @@
             "show_code_editor": "Show Code Editor",
             "add": "Add Card",
             "edit": "Edit",
+            "clear": "Clear",
             "delete": "Delete card",
             "duplicate": "Duplicate card",
             "move": "Move to View",
@@ -2696,6 +2703,29 @@
             "entity": "Entity",
             "by_entity": "By Entity",
             "by_card": "By Card"
+          },
+          "header-footer": {
+            "header": "Header",
+            "footer": "Footer",
+            "choose_header_footer": "Choose a {type}",
+            "types": {
+              "graph": {
+                "name": "Graph"
+              },
+              "picture": {
+                "name": "Picture"
+              },
+              "buttons": {
+                "name": "Buttons"
+              }
+            }
+          },
+          "sub-element-editor": {
+            "types": {
+              "header": "Header Editor",
+              "footer": "Footer Editor",
+              "row": "Entity Row Editor"
+            }
           }
         },
         "warning": {

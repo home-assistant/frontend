@@ -49,6 +49,16 @@ export interface LovelaceCardConstructor extends Constructor<LovelaceCard> {
   getConfigElement?: () => LovelaceCardEditor;
 }
 
+export interface LovelaceHeaderFooterConstructor
+  extends Constructor<LovelaceHeaderFooter> {
+  getStubConfig?: (
+    hass: HomeAssistant,
+    entities: string[],
+    entitiesFallback: string[]
+  ) => LovelaceHeaderFooterConfig;
+  getConfigElement?: () => LovelaceHeaderFooterEditor;
+}
+
 export interface LovelaceRowConstructor extends Constructor<LovelaceRow> {
   getConfigElement?: () => LovelaceRowEditor;
 }
@@ -59,15 +69,22 @@ export interface LovelaceHeaderFooter extends HTMLElement {
   setConfig(config: LovelaceHeaderFooterConfig): void;
 }
 
-export interface LovelaceCardEditor extends HTMLElement {
-  hass?: HomeAssistant;
-  lovelace?: LovelaceConfig;
+export interface LovelaceCardEditor extends LovelaceGenericElementEditor {
   setConfig(config: LovelaceCardConfig): void;
-  refreshYamlEditor?: (focus: boolean) => void;
 }
 
-export interface LovelaceRowEditor extends HTMLElement {
-  hass?: HomeAssistant;
+export interface LovelaceHeaderFooterEditor
+  extends LovelaceGenericElementEditor {
+  setConfig(config: LovelaceHeaderFooterConfig): void;
+}
+
+export interface LovelaceRowEditor extends LovelaceGenericElementEditor {
   setConfig(config: LovelaceRowConfig): void;
+}
+
+export interface LovelaceGenericElementEditor extends HTMLElement {
+  hass?: HomeAssistant;
+  lovelace?: LovelaceConfig;
+  setConfig(config: any): void;
   refreshYamlEditor?: (focus: boolean) => void;
 }
