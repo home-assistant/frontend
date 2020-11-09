@@ -51,7 +51,7 @@ export interface UIConfigChangedEvent extends Event {
 }
 
 @customElement("hui-element-editor")
-export class HuiElementEditor<T extends { type?: string }> extends LitElement {
+export class HuiElementEditor<T> extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public lovelace?: LovelaceConfig;
@@ -119,7 +119,7 @@ export class HuiElementEditor<T extends { type?: string }> extends LitElement {
     }
 
     fireEvent(this, "config-changed", {
-      config: this.value!,
+      config: this.value! as any,
       error: this._error,
       guiModeAvailable: !(this.hasWarning || this.hasError),
     });
@@ -169,7 +169,7 @@ export class HuiElementEditor<T extends { type?: string }> extends LitElement {
   }
 
   protected get configElementType(): string | undefined {
-    return this.value?.type;
+    return this.value ? (this.value as any).type : undefined;
   }
 
   protected render(): TemplateResult {
@@ -243,7 +243,7 @@ export class HuiElementEditor<T extends { type?: string }> extends LitElement {
   private _handleUIConfigChanged(ev: UIConfigChangedEvent) {
     ev.stopPropagation();
     const config = ev.detail.config;
-    this.value = config;
+    this.value = (config as unknown) as T;
   }
 
   private _handleYAMLChanged(ev: CustomEvent) {

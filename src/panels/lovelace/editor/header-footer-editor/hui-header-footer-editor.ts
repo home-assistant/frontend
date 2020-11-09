@@ -14,9 +14,9 @@ import {
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-paper-dropdown-menu";
 import "../../../../components/ha-svg-icon";
-import { LovelaceConfig } from "../../../../data/lovelace";
+import type { LovelaceConfig } from "../../../../data/lovelace";
 import type { HomeAssistant } from "../../../../types";
-import { LovelaceHeaderFooterConfig } from "../../header-footer/types";
+import type { LovelaceHeaderFooterConfig } from "../../header-footer/types";
 import { showCreateHeaderFooterDialog } from "./show-create-headerfooter-dialog";
 
 @customElement("hui-header-footer-editor")
