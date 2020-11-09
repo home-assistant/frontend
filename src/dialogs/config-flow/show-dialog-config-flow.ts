@@ -160,4 +160,21 @@ export const showConfigFlowDialog = (
         </p>
       `;
     },
+
+    renderShowFormProgressHeader(hass, step) {
+      return hass.localize(`component.${step.handler}.title`);
+    },
+
+    renderShowFormProgressDescription(hass, step) {
+      const description = localizeKey(
+        hass.localize,
+        `component.${step.handler}.config.progress.${step.progress_action}`,
+        step.description_placeholders
+      );
+      return description
+        ? html`
+            <ha-markdown allowsvg breaks .content=${description}></ha-markdown>
+          `
+        : "";
+    },
   });
