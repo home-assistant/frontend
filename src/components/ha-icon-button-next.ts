@@ -37,7 +37,7 @@ export class HaIconButtonNext extends LitElement {
     return html`
       <mwc-icon-button
         .disabled=${this.disabled}
-        .label="${this.label || this.hass.localize("ui.common.next")}"
+        .label=${this.label || this.hass.localize("ui.common.next")}
       >
         <ha-svg-icon .path=${this._icon}></ha-svg-icon>
       </mwc-icon-button>
