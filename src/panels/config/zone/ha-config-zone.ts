@@ -439,7 +439,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   private async _removeEntry(entry: Zone) {
     if (
       !(await showConfirmationDialog(this, {
-        title: this.hass!.localize("ui.panel.config.zone.confirm_delete_title"),
+        title: this.hass!.localize("ui.panel.config.zone.confirm_delete"),
         dismissText: this.hass!.localize("ui.common.cancel"),
         confirmText: this.hass!.localize("ui.common.delete"),
       }))
