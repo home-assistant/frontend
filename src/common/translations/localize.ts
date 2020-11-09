@@ -15,10 +15,10 @@ export interface FormatsType {
 
 let polyfillLoaded = !shouldPolyfill();
 const polyfillProm = polyfillLoaded
-  ? import("@formatjs/intl-pluralrules/polyfill-locales").then(() => {
+  ? undefined
+  : import("@formatjs/intl-pluralrules/polyfill-locales").then(() => {
       polyfillLoaded = true;
-    })
-  : undefined;
+    });
 
 /**
  * Adapted from Polymer app-localize-behavior.

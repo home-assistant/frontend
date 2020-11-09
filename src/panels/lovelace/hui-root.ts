@@ -284,15 +284,13 @@ class HUIRoot extends LitElement {
                       ? html`
                           <mwc-list-item
                             aria-label=${this.hass!.localize(
-                              "ui.panel.lovelace.menu.refresh"
+                              "ui.common.refresh"
                             )}
                             graphic="icon"
                             @request-selected="${this._handleRefresh}"
                           >
                             <span
-                              >${this.hass!.localize(
-                                "ui.panel.lovelace.menu.refresh"
-                              )}</span
+                              >${this.hass!.localize("ui.common.refresh")}</span
                             >
                             <ha-svg-icon
                               slot="graphic"
@@ -618,6 +616,8 @@ class HUIRoot extends LitElement {
       text: this.hass!.localize(
         "ui.panel.lovelace.reload_resources.refresh_body"
       ),
+      confirmText: this.hass.localize("ui.common.refresh"),
+      dismissText: this.hass.localize("ui.common.not_now"),
       confirm: () => location.reload(),
     });
   }

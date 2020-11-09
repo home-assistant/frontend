@@ -17,14 +17,10 @@ import {
   DOMAINS_MORE_INFO_NO_HISTORY,
   DOMAINS_WITH_MORE_INFO,
 } from "../../common/const";
-import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import {
-  stateMoreInfoType,
-  importMoreInfoControl,
-} from "./state_more_info_control";
+
 import { navigate } from "../../common/navigate";
 import "../../components/ha-dialog";
 import "../../components/ha-header-bar";
@@ -39,6 +35,7 @@ import "./ha-more-info-history";
 import "./ha-more-info-logbook";
 import "./controls/more-info-default";
 import { CONTINUOUS_DOMAINS } from "../../data/logbook";
+import "./more-info-content";
 
 const DOMAINS_NO_INFO = ["camera", "configurator"];
 /**
@@ -63,8 +60,6 @@ export class MoreInfoDialog extends LitElement {
 
   @internalProperty() private _entityId?: string | null;
 
-  @internalProperty() private _moreInfoType?: string;
-
   @internalProperty() private _currTabIndex = 0;
 
   public showDialog(params: MoreInfoDialogParams) {
@@ -74,18 +69,6 @@ export class MoreInfoDialog extends LitElement {
       return;
     }
     this.large = false;
-
-    const stateObj = this.hass.states[this._entityId];
-    if (!stateObj) {
-      return;
-    }
-    if (stateObj.attributes && "custom_ui_more_info" in stateObj.attributes) {
-      this._moreInfoType = stateObj.attributes.custom_ui_more_info;
-    } else {
-      const type = stateMoreInfoType(stateObj);
-      importMoreInfoControl(type);
-      this._moreInfoType = type === "hidden" ? undefined : `more-info-${type}`;
-    }
   }
 
   public closeDialog() {
@@ -218,12 +201,10 @@ export class MoreInfoDialog extends LitElement {
                         .hass=${this.hass}
                         .entityId=${this._entityId}
                       ></ha-more-info-logbook>`}
-                  ${this._moreInfoType
-                    ? dynamicElement(this._moreInfoType, {
-                        hass: this.hass,
-                        stateObj,
-                      })
-                    : ""}
+                  <more-info-content
+                    .stateObj=${stateObj}
+                    .hass=${this.hass}
+                  ></more-info-content>
                   ${stateObj.attributes.restored
                     ? html`
                         <p>
@@ -304,8 +285,8 @@ export class MoreInfoDialog extends LitElement {
       text: this.hass.localize(
         "ui.dialogs.more_info_control.restored.confirm_remove_text"
       ),
-      confirmText: this.hass.localize("ui.common.yes"),
-      dismissText: this.hass.localize("ui.common.no"),
+      confirmText: this.hass.localize("ui.common.remove"),
+      dismissText: this.hass.localize("ui.common.cancel"),
       confirm: () => {
         removeEntityRegistryEntry(this.hass, entityId);
       },

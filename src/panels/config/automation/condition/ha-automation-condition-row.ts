@@ -123,8 +123,8 @@ export default class HaAutomationConditionRow extends LitElement {
       text: this.hass.localize(
         "ui.panel.config.automation.editor.conditions.delete_confirm"
       ),
-      dismissText: this.hass.localize("ui.common.no"),
-      confirmText: this.hass.localize("ui.common.yes"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      confirmText: this.hass.localize("ui.common.delete"),
       confirm: () => {
         fireEvent(this, "value-changed", { value: null });
       },

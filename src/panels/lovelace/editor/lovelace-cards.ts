@@ -30,10 +30,6 @@ export const coreCards: Card[] = [
     showElement: true,
   },
   {
-    type: "grid",
-    showElement: true,
-  },
-  {
     type: "history-graph",
     showElement: true,
   },
@@ -94,6 +90,9 @@ export const coreCards: Card[] = [
   },
   {
     type: "entity-filter",
+  },
+  {
+    type: "grid",
   },
   {
     type: "horizontal-stack",

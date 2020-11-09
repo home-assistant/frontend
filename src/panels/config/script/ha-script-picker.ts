@@ -149,9 +149,10 @@ class HaScriptPicker extends LitElement {
           <mwc-fab
             ?is-wide=${this.isWide}
             ?narrow=${this.narrow}
-            title="${this.hass.localize(
-              "ui.panel.config.script.picker.create_new_script"
-            )}"
+            .label=${this.hass.localize(
+              "ui.panel.config.script.picker.add_script"
+            )}
+            extended
             ?rtl=${computeRTL(this.hass)}
           >
             <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
