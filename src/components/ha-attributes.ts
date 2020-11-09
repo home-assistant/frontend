@@ -10,7 +10,7 @@ import {
 } from "lit-element";
 import { until } from "lit-html/directives/until";
 import hassAttributeUtil, {
-  formatAttributeNameOut,
+  formatAttributeName,
 } from "../util/hass-attributes-util";
 
 let jsYamlPromise: Promise<typeof import("js-yaml")>;
@@ -36,7 +36,7 @@ class HaAttributes extends LitElement {
           (attribute) => html`
             <div class="data-entry">
               <div class="key">
-                ${formatAttributeNameOut(attribute)}
+                ${formatAttributeName(attribute)}
               </div>
               <div class="value">
                 ${this.formatAttribute(attribute)}

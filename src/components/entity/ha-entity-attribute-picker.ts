@@ -18,11 +18,7 @@ import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import "../ha-icon-button";
 import "./state-badge";
-import {
-  formatAttributeNameOut,
-  formatAttributeNamesOut,
-  formatAttributeNameIn,
-} from "../../util/hass-attributes-util";
+import { formatAttributeName } from "../../util/hass-attributes-util";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 
@@ -38,7 +34,9 @@ const rowRenderer = (root: HTMLElement, _owner, model: { item: string }) => {
       <paper-item></paper-item>
     `;
   }
-  root.querySelector("paper-item")!.textContent = model.item;
+  root.querySelector("paper-item")!.textContent = formatAttributeName(
+    model.item
+  );
 };
 
 @customElement("ha-entity-attribute-picker")
@@ -70,7 +68,7 @@ class HaEntityAttributePicker extends LitElement {
     if (changedProps.has("_opened") && this._opened) {
       const state = this.entityId ? this.hass.states[this.entityId] : undefined;
       (this._comboBox as any).items = state
-        ? formatAttributeNamesOut(Object.keys(state.attributes))
+        ? Object.keys(state.attributes)
         : [];
     }
   }
@@ -85,7 +83,6 @@ class HaEntityAttributePicker extends LitElement {
         .value=${this._value}
         .allowCustomValue=${this.allowCustomValue}
         .renderer=${rowRenderer}
-        attr-for-value="bind-value"
         @opened-changed=${this._openedChanged}
         @value-changed=${this._valueChanged}
       >
@@ -95,7 +92,7 @@ class HaEntityAttributePicker extends LitElement {
           this.hass.localize(
             "ui.components.entity.entity-attribute-picker.attribute"
           )}
-          .value=${this._value}
+          .value=${this._value ? formatAttributeName(this._value) : ""}
           .disabled=${this.disabled || !this.entityId}
           class="input"
           autocapitalize="none"
@@ -141,7 +138,7 @@ class HaEntityAttributePicker extends LitElement {
   }
 
   private get _value() {
-    return this.value ? formatAttributeNameOut(this.value) : "";
+    return this.value;
   }
 
   private _openedChanged(ev: PolymerChangedEvent<boolean>) {
@@ -156,8 +153,6 @@ class HaEntityAttributePicker extends LitElement {
   }
 
   private _setValue(value: string) {
-    // Ensure that we send the correct internal snake_case name to the callbacks / events
-    value = formatAttributeNameIn(value);
     this.value = value;
     setTimeout(() => {
       fireEvent(this, "value-changed", { value });
