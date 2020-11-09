@@ -1504,7 +1504,6 @@
           }
         },
         "cloud": {
-          "caption": "Home Assistant Cloud",
           "description_login": "Logged in as {email}",
           "description_not_login": "Not logged in",
           "description_features": "Control away from home, integrate with Alexa and Google Assistant.",
