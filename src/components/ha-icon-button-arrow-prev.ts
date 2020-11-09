@@ -17,6 +17,8 @@ export class HaIconButtonArrowPrev extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property() public label?: string;
+
   @internalProperty() private _icon = mdiArrowLeft;
 
   public connectedCallback() {
@@ -35,7 +37,7 @@ export class HaIconButtonArrowPrev extends LitElement {
     return html`
       <mwc-icon-button
         .disabled=${this.disabled}
-        .label="${this.title || this.hass.localize("ui.common.back")}"
+        .label="${this.label || this.hass.localize("ui.common.back")}"
       >
         <ha-svg-icon .path=${this._icon}></ha-svg-icon>
       </mwc-icon-button>
