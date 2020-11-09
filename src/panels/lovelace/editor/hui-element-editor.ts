@@ -25,13 +25,14 @@ import type {
 import type { HomeAssistant } from "../../../types";
 import { handleStructError } from "../common/structs/handle-errors";
 import type { LovelaceRowConfig } from "../entity-rows/types";
+import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import type { LovelaceGenericElementEditor } from "../types";
 import "./config-elements/hui-generic-entity-row-editor";
 import { GUISupportError } from "./gui-support-error";
 import { EditSubElementEvent, GUIModeChangedEvent } from "./types";
 
 export interface ConfigChangedEvent {
-  config: LovelaceCardConfig | LovelaceRowConfig;
+  config: LovelaceCardConfig | LovelaceRowConfig | LovelaceHeaderFooterConfig;
   error?: string;
   guiModeAvailable?: boolean;
 }
@@ -46,7 +47,7 @@ declare global {
 
 export interface UIConfigChangedEvent extends Event {
   detail: {
-    config: LovelaceCardConfig | LovelaceRowConfig;
+    config: LovelaceCardConfig | LovelaceRowConfig | LovelaceHeaderFooterConfig;
   };
 }
 
