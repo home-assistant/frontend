@@ -554,6 +554,11 @@
         },
         "person": {
           "create_zone": "Create zone from current location"
+        },
+        "cover": {
+          "open_tilt_cover": "Open cover tilt",
+          "close_tile_cover": "Close cover tilt",
+          "stop_cover": "Stop cover from moving"
         }
       },
       "entity_registry": {
