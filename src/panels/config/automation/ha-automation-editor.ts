@@ -651,8 +651,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         text: this.hass!.localize(
           "ui.panel.config.automation.editor.unsaved_confirm"
         ),
-        confirmText: this.hass!.localize("ui.common.yes"),
-        dismissText: this.hass!.localize("ui.common.no"),
+        confirmText: this.hass!.localize("ui.common.leave"),
+        dismissText: this.hass!.localize("ui.common.stay"),
         confirm: () => history.back(),
       });
     } else {
@@ -667,8 +667,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
           text: this.hass!.localize(
             "ui.panel.config.automation.editor.unsaved_confirm"
           ),
-          confirmText: this.hass!.localize("ui.common.yes"),
-          dismissText: this.hass!.localize("ui.common.no"),
+          confirmText: this.hass!.localize("ui.common.leave"),
+          dismissText: this.hass!.localize("ui.common.stay"),
         }))
       ) {
         return;
@@ -690,8 +690,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       text: this.hass.localize(
         "ui.panel.config.automation.picker.delete_confirm"
       ),
-      confirmText: this.hass!.localize("ui.common.yes"),
-      dismissText: this.hass!.localize("ui.common.no"),
+      confirmText: this.hass!.localize("ui.common.delete"),
+      dismissText: this.hass!.localize("ui.common.cancel"),
       confirm: () => this._delete(),
     });
   }

@@ -269,18 +269,26 @@
       "refresh": "Refresh",
       "cancel": "Cancel",
       "delete": "Delete",
+      "remove": "Remove",
+      "enable": "Enable",
+      "disable": "Disable",
       "close": "Close",
+      "leave": "Leave",
+      "stay": "Stay",
       "next": "Next",
+      "back": "Back",
       "undo": "Undo",
       "save": "Save",
+      "rename": "Rename",
       "yes": "Yes",
       "no": "No",
+      "not_now": "Not now",
       "skip": "Skip",
       "menu": "Menu",
       "overflow_menu": "Overflow menu",
       "successfully_saved": "Successfully saved",
       "successfully_deleted": "Successfully deleted",
-      "back": "Back",
+
       "error_required": "Required",
       "copied": "Copied"
     },
@@ -446,7 +454,7 @@
           "season": "Season",
           "track": "Track",
           "tv_show": "TV Show",
-          "url": "Url",
+          "url": "URL",
           "video": "Video"
         }
       }
@@ -789,6 +797,8 @@
           "edit": "Edit",
           "never_scanned": "Never scanned",
           "create_automation": "Create automation with tag",
+          "confirm_remove_title": "Remove tag?",
+          "confirm_remove": "Are you sure you want to remove tag {tag}?",
           "automation_title": "Tag {name} is scanned",
           "headers": {
             "name": "Name",
@@ -963,7 +973,7 @@
               "icon": "Icon",
               "title": "Title",
               "title_required": "Title is required.",
-              "url": "Url",
+              "url": "URL",
               "url_error_msg": "The URL should contain a - and cannot contain spaces or special characters, except for _ and -",
               "require_admin": "Admin only",
               "delete": "Delete",
@@ -983,7 +993,7 @@
             },
             "picker": {
               "headers": {
-                "url": "Url",
+                "url": "URL",
                 "type": "Type"
               },
               "no_resources": "No resources",
@@ -991,15 +1001,15 @@
             },
             "confirm_delete": "Are you sure you want to delete this resource?",
             "refresh_header": "Do you want to refresh?",
-            "refresh_body": "You have to refresh the page to complete the removal, do you want to refresh now?",
+            "refresh_body": "You have to refresh the page to complete the removal. Do you want to refresh now?",
             "cant_edit_yaml": "You are using Lovelace in YAML mode, therefore you cannot manage your resources through the UI. Manage them in configuration.yaml.",
             "detail": {
               "new_resource": "Add new resource",
               "dismiss": "Close",
               "warning_header": "Be cautious!",
               "warning_text": "Adding resources can be dangerous, make sure you know the source of the resource and trust them. Bad resources could seriously harm your system.",
-              "url": "Url",
-              "url_error_msg": "Url is a required field",
+              "url": "URL",
+              "url_error_msg": "URL is a required field",
               "type": "Resource type",
               "delete": "Delete",
               "update": "Update",
@@ -1660,7 +1670,7 @@
           },
           "dialog_cloudhook": {
             "webhook_for": "Webhook for {name}",
-            "available_at": "The webhook is available at the following url:",
+            "available_at": "The webhook is available at the following URL:",
             "managed_by_integration": "This webhook is managed by an integration and cannot be disabled.",
             "info_disable_webhook": "If you no longer want to use this webhook, you can",
             "link_disable_webhook": "disable it",
@@ -1770,18 +1780,18 @@
             "selected": "{number} selected",
             "enable_selected": {
               "button": "Enable selected",
-              "confirm_title": "Do you want to enable {number} entities?",
+              "confirm_title": "Do you want to enable {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
               "confirm_text": "This will make them available in Home Assistant again if they are now disabled."
             },
             "disable_selected": {
               "button": "Disable selected",
-              "confirm_title": "Do you want to disable {number} entities?",
+              "confirm_title": "Do you want to disable {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
               "confirm_text": "Disabled entities will not be added to Home Assistant."
             },
             "remove_selected": {
               "button": "Remove selected",
-              "confirm_title": "Do you want to remove {number} entities?",
-              "confirm_partly_title": "Only {number} selected entities can be removed.",
+              "confirm_title": "Do you want to remove {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
+              "confirm_partly_title": "Only {number} {number, plural,\n  one {selected entity}\n  other {selected entities}\n} can be removed.",
               "confirm_text": "You should remove them from your Lovelace config and automations if they contain these entities.",
               "confirm_partly_text": "You can only remove {removable} of the selected {selected} entities. Entities can only be removed when the integration is no longer providing the entities. Sometimes you have to restart Home Assistant before you can remove the entities of a removed integration. Are you sure you want to remove the removable entities?"
             }
@@ -2353,7 +2363,6 @@
         "menu": {
           "configure_ui": "Edit Dashboard",
           "help": "Help",
-          "refresh": "Refresh",
           "start_conversation": "Start conversation",
           "reload_resources": "Reload resources",
           "exit_edit_mode": "Exit UI edit mode",
@@ -2361,7 +2370,7 @@
         },
         "reload_resources": {
           "refresh_header": "Do you want to refresh?",
-          "refresh_body": "You have to refresh the page to complete the reload, do you want to refresh now?"
+          "refresh_body": "You have to refresh the page to complete the reload. Do you want to refresh now?"
         },
         "editor": {
           "header": "Edit UI",
@@ -2467,7 +2476,7 @@
           },
           "action-editor": {
             "navigation_path": "Navigation Path",
-            "url_path": "Url Path",
+            "url_path": "URL Path",
             "editor_service_data": "Service data can only be entered in the code editor",
             "actions": {
               "default_action": "Default Action",
@@ -2475,7 +2484,7 @@
               "more-info": "More Info",
               "toggle": "Toggle",
               "navigate": "Navigate",
-              "url": "Url",
+              "url": "URL",
               "none": "No Action"
             }
           },
@@ -2620,7 +2629,7 @@
               "theme": "Theme",
               "no_theme": "No theme",
               "unit": "Unit",
-              "url": "Url",
+              "url": "URL",
               "state": "State",
               "secondary_info_attribute": "Secondary Info Attribute",
               "search": "Search",
@@ -2736,8 +2745,7 @@
           "starting": "Home Assistant is starting, not everything may be available yet"
         },
         "changed_toast": {
-          "message": "The Lovelace UI configuration for this dashboard was updated, refresh to see changes?",
-          "refresh": "Refresh"
+          "message": "The Lovelace UI configuration for this dashboard was updated. Refresh to see changes?"
         },
         "reload_lovelace": "Reload UI"
       },

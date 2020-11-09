@@ -698,8 +698,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       text: this.hass.localize(
         "ui.panel.config.entities.picker.enable_selected.confirm_text"
       ),
-      confirmText: this.hass.localize("ui.common.yes"),
-      dismissText: this.hass.localize("ui.common.no"),
+      confirmText: this.hass.localize("ui.common.enable"),
+      dismissText: this.hass.localize("ui.common.cancel"),
       confirm: async () => {
         let require_restart = false;
         let reload_delay = 0;
@@ -748,8 +748,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       text: this.hass.localize(
         "ui.panel.config.entities.picker.disable_selected.confirm_text"
       ),
-      confirmText: this.hass.localize("ui.common.yes"),
-      dismissText: this.hass.localize("ui.common.no"),
+      confirmText: this.hass.localize("ui.common.disable"),
+      dismissText: this.hass.localize("ui.common.cancel"),
       confirm: () => {
         this._selectedEntities.forEach((entity) =>
           updateEntityRegistryEntry(this.hass, entity, {
@@ -788,8 +788,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               "selected",
               this._selectedEntities.length
             ),
-      confirmText: this.hass.localize("ui.common.yes"),
-      dismissText: this.hass.localize("ui.common.no"),
+      confirmText: this.hass.localize("ui.common.remove"),
+      dismissText: this.hass.localize("ui.common.cancel"),
       confirm: () => {
         removeableEntities.forEach((entity) =>
           removeEntityRegistryEntry(this.hass, entity)
