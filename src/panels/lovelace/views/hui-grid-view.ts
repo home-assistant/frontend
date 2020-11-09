@@ -207,8 +207,6 @@ export class GridView extends LitElement implements LovelaceViewElement {
       return;
     }
 
-    const cards = {};
-
     const newLayout: Array<{
       width: number;
       height: number;
@@ -261,21 +259,8 @@ export class GridView extends LitElement implements LovelaceViewElement {
         ...cardConfig.layout,
       };
 
-      cards[layout.key] = { card, index };
-
       newLayout.push(layout);
     }
-
-    // const cards = this._config!.cards!.map((conf, idx) => {
-    //   return { ...conf, layout: newLayout[idx] };
-    // });
-
-    // this.lovelace?.saveConfig(
-    //   replaceView(this.lovelace.config, this.index!, {
-    //     ...this._config!,
-    //     cards,
-    //   })
-    // );
 
     this._layout = newLayout;
     this._createCards();

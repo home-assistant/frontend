@@ -35,6 +35,9 @@ const createWebpackConfig = ({
             loader: "babel-loader",
             options: bundle.babelOptions({ latestBuild }),
           },
+          resolve: {
+            fullySpecified: false,
+          },
         },
         {
           test: /\.css$/,
