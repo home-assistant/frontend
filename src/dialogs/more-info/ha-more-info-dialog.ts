@@ -285,8 +285,8 @@ export class MoreInfoDialog extends LitElement {
       text: this.hass.localize(
         "ui.dialogs.more_info_control.restored.confirm_remove_text"
       ),
-      confirmText: this.hass.localize("ui.common.yes"),
-      dismissText: this.hass.localize("ui.common.no"),
+      confirmText: this.hass.localize("ui.common.remove"),
+      dismissText: this.hass.localize("ui.common.cancel"),
       confirm: () => {
         removeEntityRegistryEntry(this.hass, entityId);
       },

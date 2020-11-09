@@ -184,7 +184,7 @@ class LovelacePanel extends LitElement {
       message: this.hass!.localize("ui.panel.lovelace.changed_toast.message"),
       action: {
         action: () => this._fetchConfig(false),
-        text: this.hass!.localize("ui.panel.lovelace.changed_toast.refresh"),
+        text: this.hass!.localize("ui.common.refresh"),
       },
       duration: 0,
       dismissable: false,

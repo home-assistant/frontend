@@ -587,7 +587,7 @@ export class HaConfigDevicePage extends LitElement {
             text: this.hass.localize(
               "ui.panel.config.devices.confirm_rename_entity_ids_warning"
             ),
-            confirmText: this.hass.localize("ui.common.yes"),
+            confirmText: this.hass.localize("ui.common.rename"),
             dismissText: this.hass.localize("ui.common.no"),
             warning: true,
           }));

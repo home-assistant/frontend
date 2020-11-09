@@ -312,12 +312,14 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
   private async _removeTag(selectedTag: Tag) {
     if (
       !(await showConfirmationDialog(this, {
-        title: "Remove tag?",
-        text: `Are you sure you want to remove tag ${
+        title: this.hass!.localize("ui.panel.config.tags.confirm_remove_title"),
+        text: this.hass.localize(
+          "ui.panel.config.tags.confirm_remove",
+          "tag",
           selectedTag.name || selectedTag.id
-        }?`,
-        dismissText: this.hass!.localize("ui.common.no"),
-        confirmText: this.hass!.localize("ui.common.yes"),
+        ),
+        dismissText: this.hass!.localize("ui.common.cancel"),
+        confirmText: this.hass!.localize("ui.common.remove"),
       }))
     ) {
       return false;

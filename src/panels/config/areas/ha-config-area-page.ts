@@ -312,8 +312,8 @@ class HaConfigAreaPage extends LitElement {
             text: this.hass.localize(
               "ui.panel.config.areas.delete.confirmation_text"
             ),
-            dismissText: this.hass.localize("ui.common.no"),
-            confirmText: this.hass.localize("ui.common.yes"),
+            dismissText: this.hass.localize("ui.common.cancel"),
+            confirmText: this.hass.localize("ui.common.delete"),
           }))
         ) {
           return false;

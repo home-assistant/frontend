@@ -542,8 +542,8 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         text: this.hass!.localize(
           "ui.panel.config.common.editor.confirm_unsaved"
         ),
-        confirmText: this.hass!.localize("ui.common.yes"),
-        dismissText: this.hass!.localize("ui.common.no"),
+        confirmText: this.hass!.localize("ui.common.leave"),
+        dismissText: this.hass!.localize("ui.common.stay"),
         confirm: () => history.back(),
       });
     } else {
@@ -554,8 +554,8 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   private async _deleteConfirm() {
     showConfirmationDialog(this, {
       text: this.hass.localize("ui.panel.config.script.editor.delete_confirm"),
-      confirmText: this.hass!.localize("ui.common.yes"),
-      dismissText: this.hass!.localize("ui.common.no"),
+      confirmText: this.hass!.localize("ui.common.delete"),
+      dismissText: this.hass!.localize("ui.common.cancel"),
       confirm: () => this._delete(),
     });
   }

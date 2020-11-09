@@ -119,8 +119,8 @@ export class DialogManageCloudhook extends LitElement {
       text: this.hass!.localize(
         "ui.panel.config.cloud.dialog_cloudhook.confirm_disable"
       ),
-      dismissText: this.hass!.localize("ui.common.no"),
-      confirmText: this.hass!.localize("ui.common.yes"),
+      dismissText: this.hass!.localize("ui.common.cancel"),
+      confirmText: this.hass!.localize("ui.common.disable"),
       confirm: () => {
         this._params!.disableHook();
         this._closeDialog();
