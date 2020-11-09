@@ -110,6 +110,7 @@ export class HuiUnusedEntities extends LitElement {
       >
         <mwc-fab
           .label=${this.hass.localize("ui.panel.lovelace.editor.edit_card.add")}
+          extended
           @click=${this._addToLovelaceView}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>

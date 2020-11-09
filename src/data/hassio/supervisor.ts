@@ -111,18 +111,6 @@ export const fetchHassioLogs = async (
   return hass.callApi<string>("GET", `hassio/${provider}/logs`);
 };
 
-export const createHassioSession = async (hass: HomeAssistant) => {
-  const response = await hass.callApi<HassioResponse<CreateSessionResponse>>(
-    "POST",
-    "hassio/ingress/session"
-  );
-  document.cookie = `ingress_session=${
-    response.data.session
-  };path=/api/hassio_ingress/;SameSite=Strict${
-    location.protocol === "https:" ? ";Secure" : ""
-  }`;
-};
-
 export const setSupervisorOption = async (
   hass: HomeAssistant,
   data: SupervisorOptions

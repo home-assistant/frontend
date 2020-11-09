@@ -148,7 +148,8 @@ class HaConfigPerson extends LitElement {
         </ha-config-section>
         <mwc-fab
           slot="fab"
-          title="${hass.localize("ui.panel.config.person.add_person")}"
+          .label=${hass.localize("ui.panel.config.person.add_person")}
+          extended
           @click=${this._createPerson}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>

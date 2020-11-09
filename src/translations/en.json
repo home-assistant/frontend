@@ -7,7 +7,7 @@
     "logbook": "Logbook",
     "history": "History",
     "mailbox": "Mailbox",
-    "shopping_list": "Shopping list",
+    "shopping_list": "Shopping List",
     "developer_tools": "Developer Tools",
     "media_browser": "Media Browser",
     "profile": "Profile"
@@ -283,6 +283,7 @@
       "yes": "Yes",
       "no": "No",
       "not_now": "Not now",
+      "skip": "Skip",
       "menu": "Menu",
       "overflow_menu": "Overflow menu",
       "successfully_saved": "Successfully saved",
@@ -525,6 +526,7 @@
         "edit": "Edit entity",
         "details": "Details",
         "history": "History",
+        "last_changed": "Last changed",
         "last_updated": "Last updated",
         "last_changed": "Last changed",
         "script": {
@@ -560,6 +562,11 @@
         },
         "person": {
           "create_zone": "Create zone from current location"
+        },
+        "cover": {
+          "open_tilt_cover": "Open cover tilt",
+          "close_tile_cover": "Close cover tilt",
+          "stop_cover": "Stop cover from moving"
         }
       },
       "entity_registry": {
@@ -578,6 +585,8 @@
           "enabled_label": "Enable entity",
           "enabled_cause": "Disabled by {cause}.",
           "enabled_description": "Disabled entities will not be added to Home Assistant.",
+          "enabled_delay_confirm": "The enabled entities will be added to Home Assistant in {delay} seconds",
+          "enabled_restart_confirm": "Restart Home Assistant to finish enabling the entities",
           "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this entry?",
           "update": "Update",
@@ -881,7 +890,43 @@
           "system_health_error": "System Health component is not loaded. Add 'system_health:' to configuration.yaml",
           "integrations": "Integrations",
           "documentation": "Documentation",
-          "issues": "Issues"
+          "issues": "Issues",
+          "system_health": {
+            "manage": "Manage",
+            "more_info": "more info",
+            "checks": {
+              "homeassistant": {
+                "arch": "CPU Architecture",
+                "dev": "Development",
+                "docker": "Docker",
+                "hassio": "HassOS",
+                "installation_type": "Installation Type",
+                "os_name": "Operating System Name",
+                "os_version": "Operating System Version",
+                "python_version": "Python Version",
+                "timezone": "Timezone",
+                "version": "Version",
+                "virtualenv": "Virtual Environment"
+              },
+              "cloud": {
+                "can_reach_cert_server": "Reach Certificate Server",
+                "can_reach_cloud": "Reach Home Assistant Cloud",
+                "can_reach_cloud_auth": "Reach Authentication Server",
+                "relayer_connected": "Relayer Connected",
+                "remote_connected": "Remote Connected",
+                "remote_enabled": "Remote Enabled",
+                "alexa_enabled": "Alexa Enabled",
+                "google_enabled": "Google Enabled",
+                "logged_in": "Logged In",
+                "subscription_expiration": "Subscription Expiration"
+              },
+              "lovelace": {
+                "dashboards": "Dashboards",
+                "mode": "Mode",
+                "resources": "Resources"
+              }
+            }
+          }
         },
         "logs": {
           "caption": "Logs",
@@ -1129,7 +1174,7 @@
                   "event_data": "Event data",
                   "context_users": "Limit to events triggered by",
                   "context_user_picked": "User firing event",
-                  "context_user_pick": "Add user"
+                  "context_user_pick": "Select user"
                 },
                 "geo_location": {
                   "label": "Geolocation",
@@ -1357,6 +1402,22 @@
                 }
               }
             }
+          },
+          "thingtalk": {
+            "create": "Create automation",
+            "task_selection": {
+              "header": "Create a new automation",
+              "introduction": "Type below what this automation should do, and we will try to convert it into a Home Assistant automation.",
+              "language_note": "Note: Only English is supported for now.",
+              "for_example": "For example:",
+              "error_empty": "Enter a command or tap skip.",
+              "error_unsupported": "We couldn't create an automation for that (yet?)."
+            },
+            "link_devices": {
+              "header": "Great! Now we need to link some devices",
+              "ambiguous_entities": "One or more devices have more than one matching entity, please pick the one you want to use.",
+              "unknown_placeholder": "Unknown placeholder"
+            }
           }
         },
         "script": {
@@ -1367,7 +1428,7 @@
             "introduction": "The script editor allows you to create and edit scripts. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
             "learn_more": "Learn more about scripts",
             "no_scripts": "We couldn’t find any editable scripts",
-            "add_script": "Create new script",
+            "add_script": "Add script",
             "show_info": "Show info about script",
             "trigger_script": "Trigger script",
             "run_script": "Run script",
@@ -1453,7 +1514,6 @@
           }
         },
         "cloud": {
-          "caption": "Home Assistant Cloud",
           "description_login": "Logged in as {email}",
           "description_not_login": "Not logged in",
           "description_features": "Control away from home, integrate with Alexa and Google Assistant.",
@@ -2318,6 +2378,12 @@
             "open": "Open Lovelace UI menu",
             "raw_editor": "Raw configuration editor"
           },
+          "common": {
+            "edit": "Edit",
+            "clear": "Clear",
+            "add": "Add",
+            "none": "None"
+          },
           "raw_editor": {
             "header": "Edit Configuration",
             "save": "Save",
@@ -2369,6 +2435,7 @@
             "show_code_editor": "Show Code Editor",
             "add": "Add Card",
             "edit": "Edit",
+            "clear": "Clear",
             "delete": "Delete card",
             "duplicate": "Duplicate card",
             "move": "Move to View",
@@ -2511,6 +2578,10 @@
               "columns": "Columns",
               "description": "The Glance card is useful to group multiple sensors in a compact overview."
             },
+            "grid": {
+              "name": "Grid",
+              "description": "The Grid card allows you to show multiple cards in a grid."
+            },
             "history-graph": {
               "name": "History Graph",
               "description": "The History Graph card allows you to display a graph for each of the entities listed."
@@ -2641,6 +2712,29 @@
             "entity": "Entity",
             "by_entity": "By Entity",
             "by_card": "By Card"
+          },
+          "header-footer": {
+            "header": "Header",
+            "footer": "Footer",
+            "choose_header_footer": "Choose a {type}",
+            "types": {
+              "graph": {
+                "name": "Graph"
+              },
+              "picture": {
+                "name": "Picture"
+              },
+              "buttons": {
+                "name": "Buttons"
+              }
+            }
+          },
+          "sub-element-editor": {
+            "types": {
+              "header": "Header Editor",
+              "footer": "Footer Editor",
+              "row": "Entity Row Editor"
+            }
           }
         },
         "warning": {
@@ -2776,10 +2870,8 @@
           "empty_state": "You have no long-lived access tokens yet."
         }
       },
-      "shopping-list": {
-        "clear_completed": "Clear completed",
-        "add_item": "Add item",
-        "microphone_tip": "Tap the microphone on the top right and say or type “Add candy to my shopping list”"
+      "shopping_list": {
+        "start_conversation": "Start conversation"
       },
       "page-authorize": {
         "initializing": "Initializing",

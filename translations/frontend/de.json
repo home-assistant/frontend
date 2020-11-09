@@ -520,6 +520,7 @@
             "previous": "Vorher",
             "refresh": "Aktualisieren",
             "save": "Speichern",
+            "skip": "Überspringen",
             "successfully_deleted": "Erfolgreich gelöscht",
             "successfully_saved": "Erfolgreich gespeichert",
             "undo": "Rückgängig machen",
@@ -798,6 +799,7 @@
                 "dismiss": "Dialog ausblenden",
                 "edit": "Entität bearbeiten",
                 "history": "Verlauf",
+                "last_changed": "Zuletzt geändert",
                 "last_updated": "Letztes Update",
                 "person": {
                     "create_zone": "Zone vom aktuellen Standort erstellen"
@@ -1076,7 +1078,7 @@
                                     "wait_template": "Warte-Template"
                                 }
                             },
-                            "unsupported_action": "Nicht unterstützte Aktion: {action}"
+                            "unsupported_action": "Keine UI-Unterstützung für Aktion: {action}"
                         },
                         "alias": "Name",
                         "conditions": {
@@ -1204,7 +1206,7 @@
                                     "trigger": "Auslöser"
                                 },
                                 "event": {
-                                    "context_user_pick": "Benutzer hinzufügen",
+                                    "context_user_pick": "Benutzer auswählen",
                                     "context_user_picked": "Ereignis auslösender Benutzer",
                                     "context_users": "Auf Ereignisse beschränken, die ausgelöst wurden durch",
                                     "event_data": "Ereignisdaten",
@@ -1303,6 +1305,20 @@
                         "only_editable": "Nur Automatisierungen in automations.yaml sind editierbar.",
                         "pick_automation": "Wähle eine Automatisierung zum Bearbeiten",
                         "show_info_automation": "Informationen über die Automatisierung anzeigen"
+                    },
+                    "thingtalk": {
+                        "create": "Automatisierung erstellen",
+                        "link_devices": {
+                            "header": "Großartig! Jetzt müssen wir einige Geräte verknüpfen",
+                            "unknown_placeholder": "Unbekannter Platzhalter"
+                        },
+                        "task_selection": {
+                            "error_empty": "Gib einen Befehl ein oder tippe auf Überspringen.",
+                            "error_unsupported": "Dafür konnten wir (noch?) keine Automatisierung erstellen.",
+                            "for_example": "Zum Beispiel:",
+                            "header": "Eine neue Automatisierung erstellen",
+                            "language_note": "Hinweis: Im Moment wird nur Englisch unterstützt."
+                        }
                     }
                 },
                 "cloud": {
@@ -1751,7 +1767,7 @@
                     },
                     "configure": "Konfigurieren",
                     "configured": "Konfiguriert",
-                    "description": "Verwalte verbundene Integrationen",
+                    "description": "Verbundene Integrationen verwalten",
                     "details": "Details zur Integration",
                     "discovered": "Entdeckt",
                     "home_assistant_website": "Home Assistant Website",
@@ -1981,7 +1997,7 @@
                     "confirm_delete": "Möchtest du diese Person wirklich löschen?",
                     "confirm_delete2": "Alle Geräte, die zu dieser Person gehören, werden nicht mehr zugeordnet.",
                     "create_person": "Person erstellen",
-                    "description": "Verwalte die Personen, denen Home Assistant folgt.",
+                    "description": "Personen verwalten, denen Home Assistant folgt.",
                     "detail": {
                         "admin": "Administrator",
                         "allow_login": "Erlauben Sie dieser Person, sich einzuloggen.",
@@ -2677,7 +2693,7 @@
                             "description": "Die Messkarte ist eine Basiskarte, mit der Sensordaten visuell angezeigt werden können.",
                             "name": "Gauge",
                             "severity": {
-                                "define": "Schweregrad definieren?",
+                                "define": "Schwellenwerte definieren?",
                                 "green": "Grün",
                                 "red": "Rot",
                                 "yellow": "Gelb"
@@ -2720,6 +2736,9 @@
                             "columns": "Spalten",
                             "description": "Die Glance-Karte ist nützlich, um mehrere Sensoren in einer kompakten Übersicht zu gruppieren.",
                             "name": "Glance"
+                        },
+                        "grid": {
+                            "name": "Raster"
                         },
                         "history-graph": {
                             "description": "Mit der Verlaufsdiagramm-Karte kannst du für jedes der aufgelisteten Objekte ein Diagramm anzeigen.",
@@ -3259,6 +3278,9 @@
                     "description": "Aktiviere oder deaktiviere die Vibration an diesem Gerät, wenn du Geräte steuerst.",
                     "header": "Vibrieren"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "Konversation starten"
             },
             "shopping-list": {
                 "add_item": "Artikel hinzufügen",

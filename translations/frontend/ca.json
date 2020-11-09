@@ -21,7 +21,7 @@
         "map": "Mapa",
         "media_browser": "Navegador multimèdia",
         "profile": "Perfil",
-        "shopping_list": "Llista de compres",
+        "shopping_list": "Llista de la compra",
         "states": "Visualització general"
     },
     "state_attributes": {
@@ -432,7 +432,7 @@
                 "turn_on": "Engega"
             },
             "persistent_notification": {
-                "dismiss": "Desestimar"
+                "dismiss": "Omet"
             },
             "scene": {
                 "activate": "Activar"
@@ -520,6 +520,7 @@
             "previous": "Anterior",
             "refresh": "Actualitza",
             "save": "Desa",
+            "skip": "Omet",
             "successfully_deleted": "S'ha eliminat correctament",
             "successfully_saved": "S'ha desat correctament",
             "undo": "Desfés",
@@ -715,7 +716,7 @@
             },
             "entity_registry": {
                 "control": "Control",
-                "dismiss": "Desestimar",
+                "dismiss": "Omet",
                 "editor": {
                     "confirm_delete": "Estàs segur que vols eliminar aquesta entrada?",
                     "delete": "Elimina",
@@ -795,10 +796,10 @@
             "more_info_control": {
                 "controls": "Controls",
                 "details": "Detalls",
-                "dismiss": "Desestimar el diàleg",
+                "dismiss": "Omet el diàleg",
                 "edit": "Edita entitat",
                 "history": "Historial",
-                "last_changed": "Darrera canvi",
+                "last_changed": "Darrer canvi",
                 "last_updated": "Última actualització",
                 "person": {
                     "create_zone": "Crea una zona a partir de la ubicació actual"
@@ -952,13 +953,13 @@
         "notification_drawer": {
             "click_to_configure": "Prem el botó per configurar {entity}",
             "close": "Tanca",
-            "dismiss_all": "Descarta-ho tot",
+            "dismiss_all": "Omet tot",
             "empty": "No hi ha notificacions",
             "title": "Notificacions"
         },
         "notification_toast": {
             "connection_lost": "Connexió perduda. Tornant a connectar...",
-            "dismiss": "Desestimar",
+            "dismiss": "Omet",
             "service_call_failed": "Ha fallat la crida al servei {service}.",
             "started": "Home Assistant s'ha iniciat!",
             "starting": "Home Assistant està iniciant-se, no estarà tot disponible fins que acabi",
@@ -1084,7 +1085,7 @@
                                     "wait_template": "Plantilla d'espera"
                                 }
                             },
-                            "unsupported_action": "Acció no suportada per la UI: {action}"
+                            "unsupported_action": "La UI no és compatible amb l'acció: {action}"
                         },
                         "alias": "Nom",
                         "conditions": {
@@ -1161,7 +1162,7 @@
                                     "zone": "Zona"
                                 }
                             },
-                            "unsupported_condition": "Condició no suportada per la UI: {condition}"
+                            "unsupported_condition": "La UI no és compatible amb la condició: {condition}"
                         },
                         "copy_to_clipboard": "Copia al porta-retalls",
                         "default_name": "Nova automatització",
@@ -1212,7 +1213,7 @@
                                     "trigger": "Disparador"
                                 },
                                 "event": {
-                                    "context_user_pick": "Afegeix usuari",
+                                    "context_user_pick": "Selecciona usuari",
                                     "context_user_picked": "Esdeveniment cridat per usuari",
                                     "context_users": "Limita-ho als esdeveniments disparats per",
                                     "event_data": "Dades de l'esdeveniment",
@@ -1290,7 +1291,7 @@
                                     "zone": "Zona"
                                 }
                             },
-                            "unsupported_platform": "Plataforma no suportada per la UI: {platform}"
+                            "unsupported_platform": "La UI no és compatible amb la plataforma: {platform}"
                         },
                         "unsaved_confirm": "Hi ha canvis no desats. Segur que vols sortir?"
                     },
@@ -1311,6 +1312,22 @@
                         "only_editable": "Només es poden editar les automatitzacions definides dins l'arxiu automations.yaml.",
                         "pick_automation": "Selecciona l'automatització a editar",
                         "show_info_automation": "Mostra informació sobre l'automatització"
+                    },
+                    "thingtalk": {
+                        "create": "Crea automatització",
+                        "link_devices": {
+                            "ambiguous_entities": "Un o més dispositius tenen més d'una entitat coincident. Escull la que vulguis utilitzar.",
+                            "header": "Genial! Ara hem d'enllaçar alguns dispositius",
+                            "unknown_placeholder": "Marcador desconegut"
+                        },
+                        "task_selection": {
+                            "error_empty": "Introdueix alguna ordre o prem a omet.",
+                            "error_unsupported": "No hem pogut crear una automatització per a això (encara?).",
+                            "for_example": "Per exemple:",
+                            "header": "Crea una nova automatització",
+                            "introduction": "Escriu a continuació el que hauria de fer l'automatització i intentarem convertir-ho en una automatització de Home Assistant.",
+                            "language_note": "Nota: ara per are només s'admet en anglès"
+                        }
                     }
                 },
                 "cloud": {
@@ -1441,7 +1458,7 @@
                     "login": {
                         "alert_email_confirm_necessary": "Has de confirmar el teu correu electrònic abans d'iniciar sessió.",
                         "alert_password_change_required": "Has de canviar la teva contrasenya abans d'iniciar sessió.",
-                        "dismiss": "Desestimar",
+                        "dismiss": "Omet",
                         "email": "Correu electrònic",
                         "email_error_msg": "Correu electrònic invàlid",
                         "forgot_password": "has oblidat la contrasenya?",
@@ -1746,7 +1763,7 @@
                         "aborted": "Avortat",
                         "close": "Tanca",
                         "created_config": "S'ha creat configuració per a {name}.",
-                        "dismiss": "Desestima el diàleg",
+                        "dismiss": "Omet el diàleg",
                         "error_saving_area": "Error desant àrea: {error}",
                         "external_step": {
                             "description": "Aquest pas requereix que visitis un lloc web extern per completar-lo.",
@@ -2119,7 +2136,7 @@
                         "sequence_sentence": "Seqüència d'accions de l'script."
                     },
                     "picker": {
-                        "add_script": "Crea un script nou",
+                        "add_script": "Afegeix script",
                         "edit_script": "Edita l'script",
                         "header": "Editor de scripts",
                         "headers": {
@@ -2493,7 +2510,7 @@
                     "events": {
                         "alert_event_type": "El tipus d'esdeveniment és un camp obligatori",
                         "available_events": "Esdeveniments disponibles",
-                        "count_listeners": " ({count} oients)",
+                        "count_listeners": " ({count} oient/s)",
                         "data": "Dades de l'esdeveniment (en YAML, opcionals)",
                         "description": "Crida un esdeveniment al bus d'esdeveniments.",
                         "documentation": "Documentació d'esdeveniments.",
@@ -2758,6 +2775,10 @@
                             "columns": "Columnes",
                             "description": "La targeta visualització és útil per agrupar diversos sensors de forma general i compacta.",
                             "name": "Visualització"
+                        },
+                        "grid": {
+                            "description": "La targeta quadrícula et permet mostrar diferents targetes dins d'una quadrícula.",
+                            "name": "Quadrícula"
                         },
                         "history-graph": {
                             "description": "La targeta gràfic històric et permet mostrar un gràfic per a cadascuna de les entitats establertes.",
@@ -3255,7 +3276,7 @@
                 "push_notifications": {
                     "add_device_prompt": {
                         "input_label": "Nom del dispositiu",
-                        "title": "Com s'ha d'anomenar aquest dispositiu?"
+                        "title": "Com vols anomenar aquest dispositiu?"
                     },
                     "description": "Envia notificacions a aquest dispositiu.",
                     "error_load_platform": "Configurar notify.html5.",
@@ -3297,6 +3318,9 @@
                     "description": "Activa o desactiva la vibració en d'aquest dispositiu.",
                     "header": "Vibra"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "Inicia conversa"
             },
             "shopping-list": {
                 "add_item": "Afegir article",

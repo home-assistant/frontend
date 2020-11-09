@@ -405,7 +405,8 @@ export class HaSceneEditor extends SubscribeMixin(
         </div>
         <mwc-fab
           slot="fab"
-          .title=${this.hass.localize("ui.panel.config.scene.editor.save")}
+          .label=${this.hass.localize("ui.panel.config.scene.editor.save")}
+          extended
           @click=${this._saveScene}
           class=${classMap({ dirty: this._dirty })}
         >
