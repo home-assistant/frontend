@@ -17,6 +17,7 @@ import {
   ExtEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { PolymerChangedEvent } from "../../../polymer-types";
 import type { HomeAssistant } from "../../../types";
 
@@ -43,7 +44,27 @@ export class HaEntityRegistryBasicEditor extends LitElement {
       params.disabled_by = this._disabledBy;
     }
     try {
-      await updateEntityRegistryEntry(this.hass!, this._origEntityId, params);
+      const result = await updateEntityRegistryEntry(
+        this.hass!,
+        this._origEntityId,
+        params
+      );
+      if (result.require_restart) {
+        showAlertDialog(this, {
+          text: this.hass.localize(
+            "ui.dialogs.entity_registry.editor.enabled_restart_confirm"
+          ),
+        });
+      }
+      if (result.reload_delay) {
+        showAlertDialog(this, {
+          text: this.hass.localize(
+            "ui.dialogs.entity_registry.editor.enabled_delay_confirm",
+            "delay",
+            result.reload_delay
+          ),
+        });
+      }
     } finally {
       this._submitting = false;
     }
