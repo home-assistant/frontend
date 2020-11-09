@@ -2136,7 +2136,7 @@
                         "sequence_sentence": "Seqüència d'accions de l'script."
                     },
                     "picker": {
-                        "add_script": "Crea un script nou",
+                        "add_script": "Afegeix script",
                         "edit_script": "Edita l'script",
                         "header": "Editor de scripts",
                         "headers": {

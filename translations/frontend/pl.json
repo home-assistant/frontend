@@ -2136,7 +2136,7 @@
                         "sequence_sentence": "Sekwencja akcji tego skryptu."
                     },
                     "picker": {
-                        "add_script": "Utwórz nowy skrypt",
+                        "add_script": "Dodaj skrypt",
                         "edit_script": "Edytuj skrypt",
                         "header": "Edytor skryptów",
                         "headers": {
