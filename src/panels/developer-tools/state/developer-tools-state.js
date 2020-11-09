@@ -166,12 +166,10 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
                 title="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
                 path="[[informationOutlineIcon()]]"
               ></ha-svg-icon>
-              <a href="#" on-click="entitySelected"
-                >[[entity.attributes.friendly_name]]</a
-              >
+              <a href="#" on-click="entitySelected">[[entity.entity_id]]</a>
               <br /><br />
               <span class="secondary">
-                [[entity.entity_id]]
+                [[entity.attributes.friendly_name]]
               </span>
             </td>
             <td>[[entity.state]]</td>
@@ -303,17 +301,20 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         return hass.states[key];
       })
       .filter(function (value) {
-        // If we have a match for the entity ID, we do not have to look further
+        // 1. If there is no entity filter => nothing to check
+        // 2. If we have a match for the entity ID => we do not have to look further
+        // 3. If entity ID does not match => check the friendly name => if there is none,
+        //    this entity is not relevant for rendering => return false
         const entityFilter = _entityFilter.toLowerCase();
-        if (!value.entity_id.includes(entityFilter)) {
-          // Entity ID does not match => check the friendly_name => if there is none,
-          // this entity is not relevant for rendering => return false
-          if (
-            value.attributes.friendly_name === undefined ||
-            !value.attributes.friendly_name.toLowerCase().includes(entityFilter)
-          ) {
-            return false;
-          }
+        if (
+          entityFilter &&
+          !value.entity_id.includes(entityFilter) &&
+          (value.attributes.friendly_name === undefined ||
+            !value.attributes.friendly_name
+              .toLowerCase()
+              .includes(entityFilter))
+        ) {
+          return false;
         }
 
         if (!value.state.includes(_stateFilter.toLowerCase())) {
