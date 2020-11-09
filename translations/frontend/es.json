@@ -2136,7 +2136,7 @@
                         "sequence_sentence": "La secuencia de acciones de este script."
                     },
                     "picker": {
-                        "add_script": "Crear nuevo script",
+                        "add_script": "Añadir script",
                         "edit_script": "Editar script",
                         "header": "Editor de scripts",
                         "headers": {

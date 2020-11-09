@@ -1505,7 +1505,7 @@
                 },
                 "core": {
                     "caption": "Obecné",
-                    "description": "Změny obecné konfigurace Home Assistant",
+                    "description": "Změny obecného nastavení Home Assistant",
                     "section": {
                         "core": {
                             "core_config": {
@@ -1525,7 +1525,7 @@
                                 "unit_system_imperial": "Imperiální",
                                 "unit_system_metric": "Metrický"
                             },
-                            "header": "Obecná konfigurace",
+                            "header": "Obecná nastavení",
                             "introduction": "Moc dobře víme, že změna konfigurace může být velmi únavným procesem. Tato sekce se proto pokusí udělat váš život alespoň trochu jednodušší."
                         }
                     }
@@ -1673,7 +1673,7 @@
                     "clear": "Vymazat",
                     "filtering_by": "Filtrování podle"
                 },
-                "header": "Konfigurace Home Assistant",
+                "header": "Nastavení Home Assistant",
                 "helpers": {
                     "caption": "Pomocníci",
                     "description": "Správa prvků, které mohou pomoci při vytváření automatizací",
@@ -1851,7 +1851,7 @@
                         "picker": {
                             "add_dashboard": "Přidat dashboard",
                             "headers": {
-                                "conf_mode": "Metoda konfigurace",
+                                "conf_mode": "Metoda nastavení",
                                 "default": "Výchozí",
                                 "filename": "Název souboru",
                                 "require_admin": "Pouze správce",
@@ -1962,7 +1962,7 @@
                         "node_count": "{count} uzlů"
                     },
                     "node_config": {
-                        "header": "Konfigurace uzlu",
+                        "header": "Nastavení uzlu",
                         "help_source": "Popisy parametrů konfigurace a text nápovědy poskytuje projekt OpenZWave.",
                         "introduction": "Spravujte různé konfigurační parametry pro uzel Z-Wave.",
                         "wakeup_help": "Uzly napájené z baterie musí být vzhůru, aby mohly změnit svou konfiguraci. Pokud uzel není vzhůru, OpenZWave se pokusí aktualizovat konfiguraci uzlu při příštím probuzení, což může být o několik hodin (nebo dní) později. Zařízení probudíte takto:"
@@ -2136,7 +2136,7 @@
                         "sequence_sentence": "Posloupnost akcí tohoto skriptu."
                     },
                     "picker": {
-                        "add_script": "Vytvořit skript",
+                        "add_script": "Přidat skript",
                         "edit_script": "Upravit skript",
                         "header": "Editor skriptů",
                         "headers": {
@@ -2163,7 +2163,7 @@
                             "generic": "Nově načíst entity integrace Generic IP camera",
                             "generic_thermostat": "Nově načíst entity integrace Generic thermostat",
                             "group": "Nově načíst skupiny, skupiny entit a notifikační služby",
-                            "heading": "Konfigurace se načítá",
+                            "heading": "Konfigurace z YAML se načítá",
                             "history_stats": "Nově načíst entity integrace History stats",
                             "homekit": "Nově načíst entity integrace HomeKit",
                             "input_boolean": "Nově načíst pomocníky - přepínače",
@@ -2405,9 +2405,9 @@
                         "update": "Aktualizovat"
                     },
                     "edit_home_zone": "Poloměr domovské zóny zatím nelze upravit z frontendu. Z frontendu se dá změnit jen poloha domovské zóny.",
-                    "edit_home_zone_narrow": "Poloměr domovské zóny zatím nelze upravit z rozhraní. Umístění lze změnit z obecné konfigurace.",
+                    "edit_home_zone_narrow": "Poloměr domovské zóny zatím nelze upravit z rozhraní. Umístění lze změnit z obecného nastavení.",
                     "go_to_core_config": "Přejít na obecnou konfiguraci?",
-                    "home_zone_core_config": "Umístění vaší domovské zóny lze upravit na stránce obecné konfigurace. Poloměr domovské zóny zatím nelze upravit z rozhraní. Chcete přejít na obecnou konfiguraci?",
+                    "home_zone_core_config": "Umístění vaší domovské zóny lze upravit na stránce obecného nastavení. Poloměr domovské zóny zatím nelze upravit z rozhraní. Chcete přejít na obecnou konfiguraci?",
                     "introduction": "Zóny umožňují určit určité oblasti na zemi. Když je osoba v zóně, stav převezme název ze zóny. Zóny lze také použít jako aktivační událost nebo podmínku v nastavení automatizace.",
                     "no_zones_created_yet": "Vypadá to, že nejsou vytvořené žádné zóny."
                 },
@@ -2439,7 +2439,7 @@
                         "config_parameter": "Konfigurační parametr",
                         "config_value": "Konfigurační hodnota",
                         "false": "False",
-                        "header": "Možnosti konfigurace uzlu",
+                        "header": "Možnosti nastavení uzlu",
                         "seconds": "sekund",
                         "set_config_parameter": "Nastavte konfigurační parametr",
                         "set_wakeup": "Nastavit interval probuzení",
@@ -2635,7 +2635,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Konfigurace Lovelace pro tento dashboard byla aktualizována, chcete obnovit stránku?",
+                    "message": "Nastavení Lovelace pro tento dashboard bylo aktualizováno, chcete obnovit stránku?",
                     "refresh": "Obnovit"
                 },
                 "editor": {
@@ -2892,7 +2892,7 @@
                         "show_code_editor": "Zobrazit editor kódu",
                         "show_visual_editor": "Zobrazit vizuální editor",
                         "toggle_editor": "Přepnout Editor",
-                        "typed_header": "{type} Konfigurace karty",
+                        "typed_header": "Nastavení karty {type}",
                         "unsaved_changes": "Změny nejsou uloženy"
                     },
                     "edit_lovelace": {
@@ -2953,7 +2953,7 @@
                         "para": "Tento dashboard momentálně spravuje Home Assistant. Je automaticky aktualizován při přidání nové entity nebo Lovelace komponenty. Pokud převezmete kontrolu, nebudeme již provádět změny automaticky za vás. Vždy si můžete vytvořit nový dashboard na hraní.",
                         "para_sure": "Opravdu chcete převzít kontrolu nad uživalským rozhraním ?",
                         "save": "Převzít kontrolu",
-                        "yaml_config": "Abyste mohli snadněji začít, zde aktuální konfigurace tohoto dashboardu:",
+                        "yaml_config": "Abyste mohli snadněji začít, zde je aktuální konfigurace tohoto dashboardu:",
                         "yaml_control": "Chcete-li převzít kontrolu v režimu YAML, vytvořte soubor YAML s názvem, který jste uvedli ve své konfiguraci pro tento dashboard nebo výchozí 'ui-lovelace.yaml'.",
                         "yaml_mode": "Používáte režim YAML, což znamená, že nemůžete změnit konfiguraci Lovelace z uživatelského rozhraní. Pokud chcete měnit Lovelace z uživatelského rozhraní, odstraňte 'mode: yaml' z vaší konfigurace Lovelace v 'configuration.yaml.'"
                     },
@@ -3330,7 +3330,7 @@
         },
         "sidebar": {
             "done": "Hotovo",
-            "external_app_configuration": "Konfigurace aplikace",
+            "external_app_configuration": "Nastavení aplikace",
             "sidebar_toggle": "Přepínač postranního panelu"
         }
     }
