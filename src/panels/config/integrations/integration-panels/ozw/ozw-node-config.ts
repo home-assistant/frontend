@@ -1,8 +1,11 @@
 import "../../../../../components/ha-switch";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input";
+import type { Button } from "@material/mwc-button/mwc-button";
+import type { PaperDropdownMenuElement } from "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@material/mwc-button/mwc-button";
 import {
   css,
@@ -19,6 +22,7 @@ import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
 import "../../../../../layouts/hass-tabs-subpage";
+import "../../../../../components/ha-form/ha-form";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
@@ -49,6 +53,9 @@ class OZWNodeConfig extends LitElement {
   @property() public ozwInstance?;
 
   @property() public nodeId?;
+
+  @property()
+  private _configData: { [key: number]: any } = {};
 
   @internalProperty() private _node?: OZWDevice;
 
@@ -179,41 +186,15 @@ class OZWNodeConfig extends LitElement {
       <div class="card-content">
         <b>${item.label}</b><br />
         <span class="secondary">${item.help}</span>
-        ${["Byte", "Short", "Int"].includes(item.type)
-          ? html` <paper-input
-              type="number"
-              .value=${item.value}
-              .max=${item.max}
-              .min=${item.min}
-              ?disabled=${item.parameter === 999}
+        ${["Byte", "Short", "Int", "List"].includes(item.type)
+          ? html` <ha-form
+              .schema=${item.schema}
+              .data=${item.data}
               .parameter=${item.parameter}
+              @value-changed=${this._configValueChanged}
             >
-            </paper-input>`
+            </ha-form>`
           : ``}
-        ${item.type === "List"
-          ? html`
-              <paper-dropdown-menu
-                ?disabled=${item.parameter === 999}
-                .placeholder=${item.value}
-                .parameter=${item.parameter}
-              >
-                <paper-listbox
-                  slot="dropdown-content"
-                  .selected=${Object.values(item.options).find(
-                    (opt) => opt.Label === item.value
-                  ).Value}
-                >
-                  ${item.options.map(
-                    (option) => html`
-                      <paper-item .value=${option.Value}
-                        >${option.Label}</paper-item
-                      >
-                    `
-                  )}
-                </paper-listbox>
-              </paper-dropdown-menu>
-            `
-          : ""}
         ${item.type === "BitSet"
           ? html`
               ${item.value.map(
@@ -292,6 +273,16 @@ class OZWNodeConfig extends LitElement {
         metadataProm,
         configProm,
       ]);
+
+      this._config.forEach((item) => {
+        if (item.type === "List") {
+          this._configData[item.parameter] = Object.values(
+            item.schema[0].options
+          ).find((opt) => opt[1] === item.value)[0];
+        } else {
+          this._configData[item.parameter] = item.value;
+        }
+      });
     } catch (err) {
       if (err.code === ERR_NOT_FOUND) {
         this._error = ERR_NOT_FOUND;
@@ -301,10 +292,19 @@ class OZWNodeConfig extends LitElement {
     }
   }
 
+  private _configValueChanged(ev: CustomEvent) {
+    this._configData[ev.currentTarget.parameter] =
+      ev.detail.value[Object.keys(ev.detail.value)[0]];
+    console.log(this._configData);
+  }
+
   private async _updateTextConfigOption(ev: Event) {
-    const el = ev.target!.closest("ha-card").querySelector("paper-input");
-    el.errorMessage = undefined;
-    el.invalid = false;
+    const el = (<Button>ev.currentTarget)
+      .closest("ha-card")!
+      .querySelector("ha-form")!;
+    const value = el.closest("paper-input").value;
+    el.error = undefined;
+    /*
     try {
       await this.hass.callWS({
         type: "ozw/set_config_parameter",
@@ -315,14 +315,17 @@ class OZWNodeConfig extends LitElement {
       });
     } catch (e) {
       el.errorMessage = e.message;
-      el.invalid = true;
     }
+    */
+    console.log(el.parameter, value);
   }
 
   private async _updateListConfigOption(ev: Event) {
-    const el = ev
-      .target!.closest("ha-card")
-      .querySelector("paper-dropdown-menu");
+    const el = <OzwConfigDropdownElement>(
+      (<Button>ev.currentTarget)
+        .closest("ha-card")!
+        .querySelector("paper-dropdown-menu")!
+    );
     el.errorMessage = undefined;
     el.invalid = false;
     try {
@@ -407,6 +410,14 @@ export interface ChangeEvent {
     value?: any;
   };
   target?: EventTarget;
+}
+
+export interface OzwConfigInputElement extends PaperInputElement {
+  parameter: number;
+}
+
+export interface OzwConfigDropdownElement extends PaperDropdownMenuElement {
+  parameter: number;
 }
 
 declare global {
