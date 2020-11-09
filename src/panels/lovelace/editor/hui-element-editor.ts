@@ -3,7 +3,6 @@ import { safeDump, safeLoad } from "js-yaml";
 import {
   css,
   CSSResult,
-  customElement,
   html,
   internalProperty,
   LitElement,
@@ -51,8 +50,7 @@ export interface UIConfigChangedEvent extends Event {
   };
 }
 
-@customElement("hui-element-editor")
-export class HuiElementEditor<T> extends LitElement {
+export abstract class HuiElementEditor<T> extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public lovelace?: LovelaceConfig;
@@ -350,11 +348,5 @@ export class HuiElementEditor<T> extends LitElement {
         margin: auto;
       }
     `;
-  }
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    "hui-element-editor": HuiElementEditor<any>;
   }
 }
