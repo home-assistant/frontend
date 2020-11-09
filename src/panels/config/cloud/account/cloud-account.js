@@ -61,12 +61,10 @@ class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
           color: var(--primary-color);
         }
       </style>
-      <hass-subpage header="[[localize('ui.panel.config.cloud.caption')]]">
+      <hass-subpage header="Home Assistant Cloud">
         <div class="content">
           <ha-config-section is-wide="[[isWide]]">
-            <span slot="header"
-              >[[localize('ui.panel.config.cloud.caption')]]</span
-            >
+            <span slot="header">Home Assistant Cloud</span>
             <div slot="introduction">
               <p>
                 [[localize('ui.panel.config.cloud.account.thank_you_note')]]
