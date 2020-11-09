@@ -60,7 +60,7 @@ class HaConfigDashboard extends LitElement {
                   {
                     component: "cloud",
                     path: "/config/cloud",
-                    translationKey: "ui.panel.config.cloud.caption",
+                    name: "Home Assistant Cloud",
                     info: this.cloudStatus,
                     iconPath: mdiCloudLock,
                   },
