@@ -18,8 +18,9 @@ export class HaDateInput extends VaadinDatePicker {
         width: 12ex;
         margin-top: -6px;
         --material-body-font-size: 16px;
+        --_material-text-field-input-line-background-color: var(--primary-text-color);
         --_material-text-field-input-line-opacity: 1;
-        --material-primary-color: #000;
+        --material-primary-color: var(--primary-text-color);
       }
     `;
     this.shadowRoot.appendChild(styleEl);
