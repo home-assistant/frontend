@@ -197,6 +197,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
                 <ha-logbook
                   narrow
                   relative-time
+                  virtualize
                   class="ha-scrollbar"
                   .hass=${this.hass}
                   .entries=${this._logbookEntries}
