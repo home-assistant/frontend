@@ -331,7 +331,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                     <div class="card-content">
                       <div class="image">
                         <img
-                          src="${brandsUrl(item.domain, "logo")}"
+                          src=${brandsUrl(item.domain, "logo")}
                           referrerpolicy="no-referrer"
                           @error=${this._onImageError}
                           @load=${this._onImageLoad}
@@ -379,7 +379,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                       <div class="card-content">
                         <div class="image">
                           <img
-                            src="${brandsUrl(flow.handler, "logo")}"
+                            src=${brandsUrl(flow.handler, "logo")}
                             referrerpolicy="no-referrer"
                             @error=${this._onImageError}
                             @load=${this._onImageLoad}

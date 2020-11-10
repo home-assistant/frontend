@@ -51,7 +51,7 @@ class IntegrationsCard extends LitElement {
                     <td>
                       <img
                         loading="lazy"
-                        src="${brandsUrl(domain, "icon", true)}"
+                        src=${brandsUrl(domain, "icon", true)}
                         referrerpolicy="no-referrer"
                       />
                     </td>
