@@ -8,6 +8,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import "../components/ha-icon";
+import { brandsUrl } from "../util/brands-url";
 
 @customElement("integration-badge")
 class IntegrationBadge extends LitElement {
@@ -23,7 +24,7 @@ class IntegrationBadge extends LitElement {
     return html`
       <div class="icon">
         <img
-          src="https://brands.home-assistant.io/${this.domain}/icon.png"
+          src="${brandsUrl(this.domain, "icon")}"
           referrerpolicy="no-referrer"
         />
         ${this.badgeIcon

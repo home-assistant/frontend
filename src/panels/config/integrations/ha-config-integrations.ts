@@ -67,6 +67,7 @@ import type {
   ConfigEntryUpdatedEvent,
   HaIntegrationCard,
 } from "./ha-integration-card";
+import { brandsUrl } from "../../../util/brands-url";
 
 interface DataEntryFlowProgressExtended extends DataEntryFlowProgress {
   localized_title?: string;
@@ -330,7 +331,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                     <div class="card-content">
                       <div class="image">
                         <img
-                          src="https://brands.home-assistant.io/${item.domain}/logo.png"
+                          src="${brandsUrl(item.domain, "logo")}"
                           referrerpolicy="no-referrer"
                           @error=${this._onImageError}
                           @load=${this._onImageLoad}
@@ -378,7 +379,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                       <div class="card-content">
                         <div class="image">
                           <img
-                            src="https://brands.home-assistant.io/${flow.handler}/logo.png"
+                            src="${brandsUrl(flow.handler, "logo")}"
                             referrerpolicy="no-referrer"
                             @error=${this._onImageError}
                             @load=${this._onImageLoad}

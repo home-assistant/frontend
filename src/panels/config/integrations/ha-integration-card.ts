@@ -31,6 +31,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
+import { brandsUrl } from "../../../util/brands-url";
 
 export interface ConfigEntryUpdatedEvent {
   entry: ConfigEntry;
@@ -107,7 +108,7 @@ export class HaIntegrationCard extends LitElement {
       <ha-card outlined class="group">
         <div class="group-header">
           <img
-            src="https://brands.home-assistant.io/${this.domain}/icon.png"
+            src="${brandsUrl(this.domain, "icon")}"
             referrerpolicy="no-referrer"
             @error=${this._onImageError}
             @load=${this._onImageLoad}
@@ -157,7 +158,7 @@ export class HaIntegrationCard extends LitElement {
         <div class="card-content">
           <div class="image">
             <img
-              src="https://brands.home-assistant.io/${item.domain}/logo.png"
+              src="${brandsUrl(item.domain, "logo")}"
               referrerpolicy="no-referrer"
               @error=${this._onImageError}
               @load=${this._onImageLoad}

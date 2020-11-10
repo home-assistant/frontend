@@ -45,6 +45,7 @@ import { configSections } from "../ha-panel-config";
 import "./device-detail/ha-device-entities-card";
 import "./device-detail/ha-device-info-card";
 import { showDeviceAutomationDialog } from "./device-detail/show-dialog-device-automation";
+import { brandsUrl } from "../../../util/brands-url";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
@@ -224,9 +225,7 @@ export class HaConfigDevicePage extends LitElement {
                       : ""
                   }
                   <img
-                    src="https://brands.home-assistant.io/${
-                      integrations[0]
-                    }/logo.png"
+                    src="${brandsUrl(integrations[0], "logo")}"
                     referrerpolicy="no-referrer"
                     @load=${this._onImageLoad}
                     @error=${this._onImageError}
