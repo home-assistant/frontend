@@ -129,20 +129,26 @@ class HaHLSPlayer extends LitElement {
 
     // Parse playlist assuming it is a master playlist. Match group 1 is whether hevc, match group 2 is regular playlist url
     // See https://tools.ietf.org/html/rfc8216 for HLS spec details
-    const playlistRegexp = /#EXT-X-STREAM-INF:.*?(?:CODECS=".*?(hev1|hvc1)?\..*?".*?)?(?:\n|\r\n)(.+)/g;
+    const playlistRegexp = /#EXT-X-STREAM-INF:.*?(?:CODECS=".*?(?<isHevc>hev1|hvc1)?\..*?".*?)?(?:\n|\r\n)(?<streamUrl>.+)/g;
     const match = playlistRegexp.exec(masterPlaylist);
+    const matchTwice = playlistRegexp.exec(masterPlaylist);
 
     // Get the regular playlist url from the input (master) playlist, falling back to the input playlist if necessary
     // This avoids the player having to load and parse the master playlist again before loading the regular playlist
     let playlist_url: string;
-    if (match !== null && playlistRegexp.exec(masterPlaylist) === null) {
-      playlist_url = new URL(match[2], this.url).href;
+    if (match !== null && matchTwice === null) {
+      // Only send the regular playlist url if we match exactly once
+      playlist_url = new URL(match.groups!.streamUrl, this.url).href;
     } else {
       playlist_url = this.url;
     }
 
     // If codec is HEVC and ExoPlayer is supported, use ExoPlayer.
-    if (this._useExoPlayer && match !== null && match[1] !== undefined) {
+    if (
+      this._useExoPlayer &&
+      match !== null &&
+      match.groups!.isHevc !== undefined
+    ) {
       this._renderHLSExoPlayer(playlist_url);
     } else if (hls.isSupported()) {
       this._renderHLSPolyfill(videoEl, hls, playlist_url);
