@@ -1,5 +1,11 @@
 import "@material/mwc-fab";
-import { mdiCheck, mdiContentSave, mdiDelete, mdiDotsVertical } from "@mdi/js";
+import {
+  mdiCheck,
+  mdiContentSave,
+  mdiDelete,
+  mdiDotsVertical,
+  mdiContentDuplicate,
+} from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
@@ -36,6 +42,7 @@ import {
   MODES,
   MODES_MAX,
   ScriptConfig,
+  showScriptEditor,
   triggerScript,
 } from "../../../data/script";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
@@ -131,6 +138,22 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           </mwc-list-item>
 
           <li divider role="separator"></li>
+
+          <mwc-list-item
+            .disabled=${!this.scriptEntityId}
+            .label=${this.hass.localize(
+              "ui.panel.config.script.picker.duplicate_script"
+            )}
+            graphic="icon"
+          >
+            ${this.hass.localize(
+              "ui.panel.config.script.picker.duplicate_script"
+            )}
+            <ha-svg-icon
+              slot="graphic"
+              .path=${mdiContentDuplicate}
+            ></ha-svg-icon>
+          </mwc-list-item>
 
           <mwc-list-item
             .disabled=${!this.scriptEntityId}
@@ -551,6 +574,30 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     }
   }
 
+  private async _duplicate() {
+    if (this._dirty) {
+      if (
+        !(await showConfirmationDialog(this, {
+          text: this.hass!.localize(
+            "ui.panel.config.common.editor.confirm_unsaved"
+          ),
+          confirmText: this.hass!.localize("ui.common.yes"),
+          dismissText: this.hass!.localize("ui.common.no"),
+        }))
+      ) {
+        return;
+      }
+      // Wait for dialog to complate closing
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    }
+    showScriptEditor(this, {
+      ...this._config,
+      alias: `${this._config?.alias} (${this.hass.localize(
+        "ui.panel.config.script.picker.duplicate"
+      )})`,
+    });
+  }
+
   private async _deleteConfirm() {
     showConfirmationDialog(this, {
       text: this.hass.localize("ui.panel.config.script.editor.delete_confirm"),
@@ -574,6 +621,9 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         this._mode = "yaml";
         break;
       case 2:
+        this._duplicate();
+        break;
+      case 3:
         this._deleteConfirm();
         break;
     }
