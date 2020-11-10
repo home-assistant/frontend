@@ -95,6 +95,10 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-text-primary-color: 255, 255, 255;
       --rgb-card-background-color: 255, 255, 255;
 
+      /* change from opacity to rgba for backdrop-filter */
+      --iron-overlay-backdrop-opacity: 1;
+      --iron-overlay-backdrop-background-color: rgba(0, 0, 0, 0.32);
+
       ${Object.entries(derivedStyles)
         .map(([key, value]) => `--${key}: ${value};`)
         .join("")}
@@ -112,6 +116,10 @@ documentContainer.innerHTML = `<custom-style>
 
     paper-dialog-scrollable.can-scroll > .scrollable {
       -webkit-overflow-scrolling: touch !important;
+    }
+
+    iron-overlay-backdrop {
+      backdrop-filter: var(--dialog-backdrop-filter, none);
     }
   </style>
 </custom-style>`;
