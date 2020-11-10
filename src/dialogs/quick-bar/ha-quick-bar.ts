@@ -206,7 +206,7 @@ export class QuickBar extends LitElement {
         .twoline=${Boolean(item.altText)}
         .item=${item}
         index=${ifDefined(index)}
-        graphic="avatar"
+        graphic="icon"
       >
         ${item.iconPath
           ? html`<ha-svg-icon
@@ -504,16 +504,14 @@ export class QuickBar extends LitElement {
           }
         }
 
-        ha-icon {
-          margin-left: 8px;
-        }
-
+        ha-icon,
         ha-svg-icon {
-          color: var(--primary-text-color);
+          margin-left: 8px;
         }
 
         ha-svg-icon.prefix {
           margin: 8px;
+          color: var(--primary-text-color);
         }
 
         .uni-virtualizer-host {
