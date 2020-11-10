@@ -34,6 +34,9 @@ export class HaTabs extends PaperTabs {
 
       superStyle!.appendChild(
         document.createTextNode(`
+          #selectionBar {
+            box-sizing: border-box;
+          }
           .not-visible {
             display: none;
           }
