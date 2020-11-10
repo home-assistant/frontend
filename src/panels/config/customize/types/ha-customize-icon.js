@@ -21,7 +21,7 @@ class HaCustomizeIcon extends PolymerElement {
       <ha-icon class="icon-image" icon="[[item.value]]"></ha-icon>
       <paper-input
         disabled="[[item.secondary]]"
-        label="icon"
+        label="Icon"
         value="{{item.value}}"
       >
       </paper-input>
