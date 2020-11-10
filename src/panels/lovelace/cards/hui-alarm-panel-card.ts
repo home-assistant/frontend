@@ -353,8 +353,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       }
 
       .actions {
-        margin: 0 8px;
-        padding-top: 20px;
+        margin: 0;
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
