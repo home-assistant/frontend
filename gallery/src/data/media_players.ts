@@ -52,7 +52,7 @@ export const createMediaPlayerEntities = () => [
     supported_features: 16417,
   }),
   getEntity("media_player", "stream_playing_previous", "playing", {
-    friendly_name: "Playing the Stream (with Previous support)",
+    friendly_name: 'Playing the Stream (with "previous" support)',
     media_content_type: "movie",
     media_title: "Epic sax guy 10 hours",
     app_name: "YouTube",
@@ -84,13 +84,13 @@ export const createMediaPlayerEntities = () => [
   }),
   getEntity("media_player", "theater_off", "off", {
     friendly_name: "TV Off",
-    // On + Off + Next + Pause
-    supported_features: 417,
+    // On + Off + Play + Next + Pause
+    supported_features: 16801,
   }),
   getEntity("media_player", "theater_on", "on", {
     friendly_name: "TV On",
-    // On + Off + Next + Pause
-    supported_features: 417,
+    // On + Off + Play + Next + Pause
+    supported_features: 16801,
   }),
   getEntity("media_player", "theater_off_static", "off", {
     friendly_name: "TV Off (cannot be switched on)",
@@ -145,13 +145,13 @@ export const createMediaPlayerEntities = () => [
     volume_level: 0.63,
     is_volume_muted: false,
     source: "TV",
-    friendly_name: "Receiver",
+    friendly_name: "Receiver (selectable sources)",
     // Volume Set + Volume Mute + On + Off + Select Source + Play + Sound Mode
     supported_features: 84364,
   }),
   getEntity("media_player", "receiver_off", "off", {
     source_list: ["AirPlay", "Blu-Ray", "TV", "USB", "iPod (USB)"],
-    friendly_name: "Receiver",
+    friendly_name: "Receiver (selectable sources)",
     // Volume Set + Volume Mute + On + Off + Select Source + Play + Sound Mode
     supported_features: 84364,
   }),

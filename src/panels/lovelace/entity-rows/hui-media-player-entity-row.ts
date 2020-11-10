@@ -21,6 +21,7 @@ import {
   SUPPORT_NEXT_TRACK,
   SUPPORT_PAUSE,
   SUPPORT_PREVIOUS_TRACK,
+  SUPPORT_STOP,
   SUPPORT_TURN_OFF,
   SUPPORT_TURN_ON,
   SUPPORT_VOLUME_BUTTONS,
@@ -80,6 +81,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     }
 
     const stateObj = this.hass.states[this._config.entity];
+    const state = stateObj.state;
 
     if (!stateObj) {
       return html`
@@ -90,7 +92,9 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     }
 
     const buttons = html`
-      ${!this._narrow && supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)
+      ${!this._narrow &&
+      state === "playing" &&
+      supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)
         ? html`
             <ha-icon-button
               icon="hass:skip-previous"
@@ -98,11 +102,12 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
             ></ha-icon-button>
           `
         : ""}
-      ${(stateObj.state === "playing" &&
-        (supportsFeature(stateObj, SUPPORT_PAUSE) ||
-          supportsFeature(stateObj, SUPPORT_STOP))) ||
-      ((stateObj.state === "paused" || stateObj.state === "idle") &&
-        supportsFeature(stateObj, SUPPORT_PLAY))
+      ${(state === "playing" && supportsFeature(stateObj, SUPPORT_PAUSE)) ||
+      supportsFeature(stateObj, SUPPORT_STOP) ||
+      ((state === "paused" || state === "idle") &&
+        supportsFeature(stateObj, SUPPORT_PLAY)) ||
+      (state === "on" && supportsFeature(stateObj, SUPPORT_PLAY)) ||
+      supportsFeature(stateObj, SUPPORT_PAUSE)
         ? ""
         : html`
             <ha-icon-button
@@ -110,7 +115,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
               @click=${this._playPause}
             ></ha-icon-button>
           `}
-      ${supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
+      ${state === "playing" && supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
         ? html`
             <ha-icon-button
               icon="hass:skip-next"

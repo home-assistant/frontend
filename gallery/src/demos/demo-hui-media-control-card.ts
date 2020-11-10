@@ -35,7 +35,7 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "Playing Stream (with Previous support)",
+    heading: 'Playing Stream (with "previous" support)',
     config: `
   - type: media-control
     entity: media_player.stream_playing_previous
@@ -133,14 +133,14 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "Receiver On",
+    heading: "Receiver On (selectable sources)",
     config: `
   - type: media-control
     entity: media_player.receiver_on
     `,
   },
   {
-    heading: "Receiver Off",
+    heading: "Receiver Off (selectable sources)",
     config: `
   - type: media-control
     entity: media_player.receiver_off
