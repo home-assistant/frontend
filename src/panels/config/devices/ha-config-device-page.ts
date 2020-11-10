@@ -225,7 +225,7 @@ export class HaConfigDevicePage extends LitElement {
                       : ""
                   }
                   <img
-                    src="${brandsUrl(integrations[0], "logo")}"
+                    src=${brandsUrl(integrations[0], "logo")}
                     referrerpolicy="no-referrer"
                     @load=${this._onImageLoad}
                     @error=${this._onImageError}
