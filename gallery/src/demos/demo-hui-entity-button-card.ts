@@ -98,4 +98,4 @@ class DemoButtonEntity extends PolymerElement {
   }
 }
 
-customElements.define("demo-hui-button-card", DemoButtonEntity);
+customElements.define("demo-hui-entity-button-card", DemoButtonEntity);

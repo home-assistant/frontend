@@ -153,15 +153,17 @@ export class HaConfigHelpers extends LitElement {
         .data=${this._getItems(this._stateItems)}
         @row-click=${this._openEditDialog}
         hasFab
+        clickable
         .noDataText=${this.hass.localize(
           "ui.panel.config.helpers.picker.no_helpers"
         )}
       >
         <mwc-fab
           slot="fab"
-          title="${this.hass.localize(
+          .label=${this.hass.localize(
             "ui.panel.config.helpers.picker.add_helper"
-          )}"
+          )}
+          extended
           @click=${this._createHelpler}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>

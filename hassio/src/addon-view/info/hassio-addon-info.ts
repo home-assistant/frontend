@@ -135,7 +135,7 @@ class HassioAddonInfo extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      ${this._computeUpdateAvailable
+      ${this.addon.update_available
         ? html`
             <ha-card header="Update available! 🎉">
               <div class="card-content">
@@ -178,7 +178,7 @@ class HassioAddonInfo extends LitElement {
       ${!this.addon.protected
         ? html`
         <ha-card class="warning">
-          <div class="card-header">Warning: Protection mode is disabled!</div>
+          <h1 class="card-header">Warning: Protection mode is disabled!</h1>
           <div class="card-content">
             Protection mode on this add-on is disabled! This gives the add-on full access to the entire system, which adds security risks, and could damage your system when used incorrectly. Only disable the protection mode if you know, need AND trust the source of this add-on.
           </div>
@@ -607,15 +607,6 @@ class HassioAddonInfo extends LitElement {
 
   private get _computeIsRunning(): boolean {
     return this.addon?.state === "started";
-  }
-
-  private get _computeUpdateAvailable(): boolean | "" {
-    return (
-      this.addon &&
-      !this.addon.detached &&
-      this.addon.version &&
-      this.addon.version !== this.addon.version_latest
-    );
   }
 
   private get _pathWebui(): string | null {

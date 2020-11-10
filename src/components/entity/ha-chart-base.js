@@ -88,6 +88,7 @@ class HaChartBase extends mixinBehaviors(
         .chartTooltip .beforeBody {
           text-align: center;
           font-weight: 300;
+          word-break: break-all;
         }
         .chartLegend li {
           display: inline-block;
@@ -278,7 +279,7 @@ class HaChartBase extends mixinBehaviors(
     this.set(["tooltip", "title"], title);
 
     if (tooltip.beforeBody) {
-        this.set(["tooltip", "beforeBody"], tooltip.beforeBody.join("\n"));
+      this.set(["tooltip", "beforeBody"], tooltip.beforeBody.join("\n"));
     }
 
     const bodyLines = tooltip.body.map((n) => n.lines);

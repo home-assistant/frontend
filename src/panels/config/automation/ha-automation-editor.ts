@@ -31,6 +31,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
+import { showToast } from "../../../util/toast";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import {
   AutomationConfig,
@@ -132,6 +133,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
             ${this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
             ${this._mode === "gui"
               ? html`<ha-svg-icon
+                  class="selected_menu_item"
                   slot="graphic"
                   .path=${mdiCheck}
                 ></ha-svg-icon>`
@@ -147,6 +149,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
             ${this.hass.localize("ui.panel.config.automation.editor.edit_yaml")}
             ${this._mode === "yaml"
               ? html`<ha-svg-icon
+                  class="selected_menu_item"
                   slot="graphic"
                   .path=${mdiCheck}
                 ></ha-svg-icon>`
@@ -182,7 +185,12 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
             ${this.hass.localize(
               "ui.panel.config.automation.picker.delete_automation"
             )}
-            <ha-svg-icon slot="graphic" .path=${mdiDelete}></ha-svg-icon>
+            <ha-svg-icon
+              class=${classMap({ warning: this.automationId })}
+              slot="graphic"
+              .path=${mdiDelete}
+            >
+            </ha-svg-icon>
           </mwc-list-item>
         </ha-button-menu>
         ${this._config
@@ -464,7 +472,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         <mwc-fab
           slot="fab"
           class=${classMap({ dirty: this._dirty })}
-          .title=${this.hass.localize("ui.panel.config.automation.editor.save")}
+          .label=${this.hass.localize("ui.panel.config.automation.editor.save")}
+          extended
           @click=${this._saveAutomation}
         >
           <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
@@ -642,8 +651,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         text: this.hass!.localize(
           "ui.panel.config.automation.editor.unsaved_confirm"
         ),
-        confirmText: this.hass!.localize("ui.common.yes"),
-        dismissText: this.hass!.localize("ui.common.no"),
+        confirmText: this.hass!.localize("ui.common.leave"),
+        dismissText: this.hass!.localize("ui.common.stay"),
         confirm: () => history.back(),
       });
     } else {
@@ -658,8 +667,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
           text: this.hass!.localize(
             "ui.panel.config.automation.editor.unsaved_confirm"
           ),
-          confirmText: this.hass!.localize("ui.common.yes"),
-          dismissText: this.hass!.localize("ui.common.no"),
+          confirmText: this.hass!.localize("ui.common.leave"),
+          dismissText: this.hass!.localize("ui.common.stay"),
         }))
       ) {
         return;
@@ -681,8 +690,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       text: this.hass.localize(
         "ui.panel.config.automation.picker.delete_confirm"
       ),
-      confirmText: this.hass!.localize("ui.common.yes"),
-      dismissText: this.hass!.localize("ui.common.no"),
+      confirmText: this.hass!.localize("ui.common.delete"),
+      dismissText: this.hass!.localize("ui.common.cancel"),
       confirm: () => this._delete(),
     });
   }
@@ -725,6 +734,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       },
       (errors) => {
         this._errors = errors.body.message;
+        showToast(this, {
+          message: errors.body.message,
+        });
         throw errors;
       }
     );
@@ -765,6 +777,12 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         }
         mwc-fab.dirty {
           bottom: 0;
+        }
+        .selected_menu_item {
+          color: var(--primary-color);
+        }
+        li[role="separator"] {
+          border-bottom-color: var(--divider-color);
         }
       `,
     ];

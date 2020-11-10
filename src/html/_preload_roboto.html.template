@@ -8,7 +8,7 @@
           el.type = "font/woff2";
           el.href = src;
           el.crossOrigin = "anonymous";
-          document.head.append(el);
+          document.head.appendChild(el);
         }
         _pf("/static/fonts/roboto/Roboto-Regular.woff2");
         _pf("/static/fonts/roboto/Roboto-Medium.woff2");

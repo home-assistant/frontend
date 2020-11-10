@@ -1,5 +1,11 @@
 import "@material/mwc-fab";
-import { mdiCheck, mdiContentSave, mdiDelete, mdiDotsVertical } from "@mdi/js";
+import {
+  mdiCheck,
+  mdiContentSave,
+  mdiDelete,
+  mdiDotsVertical,
+  mdiContentDuplicate,
+} from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
@@ -36,6 +42,7 @@ import {
   MODES,
   MODES_MAX,
   ScriptConfig,
+  showScriptEditor,
   triggerScript,
 } from "../../../data/script";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
@@ -106,7 +113,8 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           >
             ${this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
             ${this._mode === "gui"
-              ? html`<ha-svg-icon
+              ? html` <ha-svg-icon
+                  class="selected_menu_item"
                   slot="graphic"
                   .path=${mdiCheck}
                 ></ha-svg-icon>`
@@ -121,7 +129,8 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           >
             ${this.hass.localize("ui.panel.config.automation.editor.edit_yaml")}
             ${this._mode === "yaml"
-              ? html`<ha-svg-icon
+              ? html` <ha-svg-icon
+                  class="selected_menu_item"
                   slot="graphic"
                   .path=${mdiCheck}
                 ></ha-svg-icon>`
@@ -132,6 +141,22 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
           <mwc-list-item
             .disabled=${!this.scriptEntityId}
+            .label=${this.hass.localize(
+              "ui.panel.config.script.picker.duplicate_script"
+            )}
+            graphic="icon"
+          >
+            ${this.hass.localize(
+              "ui.panel.config.script.picker.duplicate_script"
+            )}
+            <ha-svg-icon
+              slot="graphic"
+              .path=${mdiContentDuplicate}
+            ></ha-svg-icon>
+          </mwc-list-item>
+
+          <mwc-list-item
+            .disabled=${!this.scriptEntityId}
             aria-label=${this.hass.localize(
               "ui.panel.config.script.editor.delete_script"
             )}
@@ -139,7 +164,12 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
             graphic="icon"
           >
             ${this.hass.localize("ui.panel.config.script.editor.delete_script")}
-            <ha-svg-icon slot="graphic" .path=${mdiDelete}></ha-svg-icon>
+            <ha-svg-icon
+              class=${classMap({ warning: this.scriptEntityId })}
+              slot="graphic"
+              .path=${mdiDelete}
+            >
+            </ha-svg-icon>
           </mwc-list-item>
         </ha-button-menu>
         ${this.narrow
@@ -360,9 +390,10 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         </div>
         <mwc-fab
           slot="fab"
-          .title=${this.hass.localize(
+          .label=${this.hass.localize(
             "ui.panel.config.script.editor.save_script"
           )}
+          extended
           @click=${this._saveScript}
           class=${classMap({
             dirty: this._dirty,
@@ -534,8 +565,8 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         text: this.hass!.localize(
           "ui.panel.config.common.editor.confirm_unsaved"
         ),
-        confirmText: this.hass!.localize("ui.common.yes"),
-        dismissText: this.hass!.localize("ui.common.no"),
+        confirmText: this.hass!.localize("ui.common.leave"),
+        dismissText: this.hass!.localize("ui.common.stay"),
         confirm: () => history.back(),
       });
     } else {
@@ -543,11 +574,35 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     }
   }
 
+  private async _duplicate() {
+    if (this._dirty) {
+      if (
+        !(await showConfirmationDialog(this, {
+          text: this.hass!.localize(
+            "ui.panel.config.common.editor.confirm_unsaved"
+          ),
+          confirmText: this.hass!.localize("ui.common.yes"),
+          dismissText: this.hass!.localize("ui.common.no"),
+        }))
+      ) {
+        return;
+      }
+      // Wait for dialog to complate closing
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    }
+    showScriptEditor(this, {
+      ...this._config,
+      alias: `${this._config?.alias} (${this.hass.localize(
+        "ui.panel.config.script.picker.duplicate"
+      )})`,
+    });
+  }
+
   private async _deleteConfirm() {
     showConfirmationDialog(this, {
       text: this.hass.localize("ui.panel.config.script.editor.delete_confirm"),
-      confirmText: this.hass!.localize("ui.common.yes"),
-      dismissText: this.hass!.localize("ui.common.no"),
+      confirmText: this.hass!.localize("ui.common.delete"),
+      dismissText: this.hass!.localize("ui.common.cancel"),
       confirm: () => this._delete(),
     });
   }
@@ -566,6 +621,9 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         this._mode = "yaml";
         break;
       case 2:
+        this._duplicate();
+        break;
+      case 3:
         this._deleteConfirm();
         break;
     }
@@ -573,9 +631,17 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   private _saveScript(): void {
     if (this._idError) {
-      this._errors = this.hass.localize(
-        "ui.panel.config.script.editor.id_already_exists_save_error"
-      );
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.panel.config.script.editor.id_already_exists_save_error"
+        ),
+        dismissable: false,
+        duration: 0,
+        action: {
+          action: () => {},
+          text: this.hass.localize("ui.dialogs.generic.ok"),
+        },
+      });
       return;
     }
     const id = this.scriptEntityId
@@ -591,6 +657,9 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       },
       (errors) => {
         this._errors = errors.body.message;
+        showToast(this, {
+          message: errors.body.message,
+        });
         throw errors;
       }
     );
@@ -628,6 +697,12 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         }
         mwc-fab.dirty {
           bottom: 0;
+        }
+        .selected_menu_item {
+          color: var(--primary-color);
+        }
+        li[role="separator"] {
+          border-bottom-color: var(--divider-color);
         }
       `,
     ];

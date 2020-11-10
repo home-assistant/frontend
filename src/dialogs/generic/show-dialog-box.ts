@@ -5,6 +5,7 @@ interface BaseDialogParams {
   confirmText?: string;
   text?: string | TemplateResult;
   title?: string;
+  warning?: boolean;
 }
 
 export interface AlertDialogParams extends BaseDialogParams {

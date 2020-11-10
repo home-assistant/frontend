@@ -133,7 +133,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           return this.hass!.localize;
         }
 
-        this._updateResources(language, resources);
+        await this._updateResources(language, resources);
         return this.hass!.localize;
       }
 
@@ -187,7 +187,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         return this.hass!.localize;
       }
 
-      this._updateResources(language, resources);
+      await this._updateResources(language, resources);
       return this.hass!.localize;
     }
 
@@ -216,20 +216,26 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
     }
 
-    private _updateResources(language: string, data: any) {
+    private async _updateResources(language: string, data: any) {
       // Update the language in hass, and update the resources with the newly
       // loaded resources. This merges the new data on top of the old data for
       // this language, so that the full translation set can be loaded across
       // multiple fragments.
+      //
+      // Beware of a subtle race condition: it is possible to get here twice
+      // before this.hass is even created. In this case our base state comes
+      // from this._pendingHass instead. Otherwise the first set of strings is
+      // overwritten when we call _updateHass the second time!
+      const baseHass = this.hass ?? this._pendingHass;
       const resources = {
         [language]: {
-          ...this.hass?.resources?.[language],
+          ...baseHass?.resources?.[language],
           ...data,
         },
       };
       const changes: Partial<HomeAssistant> = { resources };
       if (this.hass && language === this.hass.language) {
-        changes.localize = computeLocalize(this, language, resources);
+        changes.localize = await computeLocalize(this, language, resources);
       }
       this._updateHass(changes);
     }

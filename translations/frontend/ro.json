@@ -546,7 +546,20 @@
                 "no_history_found": "Nici un istoric de stare nu a fost găsit."
             },
             "logbook": {
-                "entries_not_found": "Nu s-au găsit intrări în jurnal."
+                "entries_not_found": "Nu s-au găsit intrări în jurnal.",
+                "messages": {
+                    "rose": "Trandafir",
+                    "set": "setaţi",
+                    "turned_off": "oprit",
+                    "turned_on": "pornit",
+                    "was_at_home": "era acasă",
+                    "was_at_state": "a fost în {state}",
+                    "was_away": "a fost plecat",
+                    "was_closed": "a fost închis",
+                    "was_disconnected": "a fost deconectat",
+                    "was_locked": "a fost încuiat",
+                    "was_unlocked": "a fost deblocat"
+                }
             },
             "media-browser": {
                 "class": {
@@ -591,11 +604,18 @@
                     "week": "{count}{count, plural,\n  one { săptămână }\n  other { săptămâni }\n}"
                 },
                 "future": "În {time}",
+                "future_duration": {
+                    "week": "În {count} {count, plural,\n  one {week}\n  other {weeks}\n}"
+                },
                 "never": "Niciodată",
                 "past": "{time} în urmă"
             },
             "service-picker": {
                 "service": "Serviciu"
+            },
+            "user-picker": {
+                "add_user": "Adăugați utilizator",
+                "no_user": "Niciun utilizator"
             }
         },
         "dialogs": {
@@ -671,6 +691,9 @@
                 },
                 "platform_not_loaded": "Integrarea {platform} nu este încărcată. Vă rugăm să-i adăugați configurația dvs. fie adăugând 'default_config:' sau ''{platform}:''.",
                 "required_error_msg": "Acest câmp este obligatoriu",
+                "timer": {
+                    "duration": "Durată"
+                },
                 "yaml_not_editable": "Setările acestei entități nu se pot edita din interfața grafica. Numai entitățile configurate in interfața grafica sunt configurabile din interfața grafica."
             },
             "more_info_control": {
@@ -740,20 +763,25 @@
             },
             "zha_device_info": {
                 "buttons": {
+                    "reconfigure": "Reconfigurare dispozitiv",
+                    "remove": "Eliminare dispozitiv",
                     "zigbee_information": "Informații Zigbee"
                 },
                 "confirmations": {
                     "remove": "Ești sigur că vrei să înlături dispozitivul?"
                 },
                 "device_signature": "Semnătura dispozitivului Zigbee",
+                "last_seen": "Ultima dată văzut",
                 "manuf": "de {manufacturer}",
                 "no_area": "Nici o zonă",
+                "power_source": "Sursă de alimentare",
                 "services": {
                     "reconfigure": "Reconfigurați dispozitivul ZHA (dispozitiv de vindecare). Utilizați acest lucru dacă aveți probleme cu dispozitivul. Dacă dispozitivul în cauză este un dispozitiv alimentat cu baterii, asigurați-vă că este treaz și accepta comenzi atunci când utilizați acest serviciu.",
                     "remove": "Eliminați un dispozitiv din rețeaua Zigbee.",
                     "updateDeviceName": "Setați un nume personalizat pentru acest dispozitiv în registrul de dispozitive.",
                     "zigbee_information": "Vizualizați informațiile Zigbee pentru dispozitiv."
                 },
+                "unknown": "Necunoscut",
                 "zha_device_card": {
                     "area_picker_label": "Zonă",
                     "device_name_placeholder": "Nume dat de utilizator",
@@ -781,7 +809,8 @@
         },
         "notification_toast": {
             "connection_lost": "Conexiunea a fost pierdută. Se reconectează ...",
-            "service_call_failed": "Nu s-a putut apela serviciul {service}."
+            "service_call_failed": "Nu s-a putut apela serviciul {service}.",
+            "triggered": "Declanșat {name}"
         },
         "panel": {
             "calendar": {
@@ -874,6 +903,9 @@
                                         }
                                     }
                                 },
+                                "scene": {
+                                    "label": "Activare scenă"
+                                },
                                 "service": {
                                     "label": "Cheama serviciu",
                                     "service_data": "Date serviciu"
@@ -908,6 +940,10 @@
                                     "label": "Și"
                                 },
                                 "device": {
+                                    "extra_fields": {
+                                        "above": "De mai sus",
+                                        "below": "De mai jos"
+                                    },
                                     "label": "Dispozitiv"
                                 },
                                 "not": {
@@ -952,6 +988,7 @@
                             },
                             "unsupported_condition": "Condiție neacceptată: {condition}"
                         },
+                        "copy_to_clipboard": "Copiați în clipboard",
                         "default_name": "Automatizare nouă",
                         "description": {
                             "label": "Descriere",
@@ -990,6 +1027,11 @@
                             "type_select": "Tip acțiune",
                             "type": {
                                 "device": {
+                                    "extra_fields": {
+                                        "above": "Deasupra",
+                                        "below": "Sub",
+                                        "for": "Durată"
+                                    },
                                     "label": "Dispozitiv"
                                 },
                                 "event": {
@@ -1086,7 +1128,10 @@
                 "cloud": {
                     "account": {
                         "alexa": {
-                            "config_documentation": "Documentație de configurare"
+                            "config_documentation": "Documentație de configurare",
+                            "manage_entities": "Gestionați entități",
+                            "state_reporting_error": "Imposibil de {enable_disable} stare raport.",
+                            "sync_entities_error": "Sincronizarea entităților nu a reușit:"
                         },
                         "google": {
                             "config_documentation": "Documentație de configurare",
@@ -1148,11 +1193,13 @@
                 "devices": {
                     "automation": {
                         "actions": {
-                            "caption": "Când se declanșează ceva ..."
+                            "caption": "Când se declanșează ceva ...",
+                            "no_actions": "Fără acțiuni"
                         },
                         "automations": "Automatizări",
                         "conditions": {
-                            "caption": "Fă ceva doar dacă ..."
+                            "caption": "Fă ceva doar dacă ...",
+                            "no_conditions": "Nu există condiții"
                         },
                         "create": "Creează o automatizare cu dispozitivul",
                         "no_automations": "Nu există automatizări",
@@ -1217,6 +1264,8 @@
                         },
                         "filter": {
                             "filter": "Filtru",
+                            "hidden_entities": "{number} ascuns{number, plural,\n  one {entity}\n  other {entities}\n}",
+                            "show_all": "Arata tot",
                             "show_disabled": "Afișare entități dezactivate",
                             "show_readonly": "Afișare entități doar în citire",
                             "show_unavailable": "Afișare entități indisponibile"
@@ -1272,7 +1321,8 @@
                         "input_datetime": "Data și / sau ora",
                         "input_number": "Număr",
                         "input_select": "Buton Dropdown",
-                        "input_text": "Text"
+                        "input_text": "Text",
+                        "timer": "Temporizator"
                     }
                 },
                 "info": {
@@ -1410,6 +1460,7 @@
                             "open": "Deschide"
                         }
                     },
+                    "description": "Gestionați-vă tablourile de bord Lovelace",
                     "resources": {
                         "cant_edit_yaml": "Utilizați Lovelace în modul YAML, prin urmare nu vă puteți gestiona resursele prin intermediul UI. Gestionează-le în configuration.yaml.",
                         "caption": "Resurse",
@@ -1468,6 +1519,12 @@
                         "node_failed": "Nod nereușit",
                         "stage": "Etapă",
                         "zwave_info": "Z-Wave Info"
+                    },
+                    "node_config": {
+                        "help_source": "Descrierile parametrilor config și textul de ajutor sunt furnizate de proiectul OpenZWave."
+                    },
+                    "node_metadata": {
+                        "product_manual": "Manual produs"
                     }
                 },
                 "person": {
@@ -1478,7 +1535,9 @@
                         "device_tracker_pick": "Alegeți dispozitivul pentru a urmări",
                         "device_tracker_picked": "Urmăriți dispozitivul",
                         "name": "Nume"
-                    }
+                    },
+                    "learn_more": "Aflați mai multe despre persoane",
+                    "person_not_found_title": "Persoana nu a fost găsită"
                 },
                 "scene": {
                     "activated": "Scenă activată {name}.",
@@ -1551,10 +1610,13 @@
                         "sequence_sentence": "Secvența acțiunilor acestui scenariu."
                     },
                     "picker": {
+                        "add_script": "Creați un script nou",
                         "edit_script": "Editare script",
+                        "header": "Editor de scripturi",
                         "headers": {
                             "name": "Nume"
                         },
+                        "no_scripts": "Nu am putut găsi niciun script modificabil",
                         "show_info": "Afișează informații despre script",
                         "trigger_script": "Script activator"
                     }
@@ -1892,7 +1954,9 @@
                         "jinja_documentation": "Șablon documentație Jinja2",
                         "listeners": "Acest șablon ascultă următoarele evenimente modificate de stare:",
                         "no_listeners": "Acest șablon ascultă următoarele evenimente modificate de stare:",
+                        "result_type": "Tipul rezultatului",
                         "template_extensions": "Șabloane de extensie pentru Home Assistant",
+                        "time": "Acest șablon se actualizează la fiecare 60 de secunde după ultimul eveniment modificat de stare.",
                         "title": "Sabloane",
                         "unknown_error_template": "Sa produs o eroare de randare necunoscută."
                     }
@@ -1978,6 +2042,7 @@
                         },
                         "entities": {
                             "description": "Cardul Entities este cel mai comun tip de card. Acesta grupează elementele împreună în liste.",
+                            "edit_special_row": "Vizualizați detaliile acestui rând făcând clic pe butonul de editare",
                             "entity_row_editor": "Editează rândul entității",
                             "name": "Entități",
                             "secondary_info_values": {
@@ -2004,12 +2069,21 @@
                         "generic": {
                             "attribute": "Atribut",
                             "double_tap_action": "Acțiune atingere dublă",
+                            "entity": "Entitate",
+                            "hold_action": "Suspendare acțiunii",
+                            "hours_to_show": "Ore de afișat",
+                            "icon": "Pictogramă",
+                            "icon_height": "Înălțimea pictogramei",
+                            "image": "Calea imaginii",
                             "manual": "Manual",
                             "manual_description": "Trebuie să adăugați un card personalizat sau doriți doar să scrieți manual yaml?",
+                            "maximum": "Maximă",
                             "no_theme": "Nicio temă",
                             "search": "Căutare",
                             "secondary_info_attribute": "Atribut informații secundare",
-                            "state": "Stare"
+                            "state": "Stare",
+                            "unit": "Unitate",
+                            "url": "Url"
                         },
                         "glance": {
                             "description": "Cardul Glance este util pentru a grupa mai mulți senzori într-o imagine de ansamblu compactă.",
@@ -2033,7 +2107,9 @@
                             "name": "Lumina"
                         },
                         "map": {
+                            "dark_mode": "Modul întunecat?",
                             "description": "Cardul Map care vă permite să afișați entități pe o hartă.",
+                            "geo_location_sources": "Surse de geolocalizare",
                             "hours_to_show": "Ore de afisat",
                             "name": "Hartă"
                         },
@@ -2061,7 +2137,8 @@
                         },
                         "sensor": {
                             "description": "Cardul Senzor vă oferă o imagine de ansamblu rapidă a stării senzorilor cu un grafic opțional pentru a vizualiza schimbarea în timp.",
-                            "name": "Senzor"
+                            "name": "Senzor",
+                            "show_more_detail": "Afișați mai multe detalii"
                         },
                         "shopping-list": {
                             "description": "Cardul Listă cumpărături vă permite să adăugați, să editați, să verificați și să ștergeți elemente din lista de cumpărături.",
@@ -2201,6 +2278,7 @@
                 "views": {
                     "confirm_delete": "Ștergeți vizualizarea?",
                     "confirm_delete_existing_cards": "Ștergerea acestei vizualizări va elimina și cardurile",
+                    "confirm_delete_existing_cards_text": "Sigur doriți să ștergeți vizualizarea '' {name} ''? Vizualizarea conține {number} carduri care vor fi șterse. Această acțiune nu poate fi anulată.",
                     "confirm_delete_text": "Sigur doriți să ștergeți vizualizarea „{name}”?"
                 },
                 "warning": {
@@ -2373,6 +2451,10 @@
                     "more_integrations": "Mai Mult"
                 },
                 "intro": "Sunteți gata să vă treziți casa, să vă recuperați intimitatea și să vă alăturați unei comunități mondiale de creatori?",
+                "restore": {
+                    "in_progress": "Restaurare în curs",
+                    "show_log": "Afișați jurnalul complet"
+                },
                 "user": {
                     "create_account": "Creează cont",
                     "data": {
@@ -2458,6 +2540,9 @@
                     "header": "Autentificare cu doi factori"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "Nume dispozitiv"
+                    },
                     "description": "Trimiteți notificări către acest dispozitiv.",
                     "error_load_platform": "Configurați notify.html5.",
                     "error_use_https": "Necesită SSL activat pentru interfaţă.",

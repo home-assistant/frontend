@@ -31,6 +31,7 @@ import { configElementStyle } from "./config-elements-style";
 const SecondaryInfoValues: { [key: string]: { domains?: string[] } } = {
   "entity-id": {},
   "last-changed": {},
+  "last-updated": {},
   "last-triggered": { domains: ["automation", "script"] },
   position: { domains: ["cover"] },
   "tilt-position": { domains: ["cover"] },

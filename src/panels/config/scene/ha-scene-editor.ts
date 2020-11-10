@@ -57,6 +57,7 @@ import { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "../../../components/ha-svg-icon";
+import { showToast } from "../../../util/toast";
 import { mdiContentSave } from "@mdi/js";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 
@@ -268,7 +269,7 @@ export class HaSceneEditor extends SubscribeMixin(
                     (device) =>
                       html`
                         <ha-card>
-                          <div class="card-header">
+                          <h1 class="card-header">
                             ${device.name}
                             <ha-icon-button
                               icon="hass:delete"
@@ -278,7 +279,7 @@ export class HaSceneEditor extends SubscribeMixin(
                               .device=${device.id}
                               @click=${this._deleteDevice}
                             ></ha-icon-button>
-                          </div>
+                          </h1>
                           ${device.entities.map((entityId) => {
                             const entityStateObj = this.hass.states[entityId];
                             if (!entityStateObj) {
@@ -404,7 +405,8 @@ export class HaSceneEditor extends SubscribeMixin(
         </div>
         <mwc-fab
           slot="fab"
-          .title=${this.hass.localize("ui.panel.config.scene.editor.save")}
+          .label=${this.hass.localize("ui.panel.config.scene.editor.save")}
+          extended
           @click=${this._saveScene}
           class=${classMap({ dirty: this._dirty })}
         >
@@ -644,8 +646,8 @@ export class HaSceneEditor extends SubscribeMixin(
         text: this.hass!.localize(
           "ui.panel.config.scene.editor.unsaved_confirm"
         ),
-        confirmText: this.hass!.localize("ui.common.yes"),
-        dismissText: this.hass!.localize("ui.common.no"),
+        confirmText: this.hass!.localize("ui.common.leave"),
+        dismissText: this.hass!.localize("ui.common.stay"),
         confirm: () => this._goBack(),
       });
     } else {
@@ -661,8 +663,8 @@ export class HaSceneEditor extends SubscribeMixin(
   private _deleteTapped(): void {
     showConfirmationDialog(this, {
       text: this.hass!.localize("ui.panel.config.scene.picker.delete_confirm"),
-      confirmText: this.hass!.localize("ui.common.yes"),
-      dismissText: this.hass!.localize("ui.common.no"),
+      confirmText: this.hass!.localize("ui.common.delete"),
+      dismissText: this.hass!.localize("ui.common.cancel"),
       confirm: () => this._delete(),
     });
   }
@@ -715,6 +717,9 @@ export class HaSceneEditor extends SubscribeMixin(
       }
     } catch (err) {
       this._errors = err.body.message || err.message;
+      showToast(this, {
+        message: err.body.message || err.message,
+      });
       throw err;
     }
   }

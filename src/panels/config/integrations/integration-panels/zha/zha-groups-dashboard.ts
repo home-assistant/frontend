@@ -124,10 +124,14 @@ export class ZHAGroupsDashboard extends LitElement {
         .columns=${this._columns(this.narrow)}
         .data=${this._formattedGroups(this._groups)}
         @row-click=${this._handleRowClicked}
+        clickable
       >
         <a href="/config/zha/group-add" slot="fab">
           <mwc-fab
-            title=${this.hass!.localize("ui.panel.config.zha.groups.add_group")}
+            .label=${this.hass!.localize(
+              "ui.panel.config.zha.groups.add_group"
+            )}
+            extended
           >
             <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
           </mwc-fab>

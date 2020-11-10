@@ -786,6 +786,9 @@
                     "description": "Opciones guardadas con éxito."
                 }
             },
+            "quick-bar": {
+                "filter_placeholder": "Filtro de entidad"
+            },
             "voice_command": {
                 "did_not_hear": "Home Assistant no escuchó nada",
                 "error": "¡Vaya! Se ha producido un error.",
@@ -1013,6 +1016,7 @@
                             },
                             "unsupported_condition": "No hay soporte en la interfaz de usuario para la condición: {condition}"
                         },
+                        "copy_to_clipboard": "Copiar al portapapeles",
                         "default_name": "Nueva Automatización",
                         "description": {
                             "label": "Descripción",
@@ -1456,6 +1460,7 @@
                         },
                         "filter": {
                             "filter": "Filtrar",
+                            "show_all": "Mostrar todo",
                             "show_disabled": "Mostrar entidades deshabilitadas",
                             "show_readonly": "Mostrar entidades de solo lectura",
                             "show_unavailable": "Mostrar entidades no disponibles"
@@ -1802,6 +1807,7 @@
                     "create_person": "Crear persona",
                     "description": "Gestione las personas que rastrea Home Assistant.",
                     "detail": {
+                        "confirm_delete_user": "¿Está seguro de que desea eliminar la cuenta de usuario de {name} ? La persona ya no podrá iniciar sesión, pero aún puede rastrear al usuario.",
                         "create": "Crear",
                         "delete": "Eliminar",
                         "device_tracker_intro": "Selecciona los dispositivos que pertenecen a esta persona.",
@@ -1818,7 +1824,8 @@
                     },
                     "introduction": "Aquí puede definir cada persona de interés en Home Assistant.",
                     "no_persons_created_yet": "Parece que todavía no has creado ninguna persona.",
-                    "note_about_persons_configured_in_yaml": "Nota: las personas configuradas a través de configuration.yaml no se pueden editar a través de la interfaz de usuario."
+                    "note_about_persons_configured_in_yaml": "Nota: las personas configuradas a través de configuration.yaml no se pueden editar a través de la interfaz de usuario.",
+                    "person_not_found_title": "Persona no encontrada"
                 },
                 "scene": {
                     "activated": "Escena activada {name}.",
@@ -2004,6 +2011,7 @@
                         "id": "Identificación",
                         "name": "Nombre",
                         "owner": "Propietario",
+                        "password_changed": "La contraseña se cambió con éxito",
                         "system_generated": "Generado por el sistema",
                         "system_generated_users_not_editable": "No se pueden actualizar los usuarios generados por el sistema.",
                         "system_generated_users_not_removable": "No se pueden eliminar los usuarios generados por el sistema.",
@@ -2554,6 +2562,9 @@
                         "domain": "Dominio",
                         "entity": "Entidad",
                         "no_description": "No hay descripción disponible."
+                    },
+                    "edit_badges": {
+                        "panel_mode": "Estas insignias no se mostrarán porque esta vista está en \"Modo Panel\"."
                     },
                     "edit_card": {
                         "add": "Agregar tarjeta",

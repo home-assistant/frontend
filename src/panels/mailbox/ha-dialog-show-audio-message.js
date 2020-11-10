@@ -21,7 +21,7 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
           ha-paper-dialog {
             margin: 0;
             width: 100%;
-            max-height: calc(100% - 64px);
+            max-height: calc(100% - var(--header-height));
 
             position: fixed !important;
             bottom: 0px;

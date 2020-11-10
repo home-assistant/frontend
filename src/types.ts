@@ -127,11 +127,6 @@ export interface Calendar {
   backgroundColor?: string;
 }
 
-export interface SelectedCalendar {
-  selected: boolean;
-  calendar: Calendar;
-}
-
 export interface CalendarEvent {
   summary: string;
   title: string;
@@ -153,7 +148,7 @@ export type FullCalendarView =
   | "dayGridMonth"
   | "dayGridWeek"
   | "dayGridDay"
-  | "listWeek";
+  | "list";
 
 export interface ToggleButton {
   label: string;
@@ -237,6 +232,7 @@ export interface HomeAssistant {
   localize: LocalizeFunc;
   translationMetadata: TranslationMetadata;
   suspendWhenHidden: boolean;
+  enableShortcuts: boolean;
   vibrate: boolean;
   dockedSidebar: "docked" | "always_hidden" | "auto";
   defaultPanel: string;

@@ -1069,6 +1069,8 @@
                                     "label": "Zariadenie"
                                 },
                                 "event": {
+                                    "context_user_pick": "Pridať používateľa",
+                                    "context_user_picked": "Udalosť spustenia používateľa",
                                     "event_data": "Dáta udalosti",
                                     "event_type": "Typ udalosti",
                                     "label": "Udalosť"
@@ -2193,6 +2195,7 @@
                         "entity": "Entita",
                         "listeners": "Táto šablóna počúva nasledujúce udalosti zmenené stavom:",
                         "no_listeners": "Táto šablóna nepočúva žiadne udalosti zmenené stavom a neaktualizuje sa automaticky.",
+                        "result_type": "Typ výsledku",
                         "template_extensions": "Rozšírenia šablóny Home Assistant",
                         "title": "Šablóny"
                     }
@@ -2326,6 +2329,7 @@
                                 "entity-id": "ID entity",
                                 "last-changed": "Posledná zmena",
                                 "last-triggered": "Naposledy spustené",
+                                "last-updated": "Posledná aktualizácia",
                                 "none": "Žiadne sekundárne informácie",
                                 "position": "Pozícia",
                                 "tilt-position": "Pozícia dlaždice"
@@ -2574,7 +2578,8 @@
                     "exit_edit_mode": "Skončiť režim úprav používateľského rozhrania",
                     "help": "Pomoc",
                     "refresh": "Obnoviť",
-                    "reload_resources": "Znovu načítať prostriedky"
+                    "reload_resources": "Znovu načítať prostriedky",
+                    "start_conversation": "Začať konverzáciu"
                 },
                 "reload_lovelace": "Znovu načítať Lovelace",
                 "reload_resources": {

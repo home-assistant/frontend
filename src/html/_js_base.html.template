@@ -20,5 +20,4 @@
             "content" in document.createElement("template"))) {
         document.write("<script src='/static/polyfills/webcomponents-bundle.js'><"+"/script>");
       }
-      var isS101 = /\s+Version\/10\.1(?:\.\d+)?\s+Safari\//.test(navigator.userAgent);
     </script>

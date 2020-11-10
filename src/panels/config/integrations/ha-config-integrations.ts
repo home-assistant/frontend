@@ -23,7 +23,6 @@ import "../../../common/search/search-input";
 import { caseInsensitiveCompare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import { nextRender } from "../../../common/util/render-status";
-import "../../../components/entity/ha-state-icon";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
@@ -476,8 +475,10 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         </div>
         <mwc-fab
           slot="fab"
-          aria-label=${this.hass.localize("ui.panel.config.integrations.new")}
-          title=${this.hass.localize("ui.panel.config.integrations.new")}
+          .label=${this.hass.localize(
+            "ui.panel.config.integrations.add_integration"
+          )}
+          extended
           @click=${this._createFlow}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
@@ -739,6 +740,13 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         }
         h2 {
           margin-top: 0;
+          word-wrap: break-word;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 3;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: normal;
         }
       `,
     ];

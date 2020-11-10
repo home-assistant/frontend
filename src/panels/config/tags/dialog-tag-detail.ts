@@ -231,7 +231,7 @@ class DialogTagDetail extends LitElement
   private async _generateQR() {
     const qrcode = await import("qrcode");
     const canvas = await qrcode.toCanvas(
-      `https://home-assistant.io/tag/${this._params?.entry?.id}`,
+      `https://www.home-assistant.io/tag/${this._params!.entry!.id}`,
       {
         width: 180,
         errorCorrectionLevel: "Q",

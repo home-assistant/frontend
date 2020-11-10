@@ -1,7 +1,7 @@
+import "@material/mwc-fab";
 import { mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
-import "@material/mwc-fab";
 import {
   css,
   CSSResult,
@@ -24,8 +24,8 @@ import {
 } from "../../../data/person";
 import { fetchUsers, User } from "../../../data/user";
 import {
-  showConfirmationDialog,
   showAlertDialog,
+  showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage";
@@ -87,22 +87,16 @@ class HaConfigPerson extends LitElement {
                   </p>
                 `
               : ""}
-            
+
             <a
-              href=${documentationUrl(
-              this.hass,
-              "/integrations/person/"
-              )}
+              href=${documentationUrl(this.hass, "/integrations/person/")}
               target="_blank"
               rel="noreferrer"
             >
-              ${this.hass.localize(
-              "ui.panel.config.person.learn_more"
-              )}
+              ${this.hass.localize("ui.panel.config.person.learn_more")}
             </a>
           </span>
 
-          
           <ha-card class="storage">
             ${this._storageItems.map((entry) => {
               return html`
@@ -154,7 +148,8 @@ class HaConfigPerson extends LitElement {
         </ha-config-section>
         <mwc-fab
           slot="fab"
-          title="${hass.localize("ui.panel.config.person.add_person")}"
+          .label=${hass.localize("ui.panel.config.person.add_person")}
+          extended
           @click=${this._createPerson}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
@@ -253,8 +248,8 @@ class HaConfigPerson extends LitElement {
           !(await showConfirmationDialog(this, {
             title: this.hass!.localize("ui.panel.config.person.confirm_delete"),
             text: this.hass!.localize("ui.panel.config.person.confirm_delete2"),
-            dismissText: this.hass!.localize("ui.common.no"),
-            confirmText: this.hass!.localize("ui.common.yes"),
+            dismissText: this.hass!.localize("ui.common.cancel"),
+            confirmText: this.hass!.localize("ui.common.delete"),
           }))
         ) {
           return false;

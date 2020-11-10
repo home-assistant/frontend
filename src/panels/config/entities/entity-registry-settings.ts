@@ -23,10 +23,14 @@ import {
   removeEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import type { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { domainIcon } from "../../../common/entity/domain_icon";
 
 @customElement("entity-registry-settings")
 export class EntityRegistrySettings extends LitElement {
@@ -93,7 +97,11 @@ export class EntityRegistrySettings extends LitElement {
           .value=${this._icon}
           @value-changed=${this._iconChanged}
           .label=${this.hass.localize("ui.dialogs.entity_registry.editor.icon")}
-          .placeholder=${this.entry.original_icon}
+          .placeholder=${this.entry.original_icon ||
+          domainIcon(
+            computeDomain(this.entry.entity_id),
+            this.hass.states[this.entry.entity_id]
+          )}
           .disabled=${this._submitting}
           .errorMessage=${this.hass.localize(
             "ui.dialogs.entity_registry.editor.icon_error"
@@ -186,7 +194,27 @@ export class EntityRegistrySettings extends LitElement {
       params.disabled_by = this._disabledBy;
     }
     try {
-      await updateEntityRegistryEntry(this.hass!, this._origEntityId, params);
+      const result = await updateEntityRegistryEntry(
+        this.hass!,
+        this._origEntityId,
+        params
+      );
+      if (result.require_restart) {
+        showAlertDialog(this, {
+          text: this.hass.localize(
+            "ui.dialogs.entity_registry.editor.enabled_restart_confirm"
+          ),
+        });
+      }
+      if (result.reload_delay) {
+        showAlertDialog(this, {
+          text: this.hass.localize(
+            "ui.dialogs.entity_registry.editor.enabled_delay_confirm",
+            "delay",
+            result.reload_delay
+          ),
+        });
+      }
       fireEvent(this as HTMLElement, "close-dialog");
     } catch (err) {
       this._error = err.message || "Unknown error";
