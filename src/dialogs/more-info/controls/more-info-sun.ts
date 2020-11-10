@@ -42,7 +42,6 @@ class MoreInfoSun extends LitElement {
                     )}</span
               >
               <ha-relative-time
-                class="time"
                 .hass=${this.hass}
                 .datetimeObj=${item === "ris" ? risingDate : settingDate}
               ></ha-relative-time>
@@ -73,10 +72,10 @@ class MoreInfoSun extends LitElement {
         flex-direction: row;
         justify-content: space-between;
       }
-      .time {
+      ha-relative-time {
         display: inline-block;
       }
-      .time::first-letter {
+      ha-relative-time::first-letter {
         text-transform: lowercase;
       }
     `;
