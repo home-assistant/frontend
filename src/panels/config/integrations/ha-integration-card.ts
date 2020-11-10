@@ -108,7 +108,7 @@ export class HaIntegrationCard extends LitElement {
       <ha-card outlined class="group">
         <div class="group-header">
           <img
-            src="${brandsUrl(this.domain, "icon")}"
+            src=${brandsUrl(this.domain, "icon")}
             referrerpolicy="no-referrer"
             @error=${this._onImageError}
             @load=${this._onImageLoad}
@@ -158,7 +158,7 @@ export class HaIntegrationCard extends LitElement {
         <div class="card-content">
           <div class="image">
             <img
-              src="${brandsUrl(item.domain, "logo")}"
+              src=${brandsUrl(item.domain, "logo")}
               referrerpolicy="no-referrer"
               @error=${this._onImageError}
               @load=${this._onImageLoad}

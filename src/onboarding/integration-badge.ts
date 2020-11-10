@@ -24,7 +24,7 @@ class IntegrationBadge extends LitElement {
     return html`
       <div class="icon">
         <img
-          src="${brandsUrl(this.domain, "icon")}"
+          src=${brandsUrl(this.domain, "icon")}
           referrerpolicy="no-referrer"
         />
         ${this.badgeIcon
