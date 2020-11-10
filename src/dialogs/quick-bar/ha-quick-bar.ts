@@ -382,9 +382,16 @@ export class QuickBar extends LitElement {
   >[] {
     return Object.keys(this.hass.panels).map((panelKey) => {
       const panel = this.hass.panels[panelKey];
+      const translationKey = getPanelText(panel) || "";
+
+      const text = this.hass.localize(
+        "ui.dialogs.quick-bar.commands.navigation.navigate_to",
+        "panel",
+        this.hass.localize(translationKey)
+      );
 
       return {
-        text: getPanelText(this.hass, panel),
+        text,
         icon: getPanelIcon(panel) || DEFAULT_NAVIGATION_ICON,
         path: `/${panel.url_path}`,
       };
@@ -416,18 +423,20 @@ export class QuickBar extends LitElement {
   private _getNavigationInfoFromConfig(
     page: PageNavigation
   ): NavigationInfo | undefined {
-    const shortCaption = this.hass.localize(
-      `ui.dialogs.quick-bar.commands.navigation.${page.component}`
-    );
-
-    if (page && page.translationKey && shortCaption) {
-      const caption = this.hass.localize(
-        "ui.dialogs.quick-bar.commands.navigation.navigate_to",
-        "panel",
-        shortCaption
+    if (page.component) {
+      const shortCaption = this.hass.localize(
+        `ui.dialogs.quick-bar.commands.navigation.${page.component}`
       );
 
-      return { ...page, text: caption };
+      if (page.translationKey) {
+        const caption = this.hass.localize(
+          "ui.dialogs.quick-bar.commands.navigation.navigate_to",
+          "panel",
+          shortCaption
+        );
+
+        return { ...page, text: caption };
+      }
     }
 
     return undefined;

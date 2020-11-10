@@ -21,6 +21,24 @@ export const getDefaultPanel = (hass: HomeAssistant): PanelInfo =>
     ? hass.panels[hass.defaultPanel]
     : hass.panels[DEFAULT_PANEL];
 
+const getPanelNameTranslationKey = (
+  panelName: string | null
+): string | undefined => {
+  if (!panelName) {
+    return undefined;
+  }
+
+  if (panelName === "lovelace") {
+    return "panel.states";
+  }
+
+  if (panelName === "profile") {
+    return "panel.profile";
+  }
+
+  return `panel.${panelName}`;
+};
+
 export const getPanelTitle = (hass: HomeAssistant): string | undefined => {
   if (!hass.panels) {
     return undefined;
@@ -34,38 +52,29 @@ export const getPanelTitle = (hass: HomeAssistant): string | undefined => {
     return undefined;
   }
 
-  if (panel.url_path === "lovelace") {
-    return hass.localize("panel.states");
-  }
+  const translationKey = getPanelNameTranslationKey(panel?.url_path);
 
-  if (panel.url_path === "profile") {
-    return hass.localize("panel.profile");
-  }
-
-  return hass.localize(`panel.${panel.title}`) || panel.title || undefined;
+  return (
+    (translationKey && hass.localize(translationKey)) ||
+    panel.title ||
+    undefined
+  );
 };
 
-export const getPanelText = (hass: HomeAssistant, panel: Panels["panel"]) => {
-  let translationKey = "";
-
-  if (!panel.title) {
-    switch (panel.component_name) {
-      case "profile":
-        translationKey = "panel.profile";
-        break;
-      case "lovelace":
-        translationKey = "panel.states";
-        break;
-    }
-  } else {
-    translationKey = `panel.${panel.title}`;
+export const getPanelText = (panel: Panels["panel"]) => {
+  if (!panel) {
+    return undefined;
   }
 
-  return hass.localize(
-    "ui.dialogs.quick-bar.commands.navigation.navigate_to",
-    "panel",
-    hass.localize(translationKey)
-  );
+  const panelNameTranslationKey =
+    getPanelNameTranslationKey(panel.title) ||
+    getPanelNameTranslationKey(panel.component_name);
+
+  if (!panelNameTranslationKey) {
+    return undefined;
+  }
+
+  return panelNameTranslationKey;
 };
 
 export const getPanelIcon = (panel: Panels["panel"]): string | null => {
