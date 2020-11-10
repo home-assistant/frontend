@@ -149,9 +149,10 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
             : !supportsFeature(stateObj, SUPPORT_VOLUME_SET) &&
               !supportsFeature(stateObj, SUPPORT_VOLUME_BUTTONS)
             ? buttons
-            : supportsFeature(stateObj, SUPPORT_TURN_OFF) &&
-              state !== "off" &&
-              !UNAVAILABLE_STATES.includes(state)
+            : ""}
+          ${supportsFeature(stateObj, SUPPORT_TURN_OFF) &&
+          state !== "off" &&
+          !UNAVAILABLE_STATES.includes(state)
             ? html`
                 <ha-icon-button
                   icon="hass:power"
