@@ -206,28 +206,26 @@ class OZWNodeConfig extends LitElement {
                 `
               )}
               <p>
-                <em
-                  >This configuration option can't be edited from the UI yet</em
-                >
+                <em>
+                  This configuration option can't be edited from the UI yet
+                </em>
               </p>
             `
           : ``}
         ${!["Byte", "Short", "Int", "List", "BitSet"].includes(item.type)
-          ? html`<p>${item.value}</p>`
-          : ``}
-        ${item.parameter === 999
-          ? html`<p class="error">
-              This config option can't be edited from the UI due to a current
-              OpenZWave integration issue.
-            </p>`
+          ? html`
+              <p>${item.value}</p>
+              <p>
+                <em>
+                  This configuration option can't be edited from the UI yet
+                </em>
+              </p>
+            `
           : ``}
       </div>
       ${["Byte", "Short", "Int"].includes(item.type)
         ? html` <div class="card-actions">
-            <mwc-button
-              @click=${this._updateTextConfigOption}
-              ?disabled=${item.parameter === 999}
-            >
+            <mwc-button @click=${this._updateTextConfigOption}>
               ${this.hass.localize("ui.panel.config.ozw.node_config.update")}
             </mwc-button>
           </div>`
@@ -235,10 +233,7 @@ class OZWNodeConfig extends LitElement {
       ${item.type === "List"
         ? html`
             <div class="card-actions">
-              <mwc-button
-                @click=${this._updateListConfigOption}
-                ?disabled=${item.parameter === 999}
-              >
+              <mwc-button @click=${this._updateListConfigOption}>
                 ${this.hass.localize("ui.panel.config.ozw.node_config.update")}
               </mwc-button>
             </div>
@@ -410,14 +405,6 @@ export interface ChangeEvent {
     value?: any;
   };
   target?: EventTarget;
-}
-
-export interface OzwConfigInputElement extends PaperInputElement {
-  parameter: number;
-}
-
-export interface OzwConfigDropdownElement extends PaperDropdownMenuElement {
-  parameter: number;
 }
 
 declare global {
