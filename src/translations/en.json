@@ -1059,8 +1059,8 @@
               "ping": "Reload ping binary sensor entities",
               "filesize": "Reload file size entities",
               "telegram": "Reload telegram notify services",
-              "smtp": "Reload smtp notify services",
-              "mqtt": "Reload manually configured mqtt entities",
+              "smtp": "Reload SMTP notify services",
+              "mqtt": "Reload manually configured MQTT entities",
               "rpi_gpio": "Reload Raspberry Pi GPIO entities"
             },
             "server_management": {

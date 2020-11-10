@@ -182,14 +182,15 @@ export class QuickBar extends LitElement {
         .twoline=${Boolean(item.altText)}
         .item=${item}
         index=${ifDefined(index)}
-        hasMeta
-        graphic=${item.altText ? "avatar" : "icon"}
+        graphic="avatar"
       >
         <ha-icon .icon=${item.icon} slot="graphic"></ha-icon>
-        <span>${item.text}</span>
+        <span class="item-text">${item.text}</span>
         ${item.altText
           ? html`
-              <span slot="secondary" class="secondary">${item.altText}</span>
+              <span slot="secondary" class="item-text secondary"
+                >${item.altText}</span
+              >
             `
           : null}
       </mwc-list-item>
@@ -387,6 +388,14 @@ export class QuickBar extends LitElement {
           }
         }
 
+        ha-icon {
+          margin-left: 8px;
+        }
+
+        ha-svg-icon {
+          color: var(--primary-text-color);
+        }
+
         ha-svg-icon.prefix {
           margin: 8px;
         }
@@ -405,6 +414,10 @@ export class QuickBar extends LitElement {
 
         mwc-list-item {
           width: 100%;
+        }
+
+        .item-text {
+          margin-left: 16px;
         }
       `,
     ];
