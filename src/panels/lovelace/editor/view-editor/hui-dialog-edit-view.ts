@@ -148,7 +148,7 @@ export class HuiDialogEditView extends LitElement {
       case "tab-visibility":
         content = html`
           <hui-view-visibility-editor
-            .hass="${this.hass}"
+            .hass=${this.hass}
             .config="${this._config}"
             @view-visibility-changed="${this._viewVisibilityChanged}"
           ></hui-view-visibility-editor>

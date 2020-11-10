@@ -143,9 +143,10 @@ export class HaConfigDevicePage extends LitElement {
     if (!device) {
       return html`
         <hass-error-screen
-          error="${this.hass.localize(
+          .hass=${this.hass}
+          .error=${this.hass.localize(
             "ui.panel.config.devices.device_not_found"
-          )}"
+          )}
         ></hass-error-screen>
       `;
     }

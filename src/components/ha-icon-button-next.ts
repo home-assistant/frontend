@@ -9,10 +9,15 @@ import {
 import { mdiChevronRight, mdiChevronLeft } from "@mdi/js";
 import "@material/mwc-icon-button";
 import "./ha-svg-icon";
+import { HomeAssistant } from "../types";
 
 @customElement("ha-icon-button-next")
 export class HaIconButtonNext extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
   @property({ type: Boolean }) public disabled = false;
+
+  @property() public label?: string;
 
   @internalProperty() private _icon = mdiChevronRight;
 
@@ -29,9 +34,14 @@ export class HaIconButtonNext extends LitElement {
   }
 
   protected render(): TemplateResult {
-    return html`<mwc-icon-button .disabled=${this.disabled}>
-      <ha-svg-icon .path=${this._icon}></ha-svg-icon>
-    </mwc-icon-button> `;
+    return html`
+      <mwc-icon-button
+        .disabled=${this.disabled}
+        .label=${this.label || this.hass.localize("ui.common.next")}
+      >
+        <ha-svg-icon .path=${this._icon}></ha-svg-icon>
+      </mwc-icon-button>
+    `;
   }
 }
 
