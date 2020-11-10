@@ -323,7 +323,7 @@ class MoreInfoMediaPlayer extends LitElement {
             : supportsFeature(stateObj, SUPPORT_PAUSE)
             ? "hass:pause"
             : "hass:stop",
-        action: "media_play_pause",
+        action: state === "playing" && !supportsFeature(stateObj, SUPPORT_PAUSE) ? "media_stop" : "media_play_pause",
       });
     }
 
