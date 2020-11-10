@@ -166,6 +166,7 @@ export const computeMediaDescription = (stateObj: HassEntity): string => {
 
   switch (stateObj.attributes.media_content_type) {
     case "music":
+    case "image":
       secondaryTitle = stateObj.attributes.media_artist;
       break;
     case "playlist":

@@ -7,38 +7,59 @@ import { createMediaPlayerEntities } from "../data/media_players";
 
 const CONFIGS = [
   {
-    heading: "Paused music",
+    heading: "Paused Music",
     config: `
   - type: media-control
     entity: media_player.music_paused
     `,
   },
   {
-    heading: "Playing music",
+    heading: "Playing Music",
     config: `
   - type: media-control
     entity: media_player.music_playing
     `,
   },
   {
-    heading: "Playing stream",
+    heading: "Playing Stream",
     config: `
   - type: media-control
     entity: media_player.stream_playing
     `,
   },
   {
-    heading: "Pause, No skip, tvshow",
+    heading: "Paused Stream",
     config: `
   - type: media-control
-    entity: media_player.living_room
+    entity: media_player.stream_paused
     `,
   },
   {
-    heading: "Screen casting",
+    heading: "Playing Stream (only back)",
+    config: `
+  - type: media-control
+    entity: media_player.stream_playing_back
+    `,
+  },
+  {
+    heading: "Playing non-skip TV Show",
+    config: `
+  - type: media-control
+    entity: media_player.tv_playing
+    `,
+  },
+  {
+    heading: "Screen Casting",
     config: `
   - type: media-control
     entity: media_player.android_cast
+    `,
+  },
+  {
+    heading: "Digital Picture Frame",
+    config: `
+  - type: media-control
+    entity: media_player.image_display
     `,
   },
   {
@@ -49,10 +70,52 @@ const CONFIGS = [
     `,
   },
   {
+    heading: "Idle waiting for Browse Media",
+    config: `
+  - type: media-control
+    entity: media_player.idle_browse_media
+    `,
+  },
+  {
     heading: "Player Off",
     config: `
   - type: media-control
-    entity: media_player.theater
+    entity: media_player.theater_off
+    `,
+  },
+  {
+    heading: "Player On",
+    config: `
+  - type: media-control
+    entity: media_player.theater_on
+    `,
+  },
+  {
+    heading: "Player Off (cannot be switched on)",
+    config: `
+  - type: media-control
+    entity: media_player.theater_off_static
+    `,
+  },
+  {
+    heading: "Player On (cannot be switched off)",
+    config: `
+  - type: media-control
+    entity: media_player.theater_on_static
+    `,
+  },
+  {
+    heading: "Player Idle",
+    config: `
+  - type: media-control
+    entity: media_player.idle
+    `,
+  },
+  {
+    heading: "Player Playing",
+    config: `
+  - type: media-control
+    entity: media_player.playing
     `,
   },
   {

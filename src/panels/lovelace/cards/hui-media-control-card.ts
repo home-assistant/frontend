@@ -361,9 +361,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
               ></ha-icon-button>
             </div>
           </div>
-          ${isUnavailable
-            ? ""
-            : html`
+          ${!isUnavailable &&
+          (mediaDescription || stateObj.attributes.media_title || showControls)
+            ? html`
                 <div
                   class="title-controls"
                   style=${styleMap({
@@ -436,7 +436,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                         @click=${this._handleSeek}
                       ></paper-progress>
                     `}
-              `}
+              `
+            : ""}
         </div>
       </ha-card>
     `;
@@ -551,7 +552,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       });
     }
 
-    if (supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)) {
+    if (
+      (state === "playing" || state === "paused") &&
+      supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)
+    ) {
       buttons.push({
         icon: "hass:skip-previous",
         action: "media_previous_track",
@@ -562,8 +566,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       (state === "playing" &&
         (supportsFeature(stateObj, SUPPORT_PAUSE) ||
           supportsFeature(stateObj, SUPPORT_STOP))) ||
-      ((state === "paused" || state === "idle") &&
-        supportsFeature(stateObj, SUPPORT_PLAY))
+      (state === "paused" && supportsFeature(stateObj, SUPPORT_PLAY))
     ) {
       buttons.push({
         icon:
@@ -576,7 +579,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       });
     }
 
-    if (supportsFeature(stateObj, SUPPORT_NEXT_TRACK)) {
+    if (
+      (state === "playing" || state === "paused") &&
+      supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
+    ) {
       buttons.push({
         icon: "hass:skip-next",
         action: "media_next_track",
