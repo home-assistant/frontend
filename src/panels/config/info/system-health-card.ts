@@ -106,7 +106,7 @@ class SystemHealthCard extends LitElement {
             <tr>
               <td>
                 ${this.hass.localize(
-                  `ui.panel.config.info.system_health.checks.${domain}.${key}`
+                  `component.${domain}.system_health.info.${key}`
                 ) || key}
               </td>
               <td>${value}</td>
@@ -169,6 +169,8 @@ class SystemHealthCard extends LitElement {
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
+
+    this.hass!.loadBackendTranslation("system_health");
 
     if (!this.hass!.config.components.includes("system_health")) {
       this._info = {

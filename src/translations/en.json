@@ -892,39 +892,7 @@
           "issues": "Issues",
           "system_health": {
             "manage": "Manage",
-            "more_info": "more info",
-            "checks": {
-              "homeassistant": {
-                "arch": "CPU Architecture",
-                "dev": "Development",
-                "docker": "Docker",
-                "hassio": "HassOS",
-                "installation_type": "Installation Type",
-                "os_name": "Operating System Name",
-                "os_version": "Operating System Version",
-                "python_version": "Python Version",
-                "timezone": "Timezone",
-                "version": "Version",
-                "virtualenv": "Virtual Environment"
-              },
-              "cloud": {
-                "can_reach_cert_server": "Reach Certificate Server",
-                "can_reach_cloud": "Reach Home Assistant Cloud",
-                "can_reach_cloud_auth": "Reach Authentication Server",
-                "relayer_connected": "Relayer Connected",
-                "remote_connected": "Remote Connected",
-                "remote_enabled": "Remote Enabled",
-                "alexa_enabled": "Alexa Enabled",
-                "google_enabled": "Google Enabled",
-                "logged_in": "Logged In",
-                "subscription_expiration": "Subscription Expiration"
-              },
-              "lovelace": {
-                "dashboards": "Dashboards",
-                "mode": "Mode",
-                "resources": "Resources"
-              }
-            }
+            "more_info": "more info"
           }
         },
         "logs": {
