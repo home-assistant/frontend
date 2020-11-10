@@ -223,21 +223,12 @@ class OZWNodeConfig extends LitElement {
             `
           : ``}
       </div>
-      ${["Byte", "Short", "Int"].includes(item.type)
+      ${["Byte", "Short", "Int", "List"].includes(item.type)
         ? html` <div class="card-actions">
-            <mwc-button @click=${this._updateTextConfigOption}>
+            <mwc-button @click=${this._updateConfigOption}>
               ${this.hass.localize("ui.panel.config.ozw.node_config.update")}
             </mwc-button>
           </div>`
-        : ``}
-      ${item.type === "List"
-        ? html`
-            <div class="card-actions">
-              <mwc-button @click=${this._updateListConfigOption}>
-                ${this.hass.localize("ui.panel.config.ozw.node_config.update")}
-              </mwc-button>
-            </div>
-          `
         : ``}
     </ha-card>`;
   }
@@ -290,15 +281,11 @@ class OZWNodeConfig extends LitElement {
   private _configValueChanged(ev: CustomEvent) {
     this._configData[ev.currentTarget.parameter] =
       ev.detail.value[Object.keys(ev.detail.value)[0]];
-    console.log(this._configData);
   }
 
-  private async _updateTextConfigOption(ev: Event) {
-    const el = (<Button>ev.currentTarget)
-      .closest("ha-card")!
-      .querySelector("ha-form")!;
-    const value = el.closest("paper-input").value;
-    el.error = undefined;
+  private async _updateConfigOption(ev: CustomEvent) {
+    const parameter = ev.currentTarget.parameter;
+    const value = this._configData[parameter];
     /*
     try {
       await this.hass.callWS({
@@ -312,29 +299,7 @@ class OZWNodeConfig extends LitElement {
       el.errorMessage = e.message;
     }
     */
-    console.log(el.parameter, value);
-  }
-
-  private async _updateListConfigOption(ev: Event) {
-    const el = <OzwConfigDropdownElement>(
-      (<Button>ev.currentTarget)
-        .closest("ha-card")!
-        .querySelector("paper-dropdown-menu")!
-    );
-    el.errorMessage = undefined;
-    el.invalid = false;
-    try {
-      await this.hass.callWS({
-        type: "ozw/set_config_parameter",
-        node_id: this.nodeId,
-        ozw_instance: this.ozwInstance,
-        parameter: el.parameter,
-        value: el.value,
-      });
-    } catch (e) {
-      el.errorMessage = e.message;
-      el.invalid = true;
-    }
+    console.log(ev.currentTarget, value);
   }
 
   private async _refreshNodeClicked() {
