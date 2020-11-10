@@ -113,6 +113,11 @@ documentContainer.innerHTML = `<custom-style>
     paper-dialog-scrollable.can-scroll > .scrollable {
       -webkit-overflow-scrolling: touch !important;
     }
+
+    /* for paper-dialog */
+    iron-overlay-backdrop {
+      backdrop-filter: var(--dialog-backdrop-filter, none);
+    }
   </style>
 </custom-style>`;
 
