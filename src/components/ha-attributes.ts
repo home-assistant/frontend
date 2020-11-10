@@ -63,12 +63,12 @@ class HaAttributes extends LitElement {
         justify-content: space-between;
       }
       .data-entry .value {
-        max-width: 200px;
+        max-width: 50%;
         overflow-wrap: break-word;
         text-align: right;
       }
-      .key:first-letter {
-        text-transform: capitalize;
+      .key {
+        flex-grow: 1;
       }
       .attribution {
         color: var(--secondary-text-color);
