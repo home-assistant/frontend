@@ -76,7 +76,7 @@ class CloudLogin extends LocalizeMixin(
           left: 8px;
         }
       </style>
-      <hass-subpage header="Home Assistant Cloud">
+      <hass-subpage hass="[[hass]]" header="Home Assistant Cloud">
         <div class="content">
           <ha-config-section is-wide="[[isWide]]">
             <span slot="header">Home Assistant Cloud</span>

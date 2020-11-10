@@ -61,7 +61,7 @@ class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
           color: var(--primary-color);
         }
       </style>
-      <hass-subpage header="Home Assistant Cloud">
+      <hass-subpage hass="[[hass]]" header="Home Assistant Cloud">
         <div class="content">
           <ha-config-section is-wide="[[isWide]]">
             <span slot="header">Home Assistant Cloud</span>

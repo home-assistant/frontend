@@ -109,6 +109,7 @@ class LovelacePanel extends LitElement {
     if (state === "error") {
       return html`
         <hass-error-screen
+          .hass=${this.hass}
           title="${domainToName(this.hass!.localize, "lovelace")}"
           .error="${this._errorMsg}"
         >
