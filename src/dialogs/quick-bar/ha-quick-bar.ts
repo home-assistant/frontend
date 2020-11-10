@@ -388,6 +388,10 @@ export class QuickBar extends LitElement {
           }
         }
 
+        ha-icon {
+          margin-left: 8px;
+        }
+
         ha-svg-icon {
           color: var(--primary-text-color);
         }
