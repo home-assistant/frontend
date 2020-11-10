@@ -16,6 +16,7 @@ export const createMediaPlayerEntities = () => [
       // 23 seconds in
       new Date().getTime() - 23000
     ).toISOString(),
+    volume_level: 0.5,
   }),
   getEntity("media_player", "music_playing", "playing", {
     friendly_name: "Playing The Music",
@@ -32,6 +33,7 @@ export const createMediaPlayerEntities = () => [
       // 23 seconds in
       new Date().getTime() - 23000
     ).toISOString(),
+    volume_level: 0.5,
   }),
   getEntity("media_player", "stream_playing", "playing", {
     friendly_name: "Playing the Stream",
@@ -75,12 +77,15 @@ export const createMediaPlayerEntities = () => [
     // Pause + Seek + Volume Set + Volume Mute + Previous Track + Next Track + Play Media +
     // Select Source + Stop + Clear + Play + Shuffle Set
     supported_features: 64063,
+    volume_level: 0.33,
+    is_volume_muted: true,
   }),
   getEntity("media_player", "idle_browse_media", "idle", {
     friendly_name: "Idle waiting for Browse Media (e.g. Spotify)",
     // Pause + Seek + Volume Set + Previous Track + Next Track + Play Media +
     // Select Source + Play + Shuffle Set + Browse Media
     supported_features: 182839,
+    volume_level: 0.79,
   }),
   getEntity("media_player", "theater_off", "off", {
     friendly_name: "TV Off",
@@ -133,12 +138,14 @@ export const createMediaPlayerEntities = () => [
     // Volume Set + Volume Mute + Previous Track + Next Track +
     // Play Media + Stop + Play
     supported_features: 21436,
+    volume_level: 1,
   }),
   getEntity("media_player", "idle", "idle", {
     friendly_name: "Player Idle",
     // Pause + Volume Set + Volume Mute + Previous Track + Next Track +
     // Play Media + Stop + Play
     supported_features: 21437,
+    volume_level: 0,
   }),
   getEntity("media_player", "receiver_on", "on", {
     source_list: ["AirPlay", "Blu-Ray", "TV", "USB", "iPod (USB)"],

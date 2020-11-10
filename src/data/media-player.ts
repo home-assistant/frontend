@@ -235,12 +235,14 @@ export const computeMediaControls = (
   }
 
   if (
-    (state === "playing" && supportsFeature(stateObj, SUPPORT_PAUSE)) ||
-    supportsFeature(stateObj, SUPPORT_STOP) ||
+    (state === "playing" &&
+      (supportsFeature(stateObj, SUPPORT_PAUSE) ||
+        supportsFeature(stateObj, SUPPORT_STOP))) ||
     ((state === "paused" || state === "idle") &&
       supportsFeature(stateObj, SUPPORT_PLAY)) ||
-    (state === "on" && supportsFeature(stateObj, SUPPORT_PLAY)) ||
-    supportsFeature(stateObj, SUPPORT_PAUSE)
+    (state === "on" &&
+      (supportsFeature(stateObj, SUPPORT_PLAY) ||
+        supportsFeature(stateObj, SUPPORT_PAUSE)))
   ) {
     buttons.push({
       icon:
